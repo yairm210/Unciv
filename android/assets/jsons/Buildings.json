@@ -397,7 +397,7 @@
 		production:2,
 		specialistSlots:{production:1},
 		hurryCostModifier:25,
-		uniques:["+1 Production from each worked Forest tile"],
+		uniques:["+1 Production from each worked Forest tile"],//Should actually be "Forests provide +1 production"
 		requiredTech:"Metal Casting"
 	},
 	{
