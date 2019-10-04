@@ -1060,11 +1060,48 @@
 		innerColor:[153,76,0],
 		uniqueName:"Ta-Seti"
 		unique:"+50% Production toward Ranged units, which gain +50% combat experience. +1 Production from Mines over a Strategic Resource, and +2 Gold from Mines over a Luxury Resource.",
-		cities:["Kerma","Napata","Nuri","El-Kurru","Kawa","Sedeinga","Heh","Qasr Ibrim","Faras","Shaat","Iken","Abu Simbel","Buhen",
-			"Dengeil","Miam","Tombos","Kurgus","Toshka","Soleb","Wad ban Naqa","Debba","Bugdumbush","Baki","Amara",
-			"Musawwarat es-Sufra","El Fura","Ukma","Pedeme","Defeia"]
+		cities:["Meroe","Kerma","Napata","Nuri","El-Kurru","Kawa","Sedeinga","Heh","Qasr Ibrim","Faras","Shaat","Iken",
+			"Abu Simbel","Buhen","Dengeil","Miam","Tombos","Kurgus","Toshka","Soleb","Wad ban Naqa","Debba","Bugdumbush",
+			"Baki","Amara","Musawwarat es-Sufra","El Fura","Ukma","Pedeme","Defeia"]
 		//Nubians should have Pitati Archer as their unique unit, which replaces Archer and it's stronger. Can also move three tiles.
 		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
+	},
+	{   /// MOD CIV
+		name:"Georgia",
+		leaderName:"Tamar",
+		adjective:["Georgian"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "We great thee, Holy Righteous Queen Tamar, ruler of the Georgian nation! Your deeds, like your radiance, are revealed bright as sunshine. The ideal monarch is wise, diplomatic, forward-thinking, a patron to the arts and cultures, and strong in defense of the realm. Few live up to this standard, and you, ruler of Georgia at the height of its golden age, matched this standard, even by the judgement of your enemies. You were born from the Bagrationi dynasty, who claimed descend from the line of David, the biblical King of Israel. Not only did your reign mark your the greatest extent of your nation's domain, but your charisma made all men who ever knew you fall at your feet in reverence. Your rule came in a divided kingdom, and when it was over, it made it larger, more powerful, and sure of its cultural identity, so much that you were canonized as a saint in the Eastern Orthodox faith, and a national symbol of Georgia even today.",
+		startIntroPart2: "Fierce Tamar, only a fool could misjudge Georgia's true measure. If you suffer no fools, great queen, Georgia will not suffer. Can you build a civilization that stands the test of time?",
+		
+		declaringWar:"God fight with us. You stand alone."
+		attacked:"Ha! Georgian hearts will not tremble before your multitudes!",
+		defeated:"Walls weren't enough to save Georgia from ruin. Neither was I.",
+		introduction:"I am Tamar of Georgia. Say what you will and be on your way.",
+		
+		neutralHello:"Greetings.",
+		neutralLetsHearIt:["I'm listening.","What do you have in mind?"],
+		neutralNo:["Sorry but no.","I decline.","I regret I must refuse."],
+		neutralYes:["As you wish!","So be it!","I agree!"],
+
+		hateHello:"You again, it seems...",
+		hateLetsHearIt:["Speak your mind.","I'm listening!"],
+		hateNo:["No.","It shall not be.","Thanks, but no thanks."],
+		hateYes:["Fine...","I accept.","If I must..."],
+		
+		afterPeace:"The war is over, for now. At least I see it alive.",
+		tradeRequest:"I hope you will receive my offer with my sincerest thanks.",
+				
+		outerColor:[255,255,0],
+		innerColor:[255,255,255],
+		uniqueName:"Strenght in Unity",
+		unique:"+50% Production towards walls, +50% Influence increase and -50% Influence decrease when you and your allied City-States have a common enemy",
+		cities:["Tbilisi","Kaspi","Rustavi","Tskhumi","Akhalkalaki","Kutaisi","Zugdidi","Batumi","Gori","Mtskheta",
+			"Poti","Telavi","Akhali Atoni","Akhaltsikhe","Bichvinta","Borjomi","Dedoplistsqaro","Dmanisi","Geguti",
+			"Mutso","Nicopsia","Omalo","Oni","Tianeti","Tmogvi","Tsageri","Tsalka","Tskhinvali","Urbnisi","Zestafoni"]
+	///Unique unit: Khevsur (Requires Iron, replaces Swordsman and Longswordsman, upgrades to Musketman)
+	///Unique improvement: Tsikhe (requires Masonry, +1 Faith, +1 Defense, becomes obsolete with Steel), would require G&K
 	},
 	*/
 	
