@@ -58,8 +58,8 @@
 		greatPersonPoints:{science:1},
 		isWonder:true,
 		providesFreeBuilding: "Library",
-		freeTechs:1,
 		requiredTech:"Writing"
+		uniques:["Free Technology"],
 		quote:"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon"
 	},
 	{
@@ -429,10 +429,10 @@
 		name:"Oxford University",
 		science:3,
 		culture:1,
-		freeTechs:1,
 		isNationalWonder:true,
 		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"University",
+		uniques:["Free Technology"],
 		requiredTech:"Education"
 	},
 	/*
