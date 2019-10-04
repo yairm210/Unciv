@@ -200,7 +200,8 @@ class BattleDamage{
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        return if(combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged" && !combatant.getUnitType().isAirUnit())
+        return if(combatant.getUnitType() == UnitType.City
+                || combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged" && !combatant.getUnitType().isAirUnit())
             1f
         else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
     }
@@ -228,12 +229,12 @@ class BattleDamage{
         if(attacker.isRanged()) return 0
         if(defender.getUnitType().isCivilian()) return 0
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        return (damageModifier(ratio, true) * (if(defender.getUnitType() == UnitType.City) 1.00f else getHealthDependantDamageRatio(defender))).roundToInt()
+        return (damageModifier(ratio, true) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        return (damageModifier(ratio,false) * (if(attacker.getUnitType() == UnitType.City) 0.75f else getHealthDependantDamageRatio(attacker))).roundToInt()
+        return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
     fun damageModifier(attackerToDefenderRatio:Float, damageToAttacker:Boolean): Float {

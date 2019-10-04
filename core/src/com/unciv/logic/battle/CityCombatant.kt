@@ -27,7 +27,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     }
 
     override fun getUnitType(): UnitType = UnitType.City
-    override fun getAttackingStrength(): Int = getCityStrength() //If we don't need to multiply by a modifier number (0.75) in Damage Calculations, getCityStrength() should multiply by 1/(x^i+0.5) (x = CityStrength / DefendUnitStrength, i = if(x>1) 1 else -1).
+    override fun getAttackingStrength(): Int = (getCityStrength() * 0.75).roundToInt()
     override fun getDefendingStrength(): Int{
         if(isDefeated()) return 1
         return getCityStrength()
