@@ -39,8 +39,6 @@ class Building : NamedStats(), IConstruction{
     var replaces:String?=null
     var uniqueTo:String?=null
     var quote:String=""
-
-    // Uniques
     private var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
 

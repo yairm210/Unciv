@@ -122,8 +122,7 @@ class TradeEvaluation{
                         * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
-                val nameOfCivToDeclareWarOn = offer.name.removePrefix("Declare war on ")
-                val civToDeclareWarOn = civInfo.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
+                val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
                 if(civInfo.isAtWarWith(civToDeclareWarOn)){
@@ -193,8 +192,7 @@ class TradeEvaluation{
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
-                val nameOfCivToDeclareWarOn = offer.name.removePrefix("Declare war on ")
-                val civToDeclareWarOn = civInfo.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
+                val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation().threatAssessment(civInfo, civToDeclareWarOn)
 
                 when (threatToUs) {
