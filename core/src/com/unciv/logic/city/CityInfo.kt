@@ -261,11 +261,14 @@ class CityInfo {
     }
 
     fun destroyCity() {
+        for(airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
+
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
-        for(unit in getCenterTile().getUnits())
-            if(!unit.movement.canPassThrough(getCenterTile()))
+        for(unit in getCenterTile().getUnits()) {
+            if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
+        }
 
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getTiles().forEach { expansion.relinquishOwnership(it) }
