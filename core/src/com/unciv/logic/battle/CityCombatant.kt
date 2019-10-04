@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
+import kotlin.math.roundToInt
 
 class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getMaxHealth(): Int {
@@ -34,7 +35,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
 
     fun getCityStrength(): Int { // Civ fanatics forum, from a modder who went through the original code
         var strength = 8f
-        if(city.isCapital()) strength+=2.5f
+        if(city.isCapital()) strength+=2f
         strength += (city.population.population/5) * 2 // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
         if(cityTile.baseTerrain== Constants.hill) strength+=5
@@ -48,16 +49,16 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // Industrial - 32.4, Modern - 51, Atomic - 72.5, All - 118.3
         // 100% of the way through the game provides an extra 50.00
 
-        // Garrisoned unit gives up to 20% of strength to city, health-dependant
+        // Garrisoned unit gives up to 20% of strength to city, in original game strengh of unit has nothing to do with health, health only is related to damage.
         if(cityTile.militaryUnit!=null)
-            strength += cityTile.militaryUnit!!.baseUnit().strength * cityTile.militaryUnit!!.health/100f
+            strength += cityTile.militaryUnit!!.baseUnit().strength / 5f
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumBy{ it.cityStrength }.toFloat()
         if(getCivInfo().containsBuildingUnique("Defensive buildings in all cities are 25% more effective"))
             buildingsStrength*=1.25f
         strength += buildingsStrength
 
-        return strength.toInt()
+        return strength.roundToInt()
     }
 
     override fun toString(): String {return city.name} // for debug

@@ -9,6 +9,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class BattleDamageModifier(val vs:String,val modificationAmount:Float){
     fun getText(): String = "vs $vs"
@@ -227,12 +228,12 @@ class BattleDamage{
         if(attacker.isRanged()) return 0
         if(defender.getUnitType().isCivilian()) return 0
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        return (damageModifier(ratio, true) * (if(defender.getUnitType() == UnitType.City) 1.00f else getHealthDependantDamageRatio(defender))).toInt()
+        return (damageModifier(ratio, true) * (if(defender.getUnitType() == UnitType.City) 1.00f else getHealthDependantDamageRatio(defender))).roundToInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        return (damageModifier(ratio,false) * (if(attacker.getUnitType() == UnitType.City) 0.75f else getHealthDependantDamageRatio(attacker))).toInt()
+        return (damageModifier(ratio,false) * (if(attacker.getUnitType() == UnitType.City) 0.75f else getHealthDependantDamageRatio(attacker))).roundToInt()
     }
 
     fun damageModifier(attackerToDefenderRatio:Float, damageToAttacker:Boolean): Float {
