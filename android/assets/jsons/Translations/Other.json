@@ -758,7 +758,7 @@
 		German:"Wartungskosten"
 		Dutch:"Onderhouskosten"
 		Spanish:"Coste de mantenimiento"
-		Simplified_Chinese:"维护费"
+		Simplified_Chinese:"建筑维护费"
 		Portuguese:"Custo de manutenção"
 		Japanese:"メンテナンス費用"
 	}
@@ -1546,7 +1546,7 @@
 		French:"Entretien"
 		Romanian:"Întreținere"
 		Spanish:"Mantenimiento"
-		Simplified_Chinese:"维护费"
+		Simplified_Chinese:"建筑维护费"
 		Portuguese:"Manutenção"
 		German:"Wartung"
 	}
@@ -1568,7 +1568,7 @@
 		French:"Entretien des unités"
 		Romanian:"Întreținere unități"
 		Spanish:"Mantenimiento de unidades"
-		Simplified_Chinese:"单位维护"
+		Simplified_Chinese:"单位维护费"
 		Portuguese:"Manutenção de unidades"
 		German:"Unterhalt für Einheiten"		
 	}
