@@ -49,9 +49,9 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // Industrial - 32.4, Modern - 51, Atomic - 72.5, All - 118.3
         // 100% of the way through the game provides an extra 50.00
 
-        // Garrisoned unit gives up to 20% of strength to city, in original game strengh of unit has nothing to do with health, health only is related to damage.
+        // Garrisoned unit gives up to 20% of strength to city, health-dependant
         if(cityTile.militaryUnit!=null)
-            strength += cityTile.militaryUnit!!.baseUnit().strength / 5f
+            strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * 0.2f
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumBy{ it.cityStrength }.toFloat()
         if(getCivInfo().containsBuildingUnique("Defensive buildings in all cities are 25% more effective"))
