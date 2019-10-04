@@ -9,50 +9,50 @@
 		],  // this will be displayed as 4 lines of text in-game as well
 		[
 			"Le politiche sono divise in rami, ognuno dei quali concede un'abilità bonus",
-			"  bonus quanto tutte le sue politiche sono state adottate."
+			" bonus quanto tutte le sue politiche sono state adottate."
 		],
 		[
-			"Ad ogni politica adottata, e ad ogni nuova città fondata, il costo ",
-			"  di adozione per un'altra politica aumenta, quindi pianifica con cautela!"
+			"Per ogni politica adottata, e per ogni nuova città fondata, il costo ",
+			" di adozione per un'altra politica aumenta, quindi pianifica con cautela!"
 		]
 	],
 	
 	CityEntered: [
 		[
 			"Benvenuto nella tua prima città!",
-			"Per ora, possiedi solo 1 abitante, ma la popolazione crescerà quando possiedi del cibo in eccesso",
-			"In modo simile, la città espanderà i suoi confini quando accumulerà cultura sufficiente,",
-			"  che normalmente non si genera dalle caselle, ma piuttosto dagli edifici."
+			"Per ora, possiede solo 1 abitante, ma la popolazione crescerà quando possiedi del cibo in eccesso",
+			"In modo simile, la città espanderà i suoi confini quando accumulerà cultura sufficiente, ",
+			" che normalmente non si genera dalle caselle, ma piuttosto dagli edifici."
 		],
 		[
-			"Ogni abitante nella tua città può sfruttare una singola casella, dando alla città gli introiti della casella.",
+			"Ogni abitante nella tua città può sfruttare una singola casella, dando alla città gli introiti che essa contiene.",
 			"Puoi assegnare e togliere lavoro agli abitanti cliccando sulle caselle, ",
-			"  ma, ovviamente, puoi dare lavoro solo se hai ancora abitanti non attivi."
+			" ma, ovviamente, puoi dare lavoro solo se possiedi abitanti non attivi."
 		],
 		[
-			"La casella centrale di una città è sempre sfruttata e non richiede abitanti,",
-			"  ma non può contenere miglioramenti.",
-			"La produzione cittadina tira sempre verso la costruzione attuale. ",
+			"La casella centrale di una città è sempre sfruttata e non richiede abitanti, ",
+			" ma non può contenere miglioramenti.",
+			"La produzione cittadina tira sempre verso la costruzione attuale.",
 			"Puoi scegliere la costruzione cliccando sul tasto costruzione in basso a sinistra."
 		]
 	],
 	
 	TechPickerScreen : [
 		[
-			"La tecnologia è centrale per la tua civiltà,",
-			" perché quante più tecnologie ricerchi",
+			"La tecnologia è centrale per la tua civiltà, ",
+			" perché quante più tecnologie ricerchi ",
 			" più abilità, unità, miglioramenti ed edifici ti saranno concessi."
 		],
 		[
 			"La maggior parte delle tecnologie sono dipese dalla ricerca di altre tecnologie, ",
-			"  ma puoi scegliere a quale tecnologia aspiri, e la tua civiltà",
-			"  ricercherà le tecnologie necessarie per arrivarci."
+			" ma puoi scegliere a quale tecnologia aspiri, e la tua civiltà ",
+			" ricercherà le tecnologie necessarie per arrivarci."
 		]
 		[
 			"Ricorda di restare competitivo nella corsa tecnologica, perché se rimani ",
-			"  troppo indietro in tale campo ti ritroverai nella stessa situazione degli Aztechi, che ",
-			"  dovettero affrontare i moschetti e i cannoni spagnoli armati solo di fionde e spade in ossidiana."
-			" La storia ci insegna che in casi come questo vince sempre chi possiede la tecnologia più avanzata."
+			" troppo indietro in tale campo ti ritroverai nella stessa situazione degli Aztechi, che ",
+			" dovettero affrontare i moschetti e i cannoni spagnoli armati solo di fionde e spade in ossidiana."
+			"La storia ci insegna che in casi come questo vince sempre chi possiede la tecnologia più avanzata."
 		]
 	],
 	
@@ -60,23 +60,23 @@
 	CityFounded : [
 		[
 			"Hai fondato una città!",
-			"Le Città sono la linfa vitale del tuo impero, perchè producono globalmente,",
-			"  oro e scienza, che puoi vedere nella barra superiore.",
-			"Clicca sul nome della città per entrare nella schermata cittadina, dove puoi assegnare",
-			"  abitanti, scegliere la produzione, e vedere le informazioni della Città."
+			"Le Città sono la linfa vitale del tuo impero, perchè producono globalmente ",
+			" oro e scienza, che puoi vedere nella barra superiore.",
+			"Clicca sul nome della città per entrare nella schermata cittadina, dove puoi assegnare ",
+			" abitanti, scegliere la produzione, e vedere le informazioni della Città."
 		],
 		[
-			"Una volta fondata la tua prima città, potrai iniziare a produrre una nuova unità,",
-			"  e iniziare a ricercare la tua prima tecnologia.",
-			"Non mi dilungherò troppo nella parte tecnologica, per adesso (ci penserà il manuale),",
-			"  quindi parliamo della produzione."
+			"Una volta fondata la tua prima città, potrai iniziare a produrre una nuova unità, ",
+			" e iniziare a ricercare la tua prima tecnologia.",
+			"Non mi dilungherò troppo nella parte tecnologica, per adesso (ci penserà il manuale), ",
+			" quindi parliamo della produzione."
 		],
 		[
 			"Le prime cose producibili dalla città saranno lo Scout e il Guerriero."
-			"Generalmente preferisco il Guerriero, in quanto utile per difendersi, oltre che aggiornabile",
-			"  allo Spadaccino nelle fasi successive per una modesta somma di denaro e una certa risorsa.",
-			"Gli Scout non sono da meno, però, soprattutto se ti trovi in un'area abbondante di foreste e colline,",
-			"  terreni sui quali non ci sono penalità di movimento per lo Scout."
+			"Generalmente preferisco il Guerriero, in quanto utile per difendersi, oltre che aggiornabile ",
+			" allo Spadaccino nelle fasi successive per una modesta somma di denaro e una certa risorsa.",
+			"Gli Scout non sono da meno, però, soprattutto se ti trovi in un'area abbondante di foreste e colline, ",
+			" terreni sui quali non ci sono penalità di movimento per lo Scout."
 			"Se sei un veterano del genere 4X, prova a costruire un Guerriero e uno Scout seguito da un Colono.",
 			"In gran parte dei giochi di questo tipo, una rapida espansione è un'azione critica.",
 		],
@@ -87,25 +87,25 @@
 			"Salve! Benvenuto su Unciv!",
 			"I giochi di tipo Civilization possono essere complessi, quindi ti guideremo passo dopo passo.",
 			"La tua prima missione è fondare la tua Città Capitale.",
-			"È invero assai importante perché la tua Capitale sarà la tua Città più prospera.",
+			"È invero assai importante perché di solito la tua Capitale sarà la tua Città più prospera.",
 			"Molti dei bonus del gioco si applicano solo sulla tua Capitale, centro del tuo impero."
 		],
 		[
 			"Come si fa a sapere se un punto è appropriato?",
 			"Non è facile rispondere a questa domanda, ma cercare e costruire accanto a risorse di lusso è un'ottima idea.",
-			"Le risorse di lusso sono caselle che possiedono oggetti come gemme, cotome o seta,"
-			"  (e sono indicate da un sorriso vicino all'icona della risorsa)",
+			"Le risorse di lusso sono caselle che possiedono oggetti come gemme, cotome o seta, "
+			" (e sono indicate da un sorriso vicino all'icona della risorsa)",
 			"Queste risorse rendono felici i tuoi cittadini."
-			"Tieni d'occhio anche le risorse necessarie per costruire alcune unità e strutture, come il Ferro."
+			"Tieni d'occhio anche le risorse necessarie per costruire alcune unità e strutture, come il Ferro o i Cavalli."
 		],
 		[
-			"Le Città, però, non hanno un'area predefinita dove possono lavorare (ce ne occuperemo dopo),"
-			"  quindi non è obbligatorio fondare città vicino alle risorse.",
-			"Mettiamo, per esempio, che tu voalia usare del Ferro ma la risorse si trova vicino a un deserto."
-			"Non serve fondare la città accanto a quel deserto, e puoi invece farlo qualche casella più in là,",
-			"  in terre più prospere, e, con un po' di fortuna, la città, crescendo, avrà accesso alla risorsa.",
-			"Se ti serve subito, però, sarà necessario fondarla nelle sue immediate vicinanze,",
-			"  e potrebbe servire fin da subito, ma di solito avrai il lusso del tempo."
+			"Le Città, però, non hanno un'area predefinita dove possono lavorare (ce ne occuperemo dopo), "
+			" quindi non è obbligatorio fondare città vicino alle risorse.",
+			"Mettiamo, per esempio, che tu voglia usare del Ferro ma la risorsa si trova vicino a un deserto."
+			"Non serve fondare la città accanto a quel deserto, e puoi invece farlo qualche casella più in là, ",
+			" in terre più prospere, e, con un po' di fortuna, la città, crescendo, avrà accesso alla risorsa.",
+			"Se ti serve subito, però, sarà necessario fondarla nelle sue immediate vicinanze, ",
+			" e potrebbe servire fin da subito, ma di solito avrai il lusso del tempo."
 		],
 		
 	],
@@ -120,15 +120,15 @@
 			"All'aumentare della popolazione troverai sempre più difficile mantenerne la felicità."
 		],
 		[
-			"Inolte, per costruire degli edifici che incrementano la Felicità, dovrai ricercarne l'apposita tecnologia.",
-			"Controlla la tua Felicità (indicata da un sorriso nella barra superiore dell'interfaccia): se scende",
-			"  sotto lo zero, non solo la tua economia ne avrà da soffrire, ma i tuoi eserciti",
-			"  avranno una tremenda penalità inflitta alla loro efficacia in combattimento."
+			"Inoltre, per costruire degli edifici che incrementano la Felicità, dovrai ricercarne l'apposita tecnologia.",
+			"Controlla la tua Felicità (indicata da un sorriso nella barra superiore dell'interfaccia): ",
+			" se scende sotto lo zero, non solo la tua economia ne avrà da soffrire, ",
+			"  ma i tuoi eserciti avranno una pessima penalità inflitta alla loro efficacia in combattimento."
 		],
 		[
 			"Questa è la ragione per cui è molto difficile espandersi rapidamente in Unciv.",
 			"Non è certo impossibile, ma come nuovo giocatore non dovresti farlo.",
-			"Pertanto, basta fare con calma, esplora, e migliora i tuoi terreni utilizzando i Lavoratori.",
+			"Pertanto, basta fare con calma, esplorare, e migliorare i tuoi terreni utilizzando i Lavoratori.",
 			"Se vuoi fondare nuove Città, fallo solo su punti che credi appropriati."
 		],
 	],
@@ -170,12 +170,12 @@
 	
 	NextTurn: [
 		[
-			"Nei tuoi primi turni, avrai ben poche opzioni,  ma con il crescere della tua civiltà, lo stesso accadrà ",
-			" alla quantità di cose che richiedono la tua attenzione."
+			"Nei tuoi primi turni, avrai ben poche opzioni, ma con il crescere della tua civiltà, aumenterà anche ",
+			" la quantità di cose che richiedono la tua attenzione."
 		]
 		[
 			"Ah, dimenticavo! Qualsiasi cosa tu faccia, nelle prime fasi del gioco ricordati sempre ",
-			" di inviare qualche unità (il tuo Scout, ad esempio) ad esplorare il mondo (se non l'hai già fatto). ",
+			" di inviare qualche unità (il tuo Scout, ad esempio) ad esplorare il mondo (se non l'hai già fatto).",
 			"Se non sai cosa ti succede intorno, qualche vicino avido ti tirerà certamente ",
 			" qualche tiro mancino, e l'esperienza potrebbe esserti fatale!"
 		]
@@ -184,7 +184,7 @@
 	ContactMe:  [
 		[
 			"Salve! Se sei giunto/a fin qui, forse avrai visto che il gioco è al momento incompleto.",
-			"UnCiv dovrebbe essere open-source e gratuito per sempre, quindi nessuna pubblicità o altre siocchezze."
+			"UnCiv dovrebbe essere open-source e gratuito per sempre, quindi privo di pubblicità o altre siocchezze."
 		],
 		[
 			"Ciò che mi motiva a continuare il progetto, oltre al fatto che è fantastico, ",
@@ -220,24 +220,8 @@
 		[
 			"Sei entrato in un'Età dell'Oro! Che fortuna!",
 			"I punti Età dell'Oro si accumulano ad ogni turno dalla felicità totale della tua civiltà.",
-			"Durante l'Età dell'Oro, generi Cultura e Produzione il 20% in più, ",
+			"Durante l'Età dell'Oro, generi il 20% in più di Cultura e Produzione, ",
 			" e ogni casella che frutta minimo un punto Oro ne frutta uno aggiuntivo."
-		]
-		[
-			"Fondate le tue prime due/tre Città saranno passati già almeno 100/150 turni di gioco.",
-			"Ora dovresti pensare a come, esattamente, vorresti vincere... se non l'hai già pensato."
-		],
-		[
-			"Tre sono i modi per vincere una partita qualsiasi Unciv. Eccole:",
-			"Culturale: Completa 4 Rami delle Politiche",
-			"Dominazione: Sopravvivi come l'ultima civiltà",
-			"Scientifica: Costruisci per primo un'astronave per Alpha Centauri"
-		],
-		[
-			"Riassumendo, queste sono le basi perUnciv.",
-			"Fonda una capitale prospera, espanditi lentamente per gestire la tua felicità ed economia, ",
-			"  e impostati una condizione di vittoria che desideri conseguire.",
-			"Ovviamente, vi è molto più di questo, ma prima di tuffarti dovresti innanzitutto imparare a nuotare.",
 		]
 	],
 	
@@ -247,6 +231,22 @@
 			"Se connetti le tua città alla capitale con le strade, le rotte commerciali ti frutteranno oro.",
 			"Nota che ogni strada costa 1 Oro di manutenzione al turno, quindi attendi di "
 			" possedere una forte economia finché le città crescono!"
+		]
+		[
+			"Fondate le tue prime due/tre Città, saranno passati già almeno 100/150 turni di gioco.",
+			"Ora dovresti pensare a come, esattamente, vorresti vincere... se non l'hai già fatto."
+		],
+		[
+			"Tre sono i modi per vincere una partita qualsiasi in Unciv:",
+			"Culturale: Completa 4 Rami delle Politiche Sociali",
+			"Dominazione: Sopravvivi come l'ultima civiltà distruggendo tutte le altre",
+			"Scientifica: Costruisci per primo un'astronave per Alpha Centauri riunendone tutte le parti dell'astronave"
+		],
+		[
+			"Riassumendo, queste sono le basi per Unciv.",
+			"Fonda una capitale prospera, espanditi lentamente per gestire la tua felicità ed economia, ",
+			"  e impostati una condizione di vittoria che desideri conseguire.",
+			"Ovviamente, vi è molto più di questo, ma prima di tuffarti dovresti innanzitutto imparare a nuotare.",
 		]
 	],
 	
@@ -284,6 +284,22 @@
 		[
 			"La città ha esaurito del tutto la sua resistenza! È giunto il momento di conquistarla!",
 			"Ricordati che per conquistarla devi farvi entrare un'unità da mischia."
+		]
+	],
+	
+	ConqueredEnemyCity: [
+		[
+			"Hai conquistato una città nemica!",
+			"Ora puoi scegliere se raderla al suolo, ridurla a stato fantoccio o annetterla al tuo impero.",
+			"Se scegli la prima opzione, la città perderà un abitante al turno, fino a scomparire del tutto."
+		],
+		[
+			"Porla come stato fantoccio non ti consente di controllarne la produzione, ma in compenso",
+			" non incrementerà i tuoi costi tecnologici o di politica, e la popolazione genererà "
+			" soltanto un'infelicità 1.5 volte superiore alla norma.",
+			"Se annetti la città, potrai farne quello che desideri, ma l'infelicità della popolazione sarà raddoppiata!",
+			"Puoi mitigare il tutto costruendo un palazzo di giustizia, ripristinando l'infelicità della popolazione.",
+			"Puoi annettere una città fantoccio quando vuoi, ma ricorda che è un processo irreversibile!"
 		]
 	],
 	
