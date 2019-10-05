@@ -48,7 +48,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                 }
             }
         }
-        if (civInfo.policies.isAdopted("Trade Unions")) transportationUpkeep *= (2 / 3f).toInt()
+        if (civInfo.policies.isAdopted("Trade Unions"))
+            transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
         return transportationUpkeep
     }
 

@@ -271,7 +271,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray
-        languageSelectBox.selected = languageArray.first { it.language == UnCivGame.Current.settings.language }
+        val matchingLanguage = languageArray.firstOrNull { it.language == UnCivGame.Current.settings.language }
+        languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
         innerTable.add(languageSelectBox).pad(10f).row()
 
         languageSelectBox.addListener(object : ChangeListener() {
