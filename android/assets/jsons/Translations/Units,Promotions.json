@@ -3,7 +3,7 @@
 ///////// Unit types
 
 	"Civilian":{
-		Italian:"civile" //Unità civile
+		Italian:"unità civile" //Unità civile
 		Russian:"Мирный"
 		French:"Civile"
 		Romanian:"Civil"
@@ -34,7 +34,7 @@
 
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
 		English:"Water Civilian"
-		Italian:"marittima civile" //Unità marittima civile
+		Italian:"unità marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
 		Russian:"Мирный, морской"
@@ -1429,7 +1429,7 @@
 	}
 	
 	"Bonus vs [unitType]":{
-		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
+		Italian:"Bonus contro [unitType]" // es. Bonus contro unità da tiro
 		Russian:"Бонус против [unitType]"
 		French:"Bonus contre [unitType]"
 		Romanian:"Bonus contra [unitType]"
@@ -1441,7 +1441,7 @@
 	}
 
 	"Penalty vs [unitType]":{
-		Italian:"Malus contro unità [unitType]"
+		Italian:"Malus contro [unitType]"
 		Russian:"Штраф против [unitType]"
 		French:"Pénalité contre [unitType]"
 		Romanian:"Penalizare contra [unitType]"
@@ -1968,7 +1968,7 @@
 	}
 
 	"1 extra Interception may be made per turn":{
-		Italian:"Può eseguire 1 Intercettazione extra per turno"
+		Italian:"Può eseguire un'Intercettazione extra per turno"
 		French:"1 interception supplémentaire par tour"
 		Russian:"+1 Перехват за ход"
 		Simplified_Chinese:"1额外拦截次数/回合"
