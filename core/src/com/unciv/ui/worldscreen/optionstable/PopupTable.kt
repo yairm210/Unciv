@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
@@ -25,6 +24,8 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         screen.stage.addActor(this)
     }
 
+    open fun close(){ remove() }
+
     fun addGoodSizedLabel(text: String): Cell<Label> {
         val label = text.toLabel()
         label.setWrap(true)
@@ -32,27 +33,12 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         return add(label).width(screen.stage.width/2)
     }
 
-    fun addButton(text:String, action:()->Unit){
+    fun addButton(text:String, action:()->Unit): Cell<TextButton> {
         val button = TextButton(text.tr(), skin).apply { color= ImageGetter.getBlue() }
         button.onClick(action)
-        add(button).row()
-    }
-}
-
-class YesNoPopupTable(question:String, action:()->Unit,
-                      screen: CameraStageBaseScreen = UnCivGame.Current.worldScreen) : PopupTable(screen){
-    init{
-        if(!screen.hasPopupOpen) {
-            screen.hasPopupOpen=true
-            add(question.toLabel()).colspan(2).row()
-            add(TextButton("No".tr(), skin).onClick { close() })
-            add(TextButton("Yes".tr(), skin).onClick { close(); action() })
-            open()
-        }
+        return add(button).apply { row() }
     }
 
-    fun close(){
-        remove()
-        screen.hasPopupOpen=false
-    }
+    fun addCloseButton() = addButton("Close"){close()}
 }
+

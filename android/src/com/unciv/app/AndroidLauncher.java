@@ -12,6 +12,9 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		String version = BuildConfig.VERSION_NAME;
+
+		config.useImmersiveMode=true;
+
 		initialize(new UnCivGame(version), config);
 	}
 }

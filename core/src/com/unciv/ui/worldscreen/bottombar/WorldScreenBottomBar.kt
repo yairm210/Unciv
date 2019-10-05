@@ -10,7 +10,7 @@ class WorldScreenBottomBar(val worldScreen: WorldScreen) : Table(){
     val tileInfoTable = TileInfoTable(worldScreen)
 
     init {
-        add(unitTable).width(worldScreen.stage.width/3).fill()
+        add(unitTable).width(worldScreen.stage.width/3).bottom().fillX()
         add().width(worldScreen.stage.width/3) // empty space for the battle table
         add(tileInfoTable).width(worldScreen.stage.width/3).fill()
 

@@ -31,4 +31,27 @@ class Trade{
         toReturn.ourOffers.addAll(ourOffers)
         return toReturn
     }
+
+    fun set(trade: Trade) {
+        ourOffers.clear()
+        ourOffers.addAll(trade.ourOffers)
+        theirOffers.clear()
+        theirOffers.addAll(trade.theirOffers)
+    }
+}
+
+
+class TradeRequest {
+
+    lateinit var requestingCiv: String
+
+    /** Their offers are what they offer us, and our offers are what they want in return */
+    lateinit var trade: Trade
+
+    constructor()  // for json serialization
+
+    constructor(requestingCiv: String, trade: Trade) {
+        this.requestingCiv = requestingCiv
+        this.trade = trade
+    }
 }

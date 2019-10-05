@@ -1,10 +1,12 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
@@ -12,6 +14,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import java.io.IOException
 import kotlin.concurrent.thread
 
 class Language(val language:String){
@@ -27,8 +30,8 @@ class Language(val language:String){
     }
 }
 
-class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
-    val languageSelectBox = SelectBox<Language>(skin)
+class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScreen){
+    var selectedLanguage: String = "English"
 
     init {
         update()
@@ -41,37 +44,93 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         settings.save()
         clear()
 
-        add("Worked tiles".toLabel())
-        if (settings.showWorkedTiles) addButton("Hide") { settings.showWorkedTiles = false; update() }
-        else addButton("Show") { settings.showWorkedTiles = true; update() }
+        val innerTable = PopupTable(screen) // cheating, to get the old code to fit inside a Scroll =)
+        innerTable.background=null
+        innerTable.add("Worked tiles".toLabel())
+        if (settings.showWorkedTiles) innerTable.addButton("Hide") { settings.showWorkedTiles = false; update() }
+        else innerTable.addButton("Show") { settings.showWorkedTiles = true; update() }
 
-        add("Resources and improvements".toLabel())
+        innerTable.add("Resources and improvements".toLabel())
         if (settings.showResourcesAndImprovements)
-            addButton("Hide") { settings.showResourcesAndImprovements = false; update() }
-        else addButton("Show") { settings.showResourcesAndImprovements = true; update() }
+            innerTable.addButton("Hide") { settings.showResourcesAndImprovements = false; update() }
+        else innerTable.addButton("Show") { settings.showResourcesAndImprovements = true; update() }
 
-        addLanguageSelectBox()
+        innerTable.add("Check for idle units".toLabel())
+        innerTable.addButton(if(settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
+            settings.checkForDueUnits = !settings.checkForDueUnits
+            update()
+        }
 
-        addResolutionSelectBox()
+        innerTable.add("Move units with a single tap".toLabel())
+        innerTable.addButton(if(settings.singleTapMove) "Yes".tr() else "No".tr()) {
+            settings.singleTapMove = !settings.singleTapMove
+            update()
+        }
 
-        addAutosaveTurnsSelectBox()
+        innerTable.add("Show tutorials".toLabel())
+        innerTable.addButton(if(settings.showTutorials) "Yes".tr() else "No".tr()) {
+            settings.showTutorials= !settings.showTutorials
+            update()
+        }
 
-        addTileSetSelectBox()
 
-        addSoundEffectsVolumeSlider()
+        innerTable.add("Auto-assign city production".toLabel())
+        innerTable.addButton(if(settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
+            settings.autoAssignCityProduction= !settings.autoAssignCityProduction
+            update()
+        }
 
-        add("Version".toLabel())
-        add(UnCivGame.Current.version.toLabel()).row()
+        innerTable.add("Show minimap".toLabel())
+        innerTable.addButton(if(settings.showMinimap) "Yes".tr() else "No".tr()) {
+            settings.showMinimap= !settings.showMinimap
+            update()
+        }
 
-        addButton("Close"){ remove() }
+        addLanguageSelectBox(innerTable)
+
+        addFontSelectBox(innerTable)
+
+        addResolutionSelectBox(innerTable)
+
+        addAutosaveTurnsSelectBox(innerTable)
+
+        addTileSetSelectBox(innerTable)
+
+        addSoundEffectsVolumeSlider(innerTable)
+
+        innerTable.add("Version".toLabel())
+        innerTable.add(UnCivGame.Current.version.toLabel()).row()
+
+        addUsernameAndId(innerTable)
+
+        val scrollPane = ScrollPane(innerTable,skin)
+        scrollPane.setOverscroll(false,false)
+        scrollPane.fadeScrollBars=false
+        scrollPane.setScrollingDisabled(true,false)
+        add(scrollPane).maxHeight(screen.stage.height*0.6f).row()
+
+        addCloseButton()
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
-    private fun addSoundEffectsVolumeSlider() {
-        add("Sound effects volume".tr())
+    private fun addUsernameAndId(innerTable: PopupTable) {
+        innerTable.add("Username".toLabel())
+        val userNameTextField = TextField(UnCivGame.Current.settings.userName, skin)
+        userNameTextField.addListener {
+            UnCivGame.Current.settings.userName = userNameTextField.text
+            UnCivGame.Current.settings.save()
+            true
+        }
+        innerTable.add(userNameTextField).row()
+
+
+    }
+
+    private fun addSoundEffectsVolumeSlider(innerTable: PopupTable) {
+        innerTable.add("Sound effects volume".tr())
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
         soundEffectsVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
@@ -82,32 +141,32 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                 Sounds.play("click")
             }
         })
-        add(soundEffectsVolumeSlider).row()
+        innerTable.add(soundEffectsVolumeSlider).row()
     }
 
-    private fun addResolutionSelectBox() {
-        add("Resolution".toLabel())
+    private fun addResolutionSelectBox(innerTable: PopupTable) {
+        innerTable.add("Resolution".toLabel())
 
         val resolutionSelectBox = SelectBox<String>(skin)
         val resolutionArray = Array<String>()
         resolutionArray.addAll("900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UnCivGame.Current.settings.resolution
-        add(resolutionSelectBox).pad(10f).row()
+        innerTable.add(resolutionSelectBox).pad(10f).row()
 
         resolutionSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.resolution = resolutionSelectBox.selected
                 UnCivGame.Current.settings.save()
-                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UnCivGame.Current.setWorldScreen()
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
         })
     }
 
-    private fun addTileSetSelectBox() {
-        add("Tileset".toLabel())
+    private fun addTileSetSelectBox(innerTable: PopupTable) {
+        innerTable.add("Tileset".toLabel())
 
         val tileSetSelectBox = SelectBox<String>(skin)
         val tileSetArray = Array<String>()
@@ -116,21 +175,21 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         for(tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = UnCivGame.Current.settings.tileSet
-        add(tileSetSelectBox).pad(10f).row()
+        innerTable.add(tileSetSelectBox).pad(10f).row()
 
         tileSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.tileSet = tileSetSelectBox.selected
                 UnCivGame.Current.settings.save()
-                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UnCivGame.Current.setWorldScreen()
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
         })
     }
 
-    private fun addAutosaveTurnsSelectBox() {
-        add("Turns between autosaves".toLabel())
+    private fun addAutosaveTurnsSelectBox(innerTable: PopupTable) {
+        innerTable.add("Turns between autosaves".toLabel())
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
@@ -138,7 +197,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = UnCivGame.Current.settings.turnsBetweenAutosaves
 
-        add(autosaveTurnsSelectBox).pad(10f).row()
+        innerTable.add(autosaveTurnsSelectBox).pad(10f).row()
 
         autosaveTurnsSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -149,73 +208,98 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         })
     }
 
-    private fun addLanguageSelectBox() {
-        add("Language".toLabel())
+    private fun addFontSelectBox(innerTable: PopupTable) {
+        innerTable.add("Fontset".toLabel())
+        val FontSetSelectBox = SelectBox<String>(skin)
+        val FontSetArray = Array<String>()
+        FontSetArray.add("NativeFont(Recommended)")
+        FontSetArray.add("WenQuanYiMicroHei")
+        FontSetSelectBox.items = FontSetArray
+        FontSetSelectBox.selected = UnCivGame.Current.settings.fontSet
+        innerTable.add(FontSetSelectBox).pad(10f).row()
 
+        FontSetSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
+                if (FontSetSelectBox.selected == "NativeFont(Recommended)"||Fonts().containsFont()) {
+                    selectFont()
+                }
+                else {
+                    YesNoPopupTable("This Font requires you to download fonts.\n" +
+                            "Do you want to download fonts(about 4.2MB)?",
+                            {
+                                val downloadingFontPopup = PopupTable(screen)
+                                downloadingFontPopup.add("Downloading...\n".toLabel()).row()
+                                downloadingFontPopup.add("Warning:Don't switch this game to background until download finished.".toLabel().setFontColor(Color.RED)).row()
+                                downloadingFontPopup.open()
+                                Gdx.input.inputProcessor = null
+                                thread {
+                                    try {
+                                        Fonts().download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf", "WenQuanYiMicroHei")//This font is licensed under Apache2.0 or GPLv3
+                                        Gdx.app.postRunnable {
+                                            selectFont()
+                                        }
+                                    }
+                                    catch (e: IOException) {
+                                        Gdx.app.postRunnable {
+                                            FontSetSelectBox.selected = "NativeFont(Recommended)"
+                                            val downloadFailedPopup = PopupTable(UnCivGame.Current.worldScreen)
+                                            downloadFailedPopup.add("Download failed!\nPlease check your internet connection.".toLabel().setFontColor(Color.RED)).row()
+                                            downloadFailedPopup.addCloseButton()
+                                            downloadFailedPopup.open()
+                                        }
+                                    }
+                                }
+                            }, UnCivGame.Current.worldScreen, {FontSetSelectBox.selected = "NativeFont(Recommended)"})
+                }
+            }
+        })
+    }
+
+    fun selectFont(){
+        UnCivGame.Current.settings.save()
+        CameraStageBaseScreen.resetFonts()
+        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
+        UnCivGame.Current.setWorldScreen()
+        WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
+    }
+
+    private fun addLanguageSelectBox(innerTable: PopupTable) {
+        innerTable.add("Language".toLabel())
+        val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray
         languageSelectBox.selected = languageArray.first { it.language == UnCivGame.Current.settings.language }
-        add(languageSelectBox).pad(10f).row()
+        innerTable.add(languageSelectBox).pad(10f).row()
 
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val selectedLanguage = languageSelectBox.selected.language
-                if (Fonts().containsFont(Fonts().getFontForLanguage(selectedLanguage)))
-                    selectLanguage()
-                else {
-                    val spaceSplitLang = selectedLanguage.replace("_", " ")
-                    YesNoPopupTable("This language requires you to download fonts.\n" +
-                            "Do you want to download fonts for $spaceSplitLang?",
-                            {
-
-                                val downloading = PopupTable(screen)
-                                downloading.add("Downloading...".toLabel())
-                                downloading.open()
-                                Gdx.input.inputProcessor = null // no interaction until download is over
-
-                                thread {
-                                    Fonts().downloadFontForLanguage(selectedLanguage)
-                                    // The language selection must be done on the render thread, because it requires a GL context.
-                                    // This means that we have to tell the table to create it on render.
-                                    shouldSelectLanguage = true
-                                }
-                            })
-                }
+                selectedLanguage = languageSelectBox.selected.language
+                selectLanguage()
             }
         })
 
         if (languageSelectBox.selected.percentComplete != 100) {
-            add("Missing translations:".toLabel()).pad(5f).row()
+            innerTable.add("Missing translations:".toLabel()).pad(5f).colspan(2).row()
             val missingTextSelectBox = SelectBox<String>(skin)
             val missingTextArray = Array<String>()
             val currentLanguage = UnCivGame.Current.settings.language
             GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach { missingTextArray.add(it.key) }
             missingTextSelectBox.items = missingTextArray
             missingTextSelectBox.selected = "Untranslated texts"
-            add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width / 2).row()
+            innerTable.add(missingTextSelectBox).pad(10f)
+                    .width(screen.stage.width / 2).colspan(2).row()
         }
     }
-
 
     fun selectLanguage(){
-        UnCivGame.Current.settings.language = languageSelectBox.selected.language
+        UnCivGame.Current.settings.language = selectedLanguage
         UnCivGame.Current.settings.save()
-
-        CameraStageBaseScreen.resetFonts()
-
-        UnCivGame.Current.worldScreen = WorldScreen()
+        CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
+        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
-    }
-
-    var shouldSelectLanguage = false
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        if(shouldSelectLanguage){
-            shouldSelectLanguage=false
-            selectLanguage()
-        }
-        super.draw(batch, parentAlpha)
     }
 }

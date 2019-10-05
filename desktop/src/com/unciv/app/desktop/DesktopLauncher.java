@@ -10,14 +10,16 @@ class DesktopLauncher {
 	public static void main (String[] arg) {
 
 		TexturePacker.Settings settings = new TexturePacker.Settings();
-		settings.maxWidth = 2048;
-		settings.maxHeight = 2048;
+		settings.maxWidth = 2500;
+		settings.maxHeight = 2500;
 		settings.combineSubdirectories=true;
+		settings.pot=false;
+		settings.fast=true;
 
 		// This is so they don't look all pixelated
 		settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
 		settings.filterMin =  Texture.TextureFilter.MipMapLinearLinear;
-		TexturePacker.process(settings, "../images", ".", "game");
+		TexturePacker.process(settings, "../Images", ".", "game");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		new LwjglApplication(new UnCivGame("Desktop"), config);

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.Building
@@ -39,21 +40,29 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         pack()
     }
 
-    private fun addTitle(str:String) {
+    private fun addCategory(str: String, showHideTable: Table) {
         val titleTable = Table().background(ImageGetter.getBackground(ImageGetter.getBlue()))
-        titleTable.add(str.toLabel().setFontSize(22))
-        add(titleTable).width(cityScreen.stage.width/4 - 2*pad).row()
+        val width = cityScreen.stage.width/4 - 2*pad
+        val showHideTableWrapper = Table()
+        showHideTableWrapper.add(showHideTable).width(width)
+        titleTable.add(str.toLabel().setFontSize(24))
+        titleTable.onClick {
+            if(showHideTableWrapper.hasChildren()) showHideTableWrapper.clear()
+            else showHideTableWrapper.add(showHideTable).width(width)
+        }
+        add(titleTable).width(width).row()
+        add(showHideTableWrapper).row()
     }
 
-    fun addBuildingInfo(building: Building){
+    fun addBuildingInfo(building: Building, wondersTable: Table){
         val wonderNameAndIconTable = Table()
         wonderNameAndIconTable.touchable = Touchable.enabled
         wonderNameAndIconTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
         wonderNameAndIconTable.add(building.name.toLabel()).pad(5f)
-        add(wonderNameAndIconTable).pad(5f).fillX().row()
+        wondersTable.add(wonderNameAndIconTable).pad(5f).fillX().row()
 
         val wonderDetailsTable = Table()
-        add(wonderDetailsTable).pad(5f).align(Align.left).row()
+        wondersTable.add(wonderDetailsTable).pad(5f).align(Align.left).row()
 
         wonderNameAndIconTable.onClick {
             if(wonderDetailsTable.hasChildren())
@@ -63,10 +72,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                         cityScreen.city.civInfo)
                 wonderDetailsTable.add(detailsString.toLabel().apply { setWrap(true)})
                         .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
-                if(!building.isWonder) {
+                if(!building.isWonder && !building.isNationalWonder) {
                     val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
                     val sellBuildingButton = TextButton("Sell for [$sellAmount] gold".tr(),skin)
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
+
                     sellBuildingButton.onClick {
                         YesNoPopupTable("Are you sure you want to sell this [${building.name}]?".tr(),
                             {
@@ -75,7 +85,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                 cityScreen.update()
                             }, cityScreen)
                     }
-                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold)
+                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold
+                            || !UnCivGame.Current.worldScreen.isPlayersTurn)
                         sellBuildingButton.disable()
                 }
                 wonderDetailsTable.addSeparator()
@@ -90,29 +101,31 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
-                building.isWonder -> wonders.add(building)
+                building.isWonder || building.isNationalWonder -> wonders.add(building)
                 building.specialistSlots != null -> specialistBuildings.add(building)
                 else -> otherBuildings.add(building)
             }
         }
 
-        if (!wonders.isEmpty()) {
-            addTitle("Wonders")
-            for (building in wonders) addBuildingInfo(building)
+        if (wonders.isNotEmpty()) {
+            val wondersTable = Table()
+            addCategory("Wonders",wondersTable)
+            for (building in wonders) addBuildingInfo(building,wondersTable)
         }
 
-        if (!specialistBuildings.isEmpty()) {
-            addTitle("Specialist Buildings")
+        if (specialistBuildings.isNotEmpty()) {
+            val specialistBuildingsTable = Table()
+            addCategory("Specialist Buildings", specialistBuildingsTable)
 
             for (building in specialistBuildings) {
-                addBuildingInfo(building)
+                addBuildingInfo(building, specialistBuildingsTable)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
                 for (stat in building.specialistSlots!!.toHashMap())
                     for (i in 0 until stat.value.toInt())
                         specialistIcons.add(getSpecialistIcon(stat.key)).size(20f)
 
-                add(specialistIcons).pad(0f).row()
+                specialistBuildingsTable.add(specialistIcons).pad(0f).row()
             }
 
             // specialist allocation
@@ -120,9 +133,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
 
         if (!otherBuildings.isEmpty()) {
-
-            addTitle("Buildings")
-            for (building in otherBuildings) addBuildingInfo(building)
+            val regularBuildingsTable = Table()
+            addCategory("Buildings", regularBuildingsTable)
+            for (building in otherBuildings) addBuildingInfo(building, regularBuildingsTable)
         }
     }
 
@@ -133,17 +146,25 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         for(stats in unifiedStatList.values) stats.happiness=0f
 
         // add happiness to stat list
-        for(entry in cityStats.getCityHappiness().filter { it.value!=0f }){
+        for(entry in cityStats.happinessList.filter { it.value!=0f }){
             if(!unifiedStatList.containsKey(entry.key))
                 unifiedStatList[entry.key]= Stats()
             unifiedStatList[entry.key]!!.happiness=entry.value
         }
 
+        // Add maintenance if relevant
+
+        val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
+        if(maintenance>0)
+            unifiedStatList["Maintenance"]=Stats().add(Stat.Gold,-maintenance.toFloat())
+
+
+
         for(stat in Stat.values()){
             if(unifiedStatList.all { it.value.get(stat)==0f }) continue
 
-            addTitle(stat.name)
             val statValuesTable = Table().apply { defaults().pad(2f) }
+            addCategory(stat.name, statValuesTable)
             for(entry in unifiedStatList) {
                 val specificStatValue = entry.value.get(stat)
                 if(specificStatValue==0f) continue
@@ -155,25 +176,20 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 if(specificStatValue==0f) continue
                 statValuesTable.add(entry.key.toLabel())
                 val decimal = DecimalFormat("0.#").format(specificStatValue)
-                statValuesTable.add("+$decimal%".toLabel()).row()
-            }
-            if(stat==Stat.Gold){
-                val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
-                if(maintenance>0){
-                    statValuesTable.add("Maintenance".toLabel())
-                    statValuesTable.add("-$maintenance".toLabel())
-                }
+                if (specificStatValue > 0)
+                    statValuesTable.add("+$decimal%".toLabel()).row()
+                else
+                    statValuesTable.add("$decimal%".toLabel()).row()
             }
             if(stat==Stat.Food){
                 statValuesTable.add("Food eaten".toLabel())
-                statValuesTable.add(DecimalFormat("0.#").format(cityStats.foodEaten).toLabel()).row()
+                statValuesTable.add(("-"+DecimalFormat("0.#").format(cityStats.foodEaten)).toLabel()).row()
                 val growthBonus = cityStats.getGrowthBonusFromPolicies()
                 if(growthBonus>0){
                     statValuesTable.add("Growth bonus".toLabel())
-                    statValuesTable.add((growthBonus*100).toInt().toString().toLabel())
+                    statValuesTable.add(("+"+((growthBonus*100).toInt().toString())+"%").toLabel())
                 }
             }
-            add(statValuesTable).row()
         }
     }
 
@@ -185,20 +201,20 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             if(greatPersonPoints.all { it.value.get(stat)==0f }) continue
 
             val expanderName = "[" + statToGreatPerson[stat]!! + "] points"
-            addTitle(expanderName)
             val greatPersonTable = Table()
+            addCategory(expanderName, greatPersonTable)
             for (entry in greatPersonPoints) {
                 val value = entry.value.toHashMap()[stat]!!
                 if (value == 0f) continue
                 greatPersonTable.add(entry.key.toLabel()).padRight(10f)
                 greatPersonTable.add(DecimalFormat("0.#").format(value).toLabel()).row()
             }
-            add(greatPersonTable).row()
         }
     }
 
     private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
-        addTitle("Specialist Allocation")
+        val specialistAllocationTable = Table()
+        addCategory("Specialist Allocation", specialistAllocationTable) // todo WRONG, BAD - table should contain all the below specialist stuff
 
         val currentSpecialists = cityInfo.population.specialists.toHashMap()
         val maximumSpecialists = cityInfo.population.getMaxSpecialists()
@@ -210,7 +226,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             // these two are conflictingly named compared to above...
             val assignedSpecialists = currentSpecialists[stat]!!.toInt()
             val maxSpecialists = statToMaximumSpecialist.value.toInt()
-            if (assignedSpecialists > 0) {
+            if (assignedSpecialists > 0 && !cityInfo.isPuppet) {
                 val unassignButton = TextButton("-", skin)
                 unassignButton.label.setFontSize(24)
                 unassignButton.onClick {
@@ -218,6 +234,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
+                if(!UnCivGame.Current.worldScreen.isPlayersTurn) unassignButton.disable()
                 specialistPickerTable.add(unassignButton)
             } else specialistPickerTable.add()
 
@@ -227,7 +244,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistIconTable.add(icon).size(30f)
             }
             specialistPickerTable.add(specialistIconTable)
-            if (assignedSpecialists < maxSpecialists) {
+            if (assignedSpecialists < maxSpecialists && !cityInfo.isPuppet) {
                 val assignButton = TextButton("+", skin)
                 assignButton.label.setFontSize(24)
                 assignButton.onClick {
@@ -235,11 +252,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
-                if (cityInfo.population.getFreePopulation() == 0)
+                if (cityInfo.population.getFreePopulation() == 0 || !UnCivGame.Current.worldScreen.isPlayersTurn)
                     assignButton.disable()
                 specialistPickerTable.add(assignButton)
             } else specialistPickerTable.add()
-            add(specialistPickerTable).row()
+            specialistAllocationTable.add(specialistPickerTable).row()
 
             val specialistStatTable = Table().apply { defaults().pad(5f) }
             val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(stat, cityInfo.civInfo.policies.adoptedPolicies).toHashMap()
@@ -248,7 +265,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistStatTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
                 specialistStatTable.add(entry.value.toInt().toString().toLabel()).padRight(10f)
             }
-            add(specialistStatTable).row()
+            specialistAllocationTable.add(specialistStatTable).row()
         }
     }
 

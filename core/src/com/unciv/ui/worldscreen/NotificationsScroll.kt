@@ -1,40 +1,52 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
-import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import kotlin.math.min
 
 class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(null) {
+
+    var notificationsHash : Int = 0
+
     private var notificationsTable = Table()
 
     init {
-        widget = notificationsTable
+        actor = notificationsTable.right()
+        touchable = Touchable.childrenOnly
     }
 
     internal fun update(notifications: MutableList<Notification>) {
+
+        // no news? - keep our list as it is, especially don't reset scroll position
+        if(notificationsHash == notifications.hashCode())
+            return
+        notificationsHash = notifications.hashCode()
+
         notificationsTable.clearChildren()
-        for (notification in notifications.toList()) { // tolist to avoid concurrecy problems
-            val label = notification.text.toLabel().setFontColor(Color.BLACK)
-                    .setFontSize(14)
-            val minitable = Table()
+        for (notification in notifications.toList()) { // toList to avoid concurrency problems
+            val label = notification.text.toLabel().setFontColor(Color.BLACK).setFontSize(14)
+            val listItem = Table()
 
-            minitable.add(ImageGetter.getCircle()
+            listItem.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(10f).pad(5f)
-            minitable.background(ImageGetter.getDrawable("OtherIcons/civTableBackground.png"))
-            minitable.add(label).pad(3f).padRight(10f)
+            listItem.background(ImageGetter.getDrawable("OtherIcons/civTableBackground"))
+            listItem.add(label).pad(5f).padRight(10f)
 
-            if (notification.location != null) {
-                minitable.onClick {
-                    worldScreen.tileMapHolder.setCenterPosition(notification.location!!)
+            // using a large click area with no gap in between each message item.
+            // this avoids accidentally clicking in between the messages, resulting in a map click
+            val clickArea = Table().apply {
+                add(listItem).pad(3f)
+                touchable = Touchable.enabled
+                onClick {
+                    notification.action?.execute(worldScreen)
                 }
             }
 
-            notificationsTable.add(minitable).pad(3f)
-            notificationsTable.row()
+            notificationsTable.add(clickArea).right().row()
         }
         notificationsTable.pack()
         pack()

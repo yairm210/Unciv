@@ -28,13 +28,12 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             return
         }
         isVisible=true
-        val tile = selectedTile
         innerTable.clearChildren()
 
-        val stats = tile.getTileStats(city, city.civInfo)
+        val stats = selectedTile.getTileStats(city, city.civInfo)
         innerTable.pad(20f)
 
-        innerTable.add(Label(tile.toString(), CameraStageBaseScreen.skin)).colspan(2)
+        innerTable.add(Label(selectedTile.toString(), CameraStageBaseScreen.skin)).colspan(2)
         innerTable.row()
 
         val statsTable = Table()
@@ -46,16 +45,22 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         }
         innerTable.add(statsTable).row()
 
-        if(tile.getOwner()==null && tile.neighbors.any{it.getCity()==city}){
-            val goldCostOfTile = city.expansion.getGoldCostOfTile(tile)
+        if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}){
+            val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
+
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
-            buyTileButton.onClick("coin") { city.expansion.buyTile(tile); UnCivGame.Current.screen = CityScreen(city) }
-            if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
+            buyTileButton.onClick("coin") {
+                city.expansion.buyTile(selectedTile)
+                UnCivGame.Current.screen = CityScreen(city)
+            }
+            if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UnCivGame.Current.worldScreen.isPlayersTurn)
+                buyTileButton.disable()
+
             innerTable.add(buyTileButton)
         }
-        if(city.canAcquireTile(tile)){
+        if(city.canAcquireTile(selectedTile)){
             val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
-            acquireTileButton.onClick { city.expansion.takeOwnership(tile); UnCivGame.Current.screen = CityScreen(city) }
+            acquireTileButton.onClick { city.expansion.takeOwnership(selectedTile); UnCivGame.Current.screen = CityScreen(city) }
             innerTable.add(acquireTileButton)
         }
         innerTable.pack()

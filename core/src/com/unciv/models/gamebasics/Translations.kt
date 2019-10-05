@@ -4,9 +4,9 @@ import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UnCivGame
 import java.util.*
 
-class Translations() : HashMap<String, HashMap<String, String>>(){
+class Translations : HashMap<String, HashMap<String, String>>(){
 
-    constructor(json:String):this(){
+    fun add(json:String){
         val jsonValue = JsonReader().parse(json)!!
 
         var currentEntry = jsonValue.child
@@ -33,9 +33,10 @@ class Translations() : HashMap<String, HashMap<String, String>>(){
     }
 
     fun getLanguages(): List<String> {
-        val toReturn =  mutableListOf("English")
+        val toReturn =  mutableListOf<String>()
         toReturn.addAll(values.flatMap { it.keys }.distinct())
         toReturn.remove("Japanese")
+        toReturn.remove("Thai")
         return toReturn
     }
 
@@ -44,15 +45,17 @@ class Translations() : HashMap<String, HashMap<String, String>>(){
             val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
             if(regexResult==null) return unique.tr()
             else{
+                var separatorCharacter = " "
+                if (UnCivGame.Current.settings.language=="Simplified_Chinese")separatorCharacter = ""
                 val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
-                val translatedUnique = start.tr() + " "+ regexResult.groups[3]!!.value+"%"
+                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
                 return translatedUnique
             }
         }
     }
 }
 
-
+val squareBraceRegex = Regex("\\[(.*?)\\]") // we don't need to allocate different memory for this every time we .tr()
 fun String.tr(): String {
     if(contains("[")){ // Placeholders!
         /**
@@ -68,9 +71,13 @@ fun String.tr(): String {
          * We will find the german placeholder text, and replace the placeholders with what was filled in the text we got!
          */
 
-        val squareBraceRegex = Regex("\\[(.*?)\\]")
+        val translationStringWithSquareBracketsOnly = replace(squareBraceRegex,"[]")
+        val translationStringUntilFirstSquareBracket = substringBefore('[')
         val englishTranslationPlaceholder = GameBasics.Translations.keys
-                .firstOrNull { it.replace(squareBraceRegex,"[]") == replace(squareBraceRegex,"[]") }
+                .firstOrNull {
+                    // this is to filter out obvious non-candidates, which is most of them, before we start using the "heavy lifting" of the regex replacement
+                    it.startsWith(translationStringUntilFirstSquareBracket)
+                        && it.replace(squareBraceRegex,"[]") == translationStringWithSquareBracketsOnly }
         if(englishTranslationPlaceholder==null ||
                 !GameBasics.Translations[englishTranslationPlaceholder]!!.containsKey(UnCivGame.Current.settings.language)){
             // Translation placeholder doesn't exist for this language

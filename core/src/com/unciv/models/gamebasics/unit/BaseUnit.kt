@@ -1,5 +1,6 @@
 package com.unciv.models.gamebasics.unit
 
+import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -23,6 +24,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     var strength:Int = 0
     var rangedStrength:Int = 0
     var range:Int = 2
+    var interceptRange = 0
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null
@@ -58,22 +60,22 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         val sb = StringBuilder()
         if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
         if(!forPickerScreen) {
-            if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
+            if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
             if (unbuildable) sb.appendln("Unbuildable".tr())
-            else sb.appendln("Cost: $cost")
+            else sb.appendln("{Cost}: $cost".tr())
             if(requiredTech!=null) sb.appendln("Required tech: [$requiredTech]".tr())
             if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
             if(obsoleteTech!=null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
         }
         if(strength!=0){
-            sb.append("{Strength} $strength".tr())
+            sb.append("{Strength}: $strength".tr())
             if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
             if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
             sb.appendln()
         }
 
         for(unique in uniques)
-            sb.appendln(unique.tr())
+            sb.appendln(Translations.translateBonusOrPenalty(unique))
 
         for(promotion in promotions)
             sb.appendln(promotion.tr())
@@ -95,14 +97,23 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         return true
     }
 
-    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
+    override fun getProductionCost(civInfo: CivilizationInfo): Int {
+        var productionCost = cost.toFloat()
+        if (civInfo.isPlayerCivilization())
+            productionCost *= civInfo.getDifficulty().unitCostModifier
+        else
+            productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        return productionCost.toInt()
+    }
 
     fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
 
-    override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost()
-        if(adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-        if(adoptedPolicies.contains("Militarism")) cost *= 0.66f
+        if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
+        if (civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
+        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
@@ -116,7 +127,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     fun getRejectionReason(construction: CityConstructions): String {
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if(civRejectionReason!="") return civRejectionReason
-        if(unitType.isWaterUnit() && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
+        if(unitType.isWaterUnit() && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain==Constants.coast })
             return "Can't build water units by the coast"
         return ""
     }
@@ -127,7 +138,8 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires $requiredResource"
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
+        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
         return ""
     }
 
@@ -139,13 +151,13 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override fun postBuildEvent(construction: CityConstructions) {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        if(unit==null) return // couldn't place the unit, so there's actually no unit =(
         unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War"))
             unit.promotions.XP += 15
 
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
-            && construction.cityInfo.getBuildingUniques()
-                .contains("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
+            && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
     }
 

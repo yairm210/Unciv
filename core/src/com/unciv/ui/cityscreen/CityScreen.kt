@@ -6,16 +6,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -76,7 +79,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         cityPickerTable.centerX(stage)
 
         constructionsTable.update()
-        updateRazeCityButton()
+        updateAnnexAndRazeCityButton()
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width-5, 5f,Align.bottomRight)
         updateTileGroups()
@@ -85,7 +88,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         topCityStatsTable = getCityStatsTable()
         topCityStatsTable.setPosition(5f, stage.height-5, Align.topLeft)
         stage.addActor(topCityStatsTable)
-        stage.addActor(topCityStatsTable)
+        constructionsTable.height=stage.height-topCityStatsTable.height
+        constructionsTable.setPosition(5f, stage.height-5-topCityStatsTable.height, Align.topLeft)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
             displayTutorials("CityRange")
@@ -110,28 +114,30 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         table.defaults().pad(5f)
         table.background=ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
         val columns = Stats().toHashMap().size
-        table.add(Label("{Free population}:".tr()
+        table.add(Label("{Unassigned population}:".tr()
                 +city.population.getFreePopulation().toString() + "/" + city.population.population,skin))
                 .colspan(columns).row()
 
         val turnsToExpansionString : String
         if (city.cityStats.currentCityStats.culture > 0) {
-            val turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
+            var turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
                     / city.cityStats.currentCityStats.culture).toInt()
+            if (turnsToExpansion < 1) turnsToExpansion = 1
             turnsToExpansionString = "[$turnsToExpansion] turns to expansion".tr()
         } else {
-            turnsToExpansionString = "Stopped expansion"
+            turnsToExpansionString = "Stopped expansion".tr()
         }
         table.add(Label(turnsToExpansionString + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")",
                 skin)).colspan(columns).row()
 
         val turnsToPopString : String
         if (city.cityStats.currentCityStats.food > 0) {
-            val turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
+            var turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
                     / city.cityStats.currentCityStats.food).toInt()
+            if (turnsToPopulation < 1) turnsToPopulation = 1
             turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
         } else if (city.cityStats.currentCityStats.food < 0) {
-            val turnsToStarvation = ceil(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
+            val turnsToStarvation = floor(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt() + 1
             turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
         } else {
             turnsToPopString = "Stopped population growth".tr()
@@ -155,17 +161,30 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         return table.addBorder(2f, beige)
     }
 
-    private fun updateRazeCityButton() {
+    private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
 
-        if(!city.isBeingRazed) {
+        if(city.isPuppet) {
+            val annexCityButton = TextButton("Annex city".tr(), skin)
+            annexCityButton.labelCell.pad(10f)
+            annexCityButton.onClick {
+                city.annexCity()
+                update()
+            }
+            razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
+        }
+        else if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
+            razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
+            if(!UnCivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
         }
         else {
             val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
+            stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
+            if(!UnCivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
         }
         razeCityButtonHolder.pack()
@@ -178,23 +197,25 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private fun addTiles() {
         val cityInfo = city
 
+        val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
                 .filter { city.civInfo.exploredTiles.contains(it.position) }
-                .map { CityTileGroup(cityInfo, it) }
+                .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
-        val tilesInRange = city.getTilesInRange()
         for (tileGroup in cityTileGroups) {
             val tileInfo = tileGroup.tileInfo
 
             tileGroup.onClick {
-                selectedTile = tileInfo
-                if (tileGroup.isWorkable) {
-                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
-                        city.workedTiles.add(tileInfo.position)
-                    else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
-                    city.cityStats.update()
+                if (!city.isPuppet) {
+                    selectedTile = tileInfo
+                    if (tileGroup.isWorkable && UnCivGame.Current.worldScreen.isPlayersTurn) {
+                        if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
+                            city.workedTiles.add(tileInfo.position)
+                        else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                        city.cityStats.update()
+                    }
+                    update()
                 }
-                update()
             }
 
             tileGroups.add(tileGroup)

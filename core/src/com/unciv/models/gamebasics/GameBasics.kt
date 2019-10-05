@@ -23,11 +23,11 @@ object GameBasics {
     val Nations = LinkedHashMap<String, Nation>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Difficulties = LinkedHashMap<String, Difficulty>()
-    val Translations = Translations(Gdx.files.internal("jsons/Translations.json").readString())
+    val Translations = Translations()
 
     fun <T> getFromJson(tClass: Class<T>, name: String): T {
         val jsonText = Gdx.files.internal("jsons/$name.json").readString()
-        return Json().apply { ignoreUnknownFields=true }.fromJson(tClass, jsonText)
+        return Json().apply { ignoreUnknownFields = true }.fromJson(tClass, jsonText)
     }
 
     fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
@@ -38,40 +38,49 @@ object GameBasics {
     }
 
     init {
-            Buildings += createHashmap(getFromJson(Array<Building>::class.java, "Buildings"))
-            Terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "Terrains"))
-            TileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "TileResources"))
-            TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "TileImprovements"))
-            Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "Units"))
-            UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "UnitPromotions"))
-            PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
-            Nations += createHashmap(getFromJson(Array<Nation>::class.java, "Nations"))
-            Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
-
-            val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
-            for (techColumn in techColumns) {
-                for (tech in techColumn.techs) {
-                    tech.cost = techColumn.techCost
-                    tech.column = techColumn
-                    Technologies[tech.name] = tech
-                }
-            }
-            for (building in Buildings.values) {
-                if (building.requiredTech == null) continue
-                val column = building.getRequiredTech().column
-                if (building.cost == 0)
-                    building.cost = if (building.isWonder) column!!.wonderCost else column!!.buildingCost
-            }
-
-            for (branch in PolicyBranches.values) {
-                branch.requires = ArrayList()
-                branch.branch = branch.name
-                for (policy in branch.policies) {
-                    policy.branch = branch.name
-                    if (policy.requires == null) policy.requires = arrayListOf(branch.name)
-                }
-                branch.policies.last().name = branch.name + " Complete"
+        val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
+        for (techColumn in techColumns) {
+            for (tech in techColumn.techs) {
+                tech.cost = techColumn.techCost
+                tech.column = techColumn
+                Technologies[tech.name] = tech
             }
         }
+
+        Buildings += createHashmap(getFromJson(Array<Building>::class.java, "Buildings"))
+        for (building in Buildings.values) {
+            if (building.requiredTech == null) continue
+            val column = building.getRequiredTech().column
+            if (building.cost == 0)
+                building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
+        }
+
+        Terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "Terrains"))
+        TileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "TileResources"))
+        TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "TileImprovements"))
+        Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "Units"))
+        UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "UnitPromotions"))
+
+        PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
+        for (branch in PolicyBranches.values) {
+            branch.requires = ArrayList()
+            branch.branch = branch.name
+            for (policy in branch.policies) {
+                policy.branch = branch.name
+                if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+            }
+            branch.policies.last().name = branch.name + " Complete"
+        }
+
+        Nations += createHashmap(getFromJson(Array<Nation>::class.java, "Nations/Nations"))
+        for(nation in Nations.values) nation.setTransients()
+
+        Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
+
+
+
+        for (file in Gdx.files.internal("jsons/Translations").list())
+            Translations.add(file.readString())
+    }
 }
 

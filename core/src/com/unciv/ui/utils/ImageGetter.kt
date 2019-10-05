@@ -12,10 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 
 object ImageGetter {
-    private const val whiteDotLocation = "OtherIcons/whiteDot.png"
+    private const val whiteDotLocation = "OtherIcons/whiteDot"
 
     // When we used to load images directly from different files, without using a texture atlas,
     // The draw() phase of the main screen would take a really long time because the BatchRenderer would
@@ -27,7 +28,7 @@ object ImageGetter {
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
 
     fun getExternalImage(fileName:String): Image {
-        return Image(TextureRegion(Texture("ExtraImages/$fileName.png")))
+        return Image(TextureRegion(Texture("ExtraImages/$fileName")))
     }
 
     fun getImage(fileName: String): Image {
@@ -43,7 +44,7 @@ object ImageGetter {
 
     private fun getTextureRegion(fileName: String): TextureRegion {
         try {
-            val region = atlas.findRegion(fileName.replace(".png",""))
+            val region = atlas.findRegion(fileName)
 
             if(region==null)
                 throw Exception("Could not find $fileName")
@@ -53,16 +54,11 @@ object ImageGetter {
         }
     }
 
-    fun imageExists(fileName:String): Boolean {
-        return atlas.findRegion(fileName)!=null
-    }
-
-    fun techIconExists(techName:String): Boolean {
-        return imageExists("TechIcons/$techName")
-    }
+    fun imageExists(fileName:String) = atlas.findRegion(fileName)!=null
+    fun techIconExists(techName:String) = imageExists("TechIcons/$techName")
 
     fun getStatIcon(statName: String): Image {
-        return ImageGetter.getImage("StatIcons/$statName")
+        return getImage("StatIcons/$statName")
                 .apply { setSize(20f,20f)}
     }
 
@@ -70,12 +66,36 @@ object ImageGetter {
         return getImage("UnitIcons/$unitName").apply { this.color=color }
     }
 
-    val foodCircleColor =  colorFromRGB(129, 199, 132)// .GREEN.cpy().lerp(Color.WHITE,0.5f)
+    fun getNationIndicator(nation: Nation, size:Float): IconCircleGroup {
+        val civIndicator = getCircle().apply { color = nation.getInnerColor() }
+                .surroundWithCircle(size).apply { circle.color = nation.getOuterColor() }
+
+        val civIconName = if(nation.isCityState()) "CityState" else nation.name
+        if(nationIconExists(civIconName)){
+            val cityStateIcon = ImageGetter.getNationIcon(civIconName)
+            cityStateIcon.setSize(size*0.7f,size*0.7f)
+            cityStateIcon.center(civIndicator)
+            cityStateIcon.color = nation.getOuterColor()
+            civIndicator.addActor(cityStateIcon)
+        }
+
+        return civIndicator
+    }
+
+    fun nationIconExists(nation:String) = imageExists("NationIcons/$nation")
+    fun getNationIcon(nation:String) = getImage("NationIcons/$nation")
+
+    val foodCircleColor =  colorFromRGB(129, 199, 132)
     val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
     val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
-        val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
+        if(improvementName.startsWith("StartingLocation ")){
+            val nationName = improvementName.removePrefix("StartingLocation ")
+            val nation = GameBasics.Nations[nationName]!!
+            return getNationIndicator(nation,size)
+        }
 
+        val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
         val improvement = GameBasics.TileImprovements[improvementName]!!
         when {
@@ -96,19 +116,47 @@ object ImageGetter {
         return getStatIcon(construction)
     }
 
-    fun getPromotionIcon(promotionName:String):Image{
+    fun getPromotionIcon(promotionName:String): Actor {
+        var level = 0
+
+        when {
+            promotionName.endsWith(" I") -> level=1
+            promotionName.endsWith(" II") -> level=2
+            promotionName.endsWith(" III") -> level=3
+        }
+
+        val basePromotionName = if(level==0) promotionName
+        else promotionName.substring(0, promotionName.length-level-1)
+
+        if(imageExists("UnitPromotionIcons/$basePromotionName")) {
+            val icon = getImage("UnitPromotionIcons/$basePromotionName")
+            icon.color = colorFromRGB(255,226,0)
+            var circle = icon.surroundWithCircle(30f)
+            circle.circle.color = colorFromRGB(0,12,49)
+//            circle = circle.surroundWithCircle(40f)
+//            circle.circle.color = colorFromRGB(255,226,0)
+            if(level!=0){
+                val starTable = Table().apply { defaults().pad(2f) }
+                for(i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(8f)
+                starTable.centerX(circle)
+                starTable.y=5f
+                circle.addActor(starTable)
+            }
+            return circle
+        }
         return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5)")
     }
 
     fun getBlue() = Color(0x004085bf)
 
-    fun getCircle() = getImage("OtherIcons/Circle") // This is used, like, everywhere
+    fun getCircle() = getImage("OtherIcons/Circle")
 
     fun getBackground(color:Color): Drawable {
         return getDrawable(whiteDotLocation).tint(color)
     }
 
     fun refreshAltas() {
+        atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
     }
 
@@ -136,8 +184,20 @@ object ImageGetter {
         return iconGroup
     }
 
-    fun getTechIconGroup(techName: String): Group {
-        return getImage("TechIcons/$techName").surroundWithCircle(60f)
+    fun getTechIconGroup(techName: String, circleSize: Float): Group {
+        var techIconColor = Color.WHITE
+        when (GameBasics.Technologies[techName]!!.era().name) {
+            "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
+            "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
+            "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)
+            "Renaissance" -> techIconColor = colorFromRGB(104, 58, 183)
+            "Industrial" -> techIconColor = colorFromRGB(63, 81, 182)
+            "Modern" -> techIconColor = colorFromRGB(33, 150, 243)
+            "Information" -> techIconColor = colorFromRGB(0, 150, 136)
+            "Future" -> techIconColor = colorFromRGB(76,176,81)
+        }
+        return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK,0.6f) }
+                .surroundWithCircle(circleSize)
     }
 
     fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
@@ -152,16 +212,21 @@ object ImageGetter {
     fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
         val healthPercent = currentHealth / maxHealth
         val healthBar = Table()
-        val healthPartOfBar = ImageGetter.getWhiteDot()
+
+        val healthPartOfBar = getWhiteDot()
         healthPartOfBar.color = when {
             healthPercent > 2 / 3f -> Color.GREEN
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        val emptyPartOfBar = ImageGetter.getDot(Color.BLACK)
         healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
+
+        val emptyPartOfBar = getDot(Color.BLACK)
         healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
+
+        healthBar.pad(1f)
         healthBar.pack()
+        healthBar.background= getBackground(Color.BLACK)
         return healthBar
     }
 

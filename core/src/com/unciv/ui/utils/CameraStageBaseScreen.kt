@@ -63,14 +63,16 @@ open class CameraStageBaseScreen : Screen {
         }
 
         fun resetFonts(){
-            skin.get<TextButton.TextButtonStyle>(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(20)
-            skin.get<Label.LabelStyle>(Label.LabelStyle::class.java).apply {
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(20)
+            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(20)
+            skin.get(Label.LabelStyle::class.java).apply {
                 font = Fonts().getFont(18)
                 fontColor= Color.WHITE
             }
-            skin.get<TextField.TextFieldStyle>(TextField.TextFieldStyle::class.java).font = Fonts().getFont(18)
-            skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(20)
-            skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(20)
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts().getFont(18)
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(20)
+            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(20)
+            skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
         internal var batch: Batch = SpriteBatch()
     }
@@ -98,7 +100,6 @@ fun Button.enable() {
     color = Color.WHITE
     touchable = Touchable.enabled
 }
-fun <E> List<E>.getRandom(): E = if (size == 0) throw Exception() else get((Math.random() * size).toInt())
 
 
 fun colorFromRGB(r: Int, g: Int, b: Int): Color {
@@ -123,20 +124,23 @@ fun Label.setFontSize(size:Int): Label {
 }
 
 
-
-// If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
-
-fun Actor.onClick(sound:String,function: () -> Unit){
+/** same as [onClick], but sends the [InputEvent] and coordinates along */
+fun Actor.onClickEvent(sound: String = "click", function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if(sound!="") Sounds.play(sound)
-            function()
+            if (sound != "") Sounds.play(sound)
+            function(event, x, y)
         }
-    } )
+    })
+}
+
+// If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
+fun Actor.onClick(sound: String = "click", function: () -> Unit) {
+    onClickEvent(sound) { _, _, _ -> function() }
 }
 
 fun Actor.onClick(function: () -> Unit): Actor {
-    onClick("click",function)
+    onClick("click", function)
     return this
 }
 
@@ -158,6 +162,12 @@ fun Table.addSeparator(): Cell<Image> {
     val image = ImageGetter.getWhiteDot()
     val cell = add(image).colspan(columns).height(2f).fill()
     row()
+    return cell
+}
+
+fun Table.addSeparatorVertical(): Cell<Image> {
+    val image = ImageGetter.getWhiteDot()
+    val cell = add(image).width(2f).fillY()
     return cell
 }
 

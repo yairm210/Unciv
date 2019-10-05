@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
-import java.util.LinkedHashMap
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -26,6 +26,7 @@ class Tutorials{
 
 
     fun displayTutorials(name: String, stage: Stage) {
+        if (!UnCivGame.Current.settings.showTutorials) return
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
         val texts = getTutorials(name, UnCivGame.Current.settings.language)
         tutorialTexts.add(Tutorial(name,texts))
@@ -33,12 +34,12 @@ class Tutorials{
     }
 
     fun getTutorialsOfLanguage(language: String): HashMap<String, ArrayList<String>> {
-        if(!Gdx.files.internal("jsons/Tutorials_$language.json").exists()) return hashMapOf()
+        if(!Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists()) return hashMapOf()
 
         // ...Yes. Disgusting. I wish I didn't have to do this.
         val x = LinkedHashMap<String, Array<Array<String>>>()
         val tutorials: LinkedHashMap<String, Array<Array<String>>> =
-                GameBasics.getFromJson(x.javaClass, "Tutorials_$language")
+                GameBasics.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
         val tutorialMap = HashMap<String, ArrayList<String>>()
         for (tut in tutorials){
             val list = ArrayList<String>()
@@ -62,7 +63,7 @@ class Tutorials{
         val currentTutorial = tutorialTexts[0]
         val label = Label(currentTutorial.texts[0], CameraStageBaseScreen.skin)
         label.setAlignment(Align.center)
-        if(Gdx.files.internal("ExtraImages/"+currentTutorial.name+".png").exists())
+        if(Gdx.files.internal("ExtraImages/"+currentTutorial.name).exists())
             tutorialTable.add(Table().apply { add(ImageGetter.getExternalImage(currentTutorial.name)) }).row()
         tutorialTable.add(label).pad(10f).row()
         val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)

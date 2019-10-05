@@ -29,28 +29,39 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         val cityNameTable = Table()
         if(city.isBeingRazed){
-            val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
+            val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             cityNameTable.add(fireImage).size(20f).padRight(5f)
         }
 
         if(city.isCapital()){
-            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
+            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star").tint(Color.LIGHT_GRAY))
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
+        if(city.isPuppet){
+            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Puppet").tint(Color.LIGHT_GRAY))
+            cityNameTable.add(starImage).size(20f).padRight(5f)
+        }
+
+
+        if (city.resistanceCounter > 0) {
+            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
+            cityNameTable.add(resistanceImage).size(20f).padRight(5f)
+        }
+
         val currentCityLabel = Label(city.name + " (" + city.population.population + ")", CameraStageBaseScreen.skin)
-        currentCityLabel.setFontSize(25)
+        currentCityLabel.setFontSize(30)
         currentCityLabel.onClick {
-            val popup = PopupTable(cityScreen)
+            val editCityNamePopup = PopupTable(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
             textArea.setAlignment(Align.center)
-            popup.add(textArea).colspan(2).row()
-            popup.addButton("Close".tr()){popup.remove()}
-            popup.addButton("Save".tr()){
+            editCityNamePopup.add(textArea).colspan(2).row()
+            editCityNamePopup.addCloseButton()
+            editCityNamePopup.addButton("Save".tr()){
                 city.name = textArea.text
                 cityScreen.game.screen = CityScreen(city)
             }
-            popup.open()
+            editCityNamePopup.open()
         }
 
         cityNameTable.add(currentCityLabel)
@@ -70,6 +81,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         row()
 
         val exitCityButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
+        exitCityButton.labelCell.pad(10f)
 
         exitCityButton.onClick {
             val game = cityScreen.game

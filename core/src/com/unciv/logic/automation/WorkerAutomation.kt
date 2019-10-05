@@ -1,9 +1,10 @@
 package com.unciv.logic.automation
 
+import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
@@ -11,55 +12,72 @@ import com.unciv.models.gamebasics.tile.TileImprovement
 class WorkerAutomation(val unit: MapUnit) {
 
     fun automateWorkerAction() {
-        val enemyUnitsInWalkingDistance = unit.getDistanceToTiles().keys
-                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=unit.civInfo
-                        && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
+        val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
+                .filter {
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo != unit.civInfo
+                            && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo)
+                }
 
-        if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+        if (enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
 
-        val tile = unit.getTile()
+        val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
 
-        if(getPriority(tileToWork,unit.civInfo) < 3){ // building roads is more important
-            if(tryConnectingCities()) return
+        if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
+            if (tryConnectingCities()) return
         }
 
-        if (tileToWork != tile) {
-            val reachedTile = unit.movementAlgs().headTowards(tileToWork)
-            if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
+        if (tileToWork != currentTile) {
+            val reachedTile = unit.movement.headTowards(tileToWork)
+            if (reachedTile != currentTile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
-        if (tile.improvementInProgress == null && tile.isLand()) {
-            val improvement = chooseImprovement(tile, unit.civInfo)
-            if (improvement != null && tile.canBuildImprovement(improvement, unit.civInfo)) {
+        if (currentTile.improvementInProgress == null && currentTile.isLand) {
+            val improvement = chooseImprovement(currentTile, unit.civInfo)
+            if (improvement != null && currentTile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
-                tile.startWorkingOnImprovement(improvement, unit.civInfo)
+                currentTile.startWorkingOnImprovement(improvement, unit.civInfo)
                 return
             }
         }
-        if(tile.improvementInProgress!=null) return // we're working!
-        if(tryConnectingCities()) return //nothing to do, try again to connect cities
+        if (currentTile.improvementInProgress != null) return // we're working!
+        if (tryConnectingCities()) return //nothing to do, try again to connect cities
+
+        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
+        for (city in unit.civInfo.cities) {
+            citiesToNumberOfUnimprovedTiles[city.name] =
+                    city.getTiles().count { it.isLand && tileNeedToImprove(it, unit.civInfo) }
+        }
+
+        val mostUndevelopedCity = unit.civInfo.cities
+                .filter { citiesToNumberOfUnimprovedTiles[it.name]!! > 0 }
+                .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.name] }
+                .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undeveloped city
+        if (mostUndevelopedCity != null) {
+            val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
+            if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
+            return
+        }
+
+        unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
     }
 
 
 
-    fun tryConnectingCities():Boolean{ // returns whether we actually did anything
-        val techEnablingRailroad = GameBasics.TileImprovements["Railroad"]!!.techRequired!!
-        val canBuildRailroad = unit.civInfo.tech.isResearched(techEnablingRailroad)
+    private fun tryConnectingCities():Boolean { // returns whether we actually did anything
 
-        val targetRoadName = if (canBuildRailroad) "Railroad" else "Road"
-        val targetStatus = if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
+        val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
         val citiesThatNeedConnecting = unit.civInfo.cities
-                .filter { it.population.population>3 && !it.isCapital()
-                    && !it.cityStats.isConnectedToCapital(targetStatus) }
+                .filter { it.population.population>3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
+                    && !it.cityStats.isConnectedToCapital(targetRoad) }
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
-                .map { city -> BFS(city.getCenterTile()){it.isLand() && unit.canPassThrough(it)} }
+                .map { city -> BFS(city.getCenterTile()){it.isLand && unit.movement.canPassThrough(it)} }
                 .toMutableList()
 
-        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetStatus) }
+        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
                 .map { it.getCenterTile() }
 
         while(citiesThatNeedConnectingBfs.any()){
@@ -72,18 +90,19 @@ class WorkerAutomation(val unit: MapUnit) {
                 for(city in connectedCities)
                     if(bfs.tilesToCheck.contains(city)) { // we have a winner!
                         val pathToCity = bfs.getPathTo(city)
-                        val roadableTiles = pathToCity.filter { it.roadStatus < targetStatus }
+                        val roadableTiles = pathToCity.filter { it.roadStatus < targetRoad }
                         val tileToConstructRoadOn :TileInfo
                         if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
                         else{
-                            val reachableTiles = roadableTiles.filter {  unit.canMoveTo(it)&& unit.movementAlgs().canReach(it)}
+                            val reachableTiles = roadableTiles
+                                    .filter {  unit.movement.canMoveTo(it)&& unit.movement.canReach(it)}
                             if(reachableTiles.isEmpty()) continue
-                            tileToConstructRoadOn = reachableTiles.minBy { unit.movementAlgs().getShortestPath(it).size }!!
-                            unit.movementAlgs().headTowards(tileToConstructRoadOn)
+                            tileToConstructRoadOn = reachableTiles.minBy { unit.movement.getShortestPath(it).size }!!
+                            unit.movement.headTowards(tileToConstructRoadOn)
                         }
                         if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
-                                && unit.currentTile.improvementInProgress!=targetRoadName)
-                            tileToConstructRoadOn.startWorkingOnImprovement(GameBasics.TileImprovements[targetRoadName]!!,unit.civInfo)
+                                && unit.currentTile.improvementInProgress!=targetRoad.name)
+                            tileToConstructRoadOn.startWorkingOnImprovement(targetRoad.improvement()!!,unit.civInfo)
                         return true
                     }
             }
@@ -99,18 +118,13 @@ class WorkerAutomation(val unit: MapUnit) {
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
-                            && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && !it.containsGreatImprovement() && it.getTileResource().improvement != it.improvement))
-                            && it.isLand()
-                            && !it.getBaseTerrain().impassable
-                            && (it.containsUnfinishedGreatImprovement() || it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo))
-                            && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
-                }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
+                            && tileNeedToImprove(it, unit.civInfo) }
+                .sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
 
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
-        val selectedTile = workableTiles.firstOrNull{
-            unit.movementAlgs().canReach(it) }
+        val selectedTile = workableTiles.firstOrNull{unit.movement.canReach(it) }
 
         if (selectedTile != null
                 && getPriority(selectedTile, unit.civInfo)>1
@@ -120,6 +134,15 @@ class WorkerAutomation(val unit: MapUnit) {
         else return currentTile
     }
 
+    private fun tileNeedToImprove(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+        if (!tile.isLand || tile.getBaseTerrain().impassable)
+            return false
+        val city=tile.getCity()
+        if (city == null || city.civInfo != civInfo)
+            return false
+        return (tile.improvement == null || (tile.hasViewableResource(civInfo) && !tile.containsGreatImprovement() && tile.getTileResource().improvement != tile.improvement))
+                && (tile.containsUnfinishedGreatImprovement() || tile.canBuildImprovement(chooseImprovement(tile, civInfo), civInfo))
+    }
 
     private fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
         var priority = 0
@@ -136,8 +159,8 @@ class WorkerAutomation(val unit: MapUnit) {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.terrainFeature == "Jungle" -> "Remove Jungle"
-            tile.terrainFeature == "Forest" && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
+            tile.terrainFeature == Constants.jungle -> "Remove Jungle"
+            tile.terrainFeature == Constants.forest && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
             else -> tile.getTileResource().improvement
         }
 
@@ -146,35 +169,16 @@ class WorkerAutomation(val unit: MapUnit) {
             improvementStringForResource != null -> improvementStringForResource
             tile.containsGreatImprovement() -> null
             tile.containsUnfinishedGreatImprovement() -> null
-            tile.terrainFeature == "Jungle" -> "Trading post"
+            tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.terrainFeature == "Forest" -> "Lumber mill"
-            tile.baseTerrain == "Hill" -> "Mine"
-            tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
+            tile.terrainFeature == Constants.forest -> "Lumber mill"
+            tile.baseTerrain == Constants.hill -> "Mine"
+            tile.baseTerrain in listOf("Grassland","Desert",Constants.plains) -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
         if (improvementString == null) return null
         return GameBasics.TileImprovements[improvementString]!!
-    }
-
-    // todo: is this neccesary? Worker automation does something else to build roads.
-    //  Either generalize or delete
-    fun constructRoadTo(destination:TileInfo) {
-        val currentTile = unit.getTile()
-        if (currentTile.roadStatus == RoadStatus.None)
-            return currentTile.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!, unit.civInfo)
-
-        val pathToDestination = unit.movementAlgs().getShortestPath(destination)
-        val destinationThisTurn = pathToDestination.first()
-        val fullPathToCurrentDestination = unit.movementAlgs().getFullPathToCloseTile(destinationThisTurn)
-        val firstTileWithoutRoad = fullPathToCurrentDestination.firstOrNull { it.roadStatus == RoadStatus.None && unit.canMoveTo(it) }
-        if (firstTileWithoutRoad == null)
-            return unit.moveToTile(destinationThisTurn)
-
-        unit.moveToTile(firstTileWithoutRoad)
-        if (unit.currentMovement > 0)
-            firstTileWithoutRoad.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!, unit.civInfo)
     }
 
 }

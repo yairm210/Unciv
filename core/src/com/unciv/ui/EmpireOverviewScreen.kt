@@ -3,9 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
@@ -13,6 +11,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
+import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
@@ -21,6 +20,7 @@ import kotlin.math.roundToInt
 class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     val currentPlayerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         val topTable = Table().apply { defaults().pad(10f) }
@@ -36,7 +36,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.clear()
             centerTable.add(getCityInfoTable())
             centerTable.pack()
-            centerTable.center(stage)
         }
         setCities()
         setCityInfoButton.onClick(setCities)
@@ -45,29 +44,32 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setStatsInfoButton = TextButton("Stats".tr(),skin)
         setStatsInfoButton.onClick {
             centerTable.clear()
-            centerTable.add(getHappinessTable())
-            centerTable.add(getGoldTable()).row()
-            centerTable.add(getGreatPeopleTable())
+            centerTable.add(ScrollPane(Table().apply {
+                defaults().pad(40f)
+                add(getHappinessTable()).top()
+                add(getGoldTable()).top()
+                add(getScienceTable()).top()
+                add(getGreatPeopleTable()).top()
+            }))
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setStatsInfoButton)
 
         val setCurrentTradesButton = TextButton("Trades".tr(),skin)
         setCurrentTradesButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the naviagation buttons
+            centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the navigation buttons
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setCurrentTradesButton)
+        if(currentPlayerCivInfo.diplomacy.values.all { it.trades.isEmpty() })
+            setCurrentTradesButton.disable()
 
         val setUnitsButton = TextButton("Units".tr(),skin)
         setUnitsButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getUnitTable())).height(stage.height*0.8f)
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setUnitsButton )
 
@@ -75,19 +77,31 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setDiplomacyButton = TextButton("Diplomacy".tr(),skin)
         setDiplomacyButton.onClick {
             centerTable.clear()
-            centerTable.add(createDiplomacyGroup()).height(stage.height*0.8f)
+            centerTable.add(getDiplomacyGroup()).height(stage.height*0.8f)
             centerTable.pack()
-            centerTable.center(stage)
         }
-        topTable.add(setDiplomacyButton )
+        topTable.add(setDiplomacyButton)
+
+        val setResourcesButton = TextButton("Resources".tr(),skin)
+        setResourcesButton.onClick {
+            centerTable.clear()
+            centerTable.add(ScrollPane(getResourcesTable())).size(stage.width*0.8f, stage.height*0.8f)
+            centerTable.pack()
+        }
+        topTable.add(setResourcesButton)
+        if(currentPlayerCivInfo.detailedCivResources.isEmpty())
+            setResourcesButton.disable()
 
         topTable.pack()
-        topTable.width = stage.width
-        topTable.y = stage.height-topTable.height
 
-        stage.addActor(topTable)
-        stage.addActor(centerTable)
+        val table = Table()
+        table.add(topTable).row()
+        table.add(centerTable).expand().row()
+        table.setFillParent(true)
+        stage.addActor(table)
+
     }
+
 
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
@@ -100,21 +114,20 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size))
-        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size))
+        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size)).top()
+        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).top()
         return generalTable
     }
-    
+
     private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
         val table = Table()
         table.defaults().pad(10f)
-        table.background = ImageGetter.getBackground(civ.getNation().getColor())
-        table.add(civ.civName.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
+        table.background = ImageGetter.getBackground(civ.nation.getOuterColor())
+        table.add(civ.civName.toLabel().setFontColor(civ.nation.getInnerColor())).row()
         table.addSeparator()
         for(offer in offersList){
-            var offerText = offer.amount.toString()+" "+offer.name.tr()
-            if(offer.duration>0)offerText += " ("+offer.duration+" {turns})".tr()
-            table.add(offerText.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
+            val offerText = offer.getOfferText()
+            table.add(offerText.toLabel().setFontColor(civ.nation.getInnerColor())).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)
             table.add("".toLabel()).row() // we want both sides of the general table to have the same number of rows
@@ -127,12 +140,15 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         happinessTable.defaults().pad(5f)
         happinessTable.add("Happiness".toLabel().setFontSize(24)).colspan(2).row()
         happinessTable.addSeparator()
-        for (entry in currentPlayerCivInfo.getHappinessForNextTurn()) {
+
+        val happinessBreakdown = currentPlayerCivInfo.stats().getHappinessBreakdown()
+
+        for (entry in happinessBreakdown) {
             happinessTable.add(entry.key.tr())
-            happinessTable.add(entry.value.toString()).row()
+            happinessTable.add(entry.value.roundToInt().toString()).row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(currentPlayerCivInfo.getHappinessForNextTurn().values.sum().toString())
+        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString())
         happinessTable.pack()
         return happinessTable
     }
@@ -143,16 +159,34 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.add("Gold".toLabel().setFontSize(24)).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
-        for (entry in currentPlayerCivInfo.getStatMapForNextTurn()) {
+        for (entry in currentPlayerCivInfo.stats().getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
-            goldTable.add(entry.value.gold.toString()).row()
+            goldTable.add(entry.value.gold.roundToInt().toString()).row()
             total += entry.value.gold
         }
         goldTable.add("Total".tr())
-        goldTable.add(total.toString())
+        goldTable.add(total.roundToInt().toString())
         goldTable.pack()
         return goldTable
+    }
+
+
+    private fun getScienceTable(): Table {
+        val scienceTable = Table(skin)
+        scienceTable.defaults().pad(5f)
+        scienceTable.add("Science".toLabel().setFontSize(24)).colspan(2).row()
+        scienceTable.addSeparator()
+        val scienceStats = currentPlayerCivInfo.stats().getStatMapForNextTurn()
+                .filter { it.value.science!=0f }
+        for (entry in scienceStats) {
+            scienceTable.add(entry.key.tr())
+            scienceTable.add(entry.value.science.roundToInt().toString()).row()
+        }
+        scienceTable.add("Total".tr())
+        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString())
+        scienceTable.pack()
+        return scienceTable
     }
 
 
@@ -167,8 +201,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         greatPeopleTable.add("Great person points".toLabel().setFontSize(24)).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
-        greatPeopleTable.add("Current points")
-        greatPeopleTable.add("Points per turn").row()
+        greatPeopleTable.add("Current points".tr())
+        greatPeopleTable.add("Points per turn".tr()).row()
 
         val mapping = currentPlayerCivInfo.greatPeople.statToGreatPersonMapping
         for(entry in mapping){
@@ -176,8 +210,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
             greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
         }
-        val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toInt().toString()
-        val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toInt().toString()
+        val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toString()
+        val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toString()
         greatPeopleTable.add("Great General".tr())
         greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
         greatPeopleTable.pack()
@@ -187,7 +221,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
 
     private fun getCityInfoTable(): Table {
-        val iconSize = 20f//if you set this too low, there is a chance that the tables will be misaligned
+        val iconSize = 50f//if you set this too low, there is a chance that the tables will be misaligned
         val padding = 5f
 
         val cityInfoTableIcons = Table(skin)
@@ -207,8 +241,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableDetails = Table(skin)
         cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
 
-        for (city in currentPlayerCivInfo.cities) {
-            cityInfoTableDetails.add(city.name)
+        for (city in currentPlayerCivInfo.cities.sortedBy { it.name }) {
+            val button = Button(Label(city.name, skin), skin)
+            button.onClick {
+                UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(city.ccenterTile.position)
+            }
+            cityInfoTableDetails.add(button)
             cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
             cityInfoTableDetails.add(city.population.population.toString()).actor!!.setAlignment(Align.center)
             cityInfoTableDetails.add(city.cityStats.currentCityStats.food.roundToInt().toString()).actor!!.setAlignment(Align.center)
@@ -246,8 +285,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.defaults().pad(padding).align(Align.right)
 
         table.add(cityInfoTableIcons).row()
-        val height = if(cityInfoTableDetails.rows > 0) cityInfoTableDetails.getRowHeight(0)*4f else 100f //if there are no cities, set the height of the scroll pane to 100
-        table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).height(height).row()
+        table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).row()
         table.add(cityInfoTableTotal)
         table.pack()
 
@@ -257,28 +295,29 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     fun getUnitTable(): Table {
         val table=Table(skin).apply { defaults().pad(5f) }
         table.add("Name".tr())
+        table.add("Action".tr())
         table.add("Strength".tr())
         table.add("Ranged strength".tr())
         table.add("Movement".tr())
         table.add("Closest city".tr())
-        table.add("Go to unit".tr())
         table.row()
         table.addSeparator()
 
-        for(unit in currentPlayerCivInfo.getCivUnits()){
+        for(unit in currentPlayerCivInfo.getCivUnits().sortedBy { it.name }){
             val baseUnit = unit.baseUnit()
-            table.add(unit.name.tr())
+            val button = TextButton(unit.name.tr(), skin)
+            button.onClick {
+                UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
+            }
+            table.add(button).left()
+            val mapUnitAction = unit.mapUnitAction
+            if (mapUnitAction != null) table.add(mapUnitAction.name().tr()) else table.add()
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
             if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
-            val goToUnitButton = TextButton("Go to unit".tr(),skin)
-            goToUnitButton.onClick {
-                UnCivGame.Current.setWorldScreen()
-                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
-            }
-            table.add(goToUnitButton)
             table.row()
         }
         table.pack()
@@ -286,54 +325,34 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     }
 
 
-    fun playerKnows(civ:CivilizationInfo) = civ.isPlayerCivilization() ||
+    fun playerKnows(civ:CivilizationInfo) = civ==currentPlayerCivInfo ||
             currentPlayerCivInfo.diplomacy.containsKey(civ.civName)
 
-    fun createDiplomacyGroup(): Group {
-        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() }
+    fun getDiplomacyGroup(): Group {
+        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val groupSize = 500f
         val group = Group()
         group.setSize(groupSize,groupSize)
-        val civGroups = HashMap<CivilizationInfo,Actor>()
-        for(i in 0 until relevantCivs.size){
+        val civGroups = HashMap<String, Actor>()
+        for(i in 0..relevantCivs.lastIndex){
             val civ = relevantCivs[i]
 
-
-            val civGroup = Table()
-            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-
-            var civNameText = civ.civName.tr()
-            if(civ.isDefeated()) civNameText += "\n({Defeated})".tr()
-            val label = civNameText.toLabel()
-            label.setAlignment(Align.center)
-
-            if (civ.isDefeated()) {
-                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
-                label.setFontColor(Color.BLACK)
-            } else if (playerKnows(civ)) {
-                civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
-                label.setFontColor(civ.getNation().getSecondaryColor())
-            } else {
-                civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
-                label.setText("???")
-            }
-
-            civGroup.add(label).pad(10f)
-            civGroup.pack()
+            val civGroup = getCivGroup(civ, "", currentPlayerCivInfo)
 
             val vector = HexMath().getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
             civGroup.moveBy(vector.x*groupSize/3, vector.y*groupSize/3)
 
-            civGroups[civ]=civGroup
+            civGroups[civ.civName]=civGroup
             group.addActor(civGroup)
         }
 
-
         for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
-            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
-                val civGroup = civGroups[civ]!!
-                val otherCivGroup = civGroups[diplomacy.otherCiv()]!!
+            for(diplomacy in civ.diplomacy.values.
+                    filter { !it.otherCiv().isBarbarian() && !it.otherCiv().isCityState()
+                            && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
+                val civGroup = civGroups[civ.civName]!!
+                val otherCivGroup = civGroups[diplomacy.otherCivName]!!
 
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
@@ -345,7 +364,68 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 statusLine.toBack()
             }
 
-
         return group
+    }
+
+
+    private fun getResourcesTable(): Table {
+        val resourcesTable=Table().apply { defaults().pad(10f) }
+        val resourceDrilldown = currentPlayerCivInfo.detailedCivResources
+
+        // First row of table has all the icons
+        resourcesTable.add()
+        val resources = resourceDrilldown.map { it.resource }
+                .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
+
+        for(resource in resources)
+            resourcesTable.add(ImageGetter.getResourceImage(resource.name,50f))
+        resourcesTable.addSeparator()
+
+        val origins = resourceDrilldown.map { it.origin }.distinct()
+        for(origin in origins){
+            resourcesTable.add(origin.toLabel())
+            for(resource in resources){
+                val resourceSupply = resourceDrilldown.firstOrNull { it.resource==resource && it.origin==origin }
+                if(resourceSupply==null) resourcesTable.add()
+                else resourcesTable.add(resourceSupply.amount.toString().toLabel())
+            }
+            resourcesTable.row()
+        }
+
+        resourcesTable.add("Total".toLabel())
+        for(resource in resources){
+            val sum = resourceDrilldown.filter { it.resource==resource }.sumBy { it.amount }
+            resourcesTable.add(sum.toString().toLabel())
+        }
+
+        return resourcesTable
+    }
+
+    companion object {
+        fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String,currentPlayer:CivilizationInfo): Table {
+            val civGroup = Table()
+            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground")
+
+            val civNameText = civ.civName.tr()+afterCivNameText
+            val label = civNameText.toLabel()
+            label.setAlignment(Align.center)
+
+            if (civ.isDefeated()) {
+                civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
+                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
+                label.setFontColor(Color.BLACK)
+            } else if (currentPlayer==civ || UnCivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
+                civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
+                civGroup.background = civGroupBackground.tint(civ.nation.getOuterColor())
+                label.setFontColor(civ.nation.getInnerColor())
+            } else {
+                civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
+                label.setText("???")
+            }
+
+            civGroup.add(label).pad(10f)
+            civGroup.pack()
+            return civGroup
+        }
     }
 }

@@ -6,23 +6,35 @@ import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.utils.colorFromRGB
+import com.unciv.models.gamebasics.tr
 
 class Terrain : NamedStats(), ICivilopedia {
     override val description: String
         get(){
             val sb = StringBuilder()
             sb.appendln(this.clone().toString())
-
-            if(occursOn!=null)
-                sb.appendln("Occurs on [${occursOn!!.joinToString()}]".tr())
-
-            val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}.joinToString()
-            if(resourcesFound.isNotEmpty())
-                sb.appendln("May contain [$resourcesFound]".tr())
+            val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()
+            if(occursOn!=null) {
+                occursOn.forEach {
+                    terrainsCanBeBuiltOnString.add(it.tr())
+                }
+                sb.appendln("Occurs on [${terrainsCanBeBuiltOnString!!.joinToString(", ")}]".tr())
+            }
+            val resourcesFoundString:ArrayList<String> = arrayListOf()
+            val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}
+            if(resourcesFound.isNotEmpty()) {
+                for (i in resourcesFound) {
+                    resourcesFoundString.add(i.toString().tr())
+                }
+                sb.appendln("May contain [${resourcesFoundString!!.joinToString(", ")}]".tr())
+            }
             sb.appendln("{Movement cost}: $movementCost".tr())
             if(defenceBonus!=0f){
                 sb.appendln("{Defence bonus}: ".tr()+(defenceBonus*100).toInt()+"%")
             }
+
+            if(rough)
+                sb.appendln("Rough Terrain".tr())
 
             return sb.toString()
         }
@@ -44,7 +56,7 @@ class Terrain : NamedStats(), ICivilopedia {
     /***
      * For terrain features
      */
-    var occursOn: Collection<String>? = null
+    val occursOn: Collection<String>? = null
 
     /**
      * RGB color of base terrain
@@ -53,6 +65,7 @@ class Terrain : NamedStats(), ICivilopedia {
     var movementCost = 1
     var defenceBonus:Float = 0f
     var impassable = false
+    var rough = false
 
     fun getColor(): Color = colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
 }

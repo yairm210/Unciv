@@ -14,34 +14,57 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import java.util.*
+import kotlin.math.max
 
 class CivilopediaScreen : CameraStageBaseScreen() {
+
+    val categoryToInfos = LinkedHashMap<String, Collection<ICivilopedia>>()
+    val categoryToButtons = LinkedHashMap<String, Button>()
+    val civPediaEntries = Array<ICivilopedia>()
+
+    val nameList = List<String>(skin)
+    val description = "".toLabel()
+
+    fun select(category: String, entry: String? = null) {
+        val nameItems=Array<String>()
+        civPediaEntries.clear()
+        for (civilopediaEntry in categoryToInfos[category]!!.sortedBy { it.toString().tr() }){  // Alphabetical order of localized names
+            civPediaEntries.add(civilopediaEntry)
+            nameItems.add(civilopediaEntry.toString().tr())
+        }
+        nameList.setItems(nameItems)
+        val index = max(0, nameList.items.indexOf(entry?.tr()))
+        nameList.selected = nameList.items.get(index)
+        description.setText(civPediaEntries.get(index).description)
+        for (btn in categoryToButtons.values) btn.isChecked = false
+        categoryToButtons[category]?.isChecked = true
+    }
+
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         val buttonTable = Table()
         buttonTable.pad(15f)
         val entryTable = Table()
-        val splitPane = SplitPane(buttonTable, entryTable, true, CameraStageBaseScreen.skin)
+        val splitPane = SplitPane(buttonTable, entryTable, true, skin)
         splitPane.splitAmount = 0.2f
         splitPane.setFillParent(true)
 
         stage.addActor(splitPane)
 
-        val label = "".toLabel()
-        label.setWrap(true)
+        description.setWrap(true)
 
-        val goToGameButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+        val goToGameButton = TextButton("Close".tr(), skin)
         goToGameButton.onClick {
                 game.setWorldScreen()
                 dispose()
             }
         buttonTable.add(goToGameButton)
 
-        val categoryToInfos = LinkedHashMap<String, Collection<ICivilopedia>>()
+
 
         val language = UnCivGame.Current.settings.language.replace(" ","_")
-        val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp_$language.json").exists())"BasicHelp_$language"
-        else "BasicHelp"
+        val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())"BasicHelp/BasicHelp_$language"
+        else "BasicHelp/BasicHelp"
 
         categoryToInfos["Basics"] = GameBasics.getFromJson(kotlin.Array<BasicHelp>::class.java, basicHelpFileName).toList()
         categoryToInfos["Buildings"] = GameBasics.Buildings.values
@@ -51,48 +74,27 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         categoryToInfos["Units"] = GameBasics.Units.values
         categoryToInfos["Technologies"] = GameBasics.Technologies.values
 
-        val nameList = List<ICivilopedia>(CameraStageBaseScreen.skin)
-
-        val nameListClickListener = {
-            if(nameList.selected!=null) label.setText(nameList.selected.description)
+        nameList.onClick {
+            if(nameList.selected!=null) description.setText(civPediaEntries.get(nameList.selectedIndex).description)
         }
-        nameList.onClick (nameListClickListener)
-
         nameList.style = List.ListStyle(nameList.style)
         nameList.style.fontColorSelected = Color.BLACK
 
-        val buttons = ArrayList<Button>()
-        var first = true
-        for (str in categoryToInfos.keys) {
-            val button = TextButton(str.tr(), CameraStageBaseScreen.skin)
+        for (category in categoryToInfos.keys) {
+            val button = TextButton(category.tr(), skin)
             button.style = TextButton.TextButtonStyle(button.style)
-            button.style.checkedFontColor = Color.BLACK
-            buttons.add(button)
-            val buttonClicked = {
-                val newArray = Array<ICivilopedia>()
-                for (civilopediaEntry in categoryToInfos[str]!!.sortedBy { it.toString() })  // Alphabetical order
-                    newArray.add(civilopediaEntry)
-                nameList.setItems(newArray)
-                nameList.selected = nameList.items.get(0)
-                label.setText(nameList.selected.description)
-
-                for (btn in buttons) btn.isChecked = false
-                button.isChecked = true
-            }
-            button.onClick(buttonClicked)
-            if (first) {// Fake-click the first button so that the user sees results immediately
-                first = false
-                buttonClicked()
-            }
-
+            button.style.checkedFontColor = Color.YELLOW
+            categoryToButtons[category] = button
+            button.onClick { select(category) }
             buttonTable.add(button)
         }
+        select("Basics")
 
         val sp = ScrollPane(nameList)
         sp.setupOverscroll(5f, 1f, 200f)
         entryTable.add(sp).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))
-        entryTable.add(label).colspan(4).width(Value.percentWidth(0.65f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
+        entryTable.add(description).colspan(4).width(Value.percentWidth(0.65f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))
         // Simply changing these to x*width, y*height won't work
 

@@ -9,14 +9,14 @@ import com.unciv.logic.map.MapUnit
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var blackSpinningCircle:Image?=null
+    val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
+            .apply { setSize(size * 0.75f, size * 0.75f) }
 
     init {
-        val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
-                .apply { setSize(size * 0.75f, size * 0.75f) }
 
         val background = getBackgroundImageForUnit(unit)
         background.apply {
-            this.color = unit.civInfo.getNation().getColor()
+            this.color = unit.civInfo.nation.getOuterColor()
             setSize(size, size)
         }
         setSize(size, size)
@@ -35,7 +35,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     fun getBackgroundImageForUnit(unit: MapUnit): Image {
         return when {
             unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
-            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
+            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
             else -> ImageGetter.getCircle()
         }
     }

@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -19,11 +20,12 @@ import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
-    private val battle = Battle(worldScreen.currentPlayerCiv.gameInfo)
+    private val battle = Battle(worldScreen.viewingCiv.gameInfo)
     init{
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
         pad(5f)
+        touchable = Touchable.enabled
     }
 
     fun hide(){
@@ -50,7 +52,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
-                defender.getCivInfo()==worldScreen.currentPlayerCiv
+                defender.getCivInfo()==worldScreen.viewingCiv
                 || !(UnCivGame.Current.viewEntireMapForDebug
                         || attacker.getCivInfo().exploredTiles.contains(selectedTile.position))) {
             hide()
@@ -58,7 +60,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         if(defender.isInvisible()
-                && attacker.getCivInfo().viewableInvisibleUnitsTiles.contains(selectedTile)) {
+                && !attacker.getCivInfo().viewableInvisibleUnitsTiles.contains(selectedTile)) {
             hide()
             return
         }
@@ -78,7 +80,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
-        val defenderLabel = Label(defender.getName(), skin)
+        val defenderLabel = Label(defender.getName().tr(), skin)
         if(defender is MapUnitCombatant)
             defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
         defenderNameWrapper.add(defenderLabel)
@@ -89,9 +91,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("{Strength}: ".tr()+attacker.getAttackingStrength())
         add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
-        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key.tr()+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
         val defenderModifiers = if (defender is MapUnitCombatant)
-                                    BattleDamage().getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+                                    BattleDamage().getDefenceModifiers(attacker, defender).map { it.key.tr()+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
                                 else listOf()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
@@ -144,7 +146,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
                 attackableEnemy = UnitAutomation()
-                        .getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
+                        .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             }
             else if (attacker is CityCombatant)
@@ -156,23 +158,27 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
         }
 
-        if(attackableEnemy == null) attackButton.disable()
+        if (!worldScreen.isPlayersTurn || attackableEnemy == null) {
+            attackButton.disable()
+            attackButton.label.color = Color.GRAY
+        }
+
         else {
             attackButton.onClick {
                 try {
                     battle.moveAndAttack(attacker, attackableEnemy)
-                    worldScreen.tileMapHolder.removeUnitActionOverlay = true // the overlay was one of attacking
+                    worldScreen.tileMapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
-                    val popup = PopupTable(worldScreen)
-                    popup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
-                    popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    popup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
-                    popup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
-                    popup.addGoodSizedLabel("  that would be even better!").row()
-                    popup.open()
+                    val battleBugPopup = PopupTable(worldScreen)
+                    battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                    battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                    battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
+                    battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
+                    battleBugPopup.open()
                 }
             }
         }

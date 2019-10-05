@@ -12,7 +12,7 @@
 			},
 			{
 				name:"Legalism",
-				description:"Free culture building in your first 4 cities",
+				description:"Immediately creates a cheapest available cultural building in each of your first 4 cities for free",
 				row:1,
 				column:3
 			},
@@ -49,13 +49,13 @@
 		policies:[
 			{
 				name:"Collective Rule",
-				description:"Training of settlers increased +50% in capital, receive a new settler near capital",
+				description:"Training of settlers increased +50% in capital, receive a new settler near the capital",
 				row:1,
 				column:1
 			},
 			{
 				name:"Citizenship",
-				description:"+25% construction rate of workers, receive free worker near the capital",
+				description:"Tile improvement speed +25%, receive a free worker near the capital",
 				row:1,
 				column:4
 			},

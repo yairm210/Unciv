@@ -2,6 +2,8 @@ package com.unciv.logic.civilization
 
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -19,6 +21,8 @@ class TechManager {
     @Transient var unitsCanEmbark=false
     @Transient var embarkedUnitsCanEnterOcean=false
 
+    // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
+    @Transient var movementSpeedOnRoadsImproved=false
 
     var freeTechs = 0
     var techsResearched = HashSet<String>()
@@ -37,10 +41,21 @@ class TechManager {
     }
 
     fun costOfTech(techName: String): Int {
-        return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
+        var techCost = GameBasics.Technologies[techName]!!.cost.toFloat()
+        if (civInfo.isPlayerCivilization())
+            techCost *= civInfo.getDifficulty().researchCostModifier
+        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        techCost *= 1 + (civInfo.cities.size -1 ) * 0.02f // each city increases tech cost by 2%, as per https://civilization.fandom.com/wiki/Science_(Civ5)
+        return techCost.toInt()
     }
 
-    fun currentTechnology(): String? {
+    fun currentTechnology(): Technology? {
+        val currentTechnologyName = currentTechnologyName()
+        if (currentTechnologyName == null) return null
+        return GameBasics.Technologies[currentTechnologyName]
+    }
+
+    fun currentTechnologyName(): String? {
         if (techsToResearch.isEmpty()) return null
         else return techsToResearch[0]
     }
@@ -54,7 +69,7 @@ class TechManager {
 
     fun turnsToTech(techName: String): Int {
         return Math.ceil( remainingScienceToTech(techName).toDouble()
-                / civInfo.getStatsForNextTurn().science).toInt()
+                / civInfo.statsForNextTurn.science).toInt()
     }
 
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
@@ -63,7 +78,7 @@ class TechManager {
         return GameBasics.Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
 
-    fun getUniques() = researchedTechUniques
+    fun getTechUniques() = researchedTechUniques
 
     //endregion
 
@@ -76,7 +91,7 @@ class TechManager {
             val techNameToCheck = checkPrerequisites.pop()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have annything to research. Yeah.
-            if (techNameToCheck!="Future Tech" &&
+            if (techNameToCheck!=Constants.futureTech &&
                     (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck)) )
                 continue //no need to add or check prerequisites
             val techToCheck = GameBasics.Technologies[techNameToCheck]
@@ -89,7 +104,7 @@ class TechManager {
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
-        val currentTechnology = currentTechnology()
+        val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
@@ -106,7 +121,7 @@ class TechManager {
     }
 
     fun addTechnology(techName:String) {
-        if(techName!="Future Tech")
+        if(techName!= Constants.futureTech)
             techsToResearch.remove(techName)
 
         val previousEra = civInfo.getEra()
@@ -119,11 +134,12 @@ class TechManager {
             researchedTechUniques = researchedTechUniques.withItem(unique)
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE)
+        civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction(techName))
+        civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched,techName))
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra] era!".tr(), null, Color.GOLD)
+            civInfo.addNotification("You have entered the [$currentEra era]!".tr(), null, Color.GOLD)
             GameBasics.PolicyBranches.values.filter { it.era == currentEra }
                     .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!".tr(), null, Color.PURPLE) }
         }
@@ -151,7 +167,7 @@ class TechManager {
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
 
-        if(techName=="Writing" && civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
+        if(techName=="Writing" && civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
                 && civInfo.cities.any())
             civInfo.addGreatPerson("Great Scientist")
     }
@@ -188,6 +204,15 @@ class TechManager {
     fun updateTransientBooleans(){
         if(researchedTechUniques.contains("Enables embarkation for land units")) unitsCanEmbark=true
         if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")) embarkedUnitsCanEnterOcean=true
+        if(researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true
+    }
 
+    fun getBestRoadAvailable(): RoadStatus {
+        if (!isResearched(RoadStatus.Road.improvement()!!.techRequired!!)) return RoadStatus.None
+
+        val techEnablingRailroad = RoadStatus.Railroad.improvement()!!.techRequired!!
+        val canBuildRailroad = isResearched(techEnablingRailroad)
+
+        return if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
     }
 }

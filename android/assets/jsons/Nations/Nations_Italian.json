@@ -1,0 +1,1018 @@
+[
+	{
+		name:"Babylon",
+		translatedName:"Babilonia",
+		leaderName:"Nebuchadnezzar II",
+		translatedLeaderName:"Nabucodonosor II",
+		adjective:["babilonese"],
+		
+		startIntroPart1:"Che la benedizione del cielo scenda su di te, o grande Nabucodonosor, padre dell'antica e potente Babilonia! Giovane era il mondo quando Sargon eresse Babilonia, quasi cinquemila anni fa. A lungo crebbe e prosperò, dando vita al suo primo impero nel XVIII secolo a.C. sotto il divino Hammurabi, il legiferatore. Anche se conquistata prima dai Cassiti e poi dagli Assiri, Babilonia resistette, riemergendo come una fenice dalle ceneri della distruzione e riguadagnando la propria indipendenza nonostante i suoi molti nemici. Babilonia era davvero il centro delle arti e della conoscenza nel mondo antico!"
+		startIntroPart2:"O Nabucodonosor, il tuo impero non durò molto dopo la tua dipartita, cadendo preda dei potenti Persiani prima e dei Greci dopo, finché la tua grande città non venne distrutta nel 141 a.C. Ma davvero Babilonia è sparita per sempre, o grande Nabucodonosor? Il tuo popolo desidera che tu riporti in vita l'impero ancora una volta! Accetterai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Il demone della guerra vuole il sangue dei soldati!"
+		attacked:"Oh, bene... sono certo che tu sappia cosa stai facendo... spero."
+		defeated:"È finita. Forse ora almeno io avrò la mia pace."
+		introduction:"Io sono Nabucodonosor, re di Babilonia. Quegli sciocchi là fuori dicono che sono un dio, ma la cosa mi pare improbabile. E tu cosa sei?"
+		
+		neutralHello:"Salute."
+		neutralLetsHearIt:["Ti ascolto.","E dunque?"]
+		neutralNo:["No!","Certo che no.","Inaccettabile!"]
+		neutralYes:["D'accordo!","Sì!","Molto bene!"]
+
+		hateHello:"Che cosa vuoi?!"
+		hateLetsHearIt:["Ti ascolto.","Parla!"]
+		hateNo:["No!","Certo che no!","Inaccettabile!"]
+		hateYes:["E va bene!"]
+		
+		afterPeace:"Sciocco, sciocco errore, lasciarmi vivere..."
+		tradeRequest:"Sembra che la tua ragione di esistere è fare un accordo con me..."
+	
+		outerColor:[27,53,63],
+		innerColor:[213,249,255],
+		uniqueName:"Ingenuità",
+		unique:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
+		cities:["Babilonia","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
+			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninive","Nimrud","Arbela","Nuzi",
+			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+	},
+	{
+		name:"Greece",
+		translatedName:"Grecia",
+		leaderName:"Alexander",
+		translatedLeaderName:"Alessandro",
+		adjective:["greco"],
+		
+		startIntroPart1:"Che le benedizioni degli dei scendano su di te, o grande re Alessandro! Tu sei a capo della potente nazione greca. Il tuo popolo a lungo ha vissuto diviso in numerose città-stato, come le leggendarie Atene, Sparta e Tebe, dove cose meravigliose hanno visto la luce: la democrazia, la filosofia, la tragedia, l'arte e l'architettura, ponendo le basi dell'intera civiltà occidentale. Sebbene poco numerosi e spesso in conflitto tra di loro, nel V secolo a.C. i greci riuscirono a sconfiggere la vicina e vastissima nazione della Persia, a terra come in mare."
+		startIntroPart2:"Alessandro, il tuo popolo è pronto a marciare in guerra per diffondere la cultura greca tra le genti del mondo e donarti gloria imperitura. Sei pronto ad accettare il tuo destino, re Alessandro? Guiderai il tuo popolo verso il trionfo e la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
+		attacked:"Ad essere onesto, mi sono stancato di starmene impalato e di riposare sugli allori. Vieni, le mie armate ti accoglieranno a braccia aperte!"
+		defeated:"Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine."
+		introduction:"Benvenuto, straniero! Sono Alexandros, erede di Eracle, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
+		
+		neutralHello:"Saluti..."
+		neutralLetsHearIt:["Ti ascolto.","Avanti.","Sì?","Parla."]
+		neutralNo:["Rifiutiamo.","Certo che no.","Non reputo saggio accettarlo."]
+		neutralYes:["Ma certo.","Molto bene.","Accettabile!"]
+
+		hateHello:"Come osi venire davanti al mio cospetto?"
+		hateLetsHearIt:["Dimmi.","Dunque?","Avanti."]
+		hateNo:["Ciò non è gradito!","Niente da fare!","Scusami?"]
+		hateYes:["Oh, benissimo.","Se proprio devo.","Affare fatto."]
+		
+		afterPeace:"Devo congratularmi con te per la tua vittoria sbalorditiva. Forse mio padre Zeus non era dalla mia parte..."
+		tradeRequest:"Amico mio, dimmi: questo ti sembra ragionevole?"
+		
+		outerColor:[181, 232, 232],
+		innerColor:[68,142,249],
+		uniqueName:"Lega Ellenica",
+		unique:"L'Influenza delle Città-Stato cala il doppio più lentamente e cresce il doppio rispetto al normale.",
+		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
+			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
+			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
+	},
+	{
+		name:"China",
+		translatedName:"Cina",
+		leaderName:"Wu Zetian",
+		adjective:["cinese"],
+		
+		startIntroPart1:"Che la benedizione del cielo scenda su di te, imperatrice Wu Zetian, la più bella e la più fiera tra tutti i sovrani della Cina! O grande imperatrice, la cui sola ombra è sufficiente a far sbocciare i fiori e a far scorrere i fiumi! Tu sei a capo della civiltà cinese, la più antica e grandiosa mai prodotta dall'uomo. La storia della Cina si perde nelle nebbie del tempo e il suo popolo ha goduto di molte scoperte e invenzioni prima ancora che altre imberbi civiltà nascessero. Il contributo cinese alle arti e alle scienze è tale da non potervi rendere giustizia: la stampa, la polvere da sparo, le opere di Confucio... questi non sono che alcuni dei doni che la Cina ha offerto a questo mondo ingrato!"
+		startIntroPart2:"O grande imperatrice, tu che, con astuzia e bellezza, da semplice concubina ascendesti al rango di divina imperatrice, ascolta il popolo che vuole essere guidato da te! La grande Cina è ancora una volta circondata dai barbari. Riuscirai a sconfiggere i tuoi numerosi nemici e a riportare il tuo paese alla grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Non ti permetterò più di infastidirmi. Preparati a incontrare Yama."
+		attacked:"Folle! Ti costringerò a guardare il tuo popolo venire massacrato!"
+		defeated:"Ti sei dimostrato un avversario astuto e competente. Mi congratulo per la tua vittoria."
+		introduction:"Saluti! Sono l'imperatrice della Cina, Wu Zetian. La Cina desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione."
+		
+		neutralHello:"Bella giornata, oggi, vero?"
+		neutralLetsHearIt:["Continua.","Ebbene?","Dunque?"]
+		neutralNo:["No.","No di certo.","Certo che no."]
+		neutralYes:["Certo.","D'accordo.","Eccellente!"]
+
+		hateHello:" Oh, sei tu. Che vuoi?"
+		hateLetsHearIt:["C'è altro?","Continua a parlare."]
+		hateNo:["Non posso accettarlo.","Scusami, non basta.","Sparisci dal mio volto!"]
+		hateYes:["Credo dovrò accettare.","Ah. Molto bene."]
+		
+		afterPeace:"Che le benedizioni del Cielo scendano su di te e sul tuo popolo."
+		tradeRequest:"Amico mio, pensi di poter accettare questa proposta?"
+				
+		outerColor:[9, 112, 84],
+		innerColor:[255,255,255],
+		uniqueName:"L'Arte della Guerra",
+		unique:"Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta."
+		cities:["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macao","Shandong",
+			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
+			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+	},
+	{
+		name:"Egypt",
+		translatedName:"Egitto",
+		leaderName:"Ramesses II",
+		translatedLeaderName:"Ramses II",
+		adjective:["egiziano"],
+		
+		startIntroPart1:"Salute a te, o grande Ramses, Faraone d'Egitto, che fai sorgere il sole e scorrere il Nilo, e che benedici il suo popolo con ogni cosa buona della vita! O grande capo, da tempo immemore il tuo popolo ha vissuto lungo le sponde del fiume Nilo, dove ha concepito la scrittura e approfondito la matematica, la scultura e l'architettura, creando migliaia di anni fa i grandi monumenti che ancora oggi si erigono alti e fieri."
+		startIntroPart2:"O Ramses, il tuo popolo è sopravvissuto al tempo, mentre altre insignificanti nazioni sono cresciute e sono morte. Adesso il tuo popolo vuole che lo guidi verso la grandezza. Riuscirai a onorare gli dei e a ridare all'Egitto il ruolo che merita, quello di centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Sei solo una peste sulla Terra! Possa Amon-Ra guidare le mie armate!",
+		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà! Osiride sarà lieto di dare il suo benvenuto ai miei nemici!"
+		defeated:"Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno."
+		introduction:"Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà." //Also:"Salve. Io sono Ramses, signore del potente Egitto. E sono anche un dio. Mostrate di avere molto coraggio presentandovi davanti a me."
+		
+		neutralHello:"Buongiorno."
+		neutralLetsHearIt:["Avanti, parla.","Parla.","Sono tutto orecchi."]
+		neutralNo:["No.","No di certo."]
+		neutralYes:["Va bene.","Molto bene."]
+		
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["E allora?","Concludi il tuo discorso."]
+		hateNo:["Ciò è inaccettabile.","La tua richiesta dev'essere uno scherzo di cattivo gusto."]
+		hateYes:["Oh, molto bene.","Credo dovrò accettare."]
+		
+		afterPeace:"Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa, e mi sento magnanimo."
+		tradeRequest:"Il generoso regno d'Egitto ti fa quest'offerta."
+		
+		outerColor:[ 231, 213, 0],
+		innerColor:[98,10,210],
+		uniqueName:"Costruttori di Monumenti",
+		unique:"+20% Produzione durante la costruzione di una Meraviglia"
+		cities:["Tebe","Menfi","Eliopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
+			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi","Mendes","Elashmunein",
+			"Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+	},
+	{
+		name:"England",
+		translatedName:"Inghilterra",
+		leaderName:"Elizabeth",
+		translatedLeaderName:"Elisabetta",
+		adjective:["inglese"],
+		
+		startIntroPart1:"Lode a Sua Serena Altezza, regina Elisabetta Gloriana, che guida e protegge la celebre nazione marittima d'Inghilterra. L'Inghilterra è una terra antica, con insediamenti risalenti fino a 35.000 anni fa e oggetto di innumerevoli ondate di invasioni, ciascuna delle quali ha poi contribuito a definire il carattere della popolazione. Anche se l'Inghilterra è un'isola poco estesa, per anni la sua gente ha dominato la scena mondiale: la sua flotta ineguagliabile, i suoi brilanti artisti e l'astuzia dei suoi mercanti le hanno conferito un potere e un'influenza che andavano ben al di là dei semplici numeri."
+		startIntroPart2:"Regina Elisabetta, farai tornare il suo popolo inglese alla sua età dell'oro? Esso si rivolge a te per ritrovare la pace e la prosperità di un tempo. Accetterai di indossare il mantello della grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati!"
+		attacked:"Mai ci arrenderemo all'invasore!"
+		defeated:"Hai trionfato sull'impero su cui il Sole non tramonta mai. La vittoria è tua, ma non credere durerà a lungo, perché grazie alla provvidenza, l'Inghilterra risorgerà dalle ceneri."
+		introduction:"Io sono Elisabetta d'Inghilterra. Siamo lieti di incontrarvi."
+		
+		neutralHello:"Salve di nuovo."
+		neutralLetsHearIt:["Avanti.","Continua."]
+		neutralNo:["Scusami?","È inaccettabile!"]
+		neutralYes:["Certamente!","Molto bene!"]
+
+		hateHello:"Oh, sei tu!"
+		hateLetsHearIt:["Ti ascolto.","Che dicevi?"]
+		hateNo:["Stai scherzando, spero!","Certo che no!"]
+		hateYes:["Oh, molto bene!","Se proprio devo..."]
+		
+		afterPeace:"Hai combattuto con onore. Finiamola qui."
+		tradeRequest:"Ti interessa un accordo commerciale con il regno inglese?"
+		
+		outerColor:[ 114, 0, 0],
+		innerColor:[255,255,255],
+		uniqueName:"Il Sole non tramonta mai",
+		unique:"+2 movimento per tutte le unità navali"
+		cities:["Londra","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
+			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+	},
+	{
+		name:"France",
+		translatedName:"Francia",
+		leaderName:"Napoleon",
+		translatedLeaderName:"Napoleone",
+		adjective:["francese"],
+		
+		startIntroPart1:"Lunga vita e trionfi a te, primo console e imperatore di Francia, Napoleone I, capo del popolo francese. La Francia giace nel cuore dell'Europa. Per lungo tempo Parigi è stata al centro del mondo in fatto di cultura, arti e letteratura. Anche se circondata da nazioni concorrenti, e spesso nemiche, la Francia è sempre emersa a testa alta. I suoi eserciti hanno marciati trionfalmente da un capo all'altro del mondo e i suoi soldati e i suoi generali si sono rivelati tra i migliori della storia."
+		startIntroPart2:"Napoleone Bonaparte, la Francia vuole che ti ricostruisca il tuo impero, che la guidi nuovamente verso la gloria e la grandezza, facendola tornare ad essere il centro della cultura e della raffinatezza. Imperatore, tornerai a cavalcare contro i tuoi nemici? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Come osi disturbare la tranquillità del mio impero? Preparati a morire!",
+		attacked:"Sei caduto dritto nella mia trappola. Preparati a essere seppellito!",
+		defeated:"Mi congratulo per la tua vittoria. Sei riuscito a superarmi, impresa in cui altri avevano fallito."
+		introduction:"Benvenuto, straniero. Sono Napoleone, Imperatore di Francia. Sono leale con gli amici, ma mortale con i nemici. Voi cosa vi dichiarate?"
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Continua.","Ti ascolto.","Avanti.","Stavi dicendo?"]
+		neutralNo:["Mi rifiuto.","Certo che no.","No."]
+		neutralYes:["Eccellente.","Molto bene.","Perché no?"]
+
+		hateHello:"Sei tu..."
+		hateLetsHearIt:["Parla."]
+		hateNo:["Vuoi scherzare?","Certo che no.","Inaccettabile."]
+		hateYes:["Va bene.","Credo di non avere altra scelta.","Certamente.","Molto bene."]
+		
+		afterPeace:"Sembra che ti abbia sottovalutato. Ti prometto che non ripeterò un simile errore."
+		tradeRequest:"La Francia ti offre questa proposta eccezionale."
+		
+		outerColor:[ 38, 98, 255],
+		innerColor:[239,236,148],
+		uniqueName:"Ancien Régime",
+		unique:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
+		cities:["Parigi","Orleans","Lione","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
+			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
+			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]
+	},
+	{
+		name:"Russia",
+		translatedName:"Russia",
+		leaderName:"Catherine",
+		translatedLeaderName:"Caterina",
+		adjective:["russo"],
+		
+		startIntroPart1:"Salute, Vostra Maestà Imperiale Caterina, meravigliosa imperatrice di tutte le Russie. Al vostro comando si muove il più grande paese del mondo. La potente Russia si estende dall'Oceano Pacifico a est al Mar Baltico a ovest. Nonostante guerre, siccità e ogni altro genere di disastro, il popolo russo sopravvive e prospera e i suoi artisti e scienziati sono tra i migliori al mondo. Ancora oggi il paese è annoverabile come uno tra i più potenti della storia umana, una vera superpotenza, dotata per di più della forza più distruttiva mai concepita."
+		startIntroPart2:"Caterina, il tuo popolo vuole tornare ai gloriosi giorni della grande Russia, vuole rivitalizzarne la terra e rivivere la meraviglia dell'Illuminismo. Tornerai a guidare la tua gente verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Ti sei comportato molto male, lo sai? Credo che adesso dovrò insegnarti l'umiltà.",
+		attacked:"Hai confuso la mia passione per una debolezza... temo che la pagherai assai cara."
+		defeated:"Ci hai sconfitti, e ciò mi rende prigioniera. Ma direi che ci sono destini peggiori, giusto?"
+		introduction:"Ti saluto, straniero! Se sei intelligente e saggio tanto quanto sei bello, andremo d'accordo alla grande!"
+		
+		neutralHello:"Salve!"
+		neutralLetsHearIt:["Avanti.","Parla."]
+		neutralNo:["Rifiutiamo.","Ha! Certo che no!","No di certo."]
+		neutralYes:["Certo.","D'accordo.","Eccellente!"]
+
+		hateHello:"Che cosa vuoi?!"
+		hateLetsHearIt:["Ebbene?","Avanti...","Continua."]
+		hateNo:["Stai scherzando?!","Scusami?!","Ciò è inaccettabile."]
+		hateYes:["Credo... che accetterò.","Oh... molto bene.","Ci sto."]
+		
+		afterPeace:"Ora è il momento di godersi i frutti della pace."
+		tradeRequest:"Ti piacerebbe se ti proponessi questo scambio?"
+				
+		outerColor:[ 236, 178, 0],
+		innerColor:[0,0,0],
+		uniqueName:"Ricchezze Siberiane",
+		unique:"+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
+		cities:["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk",
+			"Orenburg","Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita",
+			"Samara","Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+	},
+	{
+		name:"Rome",
+		translatedName:"Roma",
+		leaderName:"Augustus Caesar",
+		translatedLeaderName:"Cesare Augusto",
+		adjective:["romano"],
+		
+		startIntroPart1:"Che la benedizione degli dei scenda su di te, Cesare Augusto, imperatore di Roma e di tutte le sue terre. Il tuo impero fu il più vasto e duraturo di tutto l'emisfero occidentale, di cui il tuo popolo ha modellato cutura, leggi, arti e tecnica militare come mai altri prima o dopo. Anno dopo anno di gloriose conquiste, Roma giunse a dominare tutto il bacino del Medirettaneo, dalla Spagna a ovest alla Siria a est, espandendosi a nord fino all'Inghilterra e alla Germania settentrionale. L'arte e l'architettura romana ancora oggi meravigliano e stupiscono il mondo facendo di Roma un modello per le civiltà che seguirono."
+		startIntroPart2:"O potente imperatore, il tuo popolo si rivolge a te a gran voce per riconquistare la sua antica gloria. Farai in modo che il tuo impero risorga, portando pace e ordine a tutti? Renderai Roma nuovamente il centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, credo proprio che dovrò muoverti guerra. Alea jacta eat - il dado è tratto!"
+		attacked:"La tua arroganza sarà la tua rovina! Nessun potere, per quanto prode o forte, può sconfiggere Roma!"
+		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
+		introduction:"Ave. Sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei il benvenuto, ma sappi che Roma è mortale contro i suoi nemici."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Comincia pure.","Continua."]
+		neutralNo:["No.","Certo che no!"]
+		neutralYes:["Bene.","D'accordo."]
+
+		hateHello:"Che cosa vuoi?"
+		hateLetsHearIt:["E...?","Continua."]
+		hateNo:["Spiacente.","Stai scherzando, spero!"]
+		hateYes:["Bene.","Oh. Bene."]
+		
+		afterPeace:"I tuoi soldati hanno combattuto bene. Mi congratulo per la tua vittoria."
+		tradeRequest:"È basiliare che le masse plebee siano soddisfatte. Ti offro questo, per la tua considerazione."
+				
+		outerColor:[ 53,0,87],
+		innerColor:[238,201,9],
+		uniqueName:"La Gloria di Roma",
+		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
+		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia","Satricum","Ardea",
+			"Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra","Signia",
+			"Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+	},
+	{
+		name:"Arabia",
+		translatedName:"Arabia",
+		leaderName:"Harun al-Rashid",
+		adjective:["arabo"],
+		
+		startIntroPart1:"Che la benedizione di Allah scenda su di te, grande califfo Harun al-Rashid, capo del pio popolo arabo! L'impero musulmano del Califfato nacquie negli anni turbolenti che seguirono la morte del profeta Maometto nel 632 d.C.; i suoi seguaci intendevano estendere il regno di Allah a tutti i  popoli della Terra. E il Califfato in effetti divenne sempre più potente, giungendo a controllare, al proprio apice, la Spagna, l'Africa settentrionale, il Medio Oriente, l'Anatolia, i Balcani e la Persia; un impero esteso quanto quello romano, se non di più. Nel Medio Evo, mentre le nazioni d'Europa sprofondavano nell'ignoranza e nel caos, in Arabia le arti e le scienze fiorivano. Il Califfato durò per 600 anni, finché non cedette all'assalto dei Mongoli, quei maledetti distruttori di imperi altrui."
+		startIntroPart2:"Gran califfo Harun al-Rashid, la tua gente si rivolge a te per tornare alla grandezza di un tempo. Per far tornare l'Arabia una terra illuminata da arti e conoscenza, una nazione potente che non debba temere nessuno. O califfo, raccoglierai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Invero, è un peccato che dobbiamo passare alle maniere forti... non è tradizione per un re uccidere un altro re, né per un regno uccidere un altro regno."
+		attacked:"Ti avverto almeno di non farti un'abitudine di spargere sangue. Il sangue non dorme mai."
+		defeated:"Hai vinto. Complimenti. Ora il palazzo è nelle tue mani. Ti prego di prenderti cura del mio pavone."
+		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli Arabi. Vieni ad ammirare la sontuosità del mio palazzo, e parlami del tuo impero."
+		
+		neutralHello:"Pace a te."
+		neutralLetsHearIt:["Cos'é questo?","Cosa stavi dicendo?"]
+		neutralNo:["Certamente no.","Certo che no."]
+		neutralYes:["Va bene.","Eccellente."]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Cos'é questo?!","Finisci il tuo discorso."]
+		hateNo:["Questa richiesta è inaccettabile.","Non puoi essere serio a riguardo."]
+		hateYes:["Molto bene.","Se devo."]
+		
+		afterPeace:"Vi ringraziamo per questi termini generosi. Non dimenticheremo il favore che ci hai mostrati."
+		tradeRequest:"Avanti, facciamo un affare."
+				
+		outerColor:[ 41,83,42],
+		innerColor:[146,221,9],
+		uniqueName:"Carovane Commerciali",
+    		unique:"+1 Oro per ogni rotta commerciale, e doppia quantita da Petrolio.",
+		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat","Aden","Yamama",
+			"Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul","Aydab","Bayt","Suhar","Taif","Hama",
+			"Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+	},
+	{
+		name:"America",
+		translatedName:"Stati Uniti",
+		leaderName:"George Washington",
+		adjective:["americano"],
+		
+		startIntroPart1:"Benvenuto, presidente Washington! Tu guidi l'industriosa civiltà americana, costrituitasi in seguito allo scoppio della rivoluzione nel XVIII secolo e finita, ancora giovane nazione di appena un centinaio d'anni, nella terribile morsa di una guerra civile che rischiò di dividerla per sempre. Ma poco tempo dopo, nel XX secolo, gli Stati Uniti raggiunsero l'apice della loro potenza, emergendo trionfanti e sempre più potenti dalle due terribili guerre che video la fine di tante altre grandi nazioni."
+		startIntroPart2:"Gli Stati Uniti sono una nazione di immigrati, pieni di ottimismo e determinazione. Quello che manca loro è soltanto un leader che li aiuti a realizzare il loro potenziale. Presidente Washington, saprai guidare l'America verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Speravo di non arrivare a questo punto... ma la tua idea di pace non mi da' altra scelta!"
+		attacked:"Hai confuso il nostro amore per la pace per debolezza. Se devo scegliere tra giustizia e pace... scelgo la giustizia!"
+		defeated:"Complimenti. Al posto degli Stati Uniti d'America, sarà la tua nazione ad andare lontano. Spero che ti dimostrerai misericordioso nel tuo trionfo."
+		introduction:"Vi dò il benvenuto da parte dei cittadini degli Stati Uniti d'America."
+		
+		neutralHello:"Buongiorno."
+		neutralLetsHearIt:["Procedi.","Va avanti.","Sto ascoltando."]
+		neutralNo:["Certo che no!","No."]
+		neutralYes:["Molto bene.","D'accordo.","Certamente!"]
+
+		hateHello:"Ebbene?"
+		hateLetsHearIt:["Và avanti.","Stavi dicendo?"]
+		hateNo:["Certamente no.","Mi rifiuto!","Non dirai sul serio."]
+		hateYes:["Se proprio devo.","Va bene.","D'accordo."]
+		
+		afterPeace:"Accogliamo la pace con la vostra grande nazione. Preghiamo che non vi siano altri futuri malintesi tra di noi."
+		tradeRequest:"Ti interessa forse questo accordo commerciale?"
+				
+		outerColor:[ 28,51,119],
+		innerColor:[255,255,255],
+		uniqueName:"Destino Manifesto",
+		unique:"+1 Visione per tutte le unità militari terrestri. 50% di sconto per l'acquisto delle caselle",
+		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles",
+			"Houston","Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati",
+			"Dallas","Memphis","Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque",
+			"Minneapolis","Pittsburgh"]
+	},
+	{
+		name:"Japan",
+		translatedName:"Giappone",
+		leaderName:"Oda Nobunaga",
+		adjective:["giapponese"],
+		
+		startIntroPart1: "Salute a te, nobile Oda Nobunaga, sovrano del Giappone, la terra del Sol Levante, dove sorge il Sole! Possa tu a lungo passeggiare in mezzo ai suoi prati in fiore. I giapponesi sono un popolo isolano, fiero e pio, dalla ricca cultura artistica e letteraria. La tua civiltà è millenaria. Sono stati anni di lotte sanguinose, di espansioni ed isolamenti, di grandi ricchezze e povertà. Oltre alla sua prodezza sul campo di battaglia, il tuo popolo può anche vantare una stupefacente operosità. La sua superiorità tecnologiche e le sue grandiose fabbriche sono l'invidia degli altri popoli di tutte le latitudini."
+		startIntroPart2: "O leggendario damiyo, prenderai in mano le redini del destino? Porterai alla tua famiglia e al tuo popolo l'onore e la gloria che meritano? Alzerai di nuovo la tua spada e marcerai verso il trionfo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Come samurai siamo gente onesta, e noi troviamo onesto volerti esprimere la nostra intenzione di cancellarti dalla faccia della terra con questo messaggio."
+		attacked:"Fatti pure avanti! Il kamikaze (vento divino) ci proteggerà, e tu cadrai, come altri prima di te!"
+		defeated:"Poni fine al disonore che è caduto sulla mia famiglia... sul mio popolo."
+		introduction:"In verità, il cielo ci ha rivolto il suo sorriso conducendoci alla vostra augusta presenza. Io sono Oda Nobunaga, capo del grande clan Oda. Mi auguro una relazione giusta ed equa tra i nostri popoli."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Vai avanti.","Procedi.","Ti ascolto."]
+		neutralNo:["Spiacente, ma non basta.","No.","Forse in seguito."]
+		neutralYes:["Molto bene.","Va bene.","Hai. (Sì)"]
+
+		hateHello:"Oh, sei tu..."
+		hateLetsHearIt:["Sentiamo.","Continua.","Procedi."]
+		hateNo:["Ie. (No)","Scusami?","Forse non ora."]
+		hateYes:["D'accordo.","Oh... benissimo.","Certo non v'è altro modo."]
+		
+		afterPeace:"Combatterti è stato un onore, ma adesso è il momento di terminare questo spargimento di sangue."
+		tradeRequest:"Sarei grato se accettassi questa mia proposta."
+		
+		outerColor:[215,225,225],
+		innerColor:[185,0,0],
+		uniqueName:"Bushido",
+		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki",
+			"Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo",
+			"Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha",
+			"Sendai","Gifu","Yamaguchi","Ota","Tottori"]
+	},
+	{
+		name:"India",
+		leaderName:"Gandhi",
+		adjective:["indiano"],
+		startBias:["Prateria"],
+		
+		startIntroPart1:"Salve, presidente Gandhi, grande anima a capo dell'India! Tu governi una delle più antiche nazioni del mondo, con una storia risalente fino a 10,000 anni fa, una nazione spirituale, patria di tre delle più diffuse religioni del mondo: induismo, buddismo e jainismo. Una nazione passionale, piena di musica e colori, una nazione di grande ricchezza e di spietata povertà. Per secoli, dopo varie gloriose dinastie come i Maurya e i Gupta, l'India è stata divisa in regni in perenne lotta tra di loro e con gli invasori stranieri. Nel XII secolo d.C., l'India fu conquistata dai Turchi musulmani, mentre all'inizio del XVII secolofurono gli inglesi a conquistare il territorio frammentato, grazie alla loro astuta diplomazia e alla loro superiorità tecnologica. L'Inghilterra rimase al comando della nazione per due secoli, ma alla fine fu scacciata da una crescente ondata di nazionalismo, una ribellione pacifica mai vista prima nella storia."
+		startIntroPart2:"Gandhi, il tuo popolo si rivolge a te oer raggiungere nuove vette e nuova gloria. Aiuterai la tua gente affinché comprenda appieno il suo potenziale, affinché torni a essere il centro culturale e religioso del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Posso dichiarare guerra senza sacrificare morali! Non chiedermi come: non capiresti."
+		attacked:"Non sono riuscito ad evitare la violenza. Occhio per occhio rende soltanto il mondo cieco."
+		defeated:"Puoi incatenarmi, torturarmi, persino distruggere questo corpo, ma la mia mente rimarrà sempre libera."
+		introduction:"Saluti! Sono Mohandas Gandhi. Il mio popolo mi chiama Bapu, ma chiamami amico, per favore."
+		
+		neutralHello:"Pace a te."
+		neutralLetsHearIt:["Vai avanti.","Sì?","Ti ascolto."]
+		neutralNo:["Certo che no.","No.","Questo non lo accetto."]
+		neutralYes:["Va bene.","D'accordo.","Benissimo."]
+
+		hateHello:"Cos'è che vuoi?"
+		hateLetsHearIt:["Continua.","E...?","Avanti."]
+		hateNo:["Non è accettabile.","Non scherzare.","Ciò è impossibile."]
+		hateYes:["Oh. Benissimo.","Credo dovrei accettare.","Molto bene..."]
+		
+		afterPeace:"Sono contento che siamo di nuovo in pace, anche se abbiamo dovuto pagare un prezzo per ciò."
+		tradeRequest:"Amico mio, ti interessa questo accordo?"
+				
+		outerColor:[16,126,5],
+		innerColor:[255,153,51],
+		unique:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata.",//not translated
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad",
+			"Madurai","Ahmedabad","Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur",
+			"Rajagriha","Sravasti","Tiruchirapalli","Thanjavur","Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior",
+			"Jaipur","Karachi"]
+	},	
+	{
+		name:"Germany",
+		translatedName:"Germania",
+		leaderName:"Otto von Bismark",
+		adjective:["tedesco"],
+		
+		startIntroPart1: "Salve, potente Bismarck, primo cancelliere della Germania e del suo impero! La germania è una delle nazioni più giovani, sorta dalle ceneri del Sacro Romano Impero e poi unificata nel 1871, poco più di un secolo fa. Il popolo tedesco si è rivelato creativo, industrioso e feroce in guerra. Nonostante le catastrofi subite nella prima metà del XX secolo, la Germania è riuscita a imporsi come una delle nazioni più importanti dal punto di vista economico, artistico e tecnologico.."
+		startIntroPart2: "Grande cancelliere Bismarck, il popolo tedesco guarda a te per vivere nuovi giorni di gloria. Forte è la sua determinazione affinché tu, l'amato Cancelliere di Ferro, torni a guidare la nazione ancora una volta. Sceglierai di dominare con il suangue e l'acciaio o patrocinerai le arti e l'industria? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Lascia che tu lo sappia: tu sei un nemico della Germania e come tale vai combattuto. Che Dio abbia pietà di te, perché io non ne avrò."
+		attacked:"Ho sconfitto nemici dieci volte più potenti di te. Tu ne sarai solo un altro per gli storici!"
+		defeated:"Eravamo gli augusti e i gloriosi... ma no, non importa. Hai vinto. Possa il tuo regno essere più pacifico di quanto fosse il mio."
+		introduction:"Guten tag. Nel nome del grande popolo tedesco, vi diamo il benvenuto."
+		
+		neutralHello:"E dunque?"
+		neutralLetsHearIt:["Cos'hai da dire?","Sì?","Ja? (Sì?)"]
+		neutralNo:["Non lo accetto.","Nein. (No)","Impossibile."]
+		neutralYes:["D'accordo.","Benissimo, allora.","Ja."]
+
+		hateHello:"Sputa il rospo!"
+		hateLetsHearIt:["E...?!","Avanti!","Beh, dimmelo!"]
+		hateNo:["Ciò non è accettabile!","Stai scherzando, spero!","Nein!"]
+		hateYes:["Va bene.","Gut. (Bene)","Non credo possa rifiutare."]
+		
+		afterPeace:"Che ne pensi di metterci una pietra sopra?"
+		tradeRequest:"Considerare con cautela questa proposta sarebbe nei nostri migliori interessi."
+				
+		outerColor:[224,224,224],
+		innerColor:[64,64,64],
+		uniqueName:"Furor Teutonicus",
+		unique:"67% di chance di guadagnare 25 Oro e reclutare un'unità barbarica da un accampamento conquistato. -25% manutenzione per le unità terrestri.",//not translated
+		cities:["Berlino","Amburgo","Monaco","Colonia","Francoforte","Essen","Dortmund","Stoccarta","Dusseldorf","Bremen",
+			"Hannover","Duisburg","Lipsia","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
+			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
+			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrucken","Krefeld","Pirmasens","Potsdam","Solingen",
+			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
+			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
+	},
+	{
+		name:"The Ottomans",
+		translatedName:"Turchia",
+		leaderName:"Suleiman I",
+		translatedLeaderName:"Solimano I",
+		adjective:["ottomano"],
+		
+		startIntroPart1: "Che il cielo ti benedica, oh grande imperatore Solimano! La tua potenza, la tua ricchezza e la tua generosità stupiscono il bondo! Con buona ragione sei chiamato \"il magnifico\"! Il tuo impero conobbe i suoi inizi nel XII secolo in Bitinia, un piccolo paese dell'Anatolia orientale. Sfruttando il declino del grande sultanato selgiuchide di Rum, re Osman I di Bitinia si espanse nell'Anatolia occidentale. Nel corso del secolo successivo, i tuoi sudditi distrussero l'impero bizantino, soppiantandolo in Turchia e poi nei Balbani. A metà del XV secolo, gli ottomani conquistarono l'antica Costantinopoli, assumendo il controllo del collegamento strategico tra Europa e Medio Oriente. L'impero della tua gente continuò a espandersi per secoli, raggiungendo al suo apice anche il controllo dell'Africa settentrionale, del Medio Oriente e dell'Europa orientale."
+		startIntroPart2: "Potente Solimano, ascolta la voce del tuo popolo! Riporta il tuo impero alla potenza e alla gloria passate e ancora una volta il mondo tornerà a guardarti con stupore e ammirazione. Accetterai la sfida, grande imperatore? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra."
+		attacked:"Bene. Il mondo sarà testimone dell'inconstastabile potenza dell'esercito del glorioso impero ottomano."
+		defeated:"Morte! Rovina! Istanbul diventa l'Iram dei Pilastri, ricordata solo dai poeti malinconici."
+		introduction:"Dalla magnificenza del Topkapi, gli ottomani ti salutano, straniero! Io sono il sultano Solimano, Kayser-I Rum, e ti porgo i miei saluti!"
+		
+		neutralHello:"Saluti!"
+		neutralLetsHearIt:["Ti ascolto.","Vai avanti."]
+		neutralNo:["No.","Certo che no!","Mi rifiuto."]
+		neutralYes:["Benissimo.","D'accordo.","Accettiamo!"]
+
+		hateHello:"Cosa vuoi da me?"
+		hateLetsHearIt:["Parla!","Avanti!"]
+		hateNo:["Scusami?","Non lo accetto!","Stai scherzando, spero!"]
+		hateYes:["Ah, va bene!","Benissimo.","Direi che mi conviene accettare."]
+		
+		afterPeace:"Complimenti per la tua vittoria! Speriamo che la pace scenda su di noi in eterno!"
+		tradeRequest:"Facciamo un affare! Ti interessa?"
+				
+		outerColor:[204,255,229],
+		innerColor:[0,102,0],
+		uniqueName:"Corsari barbarici",
+		unique:"La manutenzione delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",//not translated
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
+			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
+			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
+			"Bitlis","Yalova"]
+	},
+	{
+		name:"Korea",
+		translatedName:"Corea",
+		leaderName:"Sejong",
+		adjective:["coreano"],
+		
+		startIntroPart1: "Salve, magnifico re Sejong il Grande, servitore del popolo e protettore della dinastia Choson. Il tuo glorioso progetto di prosperità e la tua traboccante benevolenza verso la gente comune ti hanno reso il più amato dei monarchi coreani. Fin dai primi giorni del tuo regno i tuoi sforzi di realizzare una società equilibrata e giusta per tutti sono stati superati solo dalle scoperte e dalle innovazioni tecnologiche introdotte in virtù della tua insaziabile sete di conoscenza. Guidati dalla tua saggezza, i sapienti della Sala di Giada hanno sviluppato il primo alfabeto coreano, l'Hangul, illuminando le masse con la luce della letteratura e della scienza dopo secoli di oscurità."
+		startIntroPart2: "Onorato Sejong, il tuo popolo si rivolge ancora una volta a te per avere una guida! Coglierai questìoccasione di portare armonia e comprensione tra le genti? Riporterai ancora il tuo regno a simili altezze vertiginose? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Jip-hyun-jun (la Sala dei Giusti) non tollera più la tua insolenza. Libereremo i tuoi cittadini oppressi anche con la forza, e li illumineremo!"
+		attacked:"Sciocca progenie di una megera! Sarete distrutti dalla magnifica potenza scientifica del mio paese!"
+		defeated:"Ora resta da vedere chi proteggerà il mio popolo... Il buio è giunto."
+		introduction:"Benvenuto nel palazzo dei Choson, onorato straniero. Io sono il re Sejong l'Istruito, condottiero illuminato e sovrano di queste terre e di questo popolo."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Sentiamo.","Vai avanti","Continue."]
+		neutralNo:["Non posso farlo.","Spiacente, ma non posso accettare."]
+		neutralYes:["Ciò sta bene.","Capisco...","Certamente!"]
+
+		hateHello:"Oh, sei tu..."
+		hateLetsHearIt:["Cosa vorresti dire?","Dunque?","Parla pure."]
+		hateNo:["Il cielo me ne scampi.","Questa è follia!","Non posso far ciò."]
+		hateYes:["Hm... va bene, d'accordo.","Credo dovrei accettare...","Va bene..."]
+		
+		afterPeace:"Vedo che hai sviluppato delle strategie interessanti... Benissimo, credo dovremo finirla qui."
+		tradeRequest:"Abbiamo molte cose da discutere e tanto da guadagnare tra di noi."
+				
+		outerColor:[0,0,255],
+		innerColor:[255,0,0],
+		uniqueName:"Sapienti della Sala di Giada",
+		unique:"+2 Scienza per ogni specialista e ogni miglioramento da Gran Personaggio.",
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
+			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
+			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+	},
+	{
+		name:"Iroquois",
+		translatedName:"Irochese",
+		leaderName:"Hiawatha",
+		adjective:["irochese"],
+		
+		startIntroPart1: "Salute, nobile Hiawatha, capo della potente nazione irochese! A lungo la tua gente ha vissuto lungo le sponde del grande e sacro lago Ontario, nella terra che è poi divenuta nota come lo stato di New York nel Nord America. Nella nebbia dei tempi antichi, i cinque popoli di Seneca, Onondaga, Mohawk, Cayuga e Oneida si riunirono in un'unica nazione, quella degli haudenosaunee, o irochesi. Pur senza l'uso della scrittura, i nostri saggi crearono la 'grande legge della pace', modello per molte costituzioni, compresa quella degli Stati Uniti. Per molti anni il tuo popolo si battè contro grandi nazioni, come quella degli Uroni, o contro gli invasori francesi e inglesi. Sebbene in inferiorità numerica e dotati di armi assolutamente inadeguate rispetto a quelle degli invasori, gli irochesi sopravvissero e prosperarono finché non furono infine sopraffatti dal potente esercito dei neo-nati Stati Uniti."
+		startIntroPart2: "O nobile Hiawatha, ascolta le implorazioni della tua gente, che ti chiede a gran voce di guidarlo in pace e in guerra! Ricostruisci la casa lunga e unisci nuovamente tutte le tribù in una. Accetterai questa sfida, grande capo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Sei una peste per Madre Terra! Preparati a combattere!"
+		attacked:"Creatura maligna! I miei prodi ti massacreranno!"
+		defeated:"Ci avrai anche sconfitti, e io accetto il mio destino... ma i nostri spiriti sono immortali! Tra cento, mille anni, noi torneremo!"
+		introduction:"Saluti, straniero. Sono Hiawatha, e parlo per il popolo degli Irochesi. Cerchiamo la pace con tutti, ma siamo anche abili guerrieri."
+		
+		neutralHello:"Buongiorno."
+		neutralLetsHearIt:["Sì?","Ti ascolto."]
+		neutralNo:["No.","Certo che no."]
+		neutralYes:["Benissimo.","Va bene."]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Ti ascolto.","Parla."]
+		hateNo:["È inaccettabile!","Dovrai passare sui nostri cadaveri!"]
+		hateYes:["Se proprio devo...","Va bene."]
+		
+		afterPeace:"Ti ringrazio per la tua pietà. Preghiamo che sia l'inizio di una nuova amicizia."
+		tradeRequest:"Questo affare ti congenia, amico mio?"
+				
+		outerColor:[0,25,51],
+		innerColor:[255,255,102],
+		uniqueName:"La Grande Via del Guerriero",
+		unique:"Tutte le unità trattano le caselle di Foresta e Giungla come fossero Strade; queste caselle stabiliscono Rotte Commerciali una volta scoperta la Ruota.",
+		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
+		"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
+		"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie",
+		"Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+	},
+	{
+		name:"Persian",
+		translatedName:"Persia",
+		leaderName:"Darius I",
+		translatedLeaderName:"Dario I",
+		adjective:["persiano"],
+		
+		startIntroPart1: "La benedizione del cielo scenda su di te, oh amato re Dario di Persia! Tu sei a capo di un popolo forte e saggio. All'alba del mondo, il grande capo persiano Ciro si rivoltò contro l'impero dei Medi, che nel 550 a.C. scomparve del tutto. Grazie alla sua astuta diplomazia e alla sua prodezza militare, il grande Ciro conquistò la florida Lidia e la potente Babilonia, mentre qualche anno più tardi suo figlio Cambise s'impadronì anche dell'orgoglioso Egitto. Col tempo i persiani si espansero fino alla lontana Macedonia, bussando alla porta delle giovani città-stato greche. A lungo avrebbe prosperato la Persia, fino all'arrivo di quello zotico Alessandro di Macedonia, venuto su dal nulla, che distrusse il nostro glorioso impero con un'unica campagna militare senza precedenti."
+		startIntroPart2: "Dario, il tuo popolo si rivolge a te per tornare ai giorni della grande e potente Persia! L'impero dei tuoi antenati deve rivivere per trionfare sui suoi nemici e riportare la pace e l'ordine nel mondo. Oh re, risponderai alla chiamata? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"La tua continua esistenza rappresenta un imbarazzo per tutti i leader del mondo! Farò loro un favore distruggendoti!"
+		attacked:"Non hai forse udito le storie sulla potenza e sulla grandezza delle mie armate? Forse, se le vedrai, ci penserai due volte prima di affrontarmi!"
+		defeated:"Canaglia! Che Ahura Mazda ti maledica! Il mondo ricorderà a lungo l'errore che hai commesso!"
+		introduction:"Ti saluto con calore, e generosamente ti offro la mia mano in amicizia. Io sono Dario, il grande re dei re della Persia... ma sono certo che tu già lo sappia."
+		
+		neutralHello:"Buona giornata!"
+		neutralLetsHearIt:["Va' avanti.","Parla."]
+		neutralNo:["È uno scherzo?","Non basta."]
+		neutralYes:["Va bene!","Certamente!","D'accordo!"]
+
+		hateHello:"Ahh... sei tu..."
+		hateLetsHearIt:["Sono tutto orecchi.","Vai avanti!"]
+		hateNo:["Io dico di no!","Certo che no!"]
+		hateYes:["Va bene!","D'accordo."]
+		
+		afterPeace:"Sembra che mi convenga finirla qui... Mettiamoci una pietra sopra."
+		tradeRequest:"Nella mia infinita misericordia, ti faccio questa offerta. Di certo, accetterai?"
+				
+		outerColor:[255,0,0],
+		innerColor:[255,255,0],
+		uniqueName:"Eredità Achemenide",
+		unique:"Le Età dell'Oro durano il 50% in più, e in esse le Unità ricevono +1 Movimento e +10% Forza",
+		cities:["Persepoli","Parsagade","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardi","Ergili","Dariushkabir",
+			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
+			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
+			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
+			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
+			"Gaugamela","Harmozeia","Ecatompilo","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
+			"Paishiyauvada","Patigrbana","Phrada"]
+	},
+	
+	/*
+	{
+		name:"Mongolia",
+		translatedName:"Mongolia",
+		leaderName:"Genghis Khan",
+		adjective:["mongolo"],
+		startBias:["Plains"],
+		
+		startIntroPart1: "Salute a te, o grande Temujin, immortale imperatore dell'impero mongolo! I tuoi pugni frantumano le mura delle città e la tua voce annunciaa disperazione ai nemici che la odano. O khan, tu riunisti le tribù in lotta nell'Asia settentrionale facendone il tuo popolo e creando la più temibile cavalleria che il mondo abbia mai visto. L'astuta diplomazia dei tuoi divideva il nemico, lo rendeva debole e inerme di fronte all'esercito conquistatore della Mongolia, che in pochi anni s'impadronì di gran parte della Cina e dell'Asia orientale. E l'impero continuò a crescere, fino a estendersi dall'Europa al sud della Corea, dai confini con Bisanzio fino a Giava. Invero fu l'impero più vasto mai creato, di fronte al quale quello romano e quello greco impallidiscono."
+		startIntroPart2: "Temujin, il tuo popolo desidera cavalcare di nuovo verso la lotta e la conquista sotto la tua guida! Tremerà ancora il mondo al suono poderoso della tua cavalleria che avanza nella steppa? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Sei sulla strada dei miei eserciti. Se non ti vuoi sottomettere con le buone, allora risolviamola come guerrieri!"
+		attacked:"Basta con le parole. Oggi, la Mongolia marcia per la tua sconfitta!"
+		defeated:"Hai sottomesso i clan della Mongolia. Il mio rispetto per te è quasi uguale al mio disprezzo. Attendo la tua giustizia."
+		introduction:"Io sono Temujin, conquistatore di città e paesi. Davanti a me si estendono le future terre mongole. Dietro di me cavalca la tempesta."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Ti ascolto.","Che c'è?"]
+		neutralNo:["No.","Certo che no!"]
+		neutralYes:["Bene.","Sta bene.","Ma certo!"]
+
+		hateHello:"E dunque?"
+		hateLetsHearIt:["E poi?","Continua..."]
+		hateNo:["Smetti di scherzare.","Questo non lo tollero!"]
+		hateYes:["Va bene...","D'accordo!"]
+		
+		afterPeace:"Sembra che ti abbia sottovalutato. Molto bene... per ora la tua testa rimane sulle tue spalle."
+		tradeRequest:"Non sono sempre così generoso, ma spero tu accolga questa rara opportunità che noi ti diamo."
+				
+		outerColor:[51,0,0],
+		innerColor:[0,204,102],
+		uniqueName:"Terrore mongolo",
+		unique:"+1 Movimento per le unità a cavallo. +30% Forza quando assali una Città-Stato o ne attacchi le unità.",
+		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
+		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
+		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+	},
+	{
+		name:"Polynesia",
+		translatedName:"Polinesia",
+		leaderName:"Kamehameha I",
+		adjective:["polinesiano"],
+		startBias:["Coast"],
+		
+		startIntroPart1: "Salute e benedizione su di te, Kamehameha il Grande, prescelto dal cielo per unire il tuo popolo disperso. O potente re, tu fosti il primo a estendere il tuo dominio sulla Grande Isola di Hawaii nel 1791. Seguì l'unificazione di tutte le altre isole sotto il tuo stendardo, completata nel 1810. Come primo re delle Hawaii, hai riorganizzato il sistema legale e fiscale e hai istituito il Mamalahoe Kanawai, un editto che protegge i civili in tempi di guerra. Con le tue leggi e le tue grandi gesta hai assicurato che le isole continuassero a rafforzare la loro unione e a mantenere la loro sovranità, anche dopo la tua morte, avvenuta nel 1819."
+		startIntroPart2: "O re mirabile e saggio, il tuo popolo desidera un regno indipendente e un condottiero di impareggiabile grandezza! Risponderai alla sua chiamata indossando il mantello del Leone del Pacifico? Plasmerai una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"L'antico fuoco che s'illumina nel cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente, speravo in un altro esito."
+		attacked:"È evidente: ho valutato male te e i tuoi veri intenti."
+		defeated:"Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me."
+		introduction:"Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno."
+		
+		neutralHello:"Benvenuto, amico!"
+		neutralLetsHearIt:["Procedi.","E?","Cosa c'è?"]
+		hateNo:["Certamente no.","Dobbiamo rifiutare."]
+		hateYes:["Allora è deciso.","Eccellente!"]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Procedi.","Ti ascolto.","Cosa c'è?"]
+		hateNo:["Certo che no!","Questo lo rifiuto!"]
+		hateYes:["Sì, penso che dovrei.","Sì, così sia."]
+		
+		afterPeace:"Forse le stelle hanno sbagliato posto... Consulterò il mio Kahuna."
+		tradeRequest:"Vieni, organizziamo un banchetto!"
+				
+		outerColor:[255,128,0],
+		innerColor:[255,255,0],
+		unique:"Le unità imbarcate possono attraversare Coste e Oceani fin da subito, e ottengono +1 Visione.",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
+			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
+	{
+		name:"Siam",
+		translatedName:"Siam",
+		leaderName:"Ramkhamhaeng",
+		adjective:["siamese"],
+		startBias:["Avoid Forest"],
+		//preferredVictoryType:"Diplomatic",
+		
+		startIntroPart1: "Salute a te, o grande re Ramkhamhaeng, capo del glorioso popolo del Siam! O potente re, il tuo popolo s'inchina dinanzi a te in preda allo stupore e al terrore! Tu regni su un antico paese nel cuore del sud-est asiatico, una terra magnifica e misteriosa. Circondati dai nemici, assediati da continue guerre sanguinose e dalla miseria più nera, i leali e ingegnosi siamesi sono sempre riusciti a sopravvivere e a trionfare. O re Ramkhamhaeng, il tuo impero un tempo faceva parte di quello Khmer finché, nel XIII secolo d.C., i tuoi antenati si ribellarono, creando il piccolo regno di Sukhothai. Battaglie vittoriose e astute mosse diplomatiche lo trasformarono poi nel grande impero che avrebbe dominato il sud-est asiatico per più di un secolo!"
+		startIntroPart2: "O saggio e potente re Ramkhamhaeng, il tuo popolo ha ancora bisogno di te per tornare alla sua antica grandezza! Riuscirai a sfruttare la tua intelligenza e la tua forza per proteggere la tua gente e sconfiggere i tuoi nemici? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Visto che le tue azioni rivelano il tuo desiderio di guerra, io te lo esaudirò."
+		attacked:"È dunque la guerra? Solo uno sciocco crede che la fortuna sia dalla sua parte, ma quando essa finirà sarà solo colpa tua."
+		defeated:"L'umiltà si ottiene con la sconfitta. Prego che tu riceva la più grande umiltà di tutte."
+		introduction:"Io, Pho Kun Ramkhamhaeng, Re di Siam, considero un grande onore che tu abbia deciso di visitare il mio paese."
+		
+		neutralHello:"Benvenuto."
+		neutralLetsHearIt:["Sentiamo.","You say?","I'm listening"]
+		neutralNo:["No.","Certo che no.","Impossibile."]
+		neutralYes:["In questo caso...","Ma certo.","Come vuoi."]
+
+		hateHello:"Salve."
+		hateLetsHearIt:["Dicevi?.","Procedi.","Ebbene?"]
+		hateNo:["Questo non lo accetto.","Stai scherzando, spero.","Ma che dici?"]
+		hateYes:["Penso che debba fare così.","Benissimo."]
+		
+		afterPeace:"Hai vinto, ma un giorno tornerò e ripagherò il debito."
+		tradeRequest:"Salve. Ritengo che questa sia una valida offerta per le nostre parti. Che ne pensi?"
+				
+		outerColor:[51,25,0],
+		innerColor:[255,255,102],
+		uniqueName:"Il padre che governa i figli"
+		unique:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche.",
+		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
+			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
+			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
+			"Ban Phai","Loci","Khan Kaen","Surin"]
+	},
+	{
+		name:"Songhai",
+		translatedName:"Songhai",
+		leaderName:"Askia",
+		adjective:["Songhai"],
+		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Che la benedizione di Dio, che è il più grande di tutti, scenda su di te, Askia, sovrano del popolo Songhai! Per molti anni il tuo regno rimase vassallo della potente nazione dell'Africa occidentale, il Mali, finché alla metà del XIV secolo, il re Sunni Ali Ber riuscì a conquistare l'indipendenza, impadronendosi di vasti territori e respingendo i numerosi nemici che intendevano distruggerlo. Alla fine, la conquista delle ricche città di Timbuctu e Djenné conferirono all'impero Songhai il potere economico per sopravvivere per circa 100 anni, fino alla sua distruzione dovuta alla tecnologia del moschetto, più avanzata di quella della lancia."
+		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Sei un abominio per la terra e il cielo, il capo di selvaggi ignoranti! Distruggerti sarà un vero piacere!"
+		attacked:"Quanta follia! Hai condannato il tuo popolo al rogo della distruzione!"
+		defeated:"Le fiamme dell'odio e dell'ira ci hanno consumati. Goditi la tua vittoria in questo mondo - pagherai un prezzo più grande nel prossimo!"
+		introduction:"Io sono Askia dei Songhai. Siamo gente giusta, ma coloro che ci ostacolano troveranno solo distruzione. Ti consiglio di evitare gli stessi errori che altri fecero in passato."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Sì?","Procedi."]
+		neutralNo:["No","Non ci siamo."]
+		neutralYes:["Benissimo.","Sì.","D'accordo."]
+
+		hateHello:"Ah, sei tu."
+		hateLetsHearIt:["E...?","Continua."]
+		hateNo:["Stai scherzando!","Questo è inaccettabile!","Niente da fare."]
+		hateYes:["Oh, va bene.","A posto."]
+		
+		afterPeace:"Ti ringraziamo per aver posto fine a questa inutile guerra."
+		tradeRequest:"Forse questo affare ti sarà di tuo gusto?"
+				
+		outerColor:[204,102,0],
+		innerColor:[255,0,0],
+		uniqueName:"Signore del fiume"
+		unique:"Le unità imbarcate sono rafforzate tramite le promozioni Canoe da guerra e Attacco anfibio. Gli accampamenti barbari saccheggiati fruttano quantità tripla di oro.",
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
+			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+	*/
+
+	//City states
+	{
+		name:"Milan",
+		translatedName:"Milano",
+		adjective:["milanese"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Mostro! La storia ricorderà questo giorno!"
+		
+		outerColor:[0, 0, 0],
+		innerColor:[185,132,66],
+		cities:["Milano"]
+	},
+	{
+		name:"Florence",
+		translatedName:"Firenze",
+		adjective:["fiorentino"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Sicchè, il giglio di Firenze cade nelle mani dei barbari..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[62,197,252],
+		cities:["Firenze"]
+	},
+	{
+		name:"Rio de Janeiro",
+		translatedName:"Rio de Janeiro",
+		adjective:["brasiliano"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Tosto o tardi avremo la nostra vendetta."
+
+		outerColor:[0, 0, 0],
+		innerColor:[211, 220, 103],
+		cities:["Rio de Janeiro"]
+	},
+	{
+		name:"Antwerp",
+		translatedName:"Anversa",
+		adjective:["anversano"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Saranno scritte canzoni a riguardo.... prega che canteranno in tuo favore."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[194,97,255],
+		cities:["Anversa"]
+	},
+	{
+		name:"Dublin",
+		translatedName:"Dublino",
+		adjective:["irlandese"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Beh, almeno hai avuto una bella vittoria..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[211,180,113],
+		cities:["Dublino"]
+	},
+	{
+		name:"Tyre",
+		translatedName:"Tiro",
+		adjective:["tiriano"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Bene abbiamo fatto a diffidare di te fin dall'inizio."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[255,97,255],
+		cities:["Tiro"]
+	},
+	{
+		name:"Ur",
+		adjective:["sumero"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Perchè hai voluto fare una cosa del genere?"
+		
+		outerColor:[0, 0, 0],
+		innerColor:[255,69,0],
+		cities:["Ur"]
+	},
+	{
+		name:"Genoa",
+		translatedName:"Genova",
+		adjective:["genovese"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Quante barbarie... Chi di spada ferisce, di spada perisce."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[45,255,86],
+		cities:["Genova"]
+	},
+	{
+		name:"Venice",
+		translatedName:"Venezia",
+		adjective:["veneziano"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Se la nostra eredità continua, allora tu non hai davvero vinto contro di noi."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,10,10],
+		cities:["Venezia"]
+	},
+	{
+		name:"Brussels",
+		translatedName:"Bruxelles",
+		adjective:["belga"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Mi sa che non ti sono mai piaciuti i nostri broccoletti, dopo tutto..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,255,51],
+		cities:["Bruxelles"]
+	},
+	{
+		name:"Kabul",
+		adjective:["afgano"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Tavolta un guerriero valoroso deve ingoiare il proprio orgoglio e accettare la sconfitta..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,0,76],
+		cities:["Kabul"]
+	},
+	{
+		name:"Sidon",
+		translatedName:"Sidone",
+		adjective:["fenicio"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Che bella battaglia! Sidone accetta di servirti!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[250,128,114],
+		cities:["Sidone"]
+	},
+	{
+		name:"Almaty",
+		adjective:["cazaco"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Quale è stato il tuo segreto per sconfiggerci?!"
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[102,0,51],
+		cities:["Almaty"]
+	},
+	{
+		name:"Edinburgh",
+		translatedName:"Edimburgo",
+		adjective:["scozzese"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Non c'è disonore nel farsi sconfiggere da un avversario più degno."
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[0,102,102],
+		cities:["Edimburgo"]
+	},
+	{
+		name:"Singapore",
+		translatedName:"Singapore",
+		adjective:["singaporiano"],
+		cityStateType:"Mercantile",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Magari, in un altro mondo, saremmo stati amici..."
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[255,255,0],
+		cities:["Singapore"]
+	},
+	{
+		name:"Zanzibar",
+		translatedName:"Zanzibar",
+		adjective:["zanzibarino"],
+		cityStateType:"Mercantile",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Possa il cielo perdonarti per questo sfregio che hai inflitto al nostro popolo."
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[255,153,255],
+		cities:["Zanzibar"]
+	},
+	
+	//Barbarian
+	{
+		name:"Barbarians",
+		outerColor:[0,0,0],
+		innerColor:[182,0,0]
+	}
+]

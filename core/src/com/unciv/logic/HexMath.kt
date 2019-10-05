@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.max
+import kotlin.math.sqrt
 
 class HexMath {
 
@@ -24,8 +25,8 @@ class HexMath {
 
     fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
-        val xVector = getVectorByClockHour(10).scl(Math.sqrt(3.0).toFloat())
-        val yVector = getVectorByClockHour(2).scl(Math.sqrt(3.0).toFloat())
+        val xVector = getVectorByClockHour(10).scl(sqrt(3.0).toFloat())
+        val yVector = getVectorByClockHour(2).scl(sqrt(3.0).toFloat())
         return xVector.scl(hexCoord.x).add(yVector.scl(hexCoord.y))
     }
 

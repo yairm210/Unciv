@@ -1,22 +1,21 @@
 package com.unciv.logic.automation
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.getRandom
 import kotlin.math.max
 import kotlin.math.sqrt
 
 class Automation {
 
     internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
-        if (tile == null) return 0.0f
+        if (tile == null) return 0f
         val stats = tile.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
@@ -24,20 +23,53 @@ class Automation {
         return rank
     }
 
-    internal fun rankSpecialist(stats: Stats?, civInfo: CivilizationInfo): Float {
-        if (stats == null) return 0.0f
-        var rank = rankStatsValue(stats, civInfo)
+    fun rankTileForCityWork(tile:TileInfo, city: CityInfo): Float {
+        val stats = tile.getTileStats(city, city.civInfo)
+        return rankStatsForCityWork(stats, city)
+    }
+
+    private fun rankStatsForCityWork(stats: Stats, city: CityInfo): Float {
+        var rank = 0f
+        if(city.population.population < 5){
+            // "small city" - we care more about food and less about global problems like gold science and culture
+            rank += stats.food * 1.2f
+            rank += stats.production
+            rank += stats.science/2
+            rank += stats.culture/2
+            rank += stats.gold / 5 // it's barely worth anything at this points
+        }
+        else{
+            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += (stats.food * 1.2f) //food get more value to keep city growing
+            else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+
+            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
+            else rank += stats.gold / 3 // 3 gold is worse than 2 production
+
+            rank += stats.production
+            rank += stats.science
+            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural){
+                rank += stats.culture
+            }
+            else{
+                rank += stats.culture / 2
+            }
+        }
+        return rank
+    }
+
+    internal fun rankSpecialist(stats: Stats, cityInfo: CityInfo): Float {
+        var rank = rankStatsForCityWork(stats, cityInfo)
         rank += 0.3f //GPP bonus
         return rank
     }
 
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
-        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to kepp city growing
+        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
         else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
-        if (civInfo.gold < 0 && civInfo.getStatsForNextTurn().gold <= 0) rank += stats.gold
-        else rank += stats.gold / 2
+        if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
+        else rank += stats.gold / 3 // 3 gold is much worse than 2 production
 
         rank += stats.production
         rank += stats.science
@@ -51,141 +83,30 @@ class Automation {
     }
 
     fun chooseMilitaryUnit(city: CityInfo) : String {
-        val militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
+        var militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
+        if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstruction))
+            return city.cityConstructions.currentConstruction
+
+        val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()){it.isWater || it.isCityCenter()}
+        findWaterConnectedCitiesAndEnemies.stepToEnd()
+        if(findWaterConnectedCitiesAndEnemies.tilesReached.keys.none {
+                    (it.isCityCenter() && it.getOwner() != city.civInfo)
+                            || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
+                }) // there is absolutely no reason for you to make water units on this body of water.
+            militaryUnits = militaryUnits.filter { it.unitType.isLandUnit() }
+
         val chosenUnit: BaseUnit
         if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
                 && militaryUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
             chosenUnit = militaryUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
 
         else{ // randomize type of unit and take the most expensive of its kind
-            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
+            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.random()
             chosenUnit = militaryUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
         }
         return chosenUnit.name
     }
 
-
-    fun chooseNextConstruction(cityConstructions: CityConstructions) {
-        cityConstructions.run {
-            if (currentConstruction!="") return
-            val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
-            val buildableWonders = getBuildableBuildings().filter { it.isWonder }
-            val buildableUnits = getConstructableUnits()
-
-            val civUnits = cityInfo.civInfo.getCivUnits()
-            val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
-            val workers = civUnits.filter { it.name == CityConstructions.Worker }.size.toFloat()
-            val cities = cityInfo.civInfo.cities.size
-            val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
-                    && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
-            val needWorkboat = canBuildWorkboat
-                    && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
-
-            val isAtWar = cityInfo.civInfo.isAtWar()
-
-            data class ConstructionChoice(val choice:String, var choiceModifier:Float){
-                val remainingWork:Int = getRemainingWork(choice)
-            }
-
-            val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
-
-            //Food buildings : Granary and lighthouse and hospital
-            val foodBuilding = buildableNotWonders.filter { it.food>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.food>0) }
-                    .minBy{ it.cost }
-            if (foodBuilding!=null) {
-                val choice = ConstructionChoice(foodBuilding.name,1f)
-                if (cityInfo.population.population < foodBuilding.food + 5) choice.choiceModifier=2f
-                relativeCostEffectiveness.add(choice)
-            }
-
-            //Production buildings : Workshop, factory
-            val productionBuilding = buildableNotWonders.filter { it.production>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.production>0) }
-                    .minBy{it.cost}
-            if (productionBuilding!=null) {
-                relativeCostEffectiveness.add(ConstructionChoice(productionBuilding.name, 1.5f))
-            }
-
-            //Gold buildings : Market, bank
-            val goldBuilding = buildableNotWonders.filter { it.gold>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.gold>0) }
-                    .minBy{it.cost}
-            if (goldBuilding!=null) {
-                val choice = ConstructionChoice(goldBuilding.name,1.2f)
-                if (cityInfo.civInfo.getStatsForNextTurn().gold<0) {
-                    choice.choiceModifier=3f
-                }
-                relativeCostEffectiveness.add(choice)
-            }
-
-            //Happiness
-            val happinessBuilding = buildableNotWonders.filter { it.happiness>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.happiness>0) }
-                    .minBy{it.cost}
-            if (happinessBuilding!=null) {
-                val choice = ConstructionChoice(happinessBuilding.name,1f)
-                if (cityInfo.civInfo.happiness > 5) choice.choiceModifier = 1/2f // less desperate
-                if (cityInfo.civInfo.happiness < 0) choice.choiceModifier = 3f // more desperate
-                relativeCostEffectiveness.add(choice)
-            }
-
-            //War buildings
-            val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
-                    .minBy { it.cost }
-            if (wartimeBuilding!=null) {
-                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,1f))
-            }
-
-            //Wonders
-            if (buildableWonders.isNotEmpty()) {
-                val citiesBuildingWonders = cityInfo.civInfo.cities
-                        .count { it.cityConstructions.isBuildingWonder() }
-                val wonder = buildableWonders.getRandom()
-                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,5f / (citiesBuildingWonders + 1)))
-            }
-
-            //other buildings
-            val other = buildableNotWonders.minBy{it.cost}
-            if (other!=null) {
-                relativeCostEffectiveness.add(ConstructionChoice(other.name,1.2f))
-            }
-
-            //worker
-            if (workers < cities) {
-                relativeCostEffectiveness.add(ConstructionChoice(CityConstructions.Worker,workers/(cities+1)))
-            }
-
-            //Work boat
-            if (needWorkboat) {
-                relativeCostEffectiveness.add(ConstructionChoice("Work Boats",0.6f))
-            }
-
-            //Army
-            val militaryUnit = chooseMilitaryUnit(cityInfo)
-            val unitsToCitiesRatio = militaryUnits / cities.toFloat()
-            // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-            val militaryChoice = ConstructionChoice(militaryUnit,unitsToCitiesRatio/5)
-            if (isAtWar) {
-                militaryChoice.choiceModifier=unitsToCitiesRatio
-            }
-            relativeCostEffectiveness.add(militaryChoice)
-
-            val production = cityInfo.cityStats.currentCityStats.production
-
-            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-
-            val theChosenOne:String
-            if(relativeCostEffectiveness.any { it.remainingWork < production*30 }) { // it's possible that this is a new city and EVERYTHING is way expensive.
-                relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
-                theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork/it.choiceModifier }!!.choice
-            }
-            else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice // ignore modifiers, go for the cheapest.
-
-            currentConstruction = theChosenOne
-            cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
-        }
-    }
 
 
     fun evaluteCombatStrength(civInfo: CivilizationInfo): Int {
@@ -193,7 +114,7 @@ class Automation {
         fun square(x:Int) = x*x
         val unitStrength =  civInfo.getCivUnits().map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
         val cityStrength = civInfo.cities.map { square(CityCombatant(it).getCityStrength()) }.sum()
-        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt() + 1 //avoid 0
+        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt() + 1 //avoid 0, becaus we divide by the result
     }
 
     fun threatAssessment(assessor:CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {

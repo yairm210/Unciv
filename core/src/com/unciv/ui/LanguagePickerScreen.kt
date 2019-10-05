@@ -1,6 +1,5 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -11,8 +10,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
-import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 
 class LanguageTable(val language:String,skin: Skin):Table(skin){
@@ -77,40 +74,15 @@ class LanguagePickerScreen: PickerScreen(){
 
 
         rightSideButton.onClick {
-            if (Fonts().containsFont(Fonts().getFontForLanguage(chosenLanguage)))
-                pickLanguage()
-            else {
-                val spaceSplitLang = chosenLanguage.replace("_"," ")
-                YesNoPopupTable("This language requires you to download fonts.\n" +
-                        "Do you want to download fonts for $spaceSplitLang?",
-                        {
-                            val downloading = PopupTable(this)
-                            downloading.add("Downloading...".toLabel())
-                            downloading.open()
-                            Gdx.input.inputProcessor = null // no interaction until download is over
-
-                            kotlin.concurrent.thread {
-                                Fonts().downloadFontForLanguage(chosenLanguage)
-                                shouldPickLanguage = true
-                            }
-                        },this)
-            }
+            pickLanguage()
         }
     }
 
     fun pickLanguage(){
         UnCivGame.Current.settings.language = chosenLanguage
         UnCivGame.Current.settings.save()
-        CameraStageBaseScreen.resetFonts()
+        resetFonts()
         UnCivGame.Current.startNewGame()
         dispose()
     }
-
-    var shouldPickLanguage=false
-    override fun render(delta: Float) {
-        if(shouldPickLanguage)
-            pickLanguage()
-        super.render(delta)
-    }
-
 }

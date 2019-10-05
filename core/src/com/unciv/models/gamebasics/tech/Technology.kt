@@ -7,6 +7,17 @@ import com.unciv.models.gamebasics.tr
 import java.util.*
 
 class Technology : ICivilopedia {
+
+    lateinit var name: String
+
+    var cost: Int = 0
+    var prerequisites = HashSet<String>()
+    var uniques = ArrayList<String>()
+
+    var column: TechColumn? = null // The column that this tech is in the tech tree
+    var row: Int = 0
+    var quote=""
+
     override val description: String
         get() {
             val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
@@ -39,13 +50,13 @@ class Technology : ICivilopedia {
             }
             val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
             enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
-            val regularBuildings = enabledBuildings.filter { !it.isWonder }
+            val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
             if (regularBuildings.isNotEmpty()) {
                 lineList += "{Buildings enabled}: "
                 for (building in regularBuildings)
                     lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
             }
-            val wonders = enabledBuildings.filter { it.isWonder }
+            val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
             if (wonders.isNotEmpty()) {
                 lineList += "{Wonders enabled}: "
                 for (wonder in wonders)
@@ -61,15 +72,6 @@ class Technology : ICivilopedia {
 
             return lineList.joinToString("\n") { it.tr() }
         }
-
-    lateinit var name: String
-
-    var cost: Int = 0
-    var prerequisites = HashSet<String>()
-    var uniques = ArrayList<String>()
-
-    var column: TechColumn? = null // The column that this tech is in the tech tree
-    var row: Int = 0
 
     override fun toString(): String {
         return name

@@ -1,23 +1,35 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.GameParameters
+import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.getRandom
+import com.unciv.models.metadata.GameParameters
+import java.util.*
 
 class GameInfo {
+    @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    @Transient lateinit var currentPlayerCiv:CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    /** This is used in multiplayer games, where I may have a saved game state on my phone
+     * that is inconsistent with the saved game on the cloud */
+    @Transient var isUpToDate=false
+
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
-    var gameParameters=GameParameters()
+    var gameParameters= GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
     var currentPlayer=""
+    var gameId = UUID.randomUUID().toString() // random string
 
     //region pure functions
     fun clone(): GameInfo {
@@ -28,13 +40,22 @@ class GameInfo {
         toReturn.turns = turns
         toReturn.difficulty=difficulty
         toReturn.gameParameters = gameParameters
+        toReturn.gameId = gameId
+        toReturn.oneMoreTurnMode = oneMoreTurnMode
         return toReturn
     }
 
+    fun getPlayerToViewAs(): CivilizationInfo {
+        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
+        val userId = UnCivGame.Current.settings.userId
+        if (civilizations.any { it.playerId == userId}) return civilizations.first { it.playerId == userId }
+        else return getBarbarianCivilization()// you aren't anyone. How did you even get this game? Can you spectate?
+    }
+
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
-    fun getCurrentPlayerCivilization() = getCivilization(currentPlayer)
+    fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getBarbarianCivilization() = getCivilization("Barbarians")
-    fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
+    fun getDifficulty() = difficultyObject
     //endregion
 
     fun nextTurn() {
@@ -47,9 +68,25 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0 && !gameParameters.noBarbarians) { // every 10 turns add a barbarian in a random place
-                    placeBarbarianUnit(null)
+                if (turns % 10 == 0 && !gameParameters.noBarbarians) {
+                    val encampments = tileMap.values.filter { it.improvement==Constants.barbarianEncampment }
+
+                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size) {
+                        val newEncampmentTile = placeBarbarianEncampment(encampments)
+                        if (newEncampmentTile != null)
+                            placeBarbarianUnit(newEncampmentTile)
+                    }
+
+                    val totalBarbariansAllowedOnMap = encampments.size*3
+                    var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().size
+
+                    for (tile in tileMap.values.filter { it.improvement == Constants.barbarianEncampment }) {
+                        if(extraBarbarians<=0) break
+                        extraBarbarians--
+                        placeBarbarianUnit(tile)
+                    }
                 }
+
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -62,48 +99,86 @@ class GameInfo {
             switchTurn()
         }
 
-        currentPlayer=thisPlayer.civName
+        currentPlayer = thisPlayer.civName
+        currentPlayerCiv = getCivilization(currentPlayer)
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
-
+        val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
         val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
                 .filter {
                     it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
                             && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
-                            && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer })
+                            && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer }
+                            && (!it.militaryUnit!!.isInvisible() || viewableInvisibleTiles.contains(it.position)))
                 }
 
-        for (enemyUnitTile in enemyUnitsCloseToTerritory) {
-            val inOrNear = if (enemyUnitTile.getOwner() == thisPlayer) "in" else "near"
-            val unitName = enemyUnitTile.militaryUnit!!.name
-            thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
-        }
-
+        // enemy units ON our territory
+        addEnemyUnitNotification(
+                thisPlayer,
+                enemyUnitsCloseToTerritory.filter { it.getOwner()==thisPlayer },
+                "in"
+        )
+        // enemy units NEAR our territory
+        addEnemyUnitNotification(
+                thisPlayer,
+                enemyUnitsCloseToTerritory.filter { it.getOwner()!=thisPlayer },
+                "near"
+        )
     }
 
-    fun placeBarbarianUnit(tileToPlace: TileInfo?) {
-        var tile = tileToPlace
-        if (tileToPlace == null) {
-            // Barbarians will only spawn in places that no one can see
-            val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
-                    .flatMap { it.viewableTiles }.toHashSet()
-            val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit != null }
-            if (viableTiles.isEmpty()) return // no place for more barbs =(
-            tile = viableTiles.getRandom()
+    private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
+        // don't flood the player with similar messages. instead cycle through units by clicking the message multiple times.
+        if (tiles.size < 3) {
+            for (tile in tiles) {
+                val unitName = tile.militaryUnit!!.name
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, Color.RED)
+            }
         }
+        else {
+            val positions = tiles.map { it.position }
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
+        }
+    }
 
+    fun placeBarbarianEncampment(existingEncampments: List<TileInfo>): TileInfo? {
+        // Barbarians will only spawn in places that no one can see
+        val allViewableTiles = civilizations.filterNot { it.isBarbarian() }
+                .flatMap { it.viewableTiles }.toHashSet()
+        val tilesWithin3ofExistingEncampment = existingEncampments.flatMap { it.getTilesInDistance(3) }
+        val viableTiles = tileMap.values.filter {
+            !it.getBaseTerrain().impassable && it.isLand
+                    && it.terrainFeature==null
+                    && it !in tilesWithin3ofExistingEncampment
+                    && it !in allViewableTiles
+        }
+        if (viableTiles.isEmpty()) return null // no place for more barbs =(
+        val tile = viableTiles.random()
+        tile.improvement = Constants.barbarianEncampment
+        return tile
+    }
+
+    fun placeBarbarianUnit(tileToPlace: TileInfo) {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
-        for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
+        for (civ in civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
-        val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
-                .filter{ allResearchedTechs.contains(it.requiredTech)
-                        && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
-        val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom().name
+        val barbarianCiv = getBarbarianCivilization()
+        barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
+        val unitList = GameBasics.Units.values
+                .filter { !it.unitType.isCivilian()}
+                .filter { it.isBuildable(barbarianCiv) }
 
-        tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
+        val landUnits = unitList.filter { it.unitType.isLandUnit() }
+        val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
+
+        val unit:String
+        if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
+            unit=waterUnits.random().name
+        else unit = landUnits.random().name
+
+        tileMap.placeUnitNearTile(tileToPlace.position, unit, getBarbarianCivilization())
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -112,7 +187,8 @@ class GameInfo {
         tileMap.gameInfo = this
         tileMap.setTransients()
 
-        if(currentPlayer=="") currentPlayer=civilizations[0].civName
+        if(currentPlayer=="") currentPlayer=civilizations.first { it.isPlayerCivilization() }.civName
+        currentPlayerCiv=getCivilization(currentPlayer)
 
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
@@ -123,6 +199,7 @@ class GameInfo {
             getCurrentPlayerCivilization().playerType=PlayerType.Human
         if(getCurrentPlayerCivilization().difficulty!="Chieftain")
             difficulty= getCurrentPlayerCivilization().difficulty
+        difficultyObject = GameBasics.Difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
         // because updating leads to getting the building uniques from the civ info,
@@ -141,24 +218,50 @@ class GameInfo {
                 }
 
                 // As of 2.14.1, changed Machu Pichu to Machu Picchu
-                val oldMachuName = "Machu Pichu"
-                val newMachuName = "Machu Picchu"
-                if(cityConstructions.builtBuildings.contains(oldMachuName)){
-                    cityConstructions.builtBuildings.remove(oldMachuName)
-                    cityConstructions.builtBuildings.add(newMachuName)
-                }
-                if (cityConstructions.currentConstruction == oldMachuName)
-                    cityConstructions.currentConstruction = newMachuName
-                if (cityConstructions.inProgressConstructions.containsKey(oldMachuName)) {
-                    cityConstructions.inProgressConstructions[newMachuName] = cityConstructions.inProgressConstructions[oldMachuName]!!
-                    cityConstructions.inProgressConstructions.remove(oldMachuName)
-                }
+                changeBuildingName(cityConstructions, "Machu Pichu", "Machu Picchu")
+                // As of 2.16.1, changed Colloseum to Colosseum
+                changeBuildingName(cityConstructions, "Colloseum", "Colosseum")
             }
+
+            // This doesn't HAVE to go here, but why not.
+            // As of version 3.1.3, trade offers of "Declare war on X" and "Introduction to X" were changed to X,
+            //   with the extra text being added only on UI display (solved a couple of problems).
+            for(trade in civInfo.tradeRequests.map { it.trade })
+                for(offer in trade.theirOffers.union(trade.ourOffers)){
+                    offer.name = offer.name.removePrefix("Declare war on ")
+                    offer.name = offer.name.removePrefix("Introduction to ")
+                }
         }
 
+        for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
+
         for (civInfo in civilizations){
+            for(unit in civInfo.getCivUnits())
+                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
+
+            // Since this depends on the cities of ALL civilizations,
+            // we need to wait until we've set the transients of all the cities before we can run this.
+            // Hence why it's not in CivInfo.setTransients().
+            civInfo.setCitiesConnectedToCapitalTransients()
+
+            // We need to determine the GLOBAL happiness state in order to determine the city stats
+            for(cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
+
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
+        }
+    }
+
+    private fun changeBuildingName(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
+        if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
+            cityConstructions.builtBuildings.remove(oldBuildingName)
+            cityConstructions.builtBuildings.add(newBuildingName)
+        }
+        if (cityConstructions.currentConstruction == oldBuildingName)
+            cityConstructions.currentConstruction = newBuildingName
+        if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
+            cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
+            cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
 

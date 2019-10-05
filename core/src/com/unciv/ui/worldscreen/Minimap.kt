@@ -73,15 +73,14 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
     }
 
     fun update(cloneCivilization: CivilizationInfo) {
-        val exploredTiles = cloneCivilization.exploredTiles
         for(tileInfo in tileMapHolder.tileMap.values) {
             val hex = tileImages[tileInfo]!!
-            if (!(UnCivGame.Current.viewEntireMapForDebug || exploredTiles.contains(tileInfo.position)))
-                hex.color = Color.BLACK
-            else if (tileInfo.isCityCenter() && !tileInfo.isWater())
-                hex.color = tileInfo.getOwner()!!.getNation().getSecondaryColor()
-            else if (tileInfo.getCity() != null && !tileInfo.isWater())
-                hex.color = tileInfo.getOwner()!!.getNation().getColor()
+            if (!(UnCivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)))
+                hex.color = Color.DARK_GRAY
+            else if (tileInfo.isCityCenter() && !tileInfo.isWater)
+                hex.color = tileInfo.getOwner()!!.nation.getInnerColor()
+            else if (tileInfo.getCity() != null && !tileInfo.isWater)
+                hex.color = tileInfo.getOwner()!!.nation.getOuterColor()
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
         }
     }
@@ -138,5 +137,8 @@ class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
         return toggleIconTable
     }
 
-    fun update(civInfo:CivilizationInfo){minimap.update(civInfo)}
+    fun update(civInfo:CivilizationInfo){
+        isVisible = UnCivGame.Current.settings.showMinimap
+        minimap.update(civInfo)
+    }
 }

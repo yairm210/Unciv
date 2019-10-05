@@ -48,7 +48,7 @@
 	{
 		name:"Lakes",
 		type:"Water",
-		food:1,
+		food:2,
 		gold:1,
 		RGB: [ 200, 200, 255],
 		canHaveOverlay:false
@@ -59,7 +59,8 @@
 		production:2,
 		movementCost:2,
 		defenceBonus: 0.25,
-		RGB: [74,81,40]
+		RGB: [74,81,40],
+		rough: true
 	},
 	{
 		name:"Mountain",
@@ -87,7 +88,8 @@
 		overrideStats:true,
 		unbuildable:true,
 		defenceBonus: 0.25,
-		occursOn:["Tundra","Plains","Grassland","Hill"]
+		occursOn:["Tundra","Plains","Grassland","Hill"],
+		rough: true
 	},
 	{
 		name:"Jungle",
@@ -97,7 +99,8 @@
 		overrideStats:true,
 		unbuildable:true,
 		defenceBonus: 0.25,
-		occursOn:["Plains","Grassland"]
+		occursOn:["Plains","Grassland"],
+		rough: true
 	},
 	{
 		name:"Marsh",
@@ -112,6 +115,7 @@
 		name:"Oasis",
 		type:"TerrainFeature",
 		food:3,
+		gold:1,
 		movementCost:1,
 		unbuildable:true,
 		defenceBonus: -0.1,

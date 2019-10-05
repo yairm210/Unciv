@@ -86,4 +86,22 @@ open class Stats() {
         happiness=hashMap[Stat.Happiness]!!
         science=hashMap[Stat.Science]!!
     }
+
+    fun equals(otherStats: Stats):Boolean{
+        return culture==otherStats.culture
+                && gold==otherStats.gold
+                && production==otherStats.production
+                && food==otherStats.food
+                && happiness==otherStats.happiness
+                && science==otherStats.science
+    }
+}
+
+class StatMap:LinkedHashMap<String,Stats>(){
+    fun add(source:String,stats:Stats){
+        if(!containsKey(source)) put(source,stats)
+        else put(source, get(source)!!+stats)
+        // This CAN'T be get(source)!!.add() because the initial stats we get are sometimes from other places -
+        // for instance the Cities is from the currentCityStats and if we add to that we change the value in the cities themselves!
+    }
 }

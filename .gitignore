@@ -133,3 +133,5 @@ android/release/release/android.aab
 android/assets/fonts/
 android/release/android.aab
 android/assets/maps/
+android/release/android.aab.sig
+android/release/android-release.aab

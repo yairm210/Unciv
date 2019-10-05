@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
@@ -19,6 +20,19 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     var constructionScrollPane:ScrollPane?=null
     var lastConstruction = ""
+
+
+    fun update() {
+        val city = cityScreen.city
+        pad(10f)
+        columnDefaults(0).padRight(10f)
+        clear()
+
+        addConstructionPickerScrollpane(city)
+        addCurrentConstructionTable(city)
+
+        pack()
+    }
 
     private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String=""): Table {
         val pickProductionButton = Table()
@@ -34,13 +48,17 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
         pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
 
-        if(rejectionReason=="") {
+        if(rejectionReason=="" && UnCivGame.Current.worldScreen.isPlayersTurn) { // no rejection reason means we can build it!
             pickProductionButton.onClick {
-                lastConstruction = cityScreen.city.cityConstructions.currentConstruction
-                cityScreen.city.cityConstructions.currentConstruction = construction
-                cityScreen.city.cityStats.update()
-                cityScreen.update()
+                if (!cityScreen.city.isPuppet) {
+                    lastConstruction = cityScreen.city.cityConstructions.currentConstruction
+                    cityScreen.city.cityConstructions.currentConstruction = construction
+                    cityScreen.city.cityConstructions.currentConstructionIsUserSet = true
+                    cityScreen.city.cityStats.update()
+                    cityScreen.update()
+                }
             }
+
         }
         else {
             pickProductionButton.color = Color.GRAY
@@ -53,23 +71,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return pickProductionButton
     }
 
-    fun update() {
-        val city = cityScreen.city
-        pad(10f)
-        columnDefaults(0).padRight(10f)
-        clear()
-
-        addConstructionPickerScrollpane(city)
-        addCurrentConstructionTable(city)
-
-        pack()
-    }
-
     private fun Table.addCategory(title:String,list:ArrayList<Table>){
         if(list.isEmpty()) return
         val titleTable = Table()
         titleTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        titleTable.add(title.toLabel())
+        titleTable.add(title.toLabel().setFontSize(24))
 
         addSeparator()
         add(titleTable).fill().row()
@@ -96,20 +102,25 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.addCategory("Units",units)
 
         val buildableWonders = ArrayList<Table>()
+        val buildableNationalWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
+
         for (building in GameBasics.Buildings.values) {
             if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
-                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
+                    building.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
                     building.getRejectionReason(cityConstructions)
                     )
             if (building.isWonder)
                 buildableWonders += productionTextButton
+            else if(building.isNationalWonder)
+                buildableNationalWonders += productionTextButton
             else
                 buildableBuildings += productionTextButton
         }
 
         constructionPickerTable.addCategory("Wonders",buildableWonders)
+        constructionPickerTable.addCategory("National Wonders",buildableNationalWonders)
         constructionPickerTable.addCategory("Buildings",buildableBuildings)
 
         val specialConstructions = ArrayList<Table>()
@@ -119,7 +130,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
         constructionPickerTable.addCategory("Other",specialConstructions)
 
-        val scrollPane = ScrollPane(constructionPickerTable, skin)
+        val scrollPane = ScrollPane(constructionPickerTable.addBorder(2f, Color.WHITE))
 
         // This is to keep the same amount of scrolling on the construction picker scroll between refresh()es
         if(constructionScrollPane!=null){
@@ -129,7 +140,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
         constructionScrollPane = scrollPane
 
-        add(scrollPane).height(stage.height / 3).minWidth(stage.width/4).row()
+        add(scrollPane).maxHeight(stage.height / 3 * (stage.height/600)).row()
     }
 
     private fun addCurrentConstructionTable(city: CityInfo) {
@@ -138,24 +149,25 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         row()
         val purchaseConstructionButton: TextButton
-        if (construction.canBePurchased()) {
-            val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
-            purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+        if (construction.canBePurchased() && !city.isPuppet) {
+            val constructionGoldCost = construction.getGoldCost(city.civInfo)
+            purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
-                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
-                    cityConstructions.purchaseBuilding(construction.name)
+                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
+                    cityConstructions.purchaseConstruction(construction.name)
                     if(lastConstruction!="" && cityConstructions.getConstruction(lastConstruction).isBuildable(cityConstructions))
                         city.cityConstructions.currentConstruction = lastConstruction
-                    update()
+                    cityScreen.update() // since the list of available buildings needs to be updated too, so we can "see" that the building we bought now exists in the city
                 }, cityScreen)
             }
-            if (buildingGoldCost > city.civInfo.gold) {
+            if (constructionGoldCost > city.civInfo.gold) {
                 purchaseConstructionButton.disable()
             }
         } else {
             purchaseConstructionButton = TextButton("Buy".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.disable()
         }
+        purchaseConstructionButton.labelCell.pad(10f)
         add(purchaseConstructionButton).pad(10f).row()
 
 
@@ -163,26 +175,35 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         currentConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         currentConstructionTable.pad(10f)
 
-        currentConstructionTable.add(
-                ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction).surroundWithCircle(50f))
-                .pad(5f)
+        val userNeedsToSetProduction = city.cityConstructions.currentConstruction==""
+        if(!userNeedsToSetProduction) {
+            currentConstructionTable.add(
+                    ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction).surroundWithCircle(50f))
+                    .pad(5f)
 
-        val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-        currentConstructionTable.add(buildingText.toLabel().setFontColor(Color.WHITE)).row()
+            val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
+            currentConstructionTable.add(buildingText.toLabel().setFontColor(Color.WHITE)).row()
+        }
+        else{
+            currentConstructionTable.add() // no icon
+            currentConstructionTable.add("Pick construction".toLabel()).row()
+        }
 
-        val currentConstruction = city.cityConstructions.getCurrentConstruction()
         val description: String
-        if (currentConstruction is BaseUnit)
-            description = currentConstruction.getDescription(true)
-        else if (currentConstruction is Building)
-            description = currentConstruction.getDescription(true, city.civInfo)
-        else description = currentConstruction.description.tr()
+        if(userNeedsToSetProduction)
+            description=""
+        else if (construction is BaseUnit)
+            description = construction.getDescription(true)
+        else if (construction is Building)
+            description = construction.getDescription(true, city.civInfo)
+        else description = construction.description.tr()
 
         val descriptionLabel = description.toLabel()
         descriptionLabel.setWrap(true)
         descriptionLabel.width = stage.width / 4
         val descriptionScroll = ScrollPane(descriptionLabel)
-        currentConstructionTable.add(descriptionScroll).colspan(2).width(stage.width / 4).height(stage.height / 8)
+        currentConstructionTable.add(descriptionScroll).colspan(2)
+                .width(stage.width / 4).height(stage.height / 8)
 
         add(currentConstructionTable.addBorder(2f, Color.WHITE))
     }

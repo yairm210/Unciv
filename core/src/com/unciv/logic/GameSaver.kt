@@ -3,27 +3,14 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
-import com.unciv.GameSettings
-import com.unciv.logic.map.TileMap
-import com.unciv.ui.saves.Gzip
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.ImageGetter
+import java.io.File
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
-    private val mapsFolder = "maps"
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
-
-    fun getMap(mapName:String) = Gdx.files.local("$mapsFolder/$mapName")
-    fun saveMap(mapName: String,tileMap: TileMap){
-        getMap(mapName).writeString(Gzip.zip(json().toJson(tileMap)), false)
-    }
-    fun loadMap(mapName: String): TileMap {
-        val gzippedString = getMap(mapName).readString()
-        val unzippedJson = Gzip.unzip(gzippedString)
-        return json().fromJson(TileMap::class.java, unzippedJson)
-    }
-    fun getMaps() = Gdx.files.local(mapsFolder).list().map { it.name() }
 
 
     fun getSave(GameName: String): FileHandle {
@@ -38,8 +25,14 @@ class GameSaver {
         json().toJson(game,getSave(GameName))
     }
 
-    fun loadGame(GameName: String) : GameInfo {
+    fun loadGameByName(GameName: String) : GameInfo {
         val game = json().fromJson(GameInfo::class.java, getSave(GameName))
+        game.setTransients()
+        return game
+    }
+
+    fun gameInfoFromString(gameData:String): GameInfo {
+        val game = json().fromJson(GameInfo::class.java, gameData)
         game.setTransients()
         return game
     }
@@ -66,4 +59,31 @@ class GameSaver {
     fun setGeneralSettings(gameSettings: GameSettings){
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
     }
+
+    fun autoSave(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
+        // The save takes a long time (up to a few seconds on large games!) and we can do it while the player continues his game.
+        // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
+        // So what we do is we clone all the game data and serialize the clone.
+        val gameInfoClone = gameInfo.clone()
+        kotlin.concurrent.thread {
+            saveGame(gameInfoClone, "Autosave")
+
+            // keep auto-saves for the last 10 turns for debugging purposes
+            val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfoClone.turns}"
+            getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
+
+            fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
+            while(getAutosaves().size>10){
+                val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
+                deleteSave(saveToDelete)
+            }
+
+            // do this on main thread
+            Gdx.app.postRunnable {
+                postRunnable()
+            }
+        }
+
+    }
 }
+

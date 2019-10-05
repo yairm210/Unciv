@@ -1,10 +1,10 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.GameParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.HexMath
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 
@@ -36,7 +36,7 @@ class TileMap {
         val mapValues:Collection<TileInfo>
 
         if(newGameParameters.mapType == MapType.File)
-            mapValues = GameSaver().loadMap(newGameParameters.mapFileName!!).values
+            mapValues = MapSaver().loadMap(newGameParameters.mapFileName!!).values
         else if(newGameParameters.mapType==MapType.Perlin)
             mapValues = PerlinNoiseRandomMapGenerator().generateMap(newGameParameters.mapRadius).values
         else
@@ -70,16 +70,15 @@ class TileMap {
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
         return HexMath().getVectorsAtDistance(origin, distance).asSequence()
                 .filter {contains(it)}.map { get(it) }.toList()
-
     }
 
-    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {
+    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
         val tilesInDistance = getTilesInDistance(position, 2)
-        unit.assignOwner(civInfo)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        var unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand()) }
+        unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
+        var unitToPlaceTile = tilesInDistance.firstOrNull { unit.movement.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand) }
         if (unitToPlaceTile==null)
-            unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
+            unitToPlaceTile = tilesInDistance.firstOrNull { unit.movement.canMoveTo(it) }
 
         if(unitToPlaceTile!=null) { //see if a land unit can be placed on land. if impossible, put it on water.
             // only once we know the unit can be placed do we add it to the civ's unit list
@@ -88,9 +87,16 @@ class TileMap {
 
             // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
             for(promotion in unit.baseUnit.promotions)
-                unit.promotions.addPromotion(promotion,true)
+                unit.promotions.addPromotion(promotion, true)
+
+            // And update civ stats, since the new unit changes both unit upkeep and resource consumption
+            civInfo.updateStatsForNextTurn()
+            civInfo.updateDetailedCivResources()
         }
-        else civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+        else {
+            civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            return null // we didn't actually create a unit...
+        }
 
         return unit
     }

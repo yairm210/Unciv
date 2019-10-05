@@ -2,9 +2,11 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.tr
@@ -13,6 +15,10 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
+    init {
+        touchable = Touchable.enabled
+    }
+    
     fun getIconForUnitAction(unitAction:String): Actor {
         if(unitAction.startsWith("Upgrade to")){
             // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
@@ -25,10 +31,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
             "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
             "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
-            "Construct improvement" -> return ImageGetter.getUnitIcon("Worker")
+            "Construct improvement" -> return ImageGetter.getUnitIcon(Constants.worker)
             "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
             "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
-            "Found city" -> return ImageGetter.getUnitIcon("Settler")
+            "Found city" -> return ImageGetter.getUnitIcon(Constants.settler)
             "Discover Technology" -> return ImageGetter.getUnitIcon("Great Scientist")
             "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
             "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
@@ -41,7 +47,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit")
             "Sleep" -> return ImageGetter.getImage("OtherIcons/Sleep")
             "Explore" -> return ImageGetter.getUnitIcon("Scout")
-            "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop.png")
+            "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop")
             "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
             "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
             "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
@@ -53,6 +59,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     fun update(unit: MapUnit?){
         clear()
         if (unit == null) return
+        if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
         for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
             add(button).colspan(2).pad(5f).row()
         pack()
@@ -62,7 +69,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
-        actionButton.add(Label(unitAction.name.tr(),CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
+        actionButton.add(
+                Label(unitAction.title.tr(),CameraStageBaseScreen.skin)
+                        .setFontColor(if(unitAction.currentAction) Color.YELLOW else Color.WHITE))
                 .pad(5f)
         actionButton.pack()
         actionButton.onClick(unitAction.sound) { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }

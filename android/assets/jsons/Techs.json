@@ -8,6 +8,7 @@
 			{
 				name:"Agriculture",
 				row:5,
+				quote:"'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster"
 			}
 			
 		]	
@@ -21,18 +22,22 @@
 			{
 				name:"Pottery",
 				row:2,
+				quote:"'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9"
 			},
 			{
 				name:"Animal Husbandry",
-				row:5
+				row:5,
+				quote:"'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4"
 			},
 			{
 				name:"Archery",
-				row:7
+				row:7,
+				quote:"'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop"
 			},
 			{
 				name:"Mining",
-				row:9
+				row:9,
+				quote:"'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty"
 			}
 			
 		]	
@@ -48,36 +53,43 @@
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
+				quote:"'He who commands the sea has command of everything.' - Themistocles"
 			},
 			{
 				name:"Calendar",
 				row:2,
-				prerequisites:["Pottery"]
+				prerequisites:["Pottery"],
+				quote:"'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12"
 			},
 			{
 				name:"Writing",
 				row:3,
-				prerequisites:["Pottery"]
+				prerequisites:["Pottery"],
+				quote:"'He who destroys a good book kills reason itself.' - John Milton"
 			},
 			{
 				name:"Trapping",
 				row:5,
-				prerequisites:["Animal Husbandry"]
+				prerequisites:["Animal Husbandry"],
+				quote:"'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome"
 			},
 			{
 				name:"The Wheel",
 				row:7,
-				prerequisites:["Animal Husbandry", "Archery"]
+				prerequisites:["Animal Husbandry", "Archery"],
+				quote:"'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb"
 			},
 			{
 				name:"Masonry",
 				row:9,
-				prerequisites:["Mining"]
+				prerequisites:["Mining"],
+				quote:"'How happy are those whose walls already rise!' - Virgil"
 			},
 			{
 				name:"Bronze Working",
 				row:10,
-				prerequisites:["Mining"]
+				prerequisites:["Mining"],
+				quote:"'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer"
 			}			
 		]	
 	},
@@ -93,22 +105,26 @@
 				cost:85,
 				row:1,
 				prerequisites:["Sailing"],
-				uniques:["Enables embarkation for land units"]
+				uniques:["Enables embarkation for land units"],
+				quote:"'He made an instrument to know if the moon shine at full or no.' - Samuel Butler"
 			},
 			{
 				name:"Horseback Riding",
 				row:5,
-				prerequisites:["Trapping","The Wheel"]
+				prerequisites:["Trapping","The Wheel"],
+				quote:"'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)"
 			},
 			{
 				name:"Mathematics",
 				row:7,
-				prerequisites:["The Wheel"]
+				prerequisites:["The Wheel"],
+				quote:"'Mathematics is the gate and key to the sciences.' - Roger Bacon"
 			},
 			{
 				name:"Construction",
 				row:9,
-				prerequisites:["Masonry","The Wheel"]
+				prerequisites:["Masonry","The Wheel"],
+				quote:"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfulyl executed.' - Johann Wolfgang von Goethe"
 			}
 		]	
 	},
@@ -122,22 +138,26 @@
 			{
 				name:"Philosophy",
 				row:3,
-				prerequisites:["Writing","Calendar"]
+				prerequisites:["Writing","Calendar"],
+				quote:"'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
 				name:"Currency",
 				row:7,
-				prerequisites:["Mathematics"]
+				prerequisites:["Mathematics"],
+				quote:"'Better is bread with a happy heart than wealth with vexation.' - Amenemope"
 			},
 			{
 				name:"Engineering",
 				row:8,
-				prerequisites:["Mathematics","Construction"]
+				prerequisites:["Mathematics","Construction"],
+				quote:"'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci"
 			},
 			{
 				name:"Iron Working",
 				row:10,
-				prerequisites:["Bronze Working"]
+				prerequisites:["Bronze Working"],
+				quote:"'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats"
 			}
 		]	
 	},
@@ -151,23 +171,28 @@
 			{
 				name:"Theology",
 				row:2,
-				prerequisites:["Philosophy"]
+				prerequisites:["Philosophy"],
+				quote:"'Three things are necessary for the salvarion of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas"
 			},
 			{
 				name:"Civil Service",
 				row:5,
-				prerequisites:["Currency","Horseback Riding","Philosophy"]
+				prerequisites:["Currency","Horseback Riding","Philosophy"],
+				uniques:["Enables Open Borders agreements"],
+				quote:"'The only thing that saves us from the bureaucracy is it inefficiency' - Eugene McCarthy"
 			},
 			{
 				name:"Guilds",
 				row:7,
 				prerequisites:["Currency"],
-				uniques:["Enables conversion of city production to gold"]
+				uniques:["Enables conversion of city production to gold"],
+				quote:"'The merchants and the traders have come; their profits are pre-ordained...' - Sri Guru Granth Sahib"
 			},
 			{
 				name:"Metal Casting",
 				row:9,
-				prerequisites:["Engineering","Iron Working"]
+				prerequisites:["Engineering","Iron Working"],
+				quote:"'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib"
 			}
 		]
 	},
@@ -182,33 +207,39 @@
 				name:"Compass",
 				row:1,
 				prerequisites:["Optics","Theology"],
+				quote:"'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes"
 			},
 			{
 				name:"Education",
 				row:3,
 				prerequisites:["Theology","Civil Service"],
-				uniques:["Enables conversion of city production to science"]
+				uniques:["Enables conversion of city production to science"],
+				quote:"'Education is the best provision for old age.' - Aristotle"
 			},
 			{
 				name:"Chivalry",
 				row:6,
-				prerequisites:["Civil Service","Guilds"]
+				prerequisites:["Civil Service","Guilds"],
+				quote:"'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
 			},
 			{
 				name:"Machinery",
 				row:8,
 				prerequisites:["Guilds","Engineering"],
-				uniques:["Improves movement speed on roads"]
+				uniques:["Improves movement speed on roads"],
+				quote:"'The press is the best instrument for enlightening the mind of man, and improving him as a rational, moral and social being.' - Thomas Jefferson"
 			},
 			{
 				name:"Physics",
 				row:9,
-				prerequisites:["Metal Casting"]
+				prerequisites:["Metal Casting"],
+				quote:"'Measure what is measurable, and make measurable what is not so.' - Galileo Galilei"
 			},
 			{
 				name:"Steel",
 				row:10,
-				prerequisites:["Metal Casting"]
+				prerequisites:["Metal Casting"],
+				quote:"'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
 		]	
 	},
@@ -223,27 +254,32 @@
 				name:"Astronomy",
 				row:2,
 				uniques:["Increases embarked movement +1","Enables embarked units to enter ocean tiles"],
-				prerequisites:["Compass","Education"]
+				prerequisites:["Compass","Education"],
+				quote:"'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer"
 			},
 			{
 				name:"Acoustics",
 				row:4,
-				prerequisites:["Education"]
+				prerequisites:["Education"],
+				quote:"'Their rising all at once was as the sound of thunder heard remote' - Milton"
 			},
 			{
 				name:"Banking",
 				row:6,
-				prerequisites:["Chivalry"]
+				prerequisites:["Chivalry"],
+				quote:"'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau"
 			},
 			{
 				name:"Printing Press",
 				row:8,
-				prerequisites:["Machinery","Physics","Chivalry"]
+				prerequisites:["Machinery","Physics","Chivalry"],
+				quote:"'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times"
 			},
 			{
 				name:"Gunpowder",
 				row:10,
-				prerequisites:["Physics","Steel"]
+				prerequisites:["Physics","Steel"],
+				quote:"'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
 		]	
 	},
@@ -257,27 +293,32 @@
 			{
 				name:"Navigation",
 				row:2,
-				prerequisites:["Astronomy"]
+				prerequisites:["Astronomy"],
+				quote:"'The winds and the waves are always on the side of the ablest navigators.' - Edward Gibbon"
 			},
 			{
 				name:"Architecture",
 				row:4,
-				prerequisites:["Acoustics","Banking"]
+				prerequisites:["Acoustics","Banking"],
+				quote:"'Architecture begins where engineering ends.' - Walter Gropius"
 			},
 			{
 				name:"Economics",
 				row:6,
-				prerequisites:["Banking","Printing Press"]
+				prerequisites:["Banking","Printing Press"],
+				quote:"'Compound interest is the most powerful force in the universe.' - Albert Einstein"
 			},
 			{
 				name:"Metallurgy",
 				row:9,
-				prerequisites:["Printing Press","Gunpowder"]
+				prerequisites:["Printing Press","Gunpowder"],
+				quote:"'There never was a good knife made of bad steel.' - Benjamin Franklin"
 			}
 			{
 				name:"Chemistry",
 				row:10,
-				prerequisites:["Gunpowder"]
+				prerequisites:["Gunpowder"],
+				quote:"'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge"
 			}
 		]	
 	},
@@ -427,18 +468,17 @@
 			},
 			{
 				name:"Atomic Theory",
-				row:3,
+				row:4,
 				prerequisites:["Plastics","Electronics"]
 			},
 			{
-				name:"Computers",
-				row:5,
-				prerequisites:["Electronics"],
-				uniques:["+10% science and production in all cities"]
+				name:"Radar",
+				row:6,
+				prerequisites:["Ballistics","Electronics"]
 			},
 			{
 				name:"Combined Arms",
-				row:7,
+				row:8,
 				prerequisites:["Ballistics","Combustion"]
 			},
 		]	
@@ -458,17 +498,18 @@
 			{
 				name:"Nuclear Fission",
 				row:3,
-				prerequisites:["Atomic Theory"]
-			},
-			{
-				name:"Robotics",
-				row:4,
-				prerequisites:["Computers"]
+				prerequisites:["Atomic Theory","Radar"]
 			},
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Combined Arms","Computers"]
+				prerequisites:["Radar"]
+			}
+			{
+				name:"Computers",
+				row:8,
+				prerequisites:["Combined Arms","Radar"],
+				uniques:["+10% science and production in all cities"]
 			}
 		]
 	},
@@ -480,22 +521,30 @@
 		wonderCost:1250,
 		techs:[
 			{
-				name:"Nanotechnology",
+				name:"Mobile Tactics",
 				row:3,
-				prerequisites:["Robotics","Ecology"]
-			},
-			{
-				name:"Particle Physics",
-				row:4,
-				prerequisites:["Nuclear Fission"]
+				prerequisites:["Ecology","Nuclear Fission"]
 			},
 			{
 				name:"Satellites",
 				row:5,
-				prerequisites:["Rocketry","Robotics"]
+				prerequisites:["Nuclear Fission","Rocketry"]
 			}
+			{
+				name:"Robotics",
+				row:7,
+				prerequisites:["Rocketry","Computers"]
+			},
+			{
+				name:"Lasers",
+				row:8,
+				prerequisites:["Computers"]
+			},
+			
+			
 		]	
 	},
+	
 	{
 		columnNumber: 16,
 		era:"Future",
@@ -504,8 +553,27 @@
 		wonderCost:1250,
 		techs:[
 			{
-				name:"Future Tech",
+				name:"Particle Physics",
 				row:4,
+				prerequisites:["Mobile Tactics","Satellites"]
+			},
+			{
+				name:"Nanotechnology",
+				row:7,
+				prerequisites:["Robotics","Lasers"]
+			},
+		]	
+	}
+	{
+		columnNumber: 17,
+		era:"Future",
+		techCost: 9500,
+		buildingCost:750,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Future Tech",
+				row:5,
 				prerequisites:["Nanotechnology","Particle Physics","Satellites"],
 				uniques:["Who knows what the future holds?"]
 			}

@@ -1,13 +1,13 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+    internal var closeButton: TextButton = TextButton("Close".tr(), skin)
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
@@ -15,29 +15,29 @@ open class PickerScreen : CameraStageBaseScreen() {
     protected var topTable: Table
     var bottomTable:Table = Table()
     internal var splitPane: SplitPane
+    protected var scrollPane: ScrollPane
 
     init {
-        bottomTable.add(closeButton).width(stage.width / 4)
+        bottomTable.add(closeButton).pad(10f)
 
         descriptionLabel = "".toLabel()
         descriptionLabel.setWrap(true)
         val labelScroll = ScrollPane(descriptionLabel)
-        bottomTable.add(labelScroll).pad(5f).width(stage.width / 2)
+        bottomTable.add(labelScroll).pad(5f).fill().expand()
 
-        rightSideButton = TextButton("", CameraStageBaseScreen.skin)
+        rightSideButton = TextButton("", skin)
         rightSideButton.disable()
         rightSideGroup.addActor(rightSideButton)
 
-        bottomTable.add(rightSideGroup).width(stage.width / 4)
+        bottomTable.add(rightSideGroup).pad(10f).right()
         bottomTable.height = stage.height * (1 - screenSplit)
-        bottomTable.align(Align.center)
 
         topTable = Table()
-        val scrollPane = ScrollPane(topTable)
+        scrollPane = ScrollPane(topTable)
 
         scrollPane.setSize(stage.width, stage.height * screenSplit)
 
-        splitPane = SplitPane(scrollPane, bottomTable, true, CameraStageBaseScreen.skin)
+        splitPane = SplitPane(scrollPane, bottomTable, true, skin)
         splitPane.splitAmount = screenSplit
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
@@ -51,7 +51,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     }
 
     protected fun pick(rightButtonText: String) {
-        rightSideButton.enable()
+        if(UnCivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
 }
