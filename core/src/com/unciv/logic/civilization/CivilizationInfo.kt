@@ -417,7 +417,7 @@ class CivilizationInfo {
 
     fun addGreatPerson(greatPerson: String, city:CityInfo) {
         placeUnitNearTile(city.location, greatPerson)
-        addNotification("A [$greatPerson] has been born!".tr(), city.location, Color.GOLD)
+        addNotification("A [$greatPerson] has been born!", city.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
@@ -456,7 +456,7 @@ class CivilizationInfo {
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
                 .random()
         placeUnitNearTile(city.location, militaryUnit.name)
-        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!".tr(), null, Color.GREEN)
+        addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }
 
     //endregion
