@@ -588,7 +588,7 @@
 		French:"Nos articles"
 		Romanian:"Articolele noastre"
 		Spanish:"Nuestros ítems"
-		Simplified_Chinese:"我们的物品"
+		Simplified_Chinese:"我们的交易项"
 		Portuguese:"Nossos itens/recursos"
 		German:"Unsere Gegenstände"
 	}
@@ -621,7 +621,7 @@
 		French:"Les articles de [otherCiv]"
 		Romanian:"Articolele de la [otherCiv]"
 		Spanish:"Ítems de [otherCiv]"
-		Simplified_Chinese:"[otherCiv]的物品"
+		Simplified_Chinese:"[otherCiv]的交易项"
 		Portuguese:"Itens da(o/e) [otherCiv]"
 		German:"[otherCiv]s Gegenstände"
 	}
@@ -684,7 +684,7 @@
 		French:"Il n'y a rien a échangé" //if it's in case of empty trade it's accurate
 		Romanian:"Nu e nimic pe masă"
 		Spanish:"¿Estas de broma?"
-		Simplified_Chinese:"表格上没有任何物品"
+		Simplified_Chinese:"未选中任何交易项"
 		Portuguese:"Não ha nada á mesa"
 		German:"Der Verhandlungstisch ist leer"
 	}
@@ -764,6 +764,7 @@
 
 	"Declare war on [nation]":{
 		Italian:"Dichiara guerra a [nation]"
+		Simplified_Chinese:"宣战[nation]"
 	}
 
 	"Luxury resources":{

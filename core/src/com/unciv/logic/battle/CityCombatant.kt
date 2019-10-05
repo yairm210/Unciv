@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
+import kotlin.math.roundToInt
 
 class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getMaxHealth(): Int {
@@ -26,7 +27,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     }
 
     override fun getUnitType(): UnitType = UnitType.City
-    override fun getAttackingStrength(): Int = getCityStrength()*2/5 // I remember reading this but I don't recall where
+    override fun getAttackingStrength(): Int = (getCityStrength() * 0.75).roundToInt()
     override fun getDefendingStrength(): Int{
         if(isDefeated()) return 1
         return getCityStrength()
@@ -34,7 +35,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
 
     fun getCityStrength(): Int { // Civ fanatics forum, from a modder who went through the original code
         var strength = 8f
-        if(city.isCapital()) strength+=2.5f
+        if(city.isCapital()) strength+=2f
         strength += (city.population.population/5) * 2 // Each 5 pop gives 2 defence
         val cityTile = city.getCenterTile()
         if(cityTile.baseTerrain== Constants.hill) strength+=5
@@ -50,14 +51,14 @@ class CityCombatant(val city: CityInfo) : ICombatant {
 
         // Garrisoned unit gives up to 20% of strength to city, health-dependant
         if(cityTile.militaryUnit!=null)
-            strength += cityTile.militaryUnit!!.baseUnit().strength * cityTile.militaryUnit!!.health/100f
+            strength += cityTile.militaryUnit!!.baseUnit().strength * (cityTile.militaryUnit!!.health / 100f) * 0.2f
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumBy{ it.cityStrength }.toFloat()
         if(getCivInfo().containsBuildingUnique("Defensive buildings in all cities are 25% more effective"))
             buildingsStrength*=1.25f
         strength += buildingsStrength
 
-        return strength.toInt()
+        return strength.roundToInt()
     }
 
     override fun toString(): String {return city.name} // for debug

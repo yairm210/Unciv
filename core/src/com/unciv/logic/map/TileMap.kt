@@ -1,12 +1,12 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.metadata.GameParameters
 
 class TileMap {
 
@@ -74,13 +74,22 @@ class TileMap {
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
-        val tilesInDistance = getTilesInDistance(position, 2)
-        unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        var unitToPlaceTile = tilesInDistance.firstOrNull { unit.movement.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand) }
-        if (unitToPlaceTile==null)
-            unitToPlaceTile = tilesInDistance.firstOrNull { unit.movement.canMoveTo(it) }
 
-        if(unitToPlaceTile!=null) { //see if a land unit can be placed on land. if impossible, put it on water.
+        fun isTileMovePotential(tileInfo:TileInfo): Boolean {
+            if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()
+            else return tileInfo.isLand
+        }
+
+        var viableTilesToPlaceUnitIn = getTilesInDistance(position, 1).filter { isTileMovePotential(it) }
+        // This is so that units don't skip over non-potential tiles to go elsewhere -
+        // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
+        viableTilesToPlaceUnitIn = viableTilesToPlaceUnitIn.union(getTilesAtDistance(position, 2))
+                .filter { isTileMovePotential(it) && it.neighbors.any { n->n in viableTilesToPlaceUnitIn } }
+
+        unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
+        val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
+
+        if(unitToPlaceTile!=null) {
             // only once we know the unit can be placed do we add it to the civ's unit list
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()

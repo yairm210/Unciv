@@ -758,7 +758,7 @@
 		German:"Wartungskosten"
 		Dutch:"Onderhouskosten"
 		Spanish:"Coste de mantenimiento"
-		Simplified_Chinese:"维护费"
+		Simplified_Chinese:"建筑维护费"
 		Portuguese:"Custo de manutenção"
 		Japanese:"メンテナンス費用"
 	}
@@ -1039,6 +1039,14 @@
 		French:"Points par tours"
 		Portuguese:"Pontos por turno"
 		Russian:"Очки за ход"
+	}
+
+	"Convert production to gold at a rate of 4 to 1":{ 
+		Italian:"Converte la Produzione a Oro a un tasso di 4 a 1"
+	}
+
+	"Convert production to science at a rate of 4 to 1":{ 
+		Italian:"Converte la Produzione a Scienza a un tasso di 4 a 1"
 	}
 	
 ////// Tech picker
@@ -1546,7 +1554,7 @@
 		French:"Entretien"
 		Romanian:"Întreținere"
 		Spanish:"Mantenimiento"
-		Simplified_Chinese:"维护费"
+		Simplified_Chinese:"建筑维护费"
 		Portuguese:"Manutenção"
 		German:"Wartung"
 	}
@@ -1557,7 +1565,7 @@
 		French:"Entretien des transports"
 		Romanian:"Întreținere trasporturi"
 		Spanish:"Mantenimiento de transporte"
-		Simplified_Chinese:"道(铁)路维护"
+		Simplified_Chinese:"道(铁)路维护费"
 		Portuguese:"Manutenção de transporte"
 		German:"Unterhalt für Transport"
 	}
@@ -1568,7 +1576,7 @@
 		French:"Entretien des unités"
 		Romanian:"Întreținere unități"
 		Spanish:"Mantenimiento de unidades"
-		Simplified_Chinese:"单位维护"
+		Simplified_Chinese:"单位维护费"
 		Portuguese:"Manutenção de unidades"
 		German:"Unterhalt für Einheiten"		
 	}
@@ -1671,7 +1679,7 @@
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Завершите 4 ветви общественных институтов\n чтобы победить!"
-		Simplified_Chinese:"完全推行4项社会政策\n胜利！"
+		Simplified_Chinese:"完成4个社会政策分支\n胜利！"
 		Portuguese:"Complete 4 árvores de politicas para ganhar"
 	}
 
@@ -1775,14 +1783,14 @@
 	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
 		French:"Parties de Vaisseau spatial manquantes"
-		Simplified_Chinese:"未完成建造的飞船组件数量"
+		Simplified_Chinese:"未完成建造的飞船组件"
 		Russian:"Осталось частей КК"
 	}
 
 	"Branches completed":{
 		Italian:"Rami completati"
 		French:"Branches complêtées"
-		Simplified_Chinese:"已完全推行的社会政策数量"
+		Simplified_Chinese:"已完成的社会政策分支"
 		Russian:"Ветвей завершено"
 	}
 
