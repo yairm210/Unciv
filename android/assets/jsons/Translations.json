@@ -8647,50 +8647,62 @@
 	}
 	"Cost":{
 		Italian:"Costo"
+		Russian:"Стоимость"
 	}
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
 		French:"Requiert la construction de [buildingName] dans la ville"
+		Russian:"Требуется, чтобы [buildingName] было построен в городе"
 	}
 	"Requires [buildingName] to be built in all cities":{
 		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
 		French:"Requiert la construction de [buildingName] dans toutes les villes"
+		Russian:"Требуется, чтобы [buildingName] был построен во всех городах"
 	}
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
+		Russian:"Предоставляет бесплатный [buildingName] в городе"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
 		French:"Nécessite l'exploitation de [resource] près de la ville"
+		Russian:"Требуется работающий [resource] рядом с городом"
 	}
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
 		French:"Nécessite la technologie: [requiredTech]"
+		Russian:"Необходимая технология: [requiredTech]"
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
 		French:"Améliorer en [upgradedUnit]"
+		Russian:"Улучшить до [upgradedUnit]"
 	}
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
+		Russian:"Устаревший с [obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
 		French:""
+		Russian:"Может содержать [listOfResources]"
 	}
 	"Occurs on [listOfTerrains]":{
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
 		French:"Doit possèder [listOfResources]"
+		Russian:"Встречается на [listOfTerrains]"
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
+		Russian:"Бонус за защиту"
 	}
 	"Movement cost":{
 		Italian:"Costi di movimento"
 		French:"Coût de mouvement"
+		Russian:"Стоимость перемещения"
   }
 	
 	//Options menu, pointed out by Smashfanful
@@ -8715,5 +8727,6 @@
 	}
 	"Language":{
 		Italian:"Lingua"
+		Russian:"Язык"
 	}
 }
