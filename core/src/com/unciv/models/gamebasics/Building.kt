@@ -39,10 +39,7 @@ class Building : NamedStats(), IConstruction{
     var replaces:String?=null
     var uniqueTo:String?=null
     var quote:String=""
-
-    // Uniques
     private var providesFreeBuilding: String? = null
-    var freeTechs: Int = 0
     var uniques = ArrayList<String>()
 
 
@@ -338,34 +335,32 @@ class Building : NamedStats(), IConstruction{
             construction.addBuilding(buildingToAdd)
         }
 
-        when {
-            "Empire enters golden age" in uniques -> civInfo.goldenAges.enterGoldenAge()
-            "Free Great Artist Appears" in uniques -> civInfo.addGreatPerson("Great Artist", construction.cityInfo)
-            "Free great scientist appears" in uniques -> civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
-            "2 free great scientists appear" in uniques -> {
-                civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
-                civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
-            }
-            "Provides 2 free workers" in uniques -> {
-                civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
-                civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
-            }
-            "Free Social Policy" in uniques -> civInfo.policies.freePolicies++
-            "Free Great Person" in uniques -> {
-                if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
-            }
-            "+1 population in each city" in uniques -> {
-                for(city in civInfo.cities){
-                    city.population.population += 1
-                    city.population.autoAssignPopulation()
-                }
-            }
-            "Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques ->
-                civInfo.updateHasActiveGreatWall()
+        if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
+        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+        if ("2 free great scientists appear" in uniques) {
+            civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+            civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
         }
+        if ("Provides 2 free workers" in uniques) {
+            civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
+            civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
+        }
+        if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
+        if ("Free Great Person" in uniques) {
+            if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
+            else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
+        }
+        if ("+1 population in each city" in uniques) {
+            for(city in civInfo.cities){
+                city.population.population += 1
+                city.population.autoAssignPopulation()
+            }
+        }
+        if ("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques)
+            civInfo.updateHasActiveGreatWall()
 
-        if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs
+        if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
     }
 
     fun isStatRelated(stat: Stat): Boolean {

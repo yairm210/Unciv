@@ -15,8 +15,12 @@ data class TradeOffer(var name:String, var type: TradeType,
 
 
     fun getOfferText(): String {
-        var offerText = name.tr()
-        if (type !in tradesToNotHaveNumbers) offerText += " (" + amount + ")"
+        var offerText = when(type){
+            TradeType.WarDeclaration -> "Declare war on [$name]"
+            TradeType.Introduction -> "Introduction to [$name]"
+            else -> name
+        }.tr()
+        if (type !in tradesToNotHaveNumbers) offerText += " ($amount)"
         if (duration > 0) offerText += "\n" + duration + " {turns}".tr()
         return offerText
     }

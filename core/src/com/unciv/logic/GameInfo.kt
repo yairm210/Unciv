@@ -222,6 +222,15 @@ class GameInfo {
                 // As of 2.16.1, changed Colloseum to Colosseum
                 changeBuildingName(cityConstructions, "Colloseum", "Colosseum")
             }
+
+            // This doesn't HAVE to go here, but why not.
+            // As of version 3.1.3, trade offers of "Declare war on X" and "Introduction to X" were changed to X,
+            //   with the extra text being added only on UI display (solved a couple of problems).
+            for(trade in civInfo.tradeRequests.map { it.trade })
+                for(offer in trade.theirOffers.union(trade.ourOffers)){
+                    offer.name = offer.name.removePrefix("Declare war on ")
+                    offer.name = offer.name.removePrefix("Introduction to ")
+                }
         }
 
         for (civInfo in civilizations) civInfo.setNationTransient()

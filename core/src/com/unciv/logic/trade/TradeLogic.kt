@@ -55,7 +55,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
 
         for (thirdCiv in civsWeKnowAndTheyDont) {
-            offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
+            offers.add(TradeOffer(thirdCiv.civName, TradeType.Introduction, 0))
         }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
@@ -64,7 +64,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it).diplomaticStatus == DiplomaticStatus.Peace }
             for (thirdCiv in civsWeArentAtWarWith) {
-                offers.add(TradeOffer("Declare war on " + thirdCiv.civName, TradeType.WarDeclaration, 0))
+                offers.add(TradeOffer(thirdCiv.civName, TradeType.WarDeclaration, 0))
             }
         }
 
@@ -91,21 +91,21 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 if (offer.type == TradeType.Technology) {
                     to.tech.addTechnology(offer.name)
                 }
-                if(offer.type== TradeType.City){
-                    val city = from.cities.first { it.name==offer.name }
+                if (offer.type == TradeType.City) {
+                    val city = from.cities.first { it.name == offer.name }
                     city.moveToCiv(to)
                     city.getCenterTile().getUnits().forEach { it.movement.teleportToClosestMoveableTile() }
                     to.updateViewableTiles()
                     from.updateViewableTiles()
                 }
-                if(offer.type== TradeType.Treaty){
-                    if(offer.name==Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
+                if (offer.type == TradeType.Treaty) {
+                    if (offer.name == Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                 }
-                if(offer.type==TradeType.Introduction)
-                    to.meetCivilization(to.gameInfo.getCivilization(offer.name.removePrefix("Introduction to " )))
+                if (offer.type == TradeType.Introduction)
+                    to.meetCivilization(to.gameInfo.getCivilization(offer.name))
 
-                if(offer.type==TradeType.WarDeclaration){
-                    val nameOfCivToDeclareWarOn = offer.name.removePrefix("Declare war on ")
+                if (offer.type == TradeType.WarDeclaration) {
+                    val nameOfCivToDeclareWarOn = offer.name
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
             }
@@ -113,8 +113,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             to.updateDetailedCivResources()
         }
 
-        transferTrade(ourCivilization,otherCivilization,currentTrade)
-        transferTrade(otherCivilization,ourCivilization,currentTrade.reverse())
+        transferTrade(ourCivilization, otherCivilization, currentTrade)
+        transferTrade(otherCivilization, ourCivilization, currentTrade.reverse())
     }
 }
 

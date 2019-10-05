@@ -604,7 +604,7 @@
 	}
 
 	"+33% culture in all cities with a world wonder, immediately enter a golden age":{
-		Italian:"+33% Cultura in tutte le città con una Meraviglia Mondiale, e avvio di un'Età dell'Oro"
+		Italian:"+33% Cultura in tutte le città con una Meraviglia Mondiale, e avvio immediato di un'Età dell'Oro"
 		Russian:"+33% культуры во всех городах с чудом света, начинает в державе золотой век"
 		Romanian:"+33% cultură în toate orașele cu minuni, intră imediat în epoca de aur"
 		Spanish:"+33% cultura en todas las ciudades con una Maravilla. Inmediatamente entras en una Edad de Oro"
@@ -757,7 +757,7 @@
 	}
 
 	"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
-		Italian:"-33% mantenimento in Oro su strade e ferrovie, +2 oro per ogni rotta commerciale"//you forgot to translate this
+		Italian:"-33% mantenimento in Oro per strade e ferrovie, +2 oro per ogni rotta commerciale"
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
@@ -823,7 +823,7 @@
 	}
 
 	"Cost of purchasing culture buildings reduced by 50%":{
-		Italian:"-50% costi di per l'acquisto delle strutture culturali"
+		Italian:"-50% costi per l'acquisto degli edifici culturali"
 		Russian:"Цена покупки культурных строений уменьшена на 50%"
 		Romanian:"Costul clădirilor de cultură redus cu 50%"
 		Spanish:"Coste de comprar edificios de cultura reducido un 50%"
@@ -1001,7 +1001,7 @@
 	}
 
 	"Gain 2 free technologies":{
-		Italian:"Consente di scoprite due Tecnologie gratuite"
+		Italian:"Consente di scoprire due Tecnologie gratuite"
 		Russian:"Даёт 2 бесплатные технологии"
 		Romanian:"Obține 2 tehnologii gratuite"
 		Spanish:"Ganas 2 tecnologías gratis"
@@ -1270,7 +1270,7 @@
 
 	"Quantity of strategic resources produced by the empire increased by 100%":{
 		Spanish:"El imperio produce un +100% de recursos estrategicos"
-		Italian:"L'impero incrementa del 100% la quantità delle risorse strategiche possedute, raddoppiandole"
+		Italian:"L'impero raddoppia la quantità delle risorse strategiche che possiede"
 		Romanian:"Resursele strategice produse de imperiu crescute cu 100%"
 		Simplified_Chinese:"帝国生产的战略资源+100%"
 		Portuguese:"Quantidade de recursos estratégicos produzidos pelo império incrementado em 100%"

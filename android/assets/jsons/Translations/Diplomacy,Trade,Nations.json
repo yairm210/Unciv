@@ -689,7 +689,7 @@
 		German:"Der Verhandlungstisch ist leer"
 	}
 
-	"Peace treaty":{
+	"Peace Treaty":{//Corrected
 		Italian:"Trattato di pace"
 		Russian:"Мирный договор"
 		French:"Traité de paix"
@@ -760,6 +760,10 @@
 		Italian:"Introduci a [nation]"
 		Simplified_Chinese:"介绍认识[nation]"
 		Russian:"Представиться [nation]"
+	}
+
+	"Declare war on [nation]":{
+		Italian:"Dichiara guerra a [nation]"
 	}
 
 	"Luxury resources":{
