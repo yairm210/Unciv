@@ -412,6 +412,10 @@
 		Italian:"Forse hai inserito troppi giocatori o altri parametri?"
 		Russian:"Может, у вас слишком много игроков для такой небольшой карты?"
 	}
+
+	"No human players selected!":{
+		Italian:"È necessario almeno un giocatore umano!"
+	}
 	
 	
 ////////////// 	Save and load game
