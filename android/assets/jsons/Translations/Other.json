@@ -1040,6 +1040,14 @@
 		Portuguese:"Pontos por turno"
 		Russian:"Очки за ход"
 	}
+
+	"Convert production to gold at a rate of 4 to 1":{ 
+		Italian:"Converte la Produzione a Oro a un tasso di 4 a 1"
+	}
+
+	"Convert production to science at a rate of 4 to 1":{ 
+		Italian:"Converte la Produzione a Scienza a un tasso di 4 a 1"
+	}
 	
 ////// Tech picker
 
