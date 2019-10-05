@@ -13,6 +13,10 @@
 		German:"Landwirtschaft"
 	}
 	
+	"'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster":{
+		Italian:"'Dove arriva la coltivazione, seguono le altre arti. I contadini sono quindi i fondatori della civiltà umana.' - Daniel Webster"
+	}
+	
 	"Pottery":{
 		Italian:"Ceramica"
 		Russian:"Гончарное дело"
@@ -23,6 +27,10 @@
 		Spanish:"Cerámica"
 		Simplified_Chinese:"制陶"
 		Portuguese:"Cerâmica"
+	}
+	
+	"'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9":{
+		Italian:"'L'argilla dirà forse a colui che le dà forma: 'Che fai'?' - La Bibbia, Isaia, 45:9"
 	}
 
 	"Animal Husbandry":{
@@ -36,6 +44,10 @@
 		Simplified_Chinese:"家畜驯养"
 		Portuguese:"Pecuária"
 	}
+	
+	"'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4":{
+		Italian:"'Non mettere la musoliera al bue mentre sta trebbiando.' - Deuteronomio, 25:4"
+	}
 
 	"Archery":{
 		Italian:"Tiro con l'arco"
@@ -47,6 +59,10 @@
 		Spanish:"Tiro con arco"
 		Simplified_Chinese:"弓箭"
 		Portuguese:"Arquearia"
+	}
+	
+	"'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop":{
+		Italian:"'La freccia è piumata con le penne dell'aquila. Così, spesso diamo ai nemici i mezzi per la nostra stessa distruzione.' - Esopo"
 	}
 
 	"Mining":{
@@ -60,6 +76,10 @@
 		Simplified_Chinese:"采矿"
 		Portuguese:"Mineração"
 	}
+	
+	"'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty":{
+		Italian:"'Gli umili erediteranno la terra, ma non i suoi diritti minerari.' - J. Paul Getty"
+	}
 
 	"Sailing":{
 		Italian:"Vela"
@@ -71,6 +91,10 @@
 		Spanish:"Náutica"
 		Simplified_Chinese:"帆船"
 		Portuguese:"Navegação"
+	}
+	
+	"'He who commands the sea has command of everything.' - Themistocles":{
+		Italian:"'Chi ha il dominio del mare ha il dominio di tutto.' - Temistocle"
 	}
 
 	"Calendar":{
@@ -84,6 +108,10 @@
 		Simplified_Chinese:"历法"
 		Portuguese:"Calendário"
 	}
+	
+	"'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12":{
+		Italian:"'Insegnaci a contare i nostri giorni e giungeremo alla sapienza del cuore.' - Salmi, 90:12"
+	}
 
 	"Writing":{
 		Italian:"Scrittura"
@@ -95,6 +123,10 @@
 		Spanish:"Escritura"
 		Simplified_Chinese:"文字"
 		Portuguese:"Literatura"
+	}
+	
+	"'He who destroys a good book kills reason itself.' - John Milton":{
+		Italian:"'Chi distrugge un buon libro uccide la ragione stessa.' - John Milton"
 	}
 
 	"Trapping":{
@@ -108,6 +140,10 @@
 		Simplified_Chinese:"捕猎"
 		Portuguese:"Caça"
 	}
+	
+	"'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome":{
+		Italian:"'Persino le ferali bestie e gli uccelli vagabondi non cadono due volte nelle stesse trappole.' - San Girolamo"
+	}
 
 	"The Wheel":{
 		Italian:"Ruota"
@@ -119,6 +155,10 @@
 		Spanish:"La rueda"
 		Simplified_Chinese:"轮子"
 		Portuguese:"A roda"
+	}
+	
+	"'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb":{
+		Italian:"'La saggezza e la virtù sono come le due ruote di un carretto.' - Proverbio giapponese"
 	}
 
 	"Masonry":{
@@ -132,6 +172,10 @@
 		Simplified_Chinese:"石工术"
 		Portuguese:"Alvenaria"
 	}
+	
+	"'How happy are those whose walls already rise!' - Virgil":{
+		Italian:"'Lieti coloro le cui mura già si ergono!' - Virgilio"
+	}
 
 	"Bronze Working":{
 		Italian:"Lavorazione del bronzo"
@@ -143,6 +187,10 @@
 		Spanish:"Trabajo del bronce"
 		Simplified_Chinese:"青铜器"
 		Portuguese:"Trabalha com Bronze"
+	}
+	
+	"'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer":{
+		Italian:"'Ed ecco che entrò Ettore, impugnando una lancia lunga undici cubiti; la punta di bronzo brillava davanti a lui ed era fissata all'asta con un anello d'oro.' - Omero"
 	}
 	
 ///////// Technologies (Classical Era)
@@ -158,6 +206,10 @@
 		Simplified_Chinese:"光学"
 		Portuguese:"Óptica"
 	}
+	
+	"'He made an instrument to know if the moon shine at full or no.' - Samuel Butler":{
+		Italian:"'Costruì uno strumento per sapere se la luna brilla in pieno oppure no.' - Samuel Butler"
+	}
 
 	"Horseback Riding":{
 		Italian:"Equitazione"
@@ -169,6 +221,10 @@
 		Spanish:"Equitación"
 		Simplified_Chinese:"骑术"
 		Portuguese:"Montaria"
+	}
+	
+	"'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)":{
+		Italian:"'Un cavallo! Un cavallo! Il mio regno per un cavallo!' - William Shakespeare (Riccardo III)"
 	}
 
 	"Mathematics":{
@@ -182,6 +238,10 @@
 		Simplified_Chinese:"数学"
 		Portuguese:"Matemáticas"
 	}
+	
+	"'Mathematics is the gate and key to the sciences.' - Roger Bacon":{
+		Italian:"'La matematica è la porta e la chiave delle scienze.' - Ruggero Bacone"
+	}
 
 	"Construction":{
 		Italian:"Costruzione"
@@ -193,6 +253,10 @@
 		Spanish:"Construcción"
 		Simplified_Chinese:"建筑构造学"
 		Portuguese:"Construção"
+	}
+	
+	"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfulyl executed.' - Johann Wolfgang von Goethe":{
+		Italian:"'Di un edificio bisogna guardare tre cose: che sia collocato nel posto giusto; che abbia fondamenta solide; che la costruzione sia eseguita con perizia.' - Johann Wolfgang von Goethe"
 	}
     
 	"Philosophy":{
@@ -206,6 +270,10 @@
 		Simplified_Chinese:"哲学"
 		Portuguese:"Filosofia"
 	}
+	
+	"'There is only one good, knowledge, and one evil, ignorance.' - Socrates":{
+		Italian:"'C'è un solo bene, la conoscenza, e un solo male, l'ignoranza.' - Socrate"
+	}
 
 	"Currency":{
 		Italian:"Valuta"
@@ -217,6 +285,10 @@
 		Spanish:"Moneda"
 		Simplified_Chinese:"货币制度"
 		Portuguese:"Moeda"
+	}
+	
+	"'Better is bread with a happy heart than wealth with vexation.' - Amenemope":{
+		Italian:"'Meglio il pane con un cuore felice, che la ricchezza con l'afflizione.' - Amenemope"
 	}
 
 	"Engineering":{
@@ -230,6 +302,10 @@
 		Simplified_Chinese:"工程学"
 		Portuguese:"Engenharia"
 	}
+	
+	"'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci":{
+		Italian:"'La scienza degli strumenti e della meccanica è la più nobile di tutte, e soprattutto la più utile.' - Leonardo da Vinci"
+	}
 
 	"Iron Working":{
 		Italian:"Lavorazione del ferro"
@@ -241,6 +317,10 @@
 		Spanish:"Trabajo del hierro"
 		Simplified_Chinese:"铁器"
 		Portuguese:"Trabalho com ferro"
+	}
+	
+	"'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats":{
+		Italian:"'Non aspettate che il ferro sia caldo prima di batterlo; rendetelo caldo con i vostri colpi.' - William Butler Yeats"
 	}
 	
 /////////   Technologies (Medieval Era)
@@ -256,6 +336,10 @@
 		Simplified_Chinese:"神学"
 		Portuguese:"Teologia"
 	}
+	
+	"'Three things are necessary for the salvarion of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas":{
+		Italian:"'Tre cose sono necessarie per la salvezza dell'uomo: sapere in cosa deve credere; sapere che cosa deve desiderare; sapere cosa deve fare.' - San Tommaso d'Aquino"
+	}
 
 	"Civil Service":{
 		Italian:"Pubblica amministrazione"
@@ -267,6 +351,10 @@
 		Spanish:"Servicio civil"
 		Simplified_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
+	}
+	
+	"'The only thing that saves us from the bureaucracy is it inefficiency' - Eugene McCarthy":{
+		Italian:"'L'unica cosa che ci salva dalla burocrazia è la sua inefficienza.' - Eugene McCarthy"
 	}
 
 	"Enables Open Borders agreements":{
@@ -287,6 +375,10 @@
 		Portuguese:"Guildas"
 		German:"Gilden"
 	}
+	
+	"'The merchants and the traders have come; their profits are pre-ordained...' - Sri Guru Granth Sahib":{
+		Italian:"'I mercanti e i bottegai sono arrivati; i loro profitti sono prestabiliti...' - Sri Guru Granth Sahib"
+	}
 
 	"Physics":{
 		Italian:"Fisica"
@@ -298,6 +390,10 @@
 		Spanish:"Física"
 		Simplified_Chinese:"物理学"
 		Portuguese:"Física"
+	}
+	
+	"'Measure what is measurable, and make measurable what is not so.' - Galileo Galilei":{
+		Italian:"'Misura ciò che è misurabile, e rendi misurabile ciò che non lo è.' - Galileo Galilei"
 	}
 
 	"Metal Casting":{
@@ -311,6 +407,10 @@
 		Simplified_Chinese:"金属铸造"
 		Portuguese:"Fundição"
 	}
+	
+	"'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib":{
+		Italian:"'Quando pezzi di bronzo o d'oro o di ferro si rompono, il fabbro li rinsalda ancora con il fuoco e il legame è ristabilito.' - Sri Guru Granth Sahib"
+	}
 
 	"Steel":{
 		Italian:"Acciaio"
@@ -322,6 +422,10 @@
 		Simplified_Chinese:"炼钢"
 		Portuguese:"Aço"
 		German:"Stahl"
+	}
+	
+	"'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man":{
+		Italian:"'John Henry disse al cuo Capitano, 'Un uomo non è che un uomo, e prima che la tua perforatrice a vapore mi batta, morirò col martello in mano.' - Anonimo: La ballata di John Henry, l'uomo che batte l'acciaio"
 	}
 
 	"Compass":{
@@ -335,6 +439,10 @@
 		Simplified_Chinese:"罗盘"
 		Portuguese:"Bússola"
 	}
+	
+	"'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes":{
+		Italian:"'Trovo che la cosa grandiosa di questo mondo non sia tanto dove siamo, ma verso dove stiamo andando.' - Oliver Wendell Holmes"
+	}
 
 	"Education":{
 		Italian:"Educazione"
@@ -346,6 +454,10 @@
 		Spanish:"Educación"
 		Simplified_Chinese:"教育学"
 		Portuguese:"Educação"
+	}
+	
+	"'Education is the best provision for old age.' - Aristotle":{
+		Italian:"'L'educazione è la migliore previdenza per la vecchiaia.' - Aristotele"
 	}
 
 	"Chivalry":{
@@ -359,6 +471,10 @@
 		Simplified_Chinese:"骑士制度"
 		Portuguese:"Cavalheirismo"
 	}
+	
+	"'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory":{
+		Italian:"'Chi estrae questa spada dall'incudine e dalla roccia è per diritto nato re di tutta l'Inghilterra.' - Malory"
+	}
 
 	"Machinery":{
 		Italian:"Meccanica"
@@ -370,6 +486,10 @@
 		Spanish:"Mecánica"
 		Simplified_Chinese:"机械"
 		Portuguese:"Maquinária"
+	}
+	
+	"'The press is the best instrument for enlightening the mind of man, and improving him as a rational, moral and social being.' - Thomas Jefferson":{
+		Italian:"'La stampa è il migliore strumento per illuminare la mente dell'uomo e migliorarlo come essere razionale, morale e sociale.' - Thomas Jefferson"
 	}
 	
 ///////// Technologies (Renaissance Era)
@@ -385,6 +505,10 @@
 		Simplified_Chinese:"天文学"
 		Portuguese:"Astronomia"
 	}
+	
+	"'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer":{
+		Italian:"'Gioiosamente il re Odisseo aprì la vela alla brezza e abilmente manovrò il remo.' - Omero"
+	}
 
 	"Acoustics":{
 		Italian:"Acustica"
@@ -396,6 +520,10 @@
 		Spanish:"Acústica"
 		Simplified_Chinese:"声学"
 		Portuguese:"Acústica"
+	}
+	
+	"'Their rising all at once was as the sound of thunder heard remote' - Milton":{
+		Italian:"'Quando si levarono tutti insieme, il suono fu come un tuono che rimbomba lontano.' - Milton"
 	}
 
 	"Banking":{
@@ -409,6 +537,10 @@
 		Simplified_Chinese:"银行业"
 		Portuguese:"Sistema bancário"
 	}
+	
+	"'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau":{
+		Italian:"'La felicità è un buon conto in banca, una buona cuoca e una buona digestione.' - Jean-Jacques Rousseau"
+	}
 
 	"Printing Press":{
 		Italian:"Tipografia"
@@ -420,6 +552,10 @@
 		Spanish:"Imprenta"
 		Simplified_Chinese:"印刷机"
 		Portuguese:"Impressora"
+	}
+	
+	"'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times":{
+		Italian:"'Il dovere di un giornale è pubblicare le notizie e scatenare polveroni.' - The Chicago Times"
 	}
 
 	"Gunpowder":{
@@ -433,6 +569,10 @@
 		Portuguese:"Pólvora"
 		German:"Schießpulver"
 	}
+	
+	"'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel":{
+		Italian:"'Il giorno in cui due eserciti potranno distruggersi l'un l'altro in un solo secondo, si può sperare che tutte le nazioni civilizzate rifuggiranno la guerra e scioglieranno le loro truppe.' - Alfred Nobel"
+	}
 
 	"Navigation":{
 		Italian:"Navigazione"
@@ -445,6 +585,10 @@
 		Simplified_Chinese:"航海术"
 		Portuguese:"Navegação"
 	}
+	
+	"'The winds and the waves are always on the side of the ablest navigators.' - Edward Gibbon":{
+		Italian:"'I venti e le onde sono sempre dalla parte dei navigatori più abili.' - Edward Gibbon"
+	}
 
 	"Architecture":{
 		Italian:"Architettura"
@@ -456,6 +600,10 @@
 		Spanish:"Arquitectura"
 		Simplified_Chinese:"建筑设计学"
 		Portuguese:"Arquitetura"
+	}
+	
+	"'Architecture begins where engineering ends.' - Walter Gropius":{
+		Italian:"'L'architettura inizia dove finisce l'ingegneria.' - Walter Gropius"
 	}
 
 	"Archaeology":{ // Shouldn't it be in Industrial Age?
@@ -482,6 +630,10 @@
 		Portuguese:"Economia"
 	}
 	
+	"'Compound interest is the most powerful force in the universe.' - Albert Einstein":{
+		Italian:"'L'interesse composto è la forza più potente dell'universo.' - Albert Einstein"
+	}
+	
 	"Metallurgy":{
 		Italian:"Metallurgia"
 		Russian:"Металлургия"
@@ -494,6 +646,10 @@
 		German:"Metallhüttenkunde"
 	}
 	
+	"'There never was a good knife made of bad steel.' - Benjamin Franklin":{
+		Italian:"'Non c'è mai stato un buon coltello fatto di cattivo acciaio.' - Bejamin Franklin"
+	}
+	
 	"Chemistry":{
 		Italian:"Chimica"
 		Russian:"Химия"
@@ -504,6 +660,10 @@
 		Spanish:"Química"
 		Simplified_Chinese:"化学"
 		Portuguese:"Química"
+	}
+	
+	"'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge":{
+		Italian:"'Dovunque voltiamo gli occhi, il lavoro del chimico ha alzato il livello della nostra civiltà e incrementato la capacità produttiva della nazione.' - Calvin Coolidge"
 	}
 	
 ///////// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
@@ -616,6 +776,7 @@
 		German:"Dynamit"
 	}
 	
+	
 ///////// Technologies (Modern Era)
 	
 	"Refrigeration":{
@@ -676,7 +837,7 @@
 		Simplified_Chinese:"塑料"
 		Portuguese:"Plásticos"
 	}
-
+	
 	"Electronics":{
 		Italian:"Elettronica"
 		Russian:"Электроника"
