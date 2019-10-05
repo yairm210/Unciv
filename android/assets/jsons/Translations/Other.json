@@ -2056,20 +2056,24 @@
 	// Map editor
 	
 	
-	"Terrains & Resources":{
-		Italian:"Terreni e risorse"
+	"Terrains & Resources": {
+		Italian:"Terreni e risorse",
+		Russian:"Ландшафты и ресурсы"
 	}
 
 	"Improvements":{
 		Italian:"Miglioramenti"
+		Russian:"Улучшения"
 	}
 
 	"Barbarian encampment":{
 		Italian:"Accampamento barbaro"
+		Russian:"Лагерь варваров"
 	}
 
 	"[nation] starting location":{
 		Italian:"Punto iniziale di [nation]"
+		Russian:"Начальное положение [nation]"
 	}
 
 	"Clear terrain features":{
@@ -2078,10 +2082,12 @@
 
 	"Clear improvements":{
 		Italian:"Elimina miglioramenti"
+		Russian:"Удалить улучшения"
 	}
 
 	"Clear resource":{
-		Italian:"Elimina risorsa"
+		Italian:"Elimina risorsa",
+		Russian:"Удалить ресурсы"
 	}
 
 }

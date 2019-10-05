@@ -1233,6 +1233,7 @@
 	"Hiawatha":{
 		Italian:"Hiawatha"//Same as in Italian
 		Simplified_Chinese:"海华沙"
+		Russian:"Хайавата"
 	}
 
 	"All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.":{
@@ -1248,6 +1249,7 @@
 		French:"Perse"
 		Portuguese:"Pérsia"
 		Simplified_Chinese:"波斯"
+		Russian:Персия
 	}
 	
 	"Darius I":{
