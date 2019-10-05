@@ -658,8 +658,8 @@
 	
 	"Show minimap":{
 		Italian:"Mostra minimappa",
-		Simplified_Chinese:"显示小地图",
-		"Russian": "Показать миникарту"
+		Simplified_Chinese:"显示小地图"
+		Russian:"Показать миникарту"
 	}
 
 	"Fontset":{
