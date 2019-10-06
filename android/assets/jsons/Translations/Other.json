@@ -2076,16 +2076,19 @@
 	"Terrains & Resources":{
 		Italian:"Terreni e risorse"
 		Simplified_Chinese:"地形地貌与资源"
+		Russian:"Ландшафты и ресурсы"
 	}
 
 	"Improvements":{
 		Italian:"Miglioramenti"
 		Simplified_Chinese:"设施"
+		Russian:"Улучшения"
 	}
 
 	"[nation] starting location":{
 		Italian:"Punto iniziale di [nation]"
 		Simplified_Chinese:"[nation]起始位置"
+		Russian:"Начальное положение [nation]"
 	}
 
 	"Clear terrain features":{
@@ -2101,6 +2104,7 @@
 	"Clear resource":{
 		Italian:"Elimina risorsa"
 		Simplified_Chinese:"清除资源"
+		Russian:"Удалить ресурсы"
 	}
 
 }
