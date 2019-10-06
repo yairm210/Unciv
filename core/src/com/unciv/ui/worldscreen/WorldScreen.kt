@@ -172,7 +172,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         topBar.update(viewingCiv)
 
-        updateTechButton(viewingCiv)
+        updateTechButton()
         techPolicyandVictoryHolder.pack()
         techPolicyandVictoryHolder.setPosition(10f, topBar.y - techPolicyandVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
@@ -242,15 +242,15 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         diplomacyButtonWrapper.y = techPolicyandVictoryHolder.y -20 - diplomacyButtonWrapper.height
     }
 
-    private fun updateTechButton(civInfo: CivilizationInfo) {
-        techButtonHolder.isVisible = civInfo.cities.isNotEmpty()
+    private fun updateTechButton() {
+        techButtonHolder.isVisible = viewingCiv.cities.isNotEmpty()
         techButtonHolder.clearChildren()
 
-        val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
-        if (civInfo.tech.currentTechnology() == null && researchableTechs.isEmpty())
-            civInfo.tech.techsToResearch.add(Constants.futureTech)
+        val researchableTechs = GameBasics.Technologies.values.filter { !viewingCiv.tech.isResearched(it.name) && viewingCiv.tech.canBeResearched(it.name) }
+        if (viewingCiv.tech.currentTechnology() == null && researchableTechs.isEmpty())
+            viewingCiv.tech.techsToResearch.add(Constants.futureTech)
 
-        if (civInfo.tech.currentTechnology() == null) {
+        if (viewingCiv.tech.currentTechnology() == null) {
             val buttonPic = Table()
             buttonPic.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
                     .tint(colorFromRGB(7, 46, 43))
@@ -259,11 +259,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             techButtonHolder.add(buttonPic)
         }
         else {
-            val currentTech = civInfo.tech.currentTechnologyName()!!
-            val innerButton = TechButton(currentTech,civInfo.tech)
+            val currentTech = viewingCiv.tech.currentTechnologyName()!!
+            val innerButton = TechButton(currentTech,viewingCiv.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
             techButtonHolder.add(innerButton)
-            val turnsToTech = civInfo.tech.turnsToTech(currentTech)
+            val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
             innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
                     + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()))
         }

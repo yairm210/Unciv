@@ -31,10 +31,10 @@ class Technology : ICivilopedia {
                 lineList += impimpString.tr()
             }
 
-            val currentPlayerCiv = UnCivGame.Current.gameInfo.currentPlayer
+            val viewingCiv = UnCivGame.Current.worldScreen.viewingCiv
             var enabledUnits = GameBasics.Units.values.filter {
                 it.requiredTech == name &&
-                        (it.uniqueTo == null || it.uniqueTo == currentPlayerCiv)
+                        (it.uniqueTo == null || it.uniqueTo == viewingCiv.civName)
             }
             val replacedUnits = enabledUnits.mapNotNull { it.replaces }
             enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
@@ -46,7 +46,7 @@ class Technology : ICivilopedia {
 
             var enabledBuildings = GameBasics.Buildings.values.filter {
                 it.requiredTech == name &&
-                        (it.uniqueTo == null || it.uniqueTo == currentPlayerCiv)
+                        (it.uniqueTo == null || it.uniqueTo == viewingCiv.civName)
             }
             val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
             enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }

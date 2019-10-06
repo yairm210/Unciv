@@ -57,10 +57,12 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         add(airUnitTable).row()
     }
 
+    private fun belongsToViewingCiv() = city.civInfo == UnCivGame.Current.worldScreen.viewingCiv
+
     private fun setButtonActions() {
 
         val unitTable = tileGroup.worldScreen.bottomBar.unitTable
-        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
+        if (UnCivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
 
             // So you can click anywhere on the button to go to the city
             touchable = Touchable.childrenOnly
@@ -119,7 +121,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
                 iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
             }
-        } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {
+        } else if (belongsToViewingCiv() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             connectionImage.color = secondaryColor
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
@@ -131,7 +133,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
 
-        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
+        if (UnCivGame.Current.viewEntireMapForDebug || belongsToViewingCiv())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f).padLeft(10f)
         else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
