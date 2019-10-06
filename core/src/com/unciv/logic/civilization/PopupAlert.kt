@@ -12,6 +12,7 @@ enum class AlertType{
     CitiesSettledNearOtherCiv,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
+    GoldenAge,
 }
 
 class PopupAlert {
