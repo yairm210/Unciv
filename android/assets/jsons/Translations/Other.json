@@ -825,7 +825,7 @@
 		German:"[thingToProduce] herstellen"
 		Dutch:"[thingToProduce] produceren"
 		Spanish:"Producir [thingToProduce]"
-		Simplified_Chinese:"产能转化：[thingToProduce]"
+		Simplified_Chinese:"产能利用：[thingToProduce]"
 		Portuguese:"Produzir [thingToProduce]"
 		Japanese:"プロデュース[thingToProduce]"
 	} 
@@ -845,6 +845,7 @@
 	
 	"Annex city":{ // For a puppetted city
 		Italian:"Annetti città"
+		Simplified_Chinese:"吞并城市"
 	}
 	
 	"Specialist Buildings":{
@@ -1043,10 +1044,16 @@
 
 	"Convert production to gold at a rate of 4 to 1":{ 
 		Italian:"Converte la Produzione a Oro a un tasso di 4 a 1"
+		Simplified_Chinese:"转化1/4产能为金钱"
 	}
 
 	"Convert production to science at a rate of 4 to 1":{ 
 		Italian:"Converte la Produzione a Scienza a un tasso di 4 a 1"
+		Simplified_Chinese:"转化1/4产能为科研"
+	}
+
+	"The city will not produce anything.":{ 
+		Simplified_Chinese:"城市将不会建造/组建任何项目"
 	}
 	
 ////// Tech picker
@@ -1820,10 +1827,12 @@
 
 	"Puppet City":{
 		Italian:"Riduci a Stato Fantoccio"
+		Simplified_Chinese:"傀儡城市"
 	}
 
 	"Liberate":{
 		Italian:"Libera"
+		Simplified_Chinese:"解放"
 	}
 
 	"Raze":{
@@ -2064,37 +2073,38 @@
 	// Map editor
 	
 	
-	"Terrains & Resources": {
-		Italian:"Terreni e risorse",
+	"Terrains & Resources":{
+		Italian:"Terreni e risorse"
+		Simplified_Chinese:"地形地貌与资源"
 		Russian:"Ландшафты и ресурсы"
 	}
 
 	"Improvements":{
 		Italian:"Miglioramenti"
+		Simplified_Chinese:"设施"
 		Russian:"Улучшения"
-	}
-
-	"Barbarian encampment":{
-		Italian:"Accampamento barbaro"
-		Russian:"Лагерь варваров"
 	}
 
 	"[nation] starting location":{
 		Italian:"Punto iniziale di [nation]"
+		Simplified_Chinese:"[nation]起始位置"
 		Russian:"Начальное положение [nation]"
 	}
 
 	"Clear terrain features":{
 		Italian:"Elimina caratteristica del terreno"
+		Simplified_Chinese:"清除地貌"
 	}
 
 	"Clear improvements":{
 		Italian:"Elimina miglioramenti"
 		Russian:"Удалить улучшения"
+		Simplified_Chinese:"清除设施"
 	}
 
 	"Clear resource":{
-		Italian:"Elimina risorsa",
+		Italian:"Elimina risorsa"
+		Simplified_Chinese:"清除资源"
 		Russian:"Удалить ресурсы"
 	}
 
