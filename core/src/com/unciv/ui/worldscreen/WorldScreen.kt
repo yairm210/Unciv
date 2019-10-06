@@ -183,7 +183,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         val isSomethingOpen = tutorials.isTutorialShowing || stage.actors.any { it is TradePopup }
                 || alertPopupIsOpen
-        if(!isSomethingOpen) {
+        if(!isSomethingOpen && isPlayersTurn) {
             when {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
                 viewingCiv.policies.freePolicies > 0 -> game.screen = PolicyPickerScreen(this)
