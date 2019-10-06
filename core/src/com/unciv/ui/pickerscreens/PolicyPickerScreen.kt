@@ -19,7 +19,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
     init {
         val policies = viewingCiv.policies
-        displayTutorials("PolicyPickerScreen")
+        displayTutorials("Culture_and_Policies")
 
         rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 

@@ -1,6 +1,6 @@
 { // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
 	// so for example:
-	PolicyPickerScreen: [ // Activated when entering policy picker screen
+	Culture_and_Policies: [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
 			"A chaque tour, la culture que vous gagnez grâce à vos",
 			"  villes est ajoutée à votre total de culture.",
@@ -17,8 +17,8 @@
 			" le coût pour adopter une nouvelle doctrine augmente."
 		]
 	],
-	
-	CityEntered: [
+
+	Cities: [
 		[
 			"Bienvenue dans votre première ville !",
 			"Pour l'instant, vous avez seulement 1 habitant, mais d'autres viendront lorsque vous aurez suffisament de surplus de nourriture",
@@ -51,8 +51,8 @@
 			" chacune d'entre elles nécessite un niveau technologique élevé."
 		],
 	],
-	
-	TechPickerScreen : [
+
+	Technology: [
 		[
 			"La technologie est centrale dans le développement de votre civilisation.",
 			" Les avancées technologiques vous amènent de nouveaux bâtiments,",
@@ -64,9 +64,9 @@
 			" Votre civilisation recherchera automatiquement les technologies nécessaires pour y parvenir."
 		]
 	],
-	
-	
-	CityFounded : [
+
+
+	First_Steps : [
 		[
 			"Vous avez fondé une nouvelle ville !",
 			" Les villes composent le moteur de votre empire, elles produisent de l'or et de la science",
@@ -81,8 +81,8 @@
 			" et voir les différents informations la concernant."
 		]
 	],
-	
-	NewGame: [
+
+	New_Game: [
 		[
 			"Bonjour, et bienvenue sur Unciv !",
 			"Ce jeu peut être complexe : nous allons donc vous guider pour vos débuts.",
@@ -173,17 +173,17 @@
 			" Au fur et à mesure de votre avancée de nouveaux tutoriels seront proposés pour vous aider."
 		]
 	],
-	
-	TileLayout: [
+
+	World_Map: [
 		[
 			"C'est la carte du monde : elle est faite de nombreuses cases.",
 			" Chaque cases peut contenir des unités, des ressources et des villes.",
 			" En cliquant sur une case vous obtiendrez des informations la concernant."
 		]
 	],
-	
-	
-	TileClicked : [
+
+
+	Tile_Clicked : [
 		[
 			"Cliquer sur une case la sélectionne",
 			" et donne des informations la concernant (en bas à droite).",
@@ -191,15 +191,15 @@
 			" vous pourrez avoir des informations à son propos et la contrôler (si elle vous appartient)."
 		]
 	],
-	
-	UnitSelected : [
+
+	Unit_Selected : [
 		[
 			"Lorsqu'une unité est sélectionnée, les informations la concernant s'affichent en bas à gauche.",
 			" Les actions qu'elle peut effectuer s'afficheront sur l'écran central."
 		]
 	],
-	
-	AfterCityEntered : [
+
+	Next_Turn : [
 		[
 			"Une fois que vous avez fait ce que vous pouviez, ",
 			"cliquez sur le bouton tour suivant en haut à droite pour continuer."
@@ -210,17 +210,17 @@
 			" et elles peuvent s'agrandir en population et/ou en influence."
 		]
 	],
-	
-	NextTurn: [
+
+	Slow_Start: [
 		[
 			"Lors de vos premiers tours,",
 			" vous aurez peu de choix.",
 			" Mais plus votre civilisation grandira, ",
 			" plus vous aurez d'éléments à gérer."
 		]
-	]
-	
-	ContactMe:  [
+	],
+
+	Contact_Me:  [
 		[
 			"Salut ! Si vous avez joué jusqu'ici, vous avez probablement",
 			" remarqué que ce jeu n'est pas encore fini.",
@@ -257,8 +257,8 @@
 			"  ou en ayant des ressources de luxe sur votre territoire."
 		]
 	],
-	
-	GoldenAge:  [
+
+	Golden_Age:  [
 		[
 			"Vous êtes entré dans un Age d'or !",
 			" Les points d'Age d'or se gagnent grâce au bonheur de vos citoyens :",
@@ -268,7 +268,7 @@
 		]
 	],
 	
-	SecondCity:  [
+	Roads_and_Railroads:  [
 		[
 			"Vous avez fondé votre deuxième ville !",
 			" Connectez vos villes à votre capitale par des routes.",
@@ -308,14 +308,14 @@
 		]
 	]
 	
-	EnemyCityNeedsConqueringWithMeleeUnit:  [
+	_EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
 			"Cette ville n'est plus capable de se défendre !",
 			" Pour conquérir cette ville vous devez l'attaquer avec une unité de mêlée."
 		]
 	]
 	
-	BarbarianEncountered:  [
+	_BarbarianEncountered:  [
 		[
 			"Vous avez rencontré une unité barbare !",
 			" Les barbares attaquent tous ceux qu'ils croisent, donc ne laissez ",
@@ -323,7 +323,7 @@
 		]
 	]
 	
-	OtherCivEncountered:  [
+	_OtherCivEncountered:  [
 		[
 			"Vous avez rencontré une autre civilisation !",
 			" Lorsque vous les rencontrez, les autres civilisations sont pacifiques",
@@ -331,7 +331,7 @@
 		]
 	]
 	
-	GameCrashed:  [
+	_GameCrashed:  [
 		[
 			"Oh non ! On dirait que quelque chose ne s'est ABSOLUMENT pas passé comme prévu !",
 			" Ce n'est pas censé arriver !",
@@ -341,7 +341,7 @@
 		]
 	]
 	
-	ApolloProgram:  [
+	Apollo_Program:  [
 		[
 			"Vous avez complété le programmme Apollo !",
 			" Vous pouvez désormais produire des parties de vaisseau spatial",
@@ -349,7 +349,7 @@
 		]
 	]
 	
-	InjuredUnits:[
+	Injured_Units:[
 		[
 			"L'une de vos unités est blessée !",
 			" Les unités blessées font moins de dégâts en combat, mais elles regagnent des points de vie en restant inactives.",
@@ -358,7 +358,7 @@
 		]
 	]
 	
-	WorkerTrained:[
+	Workers:[
 		[
 			"Vous avez produit un Ouvrier !",
 			" Les ouvriers sont vitaux pour l'agrandissement de vos villes. Ils peuvent améliorer les cases",
@@ -366,7 +366,7 @@
 		]
 	]
 	
-	SiegeUnitTrained:[
+	Siege_Units:[
 		[
 			"Vous avez produit une unité de siège !",
 			" Ces unités sont efficaces contre les villes, mais elles doivent être installées avant de pouvoir attaquer.",
@@ -375,7 +375,7 @@
 		]
 	]
 	
-	CanEmbark:[
+	Embarking:[
 		[
 			"Vos unités terrestres peuvent désormais s'embarquer pour traverser les océans !",
 			" Entrer ou quitter une case d'océan prend un tour entier.",
@@ -383,7 +383,7 @@
 		]
 	]
 
-	CityRange:[
+	City_Range:[
 		[
 			"Vos citoyens peuvent exploiter les zones se trouvant jusqu'à 3 cases de leur ville.",
 			"Les fontières des villes augmentent au-delà et sans limite,",

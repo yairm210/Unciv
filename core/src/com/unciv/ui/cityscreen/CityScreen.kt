@@ -69,7 +69,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(buildingsTableContainer)
 
         update()
-        displayTutorials("CityEntered")
+        displayTutorials("Cities")
     }
 
     internal fun update() {
@@ -92,7 +92,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         constructionsTable.setPosition(5f, stage.height-5-topCityStatsTable.height, Align.topLeft)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
-            displayTutorials("CityRange")
+            displayTutorials("City_Range")
         }
     }
 

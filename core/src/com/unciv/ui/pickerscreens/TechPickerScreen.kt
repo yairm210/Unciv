@@ -95,7 +95,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
             dispose()
         }
 
-        displayTutorials("TechPickerScreen")
+        displayTutorials("Technology")
 
         // per default show current/recent technology,
         // and possibly select it to show description,

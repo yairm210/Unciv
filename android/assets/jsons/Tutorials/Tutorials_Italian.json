@@ -1,6 +1,6 @@
 { // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
 	// so for example:
-	PolicyPickerScreen: [ // Activated when entering policy picker screen
+	Culture_and_Policies: [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
 			"Ad ogni turno, la cultura ottenuta da ogni tua città ",
 			"  si aggiunge alla cultura della tua civiltà.",
@@ -16,8 +16,8 @@
 			" di adozione per un'altra politica aumenta, quindi pianifica con cautela!"
 		]
 	],
-	
-	CityEntered: [
+
+	Cities: [
 		[
 			"Benvenuto nella tua prima città!",
 			"Per ora, possiede solo 1 abitante, ma la popolazione crescerà quando possiedi del cibo in eccesso",
@@ -36,8 +36,8 @@
 			"Puoi scegliere la costruzione cliccando sul tasto costruzione in basso a sinistra."
 		]
 	],
-	
-	TechPickerScreen : [
+
+	Technology: [
 		[
 			"La tecnologia è centrale per la tua civiltà, ",
 			" perché quante più tecnologie ricerchi ",
@@ -55,9 +55,9 @@
 			"La storia ci insegna che in casi come questo vince sempre chi possiede la tecnologia più avanzata."
 		]
 	],
-	
-	
-	CityFounded : [
+
+
+	First_Steps : [
 		[
 			"Hai fondato una città!",
 			"Le Città sono la linfa vitale del tuo impero, perchè producono globalmente ",
@@ -81,8 +81,8 @@
 			"In gran parte dei giochi di questo tipo, una rapida espansione è un'azione critica.",
 		],
 	],
-	
-	NewGame: [
+
+	New_Game: [
 		[
 			"Salve! Benvenuto su Unciv!",
 			"I giochi di tipo Civilization possono essere complessi, quindi ti guideremo passo dopo passo.",
@@ -112,7 +112,7 @@
 	
 	
 	
-	HappinessGettingLow:[
+	Happiness:[
 		[
 			"Col crescere delle Città in grandezza e influenza, crescerà anche il territorio a disposizione.",
 			"Dovrai però avere a che fare con una meccanica legata all'impero e non alle Città singole.",
@@ -132,8 +132,8 @@
 			"Se vuoi fondare nuove Città, fallo solo su punti che credi appropriati."
 		],
 	],
-	
-	TileLayout: [
+
+	World_Map: [
 		[
 			"Questa è la mappa del mondo, che è composta da moltissime caselle.",
 			"Ogni casella può contenere unità, risorse e miglioramenti, che ti spiegheremo in seguito.",
@@ -141,24 +141,24 @@
 			"Per maggiori dettagli, puoi cliccare sulla casella e vederne le informazioni."
 		],
 	],
-	
-	
-	TileClicked:[
+
+
+	Tile_Clicked:[
 		[
 			"Cliccando su una casella, non solo la selezioni, ma ne visualizzi le informazioni in basso a destra.",
 			"Se una casella contiene un'unità, questa verrà selezionata, "
 			" e in basso a sinistra saranno visualizzate informazioni e azioni."
 		],
 	],
-	
-	UnitSelected:[
+
+	Unit_Selected:[
 		[
 			"Quando un'unità viene selezionata, ne vedrai le informazioni nell'angolo in basso a sinistra.",
 			"Le azioni disponibili dell'unità appariranno sopra le sue informazioni e statistiche."
 		]
 	],
-	
-	AfterCityEntered : [
+
+	Next_Turn : [
 		[
 			"Una volta fatto tutto il possibile, clicca sul tasto Fine Turno nell'angolo in alto a destra per continuare.",
 		],
@@ -167,8 +167,8 @@
 			" e anche la popolazione potrebbe aumentare."
 		]
 	],
-	
-	NextTurn: [
+
+	Slow_Start: [
 		[
 			"Nei tuoi primi turni, avrai ben poche opzioni, ma con il crescere della tua civiltà, aumenterà anche ",
 			" la quantità di cose che richiedono la tua attenzione."
@@ -180,8 +180,8 @@
 			" qualche tiro mancino, e l'esperienza potrebbe esserti fatale!"
 		]
 	],
-	
-	ContactMe:  [
+
+	Contact_Me:  [
 		[
 			"Salve! Se sei giunto/a fin qui, forse avrai visto che il gioco è al momento incompleto.",
 			"UnCiv dovrebbe essere open-source e gratuito per sempre, quindi privo di pubblicità o altre siocchezze."
@@ -215,8 +215,8 @@
 			" o sfrutti delle caselle contenenti risorse di lusso entro i tuoi confini."
 		]
 	],
-	
-	GoldenAge:  [
+
+	Golden_Age:  [
 		[
 			"Sei entrato in un'Età dell'Oro! Che fortuna!",
 			"I punti Età dell'Oro si accumulano ad ogni turno dalla felicità totale della tua civiltà.",
@@ -225,7 +225,7 @@
 		]
 	],
 	
-	SecondCity:  [
+	Roads_and_Railroads:  [
 		[
 			"Ben fatto! Hai fondato la tua seconda città!",
 			"Se connetti le tua città alla capitale con le strade, le rotte commerciali ti frutteranno oro.",
@@ -280,14 +280,14 @@
 		]
 	],
 	
-	EnemyCityNeedsConqueringWithMeleeUnit:  [
+	_EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
 			"La città ha esaurito del tutto la sua resistenza! È giunto il momento di conquistarla!",
 			"Ricordati che per conquistarla devi farvi entrare un'unità da mischia."
 		]
 	],
-	
-	ConqueredEnemyCity: [
+
+	After_Conquering: [
 		[
 			"Hai conquistato una città nemica!",
 			"Ora puoi scegliere se raderla al suolo, ridurla a stato fantoccio o annetterla al tuo impero.",
@@ -303,7 +303,7 @@
 		]
 	],
 	
-	BarbarianEncountered:  [
+	_BarbarianEncountered:  [
 		[
 			"Hai incontrato un'unità barbarica!",
 			"I barbari attaccano chiunque indiscriminatamente, quindi tieni le tue unità civili ",
@@ -311,7 +311,7 @@
 		]
 	],
 	
-	OtherCivEncountered:  [
+	_OtherCivEncountered:  [
 		[
 			"Hai incontrato un'altra civiltà!",
 			"Le altre civiltà cominciamo come pacifiche, e tu potrai commerciare con loro,",
@@ -319,7 +319,7 @@
 		]
 	],
 	
-	GameCrashed:  [
+	_GameCrashed:  [
 		[
 			"Santi numi! Pare che qualcosa sia andato disastrosamente storto!",
 			"Quello che è successo non doveva assolutamente accadere!",
@@ -329,7 +329,7 @@
 		]
 	],
 	
-	ApolloProgram:  [
+	Apollo_Program:  [
 		[
 			"Hai completato il Programma Apollo!",
 			"Ora puoi iniziare a costruire le parti dell'astronave nelle tue città (con le apposite tecnologie)",
@@ -337,7 +337,7 @@
 		]
 	],
 	
-	InjuredUnits:[
+	Injured_Units:[
 		[
 			"Una delle tue unità ha subito danni!",
 			"Le unità ferite infliggono meno dani, ma recuperano salute finché rimangono inattive",
@@ -346,7 +346,7 @@
 		]
 	],
 	
-	WorkerTrained:[
+	Workers:[
 		[
 			"Hai addestrato un lavoratore!",
 			"I lavoratori sono vitali per la crescita delle città, perché solo loro possono costruire miglioramenti nelle caselle.",
@@ -355,7 +355,7 @@
 		]
 	],
 	
-	SiegeUnitTrained:[
+	Siege_Units:[
 		[
 			"Hai addestrato un'unità d'assedio!",
 			"Le unità d'assedio sono estremamente potenti contro le città, ma vanno allestite prima di attaccare.",
@@ -364,7 +364,7 @@
 		]
 	],
 	
-	CanEmbark:[
+	Embarking:[
 		[
 			"Ora le tue unità terrestri possono imbarcarsi e attraversare caselle acquatiche!",
 			"Entrare o uscire da una casella acquatica impiega un intero turno.",
@@ -372,7 +372,7 @@
 		]
 	],
 
-	CityRange:[
+	City_Range:[
 		[
 			"I tuoi cittadini possono sfruttare fino a tre caselle di distanza dal centro città.",
 			"Ricorda che i confini della città continueranno ad espandersi,",
