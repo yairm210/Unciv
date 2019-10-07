@@ -8,6 +8,9 @@
 		buildingCostModifier:0.5,
 		policyCostModifier:0.5,
 		unhappinessModifier:0.4,
+		/*
+		barbarianBonus:75,
+		*/
 		aiCityGrowthModifier:1.6, // that is to say it'll take them 1.6 times as long to grow the city
 		aiUnitCostModifier:1.75,
 		aiBuildingCostModifier:1.6,
@@ -28,6 +31,9 @@
 		buildingCostModifier:0.67,
 		policyCostModifier:0.67,
 		unhappinessModifier:0.6,
+		/*
+		barbarianBonus:50,
+		*/
 		aiCityGrowthModifier:1.3,
 		aiUnitCostModifier:1.3,
 		aiBuildingCostModifier:1.3,
@@ -48,6 +54,9 @@
 		buildingCostModifier:0.85,
 		policyCostModifier:0.85,
 		unhappinessModifier:0.75,
+		/*
+		barbarianBonus:40,
+		*/
 		aiCityGrowthModifier:1.1,
 		aiUnitCostModifier:1.1,
 		aiBuildingCostModifier:1.1,
@@ -68,6 +77,9 @@
 		buildingCostModifier:1,
 		policyCostModifier:1,
 		unhappinessModifier:1,
+		/*
+		barbarianBonus:33,
+		*/
 		aiCityGrowthModifier:1,
 		aiUnitCostModifier:1,
 		aiBuildingCostModifier:1,
@@ -88,6 +100,9 @@
 		buildingCostModifier:1,
 		policyCostModifier:1,
 		unhappinessModifier:1,
+		/*
+		barbarianBonus:25,
+		*/
 		aiCityGrowthModifier:0.9,
 		aiUnitCostModifier:0.85,
 		aiBuildingCostModifier:0.85,
@@ -108,6 +123,9 @@
 		buildingCostModifier:1,
 		policyCostModifier:1,
 		unhappinessModifier:1,
+		/*
+		barbarianBonus:20,
+		*/
 		aiCityGrowthModifier:0.85,
 		aiUnitCostModifier:0.8,
 		aiBuildingCostModifier:0.8,
@@ -128,6 +146,9 @@
 		buildingCostModifier:1,
 		policyCostModifier:1,
 		unhappinessModifier:1,
+		/*
+		barbarianBonus:10,
+		*/
 		aiCityGrowthModifier:0.75,
 		aiUnitCostModifier:0.65,
 		aiBuildingCostModifier:0.65,
@@ -148,6 +169,9 @@
 		buildingCostModifier:1,
 		policyCostModifier:1,
 		unhappinessModifier:1,
+		/*
+		barbarianBonus:0,
+		*/
 		aiCityGrowthModifier:0.6,
 		aiUnitCostModifier:0.5,
 		aiBuildingCostModifier:0.5,
