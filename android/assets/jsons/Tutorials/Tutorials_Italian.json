@@ -2,18 +2,17 @@
 	// so for example:
 	Culture_and_Policies: [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
-			"Ad ogni turno, la cultura ottenuta da ogni tua città ",
-			"  si aggiunge alla cultura della tua civiltà.",
+			"Ad ogni turno, la cultura ottenuta da ogni tua città si aggiunge alla cultura della tua civiltà.",
 			"Una volta accumultata abbastanza cultura, potrai scegliere ",
-			"  una Politica Sociale tra tante, ognuna con i propri bonus."
+			"  una Politica Sociale tra tante, ognuna con i propri benefici."
 		],  // this will be displayed as 4 lines of text in-game as well
 		[
-			"Le politiche sono divise in rami, ognuno dei quali concede un'abilità bonus",
+			"Le politiche sono divise in rami, ognuno dei quali concede un'abilità ",
 			" bonus quanto tutte le sue politiche sono state adottate."
 		],
 		[
 			"Per ogni politica adottata, e per ogni nuova città fondata, il costo ",
-			" di adozione per un'altra politica aumenta, quindi pianifica con cautela!"
+			" di adozione per un'altra politica aumenta, quindi scegli con cautela!"
 		]
 	],
 
@@ -57,7 +56,7 @@
 	],
 
 
-	First_Steps : [
+	_City_Founded : [
 		[
 			"Hai fondato una città!",
 			"Le Città sono la linfa vitale del tuo impero, perchè producono globalmente ",
@@ -65,6 +64,9 @@
 			"Clicca sul nome della città per entrare nella schermata cittadina, dove puoi assegnare ",
 			" abitanti, scegliere la produzione, e vedere le informazioni della Città."
 		],
+
+
+	First_Steps : [
 		[
 			"Una volta fondata la tua prima città, potrai iniziare a produrre una nuova unità, ",
 			" e iniziare a ricercare la tua prima tecnologia.",
@@ -135,7 +137,7 @@
 
 	World_Map: [
 		[
-			"Questa è la mappa del mondo, che è composta da moltissime caselle.",
+			"La mappa del mondo è composta da moltissime caselle.",
 			"Ogni casella può contenere unità, risorse e miglioramenti, che ti spiegheremo in seguito.",
 			"La posizione dell'icona ti dice cosa significa.",
 			"Per maggiori dettagli, puoi cliccare sulla casella e vederne le informazioni."
@@ -322,7 +324,7 @@
 	_GameCrashed:  [
 		[
 			"Santi numi! Pare che qualcosa sia andato disastrosamente storto!",
-			"Quello che è successo non doveva assolutamente accadere!",
+			"Quello che è successo non era assolutamente previsto!",
 			"Mandami un'email all'indirizzo yairm210@hotmail.com con l'info della partita",
 			" (menu -> salva partita -> copia info partita -> incolla su email)",
 			" e proverò a riparare il guasto il più in fretta possibile!"
