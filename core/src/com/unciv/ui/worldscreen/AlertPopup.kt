@@ -139,6 +139,12 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(centerTable).row()
                 add(getCloseButton("Close"))
             }
+            AlertType.GoldenAge -> {
+                addGoodSizedLabel("GOLDEN AGE")
+                addSeparator()
+                addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
+                add(getCloseButton("Close"))
+            }
         }
         open()
         worldScreen.alertPopupIsOpen = true

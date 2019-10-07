@@ -575,13 +575,13 @@
 		"Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
 	{
-		name:"Persian",
+		name:"Persia",
 		translatedName:"Persia",
 		leaderName:"Darius I",
 		translatedLeaderName:"Dario I",
 		adjective:["persiano"],
 		
-		startIntroPart1: "La benedizione del cielo scenda su di te, oh amato re Dario di Persia! Tu sei a capo di un popolo forte e saggio. All'alba del mondo, il grande capo persiano Ciro si rivoltò contro l'impero dei Medi, che nel 550 a.C. scomparve del tutto. Grazie alla sua astuta diplomazia e alla sua prodezza militare, il grande Ciro conquistò la florida Lidia e la potente Babilonia, mentre qualche anno più tardi suo figlio Cambise s'impadronì anche dell'orgoglioso Egitto. Col tempo i persiani si espansero fino alla lontana Macedonia, bussando alla porta delle giovani città-stato greche. A lungo avrebbe prosperato la Persia, fino all'arrivo di quello zotico Alessandro di Macedonia, venuto su dal nulla, che distrusse il nostro glorioso impero con un'unica campagna militare senza precedenti."
+		startIntroPart1: "La benedizione del cielo scenda su di te, oh amato re Dario di Persia! Tu sei a capo di un popolo forte e saggio. All'alba del mondo, il grande capo persiano Ciro si rivoltò contro l'impero dei Medi, che nel 550 a.C. scomparve del tutto. Grazie alla sua astuta diplomazia e alla sua prodezza militare, il grande Ciro conquistò la florida Lidia e la potente Babilonia, mentre qualche anno più tardi suo figlio Cambise s'impadronì anche dell'orgoglioso Egitto. Col tempo i persiani si espansero fino alla lontana Macedonia, bussando alla porta delle giovani città-stato greche. A lungo avrebbe prosperato la Persia, fino all'arrivo di quello zotico Alessandro di Macedonia, venuto su dal nulla, che distrusse il nostro glorioso impero con un'unica campagna militare senza precedenti.",
 		startIntroPart2: "Dario, il tuo popolo si rivolge a te per tornare ai giorni della grande e potente Persia! L'impero dei tuoi antenati deve rivivere per trionfare sui suoi nemici e riportare la pace e l'ordine nel mondo. Oh re, risponderai alla chiamata? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"La tua continua esistenza rappresenta un imbarazzo per tutti i leader del mondo! Farò loro un favore distruggendoti!"

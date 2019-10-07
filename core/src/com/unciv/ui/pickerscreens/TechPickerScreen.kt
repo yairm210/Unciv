@@ -2,7 +2,6 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.Constants
 import com.unciv.UnCivGame
@@ -13,7 +12,6 @@ import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.util.*
-import kotlin.collections.HashSet
 
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldScreen: Boolean = true, centerOnTech: Technology? = null) : PickerScreen() {
@@ -71,7 +69,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
                     topTable.add() // empty cell
 
                 else {
-                    val techButton = TechButton(tech.name,civTech,false)
+                    val techButton = TechButton(tech.name, civTech,false)
 
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, false, switchfromWorldScreen) }
@@ -97,7 +95,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
             dispose()
         }
 
-        displayTutorials("TechPickerScreen")
+        displayTutorials("Technology")
 
         // per default show current/recent technology,
         // and possibly select it to show description,

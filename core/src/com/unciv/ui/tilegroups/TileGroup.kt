@@ -86,7 +86,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         isTransform=false // performance helper - nothing here is rotated or scaled
     }
 
-
+    //region init functions
     private fun addCircleImage() {
         circleImage.width = 50f
         circleImage.height = 50f
@@ -112,6 +112,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         crosshairImage.color = Color.WHITE.cpy().apply { a = 0.5f }
         circleCrosshairFogLayerGroup.addActor(crosshairImage)
     }
+    //endregion
 
     fun showCrosshair() {
         crosshairImage.isVisible = true
@@ -430,7 +431,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             val shouldDisplayResource =
                     if(showEntireMap) tileInfo.resource!=null
                     else showResourcesAndImprovements
-                            && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization())
+                            && tileInfo.hasViewableResource(UnCivGame.Current.worldScreen.viewingCiv)
             resourceImage!!.isVisible = shouldDisplayResource
         }
     }
@@ -453,7 +454,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo.isPlayerCivilization())
+            if (!unit.isIdle() && unit.civInfo == UnCivGame.Current.worldScreen.viewingCiv)
                 newImage.unitBaseImage.color.a = 0.5f
         }
         return newImage

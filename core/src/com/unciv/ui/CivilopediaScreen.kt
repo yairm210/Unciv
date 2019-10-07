@@ -11,6 +11,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.Tutorials
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import java.util.*
@@ -73,6 +74,14 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         categoryToInfos["Tile Improvements"] = GameBasics.TileImprovements.values
         categoryToInfos["Units"] = GameBasics.Units.values
         categoryToInfos["Technologies"] = GameBasics.Technologies.values
+
+        class Tutorial(var name:String, override var description:String):ICivilopedia{
+            override fun toString() = name
+        }
+        categoryToInfos["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
+                .filter { !it.startsWith("_") }
+                .map { Tutorial(it.replace("_"," "),
+                        Tutorials().getTutorials(it, UnCivGame.Current.settings.language).joinToString("\n\n")) }
 
         nameList.onClick {
             if(nameList.selected!=null) description.setText(civPediaEntries.get(nameList.selectedIndex).description)

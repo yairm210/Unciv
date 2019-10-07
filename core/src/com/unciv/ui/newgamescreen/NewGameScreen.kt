@@ -38,7 +38,7 @@ class NewGameScreen: PickerScreen(){
         rightSideButton.onClick {
             if (newGameParameters.players.none { it.playerType == PlayerType.Human }) {
                 val noHumanPlayersPopup = PopupTable(this)
-                noHumanPlayersPopup.addGoodSizedLabel("No human players selected!").row()
+                noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
                 return@onClick
@@ -50,7 +50,7 @@ class NewGameScreen: PickerScreen(){
                         UUID.fromString(player.playerId)
                     } catch (ex: Exception) {
                         val invalidPlayerIdPopup = PopupTable(this)
-                        invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!").row()
+                        invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                         invalidPlayerIdPopup.addCloseButton()
                         invalidPlayerIdPopup.open()
                         return@onClick
