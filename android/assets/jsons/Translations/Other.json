@@ -738,7 +738,7 @@
 	}
 	
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
-		Italian:"Vorresti acquistare [constructionName] per [buildingGoldCost] oro?"
+		Italian:"Vuoi acquistare [constructionName] per [buildingGoldCost] oro?"
 		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золота?"
 		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
@@ -1009,7 +1009,7 @@
 		Portuguese:"Você realmente quer vender o(a) [building]?"
 	}
 
-    "[greatPerson] points":{ // e.g "Great Scientist points"
+    	"[greatPerson] points":{ // e.g "Great Scientist points"
 		Italian:"Punti [greatPerson]" //es. "Punti Grande Scienziato"
 		Portuguese:"Pontos de [greatPerson]"
 		Japanese:"[greatPerson]ポイント"
@@ -1053,6 +1053,7 @@
 	}
 
 	"The city will not produce anything.":{ 
+		Italian:"La città non produrrà nulla"
 		Simplified_Chinese:"城市将不会建造/组建任何项目"
 	}
 	
@@ -1373,6 +1374,12 @@
 		Russian:"Ускорить постройку чуда"
 		Portuguese:"Apressar a contrução Maravilha" //whoever did that please jump from a dingy on a calm river with no crocodiles whatsoever
 	} 
+
+////// Golden Age Message
+
+	"Congratulations! Your citizens have been happy with your rule for so long that the empire enters a Golden Age!":{
+		Italian:"Congratulazioni! I tuoi cittadini sono da tempo contenti del tuo governo! Il tuo impero è entrato in un'Età dell'Oro!"
+	}
 	
 ////// Policy picker screen
 
