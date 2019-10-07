@@ -12,6 +12,9 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -357,8 +360,19 @@ class CityInfo {
         val percentageOfCivPopulationInThatCity = population.population *
                 100f / (foundingCiv.cities.sumBy { it.population.population } + population.population)
         val respecForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
-        foundingCiv.getDiplomacyManager(conqueringCiv)
-                .addModifier(DiplomaticModifiers.CapturedOurCities, respecForLiberatingOurCity)
+        if(foundingCiv.isMajorCiv()) {
+            foundingCiv.getDiplomacyManager(conqueringCiv)
+                    .addModifier(DiplomaticModifiers.CapturedOurCities, respecForLiberatingOurCity)
+        } else {
+            //Liberating a city state gives a large amount of influence, and peace
+            foundingCiv.getDiplomacyManager(conqueringCiv).influence = 90f
+            if (foundingCiv.isAtWarWith(conqueringCiv)) {
+                val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+                tradeLogic.acceptTrade()
+            }
+        }
 
         val otherCivsRespecForLiberating = (respecForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != oldOwningCiv }) {
