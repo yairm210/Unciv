@@ -484,7 +484,7 @@
 				name:"Pharmaceuticals",
 				row:2,
 				prerequisites:["Plastics","Refrigeration"],
-				quote:""
+				quote:"'In nothing do men more nearly approach the gods than in giving health to men.' - Cicero"
 			},
 			{
 				name:"Atomic Theory",
