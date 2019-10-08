@@ -52,6 +52,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private val notificationsScroll: NotificationsScroll
     var alertPopupIsOpen = false // if we have an alert popup and then we changed screens, the old one shouldn't affect us
+    var shouldUpdate=false
 
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
@@ -112,7 +113,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn,true)
 
-        update()
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
@@ -121,6 +121,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 loadLatestMultiplayerState()
             }, Actions.delay(10f)))) // delay is in seconds
         }
+
+        // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
+        //  know what the viewing civ is.
+        shouldUpdate=true
     }
 
     fun loadLatestMultiplayerState(){
@@ -408,8 +412,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             game.setWorldScreen()
         }
     }
-
-    var shouldUpdate=false
 
 
     override fun render(delta: Float) {

@@ -12,6 +12,7 @@ class Difficulty: INamed {
     var buildingCostModifier:Float = 1f
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
+    var barbarianBonus:Float = 0f
     var aiCityGrowthModifier:Float = 1f
     var aiUnitCostModifier:Float = 1f
     var aiBuildingCostModifier:Float = 1f
