@@ -278,7 +278,7 @@
 		]
 	]
 	
-	EnemyCity:  [
+	Enemy_City:  [
 		[
 			"Vous avez rencontré une ville ennemie !",
 			" Les villes peuvent être conquises en réduisant leur vie à 1",
@@ -288,7 +288,7 @@
 		]
 	]
 	
-	LuxuryResource:  [
+	Luxury_Resource:  [
 		[
 			"Vous avez trouvé votre première ressource de luxe !",
 			" Chaque ressource de luxe différente que vous possédez vous donne 5 de bonheur",
@@ -297,7 +297,7 @@
 		]
 	]
 	
-	StrategicResource:  [
+	Strategic_Resource:  [
 		[
 			"Vous avez trouvé votre première ressource stratégique !",
 			" Les ressources stratégiques servent à produire certaines unités et certains bâtiments",

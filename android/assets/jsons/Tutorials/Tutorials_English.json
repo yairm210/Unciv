@@ -238,9 +238,8 @@
 		]
 	]
 	
-	EnemyCity:  [
+	Enemy_City:  [
 		[
-			"You have encountered an enemy city!",
 			"Cities can be conquered by reducing their health to 1,",
 			"  and entering the city with a melee unit.",
 			"Since cities heal each turn, it is best to attack with ranged units"
@@ -248,18 +247,16 @@
 		]
 	]
 	
-	LuxuryResource:  [
+	Luxury_Resource:  [
 		[
-			"You have gained your first luxury resource!",
 			"Each unique Luxury resource you have adds 5 happiness to your civilization,",
 			"  but extra resources of the same type don't add anything, ",
 			"  so use them for trading with other civilizations!"
 		]
 	]
 	
-	StrategicResource:  [
+	Strategic_Resource:  [
 		[
-			"You have gained your first strategic resource!",
 			"Strategic resources allow you to train units and construct buildings that",
 			"  require those specific resources, for example the Horseman requires Horses."
 			"Each unit 'consumes' a copy of that resource, but if the unit is killed you can ",

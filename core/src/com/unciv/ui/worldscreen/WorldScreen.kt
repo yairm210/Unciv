@@ -440,12 +440,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(gameInfo.turns >= 50 && UnCivGame.Current.settings.checkForDueUnits) displayTutorials("Idle_Units")
         if(gameInfo.turns >= 100) displayTutorials("ContactMe")
         val resources = viewingCiv.getCivResources()
-        if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
-        if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
-        if("EnemyCity" !in shownTutorials
+        if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("Luxury_Resource")
+        if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("Strategic_Resource")
+        if("Enemy_City" !in shownTutorials
                 && gameInfo.civilizations.filter { it!=viewingCiv }
                         .flatMap { it.cities }.any { viewingCiv.exploredTiles.contains(it.location) })
-            displayTutorials("EnemyCity")
+            displayTutorials("Enemy_City")
         if(viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts"))
             displayTutorials("Apollo_Program")
         if(viewingCiv.getCivUnits().any { it.type == UnitType.Siege })

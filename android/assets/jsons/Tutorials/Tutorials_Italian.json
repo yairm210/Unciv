@@ -252,7 +252,7 @@
 		]
 	],
 	
-	EnemyCity:  [
+	Enemy_City:  [
 		[
 			"Hai avvistato una città nemica!",
 			"Puoi conquistare le città prima riducendo la loro salute a 1,",
@@ -262,7 +262,7 @@
 		]
 	],
 	
-	LuxuryResource:  [
+	Luxury_Resource:  [
 		[
 			"Hai ottenuto la tua prima risorsa di lusso!",
 			"Ogni risorsa unica di lusso posseduta frutta 5 punti felicità alla civiltà,",
@@ -271,7 +271,7 @@
 		]
 	],
 	
-	StrategicResource:  [
+	Strategic_Resource:  [
 		[
 			"Hai ottenuto la tua prima risorsa strategica!",
 			"Le risorse strategiche ti permettono di addestrare unità e costruire edifici ",
