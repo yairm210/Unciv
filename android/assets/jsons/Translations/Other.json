@@ -1377,8 +1377,8 @@
 
 ////// Golden Age Message
 
-	"Congratulations! Your citizens have been happy with your rule for so long that the empire enters a Golden Age!":{
-		Italian:"Congratulazioni! I tuoi cittadini sono da tempo contenti del tuo governo! Il tuo impero è entrato in un'Età dell'Oro!"
+	"Your citizens have been happy with your rule for so long that the empire enters a Golden Age!":{
+		Italian:"I tuoi cittadini sono da tempo contenti del tuo governo! Il tuo impero è entrato in un'Età dell'Oro!"
 	}
 	
 ////// Policy picker screen
