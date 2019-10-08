@@ -92,9 +92,12 @@ class BattleDamage{
 
         }
 
-        if (combatant.getCivInfo().policies.isAdopted("Honor") && enemy.getCivInfo().isBarbarian())
-            modifiers["vs Barbarians"] = 0.25f
-
+        if (enemy.getCivInfo().isBarbarian()) {
+            modifiers["Difficulty"] = combatant.getCivInfo().gameInfo.getDifficulty().barbarianBonus
+            if (combatant.getCivInfo().policies.isAdopted("Honor"))
+                modifiers["vs Barbarians"] = 0.25f
+        }
+        
         return modifiers
     }
 
