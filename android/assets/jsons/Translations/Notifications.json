@@ -157,8 +157,8 @@
 	"[cityName] cannot continue work on [construction]":{
 		Italian:"[cityName] non può più costruire [construction]"
 		French:"[cityName] ne peut plus travailler sur [construction]"
-		Russian:"[cityName] не может продолжать работу над [construction]"
-		Simplified_Chinese:"[cityname]无法继续建造/组建[construction]"
+		Russian:"[cityName] не может продолжать работу над [construction]",
+		Simplified_Chinese:"[cityName]无法继续建造/组建[construction]"
 	}
 		
 
@@ -550,8 +550,8 @@
 	
 	
 	"[tradeOffer] from [otherCivName] has ended":{
-		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
-		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato",
+		Simplified_Chinese:"与[otherCivName]的[tradeOffer]协议已经结束",
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
 		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось"
