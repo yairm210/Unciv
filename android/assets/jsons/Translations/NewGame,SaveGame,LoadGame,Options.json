@@ -80,7 +80,7 @@
 	}
 
 	"Domination": {//it can be showed correct as usual in chinese, so I'm not translate it.
-		Italian:"Per Dominazione"
+		Italian:"Dominazione"
 		French: "Conquete"
 		Simplified_Chinese:"征服胜利"
 		Russian:"Завоевание"
@@ -271,6 +271,14 @@
 		Italian:"IA"
 		Simplified_Chinese:"电脑"
 		Russian:"ИИ"
+	}
+
+	"Remove":{
+		Italian:"Rimuovi"
+	}
+
+	"Random":{
+		Italian:"Casuale"
 	}
 	
 	"Human":{
