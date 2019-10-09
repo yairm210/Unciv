@@ -81,7 +81,6 @@
 		Russian:"[leaderName] из [nation]"
 		Romanian:"[leaderName] de [nation]"
                 Polish:"[leaderName], władca cywilizacji [nation]"
-		//Smashfanful notes: I think this line should be: "[leaderName] of the [adjective] empire"
               
 	}
 	
