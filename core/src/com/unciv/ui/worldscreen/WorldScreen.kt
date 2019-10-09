@@ -101,7 +101,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         stage.addActor(unitActionsTable)
 
         displayTutorials("New_Game")
-        displayTutorials("TileLayout")
+        displayTutorials("World_Map")
 
         createNextTurnButton() // needs civ table to be positioned
 
@@ -207,12 +207,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             UnCivGame.Current.settings.save()
         }
 
-        if (bottomBar.unitTable.selectedUnit != null) displayTutorials("UnitSelected")
+        if (bottomBar.unitTable.selectedUnit != null) displayTutorials("Unit_Selected")
         if (viewingCiv.cities.isNotEmpty()){
             displayTutorials("_City_Founded")
             displayTutorials("First_Steps")
         }
-        if (UnCivGame.Current.settings.tutorialsShown.contains("Cities")) displayTutorials("AfterCityEntered")
+        if (UnCivGame.Current.settings.tutorialsShown.contains("Cities")) displayTutorials("Next_Turn")
 
 
         if (!UnCivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
@@ -429,7 +429,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun showTutorialsOnNextTurn(){
         val shownTutorials = UnCivGame.Current.settings.tutorialsShown
-        displayTutorials("NextTurn")
+        displayTutorials("Slow_Start")
         if("_BarbarianEncountered" !in shownTutorials
                 && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } })
             displayTutorials("_BarbarianEncountered")
@@ -438,7 +438,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(viewingCiv.getHappiness() < 0) displayTutorials("Unhappiness")
         if(viewingCiv.goldenAges.isGoldenAge()) displayTutorials("Golden_Age")
         if(gameInfo.turns >= 50 && UnCivGame.Current.settings.checkForDueUnits) displayTutorials("Idle_Units")
-        if(gameInfo.turns >= 100) displayTutorials("ContactMe")
+        if(gameInfo.turns >= 100) displayTutorials("Contact_Me")
         val resources = viewingCiv.getCivResources()
         if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("Luxury_Resource")
         if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("Strategic_Resource")
