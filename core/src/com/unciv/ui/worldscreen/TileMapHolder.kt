@@ -95,7 +95,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
-        worldScreen.displayTutorials("TileClicked")
+        worldScreen.displayTutorials("Tile_Clicked")
         unitActionOverlay?.remove()
         selectedTile = tileInfo
 
