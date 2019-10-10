@@ -72,7 +72,7 @@
 	}
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
-		Italian:"[leaderName] del popolo [nation]"
+		Italian:"[leaderName] dell'impero [nation]"
 		German:"[leaderName] von [nation]"
 		Spanish:"[leaderName] de [nation]"
 		Portuguese:"[leaderName] do [nation]"
@@ -835,7 +835,7 @@
 	}
 
 	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
-		Italian:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura, e ricevi i Grandi scenziati il 50% più in fretta"
+		Italian:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura, e ricevi i Grandi Scienziati il 50% più in fretta"
 		Romanian:"La descoperirea abilității Scriere primești un Mare om de știință gratuit, următorii fiind obținuți cu 50% mai repede"
 		German:"Ein kostenloser Großer Wissenschaftler erscheint, wenn Schrift erforscht wurde; Große Wissenschaftler erscheinen 50% häufiger"
 		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
@@ -872,7 +872,7 @@
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
 		Simplified_Chinese:"对城邦影响力衰减速度减半，恢复速度加倍"
-		Italian:"L'influenza sulle città-stato diminuisce il doppio più lentamente e aumenta il doppio più velocemente."
+		Italian:"L'influenza sulle Città-Stato diminuisce il doppio più lentamente e aumenta il doppio più velocemente."
 		Russian:"Влияние на города-государства снижается вдвое медленнее и увеличивается вдвое быстрее"
 	},
 
@@ -894,7 +894,7 @@
 	},
 
 	"Great general provides double combat bonus, and spawns 50% faster":{
-		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
+		Italian:"I Grandi Generali nascono il 50% più in fretta e il loro bonus è raddoppiato"
 		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
 		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
 		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
@@ -924,7 +924,7 @@
 	}
 
 	"+20% production towards Wonder construction":{
-		Italian:"+20% Produzione per la costruzione di Meraviglie"
+		Italian:"+20% Produzione per la costruzione delle Meraviglie"
 		German:"20% erhöhte Produktion beim Errichten von Wundern"
 		French:"+20% vitesse de construction des merveilles"
 		Spanish:"+ 20% de producción hacia la construcción de maravillas."
@@ -982,7 +982,7 @@
 	}
 
 	"+2 Culture per turn from cities before discovering Steam Power":{
-		Italian:"+2 Cultura al turno dalle città prima di scoprire l'Energia a Vapore"
+		Italian:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore"
 		German:"+2 Kultur pro Runde von Städten (bevor Dampfkraft erforscht wurde)"
 		French:"+2 culture par tour et par villes jusqu'à la découverte de la machine à vapeur"
 		Spanish:"+2 Cultura por turno desde las ciudades antes de descubrir la Energía de Vapor."
@@ -1011,7 +1011,7 @@
 	}
 
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
-		Italian:"+1 Produzione dalle Risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
+		Italian:"+1 Produzione dalle risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
 		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
 		Spanish:"Los recursos estrategicos proporcionan +1 de produccion y los caballos, uranio y hierro proporcionan 4 envez de 2 recursos"
 		Simplified_Chinese:"每处战略资源+1产能，并且马、铁和铀资源储量加倍"
@@ -1040,7 +1040,7 @@
 	}
 
 	"+25% Production towards any buildings that already exist in the Capital":{
-		Italian:"+25% Produzione per gli edifici già esistenti nella Capitale"
+		Italian:"+25% Produzione per gli edifici già costruiti nella Capitale"
 		Romanian:"+25% Producție pentru toate clădirile deja existente în capitală"
 		Spanish:"+25% De producion a las construciones que ya existan en la capital "
 		German:"+25% Produktion für alle Gebäude die bereits in der Hauptstadt existieren"
@@ -1070,7 +1070,7 @@
 	}
 
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
-		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
+		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni fonte di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
 		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane
 		French:"+1 Or pour chaque route commerciale, la quantité de pétrole est doublée"
@@ -1196,7 +1196,7 @@
 	}
 
 	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
-		Italian:"Mantenimento delle unità navali ridotto a un terzo rispetto al normale. Le unità navali ravvicinate hanno un 34% di probabilità di catturare le unità navali nemiche sconfitte."
+		Italian:"Le unità navali hanno un mantenimento ridotto a un terzo rispetto al normale. Quelle ravvicinate hanno un 34% di probabilità di catturare le unità navali nemiche sconfitte."
 		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
 		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
 		Simplified_Chinese:"海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位"
@@ -1295,6 +1295,10 @@
 		French:"Incas"
 		Portuguese:"Inca"
 	}
+	
+	"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills, half cost elsewhere.":{
+		Italian:"Le unità si muovono senza costi di terreno sulle Colline. I miglioramenti sulle Colline sono azzerati, e sono dimezzati altrove."
+	}
 
 	"Mongolia":{
 		Italian:"Mongolia"
@@ -1303,7 +1307,7 @@
 	}
 
 	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
-		Italian:"+30% Forza contro le Città-stato e le loro unità. +1 Movimento per le Unità a cavallo."
+		Italian:"+30% Forza contro le Città-Stato e le loro unità. +1 Movimento per le Unità a cavallo."
 		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
 		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
 	}
@@ -1342,6 +1346,14 @@
 		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate."
 		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
 		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
+	}
+
+	"Spain":{
+		Italian:"Spagna"
+	}
+
+	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders are doubled.":{
+		Italian:"Ottieni Oro bonus quando scopri una Meraviglia Naturale (aumenta se la scopri per primo). Doppia Cultura, Felicità e resa generale dalle Meraviglie Naturali."
 	}
 
 
