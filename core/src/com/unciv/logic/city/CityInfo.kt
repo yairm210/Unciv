@@ -227,11 +227,18 @@ class CityInfo {
     }
 
     fun reassignWorkers() {
-        workedTiles = hashSetOf()
-        population.specialists.clear()
-        for (i in 0..population.population)
-            population.autoAssignPopulation()
-        cityStats.update()
+        var foodWeight = 1f
+        var foodPerTurn = 0f
+        while (foodWeight < 3 && foodPerTurn <= 0) {
+            workedTiles = hashSetOf()
+            population.specialists.clear()
+            for (i in 0..population.population)
+                population.autoAssignPopulation(foodWeight)
+            cityStats.update()
+
+            foodPerTurn = cityStats.currentCityStats.food
+            foodWeight += 0.5f
+        }
     }
 
     fun endTurn() {
