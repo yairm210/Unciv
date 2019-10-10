@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -36,6 +37,14 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
     fun addButton(text:String, action:()->Unit): Cell<TextButton> {
         val button = TextButton(text.tr(), skin).apply { color= ImageGetter.getBlue() }
         button.onClick(action)
+        return add(button).apply { row() }
+    }
+
+    fun addSquareButton(text:String, action:()->Unit): Cell<Table> {
+        val button = Table()
+        button.add(text.toLabel())
+        button.onClick(action)
+        button.touchable=Touchable.enabled
         return add(button).apply { row() }
     }
 
