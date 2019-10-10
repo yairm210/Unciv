@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
-open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin){
+open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin) {
     init {
         val tileTableBackground = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         background = tileTableBackground
@@ -19,35 +19,37 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         this.defaults().pad(5f)
     }
 
-    fun open(){
+    fun open() {
         pack()
         center(screen.stage)
         screen.stage.addActor(this)
     }
 
-    open fun close(){ remove() }
+    open fun close() {
+        remove()
+    }
 
     fun addGoodSizedLabel(text: String): Cell<Label> {
         val label = text.toLabel()
         label.setWrap(true)
         label.setAlignment(Align.center)
-        return add(label).width(screen.stage.width/2)
+        return add(label).width(screen.stage.width / 2)
     }
 
-    fun addButton(text:String, action:()->Unit): Cell<TextButton> {
-        val button = TextButton(text.tr(), skin).apply { color= ImageGetter.getBlue() }
+    fun addButton(text: String, action: () -> Unit): Cell<TextButton> {
+        val button = TextButton(text.tr(), skin).apply { color = ImageGetter.getBlue() }
         button.onClick(action)
         return add(button).apply { row() }
     }
 
-    fun addSquareButton(text:String, action:()->Unit): Cell<Table> {
+    fun addSquareButton(text: String, action: () -> Unit): Cell<Table> {
         val button = Table()
         button.add(text.toLabel())
         button.onClick(action)
-        button.touchable=Touchable.enabled
+        button.touchable = Touchable.enabled
         return add(button).apply { row() }
     }
 
-    fun addCloseButton() = addButton("Close"){close()}
+    fun addCloseButton() = addButton("Close") { close() }
 }
 

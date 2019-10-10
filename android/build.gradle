@@ -41,7 +41,7 @@ android {
         release {
             // Don't add local save files and fonts to release, obviously
             aaptOptions {
-                ignoreAssetsPattern "!SaveFiles:!fonts"
+                ignoreAssetsPattern "!SaveFiles:!fonts:!maps"
             }
         
             minifyEnabled false
@@ -51,7 +51,7 @@ android {
         debug {
             // Don't add local save files and fonts to release, obviously
             aaptOptions {
-                ignoreAssetsPattern "!SaveFiles:!fonts"
+                ignoreAssetsPattern "!SaveFiles:!fonts:!maps"
             }
         }
     }
