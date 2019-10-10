@@ -35,37 +35,37 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 tile.turnsToImprovement=0
                 tile.roadStatus=RoadStatus.None
             }
-            UnCivGame.Current.screen = MapEditorScreen(tileMapClone)
+            UnCivGame.Current.setScreen(MapEditorScreen(tileMapClone))
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Civilopedia".tr()){
-            UnCivGame.Current.screen = CivilopediaScreen()
+            UnCivGame.Current.setScreen(CivilopediaScreen())
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Load game".tr()){
-            UnCivGame.Current.screen = LoadGameScreen()
+            UnCivGame.Current.setScreen(LoadGameScreen())
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Save game".tr()) {
-            UnCivGame.Current.screen = SaveGameScreen()
+            UnCivGame.Current.setScreen(SaveGameScreen())
             remove()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }.size(width,height)
+        addSquareButton("Start new game".tr()){ UnCivGame.Current.setScreen(NewGameScreen()) }.size(width,height)
         addSeparator()
 
 
         addSquareButton("Multiplayer".tr()) { openMultiplayerPopup() }.size(width,height)
         addSeparator()
 
-        addSquareButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }.size(width,height)
+        addSquareButton("Victory status".tr()) { UnCivGame.Current.setScreen(VictoryScreen()) }.size(width,height)
         addSeparator()
 
         addSquareButton("Options".tr()){

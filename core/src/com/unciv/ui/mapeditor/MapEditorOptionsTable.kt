@@ -59,7 +59,7 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
 
         val loadMapButton = TextButton("Load".tr(), skin)
         loadMapButton.onClick {
-            UnCivGame.Current.screen = LoadMapScreen(mapEditorScreen.tileMap)
+            UnCivGame.Current.setScreen(LoadMapScreen(mapEditorScreen.tileMap))
         }
         add(loadMapButton).row()
 
@@ -123,7 +123,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
                     val decodedMapJson = Gzip.unzip(mapJsonGzipped)
                     val mapObject = MapSaver().mapFromJson(decodedMapJson)
                     MapSaver().saveMap(downloadableMap.name, mapObject)
-                    UnCivGame.Current.screen = MapEditorScreen(mapObject)
+                    UnCivGame.Current.setScreen(MapEditorScreen(mapObject))
                 }
                 scrollableMapTable.add(downloadMapButton).row()
             }

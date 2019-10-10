@@ -51,16 +51,19 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
             buyTileButton.onClick("coin") {
                 city.expansion.buyTile(selectedTile)
-                UnCivGame.Current.screen = CityScreen(city)
+                UnCivGame.Current.setScreen(CityScreen(city))
             }
             if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UnCivGame.Current.worldScreen.isPlayersTurn)
                 buyTileButton.disable()
 
             innerTable.add(buyTileButton)
         }
-        if(city.canAcquireTile(selectedTile)){
+        if(city.canAcquireTile(selectedTile)) {
             val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
-            acquireTileButton.onClick { city.expansion.takeOwnership(selectedTile); UnCivGame.Current.screen = CityScreen(city) }
+            acquireTileButton.onClick {
+                city.expansion.takeOwnership(selectedTile)
+                UnCivGame.Current.setScreen(CityScreen(city))
+            }
             innerTable.add(acquireTileButton)
         }
         innerTable.pack()

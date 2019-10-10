@@ -13,8 +13,10 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.utils.addSeparator
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 
 class VictoryScreen : PickerScreen() {
 
@@ -86,7 +88,7 @@ class VictoryScreen : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            UnCivGame.Current.screen= NewGameScreen()
+            UnCivGame.Current.setScreen(NewGameScreen())
         }
 
         closeButton.setText("One more turn...!".tr())
@@ -204,7 +206,7 @@ class VictoryScreen : PickerScreen() {
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
             civToBranchesHaveCompleted.touchable= Touchable.enabled
             civToBranchesHaveCompleted.onClick {
-                game.screen = PolicyPickerScreen(UnCivGame.Current.worldScreen,entry.civ, false)
+                game.setScreen(PolicyPickerScreen(UnCivGame.Current.worldScreen,entry.civ, false))
                 dispose()
             }
         }
@@ -228,7 +230,7 @@ class VictoryScreen : PickerScreen() {
             scientificVictoryColumn.add(civToPartsBeRemaining).row()
             civToPartsBeRemaining.touchable= Touchable.enabled
             civToPartsBeRemaining.onClick {
-                game.screen = TechPickerScreen(entry.civ, false)
+                game.setScreen(TechPickerScreen(entry.civ, false))
                 dispose()
             }
         }

@@ -22,7 +22,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             prevCityButton.onClick {
                 val indexOfCity = civInfo.cities.indexOf(city)
                 val indexOfNextCity = if (indexOfCity == 0) civInfo.cities.size - 1 else indexOfCity - 1
-                cityScreen.game.screen = CityScreen(civInfo.cities[indexOfNextCity])
+                cityScreen.game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
             }
             add(prevCityButton).pad(20f)
         } else add()
@@ -59,7 +59,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             editCityNamePopup.addCloseButton()
             editCityNamePopup.addButton("Save".tr()){
                 city.name = textArea.text
-                cityScreen.game.screen = CityScreen(city)
+                cityScreen.game.setScreen(CityScreen(city))
             }
             editCityNamePopup.open()
         }
@@ -74,7 +74,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             nextCityButton.onClick {
                 val indexOfCity = civInfo.cities.indexOf(city)
                 val indexOfNextCity = if (indexOfCity == civInfo.cities.size - 1) 0 else indexOfCity + 1
-                cityScreen.game.screen = CityScreen(civInfo.cities[indexOfNextCity])
+                cityScreen.game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
             }
             add(nextCityButton).pad(20f)
         } else add()

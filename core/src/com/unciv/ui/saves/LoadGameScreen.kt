@@ -72,7 +72,7 @@ class LoadGameScreen : PickerScreen() {
 
         deleteSaveButton.onClick {
             GameSaver().deleteSave(selectedSave)
-            UnCivGame.Current.screen = LoadGameScreen()
+            UnCivGame.Current.setScreen(LoadGameScreen())
         }
         deleteSaveButton.disable()
         rightSideTable.add(deleteSaveButton).row()

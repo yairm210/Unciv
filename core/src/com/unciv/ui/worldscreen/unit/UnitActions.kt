@@ -72,7 +72,7 @@ class UnitActions {
         if(!unit.type.isCivilian() && unit.promotions.canBePromoted()) {
             // promotion does not consume movement points, so we can do it always
             actionList += UnitAction("Promote", true) {
-                UnCivGame.Current.screen = PromotionPickerScreen(unit)
+                UnCivGame.Current.setScreen(PromotionPickerScreen(unit))
             }.sound("promote")
         }
 
@@ -146,7 +146,7 @@ class UnitActions {
                             && !tile.isCityCenter()
                             && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
                     currentAction = unit.currentTile.hasImprovementInProgress()
-            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) { unitTable.selectedUnit = null } }
+            ) { worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null }) }
 
             if(Constants.unitActionAutomation == unit.action){
                 actionList += UnitAction("Stop automation", true) {unit.action = null}
@@ -202,7 +202,7 @@ class UnitActions {
             ) {
                 unit.civInfo.tech.freeTechs += 1
                 unit.destroy()
-                worldScreen.game.screen = TechPickerScreen(true, unit.civInfo)
+                worldScreen.game.setScreen(TechPickerScreen(true, unit.civInfo))
             }.sound("chimes")
         }
 

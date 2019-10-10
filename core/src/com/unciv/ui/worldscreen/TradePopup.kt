@@ -84,7 +84,7 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             val tradeTable =  diplomacyScreen.setTrade(requestingCiv)
             tradeTable.tradeLogic.currentTrade.set(trade)
             tradeTable.offerColumnsTable.update()
-            worldScreen.game.screen=diplomacyScreen
+            worldScreen.game.setScreen(diplomacyScreen)
             worldScreen.shouldUpdate=true
         }
         open()
