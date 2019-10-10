@@ -142,17 +142,16 @@ class UnitActions {
 
         if (unit.hasUnique("Can build improvements on tiles") && !unit.isEmbarked()) {
             actionList += UnitAction("Construct improvement",
-                    unit.currentMovement >0
+                    unit.currentMovement > 0
                             && !tile.isCityCenter()
                             && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
                     currentAction = unit.currentTile.hasImprovementInProgress()
             ) { worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null }) }
 
-            if(Constants.unitActionAutomation == unit.action){
-                actionList += UnitAction("Stop automation", true) {unit.action = null}
-            }
-            else {
-                actionList += UnitAction("Automate", unit.currentMovement >0)
+            if (Constants.unitActionAutomation == unit.action) {
+                actionList += UnitAction("Stop automation", true) { unit.action = null }
+            } else {
+                actionList += UnitAction("Automate", unit.currentMovement > 0)
                 {
                     unit.action = Constants.unitActionAutomation
                     WorkerAutomation(unit).automateWorkerAction()

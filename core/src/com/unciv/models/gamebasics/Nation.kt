@@ -70,7 +70,7 @@ class Nation : INamed {
         if(innerColor==null) innerColorObject = Color.BLACK
         else innerColorObject = colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
 
-        if(unique == "All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.")
+        if(unique == "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
             forestsAndJunglesAreRoads = true
     }
 
