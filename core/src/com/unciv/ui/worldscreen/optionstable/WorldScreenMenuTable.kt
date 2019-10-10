@@ -11,6 +11,7 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
+import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.toLabel
@@ -21,7 +22,9 @@ import kotlin.collections.ArrayList
 class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
 
     init {
-        addButton("Map editor".tr()){
+        val width = 200f
+        val height = 30f
+        addSquareButton("Map editor".tr()){
             val tileMapClone = worldScreen.gameInfo.tileMap.clone()
             for(tile in tileMapClone.values){
                 tile.militaryUnit=null
@@ -32,46 +35,58 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 tile.turnsToImprovement=0
                 tile.roadStatus=RoadStatus.None
             }
-            UnCivGame.Current.screen = MapEditorScreen(tileMapClone)
+            UnCivGame.Current.setScreen(MapEditorScreen(tileMapClone))
             remove()
-        }
+        }.size(width,height)
+        addSeparator()
 
-        addButton("Civilopedia".tr()){
-            UnCivGame.Current.screen = CivilopediaScreen()
+        addSquareButton("Civilopedia".tr()){
+            UnCivGame.Current.setScreen(CivilopediaScreen())
             remove()
-        }
+        }.size(width,height)
+        addSeparator()
 
-        addButton("Load game".tr()){
-            UnCivGame.Current.screen = LoadGameScreen()
+        addSquareButton("Load game".tr()){
+            UnCivGame.Current.setScreen(LoadGameScreen())
             remove()
-        }
+        }.size(width,height)
+        addSeparator()
 
-        addButton("Save game".tr()) {
-            UnCivGame.Current.screen = SaveGameScreen()
+        addSquareButton("Save game".tr()) {
+            UnCivGame.Current.setScreen(SaveGameScreen())
             remove()
-        }
+        }.size(width,height)
+        addSeparator()
 
-        addButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }
+        addSquareButton("Start new game".tr()){ UnCivGame.Current.setScreen(NewGameScreen()) }.size(width,height)
+        addSeparator()
 
 
-        addButton("Multiplayer".tr()) { openMultiplayerPopup() }
+        addSquareButton("Multiplayer".tr()) { openMultiplayerPopup() }.size(width,height)
+        addSeparator()
 
-        addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
+        addSquareButton("Victory status".tr()) { UnCivGame.Current.setScreen(VictoryScreen()) }.size(width,height)
+        addSeparator()
 
-        addButton("Options".tr()){
+        addSquareButton("Options".tr()){
             UnCivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsTable(worldScreen))
             remove()
-        }
+        }.size(width,height)
+        addSeparator()
 
-        addButton("Community"){
+        addSquareButton("Community"){
             WorldScreenCommunityTable(worldScreen)
             remove()
-        }
+        }.size(width,height)
+        addSeparator()
 
-        addCloseButton()
+        addSquareButton("Close"){
+            close()
+        }.size(width,height)
 
         open()
     }
+
 
 
     fun openMultiplayerPopup(){

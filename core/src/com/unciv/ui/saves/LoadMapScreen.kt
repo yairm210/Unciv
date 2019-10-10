@@ -21,7 +21,7 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
     init {
         rightSideButton.setText("Load map".tr())
         rightSideButton.onClick {
-            UnCivGame.Current.screen = MapEditorScreen(chosenMap)
+            UnCivGame.Current.setScreen(MapEditorScreen(chosenMap))
             dispose()
         }
 
@@ -46,7 +46,7 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
             try {
                 val decoded = Gzip.unzip(clipboardContentsString)
                 val loadedMap = MapSaver().mapFromJson(decoded)
-                UnCivGame.Current.screen = MapEditorScreen(loadedMap)
+                UnCivGame.Current.setScreen(MapEditorScreen(loadedMap))
             }
             catch (ex:Exception){
                 couldNotLoadMapLabel.isVisible=true
@@ -58,7 +58,7 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
         deleteMapButton.onClick {
             YesNoPopupTable("Are you sure you want to delete this map?", {
                 MapSaver().deleteMap(chosenMap)
-                UnCivGame.Current.screen = LoadMapScreen(previousMap)
+                UnCivGame.Current.setScreen(LoadMapScreen(previousMap))
             }, this)
         }
         deleteMapButton.disable()
@@ -66,6 +66,6 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
         rightSideTable.add(deleteMapButton).row()
 
         topTable.add(rightSideTable)
-        closeButton.onClick { UnCivGame.Current.screen = MapEditorScreen(previousMap) }
+        closeButton.onClick { UnCivGame.Current.setScreen(MapEditorScreen(previousMap)) }
     }
 }

@@ -48,7 +48,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         val overviewButton = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
         overviewButton.labelCell.pad(10f)
         overviewButton.pack()
-        overviewButton.onClick { UnCivGame.Current.screen = EmpireOverviewScreen() }
+        overviewButton.onClick { UnCivGame.Current.setScreen(EmpireOverviewScreen()) }
         overviewButton.center(this)
         overviewButton.x = screen.stage.width-overviewButton.width-10
         addActor(overviewButton)

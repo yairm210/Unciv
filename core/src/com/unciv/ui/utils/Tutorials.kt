@@ -28,8 +28,14 @@ class Tutorials{
     fun displayTutorials(name: String, stage: Stage) {
         if (!UnCivGame.Current.settings.showTutorials) return
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
-        val texts = getTutorials(name, UnCivGame.Current.settings.language)
-        tutorialTexts.add(Tutorial(name,texts))
+
+        var texts: ArrayList<String>
+        try {
+            texts = getTutorials(name, UnCivGame.Current.settings.language)
+        } catch (ex: Exception) {
+            texts = ArrayList<String>().apply { add("Could not find matching tutorial!") }
+        }
+        tutorialTexts.add(Tutorial(name, texts))
         if (!isTutorialShowing) displayTutorial(stage)
     }
 

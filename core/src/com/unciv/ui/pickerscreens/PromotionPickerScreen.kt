@@ -20,7 +20,7 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
 
     fun acceptPromotion(promotion: Promotion?) {
         mapUnit.promotions.addPromotion(promotion!!.name)
-        if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
+        if(mapUnit.promotions.canBePromoted()) game.setScreen(PromotionPickerScreen(mapUnit))
         else game.setWorldScreen()
         dispose()
         game.worldScreen.shouldUpdate=true

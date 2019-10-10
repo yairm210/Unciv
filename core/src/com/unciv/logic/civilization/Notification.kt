@@ -42,7 +42,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = GameBasics.Technologies[techName]
-        worldScreen.game.screen = TechPickerScreen(worldScreen.viewingCiv, true, tech)
+        worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv, true, tech))
     }
 }
 
@@ -51,7 +51,7 @@ data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
 
     override fun execute(worldScreen: WorldScreen) {
         worldScreen.tileMapHolder.tileMap[city].getCity()?.let {
-            worldScreen.game.screen = CityScreen(it)
+            worldScreen.game.setScreen(CityScreen(it))
         }
     }
 

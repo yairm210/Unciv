@@ -68,7 +68,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         techButtonHolder.touchable=Touchable.enabled
         techButtonHolder.onClick("paper") {
-            game.screen = TechPickerScreen(viewingCiv)
+            game.setScreen(TechPickerScreen(viewingCiv))
         }
         techPolicyandVictoryHolder.add(techButtonHolder)
 
@@ -76,7 +76,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
             val policyScreenButton = Button(skin)
             policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
-            policyScreenButton.onClick { game.screen = PolicyPickerScreen(this) }
+            policyScreenButton.onClick { game.setScreen(PolicyPickerScreen(this)) }
             techPolicyandVictoryHolder.add(policyScreenButton).pad(10f)
         }
 
@@ -189,9 +189,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 || alertPopupIsOpen
         if(!isSomethingOpen && isPlayersTurn) {
             when {
-                !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
-                viewingCiv.policies.freePolicies > 0 -> game.screen = PolicyPickerScreen(this)
-                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.screen = GreatPersonPickerScreen()
+                !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
+                viewingCiv.policies.freePolicies > 0 -> game.setScreen(PolicyPickerScreen(this))
+                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen())
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
             }
@@ -240,7 +240,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         .any()) {
             displayTutorials("_OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
-            btn.onClick { UnCivGame.Current.screen = DiplomacyScreen(viewingCiv) }
+            btn.onClick { UnCivGame.Current.setScreen(DiplomacyScreen(viewingCiv)) }
             btn.label.setFontSize(30)
             btn.labelCell.pad(10f)
             diplomacyButtonWrapper.add(btn)
@@ -299,15 +299,15 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             val cityWithNoProductionSet = viewingCiv.cities
                     .firstOrNull{it.cityConstructions.currentConstruction==""}
             if(cityWithNoProductionSet!=null){
-                game.screen = CityScreen(cityWithNoProductionSet)
+                game.setScreen(CityScreen(cityWithNoProductionSet))
                 return@onClick
             }
 
             if (viewingCiv.shouldOpenTechPicker()) {
-                game.screen = TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv)
+                game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
                 return@onClick
             } else if (viewingCiv.policies.shouldOpenPolicyPicker) {
-                game.screen = PolicyPickerScreen(this)
+                game.setScreen(PolicyPickerScreen(this))
                 viewingCiv.policies.shouldOpenPolicyPicker = false
                 return@onClick
             }
@@ -369,7 +369,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    UnCivGame.Current.screen = PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization())
+                    UnCivGame.Current.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
                 else {
                     createNewWorldScreen()
                 }

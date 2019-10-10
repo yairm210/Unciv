@@ -11,6 +11,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -18,7 +19,6 @@ import java.util.*
 class UnCivGame(val version: String) : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
-
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
@@ -48,7 +48,12 @@ class UnCivGame(val version: String) : Game() {
                 startNewGame()
             }
         }
-        else screen= LanguagePickerScreen()
+        else setScreen(LanguagePickerScreen())
+    }
+
+    fun setScreen(screen: CameraStageBaseScreen) {
+        Gdx.input.inputProcessor = screen.stage
+        super.setScreen(screen)
     }
 
     fun loadGame(gameInfo:GameInfo){
@@ -70,7 +75,6 @@ class UnCivGame(val version: String) : Game() {
     fun setWorldScreen() {
         if(screen != null && screen != worldScreen) screen.dispose()
         setScreen(worldScreen)
-        Gdx.input.inputProcessor = worldScreen.stage
         worldScreen.shouldUpdate=true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
     }
 

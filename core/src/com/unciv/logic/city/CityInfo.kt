@@ -126,7 +126,9 @@ class CityInfo {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
             if(resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
-            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
+            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
+                    // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
+                    || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){
                 var amountToAdd = 1
                 if(resource.resourceType == ResourceType.Strategic){
                     amountToAdd = 2

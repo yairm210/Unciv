@@ -55,7 +55,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 if (selectedUnit != null) {
                     pedia.select("Units", selectedUnit?.name)
                 }
-                UnCivGame.Current.screen = pedia
+                UnCivGame.Current.setScreen(pedia)
             }
             addActor(helpUnitButton)
 

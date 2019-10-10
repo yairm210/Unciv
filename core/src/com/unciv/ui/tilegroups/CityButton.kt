@@ -72,7 +72,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             // second tap on the button will go to the city screen
             onClick {
                 if (isButtonMoved) {
-                    UnCivGame.Current.screen = CityScreen(city)
+                    UnCivGame.Current.setScreen(CityScreen(city))
                 } else {
                     moveButtonDown()
                     if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
