@@ -23,24 +23,24 @@ class Automation {
         return rank
     }
 
-    fun rankTileForCityWork(tile:TileInfo, city: CityInfo): Float {
+    fun rankTileForCityWork(tile:TileInfo, city: CityInfo, foodWeight: Float = 1f): Float {
         val stats = tile.getTileStats(city, city.civInfo)
-        return rankStatsForCityWork(stats, city)
+        return rankStatsForCityWork(stats, city, foodWeight)
     }
 
-    private fun rankStatsForCityWork(stats: Stats, city: CityInfo): Float {
+    private fun rankStatsForCityWork(stats: Stats, city: CityInfo, foodWeight: Float = 1f): Float {
         var rank = 0f
         if(city.population.population < 5){
             // "small city" - we care more about food and less about global problems like gold science and culture
-            rank += stats.food * 1.2f
+            rank += stats.food * 1.2f * foodWeight
             rank += stats.production
             rank += stats.science/2
             rank += stats.culture/2
             rank += stats.gold / 5 // it's barely worth anything at this points
         }
         else{
-            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += (stats.food * 1.2f) //food get more value to keep city growing
-            else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += (stats.food * 1.2f * foodWeight) //food get more value to keep city growing
+            else rank += ((2.4f + (stats.food - 2) / 2) * foodWeight) // 1.2 point for each food up to 2, from there on half a point
 
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
             else rank += stats.gold / 3 // 3 gold is worse than 2 production

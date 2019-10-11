@@ -15,8 +15,12 @@ class TileImprovement : NamedStats(), ICivilopedia {
 
     var improvingTech: String? = null
     var improvingTechStats: Stats? = null
+    var uniqueTo:String? = null
+    var uniques = ArrayList<String>()
 
     private val turnsToBuild: Int = 0 // This is the base cost.
+
+
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat()
         if (civInfo.containsBuildingUnique("Worker construction increased 25%"))

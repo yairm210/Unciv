@@ -146,17 +146,18 @@
 	},
 	
 	//Civilization unique improvements
-	/*
 	{
 		name:"Moai",
 		uniqueTo:"Polynesia",
 		culture:1,
 		turnsToBuild:4,
-		improvingTech:"Construction",
-		uniques:["+1 additional Culture for each adjacent Moai","+1 Gold after researching Flight"],
-		terrainsCanBeBuiltOn:["Hill"],
+		uniques:["+1 additional Culture for each adjacent Moai","Can only be built on Coastal tiles"],
+		techRequired:"Construction",
+		improvingTech:"Flight",
+		improvingTechStats:{gold:1}
 		//It can be colored in orange
 	},
+	/*
 	{
 		name:"Terrace Farm",
 		uniqueTo:"Inca",

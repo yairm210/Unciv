@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -24,7 +25,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val tileToWork = findTileToWork()
 
         if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
-            if (tryConnectingCities()) return
+            if (tryConnectingCities(unit)) return
         }
 
         if (tileToWork != currentTile) {
@@ -41,19 +42,19 @@ class WorkerAutomation(val unit: MapUnit) {
             }
         }
         if (currentTile.improvementInProgress != null) return // we're working!
-        if (tryConnectingCities()) return //nothing to do, try again to connect cities
+        if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
             citiesToNumberOfUnimprovedTiles[city.name] =
-                    city.getTiles().count { it.isLand && tileNeedToImprove(it, unit.civInfo) }
+                    city.getTiles().count { it.isLand && tileCanBeImproved(it, unit.civInfo) }
         }
 
         val mostUndevelopedCity = unit.civInfo.cities
                 .filter { citiesToNumberOfUnimprovedTiles[it.name]!! > 0 }
                 .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.name] }
                 .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undeveloped city
-        if (mostUndevelopedCity != null) {
+        if (mostUndevelopedCity != null && mostUndevelopedCity != unit.currentTile.owningCity) {
             val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
             if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
             return
@@ -64,7 +65,10 @@ class WorkerAutomation(val unit: MapUnit) {
 
 
 
-    private fun tryConnectingCities():Boolean { // returns whether we actually did anything
+    private fun tryConnectingCities(unit: MapUnit):Boolean { // returns whether we actually did anything
+        //Player can choose not to auto-build roads & railroads.
+        if (unit.civInfo.isPlayerCivilization() && !UnCivGame.Current.settings.autoBuildingRoads)
+            return false
 
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
@@ -118,7 +122,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
-                            && tileNeedToImprove(it, unit.civInfo) }
+                            && tileCanBeImproved(it, unit.civInfo) }
                 .sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
 
         // the tile needs to be actually reachable - more difficult than it seems,
@@ -134,14 +138,25 @@ class WorkerAutomation(val unit: MapUnit) {
         else return currentTile
     }
 
-    private fun tileNeedToImprove(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+    private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
         if (!tile.isLand || tile.getBaseTerrain().impassable)
             return false
         val city=tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
-        return (tile.improvement == null || (tile.hasViewableResource(civInfo) && !tile.containsGreatImprovement() && tile.getTileResource().improvement != tile.improvement))
-                && (tile.containsUnfinishedGreatImprovement() || tile.canBuildImprovement(chooseImprovement(tile, civInfo), civInfo))
+
+        if(tile.improvement==null){
+            if(tile.improvementInProgress!=null) return true
+            val chosenImprovement = chooseImprovement(tile, civInfo)
+            if(chosenImprovement!=null) return true
+        }
+        else{
+            if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
+                    && tile.getTileResource().improvement != tile.improvement)
+                return true
+        }
+
+        return false // cou;dn't find anything to construct here
     }
 
     private fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
