@@ -205,22 +205,28 @@ open class TileInfo {
         return stats
     }
 
-    fun canBuildImprovement(improvement: TileImprovement?, civInfo: CivilizationInfo): Boolean {
-        if (improvement == null) return false
+    fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         if (isCityCenter() || improvement.name == this.improvement) return false
-        val topTerrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()
+        if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
+
+        val topTerrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain!!.name)) return true
+
         if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
         if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
         if(improvement.name == "Remove Road" && this.roadStatus===RoadStatus.Road) return true
         if(improvement.name == "Remove Railroad" && this.roadStatus===RoadStatus.Railroad) return true
+
+        if("Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile()) return true
         if (topTerrain.unbuildable && !(topTerrain.name==Constants.forest && improvement.name=="Camp")) return false
         return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
 
     }
 
     fun hasImprovementInProgress() = improvementInProgress!=null
+
+    fun isCoastalTile() = neighbors.any { it.baseTerrain==Constants.coast }
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
         return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))

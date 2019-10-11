@@ -131,7 +131,7 @@ class GameStarter{
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid ")
                             preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
-                        } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.neighbors.any { n -> n.baseTerrain == startBias } }
+                        } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
                         else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
                     }
 

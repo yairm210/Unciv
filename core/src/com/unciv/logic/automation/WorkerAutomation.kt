@@ -46,7 +46,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
             citiesToNumberOfUnimprovedTiles[city.name] =
-                    city.getTiles().count { it.isLand && tileNeedToImprove(it, unit.civInfo) }
+                    city.getTiles().count { it.isLand && tileCanBeImproved(it, unit.civInfo) }
         }
 
         val mostUndevelopedCity = unit.civInfo.cities
@@ -118,7 +118,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
-                            && tileNeedToImprove(it, unit.civInfo) }
+                            && tileCanBeImproved(it, unit.civInfo) }
                 .sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
 
         // the tile needs to be actually reachable - more difficult than it seems,
@@ -134,14 +134,25 @@ class WorkerAutomation(val unit: MapUnit) {
         else return currentTile
     }
 
-    private fun tileNeedToImprove(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+    private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
         if (!tile.isLand || tile.getBaseTerrain().impassable)
             return false
         val city=tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
-        return (tile.improvement == null || (tile.hasViewableResource(civInfo) && !tile.containsGreatImprovement() && tile.getTileResource().improvement != tile.improvement))
-                && (tile.containsUnfinishedGreatImprovement() || tile.canBuildImprovement(chooseImprovement(tile, civInfo), civInfo))
+
+        if(tile.improvement==null){
+            if(tile.improvementInProgress!=null) return true
+            val chosenImprovement = chooseImprovement(tile, civInfo)
+            if(chosenImprovement!=null) return true
+        }
+        else{
+            if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
+                    && tile.getTileResource().improvement != tile.improvement)
+                return true
+        }
+
+        return false // cou;dn't find anything to construct here
     }
 
     private fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {

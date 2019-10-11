@@ -174,7 +174,7 @@ class GameInfo {
         val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
 
         val unit:String
-        if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
+        if(waterUnits.isNotEmpty() && tileToPlace.isCoastalTile() && Random().nextBoolean())
             unit=waterUnits.random().name
         else unit = landUnits.random().name
 

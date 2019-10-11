@@ -245,7 +245,7 @@ class Building : NamedStats(), IConstruction{
             return "Must not be on hill"
 
         if("Can only be built in coastal cities" in uniques
-                && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain==Constants.coast })
+                && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can only be built in coastal cities"
 
         if("Can only be built in annexed cities" in uniques
