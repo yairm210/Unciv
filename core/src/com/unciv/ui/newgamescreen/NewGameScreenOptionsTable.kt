@@ -10,6 +10,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
+import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSpeed
@@ -22,10 +23,10 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         addMapTypeSizeAndFile()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
+        addEraSelectBox()
         addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
-
 
         addIsOnlineMultiplayerCheckbox()
 
@@ -138,6 +139,17 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
             }
         })
         add(gameSpeedSelectBox).pad(10f).row()
+    }
+
+    private fun addEraSelectBox() {
+        add("{Starting Era}:".tr())
+        val eraSelectBox = TranslatedSelectBox(TechEra.values().map { it.name }, newGameParameters.startingEra.name, CameraStageBaseScreen.skin)
+        eraSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.startingEra = TechEra.valueOf(eraSelectBox.selected.value)
+            }
+        })
+        add(eraSelectBox).pad(10f).row()
     }
 
 

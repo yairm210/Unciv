@@ -10,8 +10,10 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.metadata.GameParameters
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.max
 
 class GameStarter{
+
     fun startNewGame(newGameParameters: GameParameters): GameInfo {
         val gameInfo = GameInfo()
 
@@ -21,6 +23,32 @@ class GameStarter{
         gameInfo.difficulty = newGameParameters.difficulty
 
 
+        addCivilizations(newGameParameters, gameInfo)
+
+        gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
+
+        // Add Civ Technologies
+        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarian()}) {
+
+            if (!civInfo.isPlayerCivilization())
+                for (tech in gameInfo.getDifficulty().aiFreeTechs)
+                    civInfo.tech.addTechnology(tech)
+
+            for (tech in GameBasics.Technologies.values
+                    .filter { it.era() < newGameParameters.startingEra })
+                if (!civInfo.tech.isResearched(tech.name))
+                    civInfo.tech.addTechnology(tech.name)
+
+            civInfo.popupAlerts.clear() // Since adding technologies generates popups...
+        }
+
+        // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
+        addCivStartingUnits(gameInfo)
+
+        return gameInfo
+    }
+
+    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo) {
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
@@ -30,8 +58,8 @@ class GameStarter{
         val barbarianCivilization = CivilizationInfo("Barbarians")
         gameInfo.civilizations.add(barbarianCivilization)
 
-        for(player in newGameParameters.players.sortedBy { it.chosenCiv=="Random" }) {
-            val nationName = if(player.chosenCiv!="Random") player.chosenCiv
+        for (player in newGameParameters.players.sortedBy { it.chosenCiv == "Random" }) {
+            val nationName = if (player.chosenCiv != "Random") player.chosenCiv
             else availableCivNames.pop()
 
             val playerCiv = CivilizationInfo(nationName)
@@ -42,8 +70,8 @@ class GameStarter{
 
 
         val cityStatesWithStartingLocations =
-                gameInfo.tileMap.values.filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
-                        .map { it.improvement!!.replace("StartingLocation ","") }
+                gameInfo.tileMap.values.filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+                        .map { it.improvement!!.replace("StartingLocation ", "") }
 
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the city states with starting locations first in a random order,
@@ -55,39 +83,41 @@ class GameStarter{
             val civ = CivilizationInfo(cityStateName)
             gameInfo.civilizations.add(civ)
         }
+    }
 
-        gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
-
-        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarian() && !it.isPlayerCivilization()}) {
-            for (tech in gameInfo.getDifficulty().aiFreeTechs)
-                civInfo.tech.addTechnology(tech)
-        }
-
-        // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-
+    private fun addCivStartingUnits(gameInfo: GameInfo) {
 
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
 
+        // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
+        fun getWarriorEquivalent(civ: CivilizationInfo): String {
+            val availableMilitaryUnits = GameBasics.Units.values.filter {
+                it.isBuildable(civ)
+                        && it.unitType.isLandUnit()
+                        && !it.unitType.isCivilian()
+            }
+            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }!!.name
+        }
+
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
 
             civ.placeUnitNearTile(startingLocation.position, Constants.settler)
-            civ.placeUnitNearTile(startingLocation.position, civ.getEquivalentUnit("Warrior").name)
+            civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ))
             civ.placeUnitNearTile(startingLocation.position, "Scout")
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    civ.placeUnitNearTile(startingLocation.position, civ.getEquivalentUnit(unit).name)
+                    val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
+                    civ.placeUnitNearTile(startingLocation.position, unitToAdd)
                 }
             }
         }
-
-        return gameInfo
     }
 
-    fun getStartingLocations(civs:List<CivilizationInfo>,tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
+    private fun getStartingLocations(civs:List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
                 .filter { it.isLand && !it.getBaseTerrain().impassable }
 
@@ -148,7 +178,7 @@ class GameStarter{
         throw Exception("Didn't manage to get starting locations even with distance of 1?")
     }
 
-    fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n:Int, tileMap: TileMap): Boolean {
+    private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n:Int, tileMap: TileMap): Boolean {
         // Since all maps are HEXAGONAL, the easiest way of checking if a tile is n steps away from the
         // edge is checking the distance to the CENTER POINT
         // Can't believe we used a dumb way of calculating this before!
@@ -156,5 +186,4 @@ class GameStarter{
         val distanceFromCenter = HexMath().getDistance(vector, Vector2.Zero)
         return hexagonalRadius-distanceFromCenter >= n
     }
-
 }
