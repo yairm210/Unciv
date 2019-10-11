@@ -799,8 +799,8 @@
 		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
 		tradeRequest:"Come, let our people feast together!"
 				
-		outerColor:[255,128,0],
-		innerColor:[255,255,0],
+		outerColor:[210,51,0],
+		innerColor:[255,255,78],
 		uniqueName:"Wayfinding"
 		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
 		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",

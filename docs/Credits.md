@@ -444,6 +444,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 * Two [Sword] Scimitars(https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) by Those Icons for Persia
+* [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 
 ## Promotions
 
