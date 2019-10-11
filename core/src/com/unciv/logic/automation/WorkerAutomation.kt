@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -24,7 +25,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val tileToWork = findTileToWork()
 
         if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
-            if (tryConnectingCities()) return
+            if (tryConnectingCities(unit)) return
         }
 
         if (tileToWork != currentTile) {
@@ -41,7 +42,7 @@ class WorkerAutomation(val unit: MapUnit) {
             }
         }
         if (currentTile.improvementInProgress != null) return // we're working!
-        if (tryConnectingCities()) return //nothing to do, try again to connect cities
+        if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
@@ -53,7 +54,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 .filter { citiesToNumberOfUnimprovedTiles[it.name]!! > 0 }
                 .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.name] }
                 .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undeveloped city
-        if (mostUndevelopedCity != null) {
+        if (mostUndevelopedCity != null && mostUndevelopedCity != unit.currentTile.owningCity) {
             val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
             if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
             return
@@ -64,7 +65,10 @@ class WorkerAutomation(val unit: MapUnit) {
 
 
 
-    private fun tryConnectingCities():Boolean { // returns whether we actually did anything
+    private fun tryConnectingCities(unit: MapUnit):Boolean { // returns whether we actually did anything
+        //Player can choose not to auto-build roads & railroads.
+        if (unit.civInfo.isPlayerCivilization() && !UnCivGame.Current.settings.autoBuildingRoads)
+            return false
 
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 

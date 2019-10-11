@@ -39,6 +39,20 @@
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
 	},
+	{
+		name:"Maori Warrior",
+		unitType:"Melee",
+		uniqueTo:"Polynesia",
+		replaces:"Warrior",
+		movement:2,
+		strength:8,
+		cost: 40,
+		hurryCostModifier:20,
+		obsoleteTech:"Metal Casting",
+		promotions:["Haka War Dance"],
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
+	},
 	/*
 	{
 		name:"Jaguar",
@@ -54,21 +68,6 @@
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
 		//Aztec unique unit, moves faster and fights better in Forest and Jungle. He also heals 25 if he kills an enemy.
-	},
-	{
-		name:"Maori Warrior",
-		unitType:"Melee",
-		uniqueTo:"Polynesia",
-		replaces:"Warrior",
-		movement:2,
-		strength:8,
-		cost: 40,
-		hurryCostModifier:20,
-		obsoleteTech:"Metal Casting",
-		uniques:["Haka War Dance"],
-		upgradesTo:"Swordsman",
-		attackSound:"nonmetalhit"
-		//Polynesian unique unit. All nearby enemy Units have -10% strenght
 	},
 	*/
 	{

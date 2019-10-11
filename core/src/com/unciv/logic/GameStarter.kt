@@ -74,12 +74,12 @@ class GameStarter{
             val startingLocation = startingLocations[civ]!!
 
             civ.placeUnitNearTile(startingLocation.position, Constants.settler)
-            civ.placeUnitNearTile(startingLocation.position, "Warrior")
+            civ.placeUnitNearTile(startingLocation.position, civ.getEquivalentUnit("Warrior").name)
             civ.placeUnitNearTile(startingLocation.position, "Scout")
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    civ.placeUnitNearTile(startingLocation.position, unit)
+                    civ.placeUnitNearTile(startingLocation.position, civ.getEquivalentUnit(unit).name)
                 }
             }
         }
@@ -101,23 +101,23 @@ class GameStarter{
                 landTilesInBigEnoughGroup.addAll(tilesInGroup)
         }
 
+        val tilesWithStartingLocations = tileMap.values
+                .filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
+
+        val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
+            when {
+                tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
+                civ.nation.startBias.isNotEmpty() -> 2 // less harsh
+                else -> 3
+            }  // no requirements
+        }
+
         for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/3 downTo 0){
             val freeTiles = landTilesInBigEnoughGroup
                     .filter {  vectorIsAtLeastNTilesAwayFromEdge(it.position,minimumDistanceBetweenStartingLocations,tileMap)}
                     .toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo,TileInfo>()
-
-            val tilesWithStartingLocations = tileMap.values
-                    .filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
-
-            val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
-                when {
-                    tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
-                    civ.nation.startBias.isNotEmpty() -> 2 // less harsh
-                    else -> 3
-                }  // no requirements
-            }
 
             for(civ in civsOrderedByAvailableLocations){
                 var startingLocation:TileInfo

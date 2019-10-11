@@ -126,8 +126,7 @@ class MapUnit {
         return getUniques().contains(unique)
     }
 
-    // we need to map all the places that this could change: Unit changes locations, owners, gets promotion?
-    fun updateViewableTiles() {
+    fun updateVisibleTiles() {
         if(type.isAirUnit()){
             if(hasUnique("6 tiles in every direction always visible"))
                 viewableTiles = getTile().getTilesInDistance(6)  // it's that simple
@@ -141,6 +140,8 @@ class MapUnit {
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
                     && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
+                visibilityRange += 1
+            if (isEmbarked() && civInfo.nation.unique == "Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
                 visibilityRange += 1
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
@@ -409,7 +410,7 @@ class MapUnit {
             clearEncampment(tile)
 
         currentTile = tile
-        updateViewableTiles()
+        updateVisibleTiles()
     }
 
     fun putInTile(tile:TileInfo){

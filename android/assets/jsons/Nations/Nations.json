@@ -618,6 +618,43 @@
 			"Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
 			"Paishiyauvada","Patigrbana","Phrada"]
 	},
+	{
+		name:"Polynesia",
+		leaderName:"Kamehameha I",
+		adjective:["Polynesia"],
+		startBias:["Coast"],
+		preferredVictoryType:"Cultural",
+		
+		startIntroPart1: "Greetings and blessings be upon you, Kamehameha the Great, chosen by the heavens to unite your scattered peoples. Oh mighty King, you were the first to bring the Big Island of Hawai'I under one solitary rule in 1791 AD. This was followed by the merging of all the remaining islands under your standard in 1810. As the first King of Hawai'I, you standardized the legal and taxation systems and instituted the Mamalahoe Kawanai, an edict protecting civilians in times of war. You ensured the continued unification and sovereignty of the islands by your strong laws and deeds, even after your death in 1819."
+		startIntroPart2: "Oh wise and exalted King, your people wish for a kingdom of their own once more and require a leader of unparalleled greatness! Will you answer their call and don the mantle of the Lion of the Pacific? Will you build a kingdom that stands the test of time?"
+		
+		declaringWar:"The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome."
+		attacked:"It is obvious now that I misjudged you and your true intentions."
+		defeated:"The hard-shelled crab yields, and the lion lies down to sleep. Kanaloa comes for me now."
+		introduction:"Aloha! Greetings and blessings upon you, friend. I am Kamehameha, Great King of this strand of islands."
+		
+		neutralHello:"Welcome, friend!"
+		neutralLetsHearIt:["Proceed.","And?","What is it?"]
+		hateNo:["Certainly not.","We will have to decline."]
+		hateYes:["It is agreed, then.","Excellent!"]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["Proceed.","I'm listening","What is it?"]
+		hateNo:["Certainly not!","That's not acceptable!"]
+		hateYes:["Yes, I suppost I must.","Yes, so be it."]
+		
+		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
+		tradeRequest:"Come, let our people feast together!"
+				
+		outerColor:[210,51,0],
+		innerColor:[255,255,78],
+		uniqueName:"Wayfinding"
+		unique:"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
+			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
 	
 	/*
 	
@@ -771,43 +808,6 @@
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
 			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
-	{
-		name:"Polynesia",
-		leaderName:"Kamehameha I",
-		adjective:["Polynesia"],
-		startBias:["Coast"],
-		preferredVictoryType:"Cultural",
-		
-		startIntroPart1: "Greetings and blessings be upon you, Kamehameha the Great, chosen by the heavens to unite your scattered peoples. Oh mighty King, you were the first to bring the Big Island of Hawai'I under one solitary rule in 1791 AD. This was followed by the merging of all the remaining islands under your standard in 1810. As the first King of Hawai'I, you standardized the legal and taxation systems and instituted the Mamalahoe Kawanai, an edict protecting civilians in times of war. You ensured the continued unification and sovereignty of the islands by your strong laws and deeds, even after your death in 1819."
-		startIntroPart2: "Oh wise and exalted King, your people wish for a kingdom of their own once more and require a leader of unparalleled greatness! Will you answer their call and don the mantle of the Lion of the Pacific? Will you build a kingdom that stands the test of time?"
-		
-		declaringWar:"The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome."
-		attacked:"It is obvious now that I misjudged you and your true intentions."
-		defeated:"The hard-shelled crab yields, and the lion lies down to sleep. Kanaloa comes for me now."
-		introduction:"Aloha! Greetings and blessings upon you, friend. I am Kamehameha, Great King of this strand of islands."
-		
-		neutralHello:"Welcome, friend!"
-		neutralLetsHearIt:["Proceed.","And?","What is it?"]
-		hateNo:["Certainly not.","We will have to decline."]
-		hateYes:["It is agreed, then.","Excellent!"]
-
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["Proceed.","I'm listening","What is it?"]
-		hateNo:["Certainly not!","That's not acceptable!"]
-		hateYes:["Yes, I suppost I must.","Yes, so be it."]
-		
-		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
-		tradeRequest:"Come, let our people feast together!"
-				
-		outerColor:[210,51,0],
-		innerColor:[255,255,78],
-		uniqueName:"Wayfinding"
-		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
-		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
-			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
-			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
-			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
-	},
 	{
 		name:"Songhai",
 		leaderName:"Askia",

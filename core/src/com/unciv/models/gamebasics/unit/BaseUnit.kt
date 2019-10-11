@@ -162,10 +162,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     }
 
     fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
-        val uniqueUnitReplacesUpgrade: BaseUnit? = GameBasics.Units.values
-                .firstOrNull{it.uniqueTo==civInfo.civName && it.replaces == upgradesTo}
-        if(uniqueUnitReplacesUpgrade!=null) return uniqueUnitReplacesUpgrade
-        return GameBasics.Units[upgradesTo!!]!!
+        return civInfo.getEquivalentUnit(upgradesTo!!)
     }
 
     override fun toString(): String = name

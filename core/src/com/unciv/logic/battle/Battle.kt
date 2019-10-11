@@ -265,7 +265,7 @@ class Battle(val gameInfo:GameInfo) {
 
         capturedUnit.civInfo.removeUnit(capturedUnit)
         capturedUnit.assignOwner(attacker.getCivInfo())
-        capturedUnit.updateViewableTiles()
+        capturedUnit.updateVisibleTiles()
     }
 
     private fun tryInterceptAirAttack(attacker:MapUnitCombatant, defender: ICombatant) {
