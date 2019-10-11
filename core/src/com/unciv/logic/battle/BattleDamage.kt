@@ -173,6 +173,16 @@ class BattleDamage{
         if(!isFriendlyTerritory && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
 
+
+        if(unit.getCivInfo().nation.unique == "Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai."
+                && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
+            modifiers["Moai"] = 0.1f
+
+        if(tile.neighbors.flatMap { it.getUnits() }
+                        .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
+            modifiers["Haka War Dance"] = -0.1f
+
+
         if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
                 && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
             modifiers[tile.terrainFeature!!]=0.33f

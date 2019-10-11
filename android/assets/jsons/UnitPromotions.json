@@ -402,4 +402,10 @@
 		effect:"Bonus vs water units 15%",
 		unitTypes:["WaterRanged"]
 	}
+	
+	// Uniques
+	{
+		name:"Haka War Dance", // only for Maori Warrior and subsequent upgrades
+		effect:"-10% combat strength for adjacent enemy units"
+	}
 ]

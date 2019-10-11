@@ -187,6 +187,9 @@ open class TileInfo {
                 stats.add(improvement) // again, for the double effect
             if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
                 stats.science += 2
+
+            if(improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
+                stats.culture += neighbors.count{it.improvement=="Moai"}
         }
 
         if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))

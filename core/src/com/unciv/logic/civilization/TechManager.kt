@@ -6,7 +6,6 @@ import com.unciv.Constants
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
-import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
@@ -202,8 +201,14 @@ class TechManager {
     }
 
     fun updateTransientBooleans(){
-        if(researchedTechUniques.contains("Enables embarkation for land units")) unitsCanEmbark=true
-        if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")) embarkedUnitsCanEnterOcean=true
+        if(researchedTechUniques.contains("Enables embarkation for land units")
+                || civInfo.nation.unique=="Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+            unitsCanEmbark=true
+
+        if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")
+                || civInfo.nation.unique=="Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+            embarkedUnitsCanEnterOcean=true
+
         if(researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true
     }
 

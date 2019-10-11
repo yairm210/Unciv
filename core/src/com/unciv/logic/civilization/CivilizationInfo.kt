@@ -17,6 +17,7 @@ import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
+import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
@@ -230,6 +231,13 @@ class CivilizationInfo {
         return baseBuilding
     }
 
+    fun getEquivalentUnit(baseUnitName:String):BaseUnit {
+        for (unit in GameBasics.Units.values)
+            if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
+                return unit
+        return GameBasics.Units[baseUnitName]!!
+    }
+
     fun meetCivilization(otherCiv: CivilizationInfo) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
@@ -278,7 +286,7 @@ class CivilizationInfo {
     //region state-changing functions
 
     /** This is separate because the REGULAR setTransients updates the viewable ties,
-     *  and the updateViewableTiles tries to meet civs...
+     *  and the updateVisibleTiles tries to meet civs...
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){

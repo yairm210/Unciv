@@ -20,6 +20,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Flag](https://thenounproject.com/search/?q=Flag&i=50114) By Melvin Poppelaars for Settler
 * [Eagle](https://thenounproject.com/search/?q=Eagle&i=1619932) By anggun for Scout
 * [Axe](https://thenounproject.com/search/?q=Axe&i=1688143) By ehab.abdullah for Warrior
+* [Haka](https://thenounproject.com/search/?q=haka&i=379655) By Josh for Maori Warrior
 * [Spiked Club](https://thenounproject.com/search/?q=spiked%20club&i=831793) by Hamish
 * [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky for Archer
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
@@ -444,6 +445,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 * Two [Sword] Scimitars(https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) by Those Icons for Persia
+* [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 
 ## Promotions
 

@@ -155,7 +155,6 @@
 		techRequired:"Construction",
 		improvingTech:"Flight",
 		improvingTechStats:{gold:1}
-		//It can be colored in orange
 	},
 	/*
 	{

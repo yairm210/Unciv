@@ -27,9 +27,9 @@ class UnitPromotions{
         unit.updateUniques()
 
         // Since some units get promotions upon construction, they will get the addPromotion from the unit.postBuildEvent
-        // upon creation, BEFORE they are assigned to a tile, so the updateViewableTiles() would crash.
+        // upon creation, BEFORE they are assigned to a tile, so the updateVisibleTiles() would crash.
         // So, if the addPromotion was triggered from there, simply don't update
-        unit.updateViewableTiles()  // some promotions/uniques give the unit bonus sight
+        unit.updateVisibleTiles()  // some promotions/uniques give the unit bonus sight
     }
 
     fun getAvailablePromotions(): List<Promotion> {
