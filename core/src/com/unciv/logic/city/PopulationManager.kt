@@ -73,16 +73,16 @@ class PopulationManager {
     // todo - change tile choice according to city!
     // if small city, favor production above all, ignore gold!
     // if larger city, food should be worth less!
-    internal fun autoAssignPopulation() {
+    internal fun autoAssignPopulation(foodWeight: Float = 1f) {
         if(getFreePopulation()==0) return
 
         //evaluate tiles
         val bestTile: TileInfo? = cityInfo.getTiles()
                 .filter { it.arialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
-                .maxBy { Automation().rankTileForCityWork(it,cityInfo) }
+                .maxBy { Automation().rankTileForCityWork(it,cityInfo, foodWeight) }
         val valueBestTile = if(bestTile==null) 0f
-        else Automation().rankTileForCityWork(bestTile, cityInfo)
+        else Automation().rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
         //evaluate specialists
         val maxSpecialistsMap = getMaxSpecialists().toHashMap()
