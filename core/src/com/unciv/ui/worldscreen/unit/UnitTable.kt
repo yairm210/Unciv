@@ -44,7 +44,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             deselectUnitButton.add(Label("X",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
             deselectUnitButton.pack()
             deselectUnitButton.touchable = Touchable.enabled
-            deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true }
+            deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true;this@UnitTable.isVisible=false }
             addActor(deselectUnitButton)
 
             helpUnitButton.add(Label("?",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
@@ -86,6 +86,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun update() {
         if(selectedUnit!=null) {
+            isVisible=true
             if (selectedUnit!!.civInfo != worldScreen.viewingCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 selectedCity = null
@@ -221,6 +222,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             // tapping the same tile again will deselect a unit.
             // important for single-tap-move to abort moving easily
             selectedUnit = null
+            isVisible=false
         }
 
         if(selectedUnit != previouslySelectedUnit)

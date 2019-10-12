@@ -88,7 +88,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 clearSelection()
                 selectedImprovement=TileImprovement().apply { name="StartingLocation "+nation.name }
                 val nationIcon = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
-                setCurrentHex(nationIcon, nation.name+" starting location")
+                setCurrentHex(nationIcon, "[${nation.name}] starting location")
             }
             nationsTable.add(nationImage).row()
         }

@@ -143,10 +143,10 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addEraSelectBox() {
         add("{Starting Era}:".tr())
-        val eraSelectBox = TranslatedSelectBox(TechEra.values().map { it.name }, newGameParameters.startingEra.name, CameraStageBaseScreen.skin)
+        val eraSelectBox = TranslatedSelectBox(TechEra.values().map { it.name+" era" }, newGameParameters.startingEra.name, CameraStageBaseScreen.skin)
         eraSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.startingEra = TechEra.valueOf(eraSelectBox.selected.value)
+                newGameParameters.startingEra = TechEra.valueOf(eraSelectBox.selected.value.replace(" era",""))
             }
         })
         add(eraSelectBox).pad(10f).row()

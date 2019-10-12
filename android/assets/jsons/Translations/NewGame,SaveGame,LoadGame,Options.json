@@ -275,15 +275,17 @@
 
 	"Remove":{
 		Italian:"Rimuovi"
+		Simplified_Chinese:"删除"
 	}
 
 	"Random":{
 		Italian:"Casuale"
+		Simplified_Chinese:"随机"
 	}
 	
 	"Human":{
 		Italian:"Umano"
-		Simplified_Chinese:"人类玩家"
+		Simplified_Chinese:"玩家"
 		Russian:"Человек"
 	}
 	
@@ -386,6 +388,10 @@
 		Simplified_Chinese:"游戏速度"
 	}
 	
+	"Starting Era":{
+		Simplified_Chinese:"开始时代"
+	}
+
 	"Quick":{
 		Italian:"Rapida"
 		Russian:"Быстрая"
@@ -415,15 +421,18 @@
 	"It looks like we can't make a map with the parameters you requested!":{
 		Italian:"Sembra che i parametri da te impostati siano eccessivi per questa mappa!"
 		Russian:"Похоже, что мы не можем создать карту с нужными вам параметрами!"
+		Simplified_Chinese:"无法根据你的设置创建地图！"
 	}
 	
 	"Maybe you put too many players into too small a map?":{
 		Italian:"Forse hai inserito troppi giocatori o altri parametri?"
 		Russian:"Может, у вас слишком много игроков для такой небольшой карты?"
+		Simplified_Chinese:"或许你放置了太多玩家在如此小的地图上？"
 	}
 
 	"No human players selected!":{
 		Italian:"È necessario almeno un giocatore umano!"
+		Simplified_Chinese:"未选择玩家！"
 	}
 	
 	
