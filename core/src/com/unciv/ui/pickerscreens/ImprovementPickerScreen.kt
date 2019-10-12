@@ -3,7 +3,6 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.TileInfo
@@ -51,8 +50,11 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
             group.add(image).size(30f).pad(10f)
 
-            group.add(Label(improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}".tr(),skin)
-                    .setFontColor(Color.WHITE)).pad(10f)
+            var labelText = improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}"
+            if(tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name)
+                labelText += "\n"+"Provides [${tileInfo.resource}]".tr()
+
+            group.add(labelText.toLabel().setFontColor(Color.WHITE)).pad(10f)
 
             group.touchable = Touchable.enabled
             group.onClick {
