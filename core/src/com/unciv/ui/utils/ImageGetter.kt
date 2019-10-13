@@ -131,10 +131,8 @@ object ImageGetter {
         if(imageExists("UnitPromotionIcons/$basePromotionName")) {
             val icon = getImage("UnitPromotionIcons/$basePromotionName")
             icon.color = colorFromRGB(255,226,0)
-            var circle = icon.surroundWithCircle(30f)
+            val circle = icon.surroundWithCircle(30f)
             circle.circle.color = colorFromRGB(0,12,49)
-//            circle = circle.surroundWithCircle(40f)
-//            circle.circle.color = colorFromRGB(255,226,0)
             if(level!=0){
                 val starTable = Table().apply { defaults().pad(2f) }
                 for(i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(8f)

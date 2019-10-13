@@ -12,6 +12,9 @@ class TileSetStrings {
     val cityOverlay = tileSetLocation+"CityOverlay"
     val railroad = tileSetLocation+"Railroad"
 
+    val landUnit = tileSetLocation+"LandUnit"
+    val waterUnit = tileSetLocation+"WaterUnit"
+
     private val baseTerrainToTile = HashMap<String,String>()
     fun getBaseTerrainTile(baseTerrain:String): String {
         if(!baseTerrainToTile.containsKey(baseTerrain))

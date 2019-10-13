@@ -2449,7 +2449,7 @@ TileSets/FantasyHex/TopRightBorder
   index: -1
 TileSets/FantasyHex/Grassland+Forest
   rotate: false
-  xy: 226, 12
+  xy: 294, 12
   size: 31, 29
   orig: 31, 29
   offset: 0, 0
@@ -2489,23 +2489,30 @@ TileSets/FantasyHex/Lakes
   orig: 32, 28
   offset: 0, 0
   index: -1
+TileSets/FantasyHex/LandUnit
+  rotate: false
+  xy: 750, 1395
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Mountain
   rotate: false
-  xy: 750, 1387
+  xy: 972, 1345
   size: 32, 36
   orig: 32, 36
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Ocean
   rotate: false
-  xy: 972, 1353
+  xy: 1698, 76
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains
   rotate: false
-  xy: 1698, 76
+  xy: 666, 69
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2519,44 +2526,51 @@ TileSets/FantasyHex/Plains+City
   index: -1
 TileSets/FantasyHex/Plains+Forest
   rotate: false
-  xy: 666, 64
+  xy: 570, 36
   size: 32, 33
   orig: 32, 33
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains+Jungle
   rotate: false
-  xy: 570, 34
+  xy: 874, 20
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/TopBorder
   rotate: false
-  xy: 874, 27
+  xy: 604, 17
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra
   rotate: false
-  xy: 604, 13
+  xy: 158, 10
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra+City
   rotate: false
-  xy: 158, 7
+  xy: 192, 7
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra+Forest
   rotate: false
-  xy: 192, 10
+  xy: 226, 9
   size: 32, 32
   orig: 32, 32
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/WaterUnit
+  rotate: false
+  xy: 260, 15
+  size: 32, 26
+  orig: 32, 26
   offset: 0, 0
   index: -1
 UnitIcons/Anti-Aircraft Gun
