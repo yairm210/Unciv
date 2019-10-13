@@ -40,6 +40,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
     protected var pixelMilitaryUnitImage: Image? = null
+    protected var pixelCivilianUnitImage: Image? = null
 
     val miscLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     var resourceImage: Actor? = null
@@ -213,6 +214,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
         updatePixelMilitaryUnit(showMilitaryUnit)
+        updatePixelCivilianUnit()
         updateCityImage()
         updateTileColor(tileIsViewable)
 
@@ -407,7 +409,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         } else {
             if (pixelMilitaryUnitImage == null) {
                 var imageLocation = ""
-                if (tileInfo.militaryUnit!!.type.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit))
+
+
+                val specificUnitIconLocation = tileSetStrings.unitsLocation+tileInfo.militaryUnit!!.name
+                if(ImageGetter.imageExists(specificUnitIconLocation))
+                    imageLocation = specificUnitIconLocation
+                else if (tileInfo.militaryUnit!!.type.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit))
                     imageLocation = tileSetStrings.landUnit
                 else if (tileInfo.militaryUnit!!.type.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit))
                     imageLocation = tileSetStrings.waterUnit
@@ -417,6 +424,29 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                     terrainFeatureLayerGroup.addActor(pixelUnitImage)
                     setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
                     pixelMilitaryUnitImage=pixelUnitImage
+                }
+            }
+        }
+    }
+
+    fun updatePixelCivilianUnit() {
+        if (tileInfo.civilianUnit==null) {
+            if (pixelCivilianUnitImage != null) {
+                pixelCivilianUnitImage!!.remove()
+                pixelCivilianUnitImage = null
+            }
+        } else {
+            if (pixelCivilianUnitImage == null) {
+                var imageLocation = ""
+                val specificUnitIconLocation = tileSetStrings.unitsLocation+tileInfo.civilianUnit!!.name
+                if(ImageGetter.imageExists(specificUnitIconLocation))
+                    imageLocation = specificUnitIconLocation
+
+                if (imageLocation != "") {
+                    val pixelUnitImage = ImageGetter.getImage(imageLocation)
+                    terrainFeatureLayerGroup.addActor(pixelUnitImage)
+                    setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
+                    pixelCivilianUnitImage=pixelUnitImage
                 }
             }
         }
