@@ -47,7 +47,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             }
         }
 
-        featureLayerGroup.color.a=0.5f
+        terrainFeatureLayerGroup.color.a=0.5f
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (resourceImage != null) resourceImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (cityImage != null) cityImage!!.setColor(1f, 1f, 1f, 0.5f)

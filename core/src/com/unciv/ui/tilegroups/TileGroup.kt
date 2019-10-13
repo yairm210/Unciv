@@ -12,11 +12,11 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
-
 
 
 open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : Group() {
@@ -36,10 +36,14 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain:String=""
 
-    val featureLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
+    val terrainFeatureLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
+
+    protected var pixelMilitaryUnitImageLocation=""
+    protected var pixelMilitaryUnitImage: Image? = null
+    protected var pixelCivilianUnitImage: Image? = null
 
     val miscLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     var resourceImage: Actor? = null
@@ -72,7 +76,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     init {
         this.setSize(groupSize, groupSize)
         this.addActor(baseLayerGroup)
-        this.addActor(featureLayerGroup)
+        this.addActor(terrainFeatureLayerGroup)
         this.addActor(miscLayerGroup)
         this.addActor(unitLayerGroup)
         this.addActor(cityButtonLayerGroup)
@@ -138,6 +142,16 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         return tileSetStrings.hexagon
     }
 
+    // Used for both the underlying tile and unit overlays, perhaps for other things in the future
+    // Parent should already be set when calling
+    fun setHexagonImageSize(hexagonImage:Image){
+        val imageScale = groupSize * 1.5f / hexagonImage.width
+        // Using "scale" can get really confusing when positioning, how about no
+        hexagonImage.setSize(hexagonImage.width*imageScale, hexagonImage.height*imageScale)
+        hexagonImage.centerX(hexagonImage.parent)
+        hexagonImage.y = -groupSize/6
+    }
+
     private fun updateTileImage(isRevealed: Boolean) {
         val tileBaseImageLocation = getTileBaseImageLocation(isRevealed)
         if(tileBaseImageLocation==currentTileBaseImageLocation) return
@@ -146,14 +160,9 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         tileBaseImage = ImageGetter.getImage(tileBaseImageLocation)
         currentTileBaseImageLocation = tileBaseImageLocation
 
-        val imageScale = groupSize * 1.5f / tileBaseImage.width
-        // Using "scale" can get really confusing when positioning, how about no
-        tileBaseImage.setSize(tileBaseImage.width*imageScale, tileBaseImage.height*imageScale)
-        tileBaseImage.centerX(this)
-
-        tileBaseImage.y = -groupSize/6
-        tileBaseImage.toBack()
         baseLayerGroup.addActor(tileBaseImage)
+        setHexagonImageSize(tileBaseImage)
+        tileBaseImage.toBack()
     }
 
     fun addAcquirableIcon(){
@@ -207,6 +216,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updateTileImage(true)
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
+
+        updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
+        updatePixelCivilianUnit(tileIsViewable)
+
         updateCityImage()
         updateTileColor(tileIsViewable)
 
@@ -251,7 +264,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 return
 
             cityImage = ImageGetter.getImage(cityOverlayLocation)
-            featureLayerGroup.addActor(cityImage)
+            terrainFeatureLayerGroup.addActor(cityImage)
             cityImage!!.run {
                 setSize(60f, 60f)
                 center(this@TileGroup)
@@ -358,7 +371,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
 
             image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
-            featureLayerGroup.addActor(image)
+            terrainFeatureLayerGroup.addActor(image)
         }
 
     }
@@ -382,11 +395,67 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 val terrainFeatureOverlayLocation = tileSetStrings.getTerrainFeatureOverlay(terrainFeature!!)
                 if(!ImageGetter.imageExists(terrainFeatureOverlayLocation)) return
                 terrainFeatureOverlayImage = ImageGetter.getImage(terrainFeatureOverlayLocation)
-                featureLayerGroup.addActor(terrainFeatureOverlayImage)
+                terrainFeatureLayerGroup.addActor(terrainFeatureOverlayImage)
                 terrainFeatureOverlayImage!!.run {
                     setSize(30f, 30f)
                     setColor(1f, 1f, 1f, 0.5f)
                     center(this@TileGroup)
+                }
+            }
+        }
+    }
+
+    fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
+        var newImageLocation = ""
+
+        if (tileInfo.militaryUnit != null && showMilitaryUnit) {
+                val unitType = tileInfo.militaryUnit!!.type
+                val specificUnitIconLocation = tileSetStrings.unitsLocation+tileInfo.militaryUnit!!.name
+                if(ImageGetter.imageExists(specificUnitIconLocation))
+                    newImageLocation = specificUnitIconLocation
+                else if(unitType == UnitType.Mounted) newImageLocation = tileSetStrings.unitsLocation+"Horseman"
+                else if(unitType == UnitType.Ranged) newImageLocation = tileSetStrings.unitsLocation+"Archer"
+                else if(unitType == UnitType.Armor) newImageLocation = tileSetStrings.unitsLocation+"Tank"
+                else if(unitType == UnitType.Siege) newImageLocation = tileSetStrings.unitsLocation+"Catapult"
+                else if (unitType.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit))
+                    newImageLocation = tileSetStrings.landUnit
+                else if (unitType.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit))
+                    newImageLocation = tileSetStrings.waterUnit
+        }
+
+        if(pixelMilitaryUnitImageLocation != newImageLocation){
+            pixelMilitaryUnitImage?.remove()
+            pixelMilitaryUnitImage = null
+            pixelMilitaryUnitImageLocation = newImageLocation
+
+            if(newImageLocation!=""){
+                val pixelUnitImage = ImageGetter.getImage(newImageLocation)
+                terrainFeatureLayerGroup.addActor(pixelUnitImage)
+                setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
+                pixelMilitaryUnitImage=pixelUnitImage
+            }
+        }
+
+    }
+
+    fun updatePixelCivilianUnit(tileIsViewable: Boolean) {
+        if (tileInfo.civilianUnit==null || !tileIsViewable) {
+            if (pixelCivilianUnitImage != null) {
+                pixelCivilianUnitImage!!.remove()
+                pixelCivilianUnitImage = null
+            }
+        } else {
+            if (pixelCivilianUnitImage == null) {
+                var imageLocation = ""
+                val specificUnitIconLocation = tileSetStrings.unitsLocation+tileInfo.civilianUnit!!.name
+                if(ImageGetter.imageExists(specificUnitIconLocation))
+                    imageLocation = specificUnitIconLocation
+
+                if (imageLocation != "") {
+                    val pixelUnitImage = ImageGetter.getImage(imageLocation)
+                    terrainFeatureLayerGroup.addActor(pixelUnitImage)
+                    setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
+                    pixelCivilianUnitImage=pixelUnitImage
                 }
             }
         }

@@ -37,7 +37,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
         for(group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }){
             // now, we steal the subgroups from all the tilegroups, that's how we form layers!
             baseLayers.add(group.baseLayerGroup.apply { setPosition(group.x,group.y) })
-            featureLayers.add(group.featureLayerGroup.apply { setPosition(group.x,group.y) })
+            featureLayers.add(group.terrainFeatureLayerGroup.apply { setPosition(group.x,group.y) })
             miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
             unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
             cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })

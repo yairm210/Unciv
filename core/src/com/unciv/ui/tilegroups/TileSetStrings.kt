@@ -6,16 +6,23 @@ class TileSetStrings {
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
     val tileSetLocation = "TileSets/"+ UnCivGame.Current.settings.tileSet +"/"
+
     val hexagon = tileSetLocation+"Hexagon"
     val crosshatchHexagon = tileSetLocation+"CrosshatchHexagon"
-    val cityTile = tileSetLocation+"City"
     val cityOverlay = tileSetLocation+"CityOverlay"
     val railroad = tileSetLocation+"Railroad"
+
+    val tilesLocation = tileSetLocation+"Tiles/"
+    val cityTile = tilesLocation+"City"
+
+    val unitsLocation = tileSetLocation+"Units/"
+    val landUnit = unitsLocation+"LandUnit"
+    val waterUnit = unitsLocation+"WaterUnit"
 
     private val baseTerrainToTile = HashMap<String,String>()
     fun getBaseTerrainTile(baseTerrain:String): String {
         if(!baseTerrainToTile.containsKey(baseTerrain))
-            baseTerrainToTile[baseTerrain] = "$tileSetLocation$baseTerrain"
+            baseTerrainToTile[baseTerrain] = "$tilesLocation$baseTerrain"
         return baseTerrainToTile[baseTerrain]!!
     }
 
@@ -30,7 +37,7 @@ class TileSetStrings {
     private val baseTerrainToCityTile = HashMap<String,String>()
     fun getCityTile(baseTerrain:String): String {
         if(!baseTerrainToCityTile.containsKey(baseTerrain))
-            baseTerrainToCityTile[baseTerrain] = "$tileSetLocation$baseTerrain+City"
+            baseTerrainToCityTile[baseTerrain] = "$tilesLocation$baseTerrain+City"
         return baseTerrainToCityTile[baseTerrain]!!
     }
 
