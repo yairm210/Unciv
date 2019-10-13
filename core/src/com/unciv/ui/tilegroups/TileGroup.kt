@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
@@ -39,6 +40,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
+
+    protected var pixelMilitaryUnitImageLocation=""
     protected var pixelMilitaryUnitImage: Image? = null
     protected var pixelCivilianUnitImage: Image? = null
 
@@ -213,8 +216,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updateTileImage(true)
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
-        updatePixelMilitaryUnit(showMilitaryUnit)
-        updatePixelCivilianUnit()
+
+        updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
+        updatePixelCivilianUnit(tileIsViewable)
+
         updateCityImage()
         updateTileColor(tileIsViewable)
 
@@ -401,36 +406,40 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
-        if (tileInfo.militaryUnit==null || !showMilitaryUnit) {
-            if (pixelMilitaryUnitImage != null) {
-                pixelMilitaryUnitImage!!.remove()
-                pixelMilitaryUnitImage = null
-            }
-        } else {
-            if (pixelMilitaryUnitImage == null) {
-                var imageLocation = ""
+        var newImageLocation = ""
 
-
+        if (tileInfo.militaryUnit != null && showMilitaryUnit) {
+                val unitType = tileInfo.militaryUnit!!.type
                 val specificUnitIconLocation = tileSetStrings.unitsLocation+tileInfo.militaryUnit!!.name
                 if(ImageGetter.imageExists(specificUnitIconLocation))
-                    imageLocation = specificUnitIconLocation
-                else if (tileInfo.militaryUnit!!.type.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit))
-                    imageLocation = tileSetStrings.landUnit
-                else if (tileInfo.militaryUnit!!.type.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit))
-                    imageLocation = tileSetStrings.waterUnit
+                    newImageLocation = specificUnitIconLocation
+                else if(unitType == UnitType.Mounted) newImageLocation = tileSetStrings.unitsLocation+"Horseman"
+                else if(unitType == UnitType.Ranged) newImageLocation = tileSetStrings.unitsLocation+"Archer"
+                else if(unitType == UnitType.Armor) newImageLocation = tileSetStrings.unitsLocation+"Tank"
+                else if(unitType == UnitType.Siege) newImageLocation = tileSetStrings.unitsLocation+"Catapult"
+                else if (unitType.isLandUnit() && ImageGetter.imageExists(tileSetStrings.landUnit))
+                    newImageLocation = tileSetStrings.landUnit
+                else if (unitType.isWaterUnit() && ImageGetter.imageExists(tileSetStrings.waterUnit))
+                    newImageLocation = tileSetStrings.waterUnit
+        }
 
-                if (imageLocation != "") {
-                    val pixelUnitImage = ImageGetter.getImage(imageLocation)
-                    terrainFeatureLayerGroup.addActor(pixelUnitImage)
-                    setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
-                    pixelMilitaryUnitImage=pixelUnitImage
-                }
+        if(pixelMilitaryUnitImageLocation != newImageLocation){
+            pixelMilitaryUnitImage?.remove()
+            pixelMilitaryUnitImage = null
+            pixelMilitaryUnitImageLocation = newImageLocation
+
+            if(newImageLocation!=""){
+                val pixelUnitImage = ImageGetter.getImage(newImageLocation)
+                terrainFeatureLayerGroup.addActor(pixelUnitImage)
+                setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
+                pixelMilitaryUnitImage=pixelUnitImage
             }
         }
+
     }
 
-    fun updatePixelCivilianUnit() {
-        if (tileInfo.civilianUnit==null) {
+    fun updatePixelCivilianUnit(tileIsViewable: Boolean) {
+        if (tileInfo.civilianUnit==null || !tileIsViewable) {
             if (pixelCivilianUnitImage != null) {
                 pixelCivilianUnitImage!!.remove()
                 pixelCivilianUnitImage = null
