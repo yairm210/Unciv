@@ -101,8 +101,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         val unitTable = worldScreen.bottomBar.unitTable
         val previousSelectedUnit = unitTable.selectedUnit
+        val previousSelectedCity = unitTable.selectedCity
         unitTable.tileSelected(tileInfo)
         val newSelectedUnit = unitTable.selectedUnit
+        val newSelectedCity = unitTable.selectedCity
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
                 && worldScreen.isPlayersTurn
@@ -115,13 +117,12 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
             val unitsInTile = selectedTile!!.getUnits()
-            if(unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)){
+            if(previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
+                    && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.ccenterTile)
+                    && unitsInTile.isNotEmpty()
+                    && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)){
                 // try to select the closest city to bombard this guy
-                val citiesThatCanBombard = selectedTile!!.getTilesInDistance(2)
-                        .filter { it.isCityCenter() }.map { it.getCity()!! }
-                        .filter { !it.attackedThisTurn }
-                if(citiesThatCanBombard.isNotEmpty())
-                    unitTable.citySelected(citiesThatCanBombard.first())
+                unitTable.citySelected(previousSelectedCity)
             }
         }
 
