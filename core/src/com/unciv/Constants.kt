@@ -17,6 +17,7 @@ class Constants{
         const val ancientRuins = "Ancient ruins"
 
         const val peaceTreaty = "Peace Treaty"
+        const val openBorders = "Open Borders"
         const val random = "Random"
         val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house")
 

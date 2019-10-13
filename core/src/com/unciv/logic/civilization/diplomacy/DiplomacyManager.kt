@@ -10,7 +10,6 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
-import com.unciv.models.gamebasics.tr
 
 enum class RelationshipLevel{
     Unforgivable,
@@ -195,7 +194,7 @@ class DiplomacyManager() {
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders(){
         val newHasOpenBorders = trades.flatMap { it.theirOffers }
-                .any { it.name == "Open Borders" && it.duration > 0 }
+                .any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
         hasOpenBorders=newHasOpenBorders
@@ -209,10 +208,46 @@ class DiplomacyManager() {
     }
 
     fun nextTurn(){
-        for(trade in trades.toList()){
-            for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 }) {
+        nextTurnTrades()
+        removeUntenebleTrades()
+        updateHasOpenBorders()
+        nextTurnDiplomaticModifiers()
+        nextTurnFlags()
+        nextTurnCityStateInfluence()
+    }
+
+    private fun nextTurnCityStateInfluence() {
+        val hasCityStateInfluenceBonus =
+                civInfo.nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+        if (influence > 1) {
+            if (hasCityStateInfluenceBonus) influence -= 0.5f
+            else influence -= 1
+        } else if (influence < 1) {
+            if (hasCityStateInfluenceBonus) influence += 2
+            else influence += 1
+        } else influence = 0f
+    }
+
+    private fun nextTurnFlags() {
+        for (flag in flagsCountdown.keys.toList()) {
+            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+            if (flagsCountdown[flag] == 0) {
+                if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
+                    continue
+                flagsCountdown.remove(flag)
+                if (flag == DiplomacyFlags.AgreedToNotSettleNearUs.name)
+                    addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs, 10f)
+                else if (flag == DiplomacyFlags.ProvideMilitaryUnit.name)
+                    civInfo.giftMilitaryUnitTo(otherCiv())
+            }
+        }
+    }
+
+    private fun nextTurnTrades() {
+        for (trade in trades.toList()) {
+            for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration > 0 }) {
                 offer.duration--
-                if(offer.duration==0) {
+                if (offer.duration == 0) {
                     civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", null, Color.GOLD)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
@@ -220,70 +255,43 @@ class DiplomacyManager() {
                 }
             }
 
-            if(trade.ourOffers.all { it.duration<=0 } && trade.theirOffers.all { it.duration<=0 }) {
+            if (trade.ourOffers.all { it.duration <= 0 } && trade.theirOffers.all { it.duration <= 0 }) {
                 trades.remove(trade)
             }
         }
-        removeUntenebleTrades()
-        updateHasOpenBorders()
+    }
 
-        if(diplomaticStatus==DiplomaticStatus.Peace) {
-            if(getModifier(DiplomaticModifiers.YearsOfPeace)< 30)
+    private fun nextTurnDiplomaticModifiers() {
+        if (diplomaticStatus == DiplomaticStatus.Peace) {
+            if (getModifier(DiplomaticModifiers.YearsOfPeace) < 30)
                 addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
-        }
-        else revertToZero(DiplomaticModifiers.YearsOfPeace,0.5f) // war makes you forget the good ol' days
+        } else revertToZero(DiplomaticModifiers.YearsOfPeace, 0.5f) // war makes you forget the good ol' days
 
         var openBorders = 0
-        if(hasOpenBorders) openBorders+=1
+        if (hasOpenBorders) openBorders += 1
 
-        if(otherCivDiplomacy().hasOpenBorders) openBorders+=1
-        if(openBorders>0) addModifier(DiplomaticModifiers.OpenBorders,openBorders/8f) // so if we both have open borders it'll grow by 0.25 per turn
-        else revertToZero(DiplomaticModifiers.OpenBorders, 1/8f)
+        if (otherCivDiplomacy().hasOpenBorders) openBorders += 1
+        if (openBorders > 0) addModifier(DiplomaticModifiers.OpenBorders, openBorders / 8f) // so if we both have open borders it'll grow by 0.25 per turn
+        else revertToZero(DiplomaticModifiers.OpenBorders, 1 / 8f)
 
-        revertToZero(DiplomaticModifiers.DeclaredWarOnUs,1/8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
-        revertToZero(DiplomaticModifiers.WarMongerer,1/2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
-        revertToZero(DiplomaticModifiers.CapturedOurCities,1/4f) // if you captured our cities, though, that's harder to forget
-        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/8f) // That's a bastardly thing to do
-        revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,1/4f)
-        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,1/8f) // That's a bastardly thing to do
-        revertToZero(DiplomaticModifiers.UnacceptableDemands,1/4f)
+        revertToZero(DiplomaticModifiers.DeclaredWarOnUs, 1 / 8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
+        revertToZero(DiplomaticModifiers.WarMongerer, 1 / 2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
+        revertToZero(DiplomaticModifiers.CapturedOurCities, 1 / 4f) // if you captured our cities, though, that's harder to forget
+        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship, 1 / 8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
 
-        if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later
+        if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
-        if(otherCiv().isCityState() && otherCiv().getCityStateType() == CityStateType.Militaristic) {
+        if (otherCiv().isCityState() && otherCiv().getCityStateType() == CityStateType.Militaristic) {
             if (relationshipLevel() < RelationshipLevel.Friend) {
                 if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
-            }
-            else {
+            } else {
                 if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
             }
         }
-
-        for(flag in flagsCountdown.keys.toList()) {
-            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            if(flagsCountdown[flag]==0) {
-                if(flag==DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
-                    continue
-                flagsCountdown.remove(flag)
-                if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
-                    addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
-                else if(flag==DiplomacyFlags.ProvideMilitaryUnit.name)
-                    civInfo.giftMilitaryUnitTo(otherCiv())
-            }
-        }
-
-        // City-state influence
-        val hasCityStateInfluenceBonus =
-                civInfo.nation.unique=="City-State Influence degrades at half and recovers at twice the normal rate"
-        if (influence > 1) {
-            if(hasCityStateInfluenceBonus) influence -= 0.5f
-            else influence -= 1
-        } else if (influence < 1) {
-            if(hasCityStateInfluenceBonus) influence += 2
-            else influence += 1
-        } else influence = 0f
-
     }
 
     /** Everything that happens to both sides equally when war is delcared by one side on the other */
@@ -401,6 +409,9 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.Denunceation,30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunceation,30)
 
+        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
+
+        // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
         for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
             if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
@@ -411,7 +422,6 @@ class DiplomacyManager() {
                 RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DenouncedOurAllies,-15f)
             }
         }
-        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
     }
 
     fun agreeNotToSettleNear(){

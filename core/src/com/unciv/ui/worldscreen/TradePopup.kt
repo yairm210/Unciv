@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -12,6 +13,7 @@ import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import kotlin.math.max
+import kotlin.math.min
 
 class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
     init{
@@ -37,7 +39,10 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             else tradeOffersTable.add()
             tradeOffersTable.row()
         }
-        add(tradeOffersTable).row()
+        tradeOffersTable.pack()
+
+        val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height/2)
+        add(ScrollPane(tradeOffersTable)).height(scrollHeight).row()
 
         addGoodSizedLabel(translatedNation.tradeRequest).colspan(columns).row()
 

@@ -226,13 +226,12 @@
 		],
 		[
 			"There are three ways to win in Unciv. They are:",
-			"Cultural Victory: Complete 4 Social Policy Trees",
-			"Domination Victory: Survive as the last civilization",
-			"Science Victory: Be the first to construct a spaceship to Alpha Centauri"
+			" - Cultural Victory: Complete 4 Social Policy Trees",
+			" - Domination Victory: Survive as the last civilization",
+			" - Science Victory: Be the first to construct a spaceship to Alpha Centauri"
 		],
 		[
-			"So to sum it up, these are the basics of Unciv – ",
-			"Found a prosperous first city, expand slowly to manage happiness,",
+			"So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness,",
 			"   and set yourself up for the victory condition you wish to pursue.",
 			"Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim.",
 		]
@@ -249,6 +248,7 @@
 	
 	Luxury_Resource:  [
 		[
+			"Luxury resources within your domain and with their specific improvement are connected to your trade network.",
 			"Each unique Luxury resource you have adds 5 happiness to your civilization,",
 			"  but extra resources of the same type don't add anything, ",
 			"  so use them for trading with other civilizations!"
@@ -257,6 +257,7 @@
 	
 	Strategic_Resource:  [
 		[
+			"Strategic resources within your domain and with their specific improvement are connected to your trade network.",
 			"Strategic resources allow you to train units and construct buildings that",
 			"  require those specific resources, for example the Horseman requires Horses."
 			"Each unit 'consumes' a copy of that resource, but if the unit is killed you can ",
