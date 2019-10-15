@@ -1265,6 +1265,18 @@
 		Simplified_Chinese:"黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力"
 	}
 
+	"Polynesia":{
+		Italian:"Polinesia"
+		French:"Polynésie"
+		Portuguese:"Polinésia"
+	}
+
+	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strenght bonus if within 2 tiles of a Moai.":{
+		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate, e +10% Forza entro 2 caselle con un Moai."
+		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
+		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
+	}
+
 	/*
 	"Aztecs":{
 		Italian:"Azteca"
@@ -1334,18 +1346,6 @@
 		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
 		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
 		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
-	}
-
-	"Polynesia":{
-		Italian:"Polinesia"
-		French:"Polynésie"
-		Portuguese:"Polinésia"
-	}
-
-	"Can embark and move over Oceans immediately. +1 Sight when embarked.":{
-		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate."
-		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
-		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
 	}
 
 	"Spain":{
