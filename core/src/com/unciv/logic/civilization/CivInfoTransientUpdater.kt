@@ -64,7 +64,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
                 civInfo.containsBuildingUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
     }
 
-    fun setCitiesConnectedToCapitalTransients(){
+
+    fun setCitiesConnectedToCapitalTransients(initialSetup:Boolean=false){
         if(civInfo.cities.isEmpty()) return // eg barbarians
 
         // We map which cities we've reached, to the mediums they've been reached by -
@@ -122,6 +123,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
                 }
             }
             citiesToCheck = newCitiesToCheck
+        }
+
+        if(!initialSetup){ // In the initial setup we're loading an old game state, so it doesn't really count
+            for(city in citiesReachedToMediums.keys)
+                if(city !in civInfo.citiesConnectedToCapital)
+                    civInfo.addNotification("[${city.name}] has been connected to your capital!",city.location, Color.GOLD)
         }
 
         civInfo.citiesConnectedToCapital = citiesReachedToMediums.keys.toList()
