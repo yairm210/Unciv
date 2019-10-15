@@ -851,6 +851,21 @@
 		Simplified_Chinese:"海关"
 		Portuguese:"Alfândega"
 	}
+	
+///////// Civ-unique improvements
+
+	"Moai":{
+		Italian:"Moai"
+	}
+
+	"+1 additional Culture for each adjacent Moai":{
+		Italian:"+1 Cultura aggiuntiva per ogni Moai adiacente"
+	}
+
+	"Can only be built on Coastal tile":{
+		Italian:"Costruibile solo su Costa"
+	}
+
 
 	"Barbarian encampment":{
 		Italian:"Accampamento barbaro"
