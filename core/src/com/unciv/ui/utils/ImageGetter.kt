@@ -201,8 +201,9 @@ object ImageGetter {
     fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
         val advancementGroup = Table()
         val completionHeight = height * percentComplete
-        advancementGroup.add(getImage(whiteDotLocation).apply { color = backgroundColor }).width(width).height(height-completionHeight).row()
-        advancementGroup.add(getImage(whiteDotLocation).apply { color= progressColor}).width(width).height(completionHeight)
+        advancementGroup.add(getImage(whiteDotLocation).apply { color = backgroundColor })
+                .size(width, height - completionHeight).row()
+        advancementGroup.add(getImage(whiteDotLocation).apply { color = progressColor }).size(width, completionHeight)
         advancementGroup.pack()
         return advancementGroup
     }
@@ -217,14 +218,14 @@ object ImageGetter {
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
+        healthBar.add(healthPartOfBar).size(healthBarSize * healthPercent, 5f)
 
         val emptyPartOfBar = getDot(Color.BLACK)
-        healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
+        healthBar.add(emptyPartOfBar).size(healthBarSize * (1 - healthPercent), 5f)
 
         healthBar.pad(1f)
         healthBar.pack()
-        healthBar.background= getBackground(Color.BLACK)
+        healthBar.background = getBackground(Color.BLACK)
         return healthBar
     }
 
