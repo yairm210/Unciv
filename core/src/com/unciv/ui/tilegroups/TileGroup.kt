@@ -125,7 +125,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     fun getTileBaseImageLocation(isRevealed: Boolean): String {
         if(!isRevealed) return tileSetStrings.hexagon
         if(tileInfo.isCityCenter()){
-            val terrainAndCity = tileSetStrings.getCityTile(baseTerrain)
+            val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain)
             if(ImageGetter.imageExists(terrainAndCity))
                 return terrainAndCity
             if(ImageGetter.imageExists(tileSetStrings.cityTile))
