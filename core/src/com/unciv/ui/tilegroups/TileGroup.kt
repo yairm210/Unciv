@@ -408,12 +408,18 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     fun updatePixelMilitaryUnit(showMilitaryUnit: Boolean) {
         var newImageLocation = ""
 
-        if (tileInfo.militaryUnit != null && showMilitaryUnit) {
-            val unitType = tileInfo.militaryUnit!!.type
-            val specificUnitIconLocation = tileSetStrings.unitsLocation + tileInfo.militaryUnit!!.name
+        val militaryUnit = tileInfo.militaryUnit
+        if (militaryUnit != null && showMilitaryUnit) {
+            val unitType = militaryUnit.type
+            val specificUnitIconLocation = tileSetStrings.unitsLocation + militaryUnit.name
             newImageLocation = when {
                 !UnCivGame.Current.settings.showPixelUnits -> ""
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
+
+                militaryUnit.baseUnit.replaces!=null &&
+                        ImageGetter.imageExists(tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces) ->
+                    tileSetStrings.unitsLocation + militaryUnit.baseUnit.replaces
+
                 unitType == UnitType.Mounted -> tileSetStrings.unitsLocation + "Horseman"
                 unitType == UnitType.Ranged -> tileSetStrings.unitsLocation + "Archer"
                 unitType == UnitType.Armor -> tileSetStrings.unitsLocation + "Tank"
