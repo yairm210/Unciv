@@ -1831,16 +1831,36 @@
 		French:"Annexer"
 		Simplified_Chinese:"吞并"
 		Russian:"Аннексировать"
+	},
+
+	"Annexed cities become part of your regular empire.":{
+	}
+	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
 	}
 
-	"Puppet City":{
+	"Puppet":{
 		Italian:"Riduci a Stato Fantoccio"
 		Simplified_Chinese:"傀儡城市"
+	}
+	
+	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
+	}
+	
+	"You have no control over the the production of puppeted cities.":{
+	}
+	
+	"Puppeted cities also generate 25% less Gold and Science.":{
+	}
+	
+	"A puppeted city can be annexed at any time.":{
 	}
 
 	"Liberate":{
 		Italian:"Libera"
 		Simplified_Chinese:"解放"
+	}
+	
+	"Liberating a city returns it to its original owner, giving you a massive relationship boost with them!":{
 	}
 
 	"Raze":{
@@ -1848,6 +1868,12 @@
 		French:"Razer"
 		Simplified_Chinese:"摧毁"
 		Russian:"Разорить"
+	}
+	
+	"Razing the city annexes it, and starts razing the city to the ground.":{
+	}
+	
+	"The population will gradually dwindle until the city is destroyed.":{
 	}
 	
 	
