@@ -134,7 +134,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         val turnsToPopString : String
         if (city.cityStats.currentCityStats.food > 0) {
             if (city.cityConstructions.currentConstruction == Constants.settler) {
-                turnsToPopString = "Food converts to production"
+                turnsToPopString = "Food converts to production".tr()
             } else {
                 var turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
                         / city.cityStats.currentCityStats.food).toInt()
