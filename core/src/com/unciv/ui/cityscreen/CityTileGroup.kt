@@ -7,19 +7,20 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
 
 class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrings: TileSetStrings) : TileGroup(tileInfo,tileSetStrings) {
 
     var isWorkable = false
-    var yieldGroup = YieldGroup()
+    private var yieldGroup = YieldGroup()
 
     init {
         isTransform=false // performance helper - nothing here is rotated or scaled
         addActor(yieldGroup)
         if (city.location == tileInfo.position) {
-            populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6)")
-            addActor(populationImage)
+            icons.populationIcon = ImageGetter.getImage("StatIcons/City_Center_(Civ6)")
+            addActor(icons.populationIcon)
         }
 
     }
@@ -41,19 +42,19 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
                 baseLayerGroup.color.a = 0.5f
             }
 
-            !tileInfo.isCityCenter() && populationImage==null -> { // workable
-                addPopulationIcon()
-                isWorkable=true
+            !tileInfo.isCityCenter() && icons.populationIcon==null -> { // workable
+                icons.addPopulationIcon()
+                isWorkable = true
             }
         }
 
         terrainFeatureLayerGroup.color.a=0.5f
-        if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
-        if (resourceImage != null) resourceImage!!.setColor(1f, 1f, 1f, 0.5f)
-        if (cityImage != null) cityImage!!.setColor(1f, 1f, 1f, 0.5f)
-        if (civilianUnitImage != null) civilianUnitImage!!.setColor(1f, 1f, 1f, 0.5f)
-        if (militaryUnitImage!= null) militaryUnitImage!!.setColor(1f, 1f, 1f, 0.5f)
-        updatePopulationImage()
+        icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
+        resourceImage?.setColor(1f, 1f, 1f, 0.5f)
+        cityImage?.setColor(1f, 1f, 1f, 0.5f)
+        icons.civilianUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
+        icons.militaryUnitIcon?.setColor(1f, 1f, 1f, 0.5f)
+        updatePopulationIcon()
         updateYieldGroup()
     }
 
@@ -73,21 +74,34 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         }
     }
 
-    private fun updatePopulationImage() {
-        if (populationImage != null) {
-            populationImage!!.setSize(30f, 30f)
-            populationImage!!.setPosition(width / 2 - populationImage!!.width / 2,
-                    height * 0.85f - populationImage!!.height / 2)
+    private fun updatePopulationIcon() {
+        val populationIcon = icons.populationIcon
+        if (populationIcon != null) {
+            populationIcon.setSize(30f, 30f)
+            populationIcon.setPosition(width / 2 - populationIcon.width / 2,
+                    height * 0.85f - populationIcon.height / 2)
 
             if (tileInfo.isWorked() || city.canAcquireTile(tileInfo)) {
-                populationImage!!.color = Color.WHITE
+                populationIcon.color = Color.WHITE
             }
             else if(!tileInfo.isCityCenter()){
-                populationImage!!.color = Color.GRAY.cpy()
+                populationIcon.color = Color.GRAY.cpy()
             }
 
-            populationImage!!.toFront()
+            populationIcon.toFront()
         }
+    }
+
+
+    private fun addAcquirableIcon() {
+        icons.populationIcon = ImageGetter.getStatIcon("Acquire")
+        icons.populationIcon!!.run {
+            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
+            setSize(20f, 20f)
+            center(this@CityTileGroup)
+            x += 20 // right
+        }
+        miscLayerGroup.addActor(this)
     }
 
 }

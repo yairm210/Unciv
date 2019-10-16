@@ -139,23 +139,6 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
     private fun addStatInfo() {
         val cityStats = cityScreen.city.cityStats
-//
-//        for(stats in unifiedStatList.values) stats.happiness=0f
-//
-//        // add happiness to stat list
-//        for(entry in cityStats.happinessList.filter { it.value!=0f }){
-//            if(!unifiedStatList.containsKey(entry.key))
-//                unifiedStatList[entry.key]= Stats()
-//            unifiedStatList[entry.key]!!.happiness=entry.value
-//        }
-
-        // Add maintenance if relevant
-//
-//        val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
-//        if(maintenance>0)
-//            unifiedStatList["Maintenance"]=Stats().add(Stat.Gold,-maintenance.toFloat())
-
-
 
         for(stat in Stat.values().filter { it!=Stat.Happiness }){
             val relevantBaseStats = cityStats.baseStatList.filter { it.value.get(stat)!=0f }
@@ -208,14 +191,6 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             statValuesTable.addSeparator()
             statValuesTable.add("Total".toLabel())
             statValuesTable.add(DecimalFormat("0.#").format(finalTotal).toLabel()).row()
-
-//            if(stat==Stat.Food){
-//                val growthBonus = cityStats.getGrowthBonusFromPolicies()
-//                if(growthBonus>0){
-//                    statValuesTable.add("Growth bonus".toLabel())
-//                    statValuesTable.add(("+"+((growthBonus*100).toInt().toString())+"%").toLabel())
-//                }
-//            }
         }
     }
 

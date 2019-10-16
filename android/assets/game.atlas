@@ -1168,7 +1168,7 @@ OtherIcons/tileTableBackground
   index: -1
 OtherIcons/whiteDot
   rotate: false
-  xy: 2317, 1545
+  xy: 281, 1901
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
@@ -2442,7 +2442,7 @@ TileSets/FantasyHex/Tiles/Grassland
   index: -1
 TileSets/FantasyHex/Tiles/Grassland+Forest
   rotate: false
-  xy: 2351, 1514
+  xy: 2351, 1506
   size: 31, 29
   orig: 31, 29
   offset: 0, 0
@@ -2524,30 +2524,72 @@ TileSets/FantasyHex/Tiles/Plains+Jungle
   orig: 32, 35
   offset: 0, 0
   index: -1
+TileSets/FantasyHex/Tiles/River-Bottom
+  rotate: false
+  xy: 2321, 1727
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-BottomLeft
+  rotate: false
+  xy: 2321, 1695
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-BottomRight
+  rotate: false
+  xy: 2321, 1663
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-Top
+  rotate: false
+  xy: 2321, 1631
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-TopLeft
+  rotate: false
+  xy: 2321, 1599
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-TopRight
+  rotate: false
+  xy: 2321, 1567
+  size: 32, 30
+  orig: 32, 30
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Tiles/Tundra
   rotate: false
-  xy: 2321, 1545
+  xy: 2344, 1413
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+City
   rotate: false
-  xy: 2317, 1508
+  xy: 2344, 1376
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Tundra+Forest
   rotate: false
-  xy: 2317, 1474
+  xy: 2344, 1342
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/TopBorder
   rotate: false
-  xy: 2321, 1609
+  xy: 2317, 1447
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2750,14 +2792,14 @@ TileSets/FantasyHex/Units/Rifleman
   index: -1
 TileSets/FantasyHex/Units/Scout
   rotate: false
-  xy: 2321, 1729
+  xy: 2342, 1861
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Spearman
   rotate: false
-  xy: 2321, 1699
+  xy: 2321, 1537
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2771,49 +2813,49 @@ TileSets/FantasyHex/Units/Submarine
   index: -1
 TileSets/FantasyHex/Units/Swordsman
   rotate: false
-  xy: 2321, 1669
+  xy: 2317, 1507
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Tank
   rotate: false
-  xy: 2321, 1639
+  xy: 2317, 1477
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Trebuchet
   rotate: false
-  xy: 2321, 1579
+  xy: 440, 1234
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/War Elephant
   rotate: false
-  xy: 2342, 1861
+  xy: 2344, 1312
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/Work Boats
   rotate: false
-  xy: 440, 1236
+  xy: 2344, 1256
   size: 32, 26
   orig: 32, 26
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/WaterUnit
   rotate: false
-  xy: 2317, 1446
+  xy: 2344, 1284
   size: 32, 26
   orig: 32, 26
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Units/WaterUnit
   rotate: false
-  xy: 2317, 1446
+  xy: 2344, 1284
   size: 32, 26
   orig: 32, 26
   offset: 0, 0

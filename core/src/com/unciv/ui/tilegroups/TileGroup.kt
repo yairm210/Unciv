@@ -9,12 +9,10 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
 
@@ -49,14 +47,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     val miscLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
     var resourceImage: Actor? = null
     var resource: String? = null
-    var improvementImage: Actor? = null
-    var populationImage: Image? = null //reuse for acquire icon
     private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
 
+    val icons = TileGroupIcons(this)
+
     val unitLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
-    protected var civilianUnitImage: UnitGroup? = null
-    protected var militaryUnitImage: UnitGroup? = null
 
     val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);touchable = Touchable.childrenOnly }
 
@@ -90,6 +86,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         addCrosshairImage()
         isTransform = false // performance helper - nothing here is rotated or scaled
     }
+
 
     //region init functions
     private fun addCircleImage() {
@@ -166,35 +163,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         tileBaseImage.toBack()
     }
 
-    fun addAcquirableIcon() {
-        populationImage = ImageGetter.getStatIcon("Acquire")
-        populationImage!!.run {
-            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
-            setSize(20f, 20f)
-            center(this@TileGroup)
-            x += 20 // right
-        }
-        miscLayerGroup.addActor(populationImage)
-    }
-
-    fun addPopulationIcon() {
-        this.populationImage = ImageGetter.getStatIcon("Population")
-        populationImage!!.run {
-            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
-            setSize(20f, 20f)
-            center(this@TileGroup)
-            x += 20 // right
-        }
-        miscLayerGroup.addActor(populationImage)
-    }
-
-    protected fun removePopulationIcon() {
-        if (populationImage != null) {
-            populationImage!!.remove()
-            populationImage = null
-        }
-    }
-
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileInfo)
             || (!tileInfo.hasEnemySubmarine(viewingCiv))
@@ -220,15 +188,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
         updatePixelCivilianUnit(tileIsViewable)
 
+        icons.update(showResourcesAndImprovements, tileIsViewable, showMilitaryUnit)
+
         updateCityImage()
         updateTileColor(tileIsViewable)
-
-        updateResourceImage(showResourcesAndImprovements)
-        updateImprovementImage(showResourcesAndImprovements)
-
-
-        civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, tileIsViewable, -20f)
-        militaryUnitImage = newUnitImage(tileInfo.militaryUnit, militaryUnitImage, tileIsViewable && showMilitaryUnit, 20f)
 
         updateRoadImages()
         updateBorderImages()
@@ -471,73 +434,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
     }
 
-    private fun updateImprovementImage(showResourcesAndImprovements: Boolean) {
-        if (improvementImage != null) {
-            improvementImage!!.remove()
-            improvementImage = null
-        }
-
-        if (tileInfo.improvement != null && showResourcesAndImprovements) {
-            improvementImage = ImageGetter.getImprovementIcon(tileInfo.improvement!!)
-            miscLayerGroup.addActor(improvementImage)
-            improvementImage!!.run {
-                setSize(20f, 20f)
-                center(this@TileGroup)
-                this.x -= 22 // left
-                this.y -= 10 // bottom
-            }
-        }
-        if (improvementImage != null) {
-            improvementImage!!.color = Color.WHITE.cpy().apply { a = 0.7f }
-        }
-    }
-
-    private fun updateResourceImage(showResourcesAndImprovements: Boolean) {
-        if (resource != tileInfo.resource) {
-            resource = tileInfo.resource
-            if (resourceImage != null) resourceImage!!.remove()
-            if (resource == null) resourceImage = null
-            else {
-                resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!, 20f)
-                resourceImage!!.center(this)
-                resourceImage!!.x = resourceImage!!.x - 22 // left
-                resourceImage!!.y = resourceImage!!.y + 10 // top
-                miscLayerGroup.addActor(resourceImage!!)
-            }
-        }
-
-        if (resourceImage != null) { // This could happen on any turn, since resources need certain techs to reveal them
-            val shouldDisplayResource =
-                    if (showEntireMap) tileInfo.resource != null
-                    else showResourcesAndImprovements
-                            && tileInfo.hasViewableResource(UnCivGame.Current.worldScreen.viewingCiv)
-            resourceImage!!.isVisible = shouldDisplayResource
-        }
-    }
-
-
-    protected fun newUnitImage(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float): UnitGroup? {
-        var newImage: UnitGroup? = null
-        // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
-        oldUnitGroup?.remove()
-
-        if (unit != null && isViewable) { // Tile is visible
-            newImage = UnitGroup(unit, 25f)
-            if (oldUnitGroup?.blackSpinningCircle != null) {
-                newImage.blackSpinningCircle = ImageGetter.getCircle()
-                        .apply { rotation = oldUnitGroup.blackSpinningCircle!!.rotation }
-            }
-            unitLayerGroup.addActor(newImage)
-            newImage.center(this)
-            newImage.y += yFromCenter
-
-            // Instead of fading out the entire unit with its background, we just fade out its central icon,
-            // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == UnCivGame.Current.worldScreen.viewingCiv)
-                newImage.unitBaseImage.color.a = 0.5f
-        }
-        return newImage
-    }
 
 
     fun showCircle(color: Color, alpha: Float = 0.3f) {
