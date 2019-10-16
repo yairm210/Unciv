@@ -406,7 +406,7 @@ class CityStats {
         val newFinalStatList = LinkedHashMap<String, Stats>() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
 
         for (entry in baseStatList)
-            newFinalStatList[entry.key] = entry.value
+            newFinalStatList[entry.key] = entry.value.clone()
 
         val statPercentBonusesSum = Stats()
         for (bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
