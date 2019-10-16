@@ -950,6 +950,10 @@
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
 	}
 
+	"Food converts to production building settler":{
+		
+	}
+
 	"[turnsToStarvation] turns to lose population":{
 		Italian:"Perdita di popolazione tra [turnsToStarvation] turni"
 		Russian:"[turnsToStarvation] ходов до уменьшения населения"
