@@ -1,5 +1,6 @@
 { // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
 	// so for example:
+
 	Culture_and_Policies: [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
 			"Ad ogni turno, la cultura ottenuta da ogni tua città si aggiunge alla cultura della tua civiltà.",
@@ -64,6 +65,7 @@
 			"Clicca sul nome della città per entrare nella schermata cittadina, dove puoi assegnare ",
 			" abitanti, scegliere la produzione, e vedere le informazioni della Città."
 		],
+	]
 
 
 	First_Steps : [
