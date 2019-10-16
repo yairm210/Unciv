@@ -715,6 +715,10 @@
 		Russian:"Автопроизводство в городах"
 	}
 	
+	"Auto-build roads":{
+		Italian:"Costruzione strade automatica"
+	}
+	
 	"Show minimap":{
 		Italian:"Mostra minimappa",
 		Simplified_Chinese:"显示小地图"
