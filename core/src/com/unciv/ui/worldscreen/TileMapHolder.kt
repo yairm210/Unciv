@@ -79,7 +79,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
             override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
                 // deselect any unit, as zooming occasionally forwards clicks on to the map
-                worldScreen.bottomBar.unitTable.selectedUnit = null
+                worldScreen.bottomUnitTable.selectedUnit = null
                 if (lastInitialDistance != initialDistance) {
                     lastInitialDistance = initialDistance
                     lastScale = scaleX
@@ -99,7 +99,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         unitActionOverlay?.remove()
         selectedTile = tileInfo
 
-        val unitTable = worldScreen.bottomBar.unitTable
+        val unitTable = worldScreen.bottomUnitTable
         val previousSelectedUnit = unitTable.selectedUnit
         val previousSelectedCity = unitTable.selectedCity
         unitTable.tileSelected(tileInfo)
@@ -143,7 +143,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 if(UnCivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
                     // single turn instant move
                     selectedUnit.movement.headTowards(tileInfo)
-                    worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
+                    worldScreen.bottomUnitTable.selectedUnit = selectedUnit // keep moved unit selected
                 } else {
                     // add "move to" button
                     val moveHereButtonDto = MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
@@ -167,8 +167,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
                 unitGroup.touchable = Touchable.enabled
                 unitGroup.onClick {
-                    worldScreen.bottomBar.unitTable.selectedUnit = unit
-                    worldScreen.bottomBar.unitTable.selectedCity = null
+                    worldScreen.bottomUnitTable.selectedUnit = unit
+                    worldScreen.bottomUnitTable.selectedCity = null
                     worldScreen.shouldUpdate = true
                     unitActionOverlay?.remove()
                 }
@@ -211,8 +211,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         unitActionOverlay?.remove()
         selectedTile = tileInfo
-        val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
-        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
+        worldScreen.bottomUnitTable.tileSelected(tileInfo)
         worldScreen.shouldUpdate = true
 
         if (selectedUnit != null) {
@@ -257,7 +257,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
-        val unitTable = worldScreen.bottomBar.unitTable
+        val unitTable = worldScreen.bottomUnitTable
         when {
             unitTable.selectedCity!=null -> {
                 val city = unitTable.selectedCity!!
@@ -332,7 +332,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
         selectedTile = tileGroup.tileInfo
         if(selectUnit)
-            worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
+            worldScreen.bottomUnitTable.tileSelected(selectedTile!!)
 
         val originalScrollX = scrollX
         val originalScrollY = scrollY

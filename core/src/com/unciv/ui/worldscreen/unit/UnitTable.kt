@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
@@ -61,13 +62,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         }).left()
 
-        add(prevIdleUnitButton)
-
         add(Table().apply {
             add(Table().apply {
+                add(prevIdleUnitButton)
                 add(unitIconHolder)
                 add(unitNameLabel).pad(5f)
-
+                add(nextIdleUnitButton)
             }).colspan(2).fill().row()
             separator= addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
@@ -79,8 +79,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
             }
         }).expand()
-
-        add(nextIdleUnitButton)
 
     }
 

@@ -74,7 +74,7 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
                     if (selectedUnit.currentMovement > 0) {
-                        tileMapHolder.worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit
+                        tileMapHolder.worldScreen.bottomUnitTable.selectedUnit = selectedUnit
                     }
 
                     // we don't update it directly because we're on a different thread; instead, we tell it to update itself

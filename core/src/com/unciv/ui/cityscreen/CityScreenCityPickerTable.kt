@@ -87,7 +87,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             val game = cityScreen.game
             game.setWorldScreen()
             game.worldScreen.tileMapHolder.setCenterPosition(city.location)
-            game.worldScreen.bottomBar.unitTable.selectedUnit=null
+            game.worldScreen.bottomUnitTable.selectedUnit=null
         }
 
         add(exitCityButton).pad(10f).colspan(columns)
