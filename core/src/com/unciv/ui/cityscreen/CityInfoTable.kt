@@ -13,11 +13,9 @@ import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.text.DecimalFormat
-import java.util.*
 
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -141,55 +139,83 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
     private fun addStatInfo() {
         val cityStats = cityScreen.city.cityStats
-        val unifiedStatList = LinkedHashMap<String, Stats>(cityStats.baseStatList)
-
-        for(stats in unifiedStatList.values) stats.happiness=0f
-
-        // add happiness to stat list
-        for(entry in cityStats.happinessList.filter { it.value!=0f }){
-            if(!unifiedStatList.containsKey(entry.key))
-                unifiedStatList[entry.key]= Stats()
-            unifiedStatList[entry.key]!!.happiness=entry.value
-        }
+//
+//        for(stats in unifiedStatList.values) stats.happiness=0f
+//
+//        // add happiness to stat list
+//        for(entry in cityStats.happinessList.filter { it.value!=0f }){
+//            if(!unifiedStatList.containsKey(entry.key))
+//                unifiedStatList[entry.key]= Stats()
+//            unifiedStatList[entry.key]!!.happiness=entry.value
+//        }
 
         // Add maintenance if relevant
+//
+//        val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
+//        if(maintenance>0)
+//            unifiedStatList["Maintenance"]=Stats().add(Stat.Gold,-maintenance.toFloat())
 
-        val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
-        if(maintenance>0)
-            unifiedStatList["Maintenance"]=Stats().add(Stat.Gold,-maintenance.toFloat())
 
 
-
-        for(stat in Stat.values()){
-            if(unifiedStatList.all { it.value.get(stat)==0f }) continue
+        for(stat in Stat.values().filter { it!=Stat.Happiness }){
+            val relevantBaseStats = cityStats.baseStatList.filter { it.value.get(stat)!=0f }
+            if(relevantBaseStats.isEmpty()) continue
 
             val statValuesTable = Table().apply { defaults().pad(2f) }
             addCategory(stat.name, statValuesTable)
-            for(entry in unifiedStatList) {
+
+            statValuesTable.add("Base values".toLabel().setFontSize(24)).colspan(2).row()
+            var sumOfAllBaseValues = 0f
+            for(entry in relevantBaseStats) {
                 val specificStatValue = entry.value.get(stat)
-                if(specificStatValue==0f) continue
+                sumOfAllBaseValues += specificStatValue
                 statValuesTable.add(entry.key.toLabel())
                 statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
             }
-            for(entry in cityStats.statPercentBonusList){
-                val specificStatValue = entry.value.toHashMap()[stat]!!
-                if(specificStatValue==0f) continue
-                statValuesTable.add(entry.key.toLabel())
-                val decimal = DecimalFormat("0.#").format(specificStatValue)
-                if (specificStatValue > 0)
-                    statValuesTable.add("+$decimal%".toLabel()).row()
-                else
-                    statValuesTable.add("$decimal%".toLabel()).row()
-            }
-            if(stat==Stat.Food){
-                statValuesTable.add("Food eaten".toLabel())
-                statValuesTable.add(("-"+DecimalFormat("0.#").format(cityStats.foodEaten)).toLabel()).row()
-                val growthBonus = cityStats.getGrowthBonusFromPolicies()
-                if(growthBonus>0){
-                    statValuesTable.add("Growth bonus".toLabel())
-                    statValuesTable.add(("+"+((growthBonus*100).toInt().toString())+"%").toLabel())
+            statValuesTable.addSeparator()
+            statValuesTable.add("Total".toLabel())
+            statValuesTable.add(DecimalFormat("0.#").format(sumOfAllBaseValues).toLabel()).row()
+
+            val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat)!=0f }
+            if(relevantBonuses.isNotEmpty()) {
+                statValuesTable.add("Bonuses".toLabel().setFontSize(24)).colspan(2).padTop(20f).row()
+                var sumOfBonuses = 0f
+                for (entry in relevantBonuses) {
+                    val specificStatValue = entry.value.get(stat)
+                    sumOfBonuses += specificStatValue
+                    statValuesTable.add(entry.key.toLabel())
+                    val decimal = DecimalFormat("0.#").format(specificStatValue)
+                    if (specificStatValue > 0) statValuesTable.add("+$decimal%".toLabel()).row()
+                    else statValuesTable.add("$decimal%".toLabel()).row() // negative bonus
                 }
+                statValuesTable.addSeparator()
+                statValuesTable.add("Total".toLabel())
+                val decimal = DecimalFormat("0.#").format(sumOfBonuses)
+                if (sumOfBonuses > 0) statValuesTable.add("+$decimal%".toLabel()).row()
+                else statValuesTable.add("$decimal%".toLabel()).row() // negative bonus
             }
+
+
+            statValuesTable.add("Final".toLabel().setFontSize(24)).colspan(2).padTop(20f).row()
+            var finalTotal = 0f
+            for (entry in cityStats.finalStatList) {
+                val specificStatValue = entry.value.get(stat)
+                finalTotal += specificStatValue
+                if (specificStatValue == 0f) continue
+                statValuesTable.add(entry.key.toLabel())
+                statValuesTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
+            }
+            statValuesTable.addSeparator()
+            statValuesTable.add("Total".toLabel())
+            statValuesTable.add(DecimalFormat("0.#").format(finalTotal).toLabel()).row()
+
+//            if(stat==Stat.Food){
+//                val growthBonus = cityStats.getGrowthBonusFromPolicies()
+//                if(growthBonus>0){
+//                    statValuesTable.add("Growth bonus".toLabel())
+//                    statValuesTable.add(("+"+((growthBonus*100).toInt().toString())+"%").toLabel())
+//                }
+//            }
         }
     }
 

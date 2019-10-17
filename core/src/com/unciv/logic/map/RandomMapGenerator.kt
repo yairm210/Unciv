@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.HexMath
+import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TerrainType
@@ -82,7 +83,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
 
         for(tile in mapToReturn.values) randomizeTile(tile,mapToReturn)
 
-        randomizeStrategicResources(mapToReturn,distance)
+        randomizeResources(mapToReturn,distance)
 
         return mapToReturn
     }
@@ -248,7 +249,7 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
 
         for(tile in mapToReturn.values) randomizeTile(tile,mapToReturn)
 
-        randomizeStrategicResources(mapToReturn,distance)
+        randomizeResources(mapToReturn,distance)
 
         return mapToReturn
     }
@@ -355,7 +356,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
         for (entry in map) randomizeTile(entry.value, mapToReturn)
 
         setWaterTiles(mapToReturn)
-        randomizeStrategicResources(mapToReturn,distance)
+        randomizeResources(mapToReturn,distance)
         return mapToReturn
     }
 
@@ -521,21 +522,51 @@ open class RandomMapGenerator {
     }
 
 
-    fun randomizeStrategicResources(mapToReturn: HashMap<String, TileInfo>,distance: Int) {
+    fun randomizeResources(mapToReturn: HashMap<String, TileInfo>, distance: Int) {
         for(tile in mapToReturn.values)
-            if(tile.resource!=null && tile.getTileResource().resourceType==ResourceType.Strategic)
+            if(tile.resource!=null)
                 tile.resource=null
 
-        val strategicResources = GameBasics.TileResources.values.filter { it.resourceType==ResourceType.Strategic }
-        for(resource in strategicResources){
+        randomizeStrategicResources(mapToReturn, distance, ResourceType.Strategic)
+        randomizeResource(mapToReturn, distance, ResourceType.Luxury)
+        randomizeResource(mapToReturn, distance, ResourceType.Bonus)
+    }
+
+    // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
+    private fun randomizeStrategicResources(mapToReturn: HashMap<String, TileInfo>, distance: Int, resourceType: ResourceType) {
+        val resourcesOfType = GameBasics.TileResources.values.filter { it.resourceType == resourceType }
+        for (resource in resourcesOfType) {
             val suitableTiles = mapToReturn.values
-                    .filter { it.resource==null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+                    .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
 
-            val numberOfResources = mapToReturn.values.count{it.isLand && !it.getBaseTerrain().impassable} / 50
+            val averageTilesPerResource = 15 * resourcesOfType.count()
+            val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / averageTilesPerResource
 
-            val locations = chooseSpreadOutLocations(numberOfResources,suitableTiles, distance)
+            val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
 
-            for(location in locations) location.resource = resource.name
+            for (location in locations) location.resource = resource.name
+        }
+    }
+
+    // Here, we need there to be some luxury/bonus resource - it matters less what
+    private fun randomizeResource(mapToReturn: HashMap<String, TileInfo>, distance: Int, resourceType: ResourceType) {
+        val resourcesOfType = GameBasics.TileResources.values.filter { it.resourceType == resourceType }
+
+        val suitableTiles = mapToReturn.values
+                .filter { it.resource == null && resourcesOfType.any { r->r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
+        val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / 15
+        val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
+
+        val resourceToNumber = Counter<String>()
+
+        for(tile in locations){
+            val possibleResources = resourcesOfType
+                    .filter { it.terrainsCanBeFoundOn.contains(tile.getLastTerrain().name) }
+                    .map { it.name }
+            if(possibleResources.isEmpty()) continue
+            val resourceWithLeastAssignments = possibleResources.minBy { resourceToNumber[it]!! }!!
+            resourceToNumber.add(resourceWithLeastAssignments, 1)
+            tile.resource = resourceWithLeastAssignments
         }
     }
 

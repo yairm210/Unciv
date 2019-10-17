@@ -60,8 +60,10 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.civilizations.flatMap { it.cities }.first { it.name == popupAlert.value}
-                addGoodSizedLabel("What would you like to do with the city?").row()
+                addGoodSizedLabel("What would you like to do with the city?")
+                        .apply { this.actor.setFontSize(24) }.padBottom(20f).row()
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
+
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
@@ -70,25 +72,40 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         worldScreen.shouldUpdate=true
                         close()
                     }).row()
+                    addGoodSizedLabel("Liberating a city returns it to its original owner, giving you a massive relationship boost with them!")
+                    addSeparator()
                 }
+
                 add(TextButton("Annex".tr(), skin).onClick {
                     city.puppetCity(conqueringCiv)
                     city.annexCity()
                     worldScreen.shouldUpdate=true
                     close()
                 }).row()
-                add(TextButton("Puppet City".tr(), skin).onClick {
+                addGoodSizedLabel("Annexed cities become part of your regular empire.").row()
+                addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
+                addSeparator()
+
+                add(TextButton("Puppet".tr(), skin).onClick {
                     city.puppetCity(conqueringCiv)
                     worldScreen.shouldUpdate=true
                     close()
                 }).row()
+                addGoodSizedLabel("Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.").row()
+                addGoodSizedLabel("You have no control over the the production of puppeted cities.").row()
+                addGoodSizedLabel("Puppeted cities also generate 25% less Gold and Science.").row()
+                addGoodSizedLabel("A puppeted city can be annexed at any time.").row()
+                addSeparator()
+
                 add(TextButton("Raze".tr(), skin).onClick {
                     city.puppetCity(conqueringCiv)
                     city.annexCity()
                     city.isBeingRazed = true
                     worldScreen.shouldUpdate=true
                     close()
-                })
+                }).row()
+                addGoodSizedLabel("Razing the city annexes it, and starts razing the city to the ground.").row()
+                addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
             }
             AlertType.BorderConflict -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)

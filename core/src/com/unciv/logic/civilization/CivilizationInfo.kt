@@ -327,7 +327,7 @@ class CivilizationInfo {
     }
 
     // implementation in a seperate class, to not clog up CivInfo
-    fun setCitiesConnectedToCapitalTransients() = transients().setCitiesConnectedToCapitalTransients()
+    fun initialSetCitiesConnectedToCapitalTransients() = transients().setCitiesConnectedToCapitalTransients(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
@@ -343,7 +343,7 @@ class CivilizationInfo {
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        setCitiesConnectedToCapitalTransients()
+        transients().setCitiesConnectedToCapitalTransients()
         for (city in cities) city.startTurn()
 
         getCivUnits().toList().forEach { it.startTurn() }

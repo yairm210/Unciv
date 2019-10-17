@@ -1201,7 +1201,7 @@
 		defeated:"If our legacy continues, you will never have truly won."
 		
 		outerColor:[0, 0, 0],
-		innerColor:[18,178,210],
+		innerColor:[153,204,255],
 		cities:["Venice"]
 	},
 	{
@@ -1301,6 +1301,90 @@
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,255],
 		cities:["Zanzibar"]
+	},
+	{
+		name:"Sydney",
+		adjective:["Sydney"],
+		cityStateType:"Maritime",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"The principles for which we have fought will survive longer than any nation you could ever build."
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,204,204],
+		cities:["Sydney"]
+	},
+	{
+		name:"Cape Town",
+		adjective:["Cape Town"],
+		cityStateType:"Maritime",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"I have failed. May you, at least, know compassion towards our people."
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,153,153],
+		cities:["Cape Town"]
+	},
+	{
+		name:"Kathmandu",
+		adjective:["Kathmandu"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"We... defeated? No... we had so much work to do!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[51,25,0],
+		cities:["Kathmandu"]
+	},
+	{
+		name:"Hanoi",
+		adjective:["Hanoi"],
+		cityStateType:"Cultured",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"So this is how does it feel to die..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,0,255],
+		cities:["Hanoi"]
+	},
+	{
+		name:"Quebec City",
+		adjective:["Quebec City"],
+		cityStateType:"Cultured",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"We were too weak to protect ourselves..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[51,102,0],
+		cities:["Quebec City"]
+	},
+	{
+		name:"Helsinki",
+		adjective:["Helsinki"],
+		cityStateType:"Maritime",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"The day of judgement has come to us. But rest assured, the same will go for you!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,178,102],
+		cities:["Helsinki"]
 	},
 	
 	        

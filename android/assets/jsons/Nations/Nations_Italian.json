@@ -614,6 +614,42 @@
 			"Gaugamela","Harmozeia","Ecatompilo","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
 			"Paishiyauvada","Patigrbana","Phrada"]
 	},
+	{
+		name:"Polynesia",
+		translatedName:"Polinesia",
+		leaderName:"Kamehameha I",
+		adjective:["polinesiano"],
+		startBias:["Coast"],
+		
+		startIntroPart1: "Salute e benedizione su di te, Kamehameha il Grande, prescelto dal cielo per unire il tuo popolo disperso. O potente re, tu fosti il primo a estendere il tuo dominio sulla Grande Isola di Hawaii nel 1791. Seguì l'unificazione di tutte le altre isole sotto il tuo stendardo, completata nel 1810. Come primo re delle Hawaii, hai riorganizzato il sistema legale e fiscale e hai istituito il Mamalahoe Kanawai, un editto che protegge i civili in tempi di guerra. Con le tue leggi e le tue grandi gesta hai assicurato che le isole continuassero a rafforzare la loro unione e a mantenere la loro sovranità, anche dopo la tua morte, avvenuta nel 1819."
+		startIntroPart2: "O re mirabile e saggio, il tuo popolo desidera un regno indipendente e un condottiero di impareggiabile grandezza! Risponderai alla sua chiamata indossando il mantello del Leone del Pacifico? Plasmerai una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"L'antico fuoco che s'illumina nel cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente, speravo in un altro esito."
+		attacked:"È evidente: ho valutato male te e i tuoi veri intenti."
+		defeated:"Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me."
+		introduction:"Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno."
+		
+		neutralHello:"Benvenuto, amico!"
+		neutralLetsHearIt:["Procedi.","E?","Cosa c'è?"]
+		hateNo:["Certamente no.","Dobbiamo rifiutare."]
+		hateYes:["Allora è deciso.","Eccellente!"]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Procedi.","Ti ascolto.","Cosa c'è?"]
+		hateNo:["Certo che no!","Questo lo rifiuto!"]
+		hateYes:["Sì, penso che dovrei.","Sì, così sia."]
+		
+		afterPeace:"Forse le stelle hanno sbagliato posto... Consulterò il mio Kahuna."
+		tradeRequest:"Vieni, organizziamo un banchetto per festeggiare la nostra amicizia!"
+				
+		outerColor:[255,128,0],
+		innerColor:[255,255,0],
+		unique:"Le unità imbarcate possono attraversare Coste e Oceani fin da subito, e ottengono +1 Visione.",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
+			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
 	
 	/*
 	{
@@ -651,42 +687,6 @@
 		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
 		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
-	},
-	{
-		name:"Polynesia",
-		translatedName:"Polinesia",
-		leaderName:"Kamehameha I",
-		adjective:["polinesiano"],
-		startBias:["Coast"],
-		
-		startIntroPart1: "Salute e benedizione su di te, Kamehameha il Grande, prescelto dal cielo per unire il tuo popolo disperso. O potente re, tu fosti il primo a estendere il tuo dominio sulla Grande Isola di Hawaii nel 1791. Seguì l'unificazione di tutte le altre isole sotto il tuo stendardo, completata nel 1810. Come primo re delle Hawaii, hai riorganizzato il sistema legale e fiscale e hai istituito il Mamalahoe Kanawai, un editto che protegge i civili in tempi di guerra. Con le tue leggi e le tue grandi gesta hai assicurato che le isole continuassero a rafforzare la loro unione e a mantenere la loro sovranità, anche dopo la tua morte, avvenuta nel 1819."
-		startIntroPart2: "O re mirabile e saggio, il tuo popolo desidera un regno indipendente e un condottiero di impareggiabile grandezza! Risponderai alla sua chiamata indossando il mantello del Leone del Pacifico? Plasmerai una civiltà in grado di superare la prova del tempo?"
-		
-		declaringWar:"L'antico fuoco che s'illumina nel cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente, speravo in un altro esito."
-		attacked:"È evidente: ho valutato male te e i tuoi veri intenti."
-		defeated:"Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me."
-		introduction:"Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno."
-		
-		neutralHello:"Benvenuto, amico!"
-		neutralLetsHearIt:["Procedi.","E?","Cosa c'è?"]
-		hateNo:["Certamente no.","Dobbiamo rifiutare."]
-		hateYes:["Allora è deciso.","Eccellente!"]
-
-		hateHello:"Oh, sei tu."
-		hateLetsHearIt:["Procedi.","Ti ascolto.","Cosa c'è?"]
-		hateNo:["Certo che no!","Questo lo rifiuto!"]
-		hateYes:["Sì, penso che dovrei.","Sì, così sia."]
-		
-		afterPeace:"Forse le stelle hanno sbagliato posto... Consulterò il mio Kahuna."
-		tradeRequest:"Vieni, organizziamo un banchetto!"
-				
-		outerColor:[255,128,0],
-		innerColor:[255,255,0],
-		unique:"Le unità imbarcate possono attraversare Coste e Oceani fin da subito, e ottengono +1 Visione.",
-		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
-			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
-			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
-			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
 	{
 		name:"Siam",
@@ -1007,6 +1007,90 @@
 		mainColor:[0, 0, 0],
 		secondaryColor:[255,153,255],
 		cities:["Zanzibar"]
+	},
+	{
+		name:"Sydney",
+		adjective:["australiano"],
+		cityStateType:"Maritime",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"I principi per i quali abbiamo combattuto sopravviveranno più di ogni nazione che mai costruirai."
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,204,204],
+		cities:["Sydney"]
+	},
+	{
+		name:"Cape Town",
+		adjective:["sudafricano"],
+		cityStateType:"Maritime",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Ho fallito. Possa tu, almeno, mostrare compassione per la nostra gente."
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,153,153],
+		cities:["Città del Capo"]
+	},
+	{
+		name:"Kathmandu",
+		adjective:["nepalese"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Noi... sconfitti? Ma... avevamo tanto lavoro da fare!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[51,25,0],
+		cities:["Kathmandu"]
+	},
+	{
+		name:"Hanoi",
+		adjective:["vietnamita"],
+		cityStateType:"Cultured",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Dunque è così che ci si sente a morire..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,0,255],
+		cities:["Hanoi"]
+	},
+	{
+		name:"Quebec City",
+		adjective:["quebecchese"],
+		cityStateType:"Cultured",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Siamo stati troppo deboli per proteggersi..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[51,102,0],
+		cities:["Quebec"]
+	},
+	{
+		name:"Helsinki",
+		adjective:["finlandese"],
+		cityStateType:"Maritime",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Il giorno del giudizio è giunto su di noi. Ma stà pur sicuro che lo stesso accadrà con te!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,178,102],
+		cities:["Helsinki"]
 	},
 	
 	//Barbarian

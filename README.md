@@ -52,6 +52,10 @@ There's a lot left to implement, so it's hard to give an estimation of when exac
 
 If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
 
+## Please add {Civilization}
+
+THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
+
 ## How can I help?
 
 If you're a programmer, you can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
@@ -60,7 +64,7 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 
 If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
 
-## How can I get started workin on this?
+## How can I get started working on this?
 
 - Install Android Studio
 - Fork the repo, and clone your fork

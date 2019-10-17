@@ -243,7 +243,7 @@ class GameInfo {
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
             // Hence why it's not in CivInfo.setTransients().
-            civInfo.setCitiesConnectedToCapitalTransients()
+            civInfo.initialSetCitiesConnectedToCapitalTransients()
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
             for(cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()

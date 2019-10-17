@@ -19,6 +19,7 @@ class GameSettings {
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
     var showMinimap: Boolean = true
+    var showPixelUnits: Boolean = false
 
     var userName:String=""
     var userId = ""

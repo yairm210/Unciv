@@ -438,7 +438,7 @@
 	}
 	
 	"Start Golden Age":{
-		Italian:"Inizia Età dell'Oro"
+		Italian:"Avvia Età dell'Oro"
 		French:"Commencer un Age d'Or"
 		Simplified_Chinese:"开启黄金时代"
                 Russian:"Начать золотой век"
@@ -712,7 +712,7 @@
 	}
 
 	"Buy for [amount] gold":{
-		Italian:"Acquista con [amount] oro"
+		Italian:"Acquista ([amount] oro)"
 		Russian:"Купить за [amount] золота"
 		French:"Acheter avec [amount] or"
 		Romanian:"Cumpără cu [amount] aur"
@@ -738,7 +738,7 @@
 	}
 	
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
-		Italian:"Vuoi acquistare [constructionName] per [buildingGoldCost] oro?"
+		Italian:"Vuoi acquistare [constructionName] ([buildingGoldCost] oro)?"
 		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золота?"
 		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
@@ -948,6 +948,10 @@
 		Simplified_Chinese:"此城市将在[turnsToPopulation]轮后有1个新市民"
 		Portuguese:"[turnsToPopulation] turnos até um novo residente"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
+	}
+
+	"Food converts to production":{
+
 	}
 
 	"[turnsToStarvation] turns to lose population":{
@@ -1831,16 +1835,44 @@
 		French:"Annexer"
 		Simplified_Chinese:"吞并"
 		Russian:"Аннексировать"
+	},
+
+	"Annexed cities become part of your regular empire.":{
+		Italian:"Le città annesse faranno parte regolare del tuo impero."
 	}
 
-	"Puppet City":{
+	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
+		Italian:"I loro cittadini genereranno il doppio dell'Infelicità, fino a quando non costruirai un Palazzo di giustizia."
+	}
+
+	"Puppet":{
 		Italian:"Riduci a Stato Fantoccio"
 		Simplified_Chinese:"傀儡城市"
+	}
+	
+	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
+		Italian:"Le città fantoccio non incrementano i costi di Scienza e Cultura, ma i loro cittadini generano Infelicità pari a una volta e mezzo."
+	}
+	
+	"You have no control over the the production of puppeted cities.":{
+		Italian:"Non hai alcun controllo sulla produzione delle città fantoccio."
+	}
+	
+	"Puppeted cities also generate 25% less Gold and Science.":{
+		Italian:"Gli stati fantoccio generano anche il 25% di Oro e Scienza in meno."
+	}
+	
+	"A puppeted city can be annexed at any time.":{
+		Italian:"Puoi annettere una città fantoccio ogni volta che vuoi"
 	}
 
 	"Liberate":{
 		Italian:"Libera"
 		Simplified_Chinese:"解放"
+	}
+	
+	"Liberating a city returns it to its original owner, giving you a massive relationship boost with them!":{
+		Italian:"Liberare una città la restituirà al suo possessore originale, dandoti un'enorme bonus diplomatico nei loro confronti!"
 	}
 
 	"Raze":{
@@ -1848,6 +1880,14 @@
 		French:"Razer"
 		Simplified_Chinese:"摧毁"
 		Russian:"Разорить"
+	}
+	
+	"Razing the city annexes it, and starts razing the city to the ground.":{
+		Italian:"Questa opzione ti permetterà di annettere la città e poi di raderla al suolo."
+	}
+	
+	"The population will gradually dwindle until the city is destroyed.":{
+		Italian:"La popolazione diminuirà gradualmente fino alla distruzione della città."
 	}
 	
 	

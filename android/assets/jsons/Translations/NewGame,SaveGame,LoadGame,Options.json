@@ -387,10 +387,6 @@
 		Russian:"Скорость игры"
 		Simplified_Chinese:"游戏速度"
 	}
-	
-	"Starting Era":{
-		Simplified_Chinese:"开始时代"
-	}
 
 	"Quick":{
 		Italian:"Rapida"
@@ -414,6 +410,47 @@
 		Italian:"Maratona"
 		Simplified_Chinese:"马拉松"
 		Russian:"Марафон"
+	}
+	
+	
+	
+	// Starting Era
+	
+	"Starting Era":{
+		Italian:"Epoca iniziale"
+		Simplified_Chinese:"开始时代"
+	}
+	
+	"Ancient":{
+		Italian:"Antica"
+	}
+	
+	"Classic":{
+		Italian:"Classica"
+	}
+	
+	"Medieval":{
+		Italian:"Medievale"
+	}
+	
+	"Renaissance":{
+		Italian:"Rinascimentale"
+	}
+	
+	"Industrial":{
+		Italian:"Industriale"
+	}
+	
+	"Modern":{
+		Italian:"Moderna"
+	}
+	
+	"Information":{
+		Italian:"Informatica"
+	}
+	
+	"Future":{
+		Italian:"Futura"
 	}
 
 ////
@@ -676,6 +713,10 @@
 		Italian:"Autoassegna produzione città"
 		Simplified_Chinese:"自动分配城市产能"
 		Russian:"Автопроизводство в городах"
+	}
+	
+	"Auto-build roads":{
+		Italian:"Costruzione strade automatica"
 	}
 	
 	"Show minimap":{

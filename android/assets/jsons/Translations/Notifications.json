@@ -535,6 +535,10 @@
 		Simplified_Chinese:"真是不知死活！[civName]竟然敢谴责我们！"
 	}
 	
+	"[cityName] has been connected to your capital!":{
+		Italian:"Itinerario costruito tra la Capitale e [cityName]!"
+	}
+	
 	// Trade
 	"[civName] has accepted your trade request":{
 		Italian:"[civName] ha accettato la nostra offerta commerciale."

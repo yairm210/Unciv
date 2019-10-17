@@ -45,7 +45,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         clear()
 
         val innerTable = PopupTable(screen) // cheating, to get the old code to fit inside a Scroll =)
-        innerTable.background=null
+        innerTable.background = null
         innerTable.add("Worked tiles".toLabel())
         if (settings.showWorkedTiles) innerTable.addButton("Hide") { settings.showWorkedTiles = false; update() }
         else innerTable.addButton("Show") { settings.showWorkedTiles = true; update() }
@@ -56,39 +56,45 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         else innerTable.addButton("Show") { settings.showResourcesAndImprovements = true; update() }
 
         innerTable.add("Check for idle units".toLabel())
-        innerTable.addButton(if(settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
+        innerTable.addButton(if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
             settings.checkForDueUnits = !settings.checkForDueUnits
             update()
         }
 
         innerTable.add("Move units with a single tap".toLabel())
-        innerTable.addButton(if(settings.singleTapMove) "Yes".tr() else "No".tr()) {
+        innerTable.addButton(if (settings.singleTapMove) "Yes".tr() else "No".tr()) {
             settings.singleTapMove = !settings.singleTapMove
             update()
         }
 
         innerTable.add("Show tutorials".toLabel())
-        innerTable.addButton(if(settings.showTutorials) "Yes".tr() else "No".tr()) {
-            settings.showTutorials= !settings.showTutorials
+        innerTable.addButton(if (settings.showTutorials) "Yes".tr() else "No".tr()) {
+            settings.showTutorials = !settings.showTutorials
             update()
         }
 
 
         innerTable.add("Auto-assign city production".toLabel())
-        innerTable.addButton(if(settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
-            settings.autoAssignCityProduction= !settings.autoAssignCityProduction
+        innerTable.addButton(if (settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
+            settings.autoAssignCityProduction = !settings.autoAssignCityProduction
             update()
         }
 
         innerTable.add("Auto-build roads".toLabel())
-        innerTable.addButton(if(settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
-            settings.autoBuildingRoads= !settings.autoBuildingRoads
+        innerTable.addButton(if (settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
+            settings.autoBuildingRoads = !settings.autoBuildingRoads
             update()
         }
 
         innerTable.add("Show minimap".toLabel())
-        innerTable.addButton(if(settings.showMinimap) "Yes".tr() else "No".tr()) {
-            settings.showMinimap= !settings.showMinimap
+        innerTable.addButton(if (settings.showMinimap) "Yes".tr() else "No".tr()) {
+            settings.showMinimap = !settings.showMinimap
+            update()
+        }
+
+        innerTable.add("Show pixel units".toLabel())
+        innerTable.addButton(if (settings.showPixelUnits) "Yes".tr() else "No".tr()) {
+            settings.showPixelUnits = !settings.showPixelUnits
             update()
         }
 
@@ -109,17 +115,17 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         addUsernameAndId(innerTable)
 
-        val scrollPane = ScrollPane(innerTable,skin)
-        scrollPane.setOverscroll(false,false)
-        scrollPane.fadeScrollBars=false
-        scrollPane.setScrollingDisabled(true,false)
-        add(scrollPane).maxHeight(screen.stage.height*0.6f).row()
+        val scrollPane = ScrollPane(innerTable, skin)
+        scrollPane.setOverscroll(false, false)
+        scrollPane.fadeScrollBars = false
+        scrollPane.setScrollingDisabled(true, false)
+        add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
         addCloseButton()
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)
-        UnCivGame.Current.worldScreen.shouldUpdate=true
+        UnCivGame.Current.worldScreen.shouldUpdate = true
     }
 
     private fun addUsernameAndId(innerTable: PopupTable) {
