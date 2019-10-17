@@ -13,7 +13,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(CameraStageBaseScreen.skin) {
     init{
-        background = ImageGetter.getDrawable("OtherIcons/tileTableBackground").apply { color= Color.BLUE.lerp(Color.BLACK, 0.5f) }
+        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
     }
 
     internal fun updateTileTable(tile: TileInfo) {
