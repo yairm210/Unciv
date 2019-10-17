@@ -228,6 +228,11 @@
 		German:"Krieger"
 	}
 
+
+	"Maori Warrior":{	
+		Italian:"Guerriero Maori"
+	}
+
 	"Archer":{	
 		Italian:"Arciere"
 		Russian:"Лучник"
@@ -2081,6 +2086,14 @@
 		Italian:"Imboscata aerea II"
 		Simplified_Chinese:"伏击II级"
 		Russian:"Засада II"
+	}
+
+	"Haka War Dance":{
+		Italian:"Danza di guerra Haka"
+	}
+
+	"-10% combat strength for adjacent enemy units":{
+		Italian:"-10% Forza alle unità nemiche adiacenti a questa unità"
 	}
 
 }

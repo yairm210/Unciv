@@ -536,6 +536,7 @@
 	}
 	
 	"[cityName] has been connected to your capital!":{
+		Italian:"Itinerario costruito tra la Capitale e [cityName]!"
 	}
 	
 	// Trade

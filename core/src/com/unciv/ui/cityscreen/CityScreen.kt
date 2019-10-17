@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
@@ -132,10 +133,14 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val turnsToPopString : String
         if (city.cityStats.currentCityStats.food > 0) {
-            var turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
-                    / city.cityStats.currentCityStats.food).toInt()
-            if (turnsToPopulation < 1) turnsToPopulation = 1
-            turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
+            if (city.cityConstructions.currentConstruction == Constants.settler) {
+                turnsToPopString = "Food converts to production".tr()
+            } else {
+                var turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
+                        / city.cityStats.currentCityStats.food).toInt()
+                if (turnsToPopulation < 1) turnsToPopulation = 1
+                turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
+            }
         } else if (city.cityStats.currentCityStats.food < 0) {
             val turnsToStarvation = floor(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt() + 1
             turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()

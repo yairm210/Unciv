@@ -945,6 +945,10 @@
 		cost: 375,
 		requiredTech:"Radar",
 		requiredResource:"Oil",
+		/*
+		upgradesTo:"Jet Fighter",
+		obsoleteTech:"Lasers",
+		*/
 		hurryCostModifier:20,
 		uniques:["[100]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"]
@@ -976,6 +980,10 @@
 		cost: 375,
 		requiredTech:"Radar",
 		requiredResource:"Oil",
+		/*
+		upgradesTo:"Stealth Bomber",
+		obsoleteTech:"Stealth",
+		*/
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
@@ -1174,9 +1182,64 @@
 		cost: 425,
 		requiredTech:"Lasers",
 		requiredResource:"Aluminum",
+		/*
+		upgradesTo:"Giant Death Robot",
+		obsoleteTech:"Nuclear Fusion",
+		*/
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
+	
+	/*
+	// Information Era
+	
+	{
+		name:"Jet Fighter",
+		unitType:"Fighter",
+		movement:2,
+		strength:45,
+		rangedStrength:75,
+		range:10,
+		cost: 425,
+		requiredTech:"Lasers",
+		requiredResource:"Aluminium",
+		hurryCostModifier:20,
+		uniques:["[100]% chance to intercept air attacks",
+			"Bonus vs Bomber 150%",
+			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	{
+		name:"Stealth Bomber",
+		unitType:"Bomber",
+		movement:2,
+		strength:85,
+		rangedStrength:65,
+		range:20,
+		cost: 425,
+		requiredTech:"Stealth",
+		requiredResource:"Aluminium",
+		hurryCostModifier:20,
+		uniques:["Evasion"]
+		attackSound:"shot"
+	},
+	*/
+	
+	/*
+	// Future Era
+	
+	{
+		name:"Giant Death Robot",
+		unitType:"Armor",
+		movement:5,
+		strength:150,
+		cost: 550,
+		requiredTech:"Nuclear Fusion",
+		requiredResource:"Uranium",
+		uniques:["Can move after attacking","No defensive terrain bonus"]
+		hurryCostModifier:20,
+	},
+	*/
 	
 	
 	/* Great people */
