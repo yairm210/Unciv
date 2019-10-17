@@ -16,19 +16,19 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
 
     fun selectUnit(unit: MapUnit) {
         if(unit.type.isAirUnit()) return // doesn't appear on map so nothing to select
-        val unitImage = if (unit.type.isCivilian()) civilianUnitImage
-        else militaryUnitImage
+        val unitImage = if (unit.type.isCivilian()) icons.civilianUnitIcon
+        else icons.militaryUnitIcon
         unitImage?.selectUnit()
     }
 
     fun update(viewingCiv: CivilizationInfo) {
         val city = tileInfo.getCity()
 
-        removePopulationIcon()
+        icons.removePopulationIcon()
         val tileIsViewable = isViewable(viewingCiv)
         if (tileIsViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo.isPlayerCivilization())
-            addPopulationIcon()
+            icons.addPopulationIcon()
 
         val currentPlayerCiv = worldScreen.viewingCiv
         if (UnCivGame.Current.viewEntireMapForDebug
@@ -41,11 +41,11 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         // order by z index!
         cityImage?.toFront()
         terrainFeatureOverlayImage?.toFront()
-        improvementImage?.toFront()
+        icons.improvementIcon?.toFront()
         resourceImage?.toFront()
         cityButton?.toFront()
-        civilianUnitImage?.toFront()
-        militaryUnitImage?.toFront()
+        icons.civilianUnitIcon?.toFront()
+        icons.militaryUnitIcon?.toFront()
         fogImage.toFront()
     }
 

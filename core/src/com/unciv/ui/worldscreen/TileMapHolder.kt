@@ -26,6 +26,7 @@ import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
 import kotlin.concurrent.thread
+import kotlin.math.sqrt
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
@@ -84,7 +85,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     lastInitialDistance = initialDistance
                     lastScale = scaleX
                 }
-                val scale: Float = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
+                val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
                 if (scale < 0.5f) return
                 setScale(scale)
                 for (tilegroup in tileGroups.values.filter { it.cityButton != null })
@@ -104,7 +105,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val previousSelectedCity = unitTable.selectedCity
         unitTable.tileSelected(tileInfo)
         val newSelectedUnit = unitTable.selectedUnit
-        val newSelectedCity = unitTable.selectedCity
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
                 && worldScreen.isPlayersTurn
@@ -241,7 +241,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
 
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
-        val playerViewableInvisibleUnitsTilePositions = viewingCiv.viewableInvisibleUnitsTiles.map { it.position }.toHashSet()
 
         for (tileGroup in tileGroups.values){
             tileGroup.update(viewingCiv)
@@ -310,10 +309,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val fadeout = if (unit.type.isCivilian()) 1f
         else 0.5f
         for (tile in tileGroups.values) {
-            if (tile.populationImage != null) tile.populationImage!!.color.a = fadeout
-            if (tile.improvementImage != null && tile.tileInfo.improvement!=Constants.barbarianEncampment
+            if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
+            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement!=Constants.barbarianEncampment
                     && tile.tileInfo.improvement!=Constants.ancientRuins)
-                tile.improvementImage!!.color.a = fadeout
+                tile.icons.improvementIcon!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }
     }
