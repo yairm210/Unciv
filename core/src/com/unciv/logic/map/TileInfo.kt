@@ -35,6 +35,10 @@ open class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
+    var hasBottomRightRiver = false
+    var hasBottomRiver = false
+    var hasBottomLeftRiver = false
+
     fun clone(): TileInfo {
         val toReturn = TileInfo()
         if(militaryUnit!=null) toReturn.militaryUnit=militaryUnit!!.clone()

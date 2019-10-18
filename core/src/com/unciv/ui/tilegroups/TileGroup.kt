@@ -182,6 +182,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val showMilitaryUnit = viewingCiv == null || showMilitaryUnit(viewingCiv)
 
         updateTileImage(true)
+        updateRivers(tileInfo.hasBottomRightRiver, tileInfo.hasBottomRiver, tileInfo.hasBottomLeftRiver)
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
 
@@ -398,7 +399,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             pixelMilitaryUnitImage = null
             pixelMilitaryUnitImageLocation = newImageLocation
 
-            if (newImageLocation != "") {
+            if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
                 val pixelUnitImage = ImageGetter.getImage(newImageLocation)
                 terrainFeatureLayerGroup.addActor(pixelUnitImage)
                 setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
@@ -425,7 +426,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             pixelCivilianUnitImage = null
             pixelCivilianUnitImageLocation = newImageLocation
 
-            if (newImageLocation != "") {
+            if (newImageLocation != "" && ImageGetter.imageExists(newImageLocation)) {
                 val pixelUnitImage = ImageGetter.getImage(newImageLocation)
                 terrainFeatureLayerGroup.addActor(pixelUnitImage)
                 setHexagonImageSize(pixelUnitImage)// Treat this as A TILE, which gets overlayed on the base tile.
@@ -435,6 +436,30 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
 
+    var bottomRightRiverImage :Image?=null
+    var bottomRiverImage :Image?=null
+    var bottomLeftRiverImage :Image?=null
+
+    fun updateRivers(displayBottomRight:Boolean,displayBottom:Boolean,displayBottomLeft:Boolean){
+        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight,tileSetStrings.bottomRightRiver)
+        bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, tileSetStrings.bottomRiver)
+        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage,displayBottomLeft,tileSetStrings.bottomLeftRiver)
+    }
+
+    fun updateRiver(currentImage:Image?, shouldDisplay:Boolean,imageName:String): Image? {
+        if(!shouldDisplay){
+            currentImage?.remove()
+            return null
+        }
+        else{
+            if(currentImage!=null) return currentImage
+            if(!ImageGetter.imageExists(imageName)) return null // Old "Default" tileset gets no rivers.
+            val newImage = ImageGetter.getImage(imageName)
+            baseLayerGroup.addActor(newImage)
+            setHexagonImageSize(newImage)
+            return newImage
+        }
+    }
 
     fun showCircle(color: Color, alpha: Float = 0.3f) {
         circleImage.isVisible = true
