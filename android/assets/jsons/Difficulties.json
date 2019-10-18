@@ -15,6 +15,7 @@
 		aiWonderCostModifier:1.6,
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:1,
+		/*aibarbarianBonus:0.45,*/
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
@@ -36,6 +37,7 @@
 		aiWonderCostModifier:1.3,
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:1,
+		/*aibarbarianBonus:0.5,*/
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
@@ -57,6 +59,7 @@
 		aiWonderCostModifier:1.1,
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:1,
+		/*aibarbarianBonus:0.55,*/
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
@@ -78,6 +81,7 @@
 		aiWonderCostModifier:1,
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:0.85,
+		/*aibarbarianBonus:0.6,*/
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
@@ -99,6 +103,7 @@
 		aiWonderCostModifier:1,
 		aiBuildingMaintenanceModifier:0.85,
 		aiUnitMaintenanceModifier:0.8,
+		/*aibarbarianBonus:0.6,*/
 		aiFreeTechs:["Pottery"],
 		aiFreeUnits:["Warrior"],
 		aiUnhappinessModifier:0.9,
@@ -120,6 +125,7 @@
 		aiWonderCostModifier:1,
 		aiBuildingMaintenanceModifier:0.8,
 		aiUnitMaintenanceModifier:0.75,
+		/*aibarbarianBonus:0.6,*/
 		aiFreeTechs:["Pottery","Animal Husbandry"],
 		aiFreeUnits:["Warrior", "Scout"],
 		aiUnhappinessModifier:0.85,
@@ -141,6 +147,7 @@
 		aiWonderCostModifier:1,
 		aiBuildingMaintenanceModifier:0.65,
 		aiUnitMaintenanceModifier:0.65,
+		/*aibarbarianBonus:0.6,*/
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining"],
 		aiFreeUnits:["Warrior", "Warrior", "Worker", "Scout"],
 		aiUnhappinessModifier:0.75,
@@ -162,6 +169,7 @@
 		aiWonderCostModifier:1,
 		aiBuildingMaintenanceModifier:0.5,
 		aiUnitMaintenanceModifier:0.5,
+		/*aibarbarianBonus:0.6,*/
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining","The Wheel"],
 		aiFreeUnits:["Settler", "Warrior", "Warrior", "Worker", "Worker", "Scout"],
 		aiUnhappinessModifier:0.6,
