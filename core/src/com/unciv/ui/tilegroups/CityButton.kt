@@ -61,7 +61,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
     private fun setButtonActions() {
 
-        val unitTable = tileGroup.worldScreen.bottomBar.unitTable
+        val unitTable = tileGroup.worldScreen.bottomUnitTable
         if (UnCivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
 
             // So you can click anywhere on the button to go to the city

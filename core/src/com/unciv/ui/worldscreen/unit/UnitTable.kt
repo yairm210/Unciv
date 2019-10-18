@@ -61,13 +61,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         }).left()
 
-        add(prevIdleUnitButton)
-
         add(Table().apply {
             add(Table().apply {
+                add(prevIdleUnitButton)
                 add(unitIconHolder)
                 add(unitNameLabel).pad(5f)
-
+                add(nextIdleUnitButton)
             }).colspan(2).fill().row()
             separator= addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
@@ -79,8 +78,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 }
             }
         }).expand()
-
-        add(nextIdleUnitButton)
 
     }
 

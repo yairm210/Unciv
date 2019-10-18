@@ -26,10 +26,11 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
-import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
+import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
+import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlin.concurrent.thread
 
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
@@ -41,7 +42,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val minimapWrapper = MinimapHolder(tileMapHolder)
 
     private val topBar = WorldScreenTopBar(this)
-    val bottomBar = WorldScreenBottomBar(this)
+    val bottomUnitTable = UnitTable(this)
+    val bottomTileInfoTable = TileInfoTable(this)
     val battleTable = BattleTable(this)
     val unitActionsTable = UnitActionsTable(this)
 
@@ -90,10 +92,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         diplomacyButtonWrapper.defaults().pad(5f)
         stage.addActor(diplomacyButtonWrapper)
-
-        bottomBar.width = stage.width
-        stage.addActor(bottomBar)
-
+        stage.addActor(bottomUnitTable)
+        stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width/3
         battleTable.x = stage.width/3
         stage.addActor(battleTable)
@@ -160,14 +160,15 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         displayTutorialsOnUpdate()
 
-        bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
+        bottomUnitTable.update()
+        bottomTileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
+        bottomTileInfoTable.x=stage.width-bottomTileInfoTable.width
+        bottomTileInfoTable.y=if(UnCivGame.Current.settings.showMinimap)minimapWrapper.height else 0f
         battleTable.update()
 
         minimapWrapper.update(viewingCiv)
-        minimapWrapper.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
-
-        unitActionsTable.update(bottomBar.unitTable.selectedUnit)
-        unitActionsTable.y = bottomBar.unitTable.height
+        unitActionsTable.update(bottomUnitTable.selectedUnit)
+        unitActionsTable.y = bottomUnitTable.height
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
@@ -207,7 +208,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             UnCivGame.Current.settings.save()
         }
 
-        if (bottomBar.unitTable.selectedUnit != null) displayTutorials("Unit_Selected")
+        if (bottomUnitTable.selectedUnit != null) displayTutorials("Unit_Selected")
         if (viewingCiv.cities.isNotEmpty()){
             displayTutorials("_City_Founded")
             displayTutorials("First_Steps")
@@ -290,7 +291,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 val nextDueUnit = viewingCiv.getNextDueUnit()
                 if(nextDueUnit!=null) {
                     tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                    bottomBar.unitTable.selectedUnit = nextDueUnit
+                    bottomUnitTable.selectedUnit = nextDueUnit
                     shouldUpdate=true
                 }
                 return@onClick
