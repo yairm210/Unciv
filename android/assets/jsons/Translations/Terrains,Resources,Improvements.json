@@ -12,8 +12,9 @@
 		Spanish:"Pradera"
 		Simplified_Chinese:"草原"
 		Portuguese:"pastagem"
+                Korean:"초원"
 	}
-
+ 
 	"Plains":{
 		Italian:"Pianura"
 		Russian:"Pавнины"
@@ -24,8 +25,9 @@
 		Spanish:"Llanura"
 		Simplified_Chinese:"平原"
 		Portuguese:"Planíce"
+                Korean:"평원"
 	}
-
+ 
 	"Tundra":{
 		Italian:"Tundra"
 		Russian:"Tундра"
@@ -36,8 +38,9 @@
 		Spanish:"Tundra"
 		Simplified_Chinese:"冻土"
 		Portuguese:"Tundra"
+                Korean:"툰드라"
 	}
-
+ 
 	"Desert":{
 		Italian:"Deserto"
 		Russian:"Пустыня"
@@ -48,8 +51,9 @@
 		Spanish:"Desierto"
 		Simplified_Chinese:"沙漠"
 		Portuguese:"Deserto"
+                Korean:"사막"
 	}
-
+ 
 	"Lakes":{
 		Italian:"Laghi"
 		Russian:"Озера"
@@ -60,8 +64,9 @@
 		Spanish:"Lagos"
 		Simplified_Chinese:"湖泊"
 		Portuguese:"Lagos"
+                Korean:"호수"
 	}
-
+ 
 	"Hill":{
 		Italian:"Collina"
 		Russian:"Холм"
@@ -72,6 +77,7 @@
 		Spanish:"Colinas"
 		Simplified_Chinese:"丘陵"
 		Portuguese:"Morro"
+                Korean:"언덕"
 	}
 	
 	"Mountain":{
@@ -83,8 +89,9 @@
 		French:"Montagne"
 		Russian:"Горы"
 		Portuguese:"Montanha"
+                Korean:"산"
 	}
-
+ 
 	"Forest":{
 		Italian:"Foresta"
 		Russian:"Лес"
@@ -95,8 +102,9 @@
 		Spanish:"Bosque"
 		Simplified_Chinese:"森林"
 		Portuguese:"Floresta"
+                Korean:"숲"
 	}
-
+ 
 	"Jungle":{
 		Italian:"Giungla"
 		Russian:"Джунгли"
@@ -107,8 +115,9 @@
 		Spanish:"Selva"
 		Simplified_Chinese:"丛林"
 		Portuguese:"Selva"
+                Korean:"정글"
 	}
-
+ 
 	"Marsh":{
 		Italian:"Palude"
 		Russian:"Болото"
@@ -119,8 +128,9 @@
 		Spanish:"Pantano"
 		Simplified_Chinese:"沼泽"
 		Portuguese:"Pântano"
+                Korean:"습지"
 	}
-
+ 
 	"Oasis":{
 		Italian:"Oasi"
 		Russian:"Оазис"
@@ -130,8 +140,9 @@
 		Dutch:"Oase"
 		Simplified_Chinese:"绿洲"
 		Spanish:"Oasis"
+                Korean:"오아시스"
 	}
-
+ 
 	"Snow":{
 		Italian:"Neve"
 		Russian:"Снег"
@@ -142,8 +153,9 @@
 		Spanish:"Nieve"
 		Simplified_Chinese:"雪原"
 		Portuguese:"Neve"
+                Korean:"눈"
 	}
-
+ 
 	"Coast":{
 		Italian:"Costa"
 		Russian:"Побережье"
@@ -154,8 +166,9 @@
 		Spanish:"Costa"
 		Simplified_Chinese:"海滨"
 		Portuguese:"Costa"
+                Korean:"연안"
 	}
-
+ 
 	"Ocean":{
 		Italian:"Oceano"
 		Russian:"Океан"
@@ -166,8 +179,9 @@
 		Spanish:"Océano"
 		Simplified_Chinese:"海洋"
 		Portuguese:"Oceano"
+                Korean:"대양"
 	}
-
+ 
 	"Flood plains":{
 		Italian:"Pianure allagate"
 		Russian:"Пойма"
@@ -178,6 +192,7 @@
 		Spanish:"Terreno inundable"
 		Simplified_Chinese:"冲积平原"
 		Portuguese:"Terras inundáveis"
+                Korean:"범람원"
 	}
 	
 	"Impassible":{
@@ -189,10 +204,11 @@
 		German:"Unpassierbar"
 		French:"Impraticable"
 		Russian:"Непроходимый"
+                Korean:"지나갈 수 없음"
 	}
 		
 /////////////	Bonus Resources
-
+ 
 	"Cattle":{
 		Italian:"Bestiame"
 		Russian:"Скот"
@@ -203,8 +219,9 @@
 		Spanish:"Ganado"
 		Simplified_Chinese:"牛群"
 		Portuguese:"Gado"
+                Korean:"가축"
 	}
-
+ 
 	"Sheep":{
 		Italian:"Pecora"
 		Russian:"Овцы"
@@ -215,8 +232,9 @@
 		Spanish:"Ovejas"
 		Simplified_Chinese:"绵羊"
 		Portuguese:"Ovelhas"
+                Korean:"양"
 	}
-
+ 
 	"Deer":{
 		Italian:"Cervo"
 		Russian:"Oлени"
@@ -227,8 +245,9 @@
 		Spanish:"Ciervos"
 		Simplified_Chinese:"野鹿"
 		Portuguese:"Veados"
+                Korean:"사슴"
 	}
-
+ 
 	"Bananas":{
 		Italian:"Banane"
 		Russian:"Бананы"
@@ -239,8 +258,9 @@
 		Spanish:"Plátanos"
 		Simplified_Chinese:"香蕉"
 		Portuguese:"Bananas"
+                Korean:"바나나"
 	}
-
+ 
 	"Wheat":{
 		Italian:"Grano"
 		Russian:"Пшеница"
@@ -251,8 +271,9 @@
 		Spanish:"Trigo"
 		Simplified_Chinese:"小麦"
 		Portuguese:"Trigo"
+                Korean:"밀"
 	}
-
+ 
 	"Stone":{
 		Italian:"Pietra"
 		Russian:"Камень"
@@ -263,6 +284,7 @@
 		Spanish:"Piedra"
 		Simplified_Chinese:"花岗石"
 		Portuguese:"Pedra"
+                Korean:"돌"
 	}
 	
 	"Fish":{
@@ -275,8 +297,9 @@
 		Portuguese:"Peixes"
 		German:"Fisch"
 		Russian:"Рыба"
+                Korean:"물고기"
 	}
-
+ 
 	"Bison":{
 		Italian:"Bisonti"
 		Russian:"Бизоны"
@@ -288,6 +311,7 @@
 		Simplified_Chinese:"野牛"
 		Portuguese:"Bisontes"
 		Japanese:"バイソン"
+                Korean:"들소"
 	}
 	
 ////////// Strategic Resources
@@ -302,8 +326,9 @@
 		Spanish:"Caballos"
 		Simplified_Chinese:"马"
 		Portuguese:"Cavalos"
+                Korean:"말"
 	}
-
+ 
 	"Iron":{
 		Italian:"Ferro"
 		Russian:"Железо"
@@ -314,8 +339,9 @@
 		Spanish:"Hierro"
 		Simplified_Chinese:"铁"
 		Portuguese:"Ferro"
+                Korean:"철"
 	}
-
+ 
 	"Coal":{
 		Italian:"Carbone"
 		Russian:"Уголь"
@@ -326,8 +352,9 @@
 		Spanish:"Carbón"
 		Simplified_Chinese:"煤"
 		Portuguese:"Carvão"
+                Korean:"석탄"
 	}
-
+ 
 	"Oil":{
 		Italian:"Petrolio"
 		Russian:"Нефть"
@@ -338,8 +365,9 @@
 		Spanish:"Petróleo"
 		Simplified_Chinese:"石油"
 		Portuguese:"Petróleo"
+                Korean:"기름"
 	}
-
+ 
 	"Aluminum":{
 		Italian:"Alluminio"
 		Russian:"Aлюминий"
@@ -350,8 +378,9 @@
 		Spanish:"Aluminio"
 		Simplified_Chinese:"铝"
 		Portuguese:"Alumínio"
+                Korean:"알루미늄"
 	}
-
+ 
 	"Uranium":{
 		Italian:"Uranio"
 		Russian:"Уран"
@@ -362,10 +391,11 @@
 		Spanish:"Uranio"
 		Simplified_Chinese:"铀"
 		Portuguese:"Urânio"
+                Korean:"우라늄"
 	}
 	
 ///////// Luxury Resources
-
+ 
 	"Furs":{
 		Italian:"Pellicce"
 		Russian:"Меха"
@@ -376,8 +406,9 @@
 		Spanish:"Pieles"
 		Simplified_Chinese:"毛皮"
 		Portuguese:"Peles"
+                Korean:"모피"
 	}
-
+ 
 	"Cotton":{
 		Italian:"Cotone"
 		Russian:"Хлопок"
@@ -388,8 +419,9 @@
 		Spanish:"Algodón"
 		Simplified_Chinese:"棉花"
 		Portuguese:"Algodão"
+                Korean:"면"
 	}
-
+ 
 	"Dyes":{ // Seems to have translated in all languages as *food dyes* Needs to be rechecked in all languages except french and portuguese
 		Italian:"Coloranti"
 		Russian:"Красители"
@@ -400,8 +432,9 @@
 		Spanish:"Tintes"
 		Simplified_Chinese:"染料"
 		Portuguese:"Tintas"
+                Korean:"염료"
 	}
-
+ 
 	"Gems":{
 		Italian:"Pietre preziose"
 		Russian:"Драгоценные камни"
@@ -412,8 +445,9 @@
 		Spanish:"Gemas"
 		Simplified_Chinese:"宝石"
    		Portuguese:"Joias"
+                Korean:"보석"
 	}
-
+ 
 	"Silver":{
 		Italian:"Argento"
 		Russian:"Серебро"
@@ -424,8 +458,9 @@
 		Spanish:"Plata"
 		Simplified_Chinese:"银"
 		Portuguese:"Prata"
+                Korean:"은"
 	}
-
+ 
 	"Incense":{
 		Italian:"Incenso"
 		Russian:"Благовония"
@@ -436,15 +471,17 @@
 		Spanish:"Incienso"
 		Simplified_Chinese:"熏香"
 		Portuguese:"Incenso"
+                Korean:"향"
 	}
-
+ 
 	"Ivory":{
 		Italian:"Avorio"
 		Simplified_Chinese:"象牙"
 		French:"Ivoire"
 		Russian:"Слоновая кость"
+                Korean:"상아"
 	}
-
+ 
 	"Silk":{
 		Italian:"Seta"
 		Russian:"Шёлк"
@@ -455,8 +492,9 @@
 		Spanish:"Seda"
 		Simplified_Chinese:"丝绸"
 		Portuguese:"Seda"
+                Korean:"실크"
 	}
-
+ 
 	"Spices":{
 		Italian:"Spezie"
 		Russian:"Cпеции"
@@ -467,8 +505,9 @@
 		Spanish:"Especias"
 		Simplified_Chinese:"香料"
 		Portuguese:"Especiarias"
+                Korean:"향신료"
 	}
-
+ 
 	"Wine":{
 		Italian:"Vino"
 		Russian:"Вино"
@@ -479,8 +518,9 @@
 		Spanish:"Vino"
 		Simplified_Chinese:"红酒"
 		Portuguese:"Vinho"
+                Korean:""와인
 	}
-
+ 
 	"Sugar":{
 		Italian:"Zucchero"
 		Russian:"Сахар"
@@ -491,8 +531,9 @@
 		Spanish:"Azúcar"
 		Simplified_Chinese:"蔗糖"
 		Portuguese:"Açucar"
+                Korean:"설탕"
 	}
-
+ 
 	"Marble":{
 		Italian:"Marmo"
 		Russian:"Мрамор"
@@ -503,8 +544,9 @@
 		Spanish:"Mármol"
 		Simplified_Chinese:"大理石"
 		Portuguese:"Mármore"
+                Korean:"대리석"
 	}
-
+ 
 	"Pearls":{
 		Italian:"Perle"
 		Russian:"Жемчуг"
@@ -515,8 +557,9 @@
 		Spanish:"Perlas"
 		Simplified_Chinese:"珍珠"
 		Portuguese:"Pérolas"
+                Korean:"진주"
 	}
-
+ 
 	"Whales":{
 		Italian:"Balene"
 		Russian:"Киты"
@@ -527,8 +570,9 @@
 		Spanish:"Ballenas"
 		Simplified_Chinese:"鲸鱼"
 		Portuguese:"Baleias"
+                Korean:"고래"
 	}
-
+ 
 	"Copper":{
 		Italian:"Rame"
 		Russian:"Медь"
@@ -539,8 +583,9 @@
 		Spanish:"Cobre"
 		Simplified_Chinese:"赤铜"
 		Portuguese:"Cobre"
+                Korean:"구리"
 	}
-
+ 
 	"Cocoa":{
 		Italian:"Cacao"
 		Russian:"Какао"
@@ -551,8 +596,9 @@
 		Spanish:"Cacao"
 		Simplified_Chinese:"可可"
 		Portuguese:"Cacau"
+                Korean:"코코아"
 	}
-
+ 
 	"Crab":{
 		Italian:"Granchi"
 		Russian:"Крабы"
@@ -563,8 +609,9 @@
 		Spanish:"Cangrejos"
 		Simplified_Chinese:"螃蟹"
 		Portuguese:"Caranguejos"
+                Korean:"게"
 	}
-
+ 
 	"Citrus":{
 		Italian:"Agrumi"
 		Russian:"Цитрусы"
@@ -575,8 +622,9 @@
 		Spanish:"Cítricos"
 		Simplified_Chinese:"柑橘"
 		Portuguese:"Cítrico"
+                Korean:"감귤류"
 	}
-
+ 
 	"Truffles":{
 		Italian:"Tartufi"
 		Russian:"Трюфели"
@@ -587,6 +635,7 @@
 		Spanish:"Trufas"
 		Simplified_Chinese:"松露"
 		Portuguese:"Trufas"
+                Korean:"송로 버섯"
 	}
 	
 ///////// Tile improvements
@@ -601,8 +650,9 @@
 		Spanish:"Granja"
 		Simplified_Chinese:"农场"
 		Portuguese:"Fazenda"
+                Korean:"농장"
 	}
-
+ 
 	"Lumber mill":{
 		Italian:"Segheria"
 		Russian:"Лесопилка"
@@ -613,8 +663,9 @@
 		Spanish:"Serrería"
 		Simplified_Chinese:"锯木场"
 		Portuguese:"Serralheria"
+                Korean:"목재공장"
 	}
-
+ 
 	"Mine":{
 		Italian:"Miniera"
 		Russian:"Шахта"
@@ -625,8 +676,9 @@
 		Spanish:"Mina"
 		Simplified_Chinese:"矿井"
 		Portuguese:"Mina"
+                Korean:"광산"
 	}
-
+ 
 	"Trading post":{
 		Italian:"Base commerciale"
 		Russian:"Торговый пост"
@@ -637,8 +689,9 @@
 		Spanish:"Puesto comercial"
 		Simplified_Chinese:"贸易站"
 		Portuguese:"Posto de comércio"
+                Korean:"무역소"
 	}
-
+ 
 	"Camp":{
 		Italian:"Campo"
 		Russian:"Лагерь"
@@ -649,6 +702,7 @@
 		Spanish:"Campamento"
 		Simplified_Chinese:"猎场"
 		Portuguese:"Campo"
+                Korean:"캠프"
 	}
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
@@ -660,6 +714,7 @@
 		Spanish:"Pozo petrolífero"
 		Simplified_Chinese:"油井"
 		Portuguese:"Poço de petróleo"
+                Korean:"유정"
 	}
 	"Pasture":{
 		Italian:"Pascolo"
@@ -671,6 +726,7 @@
 		Spanish:"Pastizal"
 		Simplified_Chinese:"牧场"
 		Portuguese:"Pasto"
+                Korean:"목장"
 	}
 	"Plantation":{
 		Italian:"Piantagione"
@@ -682,6 +738,7 @@
 		Spanish:"Plantación"
 		Simplified_Chinese:"种植园"
 		Portuguese:"Plantação"
+                Korean:"재배원"
 	}
 	"Quarry":{
 		Italian:"Cava"
@@ -693,6 +750,7 @@
 		Spanish:"Cantera"
 		Simplified_Chinese:"采石场"
 		Portuguese:"Pedreira"
+                Korean:"채석장"
 	}
 	"Fishing Boats":{
 		Italian:"Chiatta"
@@ -704,6 +762,7 @@
 		Portuguese:"Barcos de pesca"
 		German:"Fischerboote"
 		Russian:"Рыбацкие лодки"
+                Korean:"낚싯배"
 	}
 	
 	"Road":{
@@ -716,15 +775,17 @@
 		Spanish:"Carretera"
 		Simplified_Chinese:"道路"
 		Portuguese:"Estrada"
+                Korean:"도로"
 	}
-
+ 
 	"Remove Road":{
 		Italian:"Rimuovi Strada"
 		Simplified_Chinese:"拆毁道路"
 		French:"Retirer la route"
 		Russian:"Убрать дорогу"
+                Korean:"도로 제거"
 	}
-
+ 
 	"Railroad":{
 		Italian:"Ferrovia"
 		Russian:"Железная дорога"
@@ -735,15 +796,17 @@
 		Spanish:"Línea de ferrocarril"
 		Simplified_Chinese:"铁路"
 		Portuguese:"Estrada de ferro"
+                Korean:"철도"
 	}
-
+ 
 	"Remove Railroad":{
 		Italian:"Rimuovi Ferrovia"
 		Simplified_Chinese:"拆除铁路"
 		French:"Retirer les rails"
 		Russian:"Убрать железную дорогу"
+                Korean:"철도 제거"
 	}
-
+ 
 	"Remove Forest":{
 		Italian:"Rimuovi foresta"
 		Russian:"Вырубить лес"
@@ -753,8 +816,9 @@
 		Simplified_Chinese:"砍伐森林"
 		Portuguese:"Cortar floresta"
 		German:"Wald abholzen"
+                Korean:"숲 제거"
 	}
-
+ 
 	"Remove Jungle":{
 		Italian:"Rimuovi giungla"
 		Russian:"Вырубить джунгли"
@@ -764,8 +828,9 @@
 		Simplified_Chinese:"砍伐丛林"
 		Portuguese:"Cortar selva"
 		German:"Dschungel abholzen"
+                Korean:"정글 제거"
 	}
-
+ 
 	"Remove Marsh":{
 		Italian:"Bonifica palude"
 		Russian:"Осушить болото"
@@ -775,6 +840,7 @@
 		Simplified_Chinese:"移除沼泽"
 		Portuguese:"Drenar pântano"
 		German:"Moor trockenlegen"
+                Korean:"습지 제거"
 	}
 	
 	"Ancient ruins":{
@@ -787,6 +853,7 @@
 		Russian:"Древние руины"
 		Portuguese:"Ruínas antigas"
 		Dutch:"Oude ruïnes"
+                Korean:"고대 유적"
 	}
 	
 	"City ruins":{
@@ -799,10 +866,11 @@
 		Russian:"Руины города"
 		Portuguese:"Ruínas da Cidade"
 		Dutch:"Ruïnes van de stad"
+                Korean:"도시의 폐허"
 	}
 	
 ///////// Great Unit improvements
-
+ 
 	"Academy":{
 		Italian:"Accademia"
 		Russian:"Академия"
@@ -813,8 +881,9 @@
 		Spanish:"Academia"
 		Simplified_Chinese:"学院"
 		Portuguese:"Academia"
+                Korean:"학원"
 	}
-
+ 
 	"Landmark":{
 		Italian:"Punto di riferimento"
 		Russian:"Достопримечательность"
@@ -826,8 +895,9 @@
 		Spanish:"Edificio emblemático"
 		Simplified_Chinese:"风景地标"
 		Portuguese:"Edificio emblemático"
+                Korean:"랜드마크"
 	}
-
+ 
 	"Manufactory":{
 		Italian:"Fabbrica"
 		Russian:"Завод"
@@ -838,8 +908,9 @@
 		Spanish:"Fábrica"
 		Simplified_Chinese:"制造中心"
 		Portuguese:"Fábrica"
+                Korean:"제조소"
 	}
-
+ 
 	"Customs house":{
 		Italian:"Dogana"
 		Russian:"Таможня"
@@ -850,27 +921,32 @@
 		Spanish:"Aduana"
 		Simplified_Chinese:"海关"
 		Portuguese:"Alfândega"
+                Korean:"세관"
 	}
 	
 ///////// Civ-unique improvements
-
+ 
 	"Moai":{
 		Italian:"Moai"
+                Korean:"모아이"
 	}
-
+ 
 	"+1 additional Culture for each adjacent Moai":{
 		Italian:"+1 Cultura aggiuntiva per ogni Moai adiacente"
+                Korean:"인접한 각 Moai에 대해 +1 추가 문화"
 	}
-
+ 
 	"Can only be built on Coastal tile":{
 		Italian:"Costruibile solo su Costa"
+                Korean:"해안 타일에만 제작 가능"
 	}
-
-
+ 
+ 
 	"Barbarian encampment":{
 		Italian:"Accampamento barbaro"
 		Simplified_Chinese:"蛮族营地"
 		Russian:"Лагерь варваров"
+                Korean:"야만인 야영지"
 	}
-
+ 
 }
