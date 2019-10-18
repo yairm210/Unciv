@@ -201,14 +201,14 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
                 //change grassland to desert or tundra based on y
                 if (abs(getLatitude(tile.position)) < maxLatitude * 0.1) {
                     if (terrain == "Grassland" || terrain == "Tundra")
-                        terrain = "Desert"
+                        terrain = Constants.desert
                 } else if (abs(getLatitude(tile.position)) > maxLatitude * 0.7) {
-                    if (terrain == "Grassland" || terrain == Constants.plains || terrain == "Desert" || terrain == Constants.ocean) {
+                    if (terrain == "Grassland" || terrain == Constants.plains || terrain == Constants.desert || terrain == Constants.ocean) {
                         terrain = "Tundra"
                     }
                 } else {
                     if (terrain == "Tundra") terrain = Constants.plains
-                    else if (terrain == "Desert") terrain = "Grassland"
+                    else if (terrain == Constants.desert) terrain = "Grassland"
                 }
 
                 val area = Area(terrain)
