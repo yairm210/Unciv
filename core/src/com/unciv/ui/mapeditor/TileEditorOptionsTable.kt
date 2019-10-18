@@ -31,6 +31,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     var clearImprovement=false
     var selectedImprovement:TileImprovement?=null
 
+    var toggleBottomRightRiver=false
+    var toggleBottomRiver=false
+    var toggleBottomLeftRiver=false
+
     val editorPickTable = Table()
 
     private var currentHex: Actor = Group()
