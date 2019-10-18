@@ -124,7 +124,8 @@ class CityConstructions {
 
     fun turnsToConstruction(constructionName: String): Int {
         val workLeft = getRemainingWork(constructionName)
-
+        if(workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
+            return 1 // we'll finish this next turn
 
         val currConstruction = currentConstruction
 
