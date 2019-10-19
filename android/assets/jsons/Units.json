@@ -243,7 +243,7 @@
 		attackSound:"metalhit"
 	},
 	{
-		name:"Immortal",
+		name:"Persian Immortal",
 		replaces:"Spearman",
 		uniqueTo:"Persia",
 		unitType:"Melee",
@@ -423,7 +423,7 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
-		promotions:["Range"],
+		promotions:["Range Extension"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
