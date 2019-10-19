@@ -229,7 +229,7 @@ class Building : NamedStats(), IConstruction{
         if (construction.isBuilt(name)) return "Already built"
 
         if ("Must be next to desert" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
             return "Must be next to desert"
 
         if ("Must be next to mountain" in uniques
