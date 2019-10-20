@@ -200,15 +200,15 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
 
                 //change grassland to desert or tundra based on y
                 if (abs(getLatitude(tile.position)) < maxLatitude * 0.1) {
-                    if (terrain == "Grassland" || terrain == "Tundra")
+                    if (terrain == Constants.grassland || terrain == Constants.tundra)
                         terrain = Constants.desert
                 } else if (abs(getLatitude(tile.position)) > maxLatitude * 0.7) {
-                    if (terrain == "Grassland" || terrain == Constants.plains || terrain == Constants.desert || terrain == Constants.ocean) {
-                        terrain = "Tundra"
+                    if (terrain == Constants.grassland || terrain == Constants.plains || terrain == Constants.desert || terrain == Constants.ocean) {
+                        terrain = Constants.tundra
                     }
                 } else {
-                    if (terrain == "Tundra") terrain = Constants.plains
-                    else if (terrain == Constants.desert) terrain = "Grassland"
+                    if (terrain == Constants.tundra) terrain = Constants.plains
+                    else if (terrain == Constants.desert) terrain = Constants.grassland
                 }
 
                 val area = Area(terrain)
@@ -282,10 +282,9 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
             map[vector] = null
 
         val sparkList = ArrayList<Vector2>()
-        val grassland = "Grassland"
         for(i in 0..distance*distance/6){
             val location = map.filter { it.value==null }.map { it.key }.random()
-            map[location] = TileInfo().apply { baseTerrain= grassland}
+            map[location] = TileInfo().apply { baseTerrain= Constants.grassland}
             sparkList.add(location)
         }
 
@@ -293,9 +292,9 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
             val currentSpark = sparkList.random()
             val emptyTilesAroundSpark = HexMath().getAdjacentVectors(currentSpark)
                     .filter { map.containsKey(it) && map[it]==null }
-            if(map[currentSpark]!!.baseTerrain==grassland){
+            if(map[currentSpark]!!.baseTerrain==Constants.grassland){
                 for(tile in emptyTilesAroundSpark){
-                    if(Math.random()<landExpansionChance) map[tile]=TileInfo().apply { baseTerrain=grassland }
+                    if(Math.random()<landExpansionChance) map[tile]=TileInfo().apply { baseTerrain=Constants.grassland }
                     else  map[tile]=TileInfo().apply { baseTerrain=Constants.ocean }
                 }
             }
@@ -311,8 +310,8 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
         for(entry in map){
             entry.value!!.position = entry.key
             if(entry.value!!.baseTerrain==Constants.ocean
-                    && HexMath().getAdjacentVectors(entry.key).all { !map.containsKey(it) || map[it]!!.baseTerrain==grassland })
-                entry.value!!.baseTerrain=grassland
+                    && HexMath().getAdjacentVectors(entry.key).all { !map.containsKey(it) || map[it]!!.baseTerrain==Constants.grassland })
+                entry.value!!.baseTerrain=Constants.grassland
 
             newmap[entry.key.toString()] = entry.value!!
         }

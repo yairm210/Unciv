@@ -776,7 +776,7 @@
 		German: "Untätige Einheiten anzeigen bei Rundenende"
 		French:"Vérifier les unités inactives"
 		Russian:"Найти незанятые юниты"
-                Korean:"턴이 끝나기 전에 미행동 유닛 보기
+                Korean:"턴이 끝나기 전에 미행동 유닛 보기"
 	}
  
 	"Move units with a single tap":{
