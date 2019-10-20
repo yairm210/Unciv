@@ -3602,7 +3602,7 @@ UnitPromotionIcons/Operational Range
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Range Extension
+UnitPromotionIcons/Extended Range
   rotate: false
   xy: 1266, 16
   size: 50, 50

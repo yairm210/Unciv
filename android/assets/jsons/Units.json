@@ -423,7 +423,7 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
-		promotions:["Range Extension"],
+		promotions:["Extended Range"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
