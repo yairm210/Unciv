@@ -53,7 +53,7 @@ class Fonts {
         return false
     }
 
-    fun getCharsForFont(withChinese:Boolean): String {
+    fun getCharsForFont(language:String=""): String {
         val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
                 "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" + // Russian
                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +  // Greek
@@ -64,23 +64,25 @@ class Fonts {
             val charSet = HashSet<Char>()
             charSet.addAll(defaultText.asIterable())
 
-            if(withChinese) {
-                if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
-                if (Gdx.files.internal("jsons/Nations/Nations_Simplified_Chinese.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_Simplified_Chinese.json").readString().asIterable())
-                if (Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").readString().asIterable())
+            if(language != "") {
+                if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())
+                    charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").readString().asIterable())
+                if (Gdx.files.internal("jsons/Nations/Nations_$language.json").exists())
+                    charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_$language.json").readString().asIterable())
+                if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())
+                    charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").readString().asIterable())
 
                 for (entry in GameBasics.Translations.entries) {
                     for (lang in entry.value) {
-                        if (lang.key.contains("Chinese")) charSet.addAll(lang.value.asIterable())
+                        if (lang.key==language) charSet.addAll(lang.value.asIterable())
                     }
                 }
             }
             return charSet.joinToString("")
     }
+
    fun getFont(size: Int): BitmapFont {
+
        if(UnCivGame.Current.settings.fontSet=="WenQuanYiMicroHei"){
            val fontForLanguage="WenQuanYiMicroHei"
            val keyForFont = "$fontForLanguage $size"
@@ -96,24 +98,28 @@ class Fonts {
                    checksumFailed.open()
                }
            }
+
            else {
                val generator = FreeTypeFontGenerator(Gdx.files.local("fonts/WenQuanYiMicroHei.ttf"))
                val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
                parameter.size = size
                parameter.minFilter = Texture.TextureFilter.Linear
                parameter.magFilter = Texture.TextureFilter.Linear
-               parameter.characters = getCharsForFont(true)
+               parameter.characters = getCharsForFont(UnCivGame.Current.settings.language)
                val font = generator.generateFont(parameter)
                fontCache[keyForFont] = font
                return font
            }
        }
+
+       val language = UnCivGame.Current.settings.language
        val fontForLanguage ="Nativefont"
-       val withChinese = UnCivGame.Current.settings.language.contains("Chinese")
-       val keyForFont = if(!withChinese) "$fontForLanguage $size" else "$fontForLanguage $size withChinese" // different cache for chinese
+       val isUniqueFont = language.contains("Chinese") || language == "Korean"
+       val keyForFont = if(!isUniqueFont) "$fontForLanguage $size" else "$fontForLanguage $size $language"
        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
+
        val font=NativeFont(NativeFontPaint(size))
-       val charsForFont = getCharsForFont(withChinese)
+       val charsForFont = getCharsForFont(if(isUniqueFont) language else "")
        font.appendText(charsForFont)
        fontCache[keyForFont] = font
        return font

@@ -110,7 +110,6 @@ class TechManager {
             return
 
         // We finished it!
-        techsInProgress.remove(currentTechnology)
         addTechnology(currentTechnology)
     }
 
@@ -122,6 +121,7 @@ class TechManager {
     fun addTechnology(techName:String) {
         if(techName!= Constants.futureTech)
             techsToResearch.remove(techName)
+        techsInProgress.remove(techName)
 
         val previousEra = civInfo.getEra()
         techsResearched.add(techName)
