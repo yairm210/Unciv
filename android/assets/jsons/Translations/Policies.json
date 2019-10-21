@@ -1,5 +1,5 @@
 {
-		
+
 	"Requires":{
 		Italian:"Richiede"
 		Russian:"Требует"
@@ -9,8 +9,9 @@
 		Simplified_Chinese:"需要"
 		Portuguese:"Requer"
 		German:"Benötigt"
-	}
-	
+		Czech:"Požadavky"
+}
+
 	"Adopt policy":{
 		Italian:"Adotta politica"
 		Russian:"Принять общественный институт"
@@ -20,7 +21,8 @@
 		Simplified_Chinese:"推行政策"
 		Portuguese:"Adotar Política"
 		German:"Grundsatz verabschieden"
-	}
+		Czech:"Přijmout sociální politiku"
+}
 
 	"Adopt free policy":{
 		Italian:"Adotta politica"
@@ -30,8 +32,9 @@
 		Spanish:"Adoptar política"
 		Simplified_Chinese:"推行免费的政策"
 		Portuguese:"Adotar Política"
-		German:"Grundsatz verabschieden"
-	}
+		German:"Grundsatz verabschieden",
+		Czech:"Přijmout sociální politiku zdarma"
+}
 
 	"Unlocked at":{
 		Italian:"Si sblocca con"
@@ -42,8 +45,9 @@
 		Simplified_Chinese:"解锁时代："
 		Portuguese:"Desbloqueado em"
 		German:"Freigeschaltet bei" //this could be wrong, "at" is very flexible and its translation depends on the context
-	}
-	
+		Czech:"Odemkne se po"
+}
+
 ////// Tradition branch
 
 	"Tradition":{
@@ -55,7 +59,8 @@
 		Simplified_Chinese:"传统政策"
 		Portuguese:"Tradição"
 		//same in German
-	}
+		Czech:"Tradice"
+}
 
 	"+3 culture in capital and increased rate of border expansion":{
 		Italian: "+3 Cultura nella Capitale, e maggior tasso di espansione dei confini"
@@ -66,7 +71,8 @@
 		Portuguese:"+3 cultura na capital e taxa de expansão de fronteiras"
 		German:"+3 Kultur in der Hauptstadt und erhöhte Grenzerweiterungsrate"
 		French:"+3 culture dans la capitale and accélère la vitesse d'expension du territoire"
-	}
+		Czech:"+3 kulturní body v hlavním městě a rychlejší rozšiřuvání území města"
+}
 
 	"Aristocracy":{
 		Italian:"Aristocrazia"
@@ -77,7 +83,8 @@
 		Portuguese:"Aristocracia"
 		German:"Aristokratie"
 		French:"Aristocratie"
-	}
+		Czech:"Aristokracie"
+}
 
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
 		Italian: "+15% Produzione quando costruisci una Meraviglia, e +1 Felicità ogni 10 cittadini in una città"
@@ -88,7 +95,8 @@
 		Portuguese:"+15 de produção ao construir maravilhas, +1 felicidade a cada 10 em uma cidade"
 		German:"+15% Produktion beim Errichten von Wundern; +1 Zufriedenheit für jeden 10. Einwohner in einer Stadt"
 		French:"+15% production lors de la construction de merveilles, +1 de bonheur pour chaque tranche de 10 citoyens dans chaques villes"
-	}
+		Czech:"+15% produkce při stavbě Divu, +1 spokojenost za každých 10 obyvatel ve městě"
+}
 
 	"Legalism":{
 		Italian:"Legalismo"
@@ -99,7 +107,8 @@
 		Portuguese:"Legalismo"
 		German:"Legalismus"
 		French:"Légalisme"
-	}
+		Czech:"Legalismus"
+}
 
 	"Immediately creates a cheapest available cultural building in each of your first 4 cities for free":{
 		Italian:"Le prime 4 città ricevono gratuitamente un edificio culturale"
@@ -110,7 +119,8 @@
 		Portuguese:"Edificio de cultura grátis em suas primeiras 4 cidades (monumento)"
 		German:"Kostenloses Kulturgebäude in den ersten 4 Städten"
 		French:"Un monument culturel gratuit dans vos 4 premières villes"
-	}
+		Czech:"Okamžitě a zdarma postaví nejlevnější kulturní budovu v každém z prvních 4 založených měst"
+}
 
 	"Oligarchy":{
 		Italian:"Oligarchia"
@@ -121,7 +131,8 @@
 		Portuguese:"Oligarquia"
 		German:"Oligarchie"
 		French:"Oligarchie"
-	}
+		Czech:"Oligarchie"
+}
 
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
 		Italian:"+50% Forza d'attacco per le città con guarnigione, e nessun mantenimento per le loro guarnigioni"
@@ -133,7 +144,8 @@
 		German:"Einheiten in Städten Kosten keinen Unterhalt, +50% Angriffsstärke"
 		French:"Les unités en garnison n'ont plus de coût d'entretien, +50% de la force d'attaque"
 		Japanese:"都市のユニットは維持費、駐屯地の都市+ 50％の攻撃力"
-	}
+		Czech:"Jednotky ve městech nestojí žádný udržovací poplatek, města s posádkou získají +50% k síle"
+}
 
 	"Landed Elite":{
 		Italian:"Nobiltà terriera"
@@ -144,7 +156,8 @@
 		Portuguese:"Elite aterrisada"
 		German:"Landjunkerschaft" //according to: https://en.wikipedia.org/wiki/Landed_nobility
 		French:"Élite terrienne"
-	}
+		Czech:"Pozemkové vlastnictví"
+}
 
 	"+10% food growth and +2 food in capital":{
 		Italian:"+10% Crescita e +2 Cibo nella capitale"
@@ -155,7 +168,8 @@
 		Portuguese:"+10% adicionado ao crescimente de comida e +2 comida na capital"
 		German:"+10% Nahrungswachstum und +2 Nahrung in der Hauptstadt"
 		French:"Croissance +10% et Nourriture +2 dans la capitale"
-	}
+		Czech:"+10% růst a +2 jídla v hlavním městě"
+}
 
 	"Monarchy":{
 		Italian:"Monarchia"
@@ -166,7 +180,8 @@
 		Portuguese:"Monarquia"
 		German:"Monarchie"
 		French:"Monarchie"
-	}
+		Czech:"Monarchie"
+}
 
 	"+1 gold and -1 unhappiness for every 2 citizens in capital":{
 		Italian:"+1 oro e -1 Infelicità ogni 2 cittadini nella capitale"
@@ -177,7 +192,8 @@
 		Portuguese:"+1 ouro e -1 de infelicidade para cada 2 habitantes na capital"
 		German:"+1 Gold und -1 Unzufriedenheit für jeden 2. Einwohner in der Hauptstadt"
 		French:"Or +1 et mécontentement -1 tous les 2 citoyens dans la capitale"
-	}
+		Czech:"+1 zlato a -1 nespokojenost za každé 2 obyvatele v hlavním městě"
+}
 
 	"Tradition Complete":{
 		Italian:"Tradizionalismo Completo"
@@ -188,7 +204,8 @@
 		Portuguese:"Tradição Completa"
 		German:"Tradition vollständig"
 		French:"Tradition complète"
-	}
+		Czech:"Kompletní Tradice"
+}
 
 	"+15% growth and +2 food in all cities":{ //You should add an Acqueduct in the first 4 cities
 		Italian:"+15% crescita e +2 Cibo in tutte le città"
@@ -199,8 +216,9 @@
 		Portuguese:"+15% crescimento e +2 de comida na capital"
 		German:"+15% Wachstum und +2 Nahrung in allen Städten"
 		French:"+15% de croissance et +2 nourriture dans toutes les villes"
-	}
-	
+		Czech:"+15% růst a +2 jídla ve všech městech"
+}
+
 ////// Liberty branch
 
 	"Liberty":{
@@ -212,7 +230,8 @@
 		Portuguese:"Liberdade"
 		German:"Unabhängigkeit"
 		French:"Liberté"
-	}
+		Czech:"Volnost"
+}
 
 	"+1 culture in every city":{
 		Italian:"+1 Cultura in ogni città"
@@ -223,7 +242,8 @@
 		Portuguese:"+1 cultura em todas as cidades"
 		German:"+1 Kultur in jeder Stadt"
 		French:"+1 Culture dans toutes les villes"
-	}
+		Czech:"+1 kultura v každém městě"
+}
 
 	"Collective Rule":{
 		Italian:"Governo collettivo"
@@ -234,7 +254,8 @@
 		Portuguese:"Governo Coletivo"
 		German:"Kollektivherrschaft"
 		French:"Pouvoir collectif" //official translation, but "règles collectives" is more accurate
-	}
+		Czech:"Kolektivní právo"
+}
 
 	"Training of settlers increased +50% in capital, receive a new settler near the capital":{
 		Italian:"La Capitale riceve un Colono gratuito nella Capitale, e produce Coloni il 50% più in fretta"
@@ -245,7 +266,8 @@
 		Portuguese:"Treinamento em de colonos +50% mais rapido na capital, receba um novo colono próximo a capital"
 		German:"Ausbildung von Siedlern in der Hauptstadt ist um 50% erhöht; ein kostenloser Siedler erscheint in der Hauptstadt."
 		French:"La vitesse de formation des colons augmente de 50% dans la capital capitale et un colon gratuit apparaît à proximité"
-	}
+		Czech:"Vycvičení osadníka zrychleno o 50% v hlavním městě, zdarma obdržíte osadníka v blízkosti hlavního města"
+}
 
 	"Citizenship":{
 		Italian:"Cittadinanza"
@@ -256,7 +278,8 @@
 		Portuguese:"Cidadania"
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
-	}
+		Czech:"Občanství"
+}
 
 	"Tile improvement speed +25%, receive a free worker near the capital":{
 		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
@@ -267,7 +290,8 @@
 		Portuguese:"+25% tava de construção de trabalhadores, receber trabalhador perto da capital"
 		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei Arbeitern; ein kostenloser Arbeiter erscheint in der Hauptstadt"
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
-	}
+		Czech:"Rychlost vylepšení na políčkách vzroste o 25%, zdarma obdržíte dělníka v blízkosti hlavního města"
+}
 
 	"Republic":{
 		Italian:"Repubblica"
@@ -278,7 +302,8 @@
 		Portuguese:"Republica"
 		German:"Republik"
 		French:"République"
-	}
+		Czech:"Republika"
+}
 
 	"+1 construction in every city, +5% construction when constructing buildings":{
 		Italian:"+1 Produzione in ogni città, e +5% Produzione quando costruisci un edificio"
@@ -289,7 +314,8 @@
 		Portuguese:"+1 de produção em todas as cidades,+5% construção quando construindo edificios"
 		German:"+1 Produktion in jeder Stadt; +5% Produktion beim Bau von Gebäuden in Städten"
 		French:"production +1, et production +5% dans les villes lors de la construction de bâtiments"
-	}
+		Czech:"+1 konstrukce v každém městě, +5% konstrukce při stavbě budov"
+}
 
 	"Representation":{
 		Italian:"Rappresentanza"
@@ -300,7 +326,8 @@
 		Portuguese:"Representação"
 		German:"Repräsentation"
 		French:"Représentation"
-	}
+		Czech:"Zastupitelství"
+}
 
 	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{
 		Italian:"Il costo in Cultura delle nuove Politiche Sociali aumenta del 33% in meno ad ogni nuova città fondata. Avvia inoltre un'Età dell'Oro."
@@ -311,7 +338,8 @@
 		Portuguese:"Toda cidade fundada aumenta o custo de políticas 33% a menos que o normal, aciona uma Idade Dourada"
 		German:"Jede gegründete Stadt erhöht die Kulturkosten von Grundsätzen um 33% weniger als üblich. Es beginnt ein Goldenes Zeitalter."
 		French:"Pour chaque ville fondée, le coût en culture des doctrines augmentera 33% moins vite. Déclenche également un âge d'or"
-	}
+		Czech:"Každé založené město zvyšuje cenu sociální politiky o 33% méně než obvykle. Započne zlatý věk."
+}
 
 	"Meritocracy":{
 		Italian:"Meritocrazia"
@@ -322,7 +350,8 @@
 		Portuguese:"Meritocracia"
 		German:"Meritokratie"
 		French:"Méritocratie"
-	}
+		Czech:"Meritokracie"
+}
 
 	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{
 		Italian:"+1 Felicità per ogni città connessa alla capitale, e -5% Infelicità dai cittadini nelle città non occupate"
@@ -333,7 +362,8 @@
 		Portuguese:"+1 felicade por cada cidade conectada a capital (estradas),-5% infelicidade de habitantes"
 		German:"+1 Zufriedenheit für jede mit der Hauptstadt verbundenen Stadt; -5% Unzufriedenheit von Einwohnern"
 		French:"Ville nationale reliée à la capitale : bonheur +1, et mécontentement -5% grâce aux citoyens des villes non occupées"
-	}
+		Czech:"+1 spokojenost za každé město propojené s hlavním městem, -5% nespokojenosti za obyvatelstvo"
+}
 
 	"Liberty Complete":{
 		Italian:"Libertà Completa"
@@ -344,7 +374,8 @@
 		Portuguese:"Liberade Completa"
 		German:"Unabhängigkeit vollständig"
 		French:"Liberté complète"
-	}
+		Czech:"Kompletní Volnost"
+}
 
 	"Free Great Person of choice near capital":{
 		Italian:"Appare un Grande Personaggio gratuito a scelta nella capitale"
@@ -352,10 +383,11 @@
 		Romanian:"Om Mare la alegere gratuit lângă capitală"
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
 		Simplified_Chinese:"首都附近出现1个免费的伟人，类型可以选择"
-		Portuguese:"Grande Pessoa de sua escolha (grátis) na capital" 
+		Portuguese:"Grande Pessoa de sua escolha (grátis) na capital"
 		German:"Kostenlose Große Persönlichkeit der Wahl erscheint in der Hauptstadt"
 		French:"personnage illustre gratuit près de votre capitale"
-	}
+		Czech:"Obdržíte zdarma velkou osobnost dle vašeho výběru v blízkosti hlavního města"
+}
 
 ////// Honor branch
 
@@ -368,7 +400,8 @@
 		Russian:"Честь"
 		German:"Ehre"
 		French:"Honneur"
-	}
+		Czech:"Čest"
+}
 
 	"+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit":{ //25% in Vanilla, 33% in G&K
 		Spanish:"+25% bonus al luchar contra Barbaros"
@@ -379,7 +412,8 @@
 		Russian:"+25% к силе атаки против варваров"
 		German:"+25% Bonus gegen Barbaren"
 		French:"bonus de combat de 25% contre les Barbares"
-	}
+		Czech:"+25% bonus proti barbarům, za každého zabitého barbara obdržíte kulturní body"
+}
 
 	"Warrior Code":{
 		Spanish:"Codigo guerrero"
@@ -390,7 +424,8 @@
 		Russian:"Военная присяга"
 		German:"Kriegerkodex"
 		French:"Code du guerrier"
-	}
+		Czech:"Kodex válečníka"
+}
 
 	"+20% production when training melee units":{ //it's +15% in the original game
 		Spanish:"+20% a la produccion de unidades cuerpo a cuerpo "
@@ -401,7 +436,8 @@
 		Russian:"+20% к производству при создании военных юнитов"
 		German:"+20% Produktion beim Rekrutieren von Nahkampfeinheiten"
 		French:"Production +20% lors de la formation d'unités de combat rapproché"
-	}
+		Czech:"+20% produkce při výcviku jednotky pro buj zblízka"
+}
 
 	"Discipline":{
 		Spanish:"Diciplina"
@@ -412,7 +448,8 @@
 		Russian:"Дисциплина"
 		German:"Disziplin"
 		French:"Discipline"
-	}
+		Czech:"Disciplína"
+}
 
 	"+15% combat strength for melee units which have another military unit in an adjacent tile":{
 		Spanish:"+15% a la fuerza de combate de las unidades cuerpo a cuerpo cuando tienen una unidad militar adyacente"
@@ -423,7 +460,8 @@
 		Russian:"+15% к силе юнитов ближнего боя за дружественный юнит на соседней клетке"
 		German:"+15% Kampfstärke für Nahkampfeinheiten, die eine andere Militäreinheit in einem anliegenden Feld haben"
 		French:"Puissance de combat +15% pour les unités de combat rapproché si une autre unité militaire se trouve sur une case adjacente"
-	}
+		Czech:"+15% bojové síly pro jednotky pro boj zblízka, které mají vedle sebe další vojenskou jednotku"
+}
 
 	"Military Tradition":{
 		Spanish:"Tradicion militar"
@@ -434,7 +472,8 @@
 		Russian:"Военные традиции"
 		German:"Militärtradition"
 		French:"Tradition militaire"
-	}
+		Czech:"Vojenská tradice"
+}
 
 	"Military units gain 50% more Experience from combat":{
 		Spanish:"Las unidades militares ganan un 50% mas experiencia en combate"
@@ -445,7 +484,8 @@
 		Russian:"Юниты получают на 50% больше опыта от сражений"
 		German:"Militäreinheiten erhalten 50% mehr Erfahrung (XP) durch Kämpfe"
 		French:"Unités militaires : EXP gagnée en combat +50%"
-	}
+		Czech:"Vojenské jednotky získávají o 50% více zkušenosti z boje"
+}
 
 	"Military Caste":{
 		Spanish:"Casta militar"
@@ -456,7 +496,8 @@
 		Russian:"Военная каста"
 		German:"Militarisierte Burg"
 		French:"Caste militaire"
-	}
+		Czech:"Vojenská třída"
+}
 
 	"Each city with a garrison increases happiness by 1 and culture by 2":{
 		Spanish:"Cada ciudad con una guarnicion gana 1 de felicidad y 2 de cultura"
@@ -467,7 +508,8 @@
 		Russian:"Каждый город с гарнизоном увеличивает счастье на 1 и культуру на 2"
 		German:"Jede besatzte Stadt erhöht die Zufriedenheit um 1 und Kultur um 2"
 		French:"Dans chaque ville possédant une garnison, +1 Bonheur et +2 Culture"
-	}
+		Czech:"Každé město vojenskou posádku zvyšuje spokojenost o 1 a kulturu o 2 "
+}
 
 	"Professional Army":{
 		Spanish:"Ejercito profesional"
@@ -478,7 +520,8 @@
 		Russian:"Профессиональная армия"
 		German:"Professionelle Armee"
 		French:"Armée de métier"
-	}
+		Czech:"Profesionální armáda"
+}
 
 	"Honor Complete":{
 		Spanish:"Honor completado"
@@ -489,7 +532,8 @@
 		Russian:"Честь Завершена"
 		German:"Ehre vollständig"
 		French:"Honneur complète"
-	}
+		Czech:"Kompletní Čest"
+}
 
 	"Gain gold for each unit killed":{
 		Spanish:"Ganas oro cada vez que destruyas una unidad enemiga"
@@ -500,8 +544,9 @@
 		Russian:"Получение золота за каждого убитого юнита"
 		German:"Jede zerstörte Einheit gibt Gold"
 		French:"Chaque unités tués rapporte de l'or"
-	}
-	
+		Czech:"Obdržíte zlato za každou zabitou jednotku"
+}
+
 ////// Piety branch
 
 	"Piety":{
@@ -513,7 +558,8 @@
 		Portuguese:"Piedade"
 		German:"Frömmigkeit"
 		French:"Piété"
-	}
+		Czech:"Zbožnost"
+}
 
 	"Building time of culture buildings reduced by 15%":{
 		Italian:"-15% tempi di costruzione per le strutture religiose"
@@ -524,7 +570,8 @@
 		Portuguese:"Tempo de construção para edifícios culturais reduzido em 15%"
 		German:"Bauzeit für Kulturgebäude ist um 15% reduziert"
 		French:"diminue de 15% le temps nécessaire à la construction des batiments produisant de la culture"
-	}
+		Czech:"Čas potřebný na stavbu kulturních budov je o 15% kratší"
+}
 
 	"Organized Religion":{
 		Italian:"Religione Organizzata"
@@ -535,7 +582,8 @@
 		Portuguese:"Religião Organizada"
 		German:"Organisierte Religion"
 		French:"Religion organisée"
-	}
+		Czech:"Organizovaná víra"
+}
 
 	"+1 happiness for each monument, temple and monastery":{
 		Italian:"+1 felicità per ogni Monumento, Tempio e Monastero costruito"
@@ -546,7 +594,8 @@
 		Portuguese:"+1 felicidade por cada monumento, templo e monastério"
 		German:"+1 Zufriedenheit für jedes Monument, Kloster und Tempel"
 		French:"+1 bonheur pour chaque monument, temple et monastère"
-	}
+		Czech:"+1 spokojenost za každý pomník, chrám a klášter"
+}
 
 	"Mandate Of Heaven":{
 		Italian:"Mandato del Cielo"
@@ -557,7 +606,8 @@
 		Portuguese:"Mandato do Céu"
 		German:"Mandat des Himmels"
 		French:"Mandat du Ciel"
-	}
+		Czech:"Mandát Nebes"
+}
 
 	"50% of excess happiness added to culture towards policies":{
 		Italian:"Il 50% di Felicità in eccesso si converte in Cultura per le future Politiche sociali"
@@ -568,7 +618,8 @@
 		Portuguese:"50% da felicidade em excesso sera adicionada para cultura para políticas"
 		German:"50% der überschüssigen Zufriedenheit wird zu Kultur für Sozialegrundsätze umgewandelt"
 		French:"50% du bonheur excédentaire est ajouté en Culture"
-	}
+		Czech:"50% z nadbytečné spokojenosti je je přidáno na sociální politiku"
+}
 
 	"Theocracy":{
 		Italian:"Teocrazia"
@@ -579,7 +630,8 @@
 		Portuguese:"Teocracia"
 		German:"Theokratie"
 		French:"Théocratie"
-	}
+		Czech:"Teokracie"
+}
 
 	"Temples give +10% gold":{
 		Italian:"+10% Oro dai Templi (Sepolcri per gli Egizi)"
@@ -590,7 +642,8 @@
 		Portuguese:"Templos dão +10% de ouro"
 		German:"Tempel geben +10% Gold"
 		French:"Les temples augmentent la production des villes de 10% "
-	}
+		Czech:"Chrámy přidávají +10% zlata"
+}
 
 	"Reformation":{
 		Italian:"Riforma"
@@ -601,7 +654,8 @@
 		Portuguese:"Reformação"
 		German:"Reformation"
 		French:"Réforme"
-	}
+		Czech:"Reformace"
+}
 
 	"+33% culture in all cities with a world wonder, immediately enter a golden age":{
 		Italian:"+33% Cultura in tutte le città con una Meraviglia Mondiale, e avvio immediato di un'Età dell'Oro"
@@ -609,10 +663,11 @@
 		Romanian:"+33% cultură în toate orașele cu minuni, intră imediat în epoca de aur"
 		Spanish:"+33% cultura en todas las ciudades con una Maravilla. Inmediatamente entras en una Edad de Oro"
 		Simplified_Chinese:"所有拥有奇观的城市文化产出+33%，立即进入黄金时代"
-		Portuguese:"+33% cultura em todas as cidades com uma maravilha. Imediatament entra Idade Dourada" 
+		Portuguese:"+33% cultura em todas as cidades com uma maravilha. Imediatament entra Idade Dourada"
 		German:"+33% Kultur in allen Städten mit einem Weltwunder; Ein Goldenes Zeitalter beginnt."
 		French:"+33% de culture dans toutes les villes ayant une Merveille, déclenche un âge d'or"
-	}
+		Czech:"33% kultury ve všech městech s Divem světa, okamžitý začátek Zlatého věku"
+}
 
 	"Free Religion":{
 		Italian:"Tolleranza Religiosa"
@@ -623,7 +678,8 @@
 		Portuguese:"Liberdade de Religião"
 		German:"Religionsfreiheit"
 		French:"Tolérance religieuse" //official, or "Religion libre"
-	}
+		Czech:"Svoboda vyznání"
+}
 
 	"+1 culture for each monument, temple and monastery. Gain a free policy.":{
 		Italian:"+1 Cultura per ogni Monumento, Tempio e Monastero, più una Politica gratuita"
@@ -634,7 +690,8 @@
 		Portuguese:"+1 cultura por cada monumento, templo e monastério. Ganha uma apolítica grátis"
 		German:"+1 Kultur für jedes Monument, Kloster und Tempel; Ein kostenloser Grundsatz."
 		French:"+1 culture pour chaque monument, temple et monastère, donne une doctrine gratuite"
-	}
+		Czech:"+1 kulturní bod za každý pomník, chrám a klášter. Obdržíte zdarma další sociální politiku"
+}
 
 	"Piety Complete":{
 		Italian:"Pietà Completa"
@@ -645,7 +702,8 @@
 		Portuguese:"Piedade Completa"
 		German:"Frömmigkeit vollständig"
 		French:"Piété complète"
-	}
+		Czech:"Kompletní Zbožnost"
+}
 
 	"Reduce culture cost of future policies by 10%":{
 		Italian:"-10% costi in Cultura per le Politiche future"
@@ -656,68 +714,83 @@
 		Portuguese:"Reduz o custo de futuras políticas em 10%"
 		German:"Reduziere Kulturkosten von zukünftigen Grundsätzen um 10%"
 		French:"Réduit le cout en culture des futures doctrines de 10%"
-	}
-	
+		Czech:"Redukuje cenu dalších sociálních politik o 10%"
+}
+
 
 
 ////// Patronage branch
 /*
 	"Patronage":{
 		Italian:"Mecenatismo"
-	}
+		Czech:"Patronát"
+}
 
 	"Influence with City-States degrades 25% slower than normal.":{
 		Italian:"L'Influenza con le Città-Stato cala il 25% più lentamente rispetto al normale."
-	}
+		Czech:"Vliv Městských států oslabuje o 25% pomaleji než obvykle."
+}
 
 	"Philantropy":{ //unlocked when adopting Patronage
 		Italian:"Filantropia"
-	}
+		Czech:"Filantropie"
+}
 
 	"Gifting Gold to a City-State generates 25% more Influence":{
 		Italian:"Donare Oro a una Città-Stato genera il 25% di Influenza in più."
-	}
+		Czech:"Darování zlata městským státům generuje o 25% více vlivu než obvykle"
+}
 
 	"Aesthetics":{ //unlocked when adopting Patronage
 		Italian:"Estetica"
-	}
+		Czech:"Estetika"
+}
 
 	"Resting point for Influence level with all City-States is increased by 20.":{
 		Italian:"Il punto neutro di livello d'Influenza per tutte le Città-Stato è portato a +20."
-	}
+		Czech:""
+}
 
 	"Scholasticism":{ //Needs Philantropy
 		Italian:"Scolasticismo"
-	}
+		Czech:"Scholastika"
+}
 
 	"All Allied City-States provide a Science bonus equal to 25% of what they produce for themselves.":{
 		Italian:"Le Città-Stato tue alleate ti donano un bonus scientifico del 25% rispetto a quello che producono da sole."
-	}
+		Czech:"Všechny městské státy, se kterými máme alianci, poskytují Výzkumný bonus ve výši 25% z jejich celkového výzkumu."
+}
 
 	"Cultural Diplomacy":{ //Needs Scholasticism
 		Italian:"Diplomazia culturale"
-	}
+		Czech:"Kulturní diplomacie"
+}
 
 	"Happiness from gifted Luxuries increased by 50%.":{
 		Italian:"+50% Felicità dalle Risorse di Lusso date dalle città che ti sono Amiche o Alleate."
-	}
+		Czech:"Spokojenost z darovaných Luxusních zdrojů se zvyšuje o 50%."
+}
 
 	"Educated Elite":{ //Needs Scholasticism and Aesthetics
 		Italian:"Elite culturale"
-	}
+		Czech:"Intelektuální elita"
+}
 
 	"Allied City-States will occasionally gift you Great People.":{
 		Italian:"Le Città-Stato Alleate ti doneranno occasionalmente dei Grandi Personaggi."
-	}
+		Czech:"Všechny městské státy, se kterými máme alianci vám občas darují Velkou osobnost."
+}
 
 	"Patronage Complete":{
 		Italian:"Mecenatismo completo"
-	}
+		Czech:"Kompletní Patronát"
+}
 
 	"Influence with City-States degrades 25% slower than normal.":{
 		Italian:"L'Influenza con le Città-Stato cala il 33% più lentamente rispetto al normale."
-	}
-	
+		Czech:"Vliv v městských státech se snižuje o 25% pomaleji než je obvyklé."
+}
+
 */
 
 
@@ -731,8 +804,9 @@
 		Simplified_Chinese:"商业政策"
 		Portuguese:"Comércio"
 		German:"Kommerz"
-		French:"Commerce"
-	}
+		French:"Commerce",
+		Czech:"Kupectví"
+}
 
 	"+25% gold in capital":{
 		Italian:"+25% Oro nella Capitale"
@@ -743,7 +817,8 @@
 		Portuguese:"+25% de ouro na capital"
 		German:"+25% Gold in der Hauptstadt"
 		French:"+25% de production d'or dans la capitale"
-	}
+		Czech:"+25% zlata v hlavním městě"
+}
 
 	"Trade Unions":{
 		Italian:"File di carri"
@@ -754,7 +829,8 @@
 		Portuguese:"Sindicatos"
 		German:"Handelsunion"
 		French:"Unions commerciales"
-	}
+		Czech:"Odborová organizace"
+}
 
 	"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
 		Italian:"-33% mantenimento in Oro per strade e ferrovie, +2 oro per ogni rotta commerciale"
@@ -765,7 +841,8 @@
 		Portuguese:"Manutenção reduzida em estradas e linhas férreas em 33%, +2 ouro de todas as rotas de comércio"
 		German:"Instandhaltung von Straßen und Schienen um 33% reduziert; +2 Gold für alle Handelsrouten"
 		French:"Le coût des routes et des chemins de fer est réduit de 33%, +2 or pour chaques routes commerciales"
-	}
+		Czech:"Údržba cest a železnic je snížena o 33%, +2 zlata za každou obchodní cestu"
+}
 
 	"Mercantilism":{
 		Italian:"Mercantilismo"
@@ -775,8 +852,9 @@
 		Simplified_Chinese:"重商主义"
 		Portuguese:"Mercantilismo"
 		German:"Merkantilismus"
-		French:"Mercantilisme"
-	}
+		French:"Mercantilisme",
+		Czech:"Merkantilismus"
+}
 
 	"-25% to purchasing items in cities":{
 		Italian:"-25% costi d'acquisto in Oro nelle città"
@@ -787,7 +865,8 @@
 		Portuguese:"-25% a compra de itens em cidades"
 		German:"-25% Gold Kosten beim Kauf von Objekten in Städten"
 		French:"-25% de coût en or d'achat de batiments/unités dans les villes"
-	}
+		Czech:"-25% na nákup všech věcí ve všech městech"
+}
 
 	"Entrepreneurship":{
 		Italian:"Imprenditorialità"
@@ -798,7 +877,8 @@
 		Portuguese:"Empreendimento"
 		//same in German
 		French:"Entreprenariat"
-	}
+		Czech:"Podníkání"
+}
 
 	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{
 		Italian:"+25% tasso di nascita dei Grandi Mercanti, +1 Scienza da ogni Zecca, Mercato, Banca e Borsa"
@@ -809,7 +889,8 @@
 		Portuguese:"Grander mercadores são obtidos 25% mais rápido, +1 ciência de cada de Casa da Moeda, banco e bolsa de valores"
 		German:"Große Händler erscheinen 25% schneller; +1 Wissenschaft von jeder Prägerei, Bank, Markt und Börse."
 		French:"Apparition des marchands illustres 25% plus rapide, +1 science pour chaque Hôtel de la monnaie, Marché, Banque et Douane"
-	}
+		Czech:"Velký obchodník se rodí o 25% rychleji, +1 Výzkum za každou Mincovnu, Tržiště, Banku a Burzu."
+}
 
 	"Patronage":{
 		Italian:"Mecenatismo"
@@ -819,8 +900,9 @@
 		Simplified_Chinese:"赞助政策"
 		Portuguese:"Patrocínio" // not sure so double check yourself if deemed nescessary
 		German:"Mäzenatentum" //according to https://en.wikipedia.org/wiki/Patronage --> click on German language post
-		French:"Patronat"
-	}
+		French:"Patronat",
+		Czech:"Patronát"
+}
 
 	"Cost of purchasing culture buildings reduced by 50%":{
 		Italian:"-50% costi per l'acquisto degli edifici culturali"
@@ -831,7 +913,8 @@
 		Portuguese:"Custo de comprar edifícios reduzido em 50%"
 		German:"Kosten für den Kauf von Kulturgebäuden ist um 50% reduziert"
 		French:"Coût d'achat des batiments culturelles réduit de 50%"
-	}
+		Czech:"Cena za nákup kulturních budov se sníží o 50%"
+}
 
 	"Protectionism":{
 		Italian:"Protezionismo"
@@ -841,8 +924,9 @@
 		Simplified_Chinese:"贸易保护"
 		Portuguese:"Protecionismo"
 		German:"Protektionismus"
-		French:"Protectionnisme"
-	}
+		French:"Protectionnisme",
+		Czech:"Protekcionismus"
+}
 
 	"+1 happiness from each luxury resource":{
 		Italian:"+1 Felicità per ogni risorsa di lusso"
@@ -853,7 +937,8 @@
 		Portuguese:"+1 Felicidade por cade recurso de luxo"
 		German:"+1 Zufriedenheit für jede Luxusresource"
 		French:"+1 Bonheur pour chaque ressource de luxe"
-	}
+		Czech:"+1 spokojenost za každý luxusní zdroj"
+}
 
 	"Commerce Complete":{
 		Italian:"Commercio Completo"
@@ -864,7 +949,8 @@
 		Portuguese:"Comércio Completo"
 		German:"Kommerz vollständig"
 		French:"Commerce complet"
-	}
+		Czech:"Kompletní Kupectví"
+}
 
 	"+1 gold from each specialist":{
 		Italian:"+1 Oro per ogni specialista"
@@ -875,8 +961,9 @@
 		Portuguese:"+1 ouro por cada especialista"
 		German:"+1 Gold für jeden Spezialisten"
 		French:"+1 or pour chaque spécialiste"
-	}
-	
+		Czech:"+1 zlato za každého specialistu"
+}
+
 //////Rationalism branch
 
 	"Rationalism":{
@@ -887,8 +974,9 @@
 		Simplified_Chinese:"理性政策"
 		Portuguese:"Racionalismo"
 		German:"Rationalismus"
-		French:"Rationalisme"
-	}
+		French:"Rationalisme",
+		Czech:"Racionalismus"
+}
 
 	"Production to science conversion in cities increased by 33%":{
 		Italian:"+33% conversione da Produzione a Scienza nelle città"
@@ -899,7 +987,8 @@
 		Portuguese:"Conversão de produção para ciência em cidades aumentada por 33%"
 		German:"Umwandlung von Produktion in Wissenschaft in Städten ist um 33% erhöht."
 		French:"+33% de production lors de conversion de la production en science"
-	}
+		Czech:"Konverze produkce na výzkum ve městech se zvyšuje o 33%"
+}
 
 	"Secularism":{
 		Italian:"Secolarismo"
@@ -909,8 +998,9 @@
 		Simplified_Chinese:"世俗主义"
 		Portuguese:"Secularismo"
 		German:"Säkularismus"
-		French:"Laïcité"
-	}
+		French:"Laïcité",
+		Czech:"Sekularismus "
+}
 
 	"+2 science from every specialist":{
 		Italian:"+2 Scienza per ogni specialista"
@@ -921,7 +1011,8 @@
 		Portuguese:"+2 ciência de cada especialista"
 		German:"+2 Wissenschaft durch jeden Spezialisten"
 		French:"Spécialiste : science +2."
-	}
+		Czech:"+2 výzkum za každého specialistu"
+}
 
 	"Humanism":{
 		Italian:"Umanesimo"
@@ -932,7 +1023,8 @@
 		Portuguese:"Humanismo"
 		German:"Humanismus"
 		French:"Humanisme"
-	}
+		Czech:"Humanismus"
+}
 
 	"+1 happiness from every university, observatory and public school":{
 		Italian:"+1 Felicità per ogni Università, Osservatorio e Scuola Pubblica"
@@ -943,7 +1035,8 @@
 		Portuguese:"+1 felicidade por cada universidade, observatório e escola pública"
 		German:"+1 Zufriedenheit durch jede Universität, öffentliche Schule oder Observatorium."
 		French:"+1 bonheur pour chaque université, observatoire et école publique"
-	}
+		Czech:"+1 spokojenost za každou univerzitu, observatoř a veřejnou školu"
+}
 
 	"Free Thought":{
 		Italian:"Libertà di pensiero"
@@ -953,8 +1046,9 @@
 		Simplified_Chinese:"思想自由"
 		Portuguese:"Pensamento Livre"
 		German:"Freies Denken"
-		French:"Liberté de pensée"
-	}
+		French:"Liberté de pensée",
+		Czech:"Volnomyšlenkářství"
+}
 
 	"+1 science from every trading post, +17% science from universities":{
 		Italian:"+1 Scienza per ogni base commerciale, +17% scienza dalle Università"
@@ -962,10 +1056,11 @@
 		Romanian:"+1 știință de la fiecare punct comercial, +17% știință de la universități"
 		Spanish:"+1 ciencia por cada puesto comercial, +17% ciencia de las universidades"
 		Simplified_Chinese:"每处贸易站+1科研，大学+17%科研产出"
-		Portuguese:"+1 ciência por cada posto mercantil, +17% ciência de todas as universidades" 
+		Portuguese:"+1 ciência por cada posto mercantil, +17% ciência de todas as universidades"
 		German:"+1 Wissenschaft durch jeden Handelsposten; +17% Wissenschaft von Universitäten"
-		French:"Comptoirs commerciaux : science +1 et science +17% grâce aux universités"
-	}
+		French:"Comptoirs commerciaux : science +1 et science +17% grâce aux universités",
+		Czech:"+1 výzkum za každou Obchodní stanici, +17% výzkumu z univerzit"
+}
 
 	"Sovereignty":{
 		Italian:"Sovranità"
@@ -975,8 +1070,9 @@
 		Simplified_Chinese:"主权在民"
 		Portuguese:"Soberania"
 		German:"Souveränität"
-		French:"Souveraineté"
-	}
+		French:"Souveraineté",
+		Czech:"Svrchovanost lidu"
+}
 
 	"+15% science while empire is happy":{
 		Italian:"+15% Scienza quando l'Impero è felice (ovvero la Felicità è al di sopra dello 0)"
@@ -987,7 +1083,8 @@
 		Portuguese:"+15% ciência enquanto império está feliz"
 		German:"+15% Wissenschaft solange das Reich zufrieden ist"
 		French:"+15% science tant que l'empire est heureux"
-	}
+		Czech:"+15% výzkumu, pokud jsou obyvatelé vaší říše spokojení"
+}
 
 	"Scientific Revolution":{
 		Italian:"Rivoluzione Scientifica"
@@ -997,8 +1094,9 @@
 		Simplified_Chinese:"科技革命"
 		Portuguese:"Revolução Ciêntifica"
 		German:"Wissenschaftsrevolution"
-		French:"Révolution scientifique"
-	}
+		French:"Révolution scientifique",
+		Czech:"Vědecká revoluce"
+}
 
 	"Gain 2 free technologies":{
 		Italian:"Consente di scoprire due Tecnologie gratuite"
@@ -1009,7 +1107,8 @@
 		Portuguese:"Ganhe 2 tecnologias grátis"
 		German:"2 kostenlose Technologien"
 		French:"2 technologies gratuites"
-	}
+		Czech:"Získáte 2 technologie zdarma"
+}
 
 	"Rationalism Complete":{
 		Italian:"Razionalismo Completo"
@@ -1019,8 +1118,9 @@
 		Simplified_Chinese:"完整的理性政策"
 		Portuguese:"Racionalismo Completo"
 		German:"Rationalismus vollständig"
-		French:"Rationalisme complet"
-	}
+		French:"Rationalisme complet",
+		Czech:"Kompletní Racionalismus"
+}
 
 	"+1 gold from all science buildings":{
 		Italian:"+1 Oro per ogni edificio scientifico costruito"
@@ -1031,8 +1131,9 @@
 		Portuguese:"+1 ouro de todos os edifícios de ciência"
 		German:"+1 Gold von allen Wissenschaftsgebäuden"
 		French:"Les batiments scientifiques rapportent +1 or"
-	}
-	
+		Czech:"+1 zlato ze všech vědeckých budov"
+}
+
 ////// Freedom branch
 
 	"Freedom":{
@@ -1044,7 +1145,8 @@
 		Portuguese:"Liberdade"
 		German:"Freiheit"
 		French:"Liberté"
-	}
+		Czech:"Svoboda"
+}
 
 	"+25% great people rate":{
 		Italian:"+25% tasso di generazione per i Grandi Personaggi"
@@ -1055,8 +1157,9 @@
 		Portuguese:"+25% Geração de Grandes Pessoas"
 		German:"+25% mehr Große Persönlichkeiten"
 		French:"+25% d'apparition des personnages illustres"
-	}
-    
+		Czech:"+25% k růstu Velkých osobností"
+}
+
 	"Constitution":{
 		Italian:"Costituzione"
 		Russian:"Конституция"
@@ -1065,8 +1168,9 @@
 		Simplified_Chinese:"宪政主义"
 		Portuguese:"Constituição"
 		German:"Verfassung"
-		French:"Constitution"
-	}
+		French:"Constitution",
+		Czech:"Ústavní systém"
+}
 
 	"+2 culture from each wonder":{
 		Italian:"+2 Cultura per ogni Meraviglia"
@@ -1077,7 +1181,8 @@
 		Portuguese:"+2 cultura por cada Maravilha"
 		German:"+2 Kultur durch jedes Wunder"
 		French:"+2 culture pour chaque merveilles"
-	}
+		Czech:"+2 body kultury za každý Div"
+}
 
 	"Universal Suffrage":{
 		Italian:"Suffragio Universale"
@@ -1087,8 +1192,9 @@
 		Simplified_Chinese:"普选制度"
 		Portuguese:"Sufrágio Universal"
 		German:"Allgemeines Wahlrecht"
-		French:"Suffrage universel"
-	}
+		French:"Suffrage universel",
+		Czech:"Všeobecné volební právo"
+}
 
 	"+1 production per 5 population":{
 		Italian:"+1 Produzione per ogni abitante"
@@ -1099,7 +1205,8 @@
 		Portuguese:"+1 produção por cada 5 habitantes"
 		German:"+1 Produktion für jeden 5. Einwohner"
 		French:"+1 production par tranches de 5 habitants"
-	}
+		Czech:"+1 produkce za každých 5 obyvatel"
+}
 
 	"Civil Society":{
 		Italian:"Società civile"
@@ -1109,8 +1216,9 @@
 		Simplified_Chinese:"公民社会"
 		Portuguese:"Sociedade Civil"
 		German:"Zivilgesellschaft"
-		French:"Société civile"
-	}
+		French:"Société civile",
+		Czech:"Občanská společnost"
+}
 
 	"-50% food consumption by specialists":{
 		Italian:"-50% consumo di Cibo dagli Specialisti"
@@ -1121,7 +1229,8 @@
 		Portuguese:"-50% gasto de comida por especialistas"
 		German:"-50% Nahrungsverbrauch durch Spezialisten"
 		French:"-50% consommation de nourriture des spécialistes"
-	}
+		Czech:"-50% spotřeby jídla specialisty"
+}
 
 	"Free Speech":{
 		Italian:"Libertà di parola"
@@ -1131,8 +1240,9 @@
 		Simplified_Chinese:"言论自由"
 		Portuguese:"Liberdade de Expressão"
 		German:"Meinungsfreiheit"
-		French:"Liberté de parler"
-	}
+		French:"Liberté de parler",
+		Czech:"Svoboda projevu"
+}
 
 	"+1 culture for every 2 citizens":{
 		Italian:"+1 Cultura ogni 2 Cittadini"
@@ -1143,7 +1253,8 @@
 		Portuguese:"+1 cultura para cada 2 habitantes"
 		German:"+1 Kultur für jeden 2. Einwohner"
 		French:"+1 culture tous les 2 citoyens"
-	}
+		Czech:"+1 kulturní bod za každé 2 obyvatele"
+}
 
 	"Democracy":{
 		Italian:"Democrazia"
@@ -1154,7 +1265,8 @@
 		Portuguese:"Democracia"
 		German:"Demokratie"
 		French:"Démocratie"
-	}
+		Czech:"Demokracie"
+}
 
 	"Specialists produce half normal unhappiness":{
 		Italian:"Gli Specialisti dimezzano l'Infelicità prodotta"
@@ -1165,7 +1277,8 @@
 		Portuguese:"Especialistas produzem metade da infelicidade normal"
 		German:"Spezialisten produzieren 50% weniger Unzufriedenheit"
 		French:"Les spécialistes produisent moitié moins de mécontentement"
-	}
+		Czech:"Specialisté produkují polovinu běžné nespokojenosti"
+}
 
 	"Freedom Complete":{
 		Italian:"Autonomia Completa"
@@ -1176,7 +1289,8 @@
 		Portuguese:"Liberdade Completa"
 		German:"Freiheit vollständig"
 		French:"Liberté complète"
-	}
+		Czech:"Kompletní Svoboda"
+}
 
 	"Tile yield from great improvement +100%, golden ages increase by 50%":{
 		Italian:"Doppia resa (+100%) dai miglioramenti, e +50% durata da Età dell'Oro"
@@ -1187,8 +1301,9 @@
 		Portuguese:"Rendimento de de terrenos com grandes melhorias +100%, Idades de Ouro incrementam 50%"
 		German:"+100% Felderträge aus Verbesserungen Großer Persönlichkeiten; Goldene Zeitalter dauern 50% länger"
 		French:"Bonus des cases améliorés par les spécialistes +100%, la durée des âges d'or augmente de 50%"
-	}
-	
+		Czech:"Zisk z políček od Velkých vylepšení +100%, Zlatý věk se prodlužuje o 50%"
+}
+
 ////// Autocracy branch
 
 	"Autocracy":{
@@ -1199,8 +1314,9 @@
 		Portuguese:"Autocracia"
 		Russian:"Автократия"
 		German:"Autokratie"
-		French:"Autocratie"
-	}
+		French:"Autocratie",
+		Czech:"Autokracie"
+}
 
 	"-33% unit upkeep costs":{
 		Spanish:"Coste de mantenimiento de unidades reducido en 33%"
@@ -1211,7 +1327,8 @@
 		Russian:"-33% затрат на содержание юнитов"
 		German:"-33% Einheiten Unterhaltskosten"
 		French:"-33% de coût de maintenance des unités"
-	}
+		Czech:"-33% nákladů na údržbu jednotek"
+}
 
 	"Populism":{
 		Spanish:"Populismo"
@@ -1221,8 +1338,9 @@
 		Portuguese:"Populismo"
 		Russian:"Популизм"
 		German:"Populismus"
-		French:"Populisme"
-	}
+		French:"Populisme",
+		Czech:"Populismus"
+}
 
 	"Wounded military units deal +25% damage":{
 		Spanish:"Las unidades militares hacen un +25% de daño cuando estan heridas"
@@ -1233,7 +1351,8 @@
 		Russian:"Раненые юниты наносят на 25% больше урона"
 		German:"Verwundete Militäreinheiten haben +25% Schaden"
 		French:"Les unités militaires blessés infligent +25% dégats"
-	}
+		Czech:"Zraněné vojenské jednotky způsobí 25% poškození více"
+}
 
 	"Militarism":{
 		Spanish:"Militarismo"
@@ -1243,8 +1362,9 @@
 		Portuguese:"Militarismo"
 		Russian:"Милитаризм"
 		German:"Militarismus"
-		French:"Militarisme"
-	}
+		French:"Militarisme",
+		Czech:"Militarismus"
+}
 
 	"Gold cost of purchasing units -33%":{
 		Spanish:"Coste de comprar oro reducido a -33%"
@@ -1255,7 +1375,8 @@
 		Russian:"Стоимость покупки юнитов снижается на 33%"
 		German:"-33% Goldkosten für das Kaufen von Einheiten"
 		French:"Le coût d'achat des unités militaires est réduit de 33%"
-	}
+		Czech:"Cena za nákup jednotek se snižuje o 33%"
+}
 
 	"Facism":{
 		Spanish:"Facismo"
@@ -1265,8 +1386,9 @@
 		Portuguese:"Fascismo"
 		German:"Faschismus"
 		French:"fascisme"
-		Russian:"Фашизм"
-	}
+		Russian:"Фашизм",
+		Czech:"Fašismus"
+}
 
 	"Quantity of strategic resources produced by the empire increased by 100%":{
 		Spanish:"El imperio produce un +100% de recursos estrategicos"
@@ -1277,7 +1399,8 @@
 		Russian:"Количество стратегических ресурсов обрабатываемых империей, удваивается"
 		German:"Menge an strategische Resourcen ist um 100% erhöht."
 		French:"La quantité de ressources stratégiques est doublé"
-	}
+		Czech:"Množství strategických zdrojů produkovaných naší říší se zvyšuje o 100%"
+}
 
 	"Police State":{
 		Spanish:"Estado de policias"
@@ -1287,8 +1410,9 @@
 		Portuguese:"Estado de Polícia"
 		Russian:"Полицейский участок"
 		German:"Polizeistaat"
-		French:"Etat policier"
-	}
+		French:"Etat policier",
+		Czech:"Policejní stát"
+}
 
 	"Captured cities retain their previous borders":{
 		Spanish:"Las ciudades capturadas retienen sus fronteras"
@@ -1299,7 +1423,8 @@
 		Russian:"Захваченные города сохраняют свои прежние границы"
 		German:"Eingenommene Städte behalten ihre vorherigen Grenzen"
 		French:"Les villes capturés ne perdent plus leurs territoires"
-	}
+		Czech:"Zajaté města si ponechávají své původní hranice"
+}
 
 	"Total War":{
 		Spanish:"Guerra Total"
@@ -1309,8 +1434,9 @@
 		Portuguese:"Guerra Total"
 		German:"Totaler Krieg"
 		French:"Guerre Totale"
-		Russian:"Тотальная война"
-	}
+		Russian:"Тотальная война",
+		Czech:"Totální válka"
+}
 
 	"+15% production when building military units and new military units start with 15 Experience":{
 		Spanish:"+15% a la produccion cuando se esta construyendo unidades militares, las unidades militares comienzan con 15 de PX"
@@ -1321,20 +1447,23 @@
 		Russian:"+15% К производству военных юнитов, Военные юниты создаются с 15 опыта"
 		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (XP)"
 		French:"+15% production lors de la construction d'unités militaires, les nouvelles unités apparaissent avec +15 EXP"
-	}
+		Czech:"+15% produkce při výcviku nových vojenských jednotek. Ty dokamžitě získají 15 zkušenosti"
+}
 
 	"Autocracy Complete":{
 		Italian:"Autocrazia Completa"
 		French:"Autocratie complète"
 		Russian:"Автократия Завершена"
 		Simplified_Chinese:"完整的独裁政策"
-	}
+		Czech:"Kompletní Autokracie"
+}
 
 	"+1 happiness from each Walls, Castle and Arsenal":{
 		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
 		French:"+1 de bonheur pour chaque Murs, Châteaux et Arsenal"
 		Russian:"+1 счастье за каждую стену, замок и арсенал"
 		Simplified_Chinese:"每座城墙、城堡和兵工厂+1快乐"
-	}
+		Czech:"+1 spokojenost za každou Hradbu, Hrad a Zbrojnici"
+}
 
 }
