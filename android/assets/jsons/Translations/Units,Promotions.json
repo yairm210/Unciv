@@ -387,7 +387,7 @@
 		French:"Hoplite"
 	}
 	
-	"Immortal":{ // Persian unique
+	"Persian Immortal":{ // Persian unique
 		Italian:"Immortale"
 		Simplified_Chinese:"波斯长生军"
 	}
@@ -1683,12 +1683,12 @@
 		Simplified_Chinese:"警戒能力"
 	}
 
-	"Range":{
+	"Extended Range":{
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Обзор"
-		Simplified_Chinese:"Range"// the unit attribute and the promotions ability have the same name,if we do not solve this problem,i will not translate it.
+		Simplified_Chinese:"射程拓展"
 	}
 
 	"+1 Range":{

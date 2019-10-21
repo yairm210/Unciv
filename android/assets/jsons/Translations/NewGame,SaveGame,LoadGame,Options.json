@@ -464,52 +464,12 @@
 	
 	
 	
-	// Starting Era
+	// Starting Era, the Era names don't need to translate.
 	
 	"Starting Era":{
 		Italian:"Epoca iniziale"
 		Simplified_Chinese:"开始时代"
                 Korean:"시작 시대"
-	}
-	
-	"Ancient":{
-		Italian:"Antica"
-                Korean:"고대"
-	}
-	
-	"Classic":{
-		Italian:"Classica"
-                Korean:"고전"
-	}
-	
-	"Medieval":{
-		Italian:"Medievale"
-                Korean:"중세"
-	}
-	
-	"Renaissance":{
-		Italian:"Rinascimentale"
-                Korean:"르네상스"
-	}
-	
-	"Industrial":{
-		Italian:"Industriale"
-                Korean:"산업"
-	}
-	
-	"Modern":{
-		Italian:"Moderna"
-                Korean:"현대"
-	}
-	
-	"Information":{
-		Italian:"Informatica"
-                Korean:"정보"
-	}
-	
-	"Future":{
-		Italian:"Futura"
-                Korean:"미래"
 	}
  
 ////
