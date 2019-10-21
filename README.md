@@ -56,6 +56,18 @@ If not, then the feature won't be added until we've finished all the features fr
 
 THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
 
+## How can I translate to {language}?
+
+Awesome!
+
+Like most open-source projects, Unciv is developed at Github
+
+The​​​ translation​ files are at​​​ https://github.com/yairm210/UnCiv/tree/master/android/assets/jsons/Translations
+
+When you feel that you're ready to add your​​​ translation​​ to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
+
+Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
+
 ## How can I help?
 
 If you're a programmer, you can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!

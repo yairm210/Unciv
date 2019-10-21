@@ -49,7 +49,7 @@
 		unitTypes:["Ranged","Siege"]
 	}
 	{
-		name:"Range",
+		name:"Extended Range",
 		prerequisites:["Accuracy III","Barrage III","Targeting II","Bombardment II", "Wolfpack II"],
 		effect:"+1 Range",
 		unitTypes:["Ranged","Siege","WaterRanged","WaterSubmarine"]

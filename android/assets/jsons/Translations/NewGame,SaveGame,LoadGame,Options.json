@@ -509,18 +509,16 @@
 		Italian:"Maratona"
 		Simplified_Chinese:"马拉松"
 		Russian:"Марафон"
-                Korean:"마라톤"
+    Korean:"마라톤"
 		Czech:"Maratónská"
-}
-
-
-
-	// Starting Era
-
+}	
+	
+	
+	// Starting Era, the Era names don't need to translate.
 	"Starting Era":{
 		Italian:"Epoca iniziale"
 		Simplified_Chinese:"开始时代"
-                Korean:"시작 시대"
+    Korean:"시작 시대"
 		Czech:"Doba počátku hry"
 }
 
@@ -860,10 +858,10 @@
 		German: "Untätige Einheiten anzeigen bei Rundenende"
 		French:"Vérifier les unités inactives"
 		Russian:"Найти незанятые юниты"
-                Korean:"턴이 끝나기 전에 미행동 유닛 보기
+    Korean:"턴이 끝나기 전에 미행동 유닛 보기"
 		Czech:"Kontrolovat zahálející jednotky"
 }
-
+ 
 	"Move units with a single tap":{
 		Italian:"Muovi unità con un solo tocco"
 		German: "Einheiten mit einem Klick bewegen"
