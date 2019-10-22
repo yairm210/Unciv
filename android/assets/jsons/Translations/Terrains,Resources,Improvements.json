@@ -1012,7 +1012,7 @@
 		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
 }
 
-	"Can only be built on Coastal tile":{
+	"Can only be built on Coastal tiles":{
 		Italian:"Costruibile solo su Costa"
                 Korean:"해안 타일에만 제작 가능"
 		Czech:"Může byt vybudován na pobřežním políčku"
