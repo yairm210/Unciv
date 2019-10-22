@@ -254,6 +254,7 @@
 	"Maori Warrior":{
 		Italian:"Guerriero Maori"
 		Czech:"Maorský válěčník"
+		Simplified_Chinese:"毛利勇士"
 }
 
 	"Archer":{
@@ -424,7 +425,7 @@
 		Czech:"Hoplita"
 }
 
-	"Immortal":{ // Persian unique
+	"Persian Immortal":{ // Persian unique
 		Italian:"Immortale"
 		Simplified_Chinese:"波斯长生军"
 		Czech:"Nesmrtelný"
@@ -2307,11 +2308,13 @@
 	"Haka War Dance":{
 		Italian:"Danza di guerra Haka"
 		Czech:"Haka - valečný tanec"
+		Simplified_Chinese:"哈卡战舞"
 }
 
 	"-10% combat strength for adjacent enemy units":{
 		Italian:"-10% Forza alle unità nemiche adiacenti a questa unità"
 		Czech:"-10% bojové síly pro nepřátelské jednotky na sousedních políčkách"
+		Simplified_Chinese:"相邻的敌方单位-10%战斗力"
 }
 
 }

@@ -1397,7 +1397,7 @@
 
 	"Darius I":{
 		Italian:"Dario I"
-		Simplified_Chinese:"大流士一世",
+		Simplified_Chinese:"大流士一世"
 		Czech:"Dareios I."
 }
 
@@ -1414,11 +1414,13 @@
 		French:"Polynésie"
 		Portuguese:"Polinésia"
 		Czech:"Polynésie"
+		Simplified_Chinese:"波利尼西亚"
 }
 
 	"Kamehameha I":{
-		Italian:"Kamehameha I",
+		Italian:"Kamehameha I"
 		Czech:"Kamehameha I."
+		Simplified_Chinese:"卡美哈梅哈一世"
 }
 
 	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strenght bonus if within 2 tiles of a Moai.":{
@@ -1426,6 +1428,7 @@
 		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
 		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
 		Czech:"Může se okamžitě přesunovat mezi pevninou a mořem. +1 při nalodění. +10% bonus k bojové síle, pokud je v okolí 2 polí Moai."
+		Simplified_Chinese:"单位初始就拥有船运能力可进入海洋，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力"
 }
 
 	/*

@@ -1002,18 +1002,21 @@
 		Italian:"Moai"
                 Korean:"모아이"
 		Czech:"Moai (kamenná socha)"
+		Simplified_Chinese:"摩艾石像群"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
 		Italian:"+1 Cultura aggiuntiva per ogni Moai adiacente"
                 Korean:"인접한 각 Moai에 대해 +1 추가 문화"
 		Czech:"+1 kulturní bod za každý Moai"
+		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
 }
 
 	"Can only be built on Coastal tile":{
 		Italian:"Costruibile solo su Costa"
                 Korean:"해안 타일에만 제작 가능"
 		Czech:"Může byt vybudován na pobřežním políčku"
+		Simplified_Chinese:"只能建造在沿海地块"
 }
 
 
