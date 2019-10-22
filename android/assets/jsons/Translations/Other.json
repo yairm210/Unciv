@@ -2004,16 +2004,18 @@
 		Simplified_Chinese:"吞并"
 		Russian:"Аннексировать"
 		Czech:"Anektovat"
-},
+}
 
 	"Annexed cities become part of your regular empire.":{
 		Italian:"Le città annesse faranno parte regolare del tuo impero."
 		Czech:"Anektované města se stanou regulérní součástí naší říše."
+		Simplified_Chinese:"“吞并城市”意味着该城市将成为您的帝国直辖的一部分。"
 }
 
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
 		Italian:"I loro cittadini genereranno il doppio dell'Infelicità, fino a quando non costruirai un Palazzo di giustizia."
 		Czech:"Jejich obyvatelé produkují 2x tolik nespokojenosti dokud napostavíte Soud."
+		Simplified_Chinese:"该城市人口产生的不满将是正常值的2倍，建造“法庭”可以使该值降低到正常值。"
 }
 
 	"Puppet":{

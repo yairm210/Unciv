@@ -527,7 +527,7 @@
 		Russian:"[unit] завершил исследование местности."
 		Simplified_Chinese:"[unit]已完成了探索。",
 		Czech:"Jednotka [unit] dokončila průzkum."
-	},
+	}
 
 	"[unit] has no work to do.": {
 		Italian:"[unit] è ora inattivo."
@@ -568,7 +568,7 @@
 		Russian:"Вы и [name] больше не союзники!"
 		Simplified_Chinese:"你和[name]不再是盟友了！",
 		Czech:"Naše říše a městský stát [name] už není v alianci!"
-	},
+	}
 
 	"[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
@@ -588,6 +588,7 @@
 	"[cityName] has been connected to your capital!":{
 		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
+		Simplified_Chinese:"[cityName]与你的首都的连接已经建立！"
 	}
 
 	// Trade
@@ -622,7 +623,7 @@
 		Russian:"Торговая сделка с [nation] завершилась"
 		Simplified_Chinese:"我们与[nation]的贸易已经结束",
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] je u konce"
-	},
+	}
 
  	"One of our trades with [nation] has been cut short": {
 		Italian:"Un nostro accordo con [nation] è stato interrotto."
@@ -630,20 +631,20 @@
 		Russian:"Торговая сделка с [nation] была завершена досрочно"
 		Simplified_Chinese:"我们与[nation]的贸易已被消减",
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] se blíží ke konci"
-	},
+	}
 
  	"[nation] agreed to stop settling cities near us!": {
 		Italian:"[nation] ha promesso di smettere di fondare città vicino a noi!"
 		Simplified_Chinese:"[nation]同意停止在我们附近建城！"
 		Russian:"[nation] согласилась прекратить заселять города рядом с нами!",
 		Czech:"Národ [nation] souhlasí, že nebude budovat své města poblíž našich hranic!"
-	},
+	}
 
  	"[nation] refused to stop settling cities near us!": {
 		Italian:"[nation] ha rifiutato di smettere di fondare città vicino a noi!"
 		Simplified_Chinese:"[nation]拒绝停止在我们附近建城！"
 		Russian:"[nation] отказалась прекратить заселять города рядом с нами!",
 		Czech:"Národ [nation] vypověděl dohodu o nebudování měst poblíž našich hranic!"
-	},
+	}
 
 }
