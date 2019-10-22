@@ -233,6 +233,12 @@ class GameInfo {
                 }
         }
 
+//        for(tile in tileMap.values)
+//            for(unit in tile.getUnits()){
+//                if(unit.name=="Immortal") unit.name="Persian Immortal"
+//            }
+
+
         for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
 

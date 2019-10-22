@@ -1,5 +1,5 @@
 {
-	
+
 ///////// 	Notifications
 		// Some notifications have an exclamation mark after them - is the exclamation mark different in other languages?
 		// If so then we need to deal with that as well
@@ -15,9 +15,10 @@
 		Spanish:"¡Investigación de [technologyName] completada!"
 		Simplified_Chinese:"[technologyName]的研究已完成!"
 		Portuguese:"[technologyName] foi pesquisada!"
-		Japanese:"[technologyName]の研究が完了しました！"
+		Japanese:"[technologyName]の研究が完了しました！",
+		Czech:"Výzkum technologie [technologyName] byl dokončen"
 	}
-		
+
 	"You have entered a golden age!":{
 		Italian:"Sei entrato in un'Età dell'Oro!"
 		Russian:"Вы вошли в золотой век!"
@@ -28,7 +29,8 @@
 		Spanish:"¡Has entrado en una edad de oro!"
 		Simplified_Chinese:"你开启了一个黄金时代!"
 		Portuguese:"Voçê entrou em uma idade dourada!"
-		Japanese:"あなたは黄金時代を迎えました！"
+		Japanese:"あなたは黄金時代を迎えました！",
+		Czech:"Započal Zlatý věk civilizace!"
 	}
 
 	"revealed near":{ // As in "Coal revealed near London"
@@ -41,7 +43,8 @@
 		Spanish:"descubierto cerca de"
 		Simplified_Chinese:"被发现在"
 		Portuguese:"revelado perto de"
-		Japanese:"付近で明らかに"
+		Japanese:"付近で明らかに",
+		Czech:" objeven(a) poblíž"
 	}
 
 	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""
@@ -53,7 +56,8 @@
 		Simplified_Chinese:"一个[greatPerson]已经出现!"
 		Portuguese:"Um [greatPerson] nasceu!"
 		German:"Ein [greatPerson] wurde geboren!"
-		Japanese:"[greatPerson]が誕生しました！"
+		Japanese:"[greatPerson]が誕生しました！",
+		Czech:"Narodil se [greatPerson]"
 	}
 
 	"We have encountered [civName]!":{
@@ -65,23 +69,25 @@
 		Simplified_Chinese:"我们遇到了[civName]!"
 		Portuguese:"Nós encontramos [civName]!"
 		German:"Wir sind auf [civName] getroffen!"
-		Japanese:"[civName]に遭遇しました。"
+		Japanese:"[civName]に遭遇しました。",
+		Czech:"Setkali jsme se s [civName]"
 	}
-		
+
 	"Cannot provide unit upkeep for [unitName] - unit has been disbanded!":{
 		Italian:"Mantenimento troppo alto per [unitName]: l'unità si è sciolta!"
 		Russian:"Невоможно предоставить содержание для [unitName] - юнит распущен!"
 		Spanish:"¡No se puede mantener [unitName] - unidad disuelta!"
-		French:"Le support ne peut être fournit pour [unitName] - l'unité a été dissoute!" 
+		French:"Le support ne peut être fournit pour [unitName] - l'unité a été dissoute!"
 		Romanian:"Nu se poate oferi susținere pentru [unitName] - unitatea a fost desființată!"
 		Simplified_Chinese:"无法为[unitName]提供维护费 - 单位已被解散！"
 		Portuguese:"Não é possivel providenciar manutenção para [unitName] - a unidade foi dissolvida!"
 		German:"Der Unterhalt für [unitName] konnte nicht bezahlt werden - Einheit wurde aufgelöst!"
-		Japanese:"[unitName]のアップキープを提供できません - ユニットは解散されました！"
+		Japanese:"[unitName]のアップキープを提供できません - ユニットは解散されました！",
+		Czech:"Žold pro jednotku [unitName] nebyl zaplacen - jednotka byla rozpuštěna."
 	}
 
-	/////////////////	City		
-		
+	/////////////////	City
+
 	"[cityName] has grown!":{
 		Italian:"[cityName] è cresciuta!"
 		Russian:"[cityName] вырос!"
@@ -92,12 +98,13 @@
 		Spanish:"¡[cityName] ha crecido!"
 		Simplified_Chinese:"[cityName]人口增长!"
 		Portuguese:"[cityName] Cresceu!"
-		Japanese:"[cityName]が成長しました！"
+		Japanese:"[cityName]が成長しました！",
+		Czech:"Město [cityName] se rozrostlo!"
 	}
-		
+
 	"[cityName] has been founded!":{
 		Italian:"[cityName] è stata fondata!"
-		Russian:"[cityName] был основан!" 
+		Russian:"[cityName] был основан!"
 		French:"[cityName] a été fondée!"
 		Romanian:"[cityName] a fost fondat!"
 		German:"[cityName] wurde gegründet!"
@@ -105,7 +112,8 @@
 		Spanish:"¡[cityName] ha sido fundada!"
 		Simplified_Chinese:"已经建立了城市：[cityName]!"
 		Portuguese:"[cityName] foi fundada!"
-		Japanese:"[cityName]が設立されました！"
+		Japanese:"[cityName]が設立されました！",
+		Czech:"Město [cityName] bylo založeno!"
 	}
 
 	"[cityName] is starving!":{
@@ -118,7 +126,8 @@
 		Spanish:"¡[cityName] está muriendo de hambre!"
 		Simplified_Chinese:"[cityName]正在闹饥荒!"
 		Portuguese:"[cityName] está morrendo de fome!"
-		Japanese:"[cityName]は飢えています！"
+		Japanese:"[cityName]は飢えています！",
+		Czech:"Ve městě [cityName] začal hladomor"
 	}
 
 	"[construction] has been built in [cityName]":{
@@ -131,16 +140,18 @@
 		Spanish:"[construction] se ha construido en [cityName]"
 		Simplified_Chinese:"[construction]已经在[cityName]被建造"
 		Portuguese:"o(a) [construction] foi construirdo em [cityName]"
-		Japanese:"[construction]は[cityName]に建てられました"
+		Japanese:"[construction]は[cityName]に建てられました",
+		Czech:"Stavba [construction] byla vybudována ve městě [cityName]"
 	}
-		
-	"[wonder] has been built in a faraway land":{	
+
+	"[wonder] has been built in a faraway land":{
 		Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
 		French:"[wonder] a été construit(e) dans un lointain pays"
 		Russian:"[wonder] был построен в далёких землях"
-		Simplified_Chinese:"[wonder]已在遥远的土地上建成"
+		Simplified_Chinese:"[wonder]已在遥远的土地上建成",
+		Czech:"Div světa [wonder] byl vybudován ve vzdálené zemi"
 	}
-		
+
 	"Work has started on [construction]":{
 		Italian:"Sono iniziati i lavori per [construction]"
 		Russian:"Началась работа над [construction]"
@@ -151,16 +162,18 @@
 		Spanish:"Se ha empezado a trabajar en [construction]"
 		Simplified_Chinese:"开始建造/组建：[construction]"
 		Portuguese:"Os trabalhos começaram no(a) [construction]"
-		Japanese:"[construction]の作業が開始されました"
+		Japanese:"[construction]の作業が開始されました",
+		Czech:"Začali jsme stavět stavbu [construction]"
 	}
-		
+
 	"[cityName] cannot continue work on [construction]":{
 		Italian:"[cityName] non può più costruire [construction]"
 		French:"[cityName] ne peut plus travailler sur [construction]"
 		Russian:"[cityName] не может продолжать работу над [construction]",
-		Simplified_Chinese:"[cityName]无法继续建造/组建[construction]"
+		Simplified_Chinese:"[cityName]无法继续建造/组建[construction]",
+		Czech:"Město [cityName] nemůže pokračovat ve stavbě budovy [construction]"
 	}
-		
+
 
 	"[cityname] has expanded its borders!":{
 		Italian:"[cityname] ha espanso i suoi confini!"
@@ -172,11 +185,12 @@
 		Spanish:"¡[cityname] ha expandido sus fronteras!"
 		Simplified_Chinese:"[cityname]的边界已经扩张！"
 		Portuguese:"[cityname] expandiu seus territórios!"
-		Japanese:"[cityname]は国境を拡大しました！"
+		Japanese:"[cityname]は国境を拡大しました！",
+		Czech:"Město [cityname] rozšířilo své hranice!"
 	}
 
 	/////////////	war, fight, ennemy
-	
+
 	"[cityName] has been razed to the ground!":{
 		Italian:"[cityName] è stata rasa al suolo!"
 		Russian:"[cityName] был разрушен до основания!"
@@ -187,9 +201,10 @@
 		Spanish:"¡[cityName] ha sido arrasada hasta los cimientos!"
 		Simplified_Chinese:"[cityName]已被夷为平地!"
 		Portuguese:"[cityName] foi queimada ás cinzas!"
-		Japanese:"[cityName]は地面に倒れました！"
+		Japanese:"[cityName]は地面に倒れました！",
+		Czech:"Město [cityname] bylo srovnáno se zemí!"
 	}
-		
+
 	"We have conquered the city of [cityname]!":{
 		Italian:"Abbiamo conquistato la città di [cityname]!"
 		Russian:"Мы завоевали город [cityname]!"
@@ -200,9 +215,10 @@
 		Spanish:"¡Hemos conquistado la ciudad de [cityname]!"
 		Simplified_Chinese:"我们已经占领城市[cityname]"
 		Portuguese:"Consquistamos a cidade de [cityname]!"
-		Japanese:"[cityname]の街を征服しました！"
+		Japanese:"[cityname]の街を征服しました！",
+		Czech:"Dobyli jsme město [cityname]!"
 	}
-		
+
 	"An enemy [unit] has attacked [cityname]":{
 		Italian:"L'unità nemica [unit] ha attaccato [cityname]"
 		Russian:"Вражеский [unit] атаковал [cityname]"
@@ -213,9 +229,10 @@
 		Spanish:"Un [unit] enemigo ha atacado [cityname]"
 		Simplified_Chinese:"敌方的[unit]攻击了[cityname]"
 		Portuguese:"Um(a) [unit] inimaga(o) atacou [cityname]"
-		Japanese:"敵[unit]が[cityname]を攻撃しました"
+		Japanese:"敵[unit]が[cityname]を攻撃しました",
+		Czech:"Npřátelská jednotka [unit] zaútočila na město [cityname]"
 	}
-		
+
 	"An enemy [unit] has attacked our [ourUnit]":{
 		Italian:"L'unità nemica [unit] ha attaccato [ourUnit]"
 		Russian:"Наш [ourUnit] был атакован вражеским [unit]"
@@ -226,16 +243,18 @@
 		Spanish:"Un [unit] enemigo ha atacado nuestro [ourUnit]"
 		Simplified_Chinese:"敌方的[unit]攻击了我们的[ourUnit]"
 		Portuguese:"Um(a) [unit] inimigo(a) atacout nossa [ourUnit]"
-		Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
+		Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました",
+		Czech:"Nepřátelská jednotka [unit] zaútočila na naši jednotku [ourUnit]"
 	}
 
 	"Enemy city [cityName] has attacked our [ourUnit]":{
 		Italian:"La città nemica di [cityName] ha attaccato [ourUnit]"
 		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
 		Russian:"Наш [ourUnit] был атакован вражеским городом [cityName]"
-		Simplified_Chinese:"敌方城市[cityName]攻击了我们的[ourUnit]"
+		Simplified_Chinese:"敌方城市[cityName]攻击了我们的[ourUnit]",
+		Czech:"Nepřátelské město [cityname] zaútočilo na naši jednotku [ourUnit]"
 	}
-		
+
 	"An enemy [unit] has captured [cityname]":{
 		Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
 		Russian:"Наш город [cityname] был захвачен вражеским [unit]"
@@ -246,9 +265,10 @@
 		Spanish:"Un [unit] enemigo ha capturado [cityname]"
 		Simplified_Chinese:"敌方的[unit]占领了[cityname]"
 		Portuguese:"Um(a) [unit] inimigo(a) capturou [cityname]"
-		Japanese:"敵[unit]が[cityname]を占領しました"
+		Japanese:"敵[unit]が[cityname]を占領しました",
+		Czech:"Nepřátelská jednotka [unit] dobyla město [cityname]"
 	}
-		
+
 	"An enemy [unit] has captured our [ourUnit]":{
 		Italian:"Un'unità nemica [unit] ha catturato [ourUnit]"
 		Russian:"Наш [ourUnit] был захвачен вражеским [unit]"
@@ -259,7 +279,8 @@
 		Spanish:"Un [unit] enemigo ha capturado nuestro [ourUnit]"
 		Simplified_Chinese:"敌方的[unit]俘虏了我们的[ourUnit]"
 		Portuguese:"Um(a) [unit] inimigo(a) capturou nosso(a) [ourUnit]"
-		Japanese:"敵[unit]が私たちの[ourUnit]を捕獲しました"
+		Japanese:"敵[unit]が私たちの[ourUnit]を捕獲しました",
+		Czech:"Nepřátelské jednotka [unit] zajala naši jednotku [ourUnit]"
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
@@ -272,16 +293,18 @@
 		Spanish:"Un [unit] enemigo ha destruido nuestro [ourUnit]"
 		Simplified_Chinese:"敌方的[unit]杀死了我们的[ourUnit]"
 		Portuguese:"Um(a) [unit] inimigo(a) destruiu nosso(a) [ourUnit]"
-		Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
+		Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました",
+		Czech:"Nepřátelská jednotka [unit] zničila naši jednotku [ourUnit]"
 	}
-		
+
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
 		Italian:"La città nemica di [cityName] ha distrutto [ourUnit]"
 		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
 		Russian:"Наш [ourUnit] был уничтожен вражеским городом [cityName]"
-		Simplified_Chinese:"敌方城市[cityName]杀死了我们的[ourUnit]"
+		Simplified_Chinese:"敌方城市[cityName]杀死了我们的[ourUnit]",
+		Czech:"Nepřátelské město [cityname] zničilo naši jednotku [ourUnit]"
 	}
-		
+
 	"An enemy [unit] was destroyed while attacking [cityname]":{
 		Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
 		Russian:"Вражеский [unit] был уничтожен при атаке [cityname]"
@@ -292,9 +315,10 @@
 		Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba [cityname]"
 		Simplified_Chinese:"敌方的[unit]在攻击[cityname]时被消灭"
 		Portuguese:"Um(a) [unit] inimigo(a) foi destruido enquanto atacava [cityname]"
-		Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された"
+		Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された",
+		Czech:"Nepřátelská jednotka [unit] byla zničena při útoku na město [cityname]"
 	}
-		
+
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
 		Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava la nostra unità [ourUnit]"
 		Russian:"Вражеский [unit] был уничтожен, атакуя нашего [ourUnit]"
@@ -305,37 +329,42 @@
 		Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba nuestro [ourUnit]"
 		Simplified_Chinese:"敌方的[unit]在攻击我方[ourUnit]时被消灭"
 		Portuguese:"Um(a) [unit] inimigo(a) foi destruido(a) enquanto atacando nosso(a) [ourUit]"
-		Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された"
+		Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された",
+		Czech:"Nepřátelská jednotka [unit] byla zničena, když napadla naši jednotku [ourUnit]"
 	}
-		
+
 	"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
 		Italian:"La nostra unità [attackerName] è stata distrutta dall'intercettante [interceptorName]"
 		French:"Notre [attackerName] a été intercepté et détruit par un(e) [interceptorName] ennemie"
 		Russian:"Наш [attackerName], был перехвачен и уничтожен вражеским [interceptorName]"
-		Simplified_Chinese:"我们的[attackerName]被敌方的[interceptorName]拦截并摧毁"
+		Simplified_Chinese:"我们的[attackerName]被敌方的[interceptorName]拦截并摧毁",
+		Czech:"Naše jednotka [attackerName] byla zničena po zachycení jednotkou [interceptorName]"
 	}
 
 	"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
 		Italian:"La nostra unità [interceptorName] ha intercettato e distrutto l'unità nemica [attackerName]"
 		French:"Notre [interceptorName] a intercepté et détruit un(e) [attackerName] ennemie"
 		Russian:"Наш [interceptorName] перехватил и уничтожил вражеский [attackerName]"
-		Simplified_Chinese:"我们的[interceptorName]拦截并摧毁了敌方的[attackerName]"
+		Simplified_Chinese:"我们的[interceptorName]拦截并摧毁了敌方的[attackerName]",
+		Czech:"Naše jednotka [interceptorName] zachytila a zničila nepřátelskou jednotku [attackerName]"
 	}
-		
+
 	"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
 		Italian:"La nostra unità [$attackerName] è stata attaccata dall'intercettante [$interceptorName]"
 		French:"Notre [$attackerName] a été intercepté par un(e) [$interceptorName] ennemie"
 		Russian:"Наш [$attackerName], был перехвачен и атакован вражеским [$interceptorName]"
-		Simplified_Chinese:"我们的[$attackerName]被敌方的[$interceptorName]拦截并攻击"
+		Simplified_Chinese:"我们的[$attackerName]被敌方的[$interceptorName]拦截并攻击",
+		Czech:"Naše jednotka [$attackerName] byla zachycena a ocitla se pod útokem jednotky [$interceptorName]"
 	}
-		
+
 	"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
 		Italian:"La nostra unità [$interceptorName] ha intercettato e attaccato l'unità nemica [$attackerName]"
 		French:"Notre [$interceptorName] a intercepté un(e) [$attackerName] ennemie"
 		Russian:"Наш [$interceptorName] перехватил и атаковал вражеский [$attackerName]"
-		Simplified_Chinese:"我们的[$interceptorName]拦截并攻击了敌方的[$attackerName]"
+		Simplified_Chinese:"我们的[$interceptorName]拦截并攻击了敌方的[$attackerName]",
+		Czech:"Naše jednotka [$interceptorName] zachytila a zaútočila na nepřátelskou jednotku [$attackerName]"
 	}
-		
+
 	"An enemy [unit] was spotted near our territory":{
 		Italian:"Abbiamo avvistato un'unità nemica [unit] vicino al nostro territorio"
 		Russian:"Вражеский [unit] был замечен у нашей территории"
@@ -346,9 +375,10 @@
 		Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
 		Simplified_Chinese:"在我们的领土附近发现了1个敌方的[unit]"
 		Portuguese:"Um(a) [unit] foi visto perto de nosso território"
-		Japanese:"私たちの領土の近くに敵[unit]が発見されました"
+		Japanese:"私たちの領土の近くに敵[unit]が発見されました",
+		Czech:"Nepřátelská jednotka [unit] byla spatřena poblíž našeho území"
 	}
-		
+
 	"An enemy [unit] was spotted in our territory":{
 		Italian:"Abbiamo avvistato un'unità nemica [unit] nel nostro territorio"
 		Russian:"Вражеский [unit] был замечен на нашей территории"
@@ -359,7 +389,8 @@
 		Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
 		Simplified_Chinese:"在我们的领土内发现了1个敌方的[unit]"
 		Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
-		Japanese:"私たちの領土に敵[unit]が発見されました"
+		Japanese:"私たちの領土に敵[unit]が発見されました",
+		Czech:"Nepřátelská jednotka [unit] byla spatřena na našem území"
 	}
 
 	"[amount] enemy units were spotted near our territory": {
@@ -367,7 +398,8 @@
 		German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
 		Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
 		French:"[amount] unités ennemies ont été repérées proche de notre territoire"
-		Russian:"[amount] вражеских юнитов было замечено у нашей территории"
+		Russian:"[amount] вражеских юнитов было замечено у нашей территории",
+		Czech:"[amount] napřátelských jednotek bylo spatřeno poblíž našeho území"
 	}
 
 	"[amount] enemy units were spotted in our territory": {
@@ -375,7 +407,8 @@
 		German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
 		Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
 		French:"[amount] unités ennemies ont été repérées sur notre territoire"
-		Russian:"[amount] вражеских юнитов было замечено на нашей территории"
+		Russian:"[amount] вражеских юнитов было замечено на нашей территории",
+		Czech:"[amount] nepřátelských jednotek bylo spatřeno na našem území"
 	}
 
 	"The civilization of [civName] has been destroyed!":{
@@ -388,30 +421,34 @@
 		Spanish:"¡La civilización de [civName] ha sido destruida!"
 		Simplified_Chinese:"文明--[civName]已经灭亡！"
 		Portuguese:"A civilização de [civName] foi destruida!"
-		Japanese:"[civName]の文明は破壊されました！"
+		Japanese:"[civName]の文明は破壊されました！",
+		Czech:"Civilizace [civName] byla zničena!"
 	}
 
 	"The City-State of [name] has been destroyed!":{
 		Italian:"La Città-Stato di [name] è stata distrutta!"
 		French:"La Cité état [name] a été détruite"
 		Russian:"Город-государство [name] был уничтожен!"
-		Simplified_Chinese:"城邦--[name]已经灭亡！"
+		Simplified_Chinese:"城邦--[name]已经灭亡！",
+		Czech:"Městský stát [name] byl zničen!"
 	}
-		
+
 	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
 		Italian:"Abbiamo distrutto un accampamento barbaro e recuperato [goldAmount] Oro!"
 		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
 		Russian:"Мы разгромили лагерь варваров и нашли [goldAmount] золота!"
-		Simplified_Chinese:"我们摧毁蛮族营地获得了[goldAmount]金钱！"
+		Simplified_Chinese:"我们摧毁蛮族营地获得了[goldAmount]金钱！",
+		Czech:"Zneškodnili jsme barbarský tábor a získali [goldAmount] zlata"
 	}
-		
+
 	"A barbarian [unitType] has joined us!":{
 		Italian:"L'unità barbarica [unitType] si è unita a noi!"
 		French:"Un [unitType] barbare nous a rejoins!"
 		Russian:"Варварский [unitType] присоединился к нам!"
-		Simplified_Chinese:"蛮族的[unitType]加入了我们！"
+		Simplified_Chinese:"蛮族的[unitType]加入了我们！",
+		Czech:"Barbarská jednotka [unitType] se připojila k nám!"
 	}
-		
+
 	/////////////////	ruins
 
 	"We have found survivors in the ruins - population added to [cityName]":{
@@ -424,7 +461,8 @@
 		Russian:"Мы нашли выживших в руинах - население добавлено в [cityName]"
 		Dutch:"We hebben overlevenden gevonden in de ruïnes - populatie toegevoegd aan [cityName]"
 		Simplified_Chinese:"我们在废墟中找到了幸存者 - [cityName]的人口增加了"
-		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]"
+		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]",
+		Czech:"V troskách jsme našli přeživší - populace se připojila k městu [cityName]"
 	}
 	"We have discovered the lost technology of [techName] in the ruins!":{
 		Italian:"Abbiamo scoperto i segreti della tecnologia perduta [techName]!"
@@ -436,9 +474,10 @@
 		Dutch:"We hebben de verloren technologie van [techName] in de ruïnes ontdekt!"
 		Spanish:"¡Hemos descubierto la tecnología perdida de [techName] en las ruinas!"
 		Simplified_Chinese:"我们在废墟中发现了失传已久的技术：[techName]！"
-		Portuguese:"Nós descobrimos a tecnologia perdida de [techName] nas ruínas!"
+		Portuguese:"Nós descobrimos a tecnologia perdida de [techName] nas ruínas!",
+		Czech:"V troskách jsme objevili ztracenou technologii [techName]"
 	}
-		
+
 	"A [unitName] has joined us!":{
 		Italian:"L'unità [unitName] si è unita a noi!"
 		Romanian:"Un [unitName] ni s-a alăturat!"
@@ -450,8 +489,9 @@
 		Spanish:"¡Un [unitName] se ha unido a nosotros!" //Gender sensitive
 		Simplified_Chinese:"[unitName]加入了我们！"
 		Portuguese:"Um [unitName] se juntou a nós!" //Gender sensitive
+		Czech:"Jednotka [unitName] se přidala na naši stranu!"
 	}
-		
+
 	"An ancient tribe trains our [unitName] in their ways of combat!":{
 		Italian:"Un'antica tribù ha addestrato la nostra unità [unitName] nelle loro arti della guerra!"
 		Romanian:"Un trib străvechi ne invață un [unitName] metodele lor de luptă!"
@@ -462,9 +502,10 @@
 		Dutch:"Een oude stam traint onze [unitName] in hun manier van vechten!"
 		Spanish:"¡Una antigua tribu entrena a nuestros [unitName] en sus formas de combate!"
 		Simplified_Chinese:"一个古老的部落以他们的战斗方式训练了我们的[unitName]！"
-		Portuguese:"Uma antiga tribo treina nosso [unitName] em suas formas de combate!"
+		Portuguese:"Uma antiga tribo treina nosso [unitName] em suas formas de combate!",
+		Czech:"Starodávný kmen cvičí naši jednotku [unitName] v jejich bojových uměních!"
 	}
-		
+
 	"We have found a stash of [amount] gold in the ruins!":{
 		Italian:"Abbiamo trovato un tesoro di [amount] pezzi d'oro nelle rovine!"
 		Romanian:"Am descoperit un depozit de [amount] aur printre ruine!"
@@ -475,7 +516,8 @@
 		Dutch:"We hebben een voorraad [amount] Goud gevonden in de ruïnes!"
 		Spanish:"¡Hemos encontrado un alijo de [amount] de oro en las ruinas!"
 		Simplified_Chinese:"我们在废墟中找到了[amount]金钱！"
-		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
+		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!",
+		Czech:"Skrýš, která obsahovala [amount] zlata byla objevena v ruinách!"
 	}
 
 	"[unit] finished exploring.": {
@@ -483,7 +525,8 @@
 		German: "[unit] hat die Erkundung abgeschlossen."
 		French:"[unit] a fini d'explorer"
 		Russian:"[unit] завершил исследование местности."
-		Simplified_Chinese:"[unit]已完成了探索。"
+		Simplified_Chinese:"[unit]已完成了探索。",
+		Czech:"Jednotka [unit] dokončila průzkum."
 	},
 
 	"[unit] has no work to do.": {
@@ -491,101 +534,116 @@
 		German:"[unit] hat keine Arbeit mehr."
 		French:"[unit] n'a rien à faire"
 		Russian:"[unit] завершил все доступные работы."
-		Simplified_Chinese:"[unit]处于空闲。"
+		Simplified_Chinese:"[unit]处于空闲。",
+		Czech:"Jednotka [unit] nemá nic dalšího na práci."
 	}
 
 	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
 		Italian:"Stai perdendo il controllo di [name]."
 		French:"Vous perdez le contrôle de [name]"
 		Russian:"Вы теряете влияние на [name]."
-		Simplified_Chinese:"你已经失去了和[name]的脆弱友谊。"
+		Simplified_Chinese:"你已经失去了和[name]的脆弱友谊。",
+		Czech:"Ztratili jsme přátelství s městským státem [name]."
 	}
 
 	"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
 		Italian:"Non sei più amico di [name]!"
 		French:"Vous et [name] n'êtes plus amis!"
 		Russian:"Вы и [name] больше не друзья!"
-		Simplified_Chinese:"你和[name]不再是朋友了！"
+		Simplified_Chinese:"你和[name]不再是朋友了！",
+		Czech:"Naše říše a městský stát [name] už nejsme nadále přátelé!"
 	}
 
 	"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
 		Italian:"L'alleanza con [name] si sta sfaldando."
 		French:"Votre alliance avec [name] est vacillante."
 		Russian:"Ваш союз с [name] заканчивается."
-		Simplified_Chinese:"你和[name]的盟友关系正日薄西山。"
+		Simplified_Chinese:"你和[name]的盟友关系正日薄西山。",
+		Czech:"Naše aliance s městským státem [name] slábne."
 	}
 
 	"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
 		Italian:"Non sei più alleato con [name]!"
 		French:"Vous et [name] n'êtes plus alliés!"
 		Russian:"Вы и [name] больше не союзники!"
-		Simplified_Chinese:"你和[name]不再是盟友了！"
+		Simplified_Chinese:"你和[name]不再是盟友了！",
+		Czech:"Naše říše a městský stát [name] už není v alianci!"
 	},
 
 	"[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
 		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
 		Russian:"[civName] передал нам в дар [untiName] около города [cityName]!"
-		Simplified_Chinese:"[civName]将[untiName](出现在[cityName]附近)赠予我们！"
+		Simplified_Chinese:"[civName]将[untiName](出现在[cityName]附近)赠予我们！",
+		Czech:"Civilizace [civName] nám darovala jednotku [untiName] poblíž města [untiName]"
 	}
-	
+
 	"[civName] has denounced us!":{
 		Italian:"[civName] ci ha denunciati pubblicamente!"
 		Russian:"[civName] публично осудил нас!"
-		Simplified_Chinese:"真是不知死活！[civName]竟然敢谴责我们！"
+		Simplified_Chinese:"真是不知死活！[civName]竟然敢谴责我们！",
+		Czech:"Civilizace [civName] nás odsoudila!"
 	}
-	
+
 	"[cityName] has been connected to your capital!":{
-		Italian:"Itinerario costruito tra la Capitale e [cityName]!"
+		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
+		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
 	}
-	
+
 	// Trade
 	"[civName] has accepted your trade request":{
 		Italian:"[civName] ha accettato la nostra offerta commerciale."
 		Russian:"[civName] принимает ваше торговое предложение"
-		Simplified_Chinese:"[civName]接受了你的贸易请求"
+		Simplified_Chinese:"[civName]接受了你的贸易请求",
+		Czech:"Civilizace [cityName] přijala naši obchodní nabídku"
 	}
-	
+
 	"[civName] has denied your trade request":{
 		Italian:"[civName] ha rifiutato la nostra offerta commerciale."
 		Russian:"[civName] отклонил ваше торговое предложение"
-		Simplified_Chinese:"[civName]否决了你的贸易请求"
+		Simplified_Chinese:"[civName]否决了你的贸易请求",
+		Czech:"Civilizace [cityName] zamítla naši obchodní nabídku"
 	}
-	
-	
+
+
 	"[tradeOffer] from [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato",
 		Simplified_Chinese:"与[otherCivName]的[tradeOffer]协议已经结束",
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
-		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось"
+		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось",
+		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 	}
-	
-	
+
+
 	"One of our trades with [nation] has ended": {
 		Italian:"Un nostro accordo con [nation] è terminato."
 		French:"Un de nos échanges avec [nation] a pris fin"
 		Russian:"Торговая сделка с [nation] завершилась"
-		Simplified_Chinese:"我们与[nation]的贸易已经结束"
+		Simplified_Chinese:"我们与[nation]的贸易已经结束",
+		Czech:"Jedna z našich obchodních spoluprací s národem [nation] je u konce"
 	},
 
  	"One of our trades with [nation] has been cut short": {
 		Italian:"Un nostro accordo con [nation] è stato interrotto."
 		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
 		Russian:"Торговая сделка с [nation] была завершена досрочно"
-		Simplified_Chinese:"我们与[nation]的贸易已被消减"
+		Simplified_Chinese:"我们与[nation]的贸易已被消减",
+		Czech:"Jedna z našich obchodních spoluprací s národem [nation] se blíží ke konci"
 	},
 
  	"[nation] agreed to stop settling cities near us!": {
 		Italian:"[nation] ha promesso di smettere di fondare città vicino a noi!"
 		Simplified_Chinese:"[nation]同意停止在我们附近建城！"
-		Russian:"[nation] согласилась прекратить заселять города рядом с нами!"
+		Russian:"[nation] согласилась прекратить заселять города рядом с нами!",
+		Czech:"Národ [nation] souhlasí, že nebude budovat své města poblíž našich hranic!"
 	},
 
  	"[nation] refused to stop settling cities near us!": {
 		Italian:"[nation] ha rifiutato di smettere di fondare città vicino a noi!"
 		Simplified_Chinese:"[nation]拒绝停止在我们附近建城！"
-		Russian:"[nation] отказалась прекратить заселять города рядом с нами!"
+		Russian:"[nation] отказалась прекратить заселять города рядом с нами!",
+		Czech:"Národ [nation] vypověděl dohodu o nebudování měst poblíž našich hranic!"
 	},
-	
+
 }
