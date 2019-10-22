@@ -233,10 +233,15 @@ class GameInfo {
                 }
         }
 
-//        for(tile in tileMap.values)
-//            for(unit in tile.getUnits()){
-//                if(unit.name=="Immortal") unit.name="Persian Immortal"
-//            }
+        // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
+        for(tile in tileMap.values)
+            for(unit in tile.getUnits()){
+                if(unit.name=="Immortal") unit.name="Persian Immortal"
+                if(unit.promotions.promotions.contains("Range")){
+                    unit.promotions.promotions.remove("Range")
+                    unit.promotions.promotions.add("Extended Range")
+                }
+            }
 
 
         for (civInfo in civilizations) civInfo.setNationTransient()
