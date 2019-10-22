@@ -662,7 +662,7 @@ BuildingIcons/Workshop
   orig: 100, 100
   offset: 0, 0
   index: -1
-FlagIcons/Czeck
+FlagIcons/Czech
   rotate: false
   xy: 2272, 1826
   size: 128, 128
