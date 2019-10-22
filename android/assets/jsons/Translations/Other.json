@@ -186,6 +186,7 @@
 }
 
 	"Range":{
+		Italian:"Raggio"
 		Simplified_Chinese:"攻击范围"
 	}
 
@@ -1032,6 +1033,7 @@
 }
 
 	"Food converts to production":{
+		Italian:"Converte il Cibo in Produzione"
 		Czech:"Jídlo směnit za produkci"
 }
 
