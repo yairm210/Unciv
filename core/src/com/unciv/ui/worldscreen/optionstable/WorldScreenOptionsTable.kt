@@ -46,14 +46,18 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         val innerTable = PopupTable(screen) // cheating, to get the old code to fit inside a Scroll =)
         innerTable.background = null
-        innerTable.add("Worked tiles".toLabel())
-        if (settings.showWorkedTiles) innerTable.addButton("Hide") { settings.showWorkedTiles = false; update() }
-        else innerTable.addButton("Show") { settings.showWorkedTiles = true; update() }
 
-        innerTable.add("Resources and improvements".toLabel())
-        if (settings.showResourcesAndImprovements)
-            innerTable.addButton("Hide") { settings.showResourcesAndImprovements = false; update() }
-        else innerTable.addButton("Show") { settings.showResourcesAndImprovements = true; update() }
+        innerTable.add("Show worked tiles".toLabel())
+        innerTable.addButton(if (settings.showWorkedTiles) "Yes".tr() else "No".tr()) {
+            settings.showWorkedTiles= !settings.showWorkedTiles
+            update()
+        }
+
+        innerTable.add("Show resources and improvements".toLabel())
+        innerTable.addButton(if (settings.showResourcesAndImprovements) "Yes".tr() else "No".tr()) {
+            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
+            update()
+        }
 
         innerTable.add("Check for idle units".toLabel())
         innerTable.addButton(if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
