@@ -25,6 +25,7 @@
 		movement:2,
 		strength:5,
 		cost:25,
+		obsoleteTech:"Scientific Theory",
 		uniques:["Ignores terrain cost"],
 		attackSound:"nonmetalhit"
 	},
