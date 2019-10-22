@@ -522,54 +522,6 @@
 		Czech:"Doba počátku hry"
 }
 
-	"Ancient":{
-		Italian:"Antica"
-                Korean:"고대"
-		Czech:"Starověk"
-}
-
-	"Classic":{
-		Italian:"Classica"
-                Korean:"고전"
-		Czech:"Klasický starověk"
-}
-
-	"Medieval":{
-		Italian:"Medievale"
-                Korean:"중세"
-		Czech:"Středověk"
-}
-
-	"Renaissance":{
-		Italian:"Rinascimentale"
-                Korean:"르네상스"
-		Czech:"Renesance"
-}
-
-	"Industrial":{
-		Italian:"Industriale"
-                Korean:"산업"
-		Czech:"Industrialní doba"
-}
-
-	"Modern":{
-		Italian:"Moderna"
-                Korean:"현대"
-		Czech:"Moderní doba"
-}
-
-	"Information":{
-		Italian:"Informatica"
-                Korean:"정보"
-		Czech:"Doba informačních technologií"
-}
-
-	"Future":{
-		Italian:"Futura"
-                Korean:"미래"
-		Czech:"Budoucnost"
-}
-
 ////
 
 	"It looks like we can't make a map with the parameters you requested!":{
