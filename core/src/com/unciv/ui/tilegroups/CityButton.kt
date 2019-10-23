@@ -53,7 +53,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
         airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel()
-                .setFontColor(secondarycolor).setFontSize(15))
+                .setFontColor(secondarycolor).setFontSize(14))
         add(airUnitTable).row()
     }
 

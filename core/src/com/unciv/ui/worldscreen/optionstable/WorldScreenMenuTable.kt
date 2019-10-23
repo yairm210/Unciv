@@ -98,11 +98,11 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
         multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
 
-        multiplayerPopup.addButton("Copy User Id"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
+        multiplayerPopup.addButton("Copy User ID"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
 
         multiplayerPopup.addGoodSizedLabel("Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.").row()
 
-        val copyGameIdButton = multiplayerPopup.addButton("Copy game ID".tr()) {
+        val copyGameIdButton = multiplayerPopup.addButton("Copy Game ID".tr()) {
             Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }.apply { row() }
         if(!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             copyGameIdButton.actor.disable()

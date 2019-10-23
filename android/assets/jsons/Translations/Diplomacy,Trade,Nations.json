@@ -1253,7 +1253,7 @@
 		Italian:"Le unità combattono come se fossero perfettamente sane, anche quando gravemente ferite"
 		Romanian:"Unitățile se luptă ca și cum ar fi la putere deplină chiar și atunci când sunt deteriorate"
 		Spanish:"Las unidades luchan como si estuvieran con toda su fuerza incluso cuando están dañadas"
-		Simplified_Chinese:"受伤单位战斗力不减"
+		Simplified_Chinese:"受伤单位造成的伤害不减"
 		German:"Einheiten kämpfen so, als wären sie selbst bei Beschädigung in voller Stärke"
 		French:"Les unités combattent comme si elles étaient à pleine force même lorsqu'elles sont endommagées"
 		Portuguese:"Unidades lutam como se estivessem em força total mesmo quando danificadas"
@@ -1397,7 +1397,7 @@
 
 	"Darius I":{
 		Italian:"Dario I"
-		Simplified_Chinese:"大流士一世",
+		Simplified_Chinese:"大流士一世"
 		Czech:"Dareios I."
 }
 
@@ -1414,18 +1414,21 @@
 		French:"Polynésie"
 		Portuguese:"Polinésia"
 		Czech:"Polynésie"
+		Simplified_Chinese:"波利尼西亚"
 }
 
 	"Kamehameha I":{
-		Italian:"Kamehameha I",
+		Italian:"Kamehameha I"
 		Czech:"Kamehameha I."
+		Simplified_Chinese:"卡美哈梅哈一世"
 }
 
-	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strenght bonus if within 2 tiles of a Moai.":{
+	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.":{
 		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate, e +10% Forza entro 2 caselle con un Moai."
 		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
 		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
 		Czech:"Může se okamžitě přesunovat mezi pevninou a mořem. +1 při nalodění. +10% bonus k bojové síle, pokud je v okolí 2 polí Moai."
+		Simplified_Chinese:"单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力"
 }
 
 	/*

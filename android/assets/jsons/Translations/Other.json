@@ -1035,6 +1035,7 @@
 	"Food converts to production":{
 		Italian:"Converte il Cibo in Produzione"
 		Czech:"Jídlo směnit za produkci"
+		Simplified_Chinese:"食物转化为产能"
 }
 
 	"[turnsToStarvation] turns to lose population":{
@@ -2005,16 +2006,18 @@
 		Simplified_Chinese:"吞并"
 		Russian:"Аннексировать"
 		Czech:"Anektovat"
-},
+}
 
 	"Annexed cities become part of your regular empire.":{
 		Italian:"Le città annesse faranno parte regolare del tuo impero."
 		Czech:"Anektované města se stanou regulérní součástí naší říše."
+		Simplified_Chinese:"“吞并城市”意味着该城市将成为您的帝国直辖的一部分。"
 }
 
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
 		Italian:"I loro cittadini genereranno il doppio dell'Infelicità, fino a quando non costruirai un Palazzo di giustizia."
 		Czech:"Jejich obyvatelé produkují 2x tolik nespokojenosti dokud napostavíte Soud."
+		Simplified_Chinese:"该城市人口产生的不满将是正常值的2倍，建造“法庭”可以使该值降低到正常值。"
 }
 
 	"Puppet":{
@@ -2026,21 +2029,25 @@
 	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
 		Italian:"Le città fantoccio non incrementano i costi di Scienza e Cultura, ma i loro cittadini generano Infelicità pari a una volta e mezzo."
 		Czech:"Města s loutkovou vládou nezvyšují náklady na výzkum a kulturu, ale jejich obyvatelé generují 1,5x tolik nespokojenosti."
+		Simplified_Chinese:"“傀儡城市”不会额外增加您研发科技和推行社会政策时的花费，但其人口产生的不满是正常值的1.5倍。"
 }
 
 	"You have no control over the the production of puppeted cities.":{
 		Italian:"Non hai alcun controllo sulla produzione delle città fantoccio."
 		Czech:"Nemáme kontrolu nad produkcí ve městech s loutkovou vládou."
+		Simplified_Chinese:"您无法控制已傀儡城市的产能。"
 }
 
 	"Puppeted cities also generate 25% less Gold and Science.":{
 		Italian:"Gli stati fantoccio generano anche il 25% di Oro e Scienza in meno."
 		Czech:"Města s loutkovou vládou také generují o 25% méně Zlata a Výzkumu."
+		Simplified_Chinese:"已傀儡城市的金钱和科研产出-25%。"
 }
 
 	"A puppeted city can be annexed at any time.":{
 		Italian:"Puoi annettere una città fantoccio ogni volta che vuoi"
 		Czech:"Město s loutkovou vládou lze kdykoliv anektovat."
+		Simplified_Chinese:"可以在任何时候选择吞并已傀儡城市。"
 }
 
 	"Liberate":{
@@ -2052,6 +2059,7 @@
 	"Liberating a city returns it to its original owner, giving you a massive relationship boost with them!":{
 		Italian:"Liberare una città la restituirà al suo possessore originale, dandoti un'enorme bonus diplomatico nei loro confronti!"
 		Czech:"Osvobozené město se vrátí zpět k původnímu majiteli, což nám přinese masivní zlepšení vzájemných vztahů."
+		Simplified_Chinese:"“解放城市”会将该城市归还给初始拥有者，这样做会极大增进两者的关系！"
 }
 
 	"Raze":{
@@ -2065,11 +2073,13 @@
 	"Razing the city annexes it, and starts razing the city to the ground.":{
 		Italian:"Questa opzione ti permetterà di annettere la città e poi di raderla al suolo."
 		Czech:"Vyhlazování města zároveň způsobí jeho anektování a započne srovnávání města ze zemí."
+		Simplified_Chinese:"“摧毁城市”意味着吞并该城市，同时开始将该城市夷为平地。"
 }
 
 	"The population will gradually dwindle until the city is destroyed.":{
 		Italian:"La popolazione diminuirà gradualmente fino alla distruzione della città."
 		Czech:"Populace se bude postupně snižovat, až do úplného zmizení z mapy.."
+		Simplified_Chinese:"城市人口将会持续地减少直至该城市被完全摧毁。"
 }
 
 
@@ -2168,7 +2178,7 @@
 		French:"Peut contenir [listOfResources]"
 		Simplified_Chinese:"可能拥有下列资源：[listOfResources]"
 		Portuguese:"Pode conter [listOfResources]"
-		Russian:"Может содержать [listOfResources]",
+		Russian:"Может содержать [listOfResources]"
 		Czech:"Může obsahovat [listOfResources]"
 }
 
@@ -2178,7 +2188,7 @@
 		French:"Améliorer en [upgradedUnit]"
 		Simplified_Chinese:"可升级为[upgradedUnit]"
 		Portuguese:"Melhorar para [upgradedUnit]"
-		Russian:"Улучшается до [upgradedUnit]",
+		Russian:"Улучшается до [upgradedUnit]"
 		Czech:"Vylepšení na [upgradedUnit]"
 }
 
@@ -2187,7 +2197,7 @@
 		French:"Obsolète avec [obsoleteTech]"
 		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
 		Portuguese:"Obsoleta(0) com [obsoleteTech]"
-		Russian:"Устаревает после [obsoleteTech]",
+		Russian:"Устаревает после [obsoleteTech]"
 		Czech:"Zastará (přestane půspbit) s [obsoleteTech]"
 }
 
@@ -2196,7 +2206,7 @@
 		French:"Doit possèder [listOfTerrains]"
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 		Portuguese:"Ocorre em [listOfTerrains]"
-		Russian:"Появляется на [listOfTerrains]",
+		Russian:"Появляется на [listOfTerrains]"
 		Czech:"Nalézá se v/na [listOfTerrains]"
 }
 
@@ -2214,7 +2224,7 @@
 		Simplified_Chinese:"开发该资源所需要的设施：[improvement]"
 		French:"Amélioré par [improvement]"
 		Portuguese:"Melhorado por [improvement]"
-		Russian:"Улучшен [improvement]",
+		Russian:"Улучшен [improvement]"
 		Czech:"Vylešen(a/o) díky [improvement]"
 }
 

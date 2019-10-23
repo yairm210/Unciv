@@ -354,9 +354,9 @@
 		Czech:"Na tomto zařízení"
 }
 
-	"User Id":{
+	"User ID":{
 		Italian:"ID Utente"
-		Simplified_Chinese:"玩家Id"
+		Simplified_Chinese:"玩家ID"
 		Russian:"ID игрока"
                 Korean:"사용자 Id"
 		Czech:"Uživatelské ID"
@@ -416,17 +416,17 @@
 		Czech:"Chybné ID hry"
 }
 
-	"Copy User Id":{
+	"Copy User ID":{
 		Italian:"Copia ID Utente"
-		Simplified_Chinese:"复制玩家Id"
+		Simplified_Chinese:"复制玩家ID"
 		Russian:"Скопировать ID игрока"
                 Korean:"사용자 Id 복사"
 		Czech:"Kopírovat uživatelské ID"
 }
 
-	"Copy Game Id":{
+	"Copy Game ID":{
 		Italian:"Copia ID Partita"
-		Simplified_Chinese:"复制游戏Id"
+		Simplified_Chinese:"复制游戏ID"
 		Russian:"Скопировать ID игры"
                 Korean:"게임 Id 복사"
 		Czech:"Kopírovat ID hry"
@@ -436,12 +436,14 @@
 		Italian:"Imposta utente attuale"
                 Korean:"현재 사용자 설정"
 		Czech:"Nastavit aktuálního uživatele"
+		Simplified_Chinese:"设置为当前玩家"
 }
 
 	"Player ID from clipboard":{
 		Italian:"Copia ID giocatore dagli appunti"
                 Korean:"클립보드의 플레이어 ID"
 		Czech:"Kopírovat ID hráče ze schránky"
+		Simplified_Chinese:"从剪贴板获取玩家ID"
 }
 
 	/// tutorials for multiplayer
@@ -449,24 +451,28 @@
 		Italian:"Per creare una partita multigiocatore, attiva la spunta su 'Multigiocatore' nella schermata Nuova Partita, e inserisci l'ID utente per del giocatore per ogni rispettivo giocatore umano"
                 Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
 		Czech:"Pro vytvoření hry pro více hráčů zaškrtněte 'Více hráčů' na obrazovce s novou hrou a pro každého lidského hráče vložte jeho hráčské ID."
+		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“Online Multiplayer”复选框，同时将每个参与游戏的玩家ID填入他们想扮演文明的“Player ID”文本框内。"
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
 		Italian:"Puoi assegnarvi facilmente il tuo ID Utente, e altri giocatori possono copiarvi il loro ID Utente e mandartelo per unirsi alla partita."
                 Korean:"당신은 당신의 사용자 ID를 쉽게 거기에 할당할 수 있고, 다른 플레이어는 당신의 사용자 ID를 여기에 복사하여 당신이 게임에 포함하도록 당신에게 보낼 수 있습니다."
 		Czech:"Svoje vlastní ID můžete přiřadit jednoduše, ostatní hráči můžou zkopírovat svoje uživatelské ID tady a poslat vám ho, aby jste je připojil ke hře."
+		Simplified_Chinese:"直接点击“设置为当前玩家”就可以自动填入你自己的玩家ID，对于其他玩家，他们可以点击当前界面“复制玩家ID”按钮将他们的ID复制到剪贴板并通过网络发送给你，你可以将他们的ID填入他们想扮演文明的“Player ID”文本框内使他们加入游戏。"
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
 		Italian:"Una volta creata la tua partita, ritorna in questa schermata per copiare l'ID Partita e mandala ad altri giocatori."
                 Korean:"게임을 만든 후 이 화면을 다시 입력하여 게임 ID를 복사하여 다른 플레이어에게 전송하십시오."
 		Czech:"Ve chvíli kdy vytvoříte hru, vraťte se zpět na tuto obrazovku, zkopírujte ID hry a pošlete ho ostatním hráčům."
+		Simplified_Chinese:"当你创建了多人游戏后，进入此界面同时点击“复制游戏ID”按钮将游戏ID复制到剪贴板并通过网络发送给其他玩家。"
 }
 
-	"Players can enter you game by copying the game ID to the clipboard, and clicking on the Join Game button":{
+	"Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button":{
 		Italian:"I giocatori possono entrare nella tua partita copiando il codice ID sugli appunti e cliccando il tasto Unisciti."
                 Korean:"플레이어는 게임 ID를 클립보드에 복사하고 게임 참여 버튼을 클릭하여 게임에 들어갈 수 있습니다."
 		Czech:"Ostatní hráči můžou vstoupit do hry zkopírováním ID hry do schránky a kliknutím na tlačítko 'Připojit se ke hře'"
+		Simplified_Chinese:"其他玩家可以将接收到的游戏ID复制到剪贴板，同时点击“加入游戏”按钮加入游戏"
 }
 
 
@@ -520,54 +526,6 @@
 		Simplified_Chinese:"开始时代"
     Korean:"시작 시대"
 		Czech:"Doba počátku hry"
-}
-
-	"Ancient":{
-		Italian:"Antica"
-                Korean:"고대"
-		Czech:"Starověk"
-}
-
-	"Classic":{
-		Italian:"Classica"
-                Korean:"고전"
-		Czech:"Klasický starověk"
-}
-
-	"Medieval":{
-		Italian:"Medievale"
-                Korean:"중세"
-		Czech:"Středověk"
-}
-
-	"Renaissance":{
-		Italian:"Rinascimentale"
-                Korean:"르네상스"
-		Czech:"Renesance"
-}
-
-	"Industrial":{
-		Italian:"Industriale"
-                Korean:"산업"
-		Czech:"Industrialní doba"
-}
-
-	"Modern":{
-		Italian:"Moderna"
-                Korean:"현대"
-		Czech:"Moderní doba"
-}
-
-	"Information":{
-		Italian:"Informatica"
-                Korean:"정보"
-		Czech:"Doba informačních technologií"
-}
-
-	"Future":{
-		Italian:"Futura"
-                Korean:"미래"
-		Czech:"Budoucnost"
 }
 
 ////
@@ -822,33 +780,11 @@
 }
 
 	"Show worked tiles":{
-		Italian:"Celle sfruttate"
-		Russian:"Обрабатываемые клетки"
-		French:"cases exploités"
-		Romanian:"celule lucrate"
-		German:"bearbeitete Felder"
-		Dutch:"Bewerkte velden"
-		Spanish:"casillas trabajadas"
-		Simplified_Chinese:"工作的地块"
-		Portuguese:"Terrenos trabalhados"
-		Japanese:"働いたタイル"
-                Korean:"작업된 타일"
-		Czech:"Obdělávané políčka"
+		Simplified_Chinese:"显示工作地块"
 }
 
-	"Resources and improvements":{
-		Italian:"Risorse e miglioramenti"
-		Russian:"Ресурсы и улучшения"
-		French:"ressources et améliorations"
-		Romanian:"resurse și îmbunătățiri"
-		German:"Ressourcen und Verbesserungen"
-		Dutch:"Grondstoffen en Verbeteringen"
-		Spanish:"recursos y mejoras"
-		Simplified_Chinese:"资源与设施"
-		Portuguese:"recursos e melhorias"
-		Japanese:"リソースと改善"
-                Korean:"자원과 시설"
-		Czech:"Zdroje a vylepšení"
+	"Show resources and improvements":{
+		Simplified_Chinese:"显示资源与地块设施"
 }
 
 	"Check for idle units":{
@@ -892,6 +828,7 @@
 		Italian:"Costruzione strade automatica"
                 Korean:"도로 자동 건설"
 		Czech:"Automatická vystavba cest"
+		Simplified_Chinese:"自动建造道(铁)路"
 }
 
 	"Show minimap":{
@@ -900,6 +837,10 @@
 		Russian:"Показать миникарту"
                 Korean:"미니맵 보이기"
 		Czech:"Zobrazit minimapu"
+}
+
+	"Show pixel units":{
+		Simplified_Chinese:"显示像素单位"
 }
 
 	"Fontset":{
