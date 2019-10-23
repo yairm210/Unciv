@@ -100,7 +100,7 @@ class Battle(val gameInfo:GameInfo) {
     private fun postBattleNotifications(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (attacker.getCivInfo() != defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
-                    if (attacker !is CityCombatant && attacker.isDefeated()) " {was destroyed while attacking}"
+                    if (attacker !is CityCombatant && attacker.isDefeated()) " was destroyed while attacking"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val attackerString =
                     if (attacker.getUnitType() == UnitType.City) "Enemy city [" + attacker.getName() + "]"
