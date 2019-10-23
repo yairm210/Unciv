@@ -132,8 +132,21 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val baseTerrainTileLocation = tileSetStrings.getBaseTerrainTile(tileInfo.baseTerrain)
         if (tileInfo.terrainFeature != null) {
             val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
+            if(tileInfo.improvement!=null && UnCivGame.Current.settings.showPixelImprovements){
+                val basefeatureAndImprovementTileLocation = "$baseTerrainAndFeatureTileLocation+${tileInfo.improvement}"
+                if (ImageGetter.imageExists(basefeatureAndImprovementTileLocation))
+                    return basefeatureAndImprovementTileLocation
+            }
+
             if (ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
                 return baseTerrainAndFeatureTileLocation
+        }
+
+        if(tileInfo.improvement != null && UnCivGame.Current.settings.showPixelImprovements){
+            val baseTerrainAndImprovement  = "$baseTerrainTileLocation+${tileInfo.improvement}"
+
+            if (ImageGetter.imageExists(baseTerrainAndImprovement))
+                return baseTerrainAndImprovement
         }
 
         if (ImageGetter.imageExists(baseTerrainTileLocation)) return baseTerrainTileLocation
