@@ -436,12 +436,14 @@
 		Italian:"Imposta utente attuale"
                 Korean:"현재 사용자 설정"
 		Czech:"Nastavit aktuálního uživatele"
+		Simplified_Chinese:"设置当前玩家"
 }
 
 	"Player ID from clipboard":{
 		Italian:"Copia ID giocatore dagli appunti"
                 Korean:"클립보드의 플레이어 ID"
 		Czech:"Kopírovat ID hráče ze schránky"
+		Simplified_Chinese:"从剪贴板获取玩家ID"
 }
 
 	/// tutorials for multiplayer
@@ -774,33 +776,11 @@
 }
 
 	"Show worked tiles":{
-		Italian:"Celle sfruttate"
-		Russian:"Обрабатываемые клетки"
-		French:"cases exploités"
-		Romanian:"celule lucrate"
-		German:"bearbeitete Felder"
-		Dutch:"Bewerkte velden"
-		Spanish:"casillas trabajadas"
-		Simplified_Chinese:"工作的地块"
-		Portuguese:"Terrenos trabalhados"
-		Japanese:"働いたタイル"
-                Korean:"작업된 타일"
-		Czech:"Obdělávané políčka"
+		Simplified_Chinese:"显示工作地块"
 }
 
-	"Resources and improvements":{
-		Italian:"Risorse e miglioramenti"
-		Russian:"Ресурсы и улучшения"
-		French:"ressources et améliorations"
-		Romanian:"resurse și îmbunătățiri"
-		German:"Ressourcen und Verbesserungen"
-		Dutch:"Grondstoffen en Verbeteringen"
-		Spanish:"recursos y mejoras"
-		Simplified_Chinese:"资源与设施"
-		Portuguese:"recursos e melhorias"
-		Japanese:"リソースと改善"
-                Korean:"자원과 시설"
-		Czech:"Zdroje a vylepšení"
+	"Show resources and improvements":{
+		Simplified_Chinese:"显示资源与地块设施"
 }
 
 	"Check for idle units":{
@@ -853,6 +833,10 @@
 		Russian:"Показать миникарту"
                 Korean:"미니맵 보이기"
 		Czech:"Zobrazit minimapu"
+}
+
+	"Show pixel units":{
+		Simplified_Chinese:"显示像素单位"
 }
 
 	"Fontset":{
