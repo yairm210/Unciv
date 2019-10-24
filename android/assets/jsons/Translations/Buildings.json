@@ -90,27 +90,32 @@
 		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
 		Simplified_Chinese:"“时间能粉碎一切；所有事物终将在时流中衰老并被遗忘。”——亚里士多德",
 		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
-}
+		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
+}               
 
 	/*
 
 	"Temple of Artemis":{
 		Italian:"Tempio di Artemide"
 		Czech:"Chrám Artemis"
+		Polish:"Świątynia Artemidy"
 	}
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
 		Italian:"'Non è tanto con la sua bellezza che la foresta tocca il cuore degli uomini, ma con un'indefinibile sottigliezza, una certa qualità dell'aria, con l'emanazione degli antichi alberi, che così meravigliosamente muta e rinnova uno spirito fiaccato.' - Robert Louis Stevenson"
+		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
 	}
 
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
 		Czech:"10% Růst populace ve všech městech"
+		Polish:"10% Wzrostu populacji we wszystkich miastach"
 	}
 
 	"+15% Production towards Ranged Units":{
 		Italian:"+15% Produzione per le unità a distanza"
 		Czech:"15% Produkce jednotek pro boj na dálku"
+		Polish:+15% Wzrostu produkcji jednostek walczących w dystansie"
 	}
 
 	*/
@@ -171,12 +176,15 @@
 		Italian:"Dona una tecnologia gratuita"
 		Simplified_Chinese:"获得1项免费科技"
 		Czech:"Technologie zdarma"
+		Polish:"Darmowa technologia"
 }
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
 		Italian:"'Le biblioteche sono come una cappella in cui sono conservate e protette tutte le reliquie dei santi antichi, colme di vera virtù, e tutto ciò che è privo di illusione e inganno' - Sir Francis Bacon"
 		Simplified_Chinese:"“图书馆就像是供奉古代圣哲全部遗物的圣坛，充满了真正的美德，保护着一切非谬误无伪装的事物在其中安眠。”——弗朗西斯·培根爵士",
 		Czech:"'Knihovny jsou svatyně, ve kterých jsou zachovány a uloženy všechny relikvie starověkých světců, plné skutečné ctnosti, to vše bez klamů nebo podvodů.' - Sir Francis Bacon"
+		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
+
 }
 
 	"Circus":{
@@ -230,6 +238,7 @@
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
 		Italian:"'Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
 		Simplified_Chinese:"“哦，别让你所受的死亡痛苦进入我的身体。我是创世神泰姆，我处在天界的最高层，神力护佑着我和所有其他神灵直到永远。”——“死者之书”译文，欧内斯特·阿尔弗雷德·沃利斯·巴吉爵士（英国考古学家）"
+		Polish:"'Niech ból śmierci, którego zaznasz, wejdzie w me ciało. Jam jest bóg Tem, najznamienitsza część nieba, a chroni mnie moc, która na zawsze jest wśród wszystkich bogów.'– Księga Umarłych, przetłumaczona przez Sir Ernesta Alfreda Wallisa Budge'a"
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -256,7 +265,7 @@
 		Spanish:"Proporciona 2 trabajadores gratis"
 		Simplified_Chinese:"提供2个免费工人"
 		Portuguese:"Proporciona 2 trabalhadores gratis"
-		Polish:"Pojawiają się 2 darmowi robotnicy"
+		Polish:"Dostarcza 2-óch darmowych robotników"
 		Czech:"Poskytuje 2 dělníky zdarma"
 }
 
@@ -281,7 +290,7 @@
 		German:"Krepost"
 		Russian:"Острог"
 		French:"Krepost"
-		Polish:"Krepost"
+		Polish:"Twierdza"
 		Czech:"Krepost"
 }
 
@@ -301,7 +310,7 @@
 		Italian:"Colosso"
 		Simplified_Chinese:"太阳神巨像"
 		French:"Colosse"
-		Polish:"Kolos rodyjski"
+		Polish:"Kolos Rodyjski"
 		Russian:"Колосс Родосский"
 		Czech:"Rhodský kolos"
 }
@@ -309,6 +318,7 @@
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
 		Italian:"'Già, lui cavalca questo stretto mondo ormai come un colosso; e noi, gli omuncoli, passiamo sotto le sue gambe enormi e ci scrutiamo intorno, per ritrovarci tutti quanti siamo come tanti sepolcri senza onore' - William Shakespeare: Giulio Cesare"
 		Simplified_Chinese:"“嘿，老兄，他像一个巨人似的跨越这狭隘的世界；我们这些渺小的凡人一个个在他粗大的两腿下行走，四处张望着，替自己寻找不光荣的坟墓。”——威廉·莎士比亚：《尤利乌斯·恺撒》"
+		Polish:"'Człowiek ten stanął okrakiem nad światem jak Kolos, gdy my, ludzie malusieńcy, spod jego wielkich nóg zerkamy wokół, szukając sobie upodlonych grobów.'– William Szekspir, Juliusz Cezar"
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -370,6 +380,7 @@
 	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
 		Italian:"'L'antico Oracolo ha detto che sono il più saggio di tutti i greci. Questo perché io solo, di tutti i greci, so di non sapere nulla.' - Socrate"
 		Simplified_Chinese:"“先知的神谕曾说我是全希腊最聪明的人。因为我是所有希腊人中唯一知道自己一无所知的人。”——苏格拉底"
+		Polish:"'Starożytna Wyrocznia powiedziała, że jestem najmądrzejszym z Greków. Bo tylko ja ze wszystkich Greków wiem, że nic nie wiem.' - Sokrates"
 }
 
 	"Free Social Policy":{
@@ -415,6 +426,7 @@
 	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
 		Italian:"'Il katun è stabilito a Chichèn Itzà. L'insediamento degli Itzà avrà luogo. Arriverà il quetzal, arriverà l'uccello verde. Ah Kantenal arriverà. È la parola di Dio. Gli Itzà arriveranno. - I Libri di Chilam Balam"
 		Simplified_Chinese:"“这个卡吞建立在奇琴伊察。伊察将在那里定居。格查尔鸟将会到来，绿色的鸟将会到来。阿·坎特纳尔将会到来。这是神的预言。伊察将会到来。”——《奇兰巴兰之书》（玛雅人的预言书）"
+		Polish:"'Katun jest w Chichen Itza. Tam powstanie osada Itza. Przybędzie kwezal, przybędzie zielony ptak. Przybędzie Ah Kantenal. Oto słowo boże. Itza przybędzie.' – Księgi Chilam Balam"
 }
 
 	"Golden Age length increases +50%":{
@@ -475,7 +487,7 @@
 		Simplified_Chinese:"大灯塔"
 		Portuguese:"O Grande Farol"
 		German:"Der Große Leuchtturm"
-		Polish:"Latarnia na Faros" //common polish name
+		Polish:"Latarnia z Faros" //common polish name
 		Russian:"Фаросский маяк"
 		Czech:"Maják na ostrově Faru"
 }
@@ -483,6 +495,7 @@
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
 		Italian:"'Ecco quelli che scendon nel mare su navi, che trafficano sulle grandi acque; essi veggono le opere dell'Eterno e le sue meraviglie nell'abisso.' - Salmi 107:23-24"
 		Simplified_Chinese:"“在大海上坐船，在大水里经理事务的；他们看到耶和华的作为，并他在深水中的奇事。”——圣经·诗篇 107:23-24"
+		Polish:"'Ci, którzy na statkach ruszyli na morze, aby uprawiać handel na ogromnych wodach, ci widzieli dzieła Pana i jego cuda wśród głębiny.'– Biblia, Księga Psalmów 107,23-24"
 }
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -518,6 +531,8 @@
 		Italian:"Costruibile solamente nelle città annesse"
 		Simplified_Chinese:"只能建造在被占领城市"
 		Czech:"Lze vybudovat pouze v anektovaných městech"
+		Polish:"Budowa możliwa tylko w okupowanych miastach"
+		
 }
 
 	"Stable":{
@@ -538,7 +553,7 @@
 		German:"+15% Produktion beim Ausbilden von berittenen Einheiten in dieser Stadt"
 		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
 		Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
-		Polish:"+15% do produkcji jednostek kawalerii"
+		Polish:"+15% do produkcji jednostek kawalerii w tym mieście"
 		Russian:"+15% Производство при постройке конных юнитов в данном городе"
 		Czech:"+15% produkce při výstavbě jízdních jednotek v tomto městě"
 }
@@ -572,6 +587,7 @@
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
 		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
 		Simplified_Chinese:"“我相信如果有凡人能听到神谕，那一定是在天气凉爽时的花园之中。”——弗兰克·法兰克福·摩尔（英国作家）"
+		Polish:"'Gdyby śmiertelnik usłyszał głos Pana Boga, znalazłby w sadzie wraz z wiatren dniowym.' - F. Frankfort Moore" //hard to translate 
 }
 
 	/*
@@ -580,7 +596,7 @@
 		Italian:"Statua di Zeus"
 		French:"Statue de Zeus"
 		Simplified_Chinese:"宙斯神像"
-		Polish:"Posąg Zeusa olimpijskiego" //common polish name
+		Polish:"Posąg Zeusa Olimpijskiego" //common polish name
 		Czech:"Socha Zeuse"
 }
 
@@ -594,6 +610,7 @@
 
 	"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad":{
 		Italian:"'Così parlò, il figlio di Crono, e con le nere sopracciglia accennò; le chiome immortali del sire si scompigliarono sul capo divino: scosse tutto l'Olimpo.' - L'Iliade"
+		Polish:"'Syn Kronosa przemówił i skinął głową z ciemnymi brwiami i na wieki namaszczone włosy wielkiego boga spłynęły z boskiej głowy, a cały Olimp zatrząsł się w posadach.' - Iliada"
 }
 
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
@@ -616,29 +633,35 @@
 	"Gain 100 Gold when you use a Great Person.":{
 		Italian:"Guadagni 100 Oro ogni volta che consumi un Grande Personaggio"
 		Czech:"Získáme 100 Zlata za každé použití Velké Osobnosti"
+		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka" 
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
 		Italian:"'Tutta la terra è tomba di uomini eroici; la loro storia non resta solo sulla pietra sopra la loro creta, ma si ritrova ovunque, invisibile, intessuta nella vita degli altri.' - Pericle"
+		Polish:"'Cała ziemia jest grobowcem bohaterskich mężczyzn, a ich historia jest nie tylko wyryta w kamieniu, lecz splata się niewidocznymi nićmi z losami innych ludzi.' – Perykles"
 }
 
 	"Petra":{
 		Italian:"Petra"
 		Czech:"Petra"
+		Polish:"Petra"
 }
 
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
 		Italian:"+1 Cibo e +1 Produzione da tutte le caselle desertiche sfruttate dalla città (eccetto Terreni allagati)"
 		Czech:""
+		Polish:"+1 żywności i produkcji ze wszystkich pustynnych pól w mieście"
 }
 
 	"+6 Culture when discovering Archeology":{
 		Italian:"+6 Cultura quando scopri l'Archeologia"
 		Czech:"+6 Kulturních bodů při objevení Archeologie"
+		Polish:"+6 do kultury za wynalezienie Archeologii"
 }
 
 	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
 		Italian:"'...colui che beve l'acqua che io gli darò, dice il Signore, avrà dentro di sé una sorgente inesauribile dalla quale sgorgherà la vita eterna. Lasciate che mi conducano alla tua montagna sacra nel luogo dove dimori, attraverso il deserto e oltre la montagna, nella Gola della Luna Crecente...' - Indiana Jones"
+		Polish:"'...kto zaś będzie pił wodę, którą Ja mu dam, nie będzie pragnął na wieki, lecz woda, którą Ja mu dam, stanie się w nim źródłem wody wytryskującej ku życiu wiecznemu. Niech dane mi będzie dotrzeć do Świętej Góry poprzez pustynię, góry i Dolinę Półksiężyca, aż do świątyni, gdzie spoczywa Czara.' - Indiana Jones"
 }
 	*/
 
@@ -659,7 +682,7 @@
 		Italian:"Esercito di terracotta"
 		Simplified_Chinese:"兵马俑"
 		French:"Armée de Terre Cuite"
-		Polish:"Terakotowa armia"
+		Polish:"Terakotowa Armia"
 		Russian:"Терракотовая армия"
 		Czech:"Terakotová armáda"
 }
@@ -667,6 +690,7 @@
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
 		Italian:"'Trattate i soldati come figli, e vi seguiranno nelle valli più profonde; considerateli la vostra amata progenie, e resteranno accanto a voi fino alla morte.' - Sun Tzu"
 		Simplified_Chinese:"“视卒如婴儿，故可以与之赴深溪；视卒如爱子，故可与之俱死。”——孙子"
+		Polish:"'Traktuj swoich żołnierzy jak ukochane dzieci, a z chęcią zginą wraz z Tobą.' - Sun Tzu"
 }
 
 	"Market":{
@@ -747,6 +771,7 @@
 	"'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
 		Italian:"'L'architettura ha registrato le più grandi idee della razza umana. Non solo ogni simbolo religioso, ma ogni pensiero umano ha la sua pagina in quel vasto libro.' - Victor Hugo"
 		Simplified_Chinese:"“建筑记录了人类所有的伟大理念：不仅包括每一种宗教符号，还包括人类思想史的每一页。”——维克多·雨果"
+		Polish:"'Architektura to zapis wspaniałych idei ludzkości. W tej obszernej księdze swe miejsce ma nie tylko każdy symbol religijny, ale także każda myśl człowiecza.' - Victor Hugo" 
 }
 
 	"Hagia Sophia":{
@@ -765,6 +790,7 @@
 	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis":{
 		Italian:"'Perché si erge così alta da toccare il cielo, e come fluttuando sugli altri edifici guarda dall'alto in basso il resto della città, abbellendola, perché fa parte di essa, ma gloriandosi della propria bellezza.' - Procopio, De Aedificis (Sugli edifici)"
 		Simplified_Chinese:"“它高耸入云，从城市中矗立而起，俯视周遭；它是城中之物，但有超俗之美。”——《论建筑》，普罗科匹厄斯（拜占庭学者）"
+		Polish:"'Wyrasta aż po sam nieboskłon, jakby wystrzeliwując spośród innych budynków, stoi wysoko i spogląda w dół na resztę miasta, podziwiając je, bo jest jego częścią, a jednocześnie pławi się we własnym pięknie.' – Prokopiusz De Aedificis"
 }
 
 	"+33% great person generation in all cities":{
@@ -777,7 +803,7 @@
 		Spanish:"+33% generación de Grandes Personas en todas las ciudades"
 		Simplified_Chinese:"+33%所有城市伟人点数积累"
 		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
-		Polish:"+33% do produkcji Wielkich Ludzi"
+		Polish:"+33% do produkcji Wielkich Ludzi we wszystkich miastach"
 		Czech:"+33% produkce Velkých Osobností ve všech městech"
 }
 
@@ -810,6 +836,7 @@
 	"'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham":{
 		Italian:"'Pochi racconti fantastici possono sorpassare quello della cittadella di granito sospesa in cima ai precipizi, Machu Picchu, la corona delle terre degli Inca.' - Hiram Bingham"
 		Simplified_Chinese:"“很少有能超越这座建立在马丘比丘顶峰峭壁上的石头城塞的浪漫，它是印加的皇冠。”——海勒姆·宾厄姆（美国探险家）"
+		Polish:"'Niewiele romansów może się równać ze związkiem granitowej cytadeli stojącej na strzelistych urwiskach Machu Picchu, korony Kraju Inków.' – Hiram Bingham"
 }
 
 	"Gold from all trade routes +25%":{
@@ -822,7 +849,7 @@
 		Spanish:"+25% de oro en todas las rutas de comercio"
 		Simplified_Chinese:"所有贸易路线的金币收益+25%"
 		Portuguese:"+25% de ouro de todas as linhas comerciais" // Linhas comerciais= comertial lines, replace with rotas de comércio if needed
-		Polish:"+25% ze wszystkich szlaków handlowych"
+		Polish:"+25% złota ze wszystkich szlaków handlowych"
 		Czech:"+25% Zlata ze všech obchodních cest"
 }
 
@@ -865,6 +892,7 @@
 	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
 		Italian:"'L'arte della guerra ci insegna a non affidarci alla possibilità che il nemico... non ci attacchi, ma piuttosto alla certezza di aver reso la nostra posizione inattaccabile.' - Sun Tzu"
 		Simplified_Chinese:"“故用兵之法：无恃其不来，恃吾有以待也。无恃其不攻，恃吾有所不可攻也。”——孙子"
+		Polish:"'Sztuka wojny uczy nas nie polegać na prawdopodobieństwie tego, iż wróg nie zaatakuje, a na tym, że nasze pozycje są niedostępne.' – Sun Zi"
 }
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
@@ -1041,6 +1069,7 @@
 	"'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison":{
 		Italian:"'La giustizia è una fortezza inespugnabile, costruita sulla cresta di una montagna che non può essere rovesciata dalla violenza dei torrenti né demolita dalla forza degli eserciti.' - Joseph Addison"
 		Simplified_Chinese:"“正义是一座牢不可破的堡垒，屹立在山巅，既不为肆虐的洪流所冲倒，也不为军队的武力所毁坏。”——约瑟夫·艾迪生（英国散文家）"
+		Polish:"'Sprawiedliwość jest twierdzą nie do zdobycia, wybudowaną na grzbiecie góry, której nie straszne ani gwałtowne wichury, ani potężne armie.' - Joseph Addison"
 }
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -1069,6 +1098,7 @@
 	"'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena":{
 		Italian:"'Il tempio non ha eguali nel mondo. Ha torri e decorazioni e tutti gli abbellimenti che il genio dell'uomo può concepire.' - Antonio da Magdalena"
 		Simplified_Chinese:"“这座寺庙不同于世界上的其他任何建筑。它拥有人类的天才们能够构想出的最精致的高塔和装饰。”——安东尼奥·达·马格达连那（葡萄牙传教士，最早游历吴哥窟的西方人）"
+		Polish:"'Ta świątynia… nie ma sobie równych w całym świecie. Ma wieże, zdobienia i całe wyrafinowanie, które mógł stworzyć geniusz człowieka.' - Antonio da Magdalena"
 }
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -1094,13 +1124,14 @@
 		Simplified_Chinese:"大报恩寺塔"
 		Portuguese:"Torre de Porcelana"
 		German:"Porzellan Turm"
-		Polish:"Porcelanowa wieża"
+		Polish:"Porcelanowa Wieża"
 		Czech:"Porcelánová pagoda"
 }
 
 	"'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell":{
 		Italian:"'Le cose sembrano sempre più belle quando ci voltiamo indietro per guardarle, ed è dall'inaccessibile torre del passato che la nostalgia si protende e chiama.' - James Russel Lowell"
 		Simplified_Chinese:"“我们所失去的总是要在回望之时才更知道它的美好，而那曾经不可一世的高塔如今是多么的渴望能够有所依靠。”——詹姆斯·罗素·洛威尔（美国诗人）"
+		Polish:"'Kiedy patrzymy w przeszłość, wszystko wydaje się piękniejsze i właśnie w tej niedostępnej wieży przeszłości rodzi się Tęsknota.' - James Russell Lowell"
 }
 
 	"Free great scientist appears":{
@@ -1184,6 +1215,7 @@
 	"'I live and love in God's peculiar light.' - Michelangelo Buonarroti":{
 		Italian:"'Vivo e amo sotto la peculiare luce di Dio.' - Michelangelo Buonarroti"
 		Simplified_Chinese:"“我在上帝的圣光之下爱与生活。”——米开朗基罗·博纳洛第"
+		Polish:"'Żyję i kocham w bożym blasku.' – Michał Anioł Buonarroti"
 }
 
 	"Culture in all cities increased by 25%":{
@@ -1233,7 +1265,7 @@
 	"Satrap's Court":{	//Persian unique
 		Italian:"Corte del Satrapo"
 		French:"Cour de Satrape"
-		Polish:"Dwór satrapy"
+		Polish:"Dwór Satrapy"
 		Simplified_Chinese:"总督府"
 }
 
@@ -1246,13 +1278,14 @@
 		Simplified_Chinese:"紫禁城"
 		Portuguese:"Palácio Proibido"
 		German:"Verbotener Palast"
-		Polish:"Zakazane miasto"
+		Polish:"Zakazany Pałac"
 		Czech:"Zakázané město"
 }
 
 	"'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock":{
 		Italian:"'La maggior parte di noi può, a sua volontà, fare di questo mondo un palazzo o una prigione.' - John Lubbock"
 		Simplified_Chinese:"“我们中的大多数都能够自己做出选择，是把这个世界变成一座宫殿还是一座监狱。”——约翰·鲁伯克（英国学者）"
+		Polish:"'Większość z nas może wybrać, czy świat będzie nam pałacem, czy więzieniem.' – John Lubbock"
 }
 
 	"Unhappiness from population decreased by 10%":{
@@ -1297,6 +1330,7 @@
 	"'Don't clap too hard - it's a very old building.' - John Osbourne":{
 		Italian:"'Non applaudite troppo forte - è un edificio molto vecchio.' - John Osborne"
 		Simplified_Chinese:"“别拍那么重——这是座非常古老的建筑。”——约翰·奥斯本（英国剧作家）"
+		Polish:"'Nie klaszczcie za mocno - to bardzo stary budynek.' – John Osborne"
 }
 
 	"Free Great Person":{
@@ -1324,6 +1358,7 @@
 		Italian:"Ottieni "
 		Simplified_Chinese:"获得"
 		Czech:"Bereme"
+		Polish:"Otrzymaj"
 }
 
 	"Himeji Castle":{
@@ -1338,6 +1373,7 @@
 	"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo":{
 		Italian:"'Il Bushido si realizza in presenza della morte. Significa, ogni volta che c'è una scelta tra la vita e la morte, scegliere la seconda. Non c'è alcun altro ragionamento' - Yamamoto Tsunetomo"
 		Simplified_Chinese:"“所谓武士道，就是看透死亡。于生死两难之际，应果断选择死，而不需要任何原因。”——山本常朝（日本江户时代武士）"
+		Polish:"'Bushido - Droga wojownika - ujawnia się w obecności śmierci. Oznacza wybranie śmierci, gdy do wyboru jest życie lub śmierć. Nie ma innego uzasadnienia.' – Yamamoto Tsunetomo"
 }
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1366,6 +1402,7 @@
 	"'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore":{
 		Italian:"'Il Taj Mahal sorge sulle rive del fiume come una lacrima solitaria sospesa sulla guancia del tempo.' - Rabindranath Tagore"
 		Simplified_Chinese:"“泰姬陵伫立在河岸，如同时间的脸颊上一滴孤单的泪水。”——罗宾德拉纳特·泰戈尔"
+		Polish:"'Tadż Mahal wznosi się nad brzegiem rzeki niczym samotna łza wisząca na policzku czasu.' – Rabindranath Tagore"
 }
 
 	"Empire enters golden age":{
@@ -1446,6 +1483,7 @@
 	"'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson":{
 		Italian:"'Ogni opera d'arte genuina ha tanta ragione d'esistere quanto la terra e il sole.' - Ralph Waldo Emerson"
 		Simplified_Chinese:"“每一件伟大的艺术品都应如日月般长存。”——拉尔夫·沃尔多·爱默生"
+		Polish:"'Każde prawdziwe dzieło sztuki pod wieloma względami przypomina ziemię i słońce.' – Ralph Waldo Emerson"
 }
 
 	"Free Great Artist Appears":{
@@ -1579,13 +1617,14 @@
 	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
 		Italian:"'Per ottenere grandi risultati servono due cose: un piano e un sacco di tempo.' - Leonard Bernstein"
 		Simplified_Chinese:"“为了完成伟大的工作，有两样东西是必须的：一个计划，以及不多的时间。”——伦纳德·伯恩斯坦（美国音乐家）"
+		Polish:"'Żeby dokonać czegoś wielkiego, potrzeba dwóch rzeczy: planu i zbyt mało czasu.' – Leonard Bernstein"
 }
 
 	"-15% to purchasing items in cities":{
 		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 		French:"-15% d'or pour les achats dans les villes"
-		Polish:"-15% ceny budynków i jednostek kupowanych w złocie"
+		Polish:"-15% do ceny budynków i jednostek kupowanych w miastach"
 		Russian:"-15% к стоимости покупки в городах"
 		Czech:"-15% ceny při nákupu věcí ve městech"
 }
@@ -1606,6 +1645,7 @@
 	"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28":{
 		Italian:"'Venite a me, voi tutti che siete affaticati e oppressi, e io vi ristorerò.' - Matteo 11:28"
 		Simplified_Chinese:"“凡劳苦担重担的人，可以到我这里来，我就使你们得安息。”——圣经·马太福音 11:28"
+		Polish:"'Przyjdźcie do Mnie wszyscy, którzy utrudzeni i obciążeni jesteście, a Ja was pokrzepię.' – Biblia, Ew. wg św. Mateusza 25,28"
 }
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -1618,7 +1658,7 @@
 		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
 		Simplified_Chinese:"推行新的社会政策所需的文化点数-10%"
 		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
-		Polish:"Koszt wdrożenia nowych ustrojów społecznych zmniejszony o 10%"
+		Polish:"Wdrożenie nowych ustrojów społecznych zmniejszone o 10% kultury"
 		Czech:"Počet Kulturních bodů na získání nové sociální politiky se sníží o 10%"
 }
 
@@ -1636,6 +1676,7 @@
 	"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed":{
 		Italian:"'La Legge è una fortezza su una collina che gli eserciti non possono catturare e le inondazioni non possono spazzare via. - Il profeta Maometto"
 		Simplified_Chinese:"“律法当如山巅之城：无论是敌人还是洪水都无法征服。”——先知穆罕默德"
+		Polish:"'Prawo to forteca na wzgórzu, którego nie zdobędzie żadna armia i nie pochłonie powódź.' – Prorok Mahomet"
 }
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -1651,7 +1692,7 @@
 		Italian:"Castello di Neuschwanstein"
 		Simplified_Chinese:"新天鹅堡"
 		French:"Château de Neuschwanstein"
-		Polish:"Neuschwanstein"
+		Polish:"Zamek Neuschwanstein"
 		Russian:"Замок Нойшванштайн",
 		Czech:"Zámek Neuschwanstein"
 }
@@ -1659,6 +1700,7 @@
 	"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria":{
 		Italian:"'...la posizione è una delle più belle che si possano trovare, sacra e inaccessibile, degno tempio per l'amico divino che ha portato salvezza e vera benedizione a tutto il mondo.' - Re Ludovico II di Baviera"
 		Simplified_Chinese:"“……选址是所能找到的当中风景最美丽的，圣洁而不可亵渎，一座配得起神圣朋友的圣所，他们给这个世界带来超度和真正的赐福。”——巴伐利亚国王路德维希二世"
+		Polish:"'...miejsce to jest jednym z najpiękniejszych, jakie można znaleźć. Święte i niedostępne. Prawdziwa świątynia ku czci boskiego przyjaciela, który przyprowadził wybawienie i prawdziwe błogosławieństwo dla świata.' – Król Ludwig II Bawarski"
 }
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{

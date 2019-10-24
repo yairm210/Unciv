@@ -102,6 +102,12 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
+        innerTable.add("Show pixel improvements".toLabel())
+        innerTable.addButton(if (settings.showPixelImprovements) "Yes".tr() else "No".tr()) {
+            settings.showPixelImprovements = !settings.showPixelImprovements
+            update()
+        }
+
         addLanguageSelectBox(innerTable)
 
         addFontSelectBox(innerTable)

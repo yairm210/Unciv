@@ -20,6 +20,7 @@ class GameSettings {
     var autoBuildingRoads: Boolean = true
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
+    var showPixelImprovements: Boolean = false
 
     var userName:String=""
     var userId = ""
