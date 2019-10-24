@@ -18,6 +18,7 @@ import java.security.MessageDigest
 
 class Fonts {
     companion object {
+        val characterSetCache = HashMap<String, String>()
         val fontCache = HashMap<String, BitmapFont>()
     }
     fun download(link: String,fontForLanguage: String) {
@@ -53,7 +54,9 @@ class Fonts {
         return false
     }
 
-    fun getCharsForFont(language:String=""): String {
+    fun getCharactersForFont(language:String=""): String {
+        if (characterSetCache.containsKey(language)) return characterSetCache[language]!!
+
         val defaultText = "AÀÁBCČĆDĐEÈÉFGHIÌÍÏJKLMNOÒÓÖPQRSŠTUÙÚÜVWXYZŽaäàâăbcčćçdđeéèfghiìîjklmnoòöpqrsșštțuùüvwxyzž" +
                 "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" + // Russian
                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +  // Greek
@@ -61,24 +64,26 @@ class Fonts {
                 "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛" +  // Thai
                 "1234567890" +
                 "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.¡*|"
-            val charSet = HashSet<Char>()
-            charSet.addAll(defaultText.asIterable())
+        val charSet = HashSet<Char>()
+        charSet.addAll(defaultText.asIterable())
 
-            if(language != "") {
-                if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").readString().asIterable())
-                if (Gdx.files.internal("jsons/Nations/Nations_$language.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_$language.json").readString().asIterable())
-                if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").readString().asIterable())
+        if (language != "") {
+            if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())
+                charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").readString().asIterable())
+            if (Gdx.files.internal("jsons/Nations/Nations_$language.json").exists())
+                charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_$language.json").readString().asIterable())
+            if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())
+                charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").readString().asIterable())
 
-                for (entry in GameBasics.Translations.entries) {
-                    for (lang in entry.value) {
-                        if (lang.key==language) charSet.addAll(lang.value.asIterable())
-                    }
+            for (entry in GameBasics.Translations.entries) {
+                for (lang in entry.value) {
+                    if (lang.key == language) charSet.addAll(lang.value.asIterable())
                 }
             }
-            return charSet.joinToString("")
+        }
+        val characterSetString = charSet.joinToString("")
+        characterSetCache[language]=characterSetString
+        return characterSetString
     }
 
    fun getFont(size: Int): BitmapFont {
@@ -105,7 +110,7 @@ class Fonts {
                parameter.size = size
                parameter.minFilter = Texture.TextureFilter.Linear
                parameter.magFilter = Texture.TextureFilter.Linear
-               parameter.characters = getCharsForFont(UnCivGame.Current.settings.language)
+               parameter.characters = getCharactersForFont(UnCivGame.Current.settings.language)
                val font = generator.generateFont(parameter)
                fontCache[keyForFont] = font
                return font
@@ -119,7 +124,7 @@ class Fonts {
        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
 
        val font=NativeFont(NativeFontPaint(size))
-       val charsForFont = getCharsForFont(if(isUniqueFont) language else "")
+       val charsForFont = getCharactersForFont(if(isUniqueFont) language else "")
        font.appendText(charsForFont)
        fontCache[keyForFont] = font
        return font
