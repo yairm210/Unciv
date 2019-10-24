@@ -47,7 +47,8 @@ class WorkerAutomation(val unit: MapUnit) {
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
             citiesToNumberOfUnimprovedTiles[city.name] =
-                    city.getTiles().count { it.isLand && tileCanBeImproved(it, unit.civInfo) }
+                    city.getTiles().count { it.isLand && it.civilianUnit == null
+                            && tileCanBeImproved(it, unit.civInfo) }
         }
 
         val mostUndevelopedCity = unit.civInfo.cities
@@ -186,6 +187,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.containsUnfinishedGreatImprovement() -> null
             tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
             tile.baseTerrain in listOf(Constants.grassland,Constants.desert,Constants.plains) -> "Farm"
