@@ -1427,7 +1427,7 @@
 		Russian:"Позволяет наземным единицам выходить в океан"
 		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
 		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
-		Czech:"Odemyká naloděným jednotkám možnost vyplout na moře a oceán"
+		Czech:"Umožňuje naloděným jednotkám vyplout na oceán"
 }
 
 	"Increases embarked movement +1":{

@@ -115,7 +115,7 @@
 		Portuguese:"Próxima unidade"
 		French:"Unité suivante"
                 Russian:"Следующий юнит"
-		Czech:"Další jednotky"
+		Czech:"Další jednotka"
 }
 
 	"Pick a policy":{
@@ -465,7 +465,7 @@
 		Romanian:"Dezactivați această unitate pentru aurul [goldAmount]?"
 		Dutch:"Deze eenheid ontbinden voor [goldAmount] goud?"
 		Russian:"Распустить юнит за [goldAmount] золота?",
-		Czech:"Propustit tuto jednotku za [goldAmount] zlata?"
+		Czech:"Propustit tuto jednotku - dostaneme [goldAmount] zlata?"
 }
 
 	"Create [improvement]":{ // for great units, fishing boats, etc.
@@ -481,7 +481,7 @@
 		French:"Commencer un Age d'Or"
 		Simplified_Chinese:"开启黄金时代"
                 Russian:"Начать золотой век"
-		Czech:"Začít Zlatý věk"
+		Czech:"Zahájit Zlatý věk"
 }
 
 	"Yes":{
@@ -619,6 +619,13 @@
 		Czech:"ZLATÝ VĚK"
 }
 
+	" BC":{ // Before Christus
+		Czech:" př. n. l."
+	},
+
+	" AC":{ // Anno Domini
+		Czech:" n. l."
+	},
 
 /////// Menu table
 
@@ -755,7 +762,7 @@
 		Simplified_Chinese:"摧毁城市"
 		Portuguese:"Saquear cidade"
 		Japanese:"ラゼ市"
-		Czech:"Vyhladit město"
+		Czech:"Srovnat město se zemí"
 }
 
 	"Stop razing city":{
@@ -848,14 +855,16 @@
 		French:"Choisir une amélioration"
 		Portuguese:"Escolha uma melhoria"
                 Russian:"Выбрать улучшение"
-		Czech:"Zvolte vylepšení"
+		Czech:"Vyberte vylepšení"
 }
 
 	"Provides [resource]":{
-	}
-	
+		Czech:"Poskytuje [resource]"
+	},
+
 	"Replaces [improvement]":{
-	}
+		Czech:"Nahrazuje [improvement]"
+	},
 
 	"Pick now!": { //sample needed
 		Italian: "Scegli ora!"
@@ -1133,7 +1142,7 @@
 		French:"Points actuelles"
 		Portuguese:"Pontos atuais"
 		Russian:"Очков сейчас"
-		Czech:"Aktuální body"
+		Czech:"Získané body"
 }
 
 	"Points per turn":{
@@ -1446,7 +1455,7 @@
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
                 Russian:"[percentage] к защите юнита",
-		Czech:"percentage] k obraně jednotky"
+		Czech:"[percentage] k obraně jednotky"
 }
 
 
@@ -1606,7 +1615,11 @@
 		Portuguese:"Felicidade base"
 		German:"Grundzufriedenheit"
 		Czech:"Základní spokojenost"
-}
+},
+
+	"Occupied City": {
+		"Czech":"Obsazená města"
+	},
 
 	"Buildings":{
 		Italian:"Edifici"
@@ -1730,7 +1743,7 @@
 		Simplified_Chinese:"建筑维护费"
 		Portuguese:"Manutenção"
 		German:"Wartung"
-		Czech:"Údržba (žold)"
+		Czech:"Údržba budov"
 }
 
 	"Transportation upkeep":{
@@ -1742,7 +1755,7 @@
 		Simplified_Chinese:"道(铁)路维护费"
 		Portuguese:"Manutenção de transporte"
 		German:"Unterhalt für Transport"
-		Czech:"Údržba dopravy"
+		Czech:"Údržba cest"
 }
 
 	"Unit upkeep":{
@@ -1803,7 +1816,11 @@
 		Portuguese:"Cidade mais próxima"
 		German:"Nächstgelegene Stadt"
 		Czech:"Nejbližší město"
-}
+},
+	"Action":{ // Overview -> Units - Action (Header)
+		Czech:"Činnost"
+	},
+
 
 	"Defeated":{
 		Italian:"Sconfitto"
@@ -1846,7 +1863,7 @@
 		Simplified_Chinese:"征服胜利"
 		Portuguese:"Vitória por conquista"
 		Russian:"Завоевание"
-		Czech:"Vítězství bojem"
+		Czech:"Vítězství v boji"
 }
 
 	"Complete all the spaceship parts\n to win!":{
@@ -1855,8 +1872,8 @@
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Постройте все части космического корабля\n чтобы победить!"
 		Simplified_Chinese:"完成建造太空飞船\n胜利！"
-		Portuguese:"Complete todas as partes da nave para ganhar"
-		Czech:"Postavte všechny části vesmírné lodi\n k vítězství!"
+		Portuguese:"Complete todas as partes da nave para ganhar",
+		Czech:"Vybudováním všech šesti části vesmírné lodi\n dosáhneme vítězství!"
 }
 
 	"Complete 4 policy branches\n to win!":{
@@ -1865,8 +1882,8 @@
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Завершите 4 ветви общественных институтов\n чтобы победить!"
 		Simplified_Chinese:"完成4个社会政策分支\n胜利！"
-		Portuguese:"Complete 4 árvores de politicas para ganhar"
-		Czech:"Zkompletujte 4 větve sociální politiky\n k vítězství!"
+		Portuguese:"Complete 4 árvores de politicas para ganhar",
+		Czech:"Zkompletováním 4 větví Sociální politiky\n dosáhneme vítězství!"
 }
 
 	"Destroy all enemies\n to win!":{
@@ -1875,8 +1892,8 @@
 		French:"Eliminer tous vos adversaires pour gagner!"
 		Russian:"Уничтожьте всех врагов\n чтобы победить!"
 		Simplified_Chinese:"消灭所有敌人\n胜利!"
-		Portuguese:"Destrua todos os inimigos para ganhar"
-		Czech:"Zničte všechny nepřátele\n k vítězství!"
+		Portuguese:"Destrua todos os inimigos para ganhar",
+		Czech:"Zničením všech ostatních civilizací\n dosáhneme vítězství!"
 }
 
 	"You have won a scientific victory!":{
@@ -1886,7 +1903,7 @@
 		Russian:"Вы одержали научную победу!"
 		Simplified_Chinese:"恭喜！你赢得了科技胜利!"
 		Portuguese:"Você ganhou uma vitória ciêntifica!"
-		Czech:"Dosáhli jste výzkumného vítězství!"
+		Czech:"Dosáhli jste vítězství ve hře díky Výzkumu!"
 }
 
 	"You have won a cultural victory!":{
@@ -1896,7 +1913,7 @@
 		Russian:"Вы одержали культурную победу!"
 		Simplified_Chinese:"恭喜！你赢得了文化胜利！"
 		Portuguese:"Você ganhou uma vitória cultural!",
-		Czech:"Dosáhli jste kulturního vítězství!"
+		Czech:"Dosáhli jste vítězství ve hře díky Kulturní vyspělosti!"
 }
 
 	"You have won a domination victory!":{
@@ -1906,31 +1923,31 @@
 		Russian:"Вы победили, завоевав всех!"
 		Simplified_Chinese:"恭喜！你赢得了征服胜利！"
 		Portuguese:"Você ganhou uma vitória de dominação!",
-		Czech:"Dosáhli jste vítězství díky dominanci!"
+		Czech:"Dosáhli jsme vítězství ve hře zničením všech ostatních civilizací!"
 }
 // TODO (4)
 	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
 		Italian:"Hai ottenuto la vittoria attraverso il maestoso potere della tua cultura. La grandezza della tua civiltà, la magnificenza dei suoi monumenti e il talento dei suoi artisti ha sbalordito il mondo! I poeti ti ononeranno per sempre, finché la bellezza continuerà a portare sollievo ai cuori affaticati."
 		Simplified_Chinese:"你们依靠文化的强大力量取得了胜利。你们文明的伟大创作——富丽堂皇的建筑和鬼斧神工的艺术品震惊了世界！这些沁入心扉的美丽给疲乏的心带来温暖，给悲伤的人送去欢乐，诗人为你赞叹，乐者为你歌唱！"
-		Czech:""
+		Czech:"Dosáhli jsme vítězství díky úžasné dokonalé kulturnosti. Velikost naší říše - velkolepost vybudovaných památek a preciznost našich umělců ohromila svět! Básníci nás budou velebit, dokud vše krásné bude přinášet potěšení unavenému srdci."
 }
 
 	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
 		Italian:"Il mondo è stato straziato dalla guerra. Molte grandi e potenti civiltà sono cadute, ma tu sei sopravvissuto e se emerso vittorioso. Il mondo ricorderà a lungo il tuo glorioso trionfo!"
-		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而且强势的文明衰落了，但你们幸存了下来——并且取得了胜利！世界将永远记住你的光辉与荣耀！"
-		Czech:""
+		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而且强势的文明衰落了，但你们幸存了下来——并且取得了胜利！世界将永远记住你的光辉与荣耀！",
+		Czech:"Celý svět byl zachvácen válkou. Velké a slavné civilizace byly zničeny, ale naše říše dokázala jako jediná přežít a zvítězit. Svět nikdy nezapomene na tento fenomenální triumf!"
 }
 
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
 		Italian:"Hai ottenuto la vittoria attraverso la padronanza della scienza! Hai penetrato i misteri più arcani della natura e condotto il tuo popolo in un viaggio verso un nuovo, favoloso mondo! Il tuo trionfo sarà ricordato finch* le stelle continueranno a brillare nel firmamento!"
 		Simplified_Chinese:"你们通过掌握先进的科技取得了胜利!你们已经征服了大自然的神秘，带领人民踏上了通往美丽新世界的航程！只要星星在夜空中燃烧，你的胜利就会被永远铭记！"
-		Czech:""
+		Czech:"Zvítězili jsme ve hře díky enormnímu úsilý a mistrovství našich vědců. Poodhalili jste tajemství přírody a dovedli naše obyvatele na cestu poznání k novým světům. Na tento úspěch se bude vzpomínat dokud budou svítit hvězdy na nebi!"
 }
 
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
 		Italian:"Sei stato sconfitto. La tua civiltà è stata spazzata via dai suoi nemici. Ma il tuo popolo non dispera, perché sa che un giorno tornerai... e lo condurrai alla vittoria!"
 		Simplified_Chinese:"你被打败了。虽然你们的文明曾经被许多敌人所征服，但是你的人民永不放弃，因为他们知道总有一天你会回来的！那时，你的文明将会成为天空中最耀眼的恒星！"
-		Czech:""
+		Czech:"Byli jsme poraženi. Naše civilizace byla převálcována schopnostmi nepřátel. Naši lidé ovšem nezoufají, protože ví, že jednou se jejich vůdce vrátí. A dovede je k vytouženému vítězství!"
 }
 
 	"One more turn...!":{
@@ -1943,17 +1960,17 @@
 		Czech:"Ještě jedno kolo..."
 }
 
-	"Built Apollo Program":{
+	"Built Apollo Program":{ // Menu -> Victory status -> Science victory -> Built Apollo Program (header)
 		Italian:"Programma Apollo costruito"
 		German:"Vollendete das Apollo-Programm" //not sure about the context here
 		French:"Construiser le programme Apollo" //same, it could be "construire"
 		Simplified_Chinese:"开启阿波罗计划"
 		Portuguese:"Completou o programa Apollo" //wound't make sense to say built as the program wasan't 'built' per se, it was the sequence of spaceship launches, america dind't launch the program itself into space...
 		Russian:"Построена Программа Аполлон"
-		Czech:"Zkompletovaný Apollo Program"
+		Czech:"Hotový Apollo Program"
 }
 
-	"Destroy [civName]":{
+	"Destroy [civName]":{ // Menu -> Victory status -> Conquest victory -> Destroy [civName] (column)
 		Italian:"Distruggi [civName]"
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
@@ -1968,7 +1985,7 @@
 		French:"Notre situation"
 		Simplified_Chinese:"我们文明的胜利进度"
 		Russian:"Наш статус"
-		Czech:"Náš status"
+		Czech:"Naše vyhlídky"
 }
 
 	"Global status":{
@@ -1976,7 +1993,7 @@
 		French:"Situation globale"
 		Simplified_Chinese:"所有文明的胜利进度"
 		Russian:"Глобальный статус"
-		Czech:"Globální status"
+		Czech:"Globální situace"
 }
 
 	"Spaceship parts remaining":{
@@ -1984,7 +2001,7 @@
 		French:"Parties de Vaisseau spatial manquantes"
 		Simplified_Chinese:"未完成建造的飞船组件"
 		Russian:"Осталось частей КК"
-		Czech:"Zbývající části Vesmírné lodi"
+		Czech:"Chybějící části Vesmírné lodi"
 }
 
 	"Branches completed":{
@@ -2000,7 +2017,7 @@
 		French:"Civilization invaincues"
 		Simplified_Chinese:"未被征服的文明"
 		Russian:"Непобеждённые цивилизации"
-		Czech:"Přeživší civilizace"
+		Czech:"Neporažené civilizace"
 }
 
 
@@ -2081,7 +2098,7 @@
 		French:"Razer"
 		Simplified_Chinese:"摧毁"
 		Russian:"Разорить"
-		Czech:"Vyhladit"
+		Czech:"Srovnat se zemí"
 }
 
 	"Razing the city annexes it, and starts razing the city to the ground.":{
