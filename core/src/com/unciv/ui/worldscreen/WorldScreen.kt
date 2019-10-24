@@ -182,6 +182,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techPolicyandVictoryHolder.setPosition(10f, topBar.y - techPolicyandVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
+        updateNextTurnButton() // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
@@ -197,7 +198,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
             }
         }
-        updateNextTurnButton()
     }
 
     private fun displayTutorialsOnUpdate() {
