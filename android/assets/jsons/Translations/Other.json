@@ -851,6 +851,12 @@
 		Czech:"Zvolte vylepšení"
 }
 
+	"Provides [resource]":{
+	}
+	
+	"Replaces [improvement]":{
+	}
+
 	"Pick now!": { //sample needed
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
