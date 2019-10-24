@@ -163,7 +163,7 @@
 		Simplified_Chinese:"开始建造/组建：[construction]"
 		Portuguese:"Os trabalhos começaram no(a) [construction]"
 		Japanese:"[construction]の作業が開始されました",
-		Czech:"Začali jsme stavět stavbu [construction]"
+		Czech:"Začali jsme stavět stavbu/jednotku [construction]"
 	}
 
 	"[cityName] cannot continue work on [construction]":{

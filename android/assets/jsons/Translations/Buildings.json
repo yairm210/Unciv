@@ -91,7 +91,7 @@
 		Simplified_Chinese:"“时间能粉碎一切；所有事物终将在时流中衰老并被遗忘。”——亚里士多德",
 		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
-}               
+}
 
 	/*
 
@@ -532,7 +532,7 @@
 		Simplified_Chinese:"只能建造在被占领城市"
 		Czech:"Lze vybudovat pouze v anektovaných městech"
 		Polish:"Budowa możliwa tylko w okupowanych miastach"
-		
+
 }
 
 	"Stable":{
@@ -587,7 +587,7 @@
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
 		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
 		Simplified_Chinese:"“我相信如果有凡人能听到神谕，那一定是在天气凉爽时的花园之中。”——弗兰克·法兰克福·摩尔（英国作家）"
-		Polish:"'Gdyby śmiertelnik usłyszał głos Pana Boga, znalazłby w sadzie wraz z wiatren dniowym.' - F. Frankfort Moore" //hard to translate 
+		Polish:"'Gdyby śmiertelnik usłyszał głos Pana Boga, znalazłby w sadzie wraz z wiatren dniowym.' - F. Frankfort Moore" //hard to translate
 }
 
 	/*
@@ -633,7 +633,7 @@
 	"Gain 100 Gold when you use a Great Person.":{
 		Italian:"Guadagni 100 Oro ogni volta che consumi un Grande Personaggio"
 		Czech:"Získáme 100 Zlata za každé použití Velké Osobnosti"
-		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka" 
+		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka"
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
@@ -771,7 +771,7 @@
 	"'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
 		Italian:"'L'architettura ha registrato le più grandi idee della razza umana. Non solo ogni simbolo religioso, ma ogni pensiero umano ha la sua pagina in quel vasto libro.' - Victor Hugo"
 		Simplified_Chinese:"“建筑记录了人类所有的伟大理念：不仅包括每一种宗教符号，还包括人类思想史的每一页。”——维克多·雨果"
-		Polish:"'Architektura to zapis wspaniałych idei ludzkości. W tej obszernej księdze swe miejsce ma nie tylko każdy symbol religijny, ale także każda myśl człowiecza.' - Victor Hugo" 
+		Polish:"'Architektura to zapis wspaniałych idei ludzkości. W tej obszernej księdze swe miejsce ma nie tylko każdy symbol religijny, ale także każda myśl człowiecza.' - Victor Hugo"
 }
 
 	"Hagia Sophia":{
@@ -982,7 +982,7 @@
 		German:"Verbindet Handelsrouten über Wasser"
 		Polish:"Tworzy wodne szlaki handlowe"
 		Russian:"Создаёт водные торговые пути"
-		Czech:"Propojí obchodní cesty přes moře a oceány"
+		Czech:"Propojí obchodní cesty přes vodu (oceán)"
 }
 
 	"University":{

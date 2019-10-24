@@ -306,7 +306,7 @@
 		Portuguese:"Não pode entrar o terreno 'oceano' até a pesquisa Astronomia" // if you want you can take away the 'a pesquisa'
 		German:"Ozeanfelder können nicht befahren werden bis Astronomie erforscht ist"
 		Russian:"Для выхода в океан нужно открыть Астрономию"
-		Czech:"Nelze vplout na volné moře před objevem Astronomie"
+		Czech:"Nelze vplout na oceán před objevem Astronomie"
 }
 
 	"May create improvements on water resources":{
@@ -349,7 +349,7 @@
 		Portuguese:"Não pode entrar o terreno 'oceano' "
 		German:"Ozeanfelder können nicht befahren werden"
 		Russian:"Не может выйти в океан"
-		Czech:"Nelze vplout na otevřené moře"
+		Czech:"Nelze vyplout na oceán"
 }
 
 	"Chariot Archer":{
