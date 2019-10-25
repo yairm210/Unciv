@@ -32,11 +32,14 @@ Made with LibGDX on Android Studio
 
 # What's the roadmap?
 
-* Polish! As you may have noticed, Unciv fully functional but right around the edges. This mean:
-    * UI+UX improvements (suggestions welcome!)
-    * Filling out gaps (missing civs etc)
-    * Better automation, AI etc.
+Is this order:
 
+* Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
+    * UI+UX improvements (suggestions welcome!)
+    * Filling out gaps (missing civs, wonders, etc)
+    * Better automation, AI etc.
+    
+* Missing features from Vanilla - Natural wonders, city-state quests, rivers etc.
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
 
