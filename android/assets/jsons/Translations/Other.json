@@ -1644,6 +1644,14 @@
 		Czech:"Specializované budovy"
 }
 
+	"Base values":{ 
+		Italian:"Valori di base"
+}
+
+	"Final":{ //Should be "Final values"
+		Italian:"Valori finali"
+}
+
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
 		Italian:"Altro"
 		French:"Autre"
