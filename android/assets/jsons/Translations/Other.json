@@ -617,14 +617,15 @@
 		Portuguese:"IDADE DOURADA"
 		Japanese:"黄金時代"
 		Czech:"ZLATÝ VĚK"
-}
+},
 
-	" BC":{ // Before Christus
-		Czech:" př. n. l."
+	// You don't have to translate this is it's good for your language, but some languages have their own display
+	"[year] BC":{ // Before Christus
+		Czech:"[year] př. n. l."
 	},
 
-	" AC":{ // Anno Domini
-		Czech:" n. l."
+	"[year] AD":{ // Anno Domini
+		Czech:"[year] n. l."
 	},
 
 /////// Menu table

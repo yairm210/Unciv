@@ -18,6 +18,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.WorldScreenMenuTable
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
@@ -128,13 +129,14 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
             else -> 2020+(turns-440)/2
         }
 
-        turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ abs(year)+(if (year<0) " BC.tr()" else " AD.tr()"))
+        val yearText = "["+ abs(year)+"] "+ if (year<0) "BC" else "AD"
+        turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ yearText.tr())
 
         val nextTurnStats = civInfo.statsForNextTurn
-        val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + Math.round(nextTurnStats.gold) + ")"
-        goldLabel.setText(Math.round(civInfo.gold.toFloat()).toString() + goldPerTurn)
+        val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
+        goldLabel.setText(civInfo.gold.toFloat().roundToInt().toString() + goldPerTurn)
 
-        scienceLabel.setText("+" + Math.round(nextTurnStats.science))
+        scienceLabel.setText("+" + nextTurnStats.science.roundToInt())
 
         happinessLabel.setText(getHappinessText(civInfo))
 
