@@ -852,9 +852,11 @@
 }
 
 	"Provides [resource]":{
+		Simplified_Chinese:"获得资源：[resource]"	
 	}
 	
 	"Replaces [improvement]":{
+		Simplified_Chinese:"替代现有设施：[improvement]"
 	}
 
 	"Pick now!": { //sample needed

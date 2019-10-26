@@ -102,7 +102,7 @@
 		Russian:"Завоевание"
                 Korean:"정복"
 		Czech:"Dominance"
-},
+}
 
 	"Cultural": {//it can be showed correct as usual in chinese, so I'm not translate it.
 		Italian:"Culturale"
@@ -111,6 +111,14 @@
 		Russian:"Культурная"
                 Korean:"문화"
 		Czech:"Kulturní"
+}
+
+	"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!": {
+		Simplified_Chinese:"⚠︎警告！试验性功能！"
+}
+
+	"Online Multiplayer": {
+		Simplified_Chinese:"在线多人游戏"
 }
 
 	// Map sizes
@@ -391,6 +399,7 @@
 		Russian:"Невозможно загрузить игру!"
                 Korean:"게임을 다운로드할 수 없습니다!"
 		Czech:"Nepodařilo se načíst hru!"
+		Simplified_Chinese:"无法下载游戏数据！"
 }
 
 	"Could not upload game!":{
@@ -398,6 +407,7 @@
 		Russian:"Невозможно отправить игру!"
                 Korean:"게임을 업로드할 수 없습니다!"
 		Czech:"Nepodařilo se nahrát hru!"
+		Simplified_Chinese:"无法上传游戏数据！"
 }
 
 	"Join Game":{
@@ -451,14 +461,14 @@
 		Italian:"Per creare una partita multigiocatore, attiva la spunta su 'Multigiocatore' nella schermata Nuova Partita, e inserisci l'ID utente per del giocatore per ogni rispettivo giocatore umano"
                 Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
 		Czech:"Pro vytvoření hry pro více hráčů zaškrtněte 'Více hráčů' na obrazovce s novou hrou a pro každého lidského hráče vložte jeho hráčské ID."
-		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“Online Multiplayer”复选框，同时将每个参与游戏的玩家ID填入他们想扮演文明的“Player ID”文本框内。"
+		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“在线多人游戏”复选框，同时将每个参与游戏的玩家ID填入其想扮演文明的“Player ID”文本框内。"
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
 		Italian:"Puoi assegnarvi facilmente il tuo ID Utente, e altri giocatori possono copiarvi il loro ID Utente e mandartelo per unirsi alla partita."
                 Korean:"당신은 당신의 사용자 ID를 쉽게 거기에 할당할 수 있고, 다른 플레이어는 당신의 사용자 ID를 여기에 복사하여 당신이 게임에 포함하도록 당신에게 보낼 수 있습니다."
 		Czech:"Svoje vlastní ID můžete přiřadit jednoduše, ostatní hráči můžou zkopírovat svoje uživatelské ID tady a poslat vám ho, aby jste je připojil ke hře."
-		Simplified_Chinese:"直接点击“设置为当前玩家”就可以自动填入你自己的玩家ID，对于其他玩家，他们可以点击当前界面“复制玩家ID”按钮将他们的ID复制到剪贴板并通过网络发送给你，你可以将他们的ID填入他们想扮演文明的“Player ID”文本框内使他们加入游戏。"
+		Simplified_Chinese:"直接点击“设置为当前玩家”就可自动填入你自己的玩家ID。对于其他玩家，他们可在终端上打开游戏并在当前界面点击“复制玩家ID”按钮将他们的ID复制到剪贴板，然后通过网络发送给你，你可以在“开始新游戏”界面将接收到的ID填入他们想扮演文明的“Player ID”文本框内使其加入游戏。"
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{

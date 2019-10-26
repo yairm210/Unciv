@@ -890,7 +890,7 @@
 
 	"[resourceName] not required":{
 		Italian:"Risorsa [resourceName] non richiesta"
-		Simplified_Chinese:"无需战略资源[resourceName]"
+		Simplified_Chinese:"无需战略资源：[resourceName]"
 		French:"[resourceName] non requis"
 		Portuguese:"[resourceName] não requirido"
 		Russian:"[resourceName] не требуется",
