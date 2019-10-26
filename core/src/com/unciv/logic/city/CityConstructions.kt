@@ -62,8 +62,9 @@ class CityConstructions {
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
                 && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  }) {
-            result += ("\r\nCost " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
-            result += "\r\n" + turnsToConstruction(currentConstructionSnapshot) + " {turns}".tr()
+            val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
+            result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
+            result += "\r\n" + turnsLeft + (if(turnsLeft>1) " {turns}".tr() else " {turn}".tr())
         }
         return result
     }
@@ -72,8 +73,10 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction // this is because there were rare errors tht I assume were caused because currentContruction changed on another thread
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
-                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot })
-            result += "\r\n{in} ".tr() + turnsToConstruction(currentConstructionSnapshot) + " {turns}".tr()
+                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot }) {
+            val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
+            result += "\r\n" + turnsLeft + (if(turnsLeft>1) " {turns}".tr() else " {turn}".tr())
+        }
         return result
     }
 

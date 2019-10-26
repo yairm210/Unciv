@@ -97,7 +97,7 @@
 		Simplified_Chinese:"回合"
 		Portuguese:"turnos"
 		Japanese:"回る"
-		Czech:"tahy"
+		Czech:"tah(y/ů)"
 }
 
 	"turn":{ // for e.g. "1 turn" to technology
@@ -281,7 +281,7 @@
 		Simplified_Chinese:"驻守"
 		Portuguese:"Fortificar"
 		Japanese:"要塞化"
-		Czech:"Opevnit"
+		Czech:"Opevnit se"
 }
 
 	"Fortification":{ // as in "+40% Fortification"
@@ -309,7 +309,7 @@
 		Russian:"Спать"
 		Dutch:"Slaap"
 		Spanish:"Dormir"
-		Czech:"Uspat"
+		Czech:"Spánek"
 }
 
 	"Moving": { //sample would be appreciated
@@ -1634,6 +1634,10 @@
 		Czech:"Budovy"
 }
 
+	"Tiles":{
+		Czech:"Políčka"
+}
+
 	"Wonders":{
 		Italian:"Meraviglie"
 		Romanian:"Minuni"
@@ -1817,11 +1821,15 @@
 		Portuguese:"Cidade mais próxima"
 		German:"Nächstgelegene Stadt"
 		Czech:"Nejbližší město"
-},
+}
+
 	"Action":{ // Overview -> Units - Action (Header)
 		Czech:"Činnost"
-	},
+}
 
+	"automation":{ // Overview -> Units - Action (column)
+		Czech:"Autopilot"
+}
 
 	"Defeated":{
 		Italian:"Sconfitto"
@@ -2194,6 +2202,10 @@
 		Czech:"Unikátní pro [civName], nahrazuje [unitName]"
 }
 
+	"Tutorials": {
+		"Czech": "Návody"
+}
+
 	"Cost":{
 		Italian:"Costo"
 		Simplified_Chinese:"花费"
@@ -2384,6 +2396,26 @@
 		Simplified_Chinese:"设施"
 		Russian:"Улучшения"
 		Czech:"Vylepšení"
+}
+
+	"Clear current map":{
+		Czech:"Vyčistit mapu"
+}
+
+	"Save map":{
+		Czech:"Uložit mapu"
+}
+
+	"Load map":{
+		Czech:"Načíst mapu"
+}
+
+	"Download map":{
+		Czech:"Stáhnout mapu"
+}
+
+	"Exit map editor":{
+		Czech:"Ukončit editování mapy"
 }
 
 	"[nation] starting location":{

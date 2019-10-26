@@ -588,7 +588,7 @@
 		Simplified_Chinese:"游戏存档名称"
 		Portuguese:"Nome do jogo salvo"
                 Korean:"저장된 게임 이름"
-		Czech:"Uložit hru pod jménem"
+		Czech:"Uložit hru jako"
 }
 
 	"Copy to clipboard":{ //this button exsits in "Save game" and "Map editor", it means that we can copy "current game status" to clipboard, "current game status" is not a existing file but some words.
@@ -682,12 +682,12 @@
 		Czech:"Jste si jistý(á), že chcete smazat tuto mapu?"
 }
 
-	"Upload":{
+	"Upload map":{
 		Simplified_Chinese:"上传"
 		Italian:"Carica"
 		Russian:"Отправить"
                 Korean:"업로드"
-  		Czech:"Nahrát"
+  		Czech:"Nahrát mapu"
 }
 
 	"Could not upload map!":{
@@ -781,10 +781,12 @@
 
 	"Show worked tiles":{
 		Simplified_Chinese:"显示工作地块"
+		Czech:"Zobrazit obdělávané políčka"
 }
 
 	"Show resources and improvements":{
 		Simplified_Chinese:"显示资源与地块设施"
+		Czech:"Zobrazit zdroje a vylepšení"
 }
 
 	"Check for idle units":{
