@@ -187,7 +187,8 @@
 
 	"Range":{
 		Italian:"Raggio"
-		Simplified_Chinese:"攻击范围"
+		Simplified_Chinese:"攻击范围",
+		Czech:"Vzdálenost"
 	}
 
 /////// Unit actions
@@ -1125,7 +1126,7 @@
 		French:"[greatPerson] points"
 		Simplified_Chinese:"[greatPerson]点数"
 	    	Russian:"Очки [greatPerson]",
-		Czech:"[greatPerson] bodů"
+		Czech:"[greatPerson] - body"
 }
 
 	"Great person points":{ // e.g ?
@@ -1664,10 +1665,17 @@
 
 	"Base values":{ 
 		Italian:"Valori di base"
+		Czech:"Základ"
 }
+
+	"Bonuses":{
+		Czech:"Bonusy"
+}
+
 
 	"Final":{ //Should be "Final values"
 		Italian:"Valori finali"
+		Czech:"Celkem"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing

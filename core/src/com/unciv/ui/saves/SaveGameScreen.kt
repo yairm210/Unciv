@@ -26,7 +26,7 @@ class SaveGameScreen : PickerScreen() {
         topTable.add(ScrollPane(currentSaves)).height(stage.height*2/3)
 
         val newSave = Table()
-        val defaultSaveName = game.gameInfo.currentPlayer+" -  "+game.gameInfo.turns+" "+"turns".tr()
+        val defaultSaveName = game.gameInfo.currentPlayer+" -  "+game.gameInfo.turns+" turns"
         textField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()
