@@ -140,7 +140,7 @@ class WorkerAutomation(val unit: MapUnit) {
     }
 
     private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        if (!tile.isLand || tile.getBaseTerrain().impassable)
+        if (!tile.isLand || tile.getBaseTerrain().impassable || tile.isCityCenter())
             return false
         val city=tile.getCity()
         if (city == null || city.civInfo != civInfo)
@@ -149,11 +149,12 @@ class WorkerAutomation(val unit: MapUnit) {
         if(tile.improvement==null){
             if(tile.improvementInProgress!=null) return true
             val chosenImprovement = chooseImprovement(tile, civInfo)
-            if(chosenImprovement!=null) return true
+            if(chosenImprovement!=null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
         }
         else{
             if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-                    && tile.getTileResource().improvement != tile.improvement)
+                    && tile.getTileResource().improvement != tile.improvement
+                    && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
                 return true
         }
 

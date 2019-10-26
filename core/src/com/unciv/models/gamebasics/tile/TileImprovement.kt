@@ -22,7 +22,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
-        var realTurnsToBuild = turnsToBuild.toFloat()
+        var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         if (civInfo.containsBuildingUnique("Worker construction increased 25%"))
             realTurnsToBuild *= 0.75f
         if (civInfo.policies.isAdopted("Citizenship"))

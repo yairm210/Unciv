@@ -30,17 +30,19 @@ Made with LibGDX on Android Studio
 * Multiplayer (hotseat and across internet)
 * Map editor
 
-# What's next?
+# What's the roadmap?
 
-* UI+UX improvements (suggestions welcome!)
-* Filling out gaps (missing civs etc)
+Is this order:
 
+* Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
+    * UI+UX improvements (suggestions welcome!)
+    * Filling out gaps (missing civs, wonders, etc)
+    * Better automation, AI etc.
+    
+* Missing features from Vanilla - Natural wonders, city-state quests, rivers etc.
+* G&K mechanics - religion, faith etc.
+* BNW mechanics - trade routes etc.
 
-I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
-
-# Desktop play
-
-You can play Unciv on any desktop using the Bluestacks emulator!
 
 # FAQ
 
@@ -67,6 +69,18 @@ The​​​ translation​ files are at​​​ https://github.com/yairm210/Un
 When you feel that you're ready to add your​​​ translation​​ to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
 
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
+
+## Will you implement Civ VI?
+
+Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
+
+## Is there a desktop version?
+
+Unciv is developed with LibGDX, which supports desktop.
+
+However, it's difficult enough for me to handle one release cycle (on Google Play), so I'm not planning on creating a second release cycle for desktop.
+
+If you really want to, you could install Android Studio and build it yourself :)
 
 ## How can I help?
 
