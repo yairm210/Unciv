@@ -94,10 +94,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.background = ImageGetter.getBackground(Color.BLACK)
 
         val units = ArrayList<Table>()
-        for (unit in GameBasics.Units.values.filter { it.shouldBeDisplayed(cityConstructions) })
+        for (unit in GameBasics.Units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
+            val turnsToUnit = cityConstructions.turnsToConstruction(unit.name)
             units += getProductionButton(unit.name,
-                    unit.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
+                    unit.name.tr() + "\r\n" + turnsToUnit + (if(turnsToUnit>1) " {turns}".tr() else " {turn}".tr()),
                     unit.getRejectionReason(cityConstructions))
+        }
 
         constructionPickerTable.addCategory("Units",units)
 
@@ -107,8 +109,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         for (building in GameBasics.Buildings.values) {
             if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
+            val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             val productionTextButton = getProductionButton(building.name,
-                    building.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
+                    building.name.tr() + "\r\n" + turnsToBuilding + (if(turnsToBuilding>1) " {turns}".tr() else " {turn}".tr()),
                     building.getRejectionReason(cityConstructions)
                     )
             if (building.isWonder)

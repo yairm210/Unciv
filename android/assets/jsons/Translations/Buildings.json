@@ -1267,6 +1267,7 @@
 		French:"Cour de Satrape"
 		Polish:"Dwór Satrapy"
 		Simplified_Chinese:"总督府"
+		Czech:"Satrapův dvůr"
 }
 
 	"Forbidden Palace":{
@@ -2191,7 +2192,7 @@
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует [buildingName] во всех городах",
-		Czech:"Vyžaduje budovu [buildingName] ve všech městech"
+		Czech:"Vyžaduje: [buildingName] ve všech městech"
 }
 
 	"Requires a [buildingName] in this city":{
@@ -2201,7 +2202,7 @@
 		Portuguese:"Requer um [buildingName] nessa cidade"
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
 		Russian:"Требует [buildingName] в городе",
-		Czech:"Vyžaduje budovu [buildingName] v tomto městě"
+		Czech:"Vyžaduje: [buildingName] v tomto městě"
 }
 
 	"Requires [resource]":{

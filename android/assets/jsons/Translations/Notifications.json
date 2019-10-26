@@ -141,7 +141,7 @@
 		Simplified_Chinese:"[construction]已经在[cityName]被建造"
 		Portuguese:"o(a) [construction] foi construirdo em [cityName]"
 		Japanese:"[construction]は[cityName]に建てられました",
-		Czech:"Stavba [construction] byla vybudována ve městě [cityName]"
+		Czech:"[construction] - stavba dokončena ve městě [cityName]"
 	}
 
 	"[wonder] has been built in a faraway land":{
