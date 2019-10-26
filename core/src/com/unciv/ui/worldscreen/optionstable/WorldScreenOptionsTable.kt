@@ -1,7 +1,5 @@
 package com.unciv.ui.worldscreen.optionstable
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -14,8 +12,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
-import java.io.IOException
-import kotlin.concurrent.thread
 
 class Language(val language:String){
     val percentComplete:Int
@@ -109,8 +105,6 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         }
 
         addLanguageSelectBox(innerTable)
-
-        addFontSelectBox(innerTable)
 
         addResolutionSelectBox(innerTable)
 
@@ -228,62 +222,6 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
                 update()
             }
         })
-    }
-
-    private fun addFontSelectBox(innerTable: PopupTable) {
-        innerTable.add("Fontset".toLabel())
-        val FontSetSelectBox = SelectBox<String>(skin)
-        val FontSetArray = Array<String>()
-        FontSetArray.add("NativeFont(Recommended)")
-        FontSetArray.add("WenQuanYiMicroHei")
-        FontSetSelectBox.items = FontSetArray
-        FontSetSelectBox.selected = UnCivGame.Current.settings.fontSet
-        innerTable.add(FontSetSelectBox).pad(10f).row()
-
-        FontSetSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
-                if (FontSetSelectBox.selected == "NativeFont(Recommended)"||Fonts().containsFont()) {
-                    selectFont()
-                }
-                else {
-                    YesNoPopupTable("This Font requires you to download fonts.\n" +
-                            "Do you want to download fonts(about 4.2MB)?",
-                            {
-                                val downloadingFontPopup = PopupTable(screen)
-                                downloadingFontPopup.add("Downloading...\n".toLabel()).row()
-                                downloadingFontPopup.add("Warning:Don't switch this game to background until download finished.".toLabel().setFontColor(Color.RED)).row()
-                                downloadingFontPopup.open()
-                                Gdx.input.inputProcessor = null
-                                thread {
-                                    try {
-                                        Fonts().download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf", "WenQuanYiMicroHei")//This font is licensed under Apache2.0 or GPLv3
-                                        Gdx.app.postRunnable {
-                                            selectFont()
-                                        }
-                                    }
-                                    catch (e: IOException) {
-                                        Gdx.app.postRunnable {
-                                            FontSetSelectBox.selected = "NativeFont(Recommended)"
-                                            val downloadFailedPopup = PopupTable(UnCivGame.Current.worldScreen)
-                                            downloadFailedPopup.add("Download failed!\nPlease check your internet connection.".toLabel().setFontColor(Color.RED)).row()
-                                            downloadFailedPopup.addCloseButton()
-                                            downloadFailedPopup.open()
-                                        }
-                                    }
-                                }
-                            }, UnCivGame.Current.worldScreen, {FontSetSelectBox.selected = "NativeFont(Recommended)"})
-                }
-            }
-        })
-    }
-
-    fun selectFont(){
-        UnCivGame.Current.settings.save()
-        CameraStageBaseScreen.resetFonts()
-        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-        UnCivGame.Current.setWorldScreen()
-        WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
     }
 
     private fun addLanguageSelectBox(innerTable: PopupTable) {

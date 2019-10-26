@@ -1,14 +1,9 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tr
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 import core.java.nativefont.NativeFont
 import core.java.nativefont.NativeFontPaint
 import java.io.FileInputStream
@@ -87,36 +82,6 @@ class Fonts {
     }
 
    fun getFont(size: Int): BitmapFont {
-
-       if(UnCivGame.Current.settings.fontSet=="WenQuanYiMicroHei"){
-           val fontForLanguage="WenQuanYiMicroHei"
-           val keyForFont = "$fontForLanguage $size"
-           if (fontCache.containsKey(keyForFont))
-               return fontCache[keyForFont]!!
-           if (getMD5(fontForLanguage)!="96574d6f2f2bbd4a3ce56979623b1952"){
-               Gdx.files.local("fonts/$fontForLanguage.ttf").delete()
-               UnCivGame.Current.settings.fontSet="NativeFont(Recommended)"
-               Gdx.app.postRunnable {
-                   val checksumFailed = PopupTable(UnCivGame.Current.worldScreen)
-                   checksumFailed.add("Checksum error!\nIf you want to use the font \"WenQuanYiMicroHei\", please download again.".toLabel().setFontColor(Color.RED)).row()
-                   checksumFailed.addButton("Close".tr()) { checksumFailed.remove() }.row()
-                   checksumFailed.open()
-               }
-           }
-
-           else {
-               val generator = FreeTypeFontGenerator(Gdx.files.local("fonts/WenQuanYiMicroHei.ttf"))
-               val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
-               parameter.size = size
-               parameter.minFilter = Texture.TextureFilter.Linear
-               parameter.magFilter = Texture.TextureFilter.Linear
-               parameter.characters = getCharactersForFont(UnCivGame.Current.settings.language)
-               val font = generator.generateFont(parameter)
-               fontCache[keyForFont] = font
-               return font
-           }
-       }
-
        val language = UnCivGame.Current.settings.language
        val fontForLanguage ="Nativefont"
        val isUniqueFont = language.contains("Chinese") || language == "Korean"
