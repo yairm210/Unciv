@@ -143,7 +143,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
         val happinessBreakdown = currentPlayerCivInfo.stats().getHappinessBreakdown()
 
-        for (entry in happinessBreakdown) {
+        for (entry in happinessBreakdown.filterNot { it.value.roundToInt()==0 }) {
             happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.roundToInt().toString()).row()
         }
@@ -312,7 +312,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             }
             table.add(button).left()
             val mapUnitAction = unit.mapUnitAction
-            if (mapUnitAction != null) table.add(mapUnitAction.name().tr()) else table.add()
+            if (mapUnitAction != null) table.add(if(mapUnitAction.name().startsWith("Fortify")) "Fortify".tr() else mapUnitAction.name().tr()) else table.add()
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())

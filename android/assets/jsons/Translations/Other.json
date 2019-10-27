@@ -47,7 +47,7 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-		Simplified_Chinese:"建造/组建完成需"
+		Simplified_Chinese:"完成需"
 		Portuguese:"em"
 		Japanese:"に"
 		Czech:"v"
@@ -618,16 +618,18 @@
 		Portuguese:"IDADE DOURADA"
 		Japanese:"黄金時代"
 		Czech:"ZLATÝ VĚK"
-},
+}
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
 	"[year] BC":{ // Before Christus
 		Czech:"[year] př. n. l."
-	},
+		Simplified_Chinese:"公元前[year]年"
+	}
 
 	"[year] AD":{ // Anno Domini
 		Czech:"[year] n. l."
-	},
+		Simplified_Chinese:"公元[year]年"
+	}
 
 /////// Menu table
 
@@ -861,12 +863,14 @@
 }
 
 	"Provides [resource]":{
-		Czech:"Poskytuje [resource]"
-	},
-
+		Simplified_Chinese:"获得资源：[resource]"
+		Czech:"Poskytuje [resource]"	
+	}
+	
 	"Replaces [improvement]":{
+		Simplified_Chinese:"替换现有设施：[improvement]"
 		Czech:"Nahrazuje [improvement]"
-	},
+	}
 
 	"Pick now!": { //sample needed
 		Italian: "Scegli ora!"
@@ -1617,11 +1621,12 @@
 		Portuguese:"Felicidade base"
 		German:"Grundzufriedenheit"
 		Czech:"Základní spokojenost"
-},
+}
 
 	"Occupied City": {
-		"Czech":"Obsazená města"
-	},
+		Czech:"Obsazená města"
+		Simplified_Chinese:"吞并的城市"
+	}
 
 	"Buildings":{
 		Italian:"Edifici"
@@ -1665,16 +1670,19 @@
 
 	"Base values":{ 
 		Italian:"Valori di base"
+		Simplified_Chinese:"基础产出"
 		Czech:"Základ"
 }
 
 	"Bonuses":{
 		Czech:"Bonusy"
+		Simplified_Chinese:"相关加成"
 }
 
 
 	"Final":{ //Should be "Final values"
 		Italian:"Valori finali"
+		Simplified_Chinese:"实际产出"
 		Czech:"Celkem"
 }
 
@@ -1825,7 +1833,7 @@
 		French:"Ville la plus proche"
 		Romanian:"Cel mai apropiat oraș"
 		Spanish:"Ciudad más cercana"
-		Simplified_Chinese:"最靠近的城市"
+		Simplified_Chinese:"最近的城市"
 		Portuguese:"Cidade mais próxima"
 		German:"Nächstgelegene Stadt"
 		Czech:"Nejbližší město"
@@ -1833,10 +1841,7 @@
 
 	"Action":{ // Overview -> Units - Action (Header)
 		Czech:"Činnost"
-}
-
-	"automation":{ // Overview -> Units - Action (column)
-		Czech:"Autopilot"
+		Simplified_Chinese:"行动"
 }
 
 	"Defeated":{
@@ -1849,6 +1854,10 @@
 		Portuguese:"Derrotado"
 		Simplified_Chinese:"战败"
 		Czech:"Poražený(á)"
+}
+
+	"Tiles":{
+		Simplified_Chinese:"地块"
 }
 
 ////// Victory Screen

@@ -46,7 +46,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addIsOnlineMultiplayerCheckbox() {
 
-        add("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!").colspan(2).row()
+        add("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr()).colspan(2).row()
         val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
         isOnlineMultiplayerCheckbox.isChecked = newGameParameters.isOnlineMultiplayer
         isOnlineMultiplayerCheckbox.addListener(object : ChangeListener() {
