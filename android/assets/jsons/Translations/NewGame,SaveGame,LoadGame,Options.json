@@ -114,10 +114,12 @@
 }
 
 	"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!": {
+		Italian:"IN FASE DI PRODUZIONE - TI ABBIAMO AVVERTITO!"
 		Simplified_Chinese:"⚠︎警告！试验性功能！"
 }
 
 	"Online Multiplayer": {
+		Italian:"Multiplayer online"
 		Simplified_Chinese:"在线多人游戏"
 }
 
@@ -790,11 +792,13 @@
 }
 
 	"Show worked tiles":{
+		Italian:"Mostra caselle sfruttate"
 		Simplified_Chinese:"显示工作地块"
 		Czech:"Zobrazit obdělávané políčka"
 }
 
 	"Show resources and improvements":{
+		Italian:"Mostra risorse e miglioramenti"
 		Simplified_Chinese:"显示资源与地块设施"
 		Czech:"Zobrazit zdroje a vylepšení"
 }
@@ -852,10 +856,12 @@
 }
 
 	"Show pixel units":{
+		Italian:"Mostra unità pixel"
 		Simplified_Chinese:"显示像素单位"
 }
 
 	"Show pixel improvements":{
+		Italian:"Mostra miglioramenti pixel"
 		Simplified_Chinese:"显示像素地块设施"
 }
 
