@@ -70,6 +70,10 @@ When you feel that you're ready to add your​​​ translation​​ to the ga
 
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
 
+You don't need to download anything, all translation work can be done on the Github website :)
+
+Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
+
 ## Will you implement Civ VI?
 
 Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
