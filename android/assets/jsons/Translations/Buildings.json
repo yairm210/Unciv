@@ -72,6 +72,7 @@
 		Russian:"Не может быть построено на равнинах"
 		Simplified_Chinese:"城市不能位于平原"
 		Czech:"Nesmí být na pláních."
+		German:"Darf nicht auf dem Flachland sein."
 }
 
 	"Stonehenge":{
@@ -84,6 +85,7 @@
 		Portuguese:"Stonehenge"
 		Polish:"Stonehenge"
 		Czech:"Stonehenge"
+		German:"Stonehenge"
 }
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
@@ -177,6 +179,7 @@
 		Simplified_Chinese:"获得1项免费科技"
 		Czech:"Technologie zdarma"
 		Polish:"Darmowa technologia"
+		German:"Kostenlose Technologie"
 }
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
@@ -220,6 +223,7 @@
 		Polish:"Mury Babilonu"
 		Russian:"Стены Вавилона"
 		Czech:"Babylonské hradby"
+		German:"Babylons Mauern"
 }
 
 	"The Pyramids":{
@@ -313,6 +317,7 @@
 		Polish:"Kolos Rodyjski"
 		Russian:"Колосс Родосский"
 		Czech:"Rhodský kolos"
+		German:"Koloss"
 }
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -517,6 +522,7 @@
 		Polish:"Sąd"
 		Simplified_Chinese:"法庭"
 		Czech:"Soud"
+		German:"Gerichtsgebäude"
 }
 
 	"Remove extra unhappiness from annexed cities":{
@@ -525,6 +531,7 @@
 		Polish:"Usuwa niezadowolenie z okupowanych miast"
 		Simplified_Chinese:"消除来自吞并的城市的额外不满"
 		Czech:"Odstraní nespokojenost občanů v anektovaných městech"
+		German:"Entferne zusätzliche Unzufriedenheit von annektierten Städten"
 }
 
 	"Can only be built in annexed cities":{
@@ -532,6 +539,7 @@
 		Simplified_Chinese:"只能建造在吞并的城市"
 		Czech:"Lze vybudovat pouze v anektovaných městech"
 		Polish:"Budowa możliwa tylko w okupowanych miastach"
+		German:"Kann nur in annektierten Städten gebaut werden."
 
 }
 
@@ -588,6 +596,7 @@
 		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
 		Simplified_Chinese:"“我相信如果有凡人能听到神谕，那一定是在天气凉爽时的花园之中。”——弗兰克·法兰克福·摩尔（英国作家）"
 		Polish:"'Gdyby śmiertelnik usłyszał głos Pana Boga, znalazłby w sadzie wraz z wiatren dniowym.' - F. Frankfort Moore" //hard to translate
+		German:"'Wenn ein sterbliches Wesen je die Stimme Gottes hören würde, dann in einem Garten beim Wehen des Abendwindes.' - F. Frankfort Moore"
 }
 
 	/*
@@ -673,7 +682,7 @@
 		Spanish:"Coliseo"
 		Simplified_Chinese:"竞技场"
 		Portuguese:"Coliseu"
-		German:"Collosseum"
+		German:"Kolosseum"
 		Polish:"Koloseum"
 		Czech:"Koloseum"
 }
@@ -685,12 +694,14 @@
 		Polish:"Terakotowa Armia"
 		Russian:"Терракотовая армия"
 		Czech:"Terakotová armáda"
+		German:"Terrakotta Armee"
 }
 
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
 		Italian:"'Trattate i soldati come figli, e vi seguiranno nelle valli più profonde; considerateli la vostra amata progenie, e resteranno accanto a voi fino alla morte.' - Sun Tzu"
 		Simplified_Chinese:"“视卒如婴儿，故可以与之赴深溪；视卒如爱子，故可与之俱死。”——孙子"
 		Polish:"'Traktuj swoich żołnierzy jak ukochane dzieci, a z chęcią zginą wraz z Tobą.' - Sun Tzu"
+		German:"'Behandle Deine Soldaten als seien sie Deine Kinder und sie werden Dir in die tiefsten Täler folgen; betrachte sie als Deine geliebten Söhne und sie werden an Deiner Seite stehen, sogar bis zum Tode.' -Sun Tzu"
 }
 
 	"Market":{
@@ -772,6 +783,7 @@
 		Italian:"'L'architettura ha registrato le più grandi idee della razza umana. Non solo ogni simbolo religioso, ma ogni pensiero umano ha la sua pagina in quel vasto libro.' - Victor Hugo"
 		Simplified_Chinese:"“建筑记录了人类所有的伟大理念：不仅包括每一种宗教符号，还包括人类思想史的每一页。”——维克多·雨果"
 		Polish:"'Architektura to zapis wspaniałych idei ludzkości. W tej obszernej księdze swe miejsce ma nie tylko każdy symbol religijny, ale także każda myśl człowiecza.' - Victor Hugo"
+		German:"'Die Architektur hat viele großartige Ideen der Menschheit festgehalten. Nicht nur jedes religiöse Symbol, sondern auch jeder menschliche Gedanke hat seine eigene Seite in diesem gewaltigen Buch.' - Victor Hugo"
 }
 
 	"Hagia Sophia":{
@@ -1251,6 +1263,7 @@
 		French:"Hanse" //same in French
 		Polish:"Hanza"
 		Russian:"Ганзея"
+		Czech:"Hanza"
 }
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
@@ -1267,6 +1280,7 @@
 		French:"Cour de Satrape"
 		Polish:"Dwór Satrapy"
 		Simplified_Chinese:"总督府"
+		Czech:"Satrapův dvůr"
 }
 
 	"Forbidden Palace":{
@@ -2191,7 +2205,7 @@
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует [buildingName] во всех городах",
-		Czech:"Vyžaduje budovu [buildingName] ve všech městech"
+		Czech:"Vyžaduje: [buildingName] ve všech městech"
 }
 
 	"Requires a [buildingName] in this city":{
@@ -2201,7 +2215,7 @@
 		Portuguese:"Requer um [buildingName] nessa cidade"
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
 		Russian:"Требует [buildingName] в городе",
-		Czech:"Vyžaduje budovu [buildingName] v tomto městě"
+		Czech:"Vyžaduje: [buildingName] v tomto městě"
 }
 
 	"Requires [resource]":{
