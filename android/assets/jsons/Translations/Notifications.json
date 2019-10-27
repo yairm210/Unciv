@@ -138,7 +138,7 @@
 		German:"[construction] wurde in [cityName] fertiggestellt"
 		Dutch:"[construction] is gebouwd in [cityName]"
 		Spanish:"[construction] se ha construido en [cityName]"
-		Simplified_Chinese:"[construction]已经在[cityName]被建造"
+		Simplified_Chinese:"[construction]已经在[cityName]被建造/组建"
 		Portuguese:"o(a) [construction] foi construirdo em [cityName]"
 		Japanese:"[construction]は[cityName]に建てられました",
 		Czech:"Stavba [construction] byla vybudována ve městě [cityName]"

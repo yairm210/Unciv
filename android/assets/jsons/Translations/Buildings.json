@@ -523,13 +523,13 @@
 		Italian:"Elimina l'Infelicità extra proveniente dalle Città occupate"
 		French:"Enlève le mécontentement supplémentaire des villes occupées"
 		Polish:"Usuwa niezadowolenie z okupowanych miast"
-		Simplified_Chinese:"消除来自被占领城市的额外不满"
+		Simplified_Chinese:"消除来自吞并的城市的额外不满"
 		Czech:"Odstraní nespokojenost občanů v anektovaných městech"
 }
 
 	"Can only be built in annexed cities":{
 		Italian:"Costruibile solamente nelle città annesse"
-		Simplified_Chinese:"只能建造在被占领城市"
+		Simplified_Chinese:"只能建造在吞并的城市"
 		Czech:"Lze vybudovat pouze v anektovaných městech"
 		Polish:"Budowa możliwa tylko w okupowanych miastach"
 

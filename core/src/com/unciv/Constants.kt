@@ -28,7 +28,7 @@ class Constants{
 
         val unitActionSetUp = "Set Up"
         val unitActionSleep = "Sleep"
-        val unitActionAutomation = "automation"
+        val unitActionAutomation = "Automate"
         val unitActionExplore = "Explore"
         val futureTech = "Future Tech"
 
