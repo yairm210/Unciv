@@ -61,7 +61,7 @@
 		Portuguese:"Deseja declarar guerra a [civName]?"
                 Polish:"Wypowiedz wojnę cywilizacji [civName]"
 		Russian:"Объявить войну [civName]?",
-		Czech:"Vyhlásili jsme válku civilizaci [civName]"
+		Czech:"Vyhlásit válku civilizaci [civName]?"
 }
 
 	"[civName] has declared war on us!":{
@@ -74,7 +74,7 @@
 		Portuguese:"[civName] declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
                 Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!",
-		Czech:"Civilizace [civName] nám vyhlásila válku"
+		Czech:"Civilizace [civName] nám vyhlásila válku!"
 }
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -628,7 +628,7 @@
 		Simplified_Chinese:"提供贸易"
 		Portuguese:"Oferecer uma troca comercial" // seems like not one person wants to :D
 		German:"Handel anbieten"
-		Czech:"Obchodní nabídka"
+		Czech:"Učinit nabídku"
 }
 
 	"Retract offer":{
