@@ -132,7 +132,7 @@ class CityInfo {
                 val improvement = GameBasics.TileImprovements[resource.improvement!!]!!
                 if(improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired!!)) continue
             }
-            
+
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
                     // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
                     || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){

@@ -146,6 +146,11 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
             remove()
         }
 
+        addButton("Patreon"){
+            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            remove()
+        }
+
         addCloseButton()
 
         open()
