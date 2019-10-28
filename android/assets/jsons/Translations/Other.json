@@ -1440,8 +1440,15 @@
 
 	"Captured!":{// Shown in the battle table when attacking a civilian unit
 		Italian:"Cattura!"
+		Russian:"Захвачен!"
+		French:"Capturé!"
+		Romanian:"Capturat!"
+		German:"Gefangen!"
+		Dutch:"Gevangen!"
+		Spanish:"Capturada!"
 		Simplified_Chinese:"可以俘虏！"
-		Czech:"Zajat(a/o)"
+		Portuguese:"Capturado(a)!"
+		Czech:"Zajat(a/o)!"
 }
 
 	"defence vs ranged":{
