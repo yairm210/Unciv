@@ -626,11 +626,13 @@
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
 	"[year] BC":{ // Before Christus
+		Italian:"[year] a.C."
 		Czech:"[year] př. n. l."
 		Simplified_Chinese:"公元前[year]年"
 	}
 
 	"[year] AD":{ // Anno Domini
+		Italian:"[year] d.C."
 		Czech:"[year] n. l."
 		Simplified_Chinese:"公元[year]年"
 	}
@@ -867,11 +869,13 @@
 }
 
 	"Provides [resource]":{
+		Italian:"Dona [resource]"
 		Simplified_Chinese:"获得资源：[resource]"
 		Czech:"Poskytuje [resource]"	
 	}
 	
 	"Replaces [improvement]":{
+		Italian:"Sostituisce [improvement]"
 		Simplified_Chinese:"替换现有设施：[improvement]"
 		Czech:"Nahrazuje [improvement]"
 	}
@@ -1638,6 +1642,7 @@
 }
 
 	"Occupied City": {
+		Italian:"Città occupata"
 		Czech:"Obsazená města"
 		Simplified_Chinese:"吞并的城市"
 	}
@@ -1655,6 +1660,7 @@
 }
 
 	"Tiles":{
+		Italian:"Caselle"
 		Czech:"Políčka"
 }
 
@@ -1689,6 +1695,7 @@
 }
 
 	"Bonuses":{
+		Italian:"Bonus"
 		Czech:"Bonusy"
 		Simplified_Chinese:"相关加成"
 }
@@ -1854,6 +1861,7 @@
 }
 
 	"Action":{ // Overview -> Units - Action (Header)
+		Italian:"Azione"
 		Czech:"Činnost"
 		Simplified_Chinese:"行动"
 }
@@ -1871,6 +1879,7 @@
 }
 
 	"Tiles":{
+		Italian:"Caselle"
 		Simplified_Chinese:"地块"
 }
 
@@ -2234,6 +2243,7 @@
 }
 
 	"Tutorials": {
+		Italian:"Tutorial"
 		Czech:"Návody"
 		Simplified_Chinese:"教程"
 }
@@ -2431,26 +2441,31 @@
 }
 
 	"Clear current map":{
+		Italian:"Ripulisci mappa"
 		Czech:"Vyčistit mapu"
 		Simplified_Chinese:"清除当前地图"
 }
 
 	"Save map":{
+		Italian:"Salva mappa"
 		Czech:"Uložit mapu"
 		Simplified_Chinese:"保存地图"
 }
 
 	"Load map":{
+		Italian:"Carica mappa"
 		Czech:"Načíst mapu"
 		Simplified_Chinese:"读取地图"
 }
 
 	"Download map":{
+		Italian:"Scarica mappa"
 		Czech:"Stáhnout mapu"
 		Simplified_Chinese:"下载地图"
 }
 
 	"Exit map editor":{
+		Italian:"Esci dall'editor"
 		Czech:"Ukončit editování mapy"
 		Simplified_Chinese:"退出地图编辑器"
 }
