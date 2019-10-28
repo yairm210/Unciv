@@ -989,7 +989,7 @@
 		French:"Nourriture consommée"
 		Portuguese:"Comida consumida"
 		Russian:"Потребление еды"
-		Czech:""
+		Czech:"Spotřeba jídla"
 }
 
 	"Growth bonus":{
@@ -1251,7 +1251,7 @@
 		Simplified_Chinese:"解锁单位"
 		Portuguese:"Unidades ativadas"
 		Japanese:"有効な単位"
-		Czech:"Odemyká jednotky"
+		Czech:"Lze stavět jednotky"
 }
 
 	"Buildings enabled":{
@@ -1265,7 +1265,7 @@
 		Simplified_Chinese:"解锁建筑"
 		Portuguese:"Construções habilitadas"
 		Japanese:"有効な建物"
-		Czech:"Odemyká budovy"
+		Czech:"Lze stavět budovy"
 }
 
 	"Wonder":{
@@ -1560,7 +1560,7 @@
 		Simplified_Chinese:"[policyBranch]分支解锁!"
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet",
-		Czech:"[policyBranch] politika byla odemčena"
+		Czech:"Zpřístupněna větev sociální politiky: [policyBranch]"
 }
 
 

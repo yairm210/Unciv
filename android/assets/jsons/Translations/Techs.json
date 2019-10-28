@@ -428,7 +428,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"允许签订开放边境协定"
 		French:"Permet l'accord des frontières ouvertes"
 		Russian:"Открывает Договор об открытых границах"
-		Czech:"Odemyká Dohodu o otevřených hranicích"
+		Czech:"Lze uzavřít Dohodu o otevřených hranicích"
 }
 
 	"Guilds":{
@@ -1463,7 +1463,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"可将城市产能转化为科研"
 		Portuguese:"Habilita a conversão de produção das cidades para ciência"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Wissenschaft"
-		Czech:"Odemyká přeměnu městské produkce na výzkum"
+		Czech:"Dovoluje přepnout městskou produkci na výzkum"
 }
 
 	"Enables conversion of city production to gold":{
@@ -1475,7 +1475,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"可将城市产能转化为金钱"
 		Portuguese:"Habilita a conversão da produção das cidades para ouro"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold",
-		Czech:"Odemyká přeměnu městské produkce na zlato"
+		Czech:"Dovoluje přepnout městskou produkci na zlato"
 }
 
 	"Enables embarkation for land units":{
@@ -1487,7 +1487,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"Позволяет наземным единицам передвигаться по воде"
 		Simplified_Chinese:"陆军单位拥有船运能力"
 		Portuguese:"Permite o embarque de unidades terrestres"
-		Czech:"Odemyká možnost nalodit se pozemním jednotkám"
+		Czech:"Zpřístupní možnost nalodění se pozemním jednotkám"
 }
 
 	"Enables embarked units to enter ocean tiles":{
