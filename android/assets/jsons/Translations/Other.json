@@ -620,6 +620,10 @@
 		Czech:"ZLATÝ VĚK"
 }
 
+	"Golden Age":{
+	Simplified_Chinese:"黄金时代"
+}
+
 	// You don't have to translate this is it's good for your language, but some languages have their own display
 	"[year] BC":{ // Before Christus
 		Czech:"[year] př. n. l."
@@ -668,7 +672,7 @@
 		German:"Spiel speichern"
 		Dutch:"Spel opslaan"
 		Spanish:"Salvar partida"
-		Simplified_Chinese:"储存游戏"
+		Simplified_Chinese:"保存游戏"
 		Portuguese:"Salvar jogo"
 		Japanese:"ゲームを保存する"
 		Czech:"Uložit hru"
@@ -1407,17 +1411,8 @@
 		Czech:"Zdraví města"
 }
 
-	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
-		Italian:"Cattura"
-		Russian:"Захвачен"
-		French:"Capturé"
-		Romanian:"Capturat"
-		German:"Gefangen"
-		Dutch:"Gevangen"
-		Spanish:"Capturada"
-		Simplified_Chinese:"被占领"
-		Portuguese:"Capturado(a)"
-		Czech:"Zajat(a/o)"
+	"Occupied!":{ // Shown in the battle table when attacking a defeated city
+		Simplified_Chinese:"可以占领！"
 }
 
 	"Attack":{
@@ -1439,15 +1434,15 @@
 		Czech:"Bombardovat"
 }
 
-	"Captured!":{
+	"Captured!":{// Shown in the battle table when attacking a civilian unit
 		Italian:"Cattura!"
-		Simplified_Chinese:"可被俘虏！"
+		Simplified_Chinese:"可以俘虏！"
 		Czech:"Zajat(a/o)"
 }
 
 	"defence vs ranged":{
 		Italian:"difesa contro unità da tiro"
-		Simplified_Chinese:"对方攻击类型为远程"
+		Simplified_Chinese:"对远程攻击防御"
 		Czech:"obrana v boji na dálku"
 }
 
@@ -1464,6 +1459,25 @@
 		Czech:"[percentage] k obraně jednotky"
 }
 
+	"Attacker Bonus":{
+		Simplified_Chinese:"主动发起攻击"
+}
+
+	"Landing":{
+		Simplified_Chinese:"登陆作战"
+}
+
+	"Flanking":{
+		Simplified_Chinese:"侧翼夹击"
+}
+
+	"vs [unitType]":{
+		Simplified_Chinese:"对战[unitType]"
+}
+
+	"Terrain":{
+		Simplified_Chinese:"地形修正"
+}
 
 ///////// Unit uniques
 
@@ -2220,7 +2234,8 @@
 }
 
 	"Tutorials": {
-		"Czech": "Návody"
+		Czech:"Návody"
+		Simplified_Chinese:"教程"
 }
 
 	"Cost":{
@@ -2417,22 +2432,27 @@
 
 	"Clear current map":{
 		Czech:"Vyčistit mapu"
+		Simplified_Chinese:"清除当前地图"
 }
 
 	"Save map":{
 		Czech:"Uložit mapu"
+		Simplified_Chinese:"保存地图"
 }
 
 	"Load map":{
 		Czech:"Načíst mapu"
+		Simplified_Chinese:"读取地图"
 }
 
 	"Download map":{
 		Czech:"Stáhnout mapu"
+		Simplified_Chinese:"下载地图"
 }
 
 	"Exit map editor":{
 		Czech:"Ukončit editování mapy"
+		Simplified_Chinese:"退出地图编辑器"
 }
 
 	"[nation] starting location":{

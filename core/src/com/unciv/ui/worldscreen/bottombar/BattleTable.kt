@@ -22,6 +22,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private val battle = Battle(worldScreen.viewingCiv.gameInfo)
     init{
+        isVisible = false
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
         pad(5f)
@@ -29,11 +30,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     }
 
     fun hide(){
+        isVisible = false
         clear()
         pack()
     }
 
     fun update() {
+        isVisible = true
         val unitTable = worldScreen.bottomUnitTable
         val attacker : ICombatant?
         if (unitTable.selectedUnit != null
@@ -91,9 +94,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("{Strength}: ".tr()+attacker.getAttackingStrength())
         add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
-        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key.tr()+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender).map { (if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr())+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
         val defenderModifiers = if (defender is MapUnitCombatant)
-                                    BattleDamage().getDefenceModifiers(attacker, defender).map { it.key.tr()+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+                                    BattleDamage().getDefenceModifiers(attacker, defender).map { (if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr())+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
                                 else listOf()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
@@ -128,7 +131,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if(attacker.isMelee() && (defender.getUnitType().isCivilian()
                         || defender.getUnitType()==UnitType.City && defender.isDefeated())) {
             add("")
-            add("{Captured!}".tr())
+            add(if(defender.getUnitType().isCivilian()) "Captured!".tr() else "Occupied!".tr() )
         }
 
 
