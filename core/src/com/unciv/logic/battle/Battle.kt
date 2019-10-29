@@ -101,12 +101,19 @@ class Battle(val gameInfo:GameInfo) {
         if (attacker.getCivInfo() != defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
                     if (attacker !is CityCombatant && attacker.isDefeated()) " was destroyed while attacking"
-                    else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
+                    else " has " + (
+                            if (defender.isDefeated())
+                                if (defender.getUnitType() == UnitType.City && attacker.isMelee())
+                                    "captured"
+                                else "destroyed"
+                            else "attacked")
             val attackerString =
                     if (attacker.getUnitType() == UnitType.City) "Enemy city [" + attacker.getName() + "]"
                     else "An enemy [" + attacker.getName() + "]"
             val defenderString =
-                    if (defender.getUnitType() == UnitType.City) " [" + defender.getName() + "]"
+                    if (defender.getUnitType() == UnitType.City)
+                        if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
+                        else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
             val notificationString = attackerString + whatHappenedString + defenderString
             defender.getCivInfo().addNotification(notificationString, attackedTile.position, Color.RED)

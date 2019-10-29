@@ -670,7 +670,7 @@
 		German:"Gespeichert um"
 		Dutch:"Opgeslagen in"
 		Spanish:"Guardado en"
-		Simplified_Chinese:"存储时间"
+		Simplified_Chinese:"保存时间"
 		Portuguese:"Salvo em"
                 Korean:"저장 시간"
 		Czech:"Uloženo jako"
@@ -680,7 +680,7 @@
 
 	"Load map":{
 		Italian:"Carica mappa"
-		Simplified_Chinese:"载入地图"
+		Simplified_Chinese:"读取地图"
 		Russian:"Загрузить карту"
                 Korean:"지도 불러오기"
 		Czech:"Načíst mapu"
@@ -695,7 +695,7 @@
 }
 
 	"Upload map":{
-		Simplified_Chinese:"上传"
+		Simplified_Chinese:"上传地图"
 		Italian:"Carica"
 		Russian:"Отправить"
                 Korean:"업로드"

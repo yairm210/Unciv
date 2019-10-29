@@ -297,6 +297,10 @@
 		Czech:"Nepřátelská jednotka [unit] zničila naši jednotku [ourUnit]"
 	}
 
+	"An enemy [RangedUnit] has destroyed the defence of [cityname]":{// When Ranged Unit's attack reduces the City's health to 1.
+		Simplified_Chinese:"敌方的[RangedUnit]摧毁了[cityname]的防御"
+	}
+
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
 		Italian:"La città nemica di [cityName] ha distrutto [ourUnit]"
 		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
@@ -419,7 +423,7 @@
 		German:"Die Zivilisation [civName] wurde besiegt!"
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
 		Spanish:"¡La civilización de [civName] ha sido destruida!"
-		Simplified_Chinese:"文明--[civName]已经灭亡！"
+		Simplified_Chinese:"[civName]文明已经灭亡！"
 		Portuguese:"A civilização de [civName] foi destruida!"
 		Japanese:"[civName]の文明は破壊されました！",
 		Czech:"Civilizace [civName] byla zničena!"
@@ -429,7 +433,7 @@
 		Italian:"La Città-Stato di [name] è stata distrutta!"
 		French:"La Cité état [name] a été détruite"
 		Russian:"Город-государство [name] был уничтожен!"
-		Simplified_Chinese:"城邦--[name]已经灭亡！",
+		Simplified_Chinese:"[name]城邦已经灭亡！",
 		Czech:"Městský stát [name] byl zničen!"
 	}
 
