@@ -3,9 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.BFS
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.metadata.GameParameters
 import java.util.*
@@ -18,7 +16,13 @@ class GameStarter{
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
-        gameInfo.tileMap = TileMap(newGameParameters)
+
+        if(newGameParameters.mapType==MapType.file)
+            gameInfo.tileMap = MapSaver().loadMap(newGameParameters.mapFileName!!)
+        else gameInfo.tileMap = MapGenerator().generateMap(newGameParameters)
+
+        gameInfo.tileMap.setTransients()
+
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         gameInfo.difficulty = newGameParameters.difficulty
 
@@ -74,7 +78,7 @@ class GameStarter{
                         .map { it.improvement!!.replace("StartingLocation ", "") }
 
         val availableCityStatesNames = Stack<String>()
-        // since we shuffle and then order by, we end up with all the city states with starting locations first in a random order,
+        // since we shuffle and then order by, we end up with all the city states with starting tiles first in a random order,
         //   and then all the other city states in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
@@ -154,7 +158,7 @@ class GameStarter{
                 val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement=="StartingLocation "+civ.civName }
                 if(presetStartingLocation!=null) startingLocation = presetStartingLocation
                 else {
-                    if (freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
+                    if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
                     var preferredTiles = freeTiles.toList()
 
                     for (startBias in civ.nation.startBias) {
@@ -175,7 +179,7 @@ class GameStarter{
             for(tile in tilesWithStartingLocations) tile.improvement=null // get rid of the starting location improvements
             return startingLocations
         }
-        throw Exception("Didn't manage to get starting locations even with distance of 1?")
+        throw Exception("Didn't manage to get starting tiles even with distance of 1?")
     }
 
     private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n:Int, tileMap: TileMap): Boolean {

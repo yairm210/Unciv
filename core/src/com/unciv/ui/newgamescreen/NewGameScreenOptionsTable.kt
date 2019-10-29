@@ -60,26 +60,23 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addMapTypeSizeAndFile() {
         add("{Map type}:".tr())
-        val mapTypes = LinkedHashMap<String, MapType>()
-        for (type in MapType.values()) {
-            if (type == MapType.File && MapSaver().getMaps().isEmpty()) continue
-            mapTypes[type.toString()] = type
-        }
+        val mapTypes = arrayListOf(MapType.default,MapType.continents,MapType.perlin,MapType.pangaea)
+        if(MapSaver().getMaps().isNotEmpty()) mapTypes.add(MapType.file)
 
         val mapFileLabel = "{Map file}:".toLabel()
         val mapFileSelectBox = getMapFileSelectBox()
         mapFileLabel.isVisible = false
         mapFileSelectBox.isVisible = false
 
-        val mapTypeSelectBox = TranslatedSelectBox(mapTypes.keys, newGameParameters.mapType.toString(), CameraStageBaseScreen.skin)
+        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, newGameParameters.mapType, CameraStageBaseScreen.skin)
 
         val worldSizeSelectBox = getWorldSizeSelectBox()
         val worldSizeLabel = "{World size}:".toLabel()
 
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.mapType = mapTypes[mapTypeSelectBox.selected.value]!!
-                if (newGameParameters.mapType == MapType.File) {
+                newGameParameters.mapType = mapTypeSelectBox.selected.value
+                if (newGameParameters.mapType == MapType.file) {
                     worldSizeSelectBox.isVisible = false
                     worldSizeLabel.isVisible = false
                     mapFileSelectBox.isVisible = true

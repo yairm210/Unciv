@@ -1,12 +1,11 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
-import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.metadata.GameParameters
 
 class TileMap {
 
@@ -32,18 +31,10 @@ class TileMap {
         get() = tileList
 
 
-    constructor(newGameParameters: GameParameters) {
-        val mapValues:Collection<TileInfo>
 
-        if(newGameParameters.mapType == MapType.File)
-            mapValues = MapSaver().loadMap(newGameParameters.mapFileName!!).values
-        else if(newGameParameters.mapType==MapType.Perlin)
-            mapValues = PerlinNoiseRandomMapGenerator().generateMap(newGameParameters.mapRadius).values
-        else
-            mapValues = CelluarAutomataRandomMapGenerator(newGameParameters.mapType).generateMap(newGameParameters.mapRadius).values
-
-        tileList.addAll(mapValues)
-
+    constructor(radius:Int){
+        for(vector in HexMath().getVectorsInDistance(Vector2.Zero, radius))
+            tileList.add(TileInfo().apply { position = vector; baseTerrain= Constants.grassland })
         setTransients()
     }
 
