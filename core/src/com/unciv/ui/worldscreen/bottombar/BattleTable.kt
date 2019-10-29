@@ -94,10 +94,20 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("{Strength}: ".tr()+attacker.getAttackingStrength())
         add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
-        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender).map { (if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr())+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
-        val defenderModifiers = if (defender is MapUnitCombatant)
-                                    BattleDamage().getDefenceModifiers(attacker, defender).map { (if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr())+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
-                                else listOf()
+        val attackerModifiers =
+                BattleDamage().getAttackModifiers(attacker,defender).map {
+                    val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
+                    val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
+                    "$description: $percentage"
+                }
+        val defenderModifiers =
+                if (defender is MapUnitCombatant)
+                    BattleDamage().getDefenceModifiers(attacker, defender).map {
+                        val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
+                        val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
+                        "$description: $percentage"
+                    }
+                else listOf()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
             if (attackerModifiers.size > i) add(attackerModifiers[i]).actor.setFontSize(14) else add()
