@@ -667,7 +667,7 @@
 
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
 		Italian:"+1 Cibo e +1 Produzione da tutte le caselle desertiche sfruttate dalla città (eccetto Terreni allagati)"
-		Czech:""
+		Czech:"+1 Jídlo a +1 Produkce za každé obděláváné políčkou pouště ve měste (kromě Údolní nivy)"
 		Polish:"+1 żywności i produkcji ze wszystkich pustynnych pól w mieście"
 }
 
@@ -1173,7 +1173,7 @@
 		German:"Ein kostenloser Großer Wissenschaftler erscheint"
 		Polish:"Pojawia się darmowy Wielki Naukowiec"
 		Russian:"Появляется бесплатный Великий Учёный"
-		Czech:"Získali jsme Velkého Vědce zdarma"
+		Czech:"Získáme Velkého Vědce zdarma"
 }
 
 	"Ironworks":{
@@ -1212,7 +1212,7 @@
 		Portuguese:"Observatório"
 		German:"Observatorium"
 		Polish:"Obserwatorium"
-		Czech:"observatoř"
+		Czech:"Observatoř"
 }
 
 	"Opera House":{
@@ -1391,7 +1391,7 @@
 	"Get ":{
 		Italian:"Ottieni "
 		Simplified_Chinese:"获得"
-		Czech:"Bereme"
+		Czech:"Vybrat: "
 		Polish:"Otrzymaj"
 }
 
@@ -1534,7 +1534,7 @@
 		Portuguese:"Aparece um Grande Artista grátis"
 		German:"Kostenloser Großer Künstler erscheint"
 		Polish:"Pojawił się darmowy Wielki Artysta"
-		Czech:"Získali jsme Velkéhu Umělce zdarma"
+		Czech:"Získáme Velkéhu Umělce zdarma"
 }
 
 	"Seaport":{

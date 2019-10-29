@@ -94,7 +94,7 @@ class UnitActions {
                     newunit.health = unit.health
                     newunit.promotions = unit.promotions
 
-                    for(promotion in unit.baseUnit.promotions)
+                    for(promotion in newunit.baseUnit.promotions)
                         if(promotion !in newunit.promotions.promotions)
                             newunit.promotions.addPromotion(promotion, true)
 
@@ -185,7 +185,7 @@ class UnitActions {
         for(unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }){
             val improvementName = unique.replace("Can build improvement: ","")
             actionList += UnitAction("Create [$improvementName]",
-                    unit.currentMovement >0f && !tile.isCityCenter()
+                    unit.currentMovement >0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().unbuildable
             ) {
                 unit.getTile().terrainFeature=null // remove forest/jungle/marsh
                 unit.getTile().improvement = improvementName

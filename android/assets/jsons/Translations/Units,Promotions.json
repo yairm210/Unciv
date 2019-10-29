@@ -807,7 +807,7 @@
 		Portuguese:"Soldado com mosquete"
 		Russian:"Стрельцы"
 		German:"Musketschütze"
-		Czech:""
+		Czech:"Střelec s mušketou"
 }
 
 	"Musketeer":{ //french unique
@@ -1191,7 +1191,7 @@
 		Russian:"Бомбардировщик"
 		German:"Weltkriegsbomber"
 		French:"Bombardier de la grande guerre"
-		Czech:""
+		Czech:"Velký válečný bombardér"
 }
 
 ////// Atomic units (not in game yet but will be, not super important but why not)
@@ -1204,7 +1204,7 @@
 		Russian:"Ракетная Артиллерия"
 		German:"Raketenartillerie"
 		French:"Lance-roquettes"
-		Czech:"Velký válečný bombardér"
+		Czech:"Raketové dělostřelectvo"
 }
 
 	"Anti-Tank Gun":{
@@ -1270,7 +1270,7 @@
 		Simplified_Chinese:"“虎II”坦克"
 		Russian:"Танк Тигр"
 		German:"Königstiger" //I used a more late WW2 panzer name here to destinguish
-		French:"Panzer",
+		French:"Panzer"
 		Czech:"Panzer"
 }
 
@@ -1280,7 +1280,7 @@
 		Spanish:"Bombardero"
 		Simplified_Chinese:"轰炸机"
 		Russian:"Тяжелый бомбардировщик"
-		French:"Bombardier",
+		French:"Bombardier"
 		Czech:"Bombardér"
 }
 
@@ -1289,14 +1289,14 @@
 		Simplified_Chinese:"机械化步兵"
 		French:"Infantrie mécanisée"
 		Russian:"Мотопехота"
-		Czech:""
+		Czech:"Mechanizovaná pěchota"
 }
 
 	"Modern Armor":{
 		Italian:"Armatura moderna"
 		Simplified_Chinese:"现代坦克"
 		French:"Blindé moderne"
-		Russian:"Современный танк",
+		Russian:"Современный танк"
 		Czech:"Moderní tank"
 }
 
@@ -1446,7 +1446,7 @@
 		Portuguese:"Pode descobrir uma tecnologia"
 		German:"Kann eine Technologie entdecken"
 		Russian:"Может открыть технологию"
-		Czech:""
+		Czech:"Může vyzkoumat technologii"
 }
 
 	"Can build improvement: Academy":{
