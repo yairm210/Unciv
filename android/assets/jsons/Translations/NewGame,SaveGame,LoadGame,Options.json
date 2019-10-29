@@ -13,6 +13,7 @@
 		Japanese:"コピーしたデータを読み込む"
                 Korean:"복사 된 데이터 로드"
 		Czech:"Načíst zkopírované data"
+		Ukrainian:"Завантажити копію даних"
 }
 
 	"Could not load game from clipboard!":{
@@ -28,6 +29,7 @@
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
                 Korean:"클립보드에서 게임을 불러 올 수 없습니다!"
 		Czech:"Nepodařilo se nahrát hru ze schránky!"
+		Ukrainian:"Неможливо завантажити гру з буфера обміну"
 }
 
 	"Start game!":{
@@ -42,6 +44,7 @@
 		Japanese:"ゲームを始める！"
                 Korean:"게임 시작!"
 		Czech:"Začít hru!"
+		Ukrainian:"Почати!"
 }
 
 	"Map type":{
@@ -56,6 +59,7 @@
 		Dutch:"Kaarttype"
                 Korean:"지도 유형"
 		Czech:"Typ mapy"
+		Ukrainian:"Тип мапи"
 }
 
 	"Number of city-states":{
@@ -66,6 +70,7 @@
                 Korean:"도시 국가 수"
 
 		Czech:"Počet městských států"
+		Ukrainian:"Міст-держав"
 }
 
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
@@ -75,6 +80,7 @@
 		Russian:"Без варваров"
                 Korean:"야만인 없음"
 		Czech:"Bez barbarů"
+		Ukrainian:"Без варварів"
 }
 
 	"Victory conditions": {
@@ -84,6 +90,7 @@
 		Russian:"Условия победы"
                 Korean:"승리 조건"
 		Czech:"Způsoby výhry"
+		Ukrainian:"Умови перемоги"
 }
 
 	"Scientific": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -93,6 +100,7 @@
 		Russian:"Научная"
                 Korean:"과학"
 		Czech:"Vědecká"
+		Ukrainian:"Наукова"
 }
 
 	"Domination": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -102,6 +110,7 @@
 		Russian:"Завоевание"
                 Korean:"정복"
 		Czech:"Dominance"
+		Ukrainian:"Загарбання"
 }
 
 	"Cultural": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -111,16 +120,19 @@
 		Russian:"Культурная"
                 Korean:"문화"
 		Czech:"Kulturní"
+		Ukrainian:"Культурна"
 }
 
 	"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!": {
 		Italian:"IN FASE DI PRODUZIONE - TI ABBIAMO AVVERTITO!"
 		Simplified_Chinese:"⚠︎警告！试验性功能！"
+		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ - ВАС ПОПЕРЕДЖЕНО!"
 }
 
 	"Online Multiplayer": {
 		Italian:"Multiplayer online"
 		Simplified_Chinese:"在线多人游戏"
+		Ukrainian:"Багатокористувацька мережева"
 }
 
 	// Map sizes
@@ -136,6 +148,7 @@
 		German:"Kartengröße"
                 Korean:"세계 크기"
 		Czech:"Velikost světa"
+		Ukrainian:"Розмір світу"
 }
 
 
@@ -150,6 +163,7 @@
 		French:"Minuscule"
                 Korean:"초소형"
 		Czech:"Miniaturní"
+		Ukrainian:"Крихітний"
 }
 
 	"Small":{
@@ -163,6 +177,7 @@
 		German:"Klein"
                 Korean:"소형"
 		Czech:"Malý"
+		Ukrainian:"Малий"
 }
 
 	"Medium":{
@@ -176,6 +191,7 @@
 		German:"Mittel"
                 Korean:"중형"
 		Czech:"Střední"
+		Ukrainian:"Середній"
 }
 
 	"Large":{
@@ -189,6 +205,7 @@
 		German:"Groß"
                 Korean:"대형"
 		Czech:"Velký"
+		Ukrainian:"Великий"
 }
 
 	"Huge":{
@@ -202,6 +219,7 @@
 		German:"Enorm"
                 Korean:"초대형"
 		Czech:"Obrovský"
+		Ukrainian:"Величезний"
 }
 
 
@@ -218,6 +236,7 @@
 		German:"Schwierigkeitsgrad"
                 Korean:"난이도"
 		Czech:"Obtížnost"
+		Ukrainian:"Складність"
 }
 
 
@@ -232,6 +251,7 @@
 		German:"Siedler"
                 Korean:"개척자"
 		Czech:"Osadník"
+		Ukrainian:"Поселенець"
 }
 
 	"Chieftain":{
@@ -245,6 +265,7 @@
 		German:"Häuptling"
                 Korean:"족장"
 		Czech:"Náčelník"
+		Ukrainian:"Вождь"
 }
 
 	"Warlord":{
@@ -258,6 +279,7 @@
 		German:"Kriegsherr"
                 Korean:"장군"
 		Czech:"Válečník"
+		Ukrainian:"Генерал"
 }
 
 	"Prince":{
@@ -271,6 +293,7 @@
 		German:"Prinz"
                 Korean:"왕자"
 		Czech:"Princ"
+		Ukrainian:"Герцог"
 }
 
 	"King":{
@@ -284,6 +307,7 @@
 		German:"König"
                 Korean:"왕"
 		Czech:"Král"
+		Ukrainian:"Король"
 }
 
 	"Emperor":{
@@ -297,6 +321,7 @@
 		German:"Kaiser"
                 Korean:"황제"
 		Czech:"Emperor"
+		Ukrainian:"Імператор"
 }
 
 	"Immortal":{
@@ -310,6 +335,7 @@
 		German:"Unsterblicher"
                 Korean:"불멸"
 		Czech:"Polobůh"
+		Ukrainian:"Безсмертний"
 }
 
 	"Deity":{
@@ -323,6 +349,7 @@
 		German:"Gott"
                 Korean:"신"
 		Czech:"Bůh"
+		Ukrainian:"Бог"
 }
 
 	//Civilization select
@@ -332,6 +359,7 @@
 		Simplified_Chinese:"电脑"
 		Russian:"ИИ"
 		Czech:"UI"
+		Ukrainian:"Бот"
 }
 
 	"Remove":{
@@ -339,6 +367,7 @@
 		Simplified_Chinese:"删除"
                 Korean:"제거"
 		Czech:"Odstranit"
+		Ukrainian:"Видалити"
 }
 
 	"Random":{
@@ -346,6 +375,7 @@
 		Simplified_Chinese:"随机"
                 Korean:"무작위"
 		Czech:"Náhodně"
+		Ukrainian:"Випадково"
 }
 
 	"Human":{
@@ -354,6 +384,7 @@
 		Russian:"Человек"
                 Korean:"인간"
 		Czech:"Člověk"
+		Ukrainian:"Людина"
 }
 
 	"Hotseat":{
@@ -362,6 +393,7 @@
 		Simplified_Chinese:"热座模式"
                 Korean:"핫시트"
 		Czech:"Na tomto zařízení"
+		Ukrainian:"Почергово"
 }
 
 	"User ID":{
@@ -370,6 +402,7 @@
 		Russian:"ID игрока"
                 Korean:"사용자 Id"
 		Czech:"Uživatelské ID"
+		Ukrainian:"Ідентифікатор гравця"
 }
 
 	"Click to copy":{
@@ -378,6 +411,7 @@
 		Russian:"Нажмите, чтобы скопировать"
                 Korean:"복사하려면 클릭하십시오"
 		Czech:"Klikni pro kopírování"
+		Ukrainian:"Натисніть для копіювання"
 }
 
 	"Username":{
@@ -386,6 +420,7 @@
 		Russian:"Пользователь"
                 Korean:"사용자이름"
 		Czech:"Uživatelské jméno"
+		Ukrainian:"Імʼя гравця"
 }
 
 	"Multiplayer":{
@@ -394,6 +429,7 @@
 		Russian:"Сетевая игра"
                 Korean:"멀티플레이어"
 		Czech:"Více hráčů"
+		Ukrainian:"Багатокористувацька"
 }
 
 	"Could not download game!":{
@@ -402,6 +438,7 @@
                 Korean:"게임을 다운로드할 수 없습니다!"
 		Czech:"Nepodařilo se načíst hru!"
 		Simplified_Chinese:"无法下载游戏数据！"
+		Ukrainian:"Неможливо завантажити гру!"
 }
 
 	"Could not upload game!":{
@@ -410,6 +447,7 @@
                 Korean:"게임을 업로드할 수 없습니다!"
 		Czech:"Nepodařilo se nahrát hru!"
 		Simplified_Chinese:"无法上传游戏数据！"
+		Ukrainian:"Неможливо надіслати гру!"
 }
 
 	"Join Game":{
@@ -418,6 +456,7 @@
 		Russian:"Подключиться"
                 Korean:"게임 참여"
 		Czech:"Připojit se ke hře"
+		Ukrainian:"Приєднатися до гри"
 }
 
 	"Invalid game ID!":{
@@ -426,6 +465,7 @@
 		Russian:"Некорректный ID игры!"
                 Korean:"잘못된 게임 ID 입니다!"
 		Czech:"Chybné ID hry"
+		Ukrainian:"Недопустимий ідентифікатор гри"
 }
 
 	"Copy User ID":{
@@ -434,6 +474,7 @@
 		Russian:"Скопировать ID игрока"
                 Korean:"사용자 Id 복사"
 		Czech:"Kopírovat uživatelské ID"
+		Ukrainian:"Копіювати ідентифікатор гравця"
 }
 
 	"Copy Game ID":{
@@ -442,6 +483,7 @@
 		Russian:"Скопировать ID игры"
                 Korean:"게임 Id 복사"
 		Czech:"Kopírovat ID hry"
+		Ukrainian:"Копіювати ідентифікатор гри"
 }
 
 	"Set current user":{
@@ -449,6 +491,7 @@
                 Korean:"현재 사용자 설정"
 		Czech:"Nastavit aktuálního uživatele"
 		Simplified_Chinese:"设置为当前玩家"
+		Ukrainian:"Обрати поточного гравця"
 }
 
 	"Player ID from clipboard":{
@@ -456,6 +499,7 @@
                 Korean:"클립보드의 플레이어 ID"
 		Czech:"Kopírovat ID hráče ze schránky"
 		Simplified_Chinese:"从剪贴板获取玩家ID"
+		Ukrainian:"Ідентифікатор гравця з буфера обміну"
 }
 
 	/// tutorials for multiplayer
@@ -464,6 +508,7 @@
                 Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
 		Czech:"Pro vytvoření hry pro více hráčů zaškrtněte 'Více hráčů' na obrazovce s novou hrou a pro každého lidského hráče vložte jeho hráčské ID."
 		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“在线多人游戏”复选框，同时将每个参与游戏的玩家ID填入其想扮演文明的“Player ID”文本框内。"
+		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач 'Багатокористувацька' у віконці 'Нова гра' і для кожної людини-гравця введіть відповідний ідентифікатор"
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
@@ -471,6 +516,7 @@
                 Korean:"당신은 당신의 사용자 ID를 쉽게 거기에 할당할 수 있고, 다른 플레이어는 당신의 사용자 ID를 여기에 복사하여 당신이 게임에 포함하도록 당신에게 보낼 수 있습니다."
 		Czech:"Svoje vlastní ID můžete přiřadit jednoduše, ostatní hráči můžou zkopírovat svoje uživatelské ID tady a poslat vám ho, aby jste je připojil ke hře."
 		Simplified_Chinese:"直接点击“设置为当前玩家”就可自动填入你自己的玩家ID。对于其他玩家，他们可在终端上打开游戏并在当前界面点击“复制玩家ID”按钮将他们的ID复制到剪贴板，然后通过网络发送给你，你可以在“开始新游戏”界面将接收到的ID填入他们想扮演文明的“Player ID”文本框内使其加入游戏。"
+		Ukrainian:"Тут Ви можете легко вказати власний ідентифікатор гравця, а інші гравці можуть скопіювати їхні ідентифікатори і надіслати Вам для додавання до гри."
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
@@ -478,6 +524,7 @@
                 Korean:"게임을 만든 후 이 화면을 다시 입력하여 게임 ID를 복사하여 다른 플레이어에게 전송하십시오."
 		Czech:"Ve chvíli kdy vytvoříte hru, vraťte se zpět na tuto obrazovku, zkopírujte ID hry a pošlete ho ostatním hráčům."
 		Simplified_Chinese:"当你创建了多人游戏后，进入此界面同时点击“复制游戏ID”按钮将游戏ID复制到剪贴板并通过网络发送给其他玩家。"
+		Ukrainian:"Щойно Ви створите власну гру, зайдіть до цього віконця для копіювання ідентифікатора гри і надсилання іншим гравцям."
 }
 
 	"Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button":{
@@ -485,6 +532,7 @@
                 Korean:"플레이어는 게임 ID를 클립보드에 복사하고 게임 참여 버튼을 클릭하여 게임에 들어갈 수 있습니다."
 		Czech:"Ostatní hráči můžou vstoupit do hry zkopírováním ID hry do schránky a kliknutím na tlačítko 'Připojit se ke hře'"
 		Simplified_Chinese:"其他玩家可以将接收到的游戏ID复制到剪贴板，同时点击“加入游戏”按钮加入游戏"
+		Ukrainian:"Гравці можуть зайти до вашої гри, скопіювавши ідентифікатор гри до буфера обміну і натиснувши на кнопку 'Приєднатися до гри'"
 }
 
 
@@ -497,6 +545,7 @@
 		Simplified_Chinese:"游戏速度"
                 Korean:"게임 속도"
 		Czech:"Rychlost hry"
+		Ukrainian:"Швидкість гри"
 }
 
 	"Quick":{
@@ -505,6 +554,7 @@
 		Simplified_Chinese:"快速"
                 Korean:"빠름"
 		Czech:"Rychlá"
+		Ukrainian:"Швидка"
 }
 
 	"Standard":{
@@ -513,6 +563,7 @@
 		Simplified_Chinese:"标准"
                 Korean:"표준"
 		Czech:"Normální"
+		Ukrainian:"Нормальна"
 }
 
 	"Epic":{
@@ -521,6 +572,7 @@
 		Russian:"Эпическая"
                 Korean:"서사시"
 		Czech:"Dlouhá"
+		Ukrainian:"Епічна"
 }
 
 	"Marathon":{
@@ -529,6 +581,7 @@
 		Russian:"Марафон"
     Korean:"마라톤"
 		Czech:"Maratónská"
+		Ukrainian:"Марафон"
 }	
 	
 	
@@ -538,6 +591,7 @@
 		Simplified_Chinese:"开始时代"
     Korean:"시작 시대"
 		Czech:"Doba počátku hry"
+		Ukrainian:"Початкова епоха"
 }
 
 ////
@@ -548,6 +602,7 @@
 		Simplified_Chinese:"无法根据你的设置创建地图！"
                 Korean:"당신이 요청한 매개변수로 지도를 만들 수 없을 것 같습니다!"
 		Czech:"Vypadá to, že nelze vytvořit mapu dle vašeho zadání!"
+		Ukrainian:"Неможливо створити мапу з обраними параметрами!"
 }
 
 	"Maybe you put too many players into too small a map?":{
@@ -556,6 +611,7 @@
 		Simplified_Chinese:"或许你放置了太多玩家在如此小的地图上？"
                 Korean:"너무 작은 지도에 너무 많은 플레이어를 넣었나요?"
 		Czech:"Nevložili jste příliš mnoho hráčů do moc malé mapy?"
+		Ukrainian:"Можливо забагато гравців на замаленьку мапу?"
 }
 
 	"No human players selected!":{
@@ -563,6 +619,7 @@
 		Simplified_Chinese:"未选择玩家！"
                 Korean:"인간 플레이어가 선택 되지 않았습니다!"
 		Czech:"Nebyl vybrán lidský hráč!"
+		Ukrainian:"Не обрано людей-гравців!"
 }
 
 
@@ -580,6 +637,7 @@
 		Portuguese:"Partidas salvas"
                 Korean:"현재 게임 저장"
 		Czech:"Aktuálně uložené hry"
+		Ukrainian:"Поточні збереження"
 }
 
 	"Show autosaves":{
@@ -587,6 +645,7 @@
 		Simplified_Chinese:"显示自动存档"
                 Korean:"자동 저장 표시"
 		Czech:"Zobrazit automaticky uložené hry"
+		Ukrainian:"Показати автозбереження"
 }
 
 	"Saved game name":{
@@ -601,6 +660,7 @@
 		Portuguese:"Nome do jogo salvo"
                 Korean:"저장된 게임 이름"
 		Czech:"Uložit hru jako"
+		Ukrainian:"Назва збереженої гри"
 }
 
 	"Copy to clipboard":{ //this button exsits in "Save game" and "Map editor", it means that we can copy "current game status" to clipboard, "current game status" is not a existing file but some words.
@@ -611,6 +671,7 @@
 		Russian:"Скопировать в буфер"
                 Korean:"클립보드에 복사"
 		Czech:"Zkopírovat do schránky"
+		Ukrainian:"Зберегти до буфера обміну"
 }
 
 	"Copy saved game to clipboard":{//this button exsits in "Load game",it means that we have a "saved game" file, so we can copy its data to clipboard.
@@ -618,6 +679,7 @@
 		Simplified_Chinese:"复制游戏存档到剪贴板"
                 Korean:"클립보드에 저장된 게임 복사"
 		Czech:"Zkopírovat uloženou hru do schránky"
+		Ukrainian:"Копіювати збережену гру до буфера обміну"
 }
 
 	"Could not load game":{
@@ -632,6 +694,7 @@
 		Portuguese:"Não foi possivel carregar a partida salva"
                 Korean:"게임을 불러올 수 없습니다"
 		Czech:"Nepodařilo se načíst hru"
+		Ukrainian:"Неможливо завантажити гру"
 }
 
 	"Load [saveFileName]":{ // as in "Load SaveFile2"
@@ -646,6 +709,7 @@
 		Portuguese:"Carregar [saveFileName]"
                 Korean:"불러오기 [saveFileName]",
 		Czech:"Načíst hru [saveFileName]"
+		Ukrainian:"Завантажити [saveFileName]"
 }
 
 	"Delete save":{
@@ -660,6 +724,7 @@
 		Portuguese:"Apagar jogo salvo"
                 Korean:"저장 삭제"
 		Czech:"Smazat uloženou hru"
+		Ukrainian:"Видалити збережене"
 }
 
 	"Saved at":{
@@ -674,6 +739,7 @@
 		Portuguese:"Salvo em"
                 Korean:"저장 시간"
 		Czech:"Uloženo jako"
+		Ukrainian:"Збережено до"
 }
 
 	////////////// Load map
@@ -684,6 +750,7 @@
 		Russian:"Загрузить карту"
                 Korean:"지도 불러오기"
 		Czech:"Načíst mapu"
+		Ukrainian:"Завантажити мапу" 
 }
 
 	"Are you sure you want to delete this map?":{
@@ -692,6 +759,7 @@
 		Russian:"Вы уверены в удалении этой карты?"
                 Korean:"이 지도를 삭제하시겠습니까?"
 		Czech:"Jste si jistý(á), že chcete smazat tuto mapu?"
+		Ukrainian:"Ви впевнені, що бажаєте видалити цю мапу?"
 }
 
 	"Upload map":{
@@ -700,6 +768,7 @@
 		Russian:"Отправить"
                 Korean:"업로드"
   		Czech:"Nahrát mapu"
+		Ukrainian:"Надіслати мапу"
 }
 
 	"Could not upload map!":{
@@ -708,6 +777,7 @@
 		Russian:"Невозможно отправить карту!"
                 Korean:"지도를 업로드할 수 없습니다!"
 		Czech:"Nelze nahrát mapu!"
+		Ukrainian:"Неможливо надіслати мапу!"
 }
 
 	////////////// Options
@@ -725,6 +795,7 @@
 		Portuguese:"Opções"
                 Korean:"설정"
 		Czech:"Možnosti"
+		Ukrainian:"Налаштування"
 }
 
 	"Display options":{
@@ -740,6 +811,7 @@
 		Japanese:"表示オプション"
                 Korean:"해상도 설정"
 		Czech:"Zobrazit možnosti"
+		Ukrainian:"Налаштування екрану"
 }
 
 	"Turns between autosaves":{
@@ -750,6 +822,7 @@
 		Russian:"Кол-во ходов между автосохранениями"
                 Korean:"자동 저장 라운드"
 		Czech:"Počet kol mezi automatickým uložením hry"
+		Ukrainian:"Ходів між автозбереженням"
 }
 
 	"Sound effects volume":{
@@ -759,6 +832,7 @@
 		Russian:"Громкость звука"
                 Korean:"음향효과 음량"
 		Czech:"Hlasitost zvuků"
+		Ukrainian:"Гучність звуків"
 }
 
 	"Show":{
@@ -774,6 +848,7 @@
 		Japanese:"見せる"
                 Korean:"보이기"
 		Czech:"Zobrazit"
+		Ukrainian:"Показати"
 }
 
 	"Hide":{
@@ -789,18 +864,21 @@
 		Japanese:"隠す"
                 Korean:"숨기기"
 		Czech:"Schovat"
+		Ukrainian:"Сховати"
 }
 
 	"Show worked tiles":{
 		Italian:"Mostra caselle sfruttate"
 		Simplified_Chinese:"显示工作地块"
 		Czech:"Zobrazit obdělávané políčka"
+		Ukrainian:"Показати оброблювані комірки"
 }
 
 	"Show resources and improvements":{
 		Italian:"Mostra risorse e miglioramenti"
 		Simplified_Chinese:"显示资源与地块设施"
 		Czech:"Zobrazit zdroje a vylepšení"
+		Ukrainian:"Показати ресурси і вдосконалення"
 }
 
 	"Check for idle units":{
@@ -812,6 +890,7 @@
 		Russian:"Найти незанятые юниты"
     Korean:"턴이 끝나기 전에 미행동 유닛 보기"
 		Czech:"Kontrolovat zahálející jednotky"
+		Ukrainian:"Перевіряти неробочі підрозділи"
 }
  
 	"Move units with a single tap":{
@@ -822,6 +901,7 @@
 		Simplified_Chinese:"点击目标地块立即移动"
                 Korean:"한 번의 탭으로 유닛 이동"
 		Czech:"Pohyb jednotek na jeden klik"
+		Ukrainian:"Переміщення підрозділів одним натиском"
 }
 
 	"Show tutorials":{
@@ -830,6 +910,7 @@
 		Simplified_Chinese:"显示教程"
                 Korean:"튜토리얼 보이기"
 		Czech:"Zobrazit tutoriál"
+		Ukrainian:"Показати навчання"
 }
 
 	"Auto-assign city production":{
@@ -838,6 +919,7 @@
 		Russian:"Автопроизводство в городах"
                 Korean:"도시 생산 자동 할당"
 		Czech:"Automatické přiřazení produkce ve městě"
+		Ukrainian:"Автомачне виробництво у містах"
 }
 
 	"Auto-build roads":{
@@ -845,6 +927,7 @@
                 Korean:"도로 자동 건설"
 		Czech:"Automatická vystavba cest"
 		Simplified_Chinese:"自动建造道(铁)路"
+		Ukrainian:"Автоматичне будівництво доріг"
 }
 
 	"Show minimap":{
@@ -853,11 +936,13 @@
 		Russian:"Показать миникарту"
                 Korean:"미니맵 보이기"
 		Czech:"Zobrazit minimapu"
+		Ukrainian:"Показати мінімапу"
 }
 
 	"Show pixel units":{
 		Italian:"Mostra unità pixel"
 		Simplified_Chinese:"显示像素单位"
+		Ukrainian:"Показати піксельні підрозділи"
 }
 
 	"Show pixel improvements":{
@@ -871,6 +956,7 @@
 		Russian:"Шрифты"
                 Korean:"폰트 설정"
 		Czech:"Typ písma"
+		Ukrainian:"Шрифт"
 }
 
 }
