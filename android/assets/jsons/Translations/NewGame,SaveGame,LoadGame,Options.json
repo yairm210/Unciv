@@ -127,12 +127,14 @@
 		Italian:"IN FASE DI PRODUZIONE - TI ABBIAMO AVVERTITO!"
 		Simplified_Chinese:"⚠︎警告！试验性功能！"
 		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ - ВАС ПОПЕРЕДЖЕНО!"
+		Czech:"VYSOCE EXPERIMENTÁLNÍ - BYLI JSTE VAROVÁNÍ!"
 }
 
 	"Online Multiplayer": {
 		Italian:"Multiplayer online"
 		Simplified_Chinese:"在线多人游戏"
 		Ukrainian:"Багатокористувацька мережева"
+		Czech:"Online pro více hráčů"
 }
 
 	// Map sizes
@@ -779,6 +781,11 @@
 		Czech:"Nelze nahrát mapu!"
 		Ukrainian:"Неможливо надіслати мапу!"
 }
+
+	"Map uploaded successfully!":{
+		Czech:"Mapa úspěšně nahrána!"
+},
+
 
 	////////////// Options
 
