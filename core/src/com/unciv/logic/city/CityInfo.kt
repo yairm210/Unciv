@@ -327,6 +327,7 @@ class CityInfo {
         isPuppet = true
         health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         cityStats.update()
+        cityConstructions.chooseNextConstruction() // The city could be producing something that puppets shouldn't, like units
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {

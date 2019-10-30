@@ -342,7 +342,7 @@
 		French:"Mise à niveau vers [unitType] ([goldCost] or)" //or Amélioration en [unitType] ([goldCost] or)
 		Romanian:"Avansare [unitType] ([goldCost] aur)"
 		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
-		Simplified_Chinese:"升级到[unitType](需要[goldCost]金钱)"
+		Simplified_Chinese:"升级为[unitType]([goldCost]金钱)"
 		Portuguese:"Melhoria a [unitType] ([goldCost] ouro)"
 		German:"Verbessere [unitType] ([goldCost] Gold)"
 		Japanese:"[unitType]（[goldCost] gold）にアップグレードする",
@@ -621,6 +621,7 @@
 }
 
 	"Golden Age":{
+		Italian:"Età dell'Oro"
 		Simplified_Chinese:"黄金时代"
 		Czech:"Zlatý Věk"
 }
@@ -1417,6 +1418,7 @@
 }
 
 	"Occupied!":{ // Shown in the battle table when attacking a defeated city
+		Italian:"Occupa!"
 		Simplified_Chinese:"可以占领！"
 		Czech:"Obsazené!"
 }
@@ -1473,26 +1475,31 @@
 }
 
 	"Attacker Bonus":{
+		Italian:"Bonus attaccante"
 		Simplified_Chinese:"主动发起攻击"
 		Czech:"Útočný bonus"
 }
 
 	"Landing":{
+		Italian:"Atterraggio"
 		Simplified_Chinese:"登陆作战",
 		Czech:"Přistání"
 }
 
 	"Flanking":{
+		Italian:"Attacco ai fianchi"
 		Simplified_Chinese:"侧翼夹击",
 		Czech:"Doprovod"
 }
 
 	"vs [unitType]":{
+		Italian:"contro [unitType]"
 		Simplified_Chinese:"对战[unitType]"
 		Czech:"proti [unitType]"
 }
 
 	"Terrain":{
+		Italian:"Terreno"
 		Simplified_Chinese:"地形修正"
 		Czech:"Terén"
 }

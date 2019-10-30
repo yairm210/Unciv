@@ -57,11 +57,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addHappinessBuildingChoice()
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
-        addWondersChoice()
         addCultureBuildingChoice()
-        addWorkerChoice()
-        addWorkBoatChoice()
-        addMilitaryUnitChoice()
+
+        if(!cityInfo.isPuppet) {
+            addWondersChoice()
+            addWorkerChoice()
+            addWorkBoatChoice()
+            addMilitaryUnitChoice()
+        }
 
         val production = cityInfo.cityStats.currentCityStats.production
 
