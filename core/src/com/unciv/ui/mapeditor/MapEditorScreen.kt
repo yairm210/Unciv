@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.tr
-import com.unciv.models.metadata.GameParameters
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -15,7 +14,7 @@ import com.unciv.ui.utils.setFontSize
 import com.unciv.ui.worldscreen.TileGroupMap
 
 class MapEditorScreen(): CameraStageBaseScreen(){
-    var tileMap = TileMap(GameParameters())
+    var tileMap = TileMap()
     var mapName = "My first map"
     lateinit var mapHolder: TileGroupMap<TileGroup>
     private val tileEditorOptions = TileEditorOptionsTable(this)

@@ -72,12 +72,17 @@ class CityExpansionManager {
 
     //region state-changing functions
     fun reset() {
-        for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
+        for(tile in cityInfo.getTiles())
             relinquishOwnership(tile)
 
         cityInfo.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity()==null } // can't take ownership of owned tiles
+                .filter { it.getCity()==null } // can't take ownership of owned tiles (by other cities)
                 .forEach { takeOwnership(it) }
+
+        // The only way to create a city inside an owned tile is if it's in your territory
+        // In this case, if you don't assign control of the central tile to the city,
+        // It becomes an invisible city and weird shit starts happening
+        takeOwnership(cityInfo.getCenterTile())
     }
 
     private fun addNewTileWithCulture() {

@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -14,6 +15,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -40,6 +43,37 @@ object ImageGetter {
         drawable.minHeight = 0f
         drawable.minWidth = 0f
         return drawable
+    }
+
+    fun getRoundedRectangle(color:Color, width:Int, height:Int, radius:Int): Pixmap {
+        val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
+        pixmap.setColor(color)
+        for (y in 0 until pixmap.height) {
+            for (x in 0 until pixmap.width) {
+                if (x in 0..radius && y in 0..radius) {
+                    if (sqrt((radius - x).toDouble().pow(2) + (radius - y).toDouble().pow(2)) > radius) {
+                        continue
+                    }
+                }
+                else if (x in 0..radius && y >= height - radius && y <= height) {
+                    if (sqrt((radius - x).toDouble().pow(2) + (height - radius - y).toDouble().pow(2)) > radius) {
+                        continue
+                    }
+                }
+                else if (x >= width - radius && x <= width && y in 0..radius) {
+                    if (sqrt((width - radius - x).toDouble().pow(2) + (radius - y).toDouble().pow(2)) > radius) {
+                        continue
+                    }
+                }
+                else if (x >= width - radius && x <= width && y >= height - radius && y <= height) {
+                    if (sqrt((width - radius - x).toDouble().pow(2) + (height - radius - y).toDouble().pow(2)) > radius) {
+                        continue
+                    }
+                }
+                pixmap.drawPixel(x, y)
+            }
+        }
+        return pixmap
     }
 
     private fun getTextureRegion(fileName: String): TextureRegion {
