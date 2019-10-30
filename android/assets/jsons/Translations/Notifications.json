@@ -163,7 +163,7 @@
 		Simplified_Chinese:"开始建造/组建：[construction]"
 		Portuguese:"Os trabalhos começaram no(a) [construction]"
 		Japanese:"[construction]の作業が開始されました",
-		Czech:"Začali jsme stavět stavbu/jednotku [construction]"
+		Czech:"Začali jsme stavět - [construction]"
 	}
 
 	"[cityName] cannot continue work on [construction]":{
@@ -298,7 +298,8 @@
 	}
 
 	"An enemy [RangedUnit] has destroyed the defence of [cityname]":{// When Ranged Unit's attack reduces the City's health to 1.
-		Simplified_Chinese:"敌方的[RangedUnit]摧毁了[cityname]的防御"
+		Simplified_Chinese:"敌方的[RangedUnit]摧毁了[cityname]的防御",
+		Czech:"Nepřátelská jednotka [unit] zničila obranu města [ourUnit]"
 	}
 
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
