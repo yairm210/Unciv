@@ -47,14 +47,14 @@
 		German:"Tierhaltung"
 		Dutch:"Veeteelt"
 		Spanish:"Ganadería"
-		Simplified_Chinese:"家畜驯养"
+		Simplified_Chinese:"畜牧"
 		Portuguese:"Pecuária"
 		Czech:"Chov zvířat"
 }
 
 	"'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4":{
 		Italian:"'Non mettere la musoliera al bue mentre sta trebbiando.' - Deuteronomio, 25:4"
-		Simplified_Chinese:"“牛在踹谷的时候，不可笼住它的嘴。”——圣经·申命记　25:4"
+		Simplified_Chinese:"“牛在踹谷的时候，不可笼住它的嘴。”——圣经·申命记 25:4"
 		Czech: "'Mlátícímu dobytčeti nedáš náhubek.' - Bible Mojžíšova 25:4"
 }
 
@@ -104,7 +104,7 @@
 		German:"Segeln"
 		Dutch:"Zeilen"
 		Spanish:"Náutica"
-		Simplified_Chinese:"帆船"
+		Simplified_Chinese:"航海"
 		Portuguese:"Navegação"
 		Czech:"Plachtění"
 }
@@ -180,7 +180,7 @@
 		German:"Das Rad"
 		Dutch:"Het Wiel"
 		Spanish:"La rueda"
-		Simplified_Chinese:"轮子"
+		Simplified_Chinese:"车轮"
 		Portuguese:"A roda"
 		Czech:"Kolo"
 }
@@ -218,7 +218,7 @@
 		German:"Bronze Bearbeitung"
 		Dutch:"Brons Bewerking"
 		Spanish:"Trabajo del bronce"
-		Simplified_Chinese:"青铜器"
+		Simplified_Chinese:"冶铜"
 		Portuguese:"Trabalha com Bronze"
 		Czech:"Zpracování bronzu"
 }
@@ -296,7 +296,7 @@
 		German:"Baukunst"
 		Dutch:"Bouwkunde"
 		Spanish:"Construcción"
-		Simplified_Chinese:"建筑构造学"
+		Simplified_Chinese:"建造术"
 		Portuguese:"Construção"
 		Czech:"Konstrukce"
 }
@@ -372,7 +372,7 @@
 		German:"Eisen Bearbeitung"
 		Dutch:"Ijzer Bewerking"
 		Spanish:"Trabajo del hierro"
-		Simplified_Chinese:"铁器"
+		Simplified_Chinese:"锻铁"
 		Portuguese:"Trabalho com ferro"
 		Czech:"Zpracování železa"
 }
@@ -650,7 +650,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Druckpresse"
 		Dutch:"Drukpers"
 		Spanish:"Imprenta"
-		Simplified_Chinese:"印刷机"
+		Simplified_Chinese:"印刷术"
 		Portuguese:"Impressora"
 		Czech:"Tiskařský lis"
 }
@@ -688,7 +688,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Navigation"
 		Dutch:"Navigatie"
 		Spanish:"Navegación"
-		Simplified_Chinese:"航海术"
+		Simplified_Chinese:"导航术"
 		Portuguese:"Navegação"
 		Czech:"Navigace"
 }
@@ -707,7 +707,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Die Architektur"
 		Dutch:"Architectuur"
 		Spanish:"Arquitectura"
-		Simplified_Chinese:"建筑设计学"
+		Simplified_Chinese:"建筑学"
 		Portuguese:"Arquitetura"
 		Czech:"Architektura"
 }
@@ -771,7 +771,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 
 	"'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge":{
 		Italian:"'Dovunque voltiamo gli occhi, il lavoro del chimico ha alzato il livello della nostra civiltà e incrementato la capacità produttiva della nazione.' - Calvin Coolidge"
-		Simplified_Chinese:"“无论从哪方面看，化学家的工作都提高了我们文明的程度，增加了国家的生产力。”——卡尔文·柯立芝（美国第30任总统）"
+		Simplified_Chinese:"“无论从哪方面看，化学家的工作都提高了我们文明的程度，增加了国家的生产力。”——卡尔文·柯立芝（美国第 30 任总统）"
 		Czech:"'Kamkoli se podíváme, práce chemiků zvýšila úroveň naší civilizace a zvýšila výrobní kapacitu národa.' - Calvin Coolidge"
 }
 
@@ -937,7 +937,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Dampfkraft"
 		Dutch:"Stoomkracht"
 		Spanish:"Energía de vapor"
-		Simplified_Chinese:"蒸汽机"
+		Simplified_Chinese:"蒸汽动力"
 		Portuguese:"Energia a vapor"
 		Czech:"Parní stroj"
 }
@@ -1077,7 +1077,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 
 	"'There's a basic principle about consumer electronics: it gets more powerful all the time and it gets cheaper all the time.' - Trip Hawkins":{
 		Italian:"'Nell'elettronica di consumo esiste un principio di base: diventa sempre più potente e sempre meno costosa.' - Trip Hawkins"
-		Simplified_Chinese:"“消费类电子产品有一个基本法则：它的功能越来越强，它的价格越来越低。”——崔普·霍金斯（美国艺电(EA)公司创始人）"
+		Simplified_Chinese:"“消费类电子产品有一个基本法则：它的功能越来越强，它的价格越来越低。”——崔普·霍金斯（美国 EA 公司创始人）"
 		Czech:"'Je zde základní princip o spotřební elektronice: Je pořád výkonnější a neustále levnější.' - Trip Hawkins"
 }
 
@@ -1127,7 +1127,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 
 	"'Aeronautics was neither an industry nor a science. It was a miracle.' - Igor Sikorsky":{
 		Italian:"'L'aeronautica non è stata né un settore industriale né una scienza. È stata un miracolo.' - Igor Sikorsky"
-		Simplified_Chinese:"“航空既不是一种工业也不是一门科学。它是一个奇迹。”——伊戈尔·西科尔斯基（俄裔美籍飞机设计师）"
+		Simplified_Chinese:"“航空既不是一种工业也不是一门科学。它是一个奇迹。”——伊戈尔·西科尔斯基（美籍俄裔飞机设计师）"
 		Czech:"'' - "
 }
 
@@ -1435,7 +1435,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"+10% науки и производства во всех городах"
 		Romanian:"+10% știință și producție în toate orașele"
 		Spanish:"+10% de ciencia y producción en todas las ciudades"
-		Simplified_Chinese:"所有城市+10%的科研和产能产出"
+		Simplified_Chinese:"所有城市 +10% 科研和产能"
 		Portuguese:"+10% de produção de ciência em todas as cidades"
 		German:"+10% Wissenschaft und Produktion in allen Städten"
 		French:"+10% science et production dans toutes les villes"
@@ -1448,7 +1448,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		French:"Améliore la vitesse de déplacement sur les routes"
 		Romanian:"Îmbunătățește viteza de deplasare pe drumuri"
 		Spanish:"Mejora la velocidad de movimiento en carreteras"
-		Simplified_Chinese:"提高道路上的移动速度"
+		Simplified_Chinese:"道路上的移动速度更快"
 		Portuguese:"Melhora velocidade de movimento em estradas"
 		German:"Erhöht die Bewegungsgeschwindigkeit auf Straßen"
 		Czech:"Zvyšuje rychlost pohybu na cestách"
@@ -1485,7 +1485,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Ermöglicht das Einbooten von Landeinheiten"
 		French:"Permet d'embarquer les unités terrestres"
 		Russian:"Позволяет наземным единицам передвигаться по воде"
-		Simplified_Chinese:"陆军单位拥有船运能力"
+		Simplified_Chinese:"陆军单位拥有水运能力"
 		Portuguese:"Permite o embarque de unidades terrestres"
 		Czech:"Zpřístupní možnost nalodění se pozemním jednotkám"
 }
@@ -1497,7 +1497,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
 		French:"Permet aux unités embarqués de traverser les cases d'océan"
 		Russian:"Позволяет наземным единицам выходить в океан"
-		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
+		Simplified_Chinese:"拥有水运能力的单位能够进入海洋"
 		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
 		Czech:"Umožňuje naloděným jednotkám vyplout na oceán"
 }
@@ -1508,7 +1508,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Italian:"+1 movimento delle unità imbarcate"
 		French:"Améliore le déplacement embarqué +1"
 		Romanian:"Crește mișcarea ambarcațiunilor +1"
-		Simplified_Chinese:"陆军单位处于船运状态时的移动力+1"
+		Simplified_Chinese:"陆军单位处于水运状态时的移动力 +1"
 		Portuguese:"Aumenta movimento enquanto embarcado em +1"
 		German:"+1 für Bewegungen eingebooteter Einheiten"
 		Russian:"+1 к движению наземных единиц по воде"

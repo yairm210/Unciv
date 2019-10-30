@@ -111,7 +111,7 @@
 
 	"Next unit":{
 		Italian:"Prossima unità"
-		Simplified_Chinese:"下个未行动单位"
+		Simplified_Chinese:"下个单位"
 		Portuguese:"Próxima unidade"
 		French:"Unité suivante"
                 Russian:"Следующий юнит"
@@ -179,7 +179,7 @@
 		German:"Stärke Bombardierung"
 		Dutch:"Bombard sterkte"
 		Spanish:"Fuerza de bombardeo"
-		Simplified_Chinese:"远程轰击"
+		Simplified_Chinese:"轰击战斗力"
 		Portuguese:"Força de bombardeio"
 		Japanese:"爆撃力"
 		Czech:"Bombardovací síla"
@@ -267,7 +267,8 @@
 		Italian: "Costruisci strada"
 		German: "Straße bauen"
 		French:"Contruire une route"
-                Russian:"Построить дорогу"
+				Russian:"Построить дорогу"
+		Simplified_Chinese:"建造道路"
 		Czech:"Postavit cestu"
 }
 
@@ -279,7 +280,7 @@
 		German:"Befestigen"
 		Dutch:"Versterken"
 		Spanish:"Fortificar"
-		Simplified_Chinese:"驻守"
+		Simplified_Chinese:"驻扎"
 		Portuguese:"Fortificar"
 		Japanese:"要塞化"
 		Czech:"Opevnit se"
@@ -293,7 +294,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"驻守防御力加成"
+		Simplified_Chinese:"驻扎防御力加成"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 		Czech:"Opevnění"
@@ -342,7 +343,7 @@
 		French:"Mise à niveau vers [unitType] ([goldCost] or)" //or Amélioration en [unitType] ([goldCost] or)
 		Romanian:"Avansare [unitType] ([goldCost] aur)"
 		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
-		Simplified_Chinese:"升级到[unitType](需要[goldCost]金钱)"
+		Simplified_Chinese:"升级到[unitType]（需要 [goldCost] 金钱）"
 		Portuguese:"Melhoria a [unitType] ([goldCost] ouro)"
 		German:"Verbessere [unitType] ([goldCost] Gold)"
 		Japanese:"[unitType]（[goldCost] gold）にアップグレードする",
@@ -398,7 +399,7 @@
 		Romanian:"Desființează unitatea"
 		Dutch:"Eenheid opheffen"
 		Spanish:"Disolver unidad"
-		Simplified_Chinese:"解雇单位"
+		Simplified_Chinese:"解散单位"
 		Portuguese:"Desfazer unidade"
 		German:"Einheit auflösen"
 		Japanese:"解散ユニット"
@@ -449,7 +450,7 @@
 		Romanian:"Sigur desființezi unitatea?"
 		Dutch:"Wil je echt deze eenheid opheffen"
 		Spanish:"¿Realmente quieres disolver esta unidad?"
-		Simplified_Chinese:"您真的想解雇这个单位吗？"
+		Simplified_Chinese:"您真的想解散这个单位吗？"
 		Portuguese:"Voçê realmente quer desfazer essa unidade?"
 		German:"Wollen Sie diese Einheit wirklich auflösen?"
 		Japanese:"あなたは本当にこのユニットを解散したいですか？"
@@ -461,7 +462,7 @@
 		French:"Dissoudre cette unité pour [goldAmount] gold?"
 		German:"Diese Einheit für [goldAmount] Gold auflösen?"
 		Spanish:"¿Disolver esta unidad para [goldAmount] gold?"
-		Simplified_Chinese:"要解散这个单位获得[goldAmount]金钱吗？"
+		Simplified_Chinese:"要解散这个单位获得 [goldAmount] 金钱吗？"
 		Japanese:"このユニットを[goldAmount]ゴールドに解散させますか？"
 		Romanian:"Dezactivați această unitate pentru aurul [goldAmount]?"
 		Dutch:"Deze eenheid ontbinden voor [goldAmount] goud?"
@@ -516,7 +517,7 @@
 		Italian:"Prendi"
 		French:"Acquérir"
 		Russian:"Получить"
-		Simplified_Chinese:"变更为本城市所属"
+		Simplified_Chinese:"获得"
 		Czech:"Získat"
 }
 
@@ -628,13 +629,13 @@
 	"[year] BC":{ // Before Christus
 		Italian:"[year] a.C."
 		Czech:"[year] př. n. l."
-		Simplified_Chinese:"公元前[year]年"
+		Simplified_Chinese:"公元前 [year] 年"
 	}
 
 	"[year] AD":{ // Anno Domini
 		Italian:"[year] d.C."
 		Czech:"[year] n. l."
-		Simplified_Chinese:"公元[year]年"
+		Simplified_Chinese:"公元 [year] 年"
 	}
 
 /////// Menu table
@@ -725,7 +726,7 @@
 
 	"Community":{
 		Italian:"Community"
-		Simplified_Chinese:"开发者社区"
+		Simplified_Chinese:"社区"
 		Russian:"Сообщество"
 		Czech:"Komunita"
 }
@@ -755,7 +756,7 @@
 		German:"Stadt verlassen"
 		Dutch:"Stadscherm sluiten"
 		Spanish:"Salir de la ciudad"
-		Simplified_Chinese:"离开城市界面"
+		Simplified_Chinese:"关闭城市界面"
 		Portuguese:"Sair da cidade"
 		Japanese:"市を出る"
 		Czech:"Opustit město"
@@ -797,7 +798,7 @@
 		German:"Für [amount] Gold kaufen"
 		Dutch:"Voor [amount] gold kopen"
 		Spanish:"Comprar por [amount] de oro"
-		Simplified_Chinese:"花费[amount]金钱购买"
+		Simplified_Chinese:"花费 [amount] 金钱购买"
 		Portuguese:"Comprar por [amount] ouro"
 		Japanese:"[amount]ゴールドで購入する",
 		Czech:"Koupit za [amount] zlata"
@@ -825,7 +826,7 @@
 		German:"Möchten Sie [constructionName] für [buildingGoldCost] gold kaufen?"
 		Dutch:"Wilt u [constructionName] kopen voor [buildGoldCost] goud?"
 		Spanish:"¿Te gustaría comprar [constructionName] para [buildingGoldCost] gold?"
-		Simplified_Chinese:"你想花费[buildingGoldCost]金钱购买[constructionName]吗？"
+		Simplified_Chinese:"您想花费 [buildingGoldCost] 金钱购买[constructionName]吗？"
 		Portuguese:"Gostaria de comprar o [constructionName] por [buildingGoldCost] ouro?"
 		Japanese:"[buildingGoldCost]ゴールドの[constructionName]を購入しますか？",
 		Czech:"Přejete si zakoupit [constructionName] za [buildingGoldCost] zlata?"
@@ -870,13 +871,13 @@
 
 	"Provides [resource]":{
 		Italian:"Dona [resource]"
-		Simplified_Chinese:"获得资源：[resource]"
-		Czech:"Poskytuje [resource]"	
+		Simplified_Chinese:"提供[resource]"
+		Czech:"Poskytuje [resource]"
 	}
 	
 	"Replaces [improvement]":{
 		Italian:"Sostituisce [improvement]"
-		Simplified_Chinese:"替换现有设施：[improvement]"
+		Simplified_Chinese:"替换[improvement]"
 		Czech:"Nahrazuje [improvement]"
 	}
 
@@ -884,7 +885,7 @@
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
 		French:"Choisir maintenant !"
-		Simplified_Chinese:"选择此项！"
+		Simplified_Chinese:"现在选择！"
                 Russian:"Выбрать сейчас!"
 		Czech:"Zvolte teď!"
 }
@@ -924,7 +925,7 @@
 		German:"[thingToProduce] herstellen"
 		Dutch:"[thingToProduce] produceren"
 		Spanish:"Producir [thingToProduce]"
-		Simplified_Chinese:"产能利用：[thingToProduce]"
+		Simplified_Chinese:"产出[thingToProduce]"
 		Portuguese:"Produzir [thingToProduce]"
 		Japanese:"プロデュース[thingToProduce]",
 		Czech:"Produkovat [thingToProduce]"
@@ -958,7 +959,7 @@
 		German:"Fachbauten"
 		Dutch:"Gespecialiseerde gebouwen"
 		Spanish:"Edificios especializados"
-		Simplified_Chinese:"专业建筑"
+		Simplified_Chinese:"专家建筑"
 		Portuguese:"Edifícios Especialistas"
 		Japanese:"スペシャリストビル"
 		Czech:"Specializované budovy"
@@ -972,7 +973,7 @@
 		German:"Spezialistzuordnung"
 		Dutch:"Specialistische toewijzing"
 		Spanish:"Asignación de especialistas"
-		Simplified_Chinese:"专业人员分配"
+		Simplified_Chinese:"专家分配"
 		Portuguese:"Alocação de Especialistas"
 		Japanese:"スペシャリスト割り当て"
 		Czech:"Přidělit specialistu"
@@ -980,7 +981,7 @@
 
 	"Specialists":{
 		Italian:"Specialisti"
-		Simplified_Chinese:"专业人员"
+		Simplified_Chinese:"专家"
 		French:"Spécialiste"
 		Portuguese:"Especialistas"
 		Russian:"Специалисты"
@@ -1013,7 +1014,7 @@
 		German:"Freie Bevölkerung"
 		Dutch:"Vrije bevolking"
 		Spanish:"Población libre"
-		Simplified_Chinese:"空闲人口"
+		Simplified_Chinese:"闲置人口"
 		Portuguese:"População livre"
 		Japanese:"無料の人口"
 		Czech:"Nevyužitá populace"
@@ -1027,7 +1028,7 @@
 		German:"Erweiterung in [turnsToExpansion] Runden"
 		Dutch:"Uitbreiding in [turnsToExpansion] rondes"
 		Spanish:"[turnsToExpansion] rondas hasta la expansión"
-		Simplified_Chinese:"此城市将在[turnsToExpansion]回合后扩张"
+		Simplified_Chinese:"此城市将在 [turnsToExpansion] 回合后扩张"
 		Portuguese:"[turnsToExpansion] turnos até a expansão"
 		Japanese:"[turnsToExpansion]が拡大に変わります",
 		Czech:"[turnsToExpansion] tahů do rozšíření"
@@ -1041,7 +1042,7 @@
 		German:"Expansion gestoppt"
 		Dutch:"Uitbreiding gestopt"
 		Spanish:"Expansión detenida"
-		Simplified_Chinese:"扩张停止了"
+		Simplified_Chinese:"扩张已停止"
 		Portuguese:"Expansão parada"
 		Japanese:"拡張停止"
 		Czech:"Rozšiřování zastaveno"
@@ -1055,7 +1056,7 @@
 		German:"Neuer Einwohner in [turnsToPopulation] Runden"
 		Dutch:"Een nieuwe inwoner in [turnsToPopulation] rondes"
 		Spanish:"[turnsToPopulation] rondas hasta un nuevo residente"
-		Simplified_Chinese:"此城市将在[turnsToPopulation]轮后有1个新市民"
+		Simplified_Chinese:"此城市将在 [turnsToPopulation] 回合后诞生新市民"
 		Portuguese:"[turnsToPopulation] turnos até um novo residente"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます",
 		Czech:"[turnsToPopulation] tahů do přírůstku populace"
@@ -1075,7 +1076,7 @@
 		German:"Bevölkerungsverlust in [turnsToStarvation] Runden"
 		Dutch:"Bevolkingsverlies in [turnsToStarvation] rondes"
 		Spanish:"Pérdida de población en [turnsToStarvation] turnos"
-		Simplified_Chinese:"此城市将在[turnsToStarvation]轮后失去1个市民"
+		Simplified_Chinese:"此城市将在 [turnsToStarvation] 回合后失去市民"
 		Portuguese:"Perda de população em [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす",
 		Czech:"[turnsToStarvation] tahů do ztráty populace"
@@ -1089,7 +1090,7 @@
 		German:"Bevölkerungswachstum gestoppt"
 		Dutch:"De bevolkingsgroei gestopt"
 		Spanish:"Aumento de la población detenida"
-		Simplified_Chinese:"人口增长停止"
+		Simplified_Chinese:"人口增长已停止"
 		Portuguese:"Crescimento populacional interrompido"
 		Japanese:"人口増加の阻止"
 		Czech:"Zastavený populační růst"
@@ -1097,7 +1098,7 @@
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
 		Italian:"La resistenza durerà altri [numberOfTurns] turni."
-                Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
+                Simplified_Chinese:"抵抗将持续额外 [numberOfTurns] 回合"
 		Portuguese:"A resistência por [numberOfTurns] turnos mais."
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
 		French:"En révolte pour [numberOfTurns] tours."
@@ -1113,7 +1114,7 @@
 		German:"Verkaufen Sie für [sellAmount] Gold"
 		Dutch:"Verkopen voor [sellAmount] goud"
 		Spanish:"Vender por [sellAmount] oro"
-		Simplified_Chinese:"卖掉获得[sellAmount]金钱"
+		Simplified_Chinese:"以 [sellAmount] 金钱出售"
 		Portuguese:"Vender por [sellAmount] ouro",
 		Czech:"Prodat za [sellAmount] zlata"
 }
@@ -1126,7 +1127,7 @@
 		German:"Wollen Sie wirklich [building] verkaufen?"
 		Dutch:"Wil je echt [building] verkopen?"
 		Spanish:"¿Realmente quieres vender [building]?"
-		Simplified_Chinese:"你真的想卖掉[building]吗？"
+		Simplified_Chinese:"您真的想卖掉[building]吗？"
 		Portuguese:"Você realmente quer vender o(a) [building]?",
 		Czech:"Jste si jistý(á), že chcete prodat budovu [building]"
 }
@@ -1161,7 +1162,7 @@
 
 	"Points per turn":{
 		Italian:"Punti per turno"
-		Simplified_Chinese:"获得点数/回合"
+		Simplified_Chinese:"每回合点数"
 		French:"Points par tours"
 		Portuguese:"Pontos por turno"
 		Russian:"Очки за ход"
@@ -1170,19 +1171,19 @@
 
 	"Convert production to gold at a rate of 4 to 1":{
 		Italian:"Converte la Produzione a Oro a un tasso di 4 a 1"
-		Simplified_Chinese:"转化1/4产能为金钱"
+		Simplified_Chinese:"每 4 产能转化为 1 金钱"
 		Czech:"Konvertovat produkci na zlato v poměru 4 ku 1"
 }
 
 	"Convert production to science at a rate of 4 to 1":{
 		Italian:"Converte la Produzione a Scienza a un tasso di 4 a 1"
-		Simplified_Chinese:"转化1/4产能为科研",
+		Simplified_Chinese:"每 4 产能转化为 1 科研",
 		Czech:"Konvertovat produkci na výzkum v poměru 4 ku 1"
 }
 
 	"The city will not produce anything.":{
 		Italian:"La città non produrrà nulla"
-		Simplified_Chinese:"城市将不会建造/组建任何项目"
+		Simplified_Chinese:"城市将不会生产任何项目"
 		Czech:"Město nebude nic vyrábět"
 }
 
@@ -1209,7 +1210,7 @@
 		Romanian:"Alege o tehnologie gratuită"
 		Dutch:"Gratis technologie kiezen"
 		Spanish:"Elige una tecnología gratis"
-		Simplified_Chinese:"选择1项免费科技"
+		Simplified_Chinese:"免费选择一项科技"
 		Portuguese:"Escolha uma tecnologia gratuita"
 		German:"Kostenlose Technologie auswählen"
 		Japanese:"無料の技術を選ぶ"
@@ -1252,7 +1253,7 @@
 		German:"Freigeschaltete Einheiten"
 		Dutch:"Eenheden vrijgespeeld"
 		Spanish:"Unidades habilitadas"
-		Simplified_Chinese:"解锁单位"
+		Simplified_Chinese:"可用单位"
 		Portuguese:"Unidades ativadas"
 		Japanese:"有効な単位"
 		Czech:"Lze stavět jednotky"
@@ -1266,7 +1267,7 @@
 		German:"Freigeschaltete Bauwerke"
 		Dutch:"Gebouwen vreijgespeeld"
 		Spanish:"Edificios habilitados"
-		Simplified_Chinese:"解锁建筑"
+		Simplified_Chinese:"可用建筑"
 		Portuguese:"Construções habilitadas"
 		Japanese:"有効な建物"
 		Czech:"Lze stavět budovy"
@@ -1309,7 +1310,7 @@
 		German:"Freigeschaltete Wunder"
 		Dutch:"Wonders vrijgespeeld"
 		Spanish:"Maravillas habilitadas"
-		Simplified_Chinese:"解锁奇观"
+		Simplified_Chinese:"可用奇观"
 		Portuguese:"Maravilhas habilitadas"
 		Japanese:"有効不思議"
 		Czech:"Odemknuté Divy"
@@ -1323,7 +1324,7 @@
 		German:"Freigschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
 		Spanish:"Mejoras de casilla habilitadas"
-		Simplified_Chinese:"解锁地块设施"
+		Simplified_Chinese:"可用地块设施"
 		Portuguese:"Melhorias de solo habilitadas"
 		Japanese:"タイルの改善"
 		Czech:"Odemknuté vylepšení políček"
@@ -1350,7 +1351,7 @@
 		Romanian:"XP pentru unități noi"
 		Dutch:"XP voor nieuwe eenheden"
 		Spanish:"PX para unidades nuevas"
-		Simplified_Chinese:"新组建单位的初始经验值"
+		Simplified_Chinese:"新单位的初始经验值"
 		Portuguese:"Experiencia para novas unidades"
 		German:"XP für neue Einheiten"
 		Japanese:"新しいユニット用のXP"
@@ -1397,7 +1398,7 @@
 		German:"Stärke der Stadt"
 		Dutch:"Kracht van de stad"
 		Spanish:"Fuerza de la ciudad"
-		Simplified_Chinese:"城市强度"
+		Simplified_Chinese:"城市攻击力"
 		Portuguese:"Força da cidade"
 		Czech:"Síla města"
 }
@@ -1416,7 +1417,7 @@
 }
 
 	"Occupied!":{ // Shown in the battle table when attacking a defeated city
-		Simplified_Chinese:"可以占领！"
+		Simplified_Chinese:"占领！"
 }
 
 	"Attack":{
@@ -1446,14 +1447,14 @@
 		German:"Gefangen!"
 		Dutch:"Gevangen!"
 		Spanish:"Capturada!"
-		Simplified_Chinese:"可以俘虏！"
+		Simplified_Chinese:"俘虏！"
 		Portuguese:"Capturado(a)!"
 		Czech:"Zajat(a/o)!"
 }
 
 	"defence vs ranged":{
 		Italian:"difesa contro unità da tiro"
-		Simplified_Chinese:"对远程攻击防御"
+		Simplified_Chinese:"对远程攻击防御力"
 		Czech:"obrana v boji na dálku"
 }
 
@@ -1462,7 +1463,7 @@
 		Spanish:"[percentage] A la defensa"
 		Italian:"[percentage] difesa dell'unità"
 		Romanian:"[percentage] la defensiva unității"
-		Simplified_Chinese:"[percentage]单位防御力"
+		Simplified_Chinese:"[percentage] 单位防御力"
 		Portuguese:"[percentage] a defesa da unidade"
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
@@ -1471,7 +1472,7 @@
 }
 
 	"Attacker Bonus":{
-		Simplified_Chinese:"主动发起攻击"
+		Simplified_Chinese:"主动攻击加成"
 }
 
 	"Landing":{
@@ -1515,7 +1516,7 @@
 		Italian:"Conduci missione commerciale"
 		Romanian:"Dirijează misiunea comercială"
 		Spanish:"Tomar mision De Comercio"
-		Simplified_Chinese:"开展贸易"
+		Simplified_Chinese:"开展贸易活动"
 		German:"Handelsmission durchführen"
 		French:"Faire une mission commerciale"
 		Portuguese:"Realizar uma missão comercial"
@@ -1528,7 +1529,7 @@
 		Italian:"La tua missione commerciale ti ha fruttato [goldGained] Oro!"
 		Romanian:"Misuiunea comercială ți-a adus [goldGained] aur!"
 		Spanish:"¡La mision de comercio ha generado [goldGained] de oro!"
-		Simplified_Chinese:"您开展贸易赚了[goldGained]金钱"
+		Simplified_Chinese:"您开展贸易获得 [goldGained] 金钱！"
 		Portuguese:"Sua missão comercial deu-lhe [goldGained] ouro!"
 		German:"Die Handelsmission hat [goldGained] Gold eingebracht!"
 		French:"Votre mission commerciale vous a rapporté [goldGained] ors"
@@ -1565,7 +1566,7 @@
 		Romanian:"Ai intrat în epoca [newEra]!"
 		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is
 		Spanish:"¡Has entrado en la [newEra]!"
-		Simplified_Chinese:"您已经进入了[newEra]！"
+		Simplified_Chinese:"您已进入[newEra]！"
 		Portuguese:"Voçê entrou na [newEra]!"
 		German:"Zeitalter [newEra] ist eingeläutet!",
 		Czech:"Vstoupili jsme do éry [newEra]!"
@@ -1578,7 +1579,7 @@
 		Romanian:"Ramura [policyBranch] deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 		Spanish:"¡Rama política [policyBranch] desbloqueada!"
-		Simplified_Chinese:"[policyBranch]分支解锁!"
+		Simplified_Chinese:"[policyBranch]分支解锁！"
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet",
 		Czech:"Zpřístupněna větev sociální politiky: [policyBranch]"
@@ -1669,6 +1670,7 @@
 	"Tiles":{
 		Italian:"Caselle"
 		Czech:"Políčka"
+		Simplified_Chinese:"地块"
 }
 
 	"Wonders":{
@@ -1689,7 +1691,7 @@
 		Spanish:"Edificios Ocupables"
 		German:"Gebäude der Spezialisten"
 		French:"Batiments spéciaux" //not sure
-		Simplified_Chinese:"专业建筑"
+		Simplified_Chinese:"专家建筑"
 		Portuguese:"Construções especializadas"
 		Russian:"Специальные здания"
 		Czech:"Specializované budovy"
@@ -1789,7 +1791,7 @@
 		French:"Entretien"
 		Romanian:"Întreținere"
 		Spanish:"Mantenimiento"
-		Simplified_Chinese:"建筑维护费"
+		Simplified_Chinese:"维护"
 		Portuguese:"Manutenção"
 		German:"Wartung"
 		Czech:"Údržba budov"
@@ -1801,7 +1803,7 @@
 		French:"Entretien des transports"
 		Romanian:"Întreținere trasporturi"
 		Spanish:"Mantenimiento de transporte"
-		Simplified_Chinese:"道(铁)路维护费"
+		Simplified_Chinese:"道路维护费"
 		Portuguese:"Manutenção de transporte"
 		German:"Unterhalt für Transport"
 		Czech:"Údržba cest"
@@ -1927,7 +1929,7 @@
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Постройте все части космического корабля\n чтобы победить!"
-		Simplified_Chinese:"完成建造太空飞船\n胜利！"
+		Simplified_Chinese:"完成建造太空飞船\n以达成胜利！"
 		Portuguese:"Complete todas as partes da nave para ganhar",
 		Czech:"Vybudováním všech šesti části vesmírné lodi\n dosáhneme vítězství!"
 }
@@ -1937,7 +1939,7 @@
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Завершите 4 ветви общественных институтов\n чтобы победить!"
-		Simplified_Chinese:"完成4个社会政策分支\n胜利！"
+		Simplified_Chinese:"完成 4 个社会政策分支\n以达成胜利！"
 		Portuguese:"Complete 4 árvores de politicas para ganhar",
 		Czech:"Zkompletováním 4 větví Sociální politiky\n dosáhneme vítězství!"
 }
@@ -1947,7 +1949,7 @@
 		German:"Um zu gewinnen besiegen Sie alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
 		Russian:"Уничтожьте всех врагов\n чтобы победить!"
-		Simplified_Chinese:"消灭所有敌人\n胜利!"
+		Simplified_Chinese:"消灭所有敌人\n以达成胜利!"
 		Portuguese:"Destrua todos os inimigos para ganhar",
 		Czech:"Zničením všech ostatních civilizací\n dosáhneme vítězství!"
 }
@@ -1957,7 +1959,7 @@
 		German:"Sie haben den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique!"
 		Russian:"Вы одержали научную победу!"
-		Simplified_Chinese:"恭喜！你赢得了科技胜利!"
+		Simplified_Chinese:"恭喜！您赢得了科技胜利!"
 		Portuguese:"Você ganhou uma vitória ciêntifica!"
 		Czech:"Dosáhli jste vítězství ve hře díky Výzkumu!"
 }
@@ -1967,7 +1969,7 @@
 		German:"Sie haben den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle!"
 		Russian:"Вы одержали культурную победу!"
-		Simplified_Chinese:"恭喜！你赢得了文化胜利！"
+		Simplified_Chinese:"恭喜！您赢得了文化胜利！"
 		Portuguese:"Você ganhou uma vitória cultural!",
 		Czech:"Dosáhli jste vítězství ve hře díky Kulturní vyspělosti!"
 }
@@ -1977,32 +1979,32 @@
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
 		Russian:"Вы победили, завоевав всех!"
-		Simplified_Chinese:"恭喜！你赢得了征服胜利！"
+		Simplified_Chinese:"恭喜！您赢得了征服胜利！"
 		Portuguese:"Você ganhou uma vitória de dominação!",
 		Czech:"Dosáhli jsme vítězství ve hře zničením všech ostatních civilizací!"
 }
 // TODO (4)
 	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
 		Italian:"Hai ottenuto la vittoria attraverso il maestoso potere della tua cultura. La grandezza della tua civiltà, la magnificenza dei suoi monumenti e il talento dei suoi artisti ha sbalordito il mondo! I poeti ti ononeranno per sempre, finché la bellezza continuerà a portare sollievo ai cuori affaticati."
-		Simplified_Chinese:"你们依靠文化的强大力量取得了胜利。你们文明的伟大创作——富丽堂皇的建筑和鬼斧神工的艺术品震惊了世界！这些沁入心扉的美丽给疲乏的心带来温暖，给悲伤的人送去欢乐，诗人为你赞叹，乐者为你歌唱！"
+		Simplified_Chinese:"您依靠文化的强大力量取得了胜利。您的文明的伟大创作——富丽堂皇的建筑和鬼斧神工的艺术品震惊了世界！这些沁入心扉的美丽给疲乏的心带来温暖，给悲伤的人送去欢乐，诗人为您赞叹，乐者为您歌唱！"
 		Czech:"Dosáhli jsme vítězství díky úžasné dokonalé kulturnosti. Velikost naší říše - velkolepost vybudovaných památek a preciznost našich umělců ohromila svět! Básníci nás budou velebit, dokud vše krásné bude přinášet potěšení unavenému srdci."
 }
 
 	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
 		Italian:"Il mondo è stato straziato dalla guerra. Molte grandi e potenti civiltà sono cadute, ma tu sei sopravvissuto e se emerso vittorioso. Il mondo ricorderà a lungo il tuo glorioso trionfo!"
-		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而且强势的文明衰落了，但你们幸存了下来——并且取得了胜利！世界将永远记住你的光辉与荣耀！",
+		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而且强势的文明衰落了，但您幸存了下来——并且取得了胜利！世界将永远记住您的光辉与荣耀！",
 		Czech:"Celý svět byl zachvácen válkou. Velké a slavné civilizace byly zničeny, ale naše říše dokázala jako jediná přežít a zvítězit. Svět nikdy nezapomene na tento fenomenální triumf!"
 }
 
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
 		Italian:"Hai ottenuto la vittoria attraverso la padronanza della scienza! Hai penetrato i misteri più arcani della natura e condotto il tuo popolo in un viaggio verso un nuovo, favoloso mondo! Il tuo trionfo sarà ricordato finch* le stelle continueranno a brillare nel firmamento!"
-		Simplified_Chinese:"你们通过掌握先进的科技取得了胜利!你们已经征服了大自然的神秘，带领人民踏上了通往美丽新世界的航程！只要星星在夜空中燃烧，你的胜利就会被永远铭记！"
+		Simplified_Chinese:"您通过掌握先进的科技取得了胜利！您已经征服了大自然的神秘，带领人民踏上了通往美丽新世界的航程！只要星星在夜空中燃烧，您的胜利就会被永远铭记！"
 		Czech:"Zvítězili jsme ve hře díky enormnímu úsilý a mistrovství našich vědců. Poodhalili jste tajemství přírody a dovedli naše obyvatele na cestu poznání k novým světům. Na tento úspěch se bude vzpomínat dokud budou svítit hvězdy na nebi!"
 }
 
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
 		Italian:"Sei stato sconfitto. La tua civiltà è stata spazzata via dai suoi nemici. Ma il tuo popolo non dispera, perché sa che un giorno tornerai... e lo condurrai alla vittoria!"
-		Simplified_Chinese:"你被打败了。虽然你们的文明曾经被许多敌人所征服，但是你的人民永不放弃，因为他们知道总有一天你会回来的！那时，你的文明将会成为天空中最耀眼的恒星！"
+		Simplified_Chinese:"您被打败了。虽然您的文明曾经被许多敌人所征服，但是您的人民永不放弃，因为他们知道总有一天您会回来的！那时，您的文明将会成为天空中最耀眼的恒星！"
 		Czech:"Byli jsme poraženi. Naše civilizace byla převálcována schopnostmi nepřátel. Naši lidé ovšem nezoufají, protože ví, že jednou se jejich vůdce vrátí. A dovede je k vytouženému vítězství!"
 }
 
@@ -2039,7 +2041,7 @@
 	"Our status":{
 		Italian:"I tuoi progressi"
 		French:"Notre situation"
-		Simplified_Chinese:"我们文明的胜利进度"
+		Simplified_Chinese:"我们的进度"
 		Russian:"Наш статус"
 		Czech:"Naše vyhlídky"
 }
@@ -2047,7 +2049,7 @@
 	"Global status":{
 		Italian:"Progressi globali"
 		French:"Situation globale"
-		Simplified_Chinese:"所有文明的胜利进度"
+		Simplified_Chinese:"全球进度"
 		Russian:"Глобальный статус"
 		Czech:"Globální situace"
 }
@@ -2055,7 +2057,7 @@
 	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
 		French:"Parties de Vaisseau spatial manquantes"
-		Simplified_Chinese:"未完成建造的飞船组件"
+		Simplified_Chinese:"尚未完成的飞船组件"
 		Russian:"Осталось частей КК"
 		Czech:"Chybějící části Vesmírné lodi"
 }
@@ -2082,7 +2084,7 @@
 	"What would you like to do with the city?":{
 		Italian:"Cosa vorresti farne della Città?"
 		French:"Que voulez vous faire de cette ville?"
-		Simplified_Chinese:"你想如何处理这座城市？"
+		Simplified_Chinese:"您想如何处理这座城市？"
 		Russian:"Что вы хотите сделать с этим городом?"
 		Czech:"Co si přejeme s městem udělat?"
 }
@@ -2104,7 +2106,7 @@
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
 		Italian:"I loro cittadini genereranno il doppio dell'Infelicità, fino a quando non costruirai un Palazzo di giustizia."
 		Czech:"Jejich obyvatelé produkují 2x tolik nespokojenosti dokud napostavíte Soud."
-		Simplified_Chinese:"该城市人口产生的不满将是正常值的2倍，建造“法庭”可以使该值降低到正常值。"
+		Simplified_Chinese:"该城市人口产生的不满将是正常值的 2 倍，建造“法院”可以使该值降低到正常值。"
 }
 
 	"Puppet":{
@@ -2116,7 +2118,7 @@
 	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
 		Italian:"Le città fantoccio non incrementano i costi di Scienza e Cultura, ma i loro cittadini generano Infelicità pari a una volta e mezzo."
 		Czech:"Města s loutkovou vládou nezvyšují náklady na výzkum a kulturu, ale jejich obyvatelé generují 1,5x tolik nespokojenosti."
-		Simplified_Chinese:"“傀儡城市”不会额外增加您研发科技和推行社会政策时的花费，但其人口产生的不满是正常值的1.5倍。"
+		Simplified_Chinese:"“傀儡城市”不会额外增加您研发科技和推行社会政策时的花费，但其人口产生的不满是正常值的 1.5 倍。"
 }
 
 	"You have no control over the the production of puppeted cities.":{
@@ -2128,13 +2130,13 @@
 	"Puppeted cities also generate 25% less Gold and Science.":{
 		Italian:"Gli stati fantoccio generano anche il 25% di Oro e Scienza in meno."
 		Czech:"Města s loutkovou vládou také generují o 25% méně Zlata a Výzkumu."
-		Simplified_Chinese:"已傀儡城市的金钱和科研产出-25%。"
+		Simplified_Chinese:"傀儡城市的金钱和科研产出 -25%。"
 }
 
 	"A puppeted city can be annexed at any time.":{
 		Italian:"Puoi annettere una città fantoccio ogni volta che vuoi"
 		Czech:"Město s loutkovou vládou lze kdykoliv anektovat."
-		Simplified_Chinese:"可以在任何时候选择吞并已傀儡城市。"
+		Simplified_Chinese:"可以在任何时候选择吞并傀儡城市。"
 }
 
 	"Liberate":{
@@ -2175,7 +2177,7 @@
 	"Remove your troops in our border immediately!":{
 		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
 		French:"Enlevez vos troupes de nos terres immédiatement!"
-		Simplified_Chinese:"请停止这种无理而且野蛮的行径！马上让你的单位滚出我的领土！"
+		Simplified_Chinese:"马上让你的单位滚出我的领土！"
 		Russian:"Уберите свои войска с наших границ немедленно!"
 		Czech:"Okamžitě odstraňte vaše jednotky z našeho území!"
 }
@@ -2183,7 +2185,7 @@
 	"Sorry.":{
 		Italian:"Ti porgiamo le nostre scuse."
 		French:"Désolé."
-		Simplified_Chinese:"请您原谅我的鲁莽。"
+		Simplified_Chinese:"抱歉。"
 		Russian:"Простите."
 		Czech:"Omlouváme se."
 }
@@ -2192,7 +2194,7 @@
 		Italian:"Non sia mai!"
 		French:"Jamais!"
 		Russian:"Никогда!"
-		Simplified_Chinese:"愤怒是无能的表现。"
+		Simplified_Chinese:"绝不！"
 		Czech:"Nikdy!"
 }
 
@@ -2241,7 +2243,7 @@
 		Italian:"Unico per la civiltà [civName], sostituisce [unitName]"
 		Spanish:"Único a la civilización [civName], reemplaza [unitName]"
 		Romanian:"Unic pentru civilizație [civName], înlocuiește [unitName]"
-		Simplified_Chinese:"[civName]文明独有，取代[unitName]"
+		Simplified_Chinese:"[civName]文明独有，替代[unitName]"
 		Portuguese:"Exclusivo da civilização [civName], substitui [unitName]"
 		Russian:"Уникален для [civName], заменяет [unitName]"
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
@@ -2279,7 +2281,7 @@
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
 		French:"Améliorer en [upgradedUnit]"
-		Simplified_Chinese:"可升级为[upgradedUnit]"
+		Simplified_Chinese:"升级为[upgradedUnit]"
 		Portuguese:"Melhorar para [upgradedUnit]"
 		Russian:"Улучшается до [upgradedUnit]"
 		Czech:"Vylepšení na [upgradedUnit]"
@@ -2305,7 +2307,7 @@
 
 	"Can be found on ":{ // For resources in civilopedia: Can be found on Forest, Hills, Jungle
 		Italian:"Può trovarsi su"
-		Simplified_Chinese:"可能发现该资源的地形地貌："
+		Simplified_Chinese:"可能被发现在："
 		French:"Peut être trouver sur "
 		Portuguese:"Pode ser encontrado em "
 		Russian:"Может быть найден в "
@@ -2314,7 +2316,7 @@
 
 	"Improved by [improvement]":{
 		Italian:"Può essere migliorato/a da [improvement]"
-		Simplified_Chinese:"开发该资源所需要的设施：[improvement]"
+		Simplified_Chinese:"开发该资源所需设施：[improvement]"
 		French:"Amélioré par [improvement]"
 		Portuguese:"Melhorado por [improvement]"
 		Russian:"Улучшен [improvement]"
@@ -2323,7 +2325,7 @@
 
 	"Bonus stats for improvement: ":{
 		Italian:"Bonus per miglioramento: "
-		Simplified_Chinese:"开发该资源后设施所获奖励效果："
+		Simplified_Chinese:"设施加成："
 		French:"Bonus de case améliorée: "
 		Portuguese:"Bonus de estatisticas por melhoria: "
 		Russian:"Бонусы за улучшение: "
@@ -2332,7 +2334,7 @@
 
 	"Can be built on ":{
 		Italian:"Può essere costruito/a su: "
-		Simplified_Chinese:"可以建造的地形地貌："
+		Simplified_Chinese:"可建造于："
 		French:"Peut être construit sur "
 		Portuguese:"Pode ser construido em "
 		Russian:"Может быть построен на "
@@ -2368,7 +2370,7 @@
 
 	" for ":{ //for example:+1 Gold for Gems,Gold,Silver
 		Italian:" per "
-		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
+		Simplified_Chinese:"，如果建造在下列资源上："
 		French:"par "
 		Portuguese:"Por "
 		Russian:" за "
@@ -2379,7 +2381,7 @@
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"
 		Russian:"Отсутствующие переводы:"
-		Simplified_Chinese:"未翻译的词条:"
+		Simplified_Chinese:"缺少翻译："
 		French:"Traductions manquantes:"
 		Portuguese:"Traduções faltando:"
 		Czech:"Chybějící překlady:"
@@ -2388,7 +2390,7 @@
 	"Version":{
 		Italian:"Versione"
 		Russian:"Версия"
-		Simplified_Chinese:"版本号"
+		Simplified_Chinese:"版本"
 		French:"Version"
 		Portuguese:"Versão"
 		Czech:"Verze"
@@ -2405,7 +2407,7 @@
 
 	"Tileset":{
 		Italian:"Set celle"
-		Simplified_Chinese:"地块显示设置"
+		Simplified_Chinese:"地块设置"
 		French:"Taille des cases"
 		Portuguese:"Estilo mapa"
 		Russian:"Палитра клеток"
@@ -2423,7 +2425,7 @@
 
 	"Language":{
 		Italian:"Lingua"
-		Simplified_Chinese:"语言设置"
+		Simplified_Chinese:"语言"
 		French:"langage"
 		Portuguese:"Língua"
 		Russian:"Язык"
@@ -2435,7 +2437,7 @@
 
 	"Terrains & Resources":{
 		Italian:"Terreni e risorse"
-		Simplified_Chinese:"地形地貌与资源"
+		Simplified_Chinese:"地形与资源"
 		Russian:"Ландшафты и ресурсы"
 		Czech:"Terén & Zdroje"
 }
