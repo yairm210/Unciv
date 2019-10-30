@@ -1,12 +1,9 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
@@ -39,7 +36,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
 
         add(rightSide)
 
-        background = TextureRegionDrawable(TextureRegion(Texture(ImageGetter.getRoundedRectangle(Color.WHITE, this.prefWidth.toInt(), this.prefHeight.toInt(), 25))))
+        background = ImageGetter.getRoundedRectangleDrawable(Color.WHITE, this.prefWidth.toInt(), this.prefHeight.toInt(), 25)
 
         pack()
     }

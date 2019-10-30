@@ -45,7 +45,7 @@ object ImageGetter {
         return drawable
     }
 
-    fun getRoundedRectangle(color:Color, width:Int, height:Int, radius:Int): Pixmap {
+    fun getRoundedRectangleDrawable(color:Color, width:Int, height:Int, radius:Int): TextureRegionDrawable {
         val pixmap = Pixmap(width, height, Pixmap.Format.RGBA8888)
         pixmap.setColor(color)
         for (y in 0 until pixmap.height) {
@@ -73,7 +73,7 @@ object ImageGetter {
                 pixmap.drawPixel(x, y)
             }
         }
-        return pixmap
+        return TextureRegionDrawable(TextureRegion(Texture(pixmap)))
     }
 
     private fun getTextureRegion(fileName: String): TextureRegion {
