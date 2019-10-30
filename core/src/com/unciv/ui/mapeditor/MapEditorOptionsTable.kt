@@ -113,7 +113,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
             for (downloadableMap in folderList.entries) {
                 val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
                 downloadMapButton.onClick {
-                    val mapJsonGzipped = DropBox().downloadFile(downloadableMap.path_display)
+                    val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
                     if(mapJsonGzipped==""){
                         val couldNotDownloadMapPopup = PopupTable(screen)
                         couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()

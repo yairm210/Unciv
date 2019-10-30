@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.audio.Music
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -30,8 +31,13 @@ class UnCivGame(val version: String) : Game() {
 
     lateinit var worldScreen: WorldScreen
 
+    var music : Music? =null
+    val musicLocation = "music/thatched-villagers.mp3"
+
     override fun create() {
         Current = this
+
+
         if(Gdx.app.type!= Application.ApplicationType.Desktop)
             viewEntireMapForDebug=false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
@@ -49,6 +55,19 @@ class UnCivGame(val version: String) : Game() {
             }
         }
         else setScreen(LanguagePickerScreen())
+
+        startMusic()
+    }
+
+    fun startMusic(){
+
+        val musicFile = Gdx.files.local(musicLocation)
+        if(musicFile.exists()){
+            music = Gdx.audio.newMusic(musicFile)
+            music!!.isLooping=true
+            music!!.volume = 0.4f
+            music!!.play()
+        }
     }
 
     fun setScreen(screen: CameraStageBaseScreen) {

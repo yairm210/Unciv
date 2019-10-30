@@ -1,10 +1,9 @@
 package com.unciv.ui.worldscreen.optionstable
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
-import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
@@ -113,6 +112,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         addTileSetSelectBox(innerTable)
 
         addSoundEffectsVolumeSlider(innerTable)
+        addMusicVolumeSlider(innerTable)
 
         innerTable.add("Version".toLabel())
         innerTable.add(UnCivGame.Current.version.toLabel()).row()
@@ -158,6 +158,43 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             }
         })
         innerTable.add(soundEffectsVolumeSlider).row()
+    }
+
+    private fun addMusicVolumeSlider(innerTable: PopupTable) {
+        val musicLocation =Gdx.files.local(UnCivGame.Current.musicLocation)
+        if(musicLocation.exists()) {
+            innerTable.add("Music volume".tr())
+
+            val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
+            musicVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
+            musicVolumeSlider.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    UnCivGame.Current.settings.musicVolume = musicVolumeSlider.value
+                    UnCivGame.Current.settings.save()
+                    UnCivGame.Current.music?.volume = 0.4f * musicVolumeSlider.value
+                }
+            })
+            innerTable.add(musicVolumeSlider).row()
+        }
+        else{
+            val downloadMusicButton = TextButton("Download music",CameraStageBaseScreen.skin)
+            innerTable.add(downloadMusicButton).colspan(2).row()
+            val errorTable = Table()
+            innerTable.add(errorTable).colspan(2).row()
+
+            downloadMusicButton.onClick {
+                try{
+                    val file = DropBox().downloadFile("/Music/thatched-villagers.mp3")
+                    musicLocation.write(file,false)
+                    update()
+                    UnCivGame.Current.startMusic()
+                }
+                catch (ex:Exception){
+                    errorTable.clear()
+                    errorTable.add("Could not download music!".toLabel().setFontColor(Color.RED))
+                }
+            }
+        }
     }
 
     private fun addResolutionSelectBox(innerTable: PopupTable) {
