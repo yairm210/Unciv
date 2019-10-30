@@ -50,7 +50,7 @@
 		Simplified_Chinese:"完成需"
 		Portuguese:"em"
 		Japanese:"に"
-		Czech:"v"
+		Czech:"za"
 }
 
 /////// Turn
@@ -622,7 +622,8 @@
 }
 
 	"Golden Age":{
-	Simplified_Chinese:"黄金时代"
+		Simplified_Chinese:"黄金时代"
+		Czech:"Zlatý Věk"
 }
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
@@ -874,7 +875,7 @@
 		Simplified_Chinese:"提供[resource]"
 		Czech:"Poskytuje [resource]"
 	}
-	
+
 	"Replaces [improvement]":{
 		Italian:"Sostituisce [improvement]"
 		Simplified_Chinese:"替换[improvement]"
@@ -1017,7 +1018,7 @@
 		Simplified_Chinese:"闲置人口"
 		Portuguese:"População livre"
 		Japanese:"無料の人口"
-		Czech:"Nevyužitá populace"
+		Czech:"Nezaměstnaní obyvatelé"
 }
 
 	"[turnsToExpansion] turns to expansion":{
@@ -1031,7 +1032,7 @@
 		Simplified_Chinese:"此城市将在 [turnsToExpansion] 回合后扩张"
 		Portuguese:"[turnsToExpansion] turnos até a expansão"
 		Japanese:"[turnsToExpansion]が拡大に変わります",
-		Czech:"[turnsToExpansion] tahů do rozšíření"
+		Czech:"[turnsToExpansion] tahů do rozšíření města"
 }
 
 	"Stopped expansion":{ // if culture is 0
@@ -1418,6 +1419,7 @@
 
 	"Occupied!":{ // Shown in the battle table when attacking a defeated city
 		Simplified_Chinese:"占领！"
+		Czech:"Obsazené!"
 }
 
 	"Attack":{
@@ -1473,22 +1475,27 @@
 
 	"Attacker Bonus":{
 		Simplified_Chinese:"主动攻击加成"
+		Czech:"Útočný bonus"
 }
 
 	"Landing":{
-		Simplified_Chinese:"登陆作战"
+		Simplified_Chinese:"登陆作战",
+		Czech:"Přistání"
 }
 
 	"Flanking":{
-		Simplified_Chinese:"侧翼夹击"
+		Simplified_Chinese:"侧翼夹击",
+		Czech:"Doprovod"
 }
 
 	"vs [unitType]":{
 		Simplified_Chinese:"对战[unitType]"
+		Czech:"proti [unitType]"
 }
 
 	"Terrain":{
 		Simplified_Chinese:"地形修正"
+		Czech:"Terén"
 }
 
 ///////// Unit uniques
@@ -1667,12 +1674,6 @@
 		Czech:"Budovy"
 }
 
-	"Tiles":{
-		Italian:"Caselle"
-		Czech:"Políčka"
-		Simplified_Chinese:"地块"
-}
-
 	"Wonders":{
 		Italian:"Meraviglie"
 		Romanian:"Minuni"
@@ -1697,7 +1698,7 @@
 		Czech:"Specializované budovy"
 }
 
-	"Base values":{ 
+	"Base values":{
 		Italian:"Valori di base"
 		Simplified_Chinese:"基础产出"
 		Czech:"Základ"
@@ -1890,6 +1891,7 @@
 	"Tiles":{
 		Italian:"Caselle"
 		Simplified_Chinese:"地块"
+		Czech:"Políčka"
 }
 
 ////// Victory Screen
