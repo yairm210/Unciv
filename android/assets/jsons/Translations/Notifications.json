@@ -252,7 +252,7 @@
 		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
 		Russian:"Наш [ourUnit] был атакован вражеским городом [cityName]"
 		Simplified_Chinese:"敌方城市[cityName]攻击了我们的[ourUnit]",
-		Czech:"Nepřátelské město [cityname] zaútočilo na naši jednotku [ourUnit]"
+		Czech:"Nepřátelské město [cityName] zaútočilo na naši jednotku [ourUnit]"
 	}
 
 	"An enemy [unit] has captured [cityname]":{

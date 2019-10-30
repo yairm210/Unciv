@@ -950,11 +950,13 @@
 		Italian:"Mostra unità pixel"
 		Simplified_Chinese:"显示像素单位"
 		Ukrainian:"Показати піксельні підрозділи"
+		Czech:"Zobrazit jednotky jako pixely"
 }
 
 	"Show pixel improvements":{
 		Italian:"Mostra miglioramenti pixel"
 		Simplified_Chinese:"显示像素地块设施"
+		Czech:"Zobrazit vylepšení jako pixely"
 }
 
 	"Fontset":{
