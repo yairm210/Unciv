@@ -18,6 +18,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
     init {
         touchable = Touchable.enabled
         defaults().pad(10f)
+        background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
         if (ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName, 60f))
 
@@ -35,9 +36,6 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
         add(rightSide)
-
-        background = ImageGetter.getRoundedRectangleDrawable(Color.WHITE, this.prefWidth.toInt(), this.prefHeight.toInt(), 25)
-
         pack()
     }
 
@@ -45,10 +43,8 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         val techEnabledIcons = Table()
         techEnabledIcons.defaults().pad(5f)
 
-        val civName = techManager.civInfo.civName
-
         val techEnabledUnits = GameBasics.Units.values.filter { it.requiredTech == techName }
-        val ourUniqueUnits = techEnabledUnits.filter { it.uniqueTo == civName }
+        val ourUniqueUnits = techEnabledUnits.filter { it.uniqueTo == techManager.civInfo.civName }
         val replacedUnits = ourUniqueUnits.map { it.replaces!! }
         val ourEnabledUnits = techEnabledUnits.filter { it.uniqueTo == null && !replacedUnits.contains(it.name) }
                 .union(ourUniqueUnits)
@@ -57,18 +53,15 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(30f))
 
         val techEnabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech == techName }
-        val ourUniqueBuildings = techEnabledBuildings.filter { it.uniqueTo == civName }
+        val ourUniqueBuildings = techEnabledBuildings.filter { it.uniqueTo == techManager.civInfo.civName }
         val replacedBuildings = ourUniqueBuildings.map { it.replaces!! }
-        val ourEnabledBuildings = techEnabledBuildings
-                .filter { it.uniqueTo == null && !replacedBuildings.contains(it.name) }
+        val ourEnabledBuildings = techEnabledBuildings.filter { it.uniqueTo == null && !replacedBuildings.contains(it.name) }
                 .union(ourUniqueBuildings)
 
         for (building in ourEnabledBuildings)
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
 
-        for (improvement in GameBasics.TileImprovements.values
-                .filter { it.techRequired == techName || it.improvingTech == techName }
-                .filter { it.uniqueTo==null || it.uniqueTo==civName }) {
+        for (improvement in GameBasics.TileImprovements.values.filter { it.techRequired == techName || it.improvingTech == techName }) {
             if (improvement.name.startsWith("Remove"))
                 techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(30f)
             else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 30f))
