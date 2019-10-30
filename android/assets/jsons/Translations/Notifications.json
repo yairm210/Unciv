@@ -299,6 +299,7 @@
 
 	"An enemy [RangedUnit] has destroyed the defence of [cityname]":{// When Ranged Unit's attack reduces the City's health to 1.
 		Simplified_Chinese:"敌方的[RangedUnit]摧毁了[cityname]的防御",
+		Italian:"L'unità nemica [RangedUnit] ha distrutto le difese di [cityname]!"
 		Czech:"Nepřátelská jednotka [unit] zničila obranu města [ourUnit]"
 	}
 
