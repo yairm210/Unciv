@@ -125,7 +125,7 @@
 	"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!": {
 		Italian:"IN FASE DI PRODUZIONE - TI ABBIAMO AVVERTITO!"
 		Simplified_Chinese:"⚠︎警告！试验性功能！"
-		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ - ВАС ПОПЕРЕДЖЕНО!"
+		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ — ВАС ПОПЕРЕДЖЕНО!"
 		Czech:"VYSOCE EXPERIMENTÁLNÍ - BYLI JSTE VAROVÁNÍ!"
 }
 
@@ -360,7 +360,7 @@
 		Simplified_Chinese:"电脑"
 		Russian:"ИИ"
 		Czech:"UI"
-		Ukrainian:"Бот"
+		Ukrainian:"ШІ"
 }
 
 	"Remove":{
@@ -509,7 +509,7 @@
                 Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
 		Czech:"Pro vytvoření hry pro více hráčů zaškrtněte 'Více hráčů' na obrazovce s novou hrou a pro každého lidského hráče vložte jeho hráčské ID."
 		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“在线多人游戏”复选框，同时将每个参与游戏的玩家ID填入其想扮演文明的“Player ID”文本框内。"
-		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач 'Багатокористувацька' у віконці 'Нова гра' і для кожної людини-гравця введіть відповідний ідентифікатор"
+		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач «Багатокористувацька» у віконці «Нова гра» і для кожної людини-гравця введіть відповідний ідентифікатор"
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
@@ -517,7 +517,7 @@
                 Korean:"당신은 당신의 사용자 ID를 쉽게 거기에 할당할 수 있고, 다른 플레이어는 당신의 사용자 ID를 여기에 복사하여 당신이 게임에 포함하도록 당신에게 보낼 수 있습니다."
 		Czech:"Svoje vlastní ID můžete přiřadit jednoduše, ostatní hráči můžou zkopírovat svoje uživatelské ID tady a poslat vám ho, aby jste je připojil ke hře."
 		Simplified_Chinese:"直接点击“设置为当前玩家”就可自动填入你自己的玩家ID。对于其他玩家，他们可在终端上打开游戏并在当前界面点击“复制玩家ID”按钮将他们的ID复制到剪贴板，然后通过网络发送给你，你可以在“开始新游戏”界面将接收到的ID填入他们想扮演文明的“Player ID”文本框内使其加入游戏。"
-		Ukrainian:"Тут Ви можете легко вказати власний ідентифікатор гравця, а інші гравці можуть скопіювати їхні ідентифікатори і надіслати Вам для додавання до гри."
+		Ukrainian:"Тут ви можете легко вказати власний ідентифікатор гравця, а інші гравці можуть скопіювати їхні ідентифікатори і надіслати вам для додавання до гри."
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
@@ -525,7 +525,7 @@
                 Korean:"게임을 만든 후 이 화면을 다시 입력하여 게임 ID를 복사하여 다른 플레이어에게 전송하십시오."
 		Czech:"Ve chvíli kdy vytvoříte hru, vraťte se zpět na tuto obrazovku, zkopírujte ID hry a pošlete ho ostatním hráčům."
 		Simplified_Chinese:"当你创建了多人游戏后，进入此界面同时点击“复制游戏ID”按钮将游戏ID复制到剪贴板并通过网络发送给其他玩家。"
-		Ukrainian:"Щойно Ви створите власну гру, зайдіть до цього віконця для копіювання ідентифікатора гри і надсилання іншим гравцям."
+		Ukrainian:"Щойно ви створите власну гру, зайдіть до цього віконця для копіювання ідентифікатора гри і надішліть його іншим гравцям."
 }
 
 	"Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button":{
@@ -533,7 +533,7 @@
                 Korean:"플레이어는 게임 ID를 클립보드에 복사하고 게임 참여 버튼을 클릭하여 게임에 들어갈 수 있습니다."
 		Czech:"Ostatní hráči můžou vstoupit do hry zkopírováním ID hry do schránky a kliknutím na tlačítko 'Připojit se ke hře'"
 		Simplified_Chinese:"其他玩家可以将接收到的游戏ID复制到剪贴板，同时点击“加入游戏”按钮加入游戏"
-		Ukrainian:"Гравці можуть зайти до вашої гри, скопіювавши ідентифікатор гри до буфера обміну і натиснувши на кнопку 'Приєднатися до гри'"
+		Ukrainian:"Гравці можуть приєднатися до вашої гри, скопіювавши ідентифікатор гри до буфера обміну і натиснувши на кнопку «Приєднатися до гри»"
 }
 
 
@@ -583,9 +583,9 @@
     		Korean:"마라톤"
 		Czech:"Maratónská"
 		Ukrainian:"Марафон"
-}	
-	
-	
+}
+
+
 	// Starting Era, the Era names don't need to translate.
 	"Starting Era":{
 		Italian:"Epoca iniziale"
@@ -603,7 +603,7 @@
 		Simplified_Chinese:"无法根据您的设置创建地图！"
                 Korean:"당신이 요청한 매개변수로 지도를 만들 수 없을 것 같습니다!"
 		Czech:"Vypadá to, že nelze vytvořit mapu dle vašeho zadání!"
-		Ukrainian:"Неможливо створити мапу з обраними параметрами!"
+		Ukrainian:"Схоже, що неможливо створити мапу з обраними параметрами!"
 }
 
 	"Maybe you put too many players into too small a map?":{
@@ -751,7 +751,7 @@
 		Russian:"Загрузить карту"
                 Korean:"지도 불러오기"
 		Czech:"Načíst mapu"
-		Ukrainian:"Завантажити мапу" 
+		Ukrainian:"Завантажити мапу"
 }
 
 	"Are you sure you want to delete this map?":{
@@ -769,7 +769,7 @@
 		Russian:"Отправить"
                 Korean:"업로드"
   		Czech:"Nahrát mapu"
-		Ukrainian:"Надіслати мапу"
+		Ukrainian:"Вивантажити мапу"
 }
 
 	"Could not upload map!":{
@@ -778,12 +778,13 @@
 		Russian:"Невозможно отправить карту!"
                 Korean:"지도를 업로드할 수 없습니다!"
 		Czech:"Nelze nahrát mapu!"
-		Ukrainian:"Неможливо надіслати мапу!"
+		Ukrainian:"Неможливо вивантажити мапу!"
 }
 
 	"Map uploaded successfully!":{
 		Italian:"Mappa caricata con successo"
 		Czech:"Mapa úspěšně nahrána!"
+		Ukrainian:"Мапа вивантажена успішно!"
 		Simplified_Chinese:"地图上传成功！"
 },
 
@@ -904,7 +905,7 @@
 		Czech:"Kontrolovat zahálející jednotky"
 		Ukrainian:"Перевіряти неробочі підрозділи"
 }
- 
+
 	"Move units with a single tap":{
 		Italian:"Muovi unità con un solo tocco"
 		German: "Einheiten mit einem Klick bewegen"
@@ -961,6 +962,7 @@
 	"Show pixel improvements":{
 		Italian:"Mostra miglioramenti pixel"
 		Simplified_Chinese:"显示像素设施"
+		Ukrainian:"Показати піксельні вдосконалення"
 		Czech:"Zobrazit vylepšení jako pixely"
 }
 
