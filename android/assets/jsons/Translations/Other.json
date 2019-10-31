@@ -30,6 +30,7 @@
 		German:"Bitte warten..."
 		Japanese:"ワーキング..."
 		Czech:"Počítám..."
+		Ukrainian:"Обробка"
 }
 
 	"Waiting for other players...":{ // Displayed when next turn is being...turned
@@ -37,6 +38,7 @@
 		Simplified_Chinese:"等待其他玩家..."
 		Russian:"Ожидание других игроков..."
 		Czech:"Čekáme na ostatní hráče..."
+		Ukrainian:"Очікування інших гравців"
 }
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -51,6 +53,7 @@
 		Portuguese:"em"
 		Japanese:"に"
 		Czech:"za"
+		Ukrainian:"через"
 }
 
 /////// Turn
@@ -67,8 +70,8 @@
 		Simplified_Chinese:"下一回合"
 		Spanish:"Siguiente turno"
 		Thai:"เริ่มเกมใหม่"
-
 		Czech:"Další tah"
+		Ukrainian:""//Доповнити
 }
 
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -83,6 +86,7 @@
 		Simplified_Chinese:"回合"
 		Spanish:"Turno"
 		Czech:"Tah"
+		Ukrainian:""
 }
 
 
@@ -98,6 +102,7 @@
 		Portuguese:"turnos"
 		Japanese:"回る"
 		Czech:"tah(y/ů)"
+		Ukrainian:""
 }
 
 	"turn":{ // for e.g. "1 turn" to technology
@@ -107,6 +112,7 @@
                 Russian:"ход"
 		French:"tour"
 		Czech:"tah"
+		Ukrainian:""
 }
 
 	"Next unit":{
@@ -116,6 +122,7 @@
 		French:"Unité suivante"
                 Russian:"Следующий юнит"
 		Czech:"Další jednotka"
+		Ukrainian:"Наступ. підрозділ"
 }
 
 	"Pick a policy":{
@@ -125,6 +132,7 @@
 		French:"Choisir une Doctrine"
 		Russian:"Выбрать институт"
 		Czech:"Vyberme politiku"
+		Ukrainian:"Обрати політику"
 }
 
 /////// Unit
@@ -141,6 +149,7 @@
 		Portuguese:"Movimento"
 		Japanese:"移動"
 		Czech:"Pohyb"
+		Ukrainian:"Рух"
 }
 
 	"Strength":{
@@ -155,6 +164,7 @@
 		Portuguese:"Força"
 		Japanese:"強さ"
 		Czech:"Síla"
+		Ukrainian:"Сила"
 }
 
 	"Ranged strength":{
@@ -169,6 +179,7 @@
 		Portuguese:"Força a distancia"
 		Japanese:"範囲の強さ"
 		Czech:"Síla na dálku"
+		Ukrainian:"Сила в дальному бою"
 }
 
 	"Bombard strength":{ // for displaying city info
@@ -183,12 +194,14 @@
 		Portuguese:"Força de bombardeio"
 		Japanese:"爆撃力"
 		Czech:"Bombardovací síla"
+		Ukrainian:"Сила бомбардування"
 }
 
 	"Range":{
 		Italian:"Raggio"
 		Simplified_Chinese:"攻击范围",
 		Czech:"Vzdálenost"
+		Ukrainian:"Дальність"
 	}
 
 /////// Unit actions
@@ -205,6 +218,7 @@
 		Portuguese:"Mover a unidade"
 		Japanese:"移動ユニット"
 		Czech:"Pohnout jednotkou"
+		Ukrainian:""
 }
 
 	"Stop movement":{
@@ -219,6 +233,7 @@
 		Portuguese:"Parar o movimento"
 		Japanese:"動きを止める"
 		Czech:"Zastavit pohyb"
+		Ukrainian:""
 }
 
 	"Construct improvement":{
@@ -874,9 +889,9 @@
 	"Provides [resource]":{
 		Italian:"Dona [resource]"
 		Simplified_Chinese:"获得资源：[resource]"
-		Czech:"Poskytuje [resource]"	
+		Czech:"Poskytuje [resource]"
 	}
-	
+
 	"Replaces [improvement]":{
 		Italian:"Sostituisce [improvement]"
 		Simplified_Chinese:"替换现有设施：[improvement]"
@@ -1705,7 +1720,7 @@
 		Czech:"Specializované budovy"
 }
 
-	"Base values":{ 
+	"Base values":{
 		Italian:"Valori di base"
 		Simplified_Chinese:"基础产出"
 		Czech:"Základ"
