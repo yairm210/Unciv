@@ -11,6 +11,7 @@
 		Dutch:"Grasland"
 		Spanish:"Pradera"
 		Simplified_Chinese:"草原"
+		Traditional_Chinese:"草原"
 		Portuguese:"pastagem"
                 Korean:"초원"
 		Czech:"Pastviny"
@@ -25,7 +26,8 @@
 		German:"Ebene"
 		Dutch:"Vlakte"
 		Spanish:"Llanura"
-		Simplified_Chinese:"平原"
+		Simplified_Chinese:"平原",
+		Traditional_Chinese:"平原",
 		Portuguese:"Planíce"
                 Korean:"평원"
 		Czech:"Pláně"
@@ -40,7 +42,8 @@
 		German:"Tundra"
 		Dutch:"Toendra"
 		Spanish:"Tundra"
-		Simplified_Chinese:"冻土"
+		Simplified_Chinese:"冻土",
+		Traditional_Chinese:"凍土",
 		Portuguese:"Tundra"
                 Korean:"툰드라"
 		Czech:"Tundra"
@@ -55,7 +58,8 @@
 		German:"Wüste"
 		Dutch:"Woestijn"
 		Spanish:"Desierto"
-		Simplified_Chinese:"沙漠"
+		Simplified_Chinese:"沙漠",
+		Traditional_Chinese:"沙漠",
 		Portuguese:"Deserto"
                 Korean:"사막"
 		Czech:"Poušť"
@@ -70,7 +74,8 @@
 		German:"Seen"
 		Dutch:"Meren"
 		Spanish:"Lagos"
-		Simplified_Chinese:"湖泊"
+		Simplified_Chinese:"湖泊",
+		Traditional_Chinese:"湖泊",
 		Portuguese:"Lagos"
                 Korean:"호수"
 		Czech:"Jezera"
@@ -85,7 +90,8 @@
 		German:"Hügel"
 		Dutch:"Heuvel"
 		Spanish:"Colinas"
-		Simplified_Chinese:"丘陵"
+		Simplified_Chinese:"丘陵",
+		Traditional_Chinese:"丘陵",
 		Portuguese:"Morro"
                 Korean:"언덕"
 		Czech:"Kopce"
@@ -96,7 +102,8 @@
 		Italian:"Montagna"
 		Romanian:"Munte"
 		Spanish:"Montañas"
-		Simplified_Chinese:"山脉"
+		Simplified_Chinese:"山脉",
+		Traditional_Chinese:"山脈",
 		German:"Berge"
 		French:"Montagne"
 		Russian:"Горы"
@@ -114,7 +121,8 @@
 		German:"Wald"
 		Dutch:"Woud"
 		Spanish:"Bosque"
-		Simplified_Chinese:"森林"
+		Simplified_Chinese:"森林",
+		Traditional_Chinese:"森林",
 		Portuguese:"Floresta"
                 Korean:"숲"
 		Czech:"Les"
@@ -129,7 +137,8 @@
 		German:"Dschungel"
 		Dutch:"Oerwoud"
 		Spanish:"Selva"
-		Simplified_Chinese:"丛林"
+		Simplified_Chinese:"丛林",
+		Traditional_Chinese:"叢林",
 		Portuguese:"Selva"
                 Korean:"정글"
 		Czech:"Džungle"
@@ -144,7 +153,8 @@
 		German:"Sumpf"
 		Dutch:"Moeras"
 		Spanish:"Pantano"
-		Simplified_Chinese:"沼泽"
+		Simplified_Chinese:"沼泽",
+		Traditional_Chinese:"沼澤",
 		Portuguese:"Pântano"
                 Korean:"습지"
 		Czech:"Bažina"
@@ -157,7 +167,8 @@
 		Romanian:"Oază"
 		German:"Oase"
 		Dutch:"Oase"
-		Simplified_Chinese:"绿洲"
+		Simplified_Chinese:"绿洲",
+		Traditional_Chinese:"綠洲",
 		Spanish:"Oasis"
                 Korean:"오아시스"
 		Czech:"Oáza"
@@ -172,7 +183,8 @@
 		German:"Schnee"
 		Dutch:"Sneeuw"
 		Spanish:"Nieve"
-		Simplified_Chinese:"雪原"
+		Simplified_Chinese:"雪原",
+		Traditional_Chinese:"雪原",
 		Portuguese:"Neve"
                 Korean:"눈"
 		Czech:"Sníh"
@@ -187,7 +199,8 @@
 		German:"Küste"
 		Dutch:"Costa"
 		Spanish:"Costa"
-		Simplified_Chinese:"海滨"
+		Simplified_Chinese:"海滨",
+		Traditional_Chinese:"海濱",
 		Portuguese:"Costa"
                 Korean:"연안"
 		Czech:"Pobřeží"
@@ -202,7 +215,8 @@
 		German:"Ozean"
 		Dutch:"Oceaan"
 		Spanish:"Océano"
-		Simplified_Chinese:"海洋"
+		Simplified_Chinese:"海洋",
+		Traditional_Chinese:"海洋",
 		Portuguese:"Oceano"
                 Korean:"대양"
 		Czech:"Oceán"
@@ -217,7 +231,8 @@
 		German:"Flussaue" //according to: https://de.wikipedia.org/wiki/Flussaue
 		Dutch:"Riviervlakte"
 		Spanish:"Terreno inundable"
-		Simplified_Chinese:"冲积平原"
+		Simplified_Chinese:"冲积平原",
+		Traditional_Chinese:"沖積平原",
 		Portuguese:"Terras inundáveis"
                 Korean:"범람원"
 		Czech:"Údolní niva"
@@ -228,7 +243,8 @@
 		Italian:"Inaccessibile"
 		Romanian:"Inaccesibil"
 		Spanish:"Inpasable"
-		Simplified_Chinese:"不能通行"
+		Simplified_Chinese:"不能通行",
+		Traditional_Chinese:"不能通行",
 		Portuguese:"Impassevel"
 		German:"Unpassierbar"
 		French:"Impraticable"
@@ -248,7 +264,8 @@
 		German:"Rinder"
 		Dutch:"Rundvee"
 		Spanish:"Ganado"
-		Simplified_Chinese:"牛群"
+		Simplified_Chinese:"牛群",
+		Traditional_Chinese:"牛群",
 		Portuguese:"Gado"
                 Korean:"가축"
 		Czech:"Dobytek"
@@ -263,7 +280,8 @@
 		German:"Schaafe"
 		Dutch:"Schaap"
 		Spanish:"Ovejas"
-		Simplified_Chinese:"绵羊"
+		Simplified_Chinese:"绵羊",
+		Traditional_Chinese:"綿羊",
 		Portuguese:"Ovelhas"
                 Korean:"양"
 		Czech:"Ovce"
@@ -278,7 +296,8 @@
 		German:"Rotwild"
 		Dutch:"Hert"
 		Spanish:"Ciervos"
-		Simplified_Chinese:"野鹿"
+		Simplified_Chinese:"野鹿",
+		Traditional_Chinese:"野鹿",
 		Portuguese:"Veados"
                 Korean:"사슴"
 		Czech:"Jelen"
@@ -293,7 +312,8 @@
 		German:"Bananen"
 		Dutch:"Bananen"
 		Spanish:"Plátanos"
-		Simplified_Chinese:"香蕉"
+		Simplified_Chinese:"香蕉",
+		Traditional_Chinese:"香蕉",
 		Portuguese:"Bananas"
                 Korean:"바나나"
 		Czech:"Banány"
@@ -308,7 +328,8 @@
 		German:"Weizen"
 		Dutch:"Tarwe"
 		Spanish:"Trigo"
-		Simplified_Chinese:"小麦"
+		Simplified_Chinese:"小麦",
+		Traditional_Chinese:"小麥",
 		Portuguese:"Trigo"
                 Korean:"밀"
 		Czech:"Pšenice"
@@ -323,7 +344,8 @@
 		German:"Stein"
 		Dutch:"Steen"
 		Spanish:"Piedra"
-		Simplified_Chinese:"花岗石"
+		Simplified_Chinese:"花岗石",
+		Traditional_Chinese:"花崗石",
 		Portuguese:"Pedra"
                 Korean:"돌"
 		Czech:"Kámen"
@@ -336,7 +358,8 @@
 		Italian:"Pesce"
 		French: "Poisson"
 		Romanian:"Pește"
-		Simplified_Chinese:"鱼群"
+		Simplified_Chinese:"鱼群",
+		Traditional_Chinese:"魚群",
 		Portuguese:"Peixes"
 		German:"Fisch"
 		Russian:"Рыба"
@@ -353,7 +376,8 @@
 		German:"Bison"
 		Dutch:"Bisons"
 		Spanish:"Bisonte"
-		Simplified_Chinese:"野牛"
+		Simplified_Chinese:"野牛",
+		Traditional_Chinese:"野牛",
 		Portuguese:"Bisontes"
 		Japanese:"バイソン"
                 Korean:"들소"
@@ -371,7 +395,8 @@
 		German:"Pferde"
 		Dutch:"Paarden"
 		Spanish:"Caballos"
-		Simplified_Chinese:"马"
+		Simplified_Chinese:"马",
+		Traditional_Chinese:"馬",
 		Portuguese:"Cavalos"
                 Korean:"말"
 		Czech:"Bizon"
@@ -386,7 +411,8 @@
 		German:"Eisen"
 		Dutch:"Ijzer"
 		Spanish:"Hierro"
-		Simplified_Chinese:"铁"
+		Simplified_Chinese:"铁",
+		Traditional_Chinese:"鐵",
 		Portuguese:"Ferro"
                 Korean:"철"
 		Czech:"Železná ruda"
@@ -401,7 +427,8 @@
 		German:"Kohle"
 		Dutch:"Kool"
 		Spanish:"Carbón"
-		Simplified_Chinese:"煤"
+		Simplified_Chinese:"煤",
+		Traditional_Chinese:"煤",
 		Portuguese:"Carvão"
                 Korean:"석탄"
 		Czech:"Uhlí"
@@ -416,7 +443,8 @@
 		German:"Erdöl"
 		Dutch:"Olie"
 		Spanish:"Petróleo"
-		Simplified_Chinese:"石油"
+		Simplified_Chinese:"石油",
+		Traditional_Chinese:"石油",
 		Portuguese:"Petróleo"
                 Korean:"기름"
 		Czech:"Ropa"
@@ -431,7 +459,8 @@
 		German:"Aluminium"
 		Dutch:"Aluminium"
 		Spanish:"Aluminio"
-		Simplified_Chinese:"铝"
+		Simplified_Chinese:"铝",
+		Traditional_Chinese:"鋁",
 		Portuguese:"Alumínio"
                 Korean:"알루미늄"
 		Czech:"Hliník"
@@ -446,7 +475,8 @@
 		German:"Uran"
 		Dutch:"Uranium"
 		Spanish:"Uranio"
-		Simplified_Chinese:"铀"
+		Simplified_Chinese:"铀",
+		Traditional_Chinese:"鈾",
 		Portuguese:"Urânio"
                 Korean:"우라늄"
 		Czech:"Uranium"
@@ -463,7 +493,8 @@
 		German:"Felle"
 		Dutch:"Bonten"
 		Spanish:"Pieles"
-		Simplified_Chinese:"毛皮"
+		Simplified_Chinese:"毛皮",
+		Traditional_Chinese:"毛皮",
 		Portuguese:"Peles"
                 Korean:"모피",
 		Czech:"Kožešina"
@@ -478,7 +509,8 @@
 		German:"Baumwolle"
 		Dutch:"Katoen"
 		Spanish:"Algodón"
-		Simplified_Chinese:"棉花"
+		Simplified_Chinese:"棉花",
+		Traditional_Chinese:"棉花",
 		Portuguese:"Algodão"
                 Korean:"면"
 		Czech:"Bavlna"
@@ -493,7 +525,8 @@
 		German:"Farbstoffe"
 		Dutch:"Verfstoffen"
 		Spanish:"Tintes"
-		Simplified_Chinese:"染料"
+		Simplified_Chinese:"染料",
+		Traditional_Chinese:"染料",
 		Portuguese:"Tintas"
                 Korean:"염료"
 		Czech:"Barvivo"
@@ -508,7 +541,8 @@
 		German:"Edelsteine"
 		Dutch:"Edelstenen"
 		Spanish:"Gemas"
-		Simplified_Chinese:"宝石"
+		Simplified_Chinese:"宝石",
+		Traditional_Chinese:"寶石",
    		Portuguese:"Joias"
                 Korean:"보석"
 		Czech:"Drahokamy"
@@ -523,7 +557,8 @@
 		German:"Silber"
 		Dutch:"Zilver"
 		Spanish:"Plata"
-		Simplified_Chinese:"白银"
+		Simplified_Chinese:"白银",
+		Traditional_Chinese:"白銀",
 		Portuguese:"Prata"
                 Korean:"은"
 		Czech:"Stříbro"
@@ -538,7 +573,8 @@
 		German:"Weihrauch"
 		Dutch:"Wierook"
 		Spanish:"Incienso"
-		Simplified_Chinese:"熏香"
+		Simplified_Chinese:"熏香",
+		Traditional_Chinese:"薰香",
 		Portuguese:"Incenso"
                 Korean:"향"
 		Czech:"Kadidlo"
@@ -547,7 +583,8 @@
 
 	"Ivory":{
 		Italian:"Avorio"
-		Simplified_Chinese:"象牙"
+		Simplified_Chinese:"象牙",
+		Traditional_Chinese:"象牙",
 		French:"Ivoire"
 		Russian:"Слоновая кость"
                 Korean:"상아"
@@ -563,7 +600,8 @@
 		German:"Seide"
 		Dutch:"Zijde"
 		Spanish:"Seda"
-		Simplified_Chinese:"丝绸"
+		Simplified_Chinese:"丝绸",
+		Traditional_Chinese:"絲綢",
 		Portuguese:"Seda"
                 Korean:"실크"
 		Czech:"Hedvábí"
@@ -578,7 +616,8 @@
 		German:"Gewürze"
 		Dutch:"Kruiden"
 		Spanish:"Especias"
-		Simplified_Chinese:"香料"
+		Simplified_Chinese:"香料",
+		Traditional_Chinese:"香料",
 		Portuguese:"Especiarias"
                 Korean:"향신료"
 		Czech:"Koření"
@@ -593,7 +632,8 @@
 		German:"Wein"
 		Dutch:"Wijn"
 		Spanish:"Vino"
-		Simplified_Chinese:"红酒"
+		Simplified_Chinese:"红酒",
+		Traditional_Chinese:"紅酒",
 		Portuguese:"Vinho"
                 Korean:"와인"
 		Czech:"Víno"
@@ -608,7 +648,8 @@
 		German:"Zucker"
 		Dutch:"Suiker"
 		Spanish:"Azúcar"
-		Simplified_Chinese:"蔗糖"
+		Simplified_Chinese:"蔗糖",
+		Traditional_Chinese:"蔗糖",
 		Portuguese:"Açucar"
                 Korean:"설탕"
 		Czech:"Cukr"
@@ -623,7 +664,8 @@
 		German:"Marmor"
 		Dutch:"Marmer"
 		Spanish:"Mármol"
-		Simplified_Chinese:"大理石"
+		Simplified_Chinese:"大理石",
+		Traditional_Chinese:"大理石",
 		Portuguese:"Mármore"
                 Korean:"대리석"
 		Czech:"Mramor"
@@ -638,7 +680,8 @@
 		German:"Perlen"
 		Dutch:"Parels"
 		Spanish:"Perlas"
-		Simplified_Chinese:"珍珠"
+		Simplified_Chinese:"珍珠",
+		Traditional_Chinese:"珍珠",
 		Portuguese:"Pérolas"
                 Korean:"진주"
 		Czech:"Perly"
@@ -653,7 +696,8 @@
 		German:"Wale"
 		Dutch:"Walvissen"
 		Spanish:"Ballenas"
-		Simplified_Chinese:"鲸鱼"
+		Simplified_Chinese:"鲸鱼",
+		Traditional_Chinese:"鯨魚",
 		Portuguese:"Baleias"
                 Korean:"고래"
 		Czech:"Velryby"
@@ -668,7 +712,8 @@
 		German:"Kupfer"
 		Dutch:"Koperen"
 		Spanish:"Cobre"
-		Simplified_Chinese:"赤铜"
+		Simplified_Chinese:"赤铜",
+		Traditional_Chinese:"赤銅",
 		Portuguese:"Cobre"
                 Korean:"구리"
 		Czech:"Měď"
@@ -683,7 +728,8 @@
 		German:"Kakao"
 		Dutch:"Cacao"
 		Spanish:"Cacao"
-		Simplified_Chinese:"可可"
+		Simplified_Chinese:"可可",
+		Traditional_Chinese:"可可",
 		Portuguese:"Cacau"
                 Korean:"코코아"
 		Czech:"Kakao"
@@ -698,7 +744,8 @@
 		German:"Crabs"
 		Dutch:"Krabben"
 		Spanish:"Cangrejos"
-		Simplified_Chinese:"螃蟹"
+		Simplified_Chinese:"螃蟹",
+		Traditional_Chinese:"螃蟹",
 		Portuguese:"Caranguejos"
                 Korean:"게"
 		Czech:"Krab"
@@ -713,7 +760,8 @@
 		German:"Zitrusgewächs"
 		Dutch:"Citrus"
 		Spanish:"Cítricos"
-		Simplified_Chinese:"柑橘"
+		Simplified_Chinese:"柑橘",
+		Traditional_Chinese:"柑橘",
 		Portuguese:"Cítrico"
                 Korean:"감귤류"
 		Czech:"Citrusy"
@@ -728,7 +776,8 @@
 		German:"Trüffel"
 		Dutch:"Truffles"
 		Spanish:"Trufas"
-		Simplified_Chinese:"松露"
+		Simplified_Chinese:"松露",
+		Traditional_Chinese:"松露",
 		Portuguese:"Trufas"
                 Korean:"송로 버섯"
 		Czech:"Lanýže"
@@ -745,7 +794,8 @@
 		German:"Farm"
 		Dutch:"Boerderij"
 		Spanish:"Granja"
-		Simplified_Chinese:"农场"
+		Simplified_Chinese:"农场",
+		Traditional_Chinese:"農場",
 		Portuguese:"Fazenda"
                 Korean:"농장"
 		Czech:"Farma"
@@ -760,7 +810,8 @@
 		German:"Sägewerk"
 		Dutch:"Houtzagerij"
 		Spanish:"Serrería"
-		Simplified_Chinese:"锯木场"
+		Simplified_Chinese:"锯木场",
+		Traditional_Chinese:"鋸木廠",
 		Portuguese:"Serralheria"
                 Korean:"목재공장"
 		Czech:"Pila"
@@ -775,7 +826,8 @@
 		German:"Mine"
 		Dutch:"Mijn"
 		Spanish:"Mina"
-		Simplified_Chinese:"矿井"
+		Simplified_Chinese:"矿井",
+		Traditional_Chinese:"礦井",
 		Portuguese:"Mina"
                 Korean:"광산"
 		Czech:"Důl"
@@ -790,7 +842,8 @@
 		German:"Handelsposten"
 		Dutch:"Handelspost"
 		Spanish:"Puesto comercial"
-		Simplified_Chinese:"贸易站"
+		Simplified_Chinese:"贸易站",
+		Traditional_Chinese:"貿易站",
 		Portuguese:"Posto de comércio"
                 Korean:"무역소",
 		Czech:"Obchodní stanice"
@@ -805,7 +858,8 @@
 		German:"Lager"
 		Dutch:"Kamp"
 		Spanish:"Campamento"
-		Simplified_Chinese:"猎场"
+		Simplified_Chinese:"猎场",
+		Traditional_Chinese:"獵場",
 		Portuguese:"Campo"
                 Korean:"캠프"
 		Czech:"Tábor"
@@ -819,7 +873,8 @@
 		German:"Ölbohrloch"
 		Dutch:"Oliebron"
 		Spanish:"Pozo petrolífero"
-		Simplified_Chinese:"油井"
+		Simplified_Chinese:"油井",
+		Traditional_Chinese:"油井",
 		Portuguese:"Poço de petróleo"
                 Korean:"유정"
 		Czech:"Ropný vrt"
@@ -833,7 +888,8 @@
 		German:"Weide"
 		Dutch:"Weide"
 		Spanish:"Pastizal"
-		Simplified_Chinese:"牧场"
+		Simplified_Chinese:"牧场",
+		Traditional_Chinese:"牧場",
 		Portuguese:"Pasto"
                 Korean:"목장"
 		Czech:"Pastvina"
@@ -847,7 +903,8 @@
 		German:"Plantage"
 		Dutch:"Plantage"
 		Spanish:"Plantación"
-		Simplified_Chinese:"种植园"
+		Simplified_Chinese:"种植园",
+		Traditional_Chinese:"種植園",
 		Portuguese:"Plantação"
                 Korean:"재배원"
 		Czech:"Plantáž"
@@ -861,7 +918,8 @@
 		German:"Steinbruch"
 		Dutch:"Steengroeve"
 		Spanish:"Cantera"
-		Simplified_Chinese:"采石场"
+		Simplified_Chinese:"采石场",
+		Traditional_Chinese:"採石場",
 		Portuguese:"Pedreira"
                 Korean:"채석장"
 		Czech:"Lom"
@@ -873,7 +931,8 @@
 		Italian:"Peschereccio"
 		French: "Bateaux de pêche"
 		Romanian:"Bărci de pescuit"
-		Simplified_Chinese:"渔船"
+		Simplified_Chinese:"渔船",
+		Traditional_Chinese:"漁船",
 		Portuguese:"Barcos de pesca"
 		German:"Fischerboote"
 		Russian:"Рыбацкие лодки"
@@ -890,7 +949,8 @@
 		German:"Straße"
 		Dutch:"Weg"
 		Spanish:"Carretera"
-		Simplified_Chinese:"道路"
+		Simplified_Chinese:"道路",
+		Traditional_Chinese:"道路",
 		Portuguese:"Estrada"
                 Korean:"도로"
 		Czech:"Cesta"
@@ -899,7 +959,8 @@
 
 	"Remove Road":{
 		Italian:"Rimuovi Strada"
-		Simplified_Chinese:"拆毁道路"
+		Simplified_Chinese:"拆毁道路",
+		Traditional_Chinese:"拆毀道路",
 		French:"Retirer la route"
 		Russian:"Убрать дорогу"
                 Korean:"도로 제거"
@@ -915,7 +976,8 @@
 		German:"Schienen"
 		Dutch:"Spoorweg"
 		Spanish:"Línea de ferrocarril"
-		Simplified_Chinese:"铁路"
+		Simplified_Chinese:"铁路",
+		Traditional_Chinese:"鐵路",
 		Portuguese:"Estrada de ferro"
                 Korean:"철도"
 		Czech:"Železnice"
@@ -924,7 +986,8 @@
 
 	"Remove Railroad":{
 		Italian:"Rimuovi Ferrovia"
-		Simplified_Chinese:"拆除铁路"
+		Simplified_Chinese:"拆除铁路",
+		Traditional_Chinese:"拆除鐵路",
 		French:"Retirer les rails"
 		Russian:"Убрать железную дорогу"
                 Korean:"철도 제거"
@@ -938,7 +1001,8 @@
 		French: "Couper la forêt"
 		Romanian:"Defrișează pădurea"
 		Spanish:"Quitar bosque"
-		Simplified_Chinese:"砍伐森林"
+		Simplified_Chinese:"砍伐森林",
+		Traditional_Chinese:"砍伐森林",
 		Portuguese:"Cortar floresta"
 		German:"Wald abholzen"
                 Korean:"숲 제거"
@@ -952,7 +1016,8 @@
 		French: "Défricher la jungle"
 		Romanian:"Defrișează jungla"
 		Spanish:"Quitar selva"
-		Simplified_Chinese:"砍伐丛林"
+		Simplified_Chinese:"砍伐丛林",
+		Traditional_Chinese:"砍伐叢林",
 		Portuguese:"Cortar selva"
 		German:"Dschungel abholzen"
                 Korean:"정글 제거"
@@ -966,7 +1031,8 @@
 		French:"Assécher le marais"
 		Romanian:"Asanează mlaștina"
 		Spanish:"Quitar pantano"
-		Simplified_Chinese:"移除沼泽"
+		Simplified_Chinese:"移除沼泽",
+		Traditional_Chinese:"移除沼澤",
 		Portuguese:"Drenar pântano"
 		German:"Moor trockenlegen"
                 Korean:"습지 제거"
@@ -978,7 +1044,8 @@
 		Italian:"Antiche rovine"
 		Romanian:"Ruine străvechi"
 		Spanish:"Ruinas Antiguas"
-		Simplified_Chinese:"远古遗迹"
+		Simplified_Chinese:"远古遗迹",
+		Traditional_Chinese:"遠古遺跡",
 		German:"Altertümliche Ruinen"
 		French:"Anciennes ruines"
 		Russian:"Древние руины"
@@ -994,6 +1061,7 @@
 		Romanian:"Oraș în ruină"
 		Spanish:"Ciudad en ruinas"
 		Simplified_Chinese:"城市废墟"
+		Traditional_Chinese:"城市遺址",
 		German:"Stadtruinen"
 		French:"Ruines"
 		Russian:"Руины города"
@@ -1014,7 +1082,8 @@
 		German:"Akademie"
 		Dutch:"Academie"
 		Spanish:"Academia"
-		Simplified_Chinese:"学院"
+		Simplified_Chinese:"学院",
+		Traditional_Chinese:"學院",
 		Portuguese:"Academia"
                 Korean:"학원"
 		Czech:"Akademie"
@@ -1030,7 +1099,8 @@
 		German:"Sehenswürdigkeit"
 		Dutch:"Mijlpaal"
 		Spanish:"Edificio emblemático"
-		Simplified_Chinese:"风景地标"
+		Simplified_Chinese:"风景地标",
+		Traditional_Chinese:"風景地標",
 		Portuguese:"Edificio emblemático"
                 Korean:"랜드마크",
 		Czech:"Dominanta"
@@ -1045,7 +1115,8 @@
 		German:"Fabrik"
 		Dutch:"Fabriek"
 		Spanish:"Fábrica"
-		Simplified_Chinese:"制造中心"
+		Simplified_Chinese:"制造中心",
+		Traditional_Chinese:"製造中心",
 		Portuguese:"Fábrica"
                 Korean:"제조소"
 		Czech:"Manufaktura"
@@ -1060,7 +1131,8 @@
 		German:"Zollamt"
 		Dutch:"Douanekantoor"
 		Spanish:"Aduana"
-		Simplified_Chinese:"海关"
+		Simplified_Chinese:"海关",
+		Traditional_Chinese:"海關",
 		Portuguese:"Alfândega"
                 Korean:"세관"
 		Czech:"Celnice"
@@ -1073,7 +1145,8 @@
 		Italian:"Moai"
                 Korean:"모아이"
 		Czech:"Moai (kamenná socha)"
-		Simplified_Chinese:"摩艾石像群"
+		Simplified_Chinese:"摩艾石像群",
+		Traditional_Chinese:"摩艾石像群"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
@@ -1082,6 +1155,7 @@
 		Czech:"+1 kulturní bod za každý Moai"
 		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
 		Ukrainian:"+1 додаткова Культура за кожну сусідню Moai"
+		Traditional_Chinese:"每個相鄰的摩艾石像群額外+1文化"
 }
 
 	"Can only be built on Coastal tiles":{
@@ -1090,12 +1164,14 @@
 		Czech:"Může byt vybudován na pobřežním políčku"
 		Simplified_Chinese:"只能建造在沿海地块"
 		Ukrainian:"Можна побудувати лише на прибрежній плитці"
+		Traditional_Chinese:"只能在沿海地塊建造"
 }
 
 
 	"Barbarian encampment":{
 		Italian:"Accampamento barbaro"
-		Simplified_Chinese:"蛮族营地"
+		Simplified_Chinese:"蛮族营地",
+		Traditional_Chinese:"蠻族營地",
 		Russian:"Лагерь варваров"
                 Korean:"야만인 야영지"
 		Czech:"Barbarský tábor"
