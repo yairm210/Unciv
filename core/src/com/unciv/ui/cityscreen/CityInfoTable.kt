@@ -43,7 +43,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         val width = cityScreen.stage.width/4 - 2*pad
         val showHideTableWrapper = Table()
         showHideTableWrapper.add(showHideTable).width(width)
-        titleTable.add(str.toLabel().setFontSize(24))
+        titleTable.add(str.toLabel(fontSize = 24))
         titleTable.onClick {
             if(showHideTableWrapper.hasChildren()) showHideTableWrapper.clear()
             else showHideTableWrapper.add(showHideTable).width(width)
@@ -147,7 +147,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             val statValuesTable = Table().apply { defaults().pad(2f) }
             addCategory(stat.name, statValuesTable)
 
-            statValuesTable.add("Base values".toLabel().setFontSize(24)).colspan(2).row()
+            statValuesTable.add("Base values".toLabel(fontSize= 24)).colspan(2).row()
             var sumOfAllBaseValues = 0f
             for(entry in relevantBaseStats) {
                 val specificStatValue = entry.value.get(stat)
@@ -161,7 +161,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
             val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat)!=0f }
             if(relevantBonuses.isNotEmpty()) {
-                statValuesTable.add("Bonuses".toLabel().setFontSize(24)).colspan(2).padTop(20f).row()
+                statValuesTable.add("Bonuses".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
                 var sumOfBonuses = 0f
                 for (entry in relevantBonuses) {
                     val specificStatValue = entry.value.get(stat)
@@ -179,7 +179,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             }
 
 
-            statValuesTable.add("Final".toLabel().setFontSize(24)).colspan(2).padTop(20f).row()
+            statValuesTable.add("Final".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
             var finalTotal = 0f
             for (entry in cityStats.finalStatList) {
                 val specificStatValue = entry.value.get(stat)

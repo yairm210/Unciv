@@ -93,7 +93,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add(("Type: ".tr() + otherCiv.getCityStateType().toString().tr()).toLabel()).row()
         diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
 
@@ -106,14 +106,16 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence".tr()
         }
 
-        val friendBonusLabel = friendBonusText.toLabel()
-        diplomacyTable.add(friendBonusLabel).row()
+        val friendBonusLabelColor:Color
         if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
-            friendBonusLabel.setFontColor(Color.GREEN)
+            friendBonusLabelColor = Color.GREEN
             val turnsToRelationshipChange = otherCivDiplomacyManager.influence.toInt() - 30 + 1
             diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel()).row()
         } else
-            friendBonusLabel.setFontColor(Color.GRAY)
+            friendBonusLabelColor = Color.GRAY
+
+        val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
+        diplomacyTable.add(friendBonusLabel).row()
 
 
         diplomacyTable.addSeparator()
@@ -158,7 +160,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         val translatedNation = otherCiv.getTranslatedNation()
         if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
             diplomacyTable.add(translatedNation.hateHello.toLabel()).row()
@@ -262,7 +264,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (modifier.value > 0) text += "+"
             text += modifier.value.roundToInt()
             val color = if (modifier.value < 0) Color.RED else Color.GREEN
-            diplomacyModifiersTable.add(text.toLabel().setFontColor(color)).row()
+            diplomacyModifiersTable.add(text.toLabel(color)).row()
         }
         return diplomacyModifiersTable
     }
@@ -300,7 +302,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             else -> Color.RED
         }
 
-        relationshipTable.add(relationshipText.toLabel().setFontColor(relationshipColor))
+        relationshipTable.add(relationshipText.toLabel(relationshipColor))
         return relationshipTable
     }
 

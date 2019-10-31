@@ -60,8 +60,8 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.CityConquered -> {
                 val city = worldScreen.gameInfo.civilizations.flatMap { it.cities }.first { it.name == popupAlert.value}
-                addGoodSizedLabel("What would you like to do with the city?")
-                        .apply { this.actor.setFontSize(24) }.padBottom(20f).row()
+                addGoodSizedLabel("What would you like to do with the city?",24)
+                        .padBottom(20f).row()
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
 
                 if (city.foundingCiv != ""

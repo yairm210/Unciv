@@ -22,11 +22,11 @@ import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
-    private val turnsLabel = "Turns: 0/400".toLabel().setFontColor(Color.WHITE)
-    private val goldLabel = "Gold:".toLabel().setFontColor(colorFromRGB(225, 217, 71) )
-    private val scienceLabel = "Science:".toLabel().setFontColor(colorFromRGB(78, 140, 151) )
+    private val turnsLabel = "Turns: 0/400".toLabel()
+    private val goldLabel = "Gold:".toLabel(colorFromRGB(225, 217, 71) )
+    private val scienceLabel = "Science:".toLabel(colorFromRGB(78, 140, 151) )
     private val happinessLabel = "Happiness:".toLabel()
-    private val cultureLabel = "Culture:".toLabel().setFontColor(colorFromRGB(210, 94, 210) )
+    private val cultureLabel = "Culture:".toLabel(colorFromRGB(210, 94, 210) )
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Actor>()
     private val happinessImage = Group()

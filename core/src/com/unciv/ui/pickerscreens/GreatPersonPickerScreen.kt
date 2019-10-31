@@ -1,6 +1,5 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.GreatPersonManager
@@ -9,7 +8,6 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.toLabel
 
 class GreatPersonPickerScreen : PickerScreen() {
@@ -24,11 +22,11 @@ class GreatPersonPickerScreen : PickerScreen() {
             val button = Button(skin)
 
             button.add(ImageGetter.getUnitIcon(unit.name)).size(30f).pad(10f)
-            button.add(unit.name.toLabel().setFontColor(Color.WHITE)).pad(10f)
+            button.add(unit.name.toLabel()).pad(10f)
             button.pack()
             button.onClick {
                 theChosenOne = unit
-                var  unitDescription=HashSet<String>()
+                val unitDescription=HashSet<String>()
                 unit.uniques.forEach { unitDescription.add(it.tr()) }
                 pick("Get ".tr() +unit.name.tr())
                 descriptionLabel.setText(unitDescription.joinToString())

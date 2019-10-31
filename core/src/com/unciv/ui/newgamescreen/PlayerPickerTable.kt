@@ -33,8 +33,8 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         for (player in newGameParameters.players)
             playerListTable.add(getPlayerTable(player)).pad(10f).row()
         if(newGameParameters.players.count() < GameBasics.Nations.values.count { it.isMajorCiv() }) {
-            playerListTable.add("+".toLabel().setFontSize(30).apply { this.setAlignment(Align.center) }
-                    .setFontColor(Color.BLACK).surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
+            playerListTable.add("+".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
+                    .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
         }
     }
 
@@ -62,7 +62,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
             val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
             playerIdTable.add(playerIdTextfield).colspan(2)
-            val errorLabel = "Not a valid user id!".toLabel().setFontColor(Color.RED)
+            val errorLabel = "Not a valid user id!".toLabel(Color.RED)
             errorLabel.isVisible=false
             playerIdTable.add(errorLabel)
 
@@ -103,9 +103,9 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = if (player.chosenCiv == "Random") "?".toLabel()
-                .apply { this.setAlignment(Align.center) }.setFontSize(30)
-                .setFontColor(Color.BLACK).surroundWithCircle(50f)
+        val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.BLACK,30)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(50f)
         else ImageGetter.getNationIndicator(GameBasics.Nations[player.chosenCiv]!!, 50f)
         nationTable.add(nationImage)
         nationTable.add(player.chosenCiv.toLabel()).pad(20f)

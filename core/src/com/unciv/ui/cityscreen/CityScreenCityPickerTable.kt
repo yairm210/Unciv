@@ -4,10 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 
 class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
@@ -49,8 +46,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
         }
 
-        val currentCityLabel = Label(city.name, CameraStageBaseScreen.skin)
-        currentCityLabel.setFontSize(30)
+        val currentCityLabel = city.name.toLabel(fontSize = 30)
         currentCityLabel.onClick {
             val editCityNamePopup = PopupTable(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
