@@ -62,15 +62,15 @@ open class CameraStageBaseScreen : Screen {
         }
 
         fun resetFonts(){
-            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(20)
-            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(20)
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(48).apply { data.setScale(20/48f) }
+            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(48).apply { data.setScale(20/48f) }
             skin.get(Label.LabelStyle::class.java).apply {
-                font = Fonts().getFont(18)
+                font = Fonts().getFont(48).apply { data.setScale(18/48f) }
                 fontColor= Color.WHITE
             }
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts().getFont(18)
-            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(20)
-            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(20)
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts().getFont(48).apply { data.setScale(18/48f) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(48).apply { data.setScale(20/48f) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(48).apply { data.setScale(20/48f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
         internal var batch: Batch = SpriteBatch()
@@ -208,9 +208,9 @@ fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
     if(fontColor!= Color.WHITE || fontSize!=18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
-        if (fontSize != 18) labelStyle.font = Fonts().getFont(fontSize)
+        if (fontSize != 18) labelStyle.font = Fonts().getFont(48)
     }
-    return Label(this.tr(),labelStyle)
+    return Label(this.tr(),labelStyle).apply { setFontScale(fontSize/48f) }
 }
 
 
@@ -218,7 +218,7 @@ fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply 
 
 fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
-    style.font = Fonts().getFont(size)
+    style.font = Fonts().getFont(48)
     style = style // because we need it to call the SetStyle function. Yuk, I know.
-    return this // for chaining
+    return this.apply { setFontScale(size/48f) } // for chaining
 }
