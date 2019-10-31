@@ -410,7 +410,7 @@
 		Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
 		Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
 		Simplified_Chinese:"我们的领土附近发现了敌方的[unit]"
-		Traditional_Chinese:"在我们的领土附近发现了1个敌方的[unit]"
+		Traditional_Chinese:"我們的領土附近發現了敵方的[unit]"
 		Portuguese:"Um(a) [unit] foi visto perto de nosso território"
 		Japanese:"私たちの領土の近くに敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena poblíž našeho území"
@@ -425,7 +425,7 @@
 		Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
 		Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
 		Simplified_Chinese:"我们的领土内发现了敌方的[unit]"
-		Traditional_Chinese:"在我们的领土内发现了1个敌方的[unit]"
+		Traditional_Chinese:"在我們的領土內發現了敵方的[unit]"
 		Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
 		Japanese:"私たちの領土に敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena na našem území"
@@ -435,7 +435,7 @@
 		Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
 		German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
 		Simplified_Chinese:"我们的领土附近发现了[amount]个敌方单位"
-		Traditional_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
+		Traditional_Chinese:"在我們的領土附近發現了[amount]個敵方單位"
 		French:"[amount] unités ennemies ont été repérées proche de notre territoire"
 		Russian:"[amount] вражеских юнитов было замечено у нашей территории",
 		Czech:"[amount] napřátelských jednotek bylo spatřeno poblíž našeho území"
@@ -445,7 +445,7 @@
 		Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
 		German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
 		Simplified_Chinese:"我们的领土内发现了[amount]个敌方单位"
-		Traditional_Chinese:"在我们的领土内发现了[amount]个敌方单位"
+		Traditional_Chinese:"在我們的領土內發現了[amount]個敵方單位"
 		French:"[amount] unités ennemies ont été repérées sur notre territoire"
 		Russian:"[amount] вражеских юнитов было замечено на нашей территории",
 		Czech:"[amount] nepřátelských jednotek bylo spatřeno na našem území"
@@ -460,7 +460,7 @@
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
 		Spanish:"¡La civilización de [civName] ha sido destruida!"
 		Simplified_Chinese:"[civName]文明已经灭亡！",
-		Traditional_Chinese:"[civName]文明已经灭亡！",
+		Traditional_Chinese:"[civName]文明已經滅亡！",
 		Portuguese:"A civilização de [civName] foi destruida!"
 		Japanese:"[civName]の文明は破壊されました！",
 		Czech:"Civilizace [civName] byla zničena!"
@@ -471,7 +471,7 @@
 		French:"La Cité état [name] a été détruite"
 		Russian:"Город-государство [name] был уничтожен!"
 		Simplified_Chinese:"[name]城邦已经灭亡！",
-		Traditional_Chinese:"[name]城邦已经灭亡！",
+		Traditional_Chinese:"[name]城邦已經滅亡！",
 		Czech:"Městský stát [name] byl zničen!"
 	}
 
@@ -480,7 +480,7 @@
 		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
 		Russian:"Мы разгромили лагерь варваров и нашли [goldAmount] золота!"
 		Simplified_Chinese:"我们摧毁蛮族营地并获得了[goldAmount]金钱！"
-		Traditional_Chinese:"我们摧毁蛮族营地获得了[goldAmount]金钱！"
+		Traditional_Chinese:"我們摧毀蠻族營地並獲得了[goldAmount]金錢！"
 		Czech:"Zneškodnili jsme barbarský tábor a získali [goldAmount] zlata"
 	}
 
@@ -489,7 +489,7 @@
 		French:"Un [unitType] barbare nous a rejoins!"
 		Russian:"Варварский [unitType] присоединился к нам!"
 		Simplified_Chinese:"蛮族的[unitType]加入了我们！",
-		Traditional_Chinese:"蛮族的[unitType]加入了我们！",
+		Traditional_Chinese:"蠻族的[unitType]加入了我們！",
 		Czech:"Barbarská jednotka [unitType] se připojila k nám!"
 	}
 
@@ -505,7 +505,7 @@
 		Russian:"Мы нашли выживших в руинах - население добавлено в [cityName]"
 		Dutch:"We hebben overlevenden gevonden in de ruïnes - populatie toegevoegd aan [cityName]"
 		Simplified_Chinese:"我们在废墟中找到了幸存者 - [cityName]的人口增加了",
-		Traditional_Chinese:"我们在废墟中找到了幸存者 - [cityName]的人口增加了",
+		Traditional_Chinese:"我們在廢墟中找到了倖存者 - [cityName]的人口增加了",
 		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]",
 		Czech:"V troskách jsme našli přeživší - populace se připojila k městu [cityName]"
 	}
@@ -519,7 +519,7 @@
 		Dutch:"We hebben de verloren technologie van [techName] in de ruïnes ontdekt!"
 		Spanish:"¡Hemos descubierto la tecnología perdida de [techName] en las ruinas!"
 		Simplified_Chinese:"我们在废墟中发现了失传已久的技术：[techName]！",
-		Traditional_Chinese:"我们在废墟中发现了失传已久的技术：[techName]！",
+		Traditional_Chinese:"我們在廢墟中發現了失傳已久的技術：[techName]！",
 		Portuguese:"Nós descobrimos a tecnologia perdida de [techName] nas ruínas!",
 		Czech:"V troskách jsme objevili ztracenou technologii [techName]"
 	}
@@ -534,7 +534,7 @@
 		Dutch:"Een [unitName] heeft zich bij ons aangesloten!"
 		Spanish:"¡Un [unitName] se ha unido a nosotros!" //Gender sensitive
 		Simplified_Chinese:"[unitName]加入了我们！",
-		Traditional_Chinese:"[unitName]加入了我们！",
+		Traditional_Chinese:"[unitName]加入了我們！",
 		Portuguese:"Um [unitName] se juntou a nós!" //Gender sensitive
 		Czech:"Jednotka [unitName] se přidala na naši stranu!"
 	}
@@ -549,7 +549,7 @@
 		Dutch:"Een oude stam traint onze [unitName] in hun manier van vechten!"
 		Spanish:"¡Una antigua tribu entrena a nuestros [unitName] en sus formas de combate!"
 		Simplified_Chinese:"一个古老的部落以他们的战斗方式训练了我们的[unitName]！",
-		Traditional_Chinese:"一个古老的部落以他们的战斗方式训练了我们的[unitName]！",
+		Traditional_Chinese:"一個古老的部落以他們的戰鬥方式訓練了我們的[unitName]！",
 		Portuguese:"Uma antiga tribo treina nosso [unitName] em suas formas de combate!",
 		Czech:"Starodávný kmen cvičí naši jednotku [unitName] v jejich bojových uměních!"
 	}
@@ -564,7 +564,7 @@
 		Dutch:"We hebben een voorraad [amount] Goud gevonden in de ruïnes!"
 		Spanish:"¡Hemos encontrado un alijo de [amount] de oro en las ruinas!"
 		Simplified_Chinese:"我们在废墟中找到了[amount]金钱！",
-		Traditional_Chinese:"我们在废墟中找到了[amount]金钱！",
+		Traditional_Chinese:"我們在廢墟中找到了[amount]金錢！",
 		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!",
 		Czech:"Skrýš, která obsahovala [amount] zlata byla objevena v ruinách!"
 	}
@@ -585,7 +585,7 @@
 		French:"[unit] n'a rien à faire"
 		Russian:"[unit] завершил все доступные работы."
 		Simplified_Chinese:"[unit]处于闲置状态。"
-		Traditional_Chinese:"[unit]处于空闲。"
+		Traditional_Chinese:"[unit]處於閒置狀態。"
 		Czech:"Jednotka [unit] nemá nic dalšího na práci."
 	}
 
@@ -594,7 +594,7 @@
 		French:"Vous perdez le contrôle de [name]"
 		Russian:"Вы теряете влияние на [name]."
 		Simplified_Chinese:"您正在失去与[name]的脆弱友谊。"
-		Traditional_Chinese:"你已经失去了和[name]的脆弱友谊。"
+		Traditional_Chinese:"您已經失去了與[name]的脆弱友誼。"
 		Czech:"Ztratili jsme přátelství s městským státem [name]."
 	}
 
@@ -603,7 +603,7 @@
 		French:"Vous et [name] n'êtes plus amis!"
 		Russian:"Вы и [name] больше не друзья!"
 		Simplified_Chinese:"您与[name]不再是朋友了！"
-		Traditional_Chinese:"你和[name]不再是朋友了！"
+		Traditional_Chinese:"您與[name]不再是朋友了！"
 		Czech:"Naše říše a městský stát [name] už nejsme nadále přátelé!"
 	}
 
@@ -612,7 +612,7 @@
 		French:"Votre alliance avec [name] est vacillante."
 		Russian:"Ваш союз с [name] заканчивается."
 		Simplified_Chinese:"您与[name]的盟友关系正日薄西山。"
-		Traditional_Chinese:"你和[name]的盟友关系正日薄西山。"
+		Traditional_Chinese:"您與[name]的盟友關係正日薄西山。"
 		Czech:"Naše aliance s městským státem [name] slábne."
 	}
 
@@ -621,7 +621,7 @@
 		French:"Vous et [name] n'êtes plus alliés!"
 		Russian:"Вы и [name] больше не союзники!"
 		Simplified_Chinese:"您与[name]不再是盟友了！"
-		Traditional_Chinese:"你和[name]不再是盟友了！"
+		Traditional_Chinese:"您與[name]不再是盟友了！"
 		Czech:"Naše říše a městský stát [name] už není v alianci!"
 	}
 
@@ -629,8 +629,8 @@
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
 		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
 		Russian:"[civName] передал нам в дар [untiName] около города [cityName]!"
-		Simplified_Chinese:"[civName]将[cityName]附近的[untiName]赠予我们！"
-		Traditional_Chinese:"[civName]将[untiName](出现在[cityName]附近)赠予我们！"
+		Simplified_Chinese:"[civName]将[cityName]附近的[untiName]赠予我们！",
+		Traditional_Chinese:"[civName]將[cityName]附近的[untiName]贈與我們！",
 		Czech:"Civilizace [civName] nám darovala jednotku [untiName] poblíž města [untiName]"
 	}
 
@@ -638,7 +638,7 @@
 		Italian:"[civName] ci ha denunciati pubblicamente!"
 		Russian:"[civName] публично осудил нас!"
 		Simplified_Chinese:"[civName]谴责了我们！"
-		Traditional_Chinese:"真是不知死活！[civName]竟然敢谴责我们！"
+		Traditional_Chinese:"[civName]譴責了我們！"
 		Czech:"Civilizace [civName] nás odsoudila!"
 	}
 
@@ -646,7 +646,7 @@
 		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
 		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
-		Traditional_Chinese:"[cityName]与你的首都的连接已经建立！"
+		Traditional_Chinese:"[cityName]以建立與您的首都的連接！"
 	}
 
 	// Trade
@@ -654,7 +654,7 @@
 		Italian:"[civName] ha accettato la nostra offerta commerciale."
 		Russian:"[civName] принимает ваше торговое предложение"
 		Simplified_Chinese:"[civName]接受了您的贸易请求"
-		Traditional_Chinese:"[civName]接受了你的贸易请求"
+		Traditional_Chinese:"[civName]接受了你的貿易請求"
 		Czech:"Civilizace [cityName] přijala naši obchodní nabídku"
 	}
 
@@ -662,7 +662,7 @@
 		Italian:"[civName] ha rifiutato la nostra offerta commerciale."
 		Russian:"[civName] отклонил ваше торговое предложение"
 		Simplified_Chinese:"[civName]拒绝了您的贸易请求"
-		Traditional_Chinese:"[civName]否决了你的贸易请求"
+		Traditional_Chinese:"[civName]否決了你的貿易請求"
 		Czech:"Civilizace [cityName] zamítla naši obchodní nabídku"
 	}
 
@@ -670,7 +670,7 @@
 	"[tradeOffer] from [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato",
 		Simplified_Chinese:"与[otherCivName]的[tradeOffer]协议已经结束",
-		Traditional_Chinese:"与[otherCivName]的[tradeOffer]协议已经结束",
+		Traditional_Chinese:"與[otherCivName]的[tradeOffer]協議已經結束",
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
 		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось",
@@ -703,7 +703,7 @@
  	"[nation] agreed to stop settling cities near us!": {
 		Italian:"[nation] ha promesso di smettere di fondare città vicino a noi!"
 		Simplified_Chinese:"[nation]同意停止在我们附近建城！",
-		Traditional_Chinese:"[nation]同意停止在我们附近建城！",
+		Traditional_Chinese:"[nation]同意停止在我們附近建城！",
 		Russian:"[nation] согласилась прекратить заселять города рядом с нами!",
 		Czech:"Národ [nation] souhlasí, že nebude budovat své města poblíž našich hranic!"
 	}
@@ -711,7 +711,7 @@
  	"[nation] refused to stop settling cities near us!": {
 		Italian:"[nation] ha rifiutato di smettere di fondare città vicino a noi!"
 		Simplified_Chinese:"[nation]拒绝停止在我们附近建城！",
-		Traditional_Chinese:"[nation]拒绝停止在我们附近建城！",
+		Traditional_Chinese:"[nation]拒絕停止在我們附近建城！",
 		Russian:"[nation] отказалась прекратить заселять города рядом с нами!",
 		Czech:"Národ [nation] vypověděl dohodu o nebudování měst poblíž našich hranic!"
 	}
