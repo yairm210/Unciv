@@ -278,7 +278,7 @@ class CivilizationInfo {
             leaderName += " (" + "AI".tr() + ")"
         else if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)
             leaderName += " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
-        else leaderName += " (" + "Human".tr() + " - " + UnCivGame.Current.settings.userName + ")"
+        else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
         return leaderName
     }
     //endregion
