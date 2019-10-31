@@ -43,9 +43,9 @@ class Translations : HashMap<String, TranslationEntry>(){
     fun getLanguages(): List<String> {
         val toReturn =  mutableListOf<String>()
 
-        for(value in values)
-            for(key in keys)
-                if(!toReturn.contains(key)) toReturn.add(key)
+        for(entry in values)
+            for(languageName in entry.keys)
+                if(!toReturn.contains(languageName)) toReturn.add(languageName)
 
         toReturn.remove("Japanese") // These were for tests but were never actually seriously translated
         toReturn.remove("Thai")
