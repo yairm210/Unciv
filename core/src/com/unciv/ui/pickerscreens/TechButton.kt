@@ -17,7 +17,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
     init {
         touchable = Touchable.enabled
         defaults().pad(10f)
-        background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
+        background = ImageGetter.getTableBackground()
         if (ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName, 60f))
 
