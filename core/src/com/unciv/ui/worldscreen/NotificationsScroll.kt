@@ -35,7 +35,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
 
             listItem.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(10f).pad(5f)
-            listItem.background(ImageGetter.getDrawable("OtherIcons/civTableBackground"))
+            listItem.background = ImageGetter.getTableBackground()
             listItem.add(label).pad(5f).padRight(10f)
 
             // using a large click area with no gap in between each message item.

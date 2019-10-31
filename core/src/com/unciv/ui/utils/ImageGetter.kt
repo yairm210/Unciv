@@ -24,6 +24,29 @@ object ImageGetter {
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
     var atlas = TextureAtlas("game.atlas")
+
+    // We then shove all the drawables into a hashmap, because the atlas specifically tells us
+    //   that the search on it is inefficient
+    val textureRegionDrawables = HashMap<String,TextureRegionDrawable>()
+
+    init{
+        setTextureRegionDrawables()
+    }
+
+    fun setTextureRegionDrawables(){
+        textureRegionDrawables.clear()
+        for(region in atlas.regions){
+            val drawable =TextureRegionDrawable(region)
+            textureRegionDrawables[region.name] = drawable
+        }
+    }
+
+    fun refreshAltas() {
+        atlas.dispose() // To avoid OutOfMemory exceptions
+        atlas = TextureAtlas("game.atlas")
+        setTextureRegionDrawables()
+    }
+
     fun getWhiteDot() =  getImage(whiteDotLocation)
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
 
@@ -32,29 +55,24 @@ object ImageGetter {
     }
 
     fun getImage(fileName: String): Image {
-        return Image(getTextureRegion(fileName))
+        return Image(getDrawable(fileName))
     }
 
-    fun getDrawable(fileName: String): TextureRegionDrawable {
-        val drawable = TextureRegionDrawable(getTextureRegion(fileName))
-        drawable.minHeight = 0f
-        drawable.minWidth = 0f
-        return drawable
+    private fun getDrawable(fileName: String): TextureRegionDrawable {
+        if(textureRegionDrawables.containsKey(fileName)) return textureRegionDrawables[fileName]!!
+        else return textureRegionDrawables[whiteDotLocation]!!
     }
 
-    private fun getTextureRegion(fileName: String): TextureRegion {
-        try {
-            val region = atlas.findRegion(fileName)
-
-            if(region==null)
-                throw Exception("Could not find $fileName")
-            return region
-        } catch (ex: Exception) {
-            return getTextureRegion(whiteDotLocation)
-        }
+    fun getTableBackground(tintColor: Color?=null): Drawable? {
+        val drawable = getDrawable("OtherIcons/civTableBackground")
+        drawable.minHeight=0f
+        drawable.minWidth=0f
+        if(tintColor==null) return drawable
+        return drawable.tint(tintColor)
     }
 
-    fun imageExists(fileName:String) = atlas.findRegion(fileName)!=null
+
+    fun imageExists(fileName:String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName:String) = imageExists("TechIcons/$techName")
 
     fun getStatIcon(statName: String): Image {
@@ -153,10 +171,6 @@ object ImageGetter {
         return getDrawable(whiteDotLocation).tint(color)
     }
 
-    fun refreshAltas() {
-        atlas.dispose() // To avoid OutOfMemory exceptions
-        atlas = TextureAtlas("game.atlas")
-    }
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)

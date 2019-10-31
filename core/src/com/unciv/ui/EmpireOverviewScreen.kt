@@ -404,24 +404,25 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     companion object {
         fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String,currentPlayer:CivilizationInfo): Table {
             val civGroup = Table()
-            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground")
 
             var labelText = civ.civName.tr()+afterCivNameText
             var labelColor=Color.WHITE
+            val backgroundColor:Color
 
             if (civ.isDefeated()) {
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
-                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
+                backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
             } else if (currentPlayer==civ || UnCivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
-                civGroup.background = civGroupBackground.tint(civ.nation.getOuterColor())
+                backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()
             } else {
-                civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
+                backgroundColor = Color.DARK_GRAY
                 labelText = "???"
             }
 
+            civGroup.background = ImageGetter.getTableBackground(backgroundColor)
             val label = labelText.toLabel(labelColor)
             label.setAlignment(Align.center)
 
