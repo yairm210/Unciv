@@ -111,7 +111,7 @@
 
 	"Next unit":{
 		Italian:"Prossima unità"
-		Simplified_Chinese:"下个未行动单位"
+		Simplified_Chinese:"下个闲置单位"
 		Portuguese:"Próxima unidade"
 		French:"Unité suivante"
                 Russian:"Следующий юнит"
@@ -179,7 +179,7 @@
 		German:"Stärke Bombardierung"
 		Dutch:"Bombard sterkte"
 		Spanish:"Fuerza de bombardeo"
-		Simplified_Chinese:"远程轰击"
+		Simplified_Chinese:"轰击战斗力"
 		Portuguese:"Força de bombardeio"
 		Japanese:"爆撃力"
 		Czech:"Bombardovací síla"
@@ -267,7 +267,8 @@
 		Italian: "Costruisci strada"
 		German: "Straße bauen"
 		French:"Contruire une route"
-                Russian:"Построить дорогу"
+		Russian:"Построить дорогу"
+		Simplified_Chinese:"建造道路"
 		Czech:"Postavit cestu"
 }
 
@@ -398,7 +399,7 @@
 		Romanian:"Desființează unitatea"
 		Dutch:"Eenheid opheffen"
 		Spanish:"Disolver unidad"
-		Simplified_Chinese:"解雇单位"
+		Simplified_Chinese:"解散单位"
 		Portuguese:"Desfazer unidade"
 		German:"Einheit auflösen"
 		Japanese:"解散ユニット"
@@ -449,7 +450,7 @@
 		Romanian:"Sigur desființezi unitatea?"
 		Dutch:"Wil je echt deze eenheid opheffen"
 		Spanish:"¿Realmente quieres disolver esta unidad?"
-		Simplified_Chinese:"您真的想解雇这个单位吗？"
+		Simplified_Chinese:"您真的想解散这个单位吗？"
 		Portuguese:"Voçê realmente quer desfazer essa unidade?"
 		German:"Wollen Sie diese Einheit wirklich auflösen?"
 		Japanese:"あなたは本当にこのユニットを解散したいですか？"
@@ -1043,7 +1044,7 @@
 		German:"Expansion gestoppt"
 		Dutch:"Uitbreiding gestopt"
 		Spanish:"Expansión detenida"
-		Simplified_Chinese:"扩张停止了"
+		Simplified_Chinese:"扩张已停止"
 		Portuguese:"Expansão parada"
 		Japanese:"拡張停止"
 		Czech:"Rozšiřování zastaveno"
@@ -1091,7 +1092,7 @@
 		German:"Bevölkerungswachstum gestoppt"
 		Dutch:"De bevolkingsgroei gestopt"
 		Spanish:"Aumento de la población detenida"
-		Simplified_Chinese:"人口增长停止"
+		Simplified_Chinese:"人口增长已停止"
 		Portuguese:"Crescimento populacional interrompido"
 		Japanese:"人口増加の阻止"
 		Czech:"Zastavený populační růst"
@@ -1128,7 +1129,7 @@
 		German:"Wollen Sie wirklich [building] verkaufen?"
 		Dutch:"Wil je echt [building] verkopen?"
 		Spanish:"¿Realmente quieres vender [building]?"
-		Simplified_Chinese:"你真的想卖掉[building]吗？"
+		Simplified_Chinese:"您真的想卖掉[building]吗？"
 		Portuguese:"Você realmente quer vender o(a) [building]?",
 		Czech:"Jste si jistý(á), že chcete prodat budovu [building]"
 }
@@ -1399,7 +1400,7 @@
 		German:"Stärke der Stadt"
 		Dutch:"Kracht van de stad"
 		Spanish:"Fuerza de la ciudad"
-		Simplified_Chinese:"城市强度"
+		Simplified_Chinese:"城市战斗力"
 		Portuguese:"Força da cidade"
 		Czech:"Síla města"
 }
@@ -1476,7 +1477,7 @@
 
 	"Attacker Bonus":{
 		Italian:"Bonus attaccante"
-		Simplified_Chinese:"主动发起攻击"
+		Simplified_Chinese:"主动攻击加成"
 		Czech:"Útočný bonus"
 }
 
@@ -1579,7 +1580,7 @@
 		Romanian:"Ai intrat în epoca [newEra]!"
 		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is
 		Spanish:"¡Has entrado en la [newEra]!"
-		Simplified_Chinese:"您已经进入了[newEra]！"
+		Simplified_Chinese:"您已进入了[newEra]！"
 		Portuguese:"Voçê entrou na [newEra]!"
 		German:"Zeitalter [newEra] ist eingeläutet!",
 		Czech:"Vstoupili jsme do éry [newEra]!"
@@ -1592,7 +1593,7 @@
 		Romanian:"Ramura [policyBranch] deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 		Spanish:"¡Rama política [policyBranch] desbloqueada!"
-		Simplified_Chinese:"[policyBranch]分支解锁!"
+		Simplified_Chinese:"[policyBranch]分支解锁！"
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet",
 		Czech:"Zpřístupněna větev sociální politiky: [policyBranch]"
@@ -1967,7 +1968,7 @@
 		German:"Sie haben den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique!"
 		Russian:"Вы одержали научную победу!"
-		Simplified_Chinese:"恭喜！你赢得了科技胜利!"
+		Simplified_Chinese:"恭喜！您赢得了科技胜利!"
 		Portuguese:"Você ganhou uma vitória ciêntifica!"
 		Czech:"Dosáhli jste vítězství ve hře díky Výzkumu!"
 }
@@ -1977,7 +1978,7 @@
 		German:"Sie haben den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle!"
 		Russian:"Вы одержали культурную победу!"
-		Simplified_Chinese:"恭喜！你赢得了文化胜利！"
+		Simplified_Chinese:"恭喜！您赢得了文化胜利！"
 		Portuguese:"Você ganhou uma vitória cultural!",
 		Czech:"Dosáhli jste vítězství ve hře díky Kulturní vyspělosti!"
 }
@@ -1987,32 +1988,32 @@
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
 		Russian:"Вы победили, завоевав всех!"
-		Simplified_Chinese:"恭喜！你赢得了征服胜利！"
+		Simplified_Chinese:"恭喜！您赢得了征服胜利！"
 		Portuguese:"Você ganhou uma vitória de dominação!",
 		Czech:"Dosáhli jsme vítězství ve hře zničením všech ostatních civilizací!"
 }
 // TODO (4)
 	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
 		Italian:"Hai ottenuto la vittoria attraverso il maestoso potere della tua cultura. La grandezza della tua civiltà, la magnificenza dei suoi monumenti e il talento dei suoi artisti ha sbalordito il mondo! I poeti ti ononeranno per sempre, finché la bellezza continuerà a portare sollievo ai cuori affaticati."
-		Simplified_Chinese:"你们依靠文化的强大力量取得了胜利。你们文明的伟大创作——富丽堂皇的建筑和鬼斧神工的艺术品震惊了世界！这些沁入心扉的美丽给疲乏的心带来温暖，给悲伤的人送去欢乐，诗人为你赞叹，乐者为你歌唱！"
+		Simplified_Chinese:"您依靠文化的强大力量取得了胜利。您的文明的伟大创作——富丽堂皇的建筑和鬼斧神工的艺术品震惊了世界！这些沁入心扉的美丽给疲乏的心带来温暖，给悲伤的人送去欢乐，诗人为您赞叹，乐者为您歌唱！"
 		Czech:"Dosáhli jsme vítězství díky úžasné dokonalé kulturnosti. Velikost naší říše - velkolepost vybudovaných památek a preciznost našich umělců ohromila svět! Básníci nás budou velebit, dokud vše krásné bude přinášet potěšení unavenému srdci."
 }
 
 	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
 		Italian:"Il mondo è stato straziato dalla guerra. Molte grandi e potenti civiltà sono cadute, ma tu sei sopravvissuto e se emerso vittorioso. Il mondo ricorderà a lungo il tuo glorioso trionfo!"
-		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而且强势的文明衰落了，但你们幸存了下来——并且取得了胜利！世界将永远记住你的光辉与荣耀！",
+		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而强盛的文明衰落了，但您幸存了下来——并且取得了胜利！世界将永远记住您的光辉与荣耀！",
 		Czech:"Celý svět byl zachvácen válkou. Velké a slavné civilizace byly zničeny, ale naše říše dokázala jako jediná přežít a zvítězit. Svět nikdy nezapomene na tento fenomenální triumf!"
 }
 
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
 		Italian:"Hai ottenuto la vittoria attraverso la padronanza della scienza! Hai penetrato i misteri più arcani della natura e condotto il tuo popolo in un viaggio verso un nuovo, favoloso mondo! Il tuo trionfo sarà ricordato finch* le stelle continueranno a brillare nel firmamento!"
-		Simplified_Chinese:"你们通过掌握先进的科技取得了胜利!你们已经征服了大自然的神秘，带领人民踏上了通往美丽新世界的航程！只要星星在夜空中燃烧，你的胜利就会被永远铭记！"
+		Simplified_Chinese:"您通过掌握先进的科技取得了胜利!您已经征服了大自然的神秘，带领人民踏上了通往美丽新世界的航程！只要星星在夜空中燃烧，您的胜利就会被永远铭记！"
 		Czech:"Zvítězili jsme ve hře díky enormnímu úsilý a mistrovství našich vědců. Poodhalili jste tajemství přírody a dovedli naše obyvatele na cestu poznání k novým světům. Na tento úspěch se bude vzpomínat dokud budou svítit hvězdy na nebi!"
 }
 
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
 		Italian:"Sei stato sconfitto. La tua civiltà è stata spazzata via dai suoi nemici. Ma il tuo popolo non dispera, perché sa che un giorno tornerai... e lo condurrai alla vittoria!"
-		Simplified_Chinese:"你被打败了。虽然你们的文明曾经被许多敌人所征服，但是你的人民永不放弃，因为他们知道总有一天你会回来的！那时，你的文明将会成为天空中最耀眼的恒星！"
+		Simplified_Chinese:"您被打败了。虽然您的文明曾经被许多敌人所征服，但是您的人民永不放弃，因为他们知道总有一天您会回来的！届时，您的文明将会成为天空中最耀眼的恒星！"
 		Czech:"Byli jsme poraženi. Naše civilizace byla převálcována schopnostmi nepřátel. Naši lidé ovšem nezoufají, protože ví, že jednou se jejich vůdce vrátí. A dovede je k vytouženému vítězství!"
 }
 
@@ -2049,7 +2050,7 @@
 	"Our status":{
 		Italian:"I tuoi progressi"
 		French:"Notre situation"
-		Simplified_Chinese:"我们文明的胜利进度"
+		Simplified_Chinese:"我们的进度"
 		Russian:"Наш статус"
 		Czech:"Naše vyhlídky"
 }
@@ -2057,7 +2058,7 @@
 	"Global status":{
 		Italian:"Progressi globali"
 		French:"Situation globale"
-		Simplified_Chinese:"所有文明的胜利进度"
+		Simplified_Chinese:"全球进度"
 		Russian:"Глобальный статус"
 		Czech:"Globální situace"
 }
@@ -2065,7 +2066,7 @@
 	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
 		French:"Parties de Vaisseau spatial manquantes"
-		Simplified_Chinese:"未完成建造的飞船组件"
+		Simplified_Chinese:"尚未完成的飞船部件"
 		Russian:"Осталось частей КК"
 		Czech:"Chybějící části Vesmírné lodi"
 }
@@ -2251,7 +2252,7 @@
 		Italian:"Unico per la civiltà [civName], sostituisce [unitName]"
 		Spanish:"Único a la civilización [civName], reemplaza [unitName]"
 		Romanian:"Unic pentru civilizație [civName], înlocuiește [unitName]"
-		Simplified_Chinese:"[civName]文明独有，取代[unitName]"
+		Simplified_Chinese:"[civName]文明独有，替代[unitName]"
 		Portuguese:"Exclusivo da civilização [civName], substitui [unitName]"
 		Russian:"Уникален для [civName], заменяет [unitName]"
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
@@ -2324,7 +2325,7 @@
 
 	"Improved by [improvement]":{
 		Italian:"Può essere migliorato/a da [improvement]"
-		Simplified_Chinese:"开发该资源所需要的设施：[improvement]"
+		Simplified_Chinese:"开发该资源所需设施：[improvement]"
 		French:"Amélioré par [improvement]"
 		Portuguese:"Melhorado por [improvement]"
 		Russian:"Улучшен [improvement]"
@@ -2342,7 +2343,7 @@
 
 	"Can be built on ":{
 		Italian:"Può essere costruito/a su: "
-		Simplified_Chinese:"可以建造的地形地貌："
+		Simplified_Chinese:"可以建造于："
 		French:"Peut être construit sur "
 		Portuguese:"Pode ser construido em "
 		Russian:"Может быть построен на "
@@ -2415,7 +2416,7 @@
 
 	"Tileset":{
 		Italian:"Set celle"
-		Simplified_Chinese:"地块显示设置"
+		Simplified_Chinese:"地块设置"
 		French:"Taille des cases"
 		Portuguese:"Estilo mapa"
 		Russian:"Палитра клеток"
