@@ -621,6 +621,10 @@
 		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось",
 		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 	}
+	
+	"[tradeOffer] to [otherCivName] has ended":{
+	}
+
 
 
 	"One of our trades with [nation] has ended": {
