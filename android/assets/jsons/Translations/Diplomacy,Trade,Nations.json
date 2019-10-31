@@ -198,7 +198,7 @@
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
 		French:"Nous avons rencontré la cité-état de [name]!"
 		Polish:"Napotkaliśmy państwo-miasto o nazwie [name]!"
-		Simplified_Chinese:"我们遇到了城邦--[name]！"
+		Simplified_Chinese:"我们遇到了城邦[name]！"
 		Russian:"Мы обнаружили город-государство [name]!",
 		Czech:"Poprvé jsme se setkali s městským státem [name]"
 }
@@ -373,7 +373,7 @@
 	"You declared war on us!":{
 		Italian:"Ci hai dichiarato guerra!"
 		French:"Vous nous avez déclaré la guerre!"
-		Simplified_Chinese:"不知死活的蠢货!你竟敢向我们宣战！"
+		Simplified_Chinese:"不知死活的蠢货！你竟敢向我们宣战！"
 		Portuguese:"Você declarou guerra contra nós!"
 		Russian:"Вы объявляли нам войну!"
 		Czech:"Vyhlásili jste nám válku!"
@@ -427,7 +427,7 @@
 	"You have declared friendship with our enemies!":{
 		Italian:"Hai dichiarato un'amicizia con i nostri nemici!"
 		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
-		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
+		Simplified_Chinese:"渡尽劫波兄弟在，相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
 		Portuguese:"Voçê declarou amizade a um de nossos inimigos!"
 		Russian:"Вы дружите с нашими врагами!"
 		Czech:"Deklarovali jste přátelství s našimi nepřáteli!"
@@ -517,7 +517,7 @@
 	"You betrayed your promise to not settle cities near us":{
 		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
 		French:"Vous avez trahis votre promesse de ne pas fonder de ville proche de nous"
-		Simplified_Chinese:"你背叛了不在我们附近建城的承诺，请好自为之。"
+		Simplified_Chinese:"你违背了不在我们附近建城的承诺，请好自为之。"
 		Russian:"Вы нарушили ваше обещание не закладывать города рядом с нами"
 		Czech:"Porušili jste svůj slib nezakládat města u našich hranic"
 }
@@ -541,7 +541,7 @@
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
 		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
 		French:"Nous avons remarquez votre nouvelle ville à notre frontière, malgré votre promesse. Cela aura des... conséquences."
-		Simplified_Chinese:"尽管你答应了，我们还是注意到你在我们边境附近的新城市。如果有不好的影响...这将是你自找的！"
+		Simplified_Chinese:"尽管你答应了，我们还是注意到你在我们边境附近建立了新城市。如果有不好的影响...这将是你自找的！"
 		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
 		Czech:"Odhalili jsme nové město poblíž našich hranic navzdory vašim slibům. To bude mít... patřičné následky."
 }
@@ -704,7 +704,7 @@
 		French:"C'est un plaisir de faire des affaires avec vous!"
 		Romanian:"Este o plăcere să facem afaceri împreună!"
 		Spanish:"¡Un placer hacer negocios contigo!"
-		Simplified_Chinese:"很高兴和您做生意!"
+		Simplified_Chinese:"很高兴和您做生意！"
 		Portuguese:"É um prazer fazer negócios com voçê" // can remove 'É um prazer' as it translates to 'it is a pleasure'
 		German:"Angenehm mit Ihnen Geschäfte zu machen!"
 		Czech:"Bylo nám potěšení s vámi obchodovat!"
@@ -716,7 +716,7 @@
 		French:"Je ne crois pas."
 		Romanian:"Nu cred."
 		Spanish:"Creo que no."
-		Simplified_Chinese:"我认为不可行."
+		Simplified_Chinese:"我认为不可行。"
 		Portuguese:"Acho que não"
 		German:"Lieber nicht."
 		Czech:"Myslím, že to neklapne."
@@ -728,7 +728,7 @@
 		French:"C'est acceptable."
 		Romanian:"E acceptabil."
 		Spanish:"Es aceptable"
-		Simplified_Chinese:"这是可以接受的."
+		Simplified_Chinese:"这是可以接受的。"
 		Portuguese:"Isto é aceitavel"
 		German:"Das ist akzeptabel."
 		Czech:"To se zdá přijatelné."
@@ -803,7 +803,7 @@
 		French:"Or par tour"
 		Romanian:"Aur per rundă"
 		Spanish:"Oro por turno"
-		Simplified_Chinese:"每回合得到金钱"
+		Simplified_Chinese:"金钱/回合"
 		Portuguese:"Ouro por turno"
 		German:"Gold pro Runde"
 		Czech:"Zlato za kolo"
@@ -1035,7 +1035,7 @@
 		Romanian:"+ 20% producție spre construcția de mirare"
 		Portuguese:"+ 20% de produção para construção de maravilhas"
 		Russian:"+20% Производство при строительстве чудес"
-		Simplified_Chinese:"建造奇观时+20%产能积累速率"
+		Simplified_Chinese:"建造奇观时产能积累速率+20%"
 		Czech:"+20% produkce při stavbě Divu světa"
 }
 
@@ -1163,7 +1163,7 @@
 		French:"+25% de production pour tous les batiments déjà construits dans la capitale"
 		Portuguese:"+ 25% Produção para quaisquer edifícios que já existam na Capital"
 		Russian:"+25% Производство при постройке зданий, которые уже существуют в столице"
-		Simplified_Chinese:"在其他城市建造首都已建有的建筑时+25%产能积累"
+		Simplified_Chinese:"在其他城市建造首都已建有的建筑时产能积累速率+25%"
 		Czech:"+25% produkce při stavbě všech budov, které už jsou postavené v hlavním městě"
 }
 
@@ -1356,7 +1356,7 @@
 
 	"+2 Science for all specialists and Great Person tile improvements":{
 		Italian:"+2 Scienza per ogni specialista e ogni miglioramento dai Grandi Personaggi."
-		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
+		Simplified_Chinese:"所有专业人员和伟人设施+2科研"
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 		Czech:"+2 Výzkum pro všechny specialisty a Velké osobnosti při vylepšení polí města."
 }

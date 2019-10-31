@@ -113,15 +113,6 @@ fun Actor.centerX(parent:Stage){ x = parent.width/2 - width/2 }
 fun Actor.centerY(parent:Stage){ y = parent.height/2- height/2}
 fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 
-fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
-
-fun Label.setFontSize(size:Int): Label {
-    style = Label.LabelStyle(style)
-    style.font = Fonts().getFont(size)
-    style = style // because we need it to call the SetStyle function. Yuk, I know.
-    return this // for chaining
-}
-
 
 /** same as [onClick], but sends the [InputEvent] and coordinates along */
 fun Actor.onClickEvent(sound: String = "click", function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
@@ -209,3 +200,25 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
 
 /** also translates */
 fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)
+
+// We don't want to use setFontSize and setFontColor because they set the font,
+//  which means we need to rebuild the font cache which means more memory allocation.
+fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
+    var labelStyle = CameraStageBaseScreen.skin.get(Label.LabelStyle::class.java)
+    if(fontColor!= Color.WHITE || fontSize!=18) { // if we want the default we don't need to create another style
+        labelStyle = Label.LabelStyle(labelStyle) // clone this to another
+        labelStyle.fontColor = fontColor
+        if (fontSize != 18) labelStyle.font = Fonts().getFont(fontSize)
+    }
+    return Label(this.tr(),labelStyle)
+}
+
+
+fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
+
+fun Label.setFontSize(size:Int): Label {
+    style = Label.LabelStyle(style)
+    style.font = Fonts().getFont(size)
+    style = style // because we need it to call the SetStyle function. Yuk, I know.
+    return this // for chaining
+}

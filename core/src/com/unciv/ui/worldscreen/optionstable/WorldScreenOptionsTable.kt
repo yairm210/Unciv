@@ -16,9 +16,9 @@ import kotlin.concurrent.thread
 class Language(val language:String){
     val percentComplete:Int
     init{
-        val availableTranslations = GameBasics.Translations.filter { it.value.containsKey(language) }
+        val availableTranslations = GameBasics.Translations.count() { it.value.containsKey(language) }
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size)
+        else percentComplete = (availableTranslations*100 / GameBasics.Translations.size)
     }
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
@@ -183,7 +183,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
                         UnCivGame.Current.startMusic()
                     } catch (ex: Exception) {
                         errorTable.clear()
-                        errorTable.add("Could not download music!".toLabel().setFontColor(Color.RED))
+                        errorTable.add("Could not download music!".toLabel(Color.RED))
                     }
                 }
             }
@@ -267,8 +267,11 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                // Sometimes the "changed" is triggered even when we didn't choose something that isn't the
                 selectedLanguage = languageSelectBox.selected.language
-                selectLanguage()
+
+                if(selectedLanguage!=UnCivGame.Current.settings.language )
+                    selectLanguage()
             }
         })
 

@@ -29,8 +29,8 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         remove()
     }
 
-    fun addGoodSizedLabel(text: String): Cell<Label> {
-        val label = text.toLabel()
+    fun addGoodSizedLabel(text: String, size:Int=18): Cell<Label> {
+        val label = text.toLabel(fontSize = size)
         label.setWrap(true)
         label.setAlignment(Align.center)
         return add(label).width(screen.stage.width / 2)

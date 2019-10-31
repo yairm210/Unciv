@@ -4,7 +4,10 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 
 class PlayerReadyScreen(currentPlayerCiv: CivilizationInfo) : CameraStageBaseScreen(){
     init {
@@ -12,8 +15,7 @@ class PlayerReadyScreen(currentPlayerCiv: CivilizationInfo) : CameraStageBaseScr
         table.touchable= Touchable.enabled
         table.background= ImageGetter.getBackground(currentPlayerCiv.nation.getOuterColor())
 
-        table.add("[$currentPlayerCiv] ready?".toLabel().setFontSize(24)
-                .setFontColor(currentPlayerCiv.nation.getInnerColor()))
+        table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),24))
 
         table.onClick {
             UnCivGame.Current.worldScreen = WorldScreen(currentPlayerCiv)

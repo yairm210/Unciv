@@ -189,8 +189,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
-        moveHereButton.addActor(dto.turnsToGetThere.toString().toLabel()
-                .apply { center(numberCircle); setFontColor(Color.WHITE) })
+        moveHereButton.addActor(dto.turnsToGetThere.toString().toLabel().apply { center(numberCircle) })
 
         val unitIcon = UnitGroup(dto.unit, size / 2)
         unitIcon.y = size - unitIcon.height

@@ -14,6 +14,7 @@
 		Portuguese:"pastagem"
                 Korean:"초원"
 		Czech:"Pastviny"
+		Ukrainian:"Пасовища"
 }
 
 	"Plains":{
@@ -28,6 +29,7 @@
 		Portuguese:"Planíce"
                 Korean:"평원"
 		Czech:"Pláně"
+		Ukrainian:"Рівнини"
 }
 
 	"Tundra":{
@@ -42,6 +44,7 @@
 		Portuguese:"Tundra"
                 Korean:"툰드라"
 		Czech:"Tundra"
+		Ukrainian:"Тундра"
 }
 
 	"Desert":{
@@ -56,6 +59,7 @@
 		Portuguese:"Deserto"
                 Korean:"사막"
 		Czech:"Poušť"
+		Ukrainian:"Пустеля"
 }
 
 	"Lakes":{
@@ -70,6 +74,7 @@
 		Portuguese:"Lagos"
                 Korean:"호수"
 		Czech:"Jezera"
+		Ukrainian:"Озера"
 }
 
 	"Hill":{
@@ -84,6 +89,7 @@
 		Portuguese:"Morro"
                 Korean:"언덕"
 		Czech:"Kopce"
+		Ukrainian:"Пагорби"
 }
 
 	"Mountain":{
@@ -97,6 +103,7 @@
 		Portuguese:"Montanha"
                 Korean:"산"
 		Czech:"Hory"
+		Ukrainian:"Гори"
 }
 
 	"Forest":{
@@ -111,6 +118,7 @@
 		Portuguese:"Floresta"
                 Korean:"숲"
 		Czech:"Les"
+		Ukrainian:"Ліс"
 }
 
 	"Jungle":{
@@ -125,6 +133,7 @@
 		Portuguese:"Selva"
                 Korean:"정글"
 		Czech:"Džungle"
+		Ukrainian:"Хащі"
 }
 
 	"Marsh":{
@@ -152,6 +161,7 @@
 		Spanish:"Oasis"
                 Korean:"오아시스"
 		Czech:"Oáza"
+		Ukrainian:"Оазис"
 }
 
 	"Snow":{
@@ -166,6 +176,7 @@
 		Portuguese:"Neve"
                 Korean:"눈"
 		Czech:"Sníh"
+		Ukrainian:"Сніг"
 }
 
 	"Coast":{
@@ -180,6 +191,7 @@
 		Portuguese:"Costa"
                 Korean:"연안"
 		Czech:"Pobřeží"
+		Ukrainian:"Узбережжя"
 }
 
 	"Ocean":{
@@ -194,6 +206,7 @@
 		Portuguese:"Oceano"
                 Korean:"대양"
 		Czech:"Oceán"
+		Ukrainian:"Океан"
 }
 
 	"Flood plains":{
@@ -208,6 +221,7 @@
 		Portuguese:"Terras inundáveis"
                 Korean:"범람원"
 		Czech:"Údolní niva"
+		Ukrainian:"Заплави"
 }
 
 	"Impassible":{
@@ -221,6 +235,7 @@
 		Russian:"Непроходимый"
                 Korean:"지나갈 수 없음"
 		Czech:"Nepřístupné"
+		Ukrainian:"Непрохідні"
 }
 
 /////////////	Bonus Resources
@@ -237,6 +252,7 @@
 		Portuguese:"Gado"
                 Korean:"가축"
 		Czech:"Dobytek"
+		Ukrainian:"Худоба"
 }
 
 	"Sheep":{
@@ -251,6 +267,7 @@
 		Portuguese:"Ovelhas"
                 Korean:"양"
 		Czech:"Ovce"
+		Ukrainian:"Вівці"
 }
 
 	"Deer":{
@@ -265,6 +282,7 @@
 		Portuguese:"Veados"
                 Korean:"사슴"
 		Czech:"Jelen"
+		Ukrainian:"Олені"
 }
 
 	"Bananas":{
@@ -279,6 +297,7 @@
 		Portuguese:"Bananas"
                 Korean:"바나나"
 		Czech:"Banány"
+		Ukrainian:"Банани"
 }
 
 	"Wheat":{
@@ -293,6 +312,7 @@
 		Portuguese:"Trigo"
                 Korean:"밀"
 		Czech:"Pšenice"
+		Ukrainian:"Пшениця"
 }
 
 	"Stone":{
@@ -307,6 +327,7 @@
 		Portuguese:"Pedra"
                 Korean:"돌"
 		Czech:"Kámen"
+		Ukrainian:"Камінь"
 }
 
 	"Fish":{
@@ -321,6 +342,7 @@
 		Russian:"Рыба"
                 Korean:"물고기"
 		Czech:"Ryba"
+		Ukrainian:"Риба"
 }
 
 	"Bison":{
@@ -336,6 +358,7 @@
 		Japanese:"バイソン"
                 Korean:"들소"
 		Czech:"Bizon"
+		Ukrainian:"Бізони"
 }
 
 ////////// Strategic Resources
@@ -352,6 +375,7 @@
 		Portuguese:"Cavalos"
                 Korean:"말"
 		Czech:"Bizon"
+		Ukrainian:"Коні"
 }
 
 	"Iron":{
@@ -366,6 +390,7 @@
 		Portuguese:"Ferro"
                 Korean:"철"
 		Czech:"Železná ruda"
+		Ukrainian:"Залізо"
 }
 
 	"Coal":{
@@ -380,6 +405,7 @@
 		Portuguese:"Carvão"
                 Korean:"석탄"
 		Czech:"Uhlí"
+		Ukrainian:"Вугілля"
 }
 
 	"Oil":{
@@ -394,6 +420,7 @@
 		Portuguese:"Petróleo"
                 Korean:"기름"
 		Czech:"Ropa"
+		Ukrainian:"Нафта"
 }
 
 	"Aluminum":{
@@ -408,6 +435,7 @@
 		Portuguese:"Alumínio"
                 Korean:"알루미늄"
 		Czech:"Hliník"
+		Ukrainian:"Алюміній"
 }
 
 	"Uranium":{
@@ -422,6 +450,7 @@
 		Portuguese:"Urânio"
                 Korean:"우라늄"
 		Czech:"Uranium"
+		Ukrainian:"Уран"
 }
 
 ///////// Luxury Resources
@@ -438,6 +467,7 @@
 		Portuguese:"Peles"
                 Korean:"모피",
 		Czech:"Kožešina"
+		Ukrainian:"Хутра"
 }
 
 	"Cotton":{
@@ -452,6 +482,7 @@
 		Portuguese:"Algodão"
                 Korean:"면"
 		Czech:"Bavlna"
+		Ukrainian:"Бавовна"
 }
 
 	"Dyes":{ // Seems to have translated in all languages as *food dyes* Needs to be rechecked in all languages except french and portuguese
@@ -466,6 +497,7 @@
 		Portuguese:"Tintas"
                 Korean:"염료"
 		Czech:"Barvivo"
+		Ukrainian:"Барвники"
 }
 
 	"Gems":{
@@ -480,6 +512,7 @@
    		Portuguese:"Joias"
                 Korean:"보석"
 		Czech:"Drahokamy"
+		Ukrainian:"Коштовні камені"
 }
 
 	"Silver":{
@@ -494,6 +527,7 @@
 		Portuguese:"Prata"
                 Korean:"은"
 		Czech:"Stříbro"
+		Ukrainian:"Срібло"
 }
 
 	"Incense":{
@@ -508,6 +542,7 @@
 		Portuguese:"Incenso"
                 Korean:"향"
 		Czech:"Kadidlo"
+		Ukrainian:"Ладан"
 }
 
 	"Ivory":{
@@ -517,6 +552,7 @@
 		Russian:"Слоновая кость"
                 Korean:"상아"
 		Czech:"Slonovina"
+		Ukrainian:"Слонова кістка"
 }
 
 	"Silk":{
@@ -531,6 +567,7 @@
 		Portuguese:"Seda"
                 Korean:"실크"
 		Czech:"Hedvábí"
+		Ukrainian:"Шовк"
 }
 
 	"Spices":{
@@ -545,6 +582,7 @@
 		Portuguese:"Especiarias"
                 Korean:"향신료"
 		Czech:"Koření"
+		Ukrainian:"Спеції"
 }
 
 	"Wine":{
@@ -559,6 +597,7 @@
 		Portuguese:"Vinho"
                 Korean:"와인"
 		Czech:"Víno"
+		Ukrainian:"Вино"
 }
 
 	"Sugar":{
@@ -573,6 +612,7 @@
 		Portuguese:"Açucar"
                 Korean:"설탕"
 		Czech:"Cukr"
+		Ukrainian:"Цукор"
 }
 
 	"Marble":{
@@ -587,6 +627,7 @@
 		Portuguese:"Mármore"
                 Korean:"대리석"
 		Czech:"Mramor"
+		Ukrainian:"Мармур"
 }
 
 	"Pearls":{
@@ -601,6 +642,7 @@
 		Portuguese:"Pérolas"
                 Korean:"진주"
 		Czech:"Perly"
+		Ukrainian:"Перли"
 }
 
 	"Whales":{
@@ -615,6 +657,7 @@
 		Portuguese:"Baleias"
                 Korean:"고래"
 		Czech:"Velryby"
+		Ukrainian:"Кити"
 }
 
 	"Copper":{
@@ -629,6 +672,7 @@
 		Portuguese:"Cobre"
                 Korean:"구리"
 		Czech:"Měď"
+		Ukrainian:"Мідь"
 }
 
 	"Cocoa":{
@@ -643,6 +687,7 @@
 		Portuguese:"Cacau"
                 Korean:"코코아"
 		Czech:"Kakao"
+		Ukrainian:"Какао"
 }
 
 	"Crab":{
@@ -657,6 +702,7 @@
 		Portuguese:"Caranguejos"
                 Korean:"게"
 		Czech:"Krab"
+		Ukrainian:"Краб"
 }
 
 	"Citrus":{
@@ -671,6 +717,7 @@
 		Portuguese:"Cítrico"
                 Korean:"감귤류"
 		Czech:"Citrusy"
+		Ukrainian:"Цитрус"
 }
 
 	"Truffles":{
@@ -685,6 +732,7 @@
 		Portuguese:"Trufas"
                 Korean:"송로 버섯"
 		Czech:"Lanýže"
+		Ukrainian:"Трюфелі"
 }
 
 ///////// Tile improvements
@@ -701,6 +749,7 @@
 		Portuguese:"Fazenda"
                 Korean:"농장"
 		Czech:"Farma"
+		Ukrainian:"Ферма"
 }
 
 	"Lumber mill":{
@@ -715,6 +764,7 @@
 		Portuguese:"Serralheria"
                 Korean:"목재공장"
 		Czech:"Pila"
+		Ukrainian:"Лісопилка"
 }
 
 	"Mine":{
@@ -729,6 +779,7 @@
 		Portuguese:"Mina"
                 Korean:"광산"
 		Czech:"Důl"
+		Ukrainian:"Шахта"
 }
 
 	"Trading post":{
@@ -743,6 +794,7 @@
 		Portuguese:"Posto de comércio"
                 Korean:"무역소",
 		Czech:"Obchodní stanice"
+		Ukrainian:"Торговий пост"
 }
 
 	"Camp":{
@@ -757,6 +809,7 @@
 		Portuguese:"Campo"
                 Korean:"캠프"
 		Czech:"Tábor"
+		Ukrainian:"Табір"
 }
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
@@ -770,6 +823,7 @@
 		Portuguese:"Poço de petróleo"
                 Korean:"유정"
 		Czech:"Ropný vrt"
+		Ukrainian:"Нафтова свердловина"
 }
 	"Pasture":{
 		Italian:"Pascolo"
@@ -783,6 +837,7 @@
 		Portuguese:"Pasto"
                 Korean:"목장"
 		Czech:"Pastvina"
+		Ukrainian:"Вигін"
 }
 	"Plantation":{
 		Italian:"Piantagione"
@@ -796,6 +851,7 @@
 		Portuguese:"Plantação"
                 Korean:"재배원"
 		Czech:"Plantáž"
+		Ukrainian:"Плантація"
 }
 	"Quarry":{
 		Italian:"Cava"
@@ -809,6 +865,7 @@
 		Portuguese:"Pedreira"
                 Korean:"채석장"
 		Czech:"Lom"
+		Ukrainian:"Кар’єр"
 }
 	"Fishing Boats":{
 		Italian:"Chiatta"
@@ -822,6 +879,7 @@
 		Russian:"Рыбацкие лодки"
                 Korean:"낚싯배"
 		Czech:"Rybářské lodě"
+		Ukrainian:"Рибальські човни"
 }
 
 	"Road":{
@@ -836,6 +894,7 @@
 		Portuguese:"Estrada"
                 Korean:"도로"
 		Czech:"Cesta"
+		Ukrainian:"Дорога"
 }
 
 	"Remove Road":{
@@ -845,6 +904,7 @@
 		Russian:"Убрать дорогу"
                 Korean:"도로 제거"
 		Czech:"Odstranit cestu"
+		Ukrainian:"Видалити дорогу"
 }
 
 	"Railroad":{
@@ -859,6 +919,7 @@
 		Portuguese:"Estrada de ferro"
                 Korean:"철도"
 		Czech:"Železnice"
+		Ukrainian:"Колія"
 }
 
 	"Remove Railroad":{
@@ -868,6 +929,7 @@
 		Russian:"Убрать железную дорогу"
                 Korean:"철도 제거"
 		Czech:"Odstranit železnici"
+		Ukrainian:"Прибрати колію"
 }
 
 	"Remove Forest":{
@@ -881,6 +943,7 @@
 		German:"Wald abholzen"
                 Korean:"숲 제거"
 		Czech:"Vykácet les"
+		Ukrainian:"Вирубати ліс"
 }
 
 	"Remove Jungle":{
@@ -894,6 +957,7 @@
 		German:"Dschungel abholzen"
                 Korean:"정글 제거"
 		Czech:"Vykácet džungli"
+		Ukrainian:"Вирубати хащі"
 }
 
 	"Remove Marsh":{
@@ -907,6 +971,7 @@
 		German:"Moor trockenlegen"
                 Korean:"습지 제거"
 		Czech:"Odstranit bažinu"
+		Ukrainian:"Висушити болото"
 }
 
 	"Ancient ruins":{
@@ -921,13 +986,14 @@
 		Dutch:"Oude ruïnes"
                 Korean:"고대 유적"
 		Czech:"Starověké zříceniny"
+		Ukrainian:"Стародавні руїни"
 }
 
 	"City ruins":{
 		Italian:"Rovine cittadine"
 		Romanian:"Oraș în ruină"
 		Spanish:"Ciudad en ruinas"
-		Simplified_Chinese:"城市遗址"
+		Simplified_Chinese:"城市废墟"
 		German:"Stadtruinen"
 		French:"Ruines"
 		Russian:"Руины города"
@@ -935,6 +1001,7 @@
 		Dutch:"Ruïnes van de stad"
                 Korean:"도시의 폐허"
 		Czech:"Zřiceniny města"
+		Ukrainian:"Руїни міста"
 }
 
 ///////// Great Unit improvements
@@ -951,6 +1018,7 @@
 		Portuguese:"Academia"
                 Korean:"학원"
 		Czech:"Akademie"
+		Ukrainian:"Академія"
 }
 
 	"Landmark":{
@@ -966,6 +1034,7 @@
 		Portuguese:"Edificio emblemático"
                 Korean:"랜드마크",
 		Czech:"Dominanta"
+		Ukrainian:"Визначна пам’ятка"
 }
 
 	"Manufactory":{
@@ -980,6 +1049,7 @@
 		Portuguese:"Fábrica"
                 Korean:"제조소"
 		Czech:"Manufaktura"
+		Ukrainian:"Фабрика"
 }
 
 	"Customs house":{
@@ -994,6 +1064,7 @@
 		Portuguese:"Alfândega"
                 Korean:"세관"
 		Czech:"Celnice"
+		Ukrainian:"Митниця"
 }
 
 ///////// Civ-unique improvements
@@ -1010,6 +1081,7 @@
                 Korean:"인접한 각 Moai에 대해 +1 추가 문화"
 		Czech:"+1 kulturní bod za každý Moai"
 		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
+		Ukrainian:"+1 додаткова Культура за кожну сусідню Moai"
 }
 
 	"Can only be built on Coastal tiles":{
@@ -1017,6 +1089,7 @@
                 Korean:"해안 타일에만 제작 가능"
 		Czech:"Může byt vybudován na pobřežním políčku"
 		Simplified_Chinese:"只能建造在沿海地块"
+		Ukrainian:"Можна побудувати лише на прибрежній плитці"
 }
 
 
@@ -1026,6 +1099,7 @@
 		Russian:"Лагерь варваров"
                 Korean:"야만인 야영지"
 		Czech:"Barbarský tábor"
+		Ukrainian:"Табір варварів"
 	}
 
 }
