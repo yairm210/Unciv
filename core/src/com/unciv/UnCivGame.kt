@@ -65,7 +65,7 @@ class UnCivGame(val version: String) : Game() {
         if(musicFile.exists()){
             music = Gdx.audio.newMusic(musicFile)
             music!!.isLooping=true
-            music!!.volume = 0.4f
+            music!!.volume = 0.4f*settings.musicVolume
             music!!.play()
         }
     }

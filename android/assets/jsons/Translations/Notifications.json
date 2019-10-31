@@ -13,7 +13,7 @@
 		German:"[technologyName] wurde erforscht!"
 		Dutch:"[technologyName] is onderzocht!"
 		Spanish:"¡Investigación de [technologyName] completada!"
-		Simplified_Chinese:"[technologyName]的研究已完成!"
+		Simplified_Chinese:"[technologyName]的研究已完成！"
 		Portuguese:"[technologyName] foi pesquisada!"
 		Japanese:"[technologyName]の研究が完了しました！",
 		Czech:"Výzkum technologie [technologyName] byl dokončen"
@@ -27,7 +27,7 @@
 		German:"Ein Goldenes Zeitalter hat begonnen!"
 		Dutch:"Een gouden eeuw is geariveerd!"
 		Spanish:"¡Has entrado en una edad de oro!"
-		Simplified_Chinese:"你开启了一个黄金时代!"
+		Simplified_Chinese:"你开启了一个黄金时代！"
 		Portuguese:"Voçê entrou em uma idade dourada!"
 		Japanese:"あなたは黄金時代を迎えました！",
 		Czech:"Započal Zlatý věk civilizace!"
@@ -53,7 +53,7 @@
 		French:"Un [greatPerson] est né!"
 		Romanian:"S-a născut un [greatPerson]!"
 		Spanish:"¡Un [greatPerson] ha nacido!"
-		Simplified_Chinese:"一个[greatPerson]已经出现!"
+		Simplified_Chinese:"一个[greatPerson]已经出现！"
 		Portuguese:"Um [greatPerson] nasceu!"
 		German:"Ein [greatPerson] wurde geboren!"
 		Japanese:"[greatPerson]が誕生しました！",
@@ -66,7 +66,7 @@
 		Spanish:"¡Hemos encontrado [civName]!"
 		French:"Nous sommes entrés en contact avec [civName]!"
 		Romanian:"Am descoperit [civName]!"
-		Simplified_Chinese:"我们遇到了[civName]!"
+		Simplified_Chinese:"我们遇到了[civName]！"
 		Portuguese:"Nós encontramos [civName]!"
 		German:"Wir sind auf [civName] getroffen!"
 		Japanese:"[civName]に遭遇しました。",
@@ -96,7 +96,7 @@
 		German:"[cityName] ist gewachsen!"
 		Dutch:"[cityName] is gegroeid!"
 		Spanish:"¡[cityName] ha crecido!"
-		Simplified_Chinese:"[cityName]人口增长!"
+		Simplified_Chinese:"[cityName]人口增长！"
 		Portuguese:"[cityName] Cresceu!"
 		Japanese:"[cityName]が成長しました！",
 		Czech:"Město [cityName] se rozrostlo!"
@@ -110,7 +110,7 @@
 		German:"[cityName] wurde gegründet!"
 		Dutch:"[cityName] is gesticht!"
 		Spanish:"¡[cityName] ha sido fundada!"
-		Simplified_Chinese:"已经建立了城市：[cityName]!"
+		Simplified_Chinese:"已建立城市：[cityName]！"
 		Portuguese:"[cityName] foi fundada!"
 		Japanese:"[cityName]が設立されました！",
 		Czech:"Město [cityName] bylo založeno!"
@@ -124,7 +124,7 @@
 		German:"[cityName] verhungert!"
 		Dutch:"[cityName] verhongerd!"
 		Spanish:"¡[cityName] está muriendo de hambre!"
-		Simplified_Chinese:"[cityName]正在闹饥荒!"
+		Simplified_Chinese:"[cityName]正在闹饥荒！"
 		Portuguese:"[cityName] está morrendo de fome!"
 		Japanese:"[cityName]は飢えています！",
 		Czech:"Ve městě [cityName] začal hladomor"
@@ -138,7 +138,7 @@
 		German:"[construction] wurde in [cityName] fertiggestellt"
 		Dutch:"[construction] is gebouwd in [cityName]"
 		Spanish:"[construction] se ha construido en [cityName]"
-		Simplified_Chinese:"[construction]已经在[cityName]被建造/组建"
+		Simplified_Chinese:"[cityName]已建造/组建[construction]"
 		Portuguese:"o(a) [construction] foi construirdo em [cityName]"
 		Japanese:"[construction]は[cityName]に建てられました",
 		Czech:"[construction] - stavba dokončena ve městě [cityName]"
@@ -148,7 +148,7 @@
 		Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
 		French:"[wonder] a été construit(e) dans un lointain pays"
 		Russian:"[wonder] был построен в далёких землях"
-		Simplified_Chinese:"[wonder]已在遥远的土地上建成",
+		Simplified_Chinese:"[wonder]已在遥远的土地上建成"
 		Czech:"Div světa [wonder] byl vybudován ve vzdálené zemi"
 	}
 
@@ -183,7 +183,7 @@
 		German:"[cityname] hat seine Grenzen erweitert!"
 		Dutch:"[cityname] heeft zijn grenzen uitgebreid!"
 		Spanish:"¡[cityname] ha expandido sus fronteras!"
-		Simplified_Chinese:"[cityname]的边界已经扩张！"
+		Simplified_Chinese:"[cityname]的边界已扩张！"
 		Portuguese:"[cityname] expandiu seus territórios!"
 		Japanese:"[cityname]は国境を拡大しました！",
 		Czech:"Město [cityname] rozšířilo své hranice!"
@@ -199,7 +199,7 @@
 		German:"[cityName] wurde dem Erdboden gleich gemacht!"
 		Dutch:"[cityName] Is totaal verwoest!"
 		Spanish:"¡[cityName] ha sido arrasada hasta los cimientos!"
-		Simplified_Chinese:"[cityName]已被夷为平地!"
+		Simplified_Chinese:"[cityName]已被夷为平地！"
 		Portuguese:"[cityName] foi queimada ás cinzas!"
 		Japanese:"[cityName]は地面に倒れました！",
 		Czech:"Město [cityname] bylo srovnáno se zemí!"
@@ -213,7 +213,7 @@
 		German:"Wir haben die Stadt [cityname] eingenommen!"
 		Dutch:"We hebben de stad [cityname] ingenomen!"
 		Spanish:"¡Hemos conquistado la ciudad de [cityname]!"
-		Simplified_Chinese:"我们已经占领城市[cityname]"
+		Simplified_Chinese:"我们已经占领城市[cityname]！"
 		Portuguese:"Consquistamos a cidade de [cityname]!"
 		Japanese:"[cityname]の街を征服しました！",
 		Czech:"Dobyli jsme město [cityname]!"
@@ -291,7 +291,7 @@
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] zerstört" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft onze [ourUnit] gedood"
 		Spanish:"Un [unit] enemigo ha destruido nuestro [ourUnit]"
-		Simplified_Chinese:"敌方的[unit]杀死了我们的[ourUnit]"
+		Simplified_Chinese:"敌方的[unit]击杀了我们的[ourUnit]"
 		Portuguese:"Um(a) [unit] inimigo(a) destruiu nosso(a) [ourUnit]"
 		Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました",
 		Czech:"Nepřátelská jednotka [unit] zničila naši jednotku [ourUnit]"
@@ -307,7 +307,7 @@
 		Italian:"La città nemica di [cityName] ha distrutto [ourUnit]"
 		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
 		Russian:"Наш [ourUnit] был уничтожен вражеским городом [cityName]"
-		Simplified_Chinese:"敌方城市[cityName]杀死了我们的[ourUnit]",
+		Simplified_Chinese:"敌方城市[cityName]击杀了我们的[ourUnit]",
 		Czech:"Nepřátelské město [cityname] zničilo naši jednotku [ourUnit]"
 	}
 
@@ -379,7 +379,7 @@
 		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt" // Gender sensitive
 		Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
 		Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
-		Simplified_Chinese:"在我们的领土附近发现了1个敌方的[unit]"
+		Simplified_Chinese:"我们的领土附近发现了敌方的[unit]"
 		Portuguese:"Um(a) [unit] foi visto perto de nosso território"
 		Japanese:"私たちの領土の近くに敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena poblíž našeho území"
@@ -393,7 +393,7 @@
 		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt" // Gender sensitive
 		Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
 		Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
-		Simplified_Chinese:"在我们的领土内发现了1个敌方的[unit]"
+		Simplified_Chinese:"我们的领土内发现了敌方的[unit]"
 		Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
 		Japanese:"私たちの領土に敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena na našem území"
@@ -402,7 +402,7 @@
 	"[amount] enemy units were spotted near our territory": {
 		Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
 		German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
-		Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
+		Simplified_Chinese:"我们的领土附近发现了[amount]个敌方单位"
 		French:"[amount] unités ennemies ont été repérées proche de notre territoire"
 		Russian:"[amount] вражеских юнитов было замечено у нашей территории",
 		Czech:"[amount] napřátelských jednotek bylo spatřeno poblíž našeho území"
@@ -411,7 +411,7 @@
 	"[amount] enemy units were spotted in our territory": {
 		Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
 		German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
-		Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
+		Simplified_Chinese:"我们的领土内发现了[amount]个敌方单位"
 		French:"[amount] unités ennemies ont été repérées sur notre territoire"
 		Russian:"[amount] вражеских юнитов было замечено на нашей территории",
 		Czech:"[amount] nepřátelských jednotek bylo spatřeno na našem území"
@@ -443,7 +443,7 @@
 		Italian:"Abbiamo distrutto un accampamento barbaro e recuperato [goldAmount] Oro!"
 		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
 		Russian:"Мы разгромили лагерь варваров и нашли [goldAmount] золота!"
-		Simplified_Chinese:"我们摧毁蛮族营地获得了[goldAmount]金钱！",
+		Simplified_Chinese:"我们摧毁蛮族营地并获得了[goldAmount]金钱！"
 		Czech:"Zneškodnili jsme barbarský tábor a získali [goldAmount] zlata"
 	}
 
@@ -531,7 +531,7 @@
 		German: "[unit] hat die Erkundung abgeschlossen."
 		French:"[unit] a fini d'explorer"
 		Russian:"[unit] завершил исследование местности."
-		Simplified_Chinese:"[unit]已完成了探索。",
+		Simplified_Chinese:"[unit]已完成探索。"
 		Czech:"Jednotka [unit] dokončila průzkum."
 	}
 
@@ -540,7 +540,7 @@
 		German:"[unit] hat keine Arbeit mehr."
 		French:"[unit] n'a rien à faire"
 		Russian:"[unit] завершил все доступные работы."
-		Simplified_Chinese:"[unit]处于空闲。",
+		Simplified_Chinese:"[unit]处于闲置状态。"
 		Czech:"Jednotka [unit] nemá nic dalšího na práci."
 	}
 
@@ -548,7 +548,7 @@
 		Italian:"Stai perdendo il controllo di [name]."
 		French:"Vous perdez le contrôle de [name]"
 		Russian:"Вы теряете влияние на [name]."
-		Simplified_Chinese:"你已经失去了和[name]的脆弱友谊。",
+		Simplified_Chinese:"您正在失去与[name]的脆弱友谊。"
 		Czech:"Ztratili jsme přátelství s městským státem [name]."
 	}
 
@@ -556,7 +556,7 @@
 		Italian:"Non sei più amico di [name]!"
 		French:"Vous et [name] n'êtes plus amis!"
 		Russian:"Вы и [name] больше не друзья!"
-		Simplified_Chinese:"你和[name]不再是朋友了！",
+		Simplified_Chinese:"您与[name]不再是朋友了！"
 		Czech:"Naše říše a městský stát [name] už nejsme nadále přátelé!"
 	}
 
@@ -564,7 +564,7 @@
 		Italian:"L'alleanza con [name] si sta sfaldando."
 		French:"Votre alliance avec [name] est vacillante."
 		Russian:"Ваш союз с [name] заканчивается."
-		Simplified_Chinese:"你和[name]的盟友关系正日薄西山。",
+		Simplified_Chinese:"您与[name]的盟友关系正日薄西山。"
 		Czech:"Naše aliance s městským státem [name] slábne."
 	}
 
@@ -572,7 +572,7 @@
 		Italian:"Non sei più alleato con [name]!"
 		French:"Vous et [name] n'êtes plus alliés!"
 		Russian:"Вы и [name] больше не союзники!"
-		Simplified_Chinese:"你和[name]不再是盟友了！",
+		Simplified_Chinese:"您与[name]不再是盟友了！"
 		Czech:"Naše říše a městský stát [name] už není v alianci!"
 	}
 
@@ -580,35 +580,35 @@
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
 		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
 		Russian:"[civName] передал нам в дар [untiName] около города [cityName]!"
-		Simplified_Chinese:"[civName]将[untiName](出现在[cityName]附近)赠予我们！",
+		Simplified_Chinese:"[civName]将[cityName]附近的[untiName]赠予我们！"
 		Czech:"Civilizace [civName] nám darovala jednotku [untiName] poblíž města [untiName]"
 	}
 
 	"[civName] has denounced us!":{
 		Italian:"[civName] ci ha denunciati pubblicamente!"
 		Russian:"[civName] публично осудил нас!"
-		Simplified_Chinese:"真是不知死活！[civName]竟然敢谴责我们！",
+		Simplified_Chinese:"[civName]谴责了我们！"
 		Czech:"Civilizace [civName] nás odsoudila!"
 	}
 
 	"[cityName] has been connected to your capital!":{
 		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
-		Simplified_Chinese:"[cityName]与你的首都的连接已经建立！"
+		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
 	}
 
 	// Trade
 	"[civName] has accepted your trade request":{
 		Italian:"[civName] ha accettato la nostra offerta commerciale."
 		Russian:"[civName] принимает ваше торговое предложение"
-		Simplified_Chinese:"[civName]接受了你的贸易请求",
+		Simplified_Chinese:"[civName]接受了您的贸易请求"
 		Czech:"Civilizace [cityName] přijala naši obchodní nabídku"
 	}
 
 	"[civName] has denied your trade request":{
 		Italian:"[civName] ha rifiutato la nostra offerta commerciale."
 		Russian:"[civName] отклонил ваше торговое предложение"
-		Simplified_Chinese:"[civName]否决了你的贸易请求",
+		Simplified_Chinese:"[civName]拒绝了您的贸易请求"
 		Czech:"Civilizace [cityName] zamítla naši obchodní nabídku"
 	}
 
@@ -627,7 +627,7 @@
 		Italian:"Un nostro accordo con [nation] è terminato."
 		French:"Un de nos échanges avec [nation] a pris fin"
 		Russian:"Торговая сделка с [nation] завершилась"
-		Simplified_Chinese:"我们与[nation]的贸易已经结束",
+		Simplified_Chinese:"我们与[nation]的一项贸易已经结束",
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] je u konce"
 	}
 
@@ -635,7 +635,7 @@
 		Italian:"Un nostro accordo con [nation] è stato interrotto."
 		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
 		Russian:"Торговая сделка с [nation] была завершена досрочно"
-		Simplified_Chinese:"我们与[nation]的贸易已被消减",
+		Simplified_Chinese:"我们与[nation]的贸易已被削减"
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] se blíží ke konci"
 	}
 

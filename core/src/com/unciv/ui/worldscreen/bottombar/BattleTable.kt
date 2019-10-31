@@ -110,8 +110,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 else listOf()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
-            if (attackerModifiers.size > i) add(attackerModifiers[i]).actor.setFontSize(14) else add()
-            if (defenderModifiers.size > i) add(defenderModifiers[i]).actor.setFontSize(14) else add()
+            if (attackerModifiers.size > i) add(attackerModifiers[i].toLabel(fontSize = 14)) else add()
+            if (defenderModifiers.size > i) add(defenderModifiers[i].toLabel(fontSize = 14)) else add()
             row().pad(2f)
         }
 

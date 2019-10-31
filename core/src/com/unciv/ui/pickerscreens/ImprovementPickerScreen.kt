@@ -58,7 +58,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
                     && improvement.name!=RoadStatus.Railroad.name && !improvement.name.startsWith("Remove"))
                 labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
-            group.add(labelText.toLabel().setFontColor(Color.WHITE)).pad(10f)
+            group.add(labelText.toLabel()).pad(10f)
 
             group.touchable = Touchable.enabled
             group.onClick {

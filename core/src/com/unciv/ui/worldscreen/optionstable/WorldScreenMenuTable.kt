@@ -13,7 +13,6 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -108,7 +107,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             copyGameIdButton.actor.disable()
 
         multiplayerPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button").row()
-        val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
+        val badGameIdLabel = "".toLabel(Color.RED)
         badGameIdLabel.isVisible = false
         multiplayerPopup.addButton("Join Game") {
             val gameId = Gdx.app.clipboard.contents

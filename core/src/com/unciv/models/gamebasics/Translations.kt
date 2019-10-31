@@ -4,19 +4,27 @@ import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UnCivGame
 import java.util.*
 
-class Translations : HashMap<String, HashMap<String, String>>(){
+class TranslationEntry(val entry:String) : HashMap<String, String>(){
+    /** For memory performance on .tr(), which was atrociously memory-expensive */
+    var entryWithShortenedSquareBrackets =""
+}
+
+class Translations : HashMap<String, TranslationEntry>(){
 
     fun add(json:String){
         val jsonValue = JsonReader().parse(json)!!
 
         var currentEntry = jsonValue.child
         while(currentEntry!=null){
-            val entryMap = HashMap<String,String>()
-            this[currentEntry.name!!]=entryMap
+            val currentEntryName = currentEntry.name!!
+            val translationEntry = TranslationEntry(currentEntryName)
+            this[currentEntryName]=translationEntry
+            if(currentEntryName.contains('['))
+                translationEntry.entryWithShortenedSquareBrackets=currentEntryName.replace(squareBraceRegex,"[]")
 
             var currentLanguage = currentEntry.child
             while(currentLanguage!=null){
-                entryMap[currentLanguage.name!!]=currentLanguage.asString()
+                translationEntry[currentLanguage.name!!]=currentLanguage.asString()
                 currentLanguage = currentLanguage.next
             }
             currentEntry = currentEntry.next
@@ -34,8 +42,12 @@ class Translations : HashMap<String, HashMap<String, String>>(){
 
     fun getLanguages(): List<String> {
         val toReturn =  mutableListOf<String>()
-        toReturn.addAll(values.flatMap { it.keys }.distinct())
-        toReturn.remove("Japanese")
+
+        for(value in values)
+            for(key in keys)
+                if(!toReturn.contains(key)) toReturn.add(key)
+
+        toReturn.remove("Japanese") // These were for tests but were never actually seriously translated
         toReturn.remove("Thai")
         return toReturn
     }
@@ -56,7 +68,12 @@ class Translations : HashMap<String, HashMap<String, String>>(){
 }
 
 val squareBraceRegex = Regex("\\[(.*?)\\]") // we don't need to allocate different memory for this every time we .tr()
+
+val eitherSquareBraceRegex=Regex("\\[|\\]")
+
 fun String.tr(): String {
+
+    // THIS IS INCREDIBLY INEFFICIENT and causes loads of memory problems!
     if(contains("[")){ // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
@@ -64,7 +81,7 @@ fun String.tr(): String {
          * Well, not all languages are like English. So say I want to say "work on Library has completed in Akkad",
          * but in a completely different language like Japanese or German,
          * It could come out "Akkad hast die worken onner Library gerfinishen" or whatever,
-         * basically, the order of the words in the sentance is not guaranteed.
+         * basically, the order of the words in the sentence is not guaranteed.
          * So to translate this, I give a sentence like "work on [building] has completed in [city]"
          * and the german can put those placeholders where he wants, so  "[city] hast die worken onner [building] gerfinishen"
          * The string on which we call tr() will look like "work on [library] has completed in [Akkad]"
@@ -72,32 +89,32 @@ fun String.tr(): String {
          */
 
         val translationStringWithSquareBracketsOnly = replace(squareBraceRegex,"[]")
-        val translationStringUntilFirstSquareBracket = substringBefore('[')
-        val englishTranslationPlaceholder = GameBasics.Translations.keys
-                .firstOrNull {
-                    // this is to filter out obvious non-candidates, which is most of them, before we start using the "heavy lifting" of the regex replacement
-                    it.startsWith(translationStringUntilFirstSquareBracket)
-                        && it.replace(squareBraceRegex,"[]") == translationStringWithSquareBracketsOnly }
-        if(englishTranslationPlaceholder==null ||
-                !GameBasics.Translations[englishTranslationPlaceholder]!!.containsKey(UnCivGame.Current.settings.language)){
-            // Translation placeholder doesn't exist for this language
-            return this.replace("[","").replace("]","")
+
+        val translationEntry = GameBasics.Translations.values
+                .firstOrNull { translationStringWithSquareBracketsOnly == it.entryWithShortenedSquareBrackets }
+
+        if(translationEntry==null ||
+                !translationEntry.containsKey(UnCivGame.Current.settings.language)){
+            // Translation placeholder doesn't exist for this language, default to English
+            return this.replace(eitherSquareBraceRegex,"")
         }
 
-        val termsInMessage = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toMutableList()
-        val termsInTranslationPlaceholder = squareBraceRegex.findAll(englishTranslationPlaceholder).map { it.value }.toMutableList()
+        val termsInMessage = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+        val termsInTranslationPlaceholder = squareBraceRegex.findAll(translationEntry.entry).map { it.value }.toList()
         if(termsInMessage.size!=termsInTranslationPlaceholder.size)
-            throw Exception("Message $this has a different number of terms than the placeholder $englishTranslationPlaceholder!")
+            throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
-        var languageSpecificPlaceholder = GameBasics.Translations[englishTranslationPlaceholder]!![UnCivGame.Current.settings.language]!!
-        for(i in 0 until termsInMessage.size){
+        var languageSpecificPlaceholder = translationEntry[UnCivGame.Current.settings.language]!!
+        for(i in termsInMessage.indices){
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
         }
         return languageSpecificPlaceholder.tr()
     }
+
     if(contains("{")){ // sentence
         return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
+
     val translation = GameBasics.Translations.get(this, UnCivGame.Current.settings.language) // single word
     return translation
 }

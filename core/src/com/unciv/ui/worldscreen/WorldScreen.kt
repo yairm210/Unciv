@@ -260,10 +260,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         if (viewingCiv.tech.currentTechnology() == null) {
             val buttonPic = Table()
-            buttonPic.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
-                    .tint(colorFromRGB(7, 46, 43))
+            buttonPic.background = ImageGetter.getTableBackground(colorFromRGB(7, 46, 43))
             buttonPic.defaults().pad(20f)
-            buttonPic.add("{Pick a tech}!".toLabel().setFontColor(Color.WHITE).setFontSize(30))
+            buttonPic.add("{Pick a tech}!".toLabel(Color.WHITE,30))
             techButtonHolder.add(buttonPic)
         }
         else {

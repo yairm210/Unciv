@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.toLabel
 
 class ExpanderTab(private val title:String,skin: Skin): Table(skin){
     private val toggle = Table(skin) // the show/hide toggler
@@ -17,7 +17,7 @@ class ExpanderTab(private val title:String,skin: Skin): Table(skin){
         toggle.defaults().pad(10f)
         toggle.touchable= Touchable.enabled
         toggle.background(ImageGetter.getBackground(ImageGetter.getBlue()))
-        toggle.add("+ $title").apply { actor.setFontSize(24) }
+        toggle.add("+ $title".toLabel(fontSize = 24))
         toggle.onClick {
             if(isOpen) close()
             else open()
@@ -30,7 +30,7 @@ class ExpanderTab(private val title:String,skin: Skin): Table(skin){
     fun close(){
         if(!isOpen) return
         toggle.clearChildren()
-        toggle.add("- $title").apply { actor.setFontSize(24) }
+        toggle.add("- $title".toLabel(fontSize = 24))
         tab.clear()
         isOpen=false
     }
@@ -38,7 +38,7 @@ class ExpanderTab(private val title:String,skin: Skin): Table(skin){
     fun open(){
         if(isOpen) return
         toggle.clearChildren()
-        toggle.add("+ $title").apply { actor.setFontSize(24) }
+        toggle.add("+ $title".toLabel(fontSize = 24))
         tab.add(innerTable)
         isOpen=true
     }

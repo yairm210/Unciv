@@ -302,7 +302,7 @@
 		Italian:"Può entrare nell'oceano solo dopo aver scoperto l'Astronomia"
 		French:"Ne peut pas aller sur les tuiles océan avant la découverte de l'Astronomie"
 		Romanian:"Nu poate accesa celule ocean înainte de descoperirea Astronomiei"
-		Simplified_Chinese:"不能进入海洋直到掌握天文学"
+		Simplified_Chinese:"研究出天文学之前不能进入海洋地块"
 		Portuguese:"Não pode entrar o terreno 'oceano' até a pesquisa Astronomia" // if you want you can take away the 'a pesquisa'
 		German:"Ozeanfelder können nicht befahren werden bis Astronomie erforscht ist"
 		Russian:"Для выхода в океан нужно открыть Астрономию"
@@ -314,7 +314,7 @@
 		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
 		French:"Peut créer des améliorations de ressources maritimes"
 		Romanian:"Poate crea îmbunătățiri pe resurse acvatice"
-		Simplified_Chinese:"可在水域资源上建造设施(工船将被消耗掉)"
+		Simplified_Chinese:"可在水上资源建造设施(工船将被消耗掉)"
 		Portuguese:"Pode criar melhorias em recursos aquáticos"
 		German:"Kann Verbesserungen auf Wasserfeldern bauen"
 		Russian:"Может создать улучшения на водных ресурсах"
@@ -345,7 +345,7 @@
 		Italian:"Non può entrare nelle caselle oceaniche"
 		French:"Ne peut pas aller sur les tuiles océan"
 		Romanian:"Nu poate accesa celule ocean"
-		Simplified_Chinese:"不能进入海洋"
+		Simplified_Chinese:"不能进入海洋地块"
 		Portuguese:"Não pode entrar o terreno 'oceano' "
 		German:"Ozeanfelder können nicht befahren werden"
 		Russian:"Не может выйти в океан"
@@ -456,7 +456,7 @@
 		French:"Catapulte"
 		Romanian:"Catapultă"
 		Spanish:"Catapulta"
-		Simplified_Chinese:"石弩"
+		Simplified_Chinese:"投石车"
 		Portuguese:"Catapulta"
 		German:"Katapult"
 		Czech:"Katapult"
@@ -480,7 +480,7 @@
 		Italian:"Ballista"
 		French:"Balliste"
 		Romanian:"Balistă"
-		Simplified_Chinese:"弩炮"
+		Simplified_Chinese:"罗马弩炮"
 		Portuguese:"Balista"
 		German:"Balliste"
 		Russian:"Баллиста"
@@ -625,7 +625,7 @@
 		Italian:"Chu-ko-nu"//same in Italian
 		Romanian:"Chu-ko-nu"
 		Spanish:"Chu-ko-nu"
-		Simplified_Chinese:"诸葛弩"
+		Simplified_Chinese:"诸葛弩兵"
 		Russian:"Чу-ко-ну (арбалет)"
 		//same in German
 		//same in French
@@ -803,7 +803,7 @@
 		French:"Arquebusier"
 		Romanian:"Muschetar"
 		Spanish:"Mosquetero"
-		Simplified_Chinese:"火铳手"
+		Simplified_Chinese:"火枪手"
 		Portuguese:"Soldado com mosquete"
 		Russian:"Стрельцы"
 		German:"Musketschütze"
@@ -815,7 +815,7 @@
 		Italian:"Moschettiere"
 		French:"Mousquetaire"
 		Romanian:"Muschetar"
-		Simplified_Chinese:"火枪手"
+		Simplified_Chinese:"法国火枪手"
 		Portuguese:"Mosqueteiro"
 		Russian:"Мушкетёр"
 		German:"Musketier",
@@ -834,7 +834,7 @@
 		Italian:"Cura [amountHealed] PF quando uccide un'unità nemica"
 		French:"Soigne [amountHealed] dégâts si il tue une unité"
 		Russian:"Восстаналивает [amountHealed] здоровья при уничтожении юнита"
-		Simplified_Chinese:"消灭敌方单位后回复50点损伤",
+		Simplified_Chinese:"消灭敌方单位后回复[amountHealed]点生命值"
 		Czech:"Léčí [amountHealed] zranění pokud zabije jednotku"
 }
 
@@ -907,7 +907,7 @@
 		Italian:"Mitragliatrice Gatling"
 		Romanian:"Mitralieră Gatling"
 		Spanish:"Ametralladora De Plomo"
-		Simplified_Chinese:"加特林"
+		Simplified_Chinese:"加特林机枪"
 		Russian:"Пулемёт Гатлинга"
 		German:"Gatling Kanone"
 		French:"Mitrailleuse Gatling"
@@ -1012,7 +1012,7 @@
 		Italian:"Fante della Grande Guerra"
 		Romanian:"Infanteria Marelui Război"
 		Spanish:"Infanteria de la Gran Guerra"
-		Simplified_Chinese:"早期现代步兵"
+		Simplified_Chinese:"一战步兵"
 		Russian:"Стрелок"
 		German:"Weltkriegs Infanterie"
 		French:"Infanterie de la grande guerre"
@@ -1178,7 +1178,7 @@
 
 	"6 tiles in every direction always visible":{
 		Italian:"6 caselle in ogni direzione sempre visibili"
-		Simplified_Chinese:"6格视野范围内可见"
+		Simplified_Chinese:"全方向6格视野范围"
 		Russian:"Всегда видимы 6 клеток вокруг"
 		Czech:"6 políček ve všech směrech je vždy viditelných"
 }
@@ -1187,7 +1187,7 @@
 		Italian:"Bombardiere della Grande Guerra"
 		Romanian:"Bombardier din Marele Război"
 		Spanish:"Bombardero de la Gran Guerra"
-		Simplified_Chinese:"早期轰炸机"
+		Simplified_Chinese:"一战轰炸机"
 		Russian:"Бомбардировщик"
 		German:"Weltkriegsbomber"
 		French:"Bombardier de la grande guerre"
@@ -1547,7 +1547,7 @@
 	"Bonus for units in 2 tile radius 15%" :{
 		Italian:"15% Bonus per le unità nel raggio di 2 caselle"
 		French:"Bonus de combat +15% pour les unités dans un rayon de 2 cases"
-		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
+		Simplified_Chinese:"周围2格地块内所有我方陆军单位+15%战斗力"
 		Russian:"Бонус к атаке юнитам в радиусе 2-х клеток"
 		Czech:"Bonus pro bojové jednotky v okruhu 2 políček 15%"
 }
@@ -1566,7 +1566,7 @@
 		Italian:" O "
 		Spanish:" O "
 		Romanian:" SAU "
-		Simplified_Chinese:" 或 "
+		Simplified_Chinese:"或"
 		Portuguese:" OR "
 		Russian:" ИЛИ "
 		German:" ODER "
@@ -2078,7 +2078,7 @@
 
 	"Medic":{
 		Italian:"Medico I"
-		Simplified_Chinese:"治疗I"
+		Simplified_Chinese:"治疗I级"
 		French:"Médecin"
 		Russian:"Медик"
 		Czech:"Zdravotník I"
@@ -2094,7 +2094,7 @@
 
 	"Medic II":{
 		Italian:"Medico II"
-		Simplified_Chinese:"治疗II"
+		Simplified_Chinese:"治疗II级"
 		French:"Médecin II"
 		Russian:"Медик II",
 		Czech:"Zdravotník II"
@@ -2112,7 +2112,7 @@
 		Italian:"Puntamento aereo I"
 		French:"Visée I (air)"
 		Russian:"Прицеливание I (воздух)"
-		Simplified_Chinese:"空·定位I级",
+		Simplified_Chinese:"空中定位I级",
 		Czech:"Míření I (vzduch)"
 }
 
@@ -2120,7 +2120,7 @@
 		Italian:"Puntamento aereo II"
 		French:"Visée II (air)"
 		Russian:"Прицеливание II (воздух)"
-		Simplified_Chinese:"空·定位II级",
+		Simplified_Chinese:"空中定位II级",
 		Czech:"Míření II (vzduch)"
 }
 
@@ -2128,7 +2128,7 @@
 		Italian:"Puntamento aereo III"
 		French:"Visée III (air)"
 		Russian:"Прицеливание II (воздух)"
-		Simplified_Chinese:"空·定位III级",
+		Simplified_Chinese:"空中定位III级",
 		Czech:"Míření III (vzduch)"
 }
 
@@ -2144,7 +2144,7 @@
 		Italian:"L'unità guarisce ad ogni turno, anche quando esegue un'azione "
 		French:"L'unité se soignera à chaque tour, même si elle effectue une action"
 		Russian:"Юнит будет восстанавливаться каждый ход, даже при действии"
-		Simplified_Chinese:"每回合回复(包括执行指令后)"
+		Simplified_Chinese:"每回合回复生命值(包括执行指令后)"
 		Czech:"Jednotka bude léčená každé kolo, i když provádí nějakou akci"
 }
 
@@ -2176,7 +2176,7 @@
 		Italian:"Può eseguire un'Intercettazione extra per turno"
 		French:"1 interception supplémentaire par tour"
 		Russian:"+1 Перехват за ход"
-		Simplified_Chinese:"1额外拦截次数/回合"
+		Simplified_Chinese:"+1额外拦截次数/回合"
 		Czech:"1 extra zabránění útoku za tah navíc"
 }
 
@@ -2192,7 +2192,7 @@
 		Italian:"+[bonusAmount]% Forza nella distruzione delle difese aeree"
 		French:"Bonus de combat aérien +[bonusAmount]%"
 		Russian:"Бонус +[bonusAmount]% при выполнении отвлекающего манёвра (воздух)"
-		Simplified_Chinese:"+[bonusAmount]%战斗力(进行空中游猎时)",
+		Simplified_Chinese:"空中游猎时+[bonusAmount]%战斗力"
 		Czech:"Bonus při provádění leteckého čištění [bonusAmount]%"
 }
 
@@ -2224,7 +2224,7 @@
 		Italian:"+[bonusAmount]% Bonus d'intercettazione"
 		French:"Bonus d'interception +[bonusAmount]%"
 		Russian:"Бонус при перехвате +[bonusAmount]%"
-		Simplified_Chinese:"+[bonusAmount]%战斗力(拦截敌方飞机时)",
+		Simplified_Chinese:"拦截敌方飞机时+[bonusAmount]%战斗力",
 		Czech:"Bonus při zachycení útoku [bonusAmount]%"
 }
 

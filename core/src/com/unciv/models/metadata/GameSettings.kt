@@ -22,7 +22,6 @@ class GameSettings {
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = false
 
-    var userName:String=""
     var userId = ""
 
     fun save(){

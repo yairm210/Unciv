@@ -11,13 +11,14 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlin.concurrent.thread
 
 class Language(val language:String){
     val percentComplete:Int
     init{
-        val availableTranslations = GameBasics.Translations.filter { it.value.containsKey(language) }
+        val availableTranslations = GameBasics.Translations.count() { it.value.containsKey(language) }
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size)
+        else percentComplete = (availableTranslations*100 / GameBasics.Translations.size)
     }
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
@@ -117,7 +118,6 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         innerTable.add("Version".toLabel())
         innerTable.add(UnCivGame.Current.version.toLabel()).row()
 
-        addUsernameAndId(innerTable)
 
         val scrollPane = ScrollPane(innerTable, skin)
         scrollPane.setOverscroll(false, false)
@@ -132,18 +132,6 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         UnCivGame.Current.worldScreen.shouldUpdate = true
     }
 
-    private fun addUsernameAndId(innerTable: PopupTable) {
-        innerTable.add("Username".toLabel())
-        val userNameTextField = TextField(UnCivGame.Current.settings.userName, skin)
-        userNameTextField.addListener {
-            UnCivGame.Current.settings.userName = userNameTextField.text
-            UnCivGame.Current.settings.save()
-            true
-        }
-        innerTable.add(userNameTextField).row()
-
-
-    }
 
     private fun addSoundEffectsVolumeSlider(innerTable: PopupTable) {
         innerTable.add("Sound effects volume".tr())
@@ -183,15 +171,20 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             innerTable.add(errorTable).colspan(2).row()
 
             downloadMusicButton.onClick {
-                try{
-                    val file = DropBox().downloadFile("/Music/thatched-villagers.mp3")
-                    musicLocation.write(file,false)
-                    update()
-                    UnCivGame.Current.startMusic()
-                }
-                catch (ex:Exception){
-                    errorTable.clear()
-                    errorTable.add("Could not download music!".toLabel().setFontColor(Color.RED))
+                // So the whole game doesn't get stuck while downloading the file
+                thread {
+                    try {
+                        downloadMusicButton.disable()
+                        errorTable.clear()
+                        errorTable.add("Downloading...".toLabel())
+                        val file = DropBox().downloadFile("/Music/thatched-villagers.mp3")
+                        musicLocation.write(file, false)
+                        update()
+                        UnCivGame.Current.startMusic()
+                    } catch (ex: Exception) {
+                        errorTable.clear()
+                        errorTable.add("Could not download music!".toLabel(Color.RED))
+                    }
                 }
             }
         }
@@ -274,8 +267,11 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                // Sometimes the "changed" is triggered even when we didn't choose something that isn't the
                 selectedLanguage = languageSelectBox.selected.language
-                selectLanguage()
+
+                if(selectedLanguage!=UnCivGame.Current.settings.language )
+                    selectLanguage()
             }
         })
 
