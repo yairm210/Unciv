@@ -10,7 +10,7 @@
 
 		startIntroPart1: "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
 		startIntroPart2: "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
-		
+
 		declaringWar:"The demon wants the blood of soldiers!",
 		attacked:"Oh well, I presume you know what you're doing.",
 		defeated:"It is over. Perhaps now I shall have peace, at last.",
@@ -332,39 +332,39 @@
 	},
 	{
 		name:"America",
-    translatedName:"",
-		leaderName:"George Washington",
-		adjective:["American"],
+    translatedName:"Америка",
+		leaderName:"Джордж Вашингтон",
+		adjective:["Американський"],
 		preferredVictoryType:"Scientific",
 
-		startIntroPart1: "Welcome President Washington! You lead the industrious American civilization! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. They lack only a leader to help them fulfill their promise."
-		startIntroPart2: "President Washington, can you lead the American people to greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "Ласкаво просимо, президент Вашингтон! Ви керуєте працьовитою американською цивілізацією! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. Їм не вистачає лише керівника, який допоможе їм виконати свої обіцянки."
+		startIntroPart2: "Президент Вашингтон, чи можете ви привести американський народ до величі? Чи можете ви побудувати цивілізацію, яка витримає випробування часом?"
 
-		declaringWar:"Your wanton aggression leaves us no choice. Prepare for war!"
+		declaringWar:"Ваша безглузда агресія не залишає нам іншого вибору. Готуйся до війни!"
 		attacked:"You have mistaken our love of peace for weakness. You shall regret this!"
-		defeated:"The day...is yours. I hope you will be merciful in your triumph."
-		introduction:"The people of the United States of America welcome you."
+		defeated:"День... твій. Сподіваюсь, ви будете милосердними у своєму торжестві."
+		introduction:"Люди Сполучених Штатів Америки вітають вас."
 
-		neutralHello:"Good day."
-		neutralLetsHearIt:["Proceed!","Go ahead.","I'm listening."]
-		neutralNo:["Of course not!","No."]
-		neutralYes:["Very well.","Alright.","Certainly!"]
+		neutralHello:"Гарного дня."
+		neutralLetsHearIt:["Продовжуйте!",Не затримуйся.","Я слухаю."]
+		neutralNo:["Звичайно що ні!","Ні."]
+		neutralYes:["Дуже добре.","Домовились.","Авжеж!"]
 
-		hateHello:"Well?"
-		hateLetsHearIt:["Go on.","You were saying?"]
-		hateNo:["Certainly not.","We decline!","You cannot be serious."]
-		hateYes:["Oh, very well.","I suppose I must.","Agreed.","Alright."]
+		hateHello:"Ну?"
+		hateLetsHearIt:["Продовжуйте.","Ви говорили?"]
+		hateNo:["Звичайно, ні.","Ми відповляємося!","Ви не можете бути серйозними."]
+		hateYes:["О, дуже добре.","Я гадаю, що треба.","Домовились.","Добре.","Гаразд","Згоден."]
 
-		afterPeace:"We welcome peace with your great nation. I pray that no future misunderstanding will come between our two peoples."
-		tradeRequest:"Is the following trade of interest to you?"
+		afterPeace:"Ми вітаємо мир з вашою великою нацією. Я молюся, щоб між нашими двома народами не виникло майбутніх непорозумінь."
+		tradeRequest:"Чи цікавить вас торгівля?"
 
 		outerColor:[ 28,51,119],
 		innerColor:[255,255,255],
-		uniqueName:"Manifest Destiny"
-		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",
-		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
-			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
-			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+		uniqueName:"Явне призначення"
+		unique:"Усі наземні підрозділи отримують +1 до зору, а також ви маєте знижку при купівлі тайлів",
+		cities:["Вашингтон","Нью-Йорк","Бостон","Філадельфія","Атланта","Чикаго","Сіетл","Сан-Франциско","Лос-Анджелес","Х’юстон",
+			"Портленд","Сент-Луїс","Маямі","Ба́ффало","Детройт","Новий Орлеан","Ба́лтимор ","Денвер","Цінціннаті","Даллас","Мемфіс",
+			"Клівленд,"Канзас-Сіті","Сан-Діеґо","Річмонд","Лас-Веґас","Фінікс","Альбукерке","Міннеаполіс","Піттсбурґ"]
 	},
 	{
 		name:"Japan",
