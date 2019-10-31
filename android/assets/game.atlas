@@ -426,7 +426,7 @@ BuildingIcons/Paper Maker
   index: -1
 BuildingIcons/Pentagon
   rotate: false
-  xy: 640, 273
+  xy: 538, 170
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -888,21 +888,21 @@ ImprovementIcons/Quarry
   index: -1
 ImprovementIcons/Railroad
   rotate: false
-  xy: 1048, 374
+  xy: 946, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TileSets/Default/Railroad
   rotate: false
-  xy: 1048, 374
+  xy: 946, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Railroad
   rotate: false
-  xy: 1048, 374
+  xy: 946, 272
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1133,7 +1133,7 @@ OtherIcons/MenuIcon
   index: -1
 OtherIcons/Pentagon
   rotate: false
-  xy: 538, 170
+  xy: 640, 273
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2204,7 +2204,7 @@ TechIcons/Radio
   index: -1
 TechIcons/Railroad
   rotate: false
-  xy: 946, 272
+  xy: 1048, 374
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
