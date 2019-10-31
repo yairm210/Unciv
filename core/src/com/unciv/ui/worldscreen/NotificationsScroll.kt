@@ -5,7 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 import kotlin.math.min
 
 class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(null) {
@@ -28,7 +30,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
 
         notificationsTable.clearChildren()
         for (notification in notifications.toList()) { // toList to avoid concurrency problems
-            val label = notification.text.toLabel().setFontColor(Color.BLACK).setFontSize(14)
+            val label = notification.text.toLabel(Color.BLACK,14)
             val listItem = Table()
 
             listItem.add(ImageGetter.getCircle()

@@ -12,6 +12,7 @@ class GameSettings {
     var tutorialsShown = ArrayList<String>()
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
+    var musicVolume = 0.5f
     var turnsBetweenAutosaves = 1
     var tileSet:String = "FantasyHex"
     var showTutorials: Boolean = true
@@ -21,7 +22,6 @@ class GameSettings {
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = false
 
-    var userName:String=""
     var userId = ""
 
     fun save(){

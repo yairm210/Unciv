@@ -44,7 +44,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     private fun addAirUnitTable() {
-        if (!tileGroup.tileInfo.airUnits.isNotEmpty()) return
+        if (tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
         airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
@@ -52,8 +52,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
-        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel()
-                .setFontColor(secondarycolor).setFontSize(14))
+        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondarycolor,14))
         add(airUnitTable).row()
     }
 
@@ -128,8 +127,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         }
 
         val cityButtonText = city.population.population.toString() + " | " + city.name
-        val label = cityButtonText.toLabel()
-        label.setFontColor(secondaryColor)
+        val label = cityButtonText.toLabel(secondaryColor)
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
 
@@ -182,9 +180,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
         if(cityCurrentConstruction !is SpecialConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
-            val label = turnsToConstruction.toString().toLabel()
-            label.setFontColor(secondaryColor)
-            label.setFontSize(14)
+            val label = turnsToConstruction.toString().toLabel(secondaryColor,14)
             label.pack()
             group.addActor(label)
 

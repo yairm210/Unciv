@@ -1033,7 +1033,7 @@
 		Simplified_Chinese:"此城市将在[turnsToExpansion]回合后扩张"
 		Portuguese:"[turnsToExpansion] turnos até a expansão"
 		Japanese:"[turnsToExpansion]が拡大に変わります",
-		Czech:"[turnsToExpansion] tahů do rozšíření města"
+		Czech:"[turnsToExpansion] tah(y/ů) do rozšíření města"
 }
 
 	"Stopped expansion":{ // if culture is 0
@@ -1061,7 +1061,7 @@
 		Simplified_Chinese:"此城市将在[turnsToPopulation]轮后有1个新市民"
 		Portuguese:"[turnsToPopulation] turnos até um novo residente"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます",
-		Czech:"[turnsToPopulation] tahů do přírůstku populace"
+		Czech:"[turnsToPopulation] tah(y/ů) do přírůstku populace"
 }
 
 	"Food converts to production":{
@@ -1081,7 +1081,7 @@
 		Simplified_Chinese:"此城市将在[turnsToStarvation]轮后失去1个市民"
 		Portuguese:"Perda de população em [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす",
-		Czech:"[turnsToStarvation] tahů do ztráty populace"
+		Czech:"[turnsToStarvation] tah(y/ů) do ztráty populace"
 }
 
 	"Stopped population growth":{
@@ -1105,7 +1105,7 @@
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
 		French:"En révolte pour [numberOfTurns] tours."
 		Russian:"Сопротивление на [numberOfTurns] ходов",
-		Czech:"Občanské nepokoje po dalších [numberOfTurns] tahů"
+		Czech:"Občanské nepokoje ještě [numberOfTurns] tah(y/ů)"
 }
 
 	"Sell for [sellAmount] gold":{ // when selling a building

@@ -113,17 +113,18 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
             for (downloadableMap in folderList.entries) {
                 val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
                 downloadMapButton.onClick {
-                    val mapJsonGzipped = DropBox().downloadFile(downloadableMap.path_display)
-                    if(mapJsonGzipped==""){
+                    try{
+                        val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
+                        val decodedMapJson = Gzip.unzip(mapJsonGzipped)
+                        val mapObject = MapSaver().mapFromJson(decodedMapJson)
+                        MapSaver().saveMap(downloadableMap.name, mapObject)
+                        UnCivGame.Current.setScreen(MapEditorScreen(mapObject))
+                    }
+                    catch(ex:Exception){
                         val couldNotDownloadMapPopup = PopupTable(screen)
                         couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
                         couldNotDownloadMapPopup.addCloseButton()
-                        return@onClick
                     }
-                    val decodedMapJson = Gzip.unzip(mapJsonGzipped)
-                    val mapObject = MapSaver().mapFromJson(decodedMapJson)
-                    MapSaver().saveMap(downloadableMap.name, mapObject)
-                    UnCivGame.Current.setScreen(MapEditorScreen(mapObject))
                 }
                 scrollableMapTable.add(downloadMapButton).row()
             }

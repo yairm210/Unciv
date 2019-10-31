@@ -7,7 +7,10 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 
 class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
     : Table(CameraStageBaseScreen.skin) {
@@ -20,13 +23,10 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
 
         val titleTable = Table()
         titleTable.add(ImageGetter.getNationIndicator(nation, 50f)).pad(10f)
-        titleTable.add(nation.getLeaderDisplayName().toLabel()
-                .apply { setFontColor(nation.getInnerColor()); setFontSize(24) })
+        titleTable.add(nation.getLeaderDisplayName().toLabel(nation.getInnerColor(),24))
         innerTable.add(titleTable).row()
 
-        innerTable.add(getUniqueLabel(nation)
-                .apply { setWrap(true);setFontColor(nation.getInnerColor()) })
-                .width(width)
+        innerTable.add(getUniqueLabel(nation).apply { setWrap(true) }).width(width)
         onClick { onClick() }
         touchable = Touchable.enabled
         add(innerTable)
@@ -44,7 +44,7 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
         addUniqueUnitsText(nation, textList)
         addUniqueImprovementsText(nation, textList)
 
-        return textList.joinToString("\n").tr().trim().toLabel()
+        return textList.joinToString("\n").tr().trim().toLabel(nation.getInnerColor())
     }
 
     private fun addUniqueBuildingsText(nation: Nation, textList: ArrayList<String>) {

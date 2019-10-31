@@ -520,3 +520,7 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
 
 
+# Music
+The following music is from https://filmmusic.io
+"Thatched Villagers" by Kevin MacLeod (https://incompetech.com)
+License: CC BY (http://creativecommons.org/licenses/by/4.0/)

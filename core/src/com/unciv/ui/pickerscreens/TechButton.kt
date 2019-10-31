@@ -2,18 +2,17 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.toLabel
 
 class TechButton(techName:String, val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
-    val text= Label("", skin).setFontColor(Color.WHITE).apply { setAlignment(Align.center) }
+    val text= "".toLabel().apply { setAlignment(Align.center) }
 
     init {
         touchable = Touchable.enabled

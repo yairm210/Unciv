@@ -6,47 +6,12 @@ import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import core.java.nativefont.NativeFont
 import core.java.nativefont.NativeFontPaint
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.net.URL
-import java.security.MessageDigest
 
 class Fonts {
+    // caches for memory and time saving
     companion object {
         val characterSetCache = HashMap<String, String>()
         val fontCache = HashMap<String, BitmapFont>()
-    }
-    fun download(link: String,fontForLanguage: String) {
-        if (!Gdx.files.local("fonts").exists())
-            Gdx.files.local("fonts").mkdirs()
-            val input = URL(link).openStream()
-            val output = FileOutputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file())
-            input.use {
-                output.use {
-                    input.copyTo(output)
-                }
-            }
-    }
-    fun getMD5(fontForLanguage: String):String {
-        val sb = StringBuffer("")
-        val md = MessageDigest.getInstance("MD5")
-        if (Gdx.files.local("fonts/$fontForLanguage.ttf").exists()) {
-            md.update(FileInputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file()).readBytes())
-            val b = md.digest()
-            for (i in b) {
-                var d = i.toInt()
-                if (d < 0) d = i + 256
-                if (d < 16) sb.append("0")
-                sb.append(Integer.toHexString(d))
-            }
-            return sb.toString()
-        }
-        return ""
-    }
-    fun containsFont(): Boolean {
-        if (Gdx.files.local("fonts/WenQuanYiMicroHei.ttf").exists())
-            return true
-        return false
     }
 
     fun getCharactersForFont(language:String=""): String {
