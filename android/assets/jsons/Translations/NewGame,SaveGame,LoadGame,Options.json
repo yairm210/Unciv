@@ -891,11 +891,11 @@
 	"Check for idle units":{
 		Italian:"Controlla unità inutilizzate"
 		Simplified_Chinese:"回合结束前查看未行动单位"
-		Portuguese:"Cheque por unidades sem ordens",
+		Portuguese:"Cheque por unidades sem ordens"
 		German: "Untätige Einheiten anzeigen bei Rundenende"
 		French:"Vérifier les unités inactives"
 		Russian:"Найти незанятые юниты"
-    		Korean:"턴이 끝나기 전에 미행동 유닛 보기"
+		Korean:"턴이 끝나기 전에 미행동 유닛 보기"
 		Czech:"Kontrolovat zahálející jednotky"
 		Ukrainian:"Перевіряти неробочі підрозділи"
 }
@@ -950,11 +950,13 @@
 		Italian:"Mostra unità pixel"
 		Simplified_Chinese:"显示像素单位"
 		Ukrainian:"Показати піксельні підрозділи"
+		Czech:"Zobrazit jednotky jako pixely"
 }
 
 	"Show pixel improvements":{
 		Italian:"Mostra miglioramenti pixel"
 		Simplified_Chinese:"显示像素地块设施"
+		Czech:"Zobrazit vylepšení jako pixely"
 }
 
 	"Fontset":{
