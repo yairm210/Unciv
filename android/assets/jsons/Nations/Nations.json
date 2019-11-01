@@ -955,120 +955,46 @@
 		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
 		"Copenhagen","Jonkoping",Boras",]
 	},
-	{    // THIS IS A FROM A MOD and so is the least important!
-	    name:"Philippines",
-		leaderName:"Jose Rizal",
-		adjective:["Filipinos"],
-		startBias:["Coastal"],
-		prefferedVictoryType:"Cultural",
+	{
+	    name:"Austria"
+	        leaderName:"Maria Theresia",
+	        adjective:["Austrian"],
+	        startBias:["Hill"],
+	        preferredVictoryType:"Diplomatic",
+	   
+	        startIntropart1:"Noble and virtuous Queen Maria Theresa, Holy Roman Empress and sovereign of Austria, your people bow to your gracious will. Following the death of your father, King Charles VI, you ascended to the throne of Austria during the time of great instability, but the empty coffers and diminished military did little to dissuade your ambitions. Faced with war almost immediately upon your succession to the throne, you managed to fend off your foes, and in naming your husband, Francis Stephen, co-ruler, assured your place as Empress of the Holy Roman Empire. During your reign, you guided Austria on a new path of reform - strengthening the military, replenishing the treasury, and improving the education system of the kingdom.",
+	        startIntropart2:"Oh great queen, bold and dignified, the time has come for you to rise and guide your kingdom once again. Can you return your people to the height of prosperity and splendor? Will you build a civilization that will stand the test of time?",
+	   
+	        declaringWar:"Shame that it has come this far. But ye wished it so/This was your wish. Next time, be so good, choose your words more wisely.",
+		attacked:"What a fool ye are! Ye will end swiftly and miserably.",
+		defeated:"The world is pitiful! There's no beauty in it, no wisdom. I am almost glad to go.".
+		introduction:"The archduchess of Austria welcomes your Eminence to... Oh let's get this over with! I have a luncheon at four o'clock.",
 		
-		startIntroPart1:"O magnificent Rizal, your people call you to change their world once more. Can you defend this beautiful and tranquil omeland against all manner of foe?" 
-		startIntroPart2:"Can you forge a place for the Philippine Republic through peace and harmony with the world around you? Can you build a civilization that can stand the test of time?"
-
-		declaringWar:"We bleed into the same earth and bleed we must!"
-		attacked:"You sure about that!"
-		defeated: "You have destroyed a beautiful creation. In its place is the blood of the thousands that you have lustfully slain.",
-		introduction: "At long last a friendly face has come to our shores. I am José Rizal, leader of the Philippine Republic! Cometellme of your people and their culture.",
+		neutralHello:"Hello!",
+		neutralLetsHearIt:["Go on!","I'm listening.","Yes?"],
+		neutralNo:["Certainly not!","We reject!"],
+		neutralYes:["Okay!","Agreed!","Very nice!"],
 		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["What do you need.","Go on"]
-		neutralNo:["Sorry I cannot do that.","No Sorry."]
-		neutralYes:["Of Course!","Yes"]
+		hateHello:"Oh, it's ye!",
+		hateLetsHearIt:["Come again?","And?","Go on!"],
+		hateNo:["That's unacceptable!","Ye can't be serious?!","Pardon?"],
+		hateYes:["Well, if it must be.","I guess i have no other choice.","I agree!"],
 		
-		hateHello:["You again"]
-		hateLetsHearIt:["Hurry Up!,"So?"]
-		hateNo:["Of Course Not!,"Are you crazy no"]
-		hateYes:["Ok Fine","I Agree"]
-	       
-	        afterPeace:"Impressive! I Offer you peace because war only bring destruction",
-		tradeRequest:"Here's the list for our own benefits",
-		innerColor:[185,132,66]
-		uniqueName:"Pearl Of The Orient"
-		unique:"Upon signing OpenBorders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
-		cities:["Manila","Quezon","Cebu",Pasig","Makati","Cagayan de Oro","Baguio","Davao City","Bacolod","Taguig","Pasay",
-		"Bataan","Angeles","Marikina"]
-	},
-	{   /// MOD CIV
-		name:"Australia",
-		leaderName:"John Curtin",
-		adjective:["Australian"],
-		startBias:["Avoid Tundra"],
-		preferredVictoryType:"Scientific",
+		afterPeace:"I hope, you're satisfied with this. Just to act-like, but no action as it seems.",
+		tradeRequest:"I see you admire my new damask. Nobody should say that I am an unjust woman. Let's reach an agreement!",
 		
-		startIntroPart1: "The people of the Australian nation salute you, Johnatan Joseph Curtin, their Prime Minister, as their leader. You have been the fourteenth prime minister of this nation, once one of the largest colonies of the British empire. You were born in a land mixed with primal nature and human civilization, and ascended on your seat as minister while the accursed Japanese empire, planning to rule the entire Asian continent, sought to conquer Australia. Your wise and careful leadership, horever, united with some luck, twarted their plans, and contributed to the rise of an indipendent, British control-free Australia. Unfortunately, your very ill health prevented you to see that dream come true, as your life ended shortly before the Second World War finally come to a close after six years of bloodshed.",
-		startIntroPart2: "Mister Curtin, the Australian people consider you as one of their most famous people of their history, and the best leader they could ever have, but not they call for your leadership, so that they are free to ascend to true greatness. Will you answer the call? Will you build a civilization that will stand the test of time?",
+		innerColor:[193,0,0]
+		outerColor:[255,255,255]
+		uniqueName:"Diplomatic Marriage,"
+		unique:"Can spend Gold to annex or puppet a City-State that has been your ally for 5 turns"
+		cities:["Vienna","Salzburg","Graz","Linz","Klagenfurt","Bregenz","Innsbruck","Kitzbühel","St. Pölten",
+		"Eisenstadt","Villach","Zwettl","Traun","Wels","Dornbirn","Feldkirch","Amstetten","Bad Ischl","Wolfsberg",
+		"Kufstein","Leoben","Klosterneuburg","Leonding","Kapfenberg","Hallein","Bischofshofen","Waidhofen","Saalbach",
+		"Lienz","Steyr",]
 		
-		declaringWar:"After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself - war is upon us.",
-		attacked:"We will mobilize every means of resistance to stop this transgression against our nation!",
-		defeated:"The principles for which we have fought will survive longer than any nation you could ever build.",
-		introduction:"My name is Jonathan Joseph Curtin, and I speak for the people of Australia as their Prime Minister. We seek sympathetic allies in the fight against the hawks of war.",
 		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you have in mind?"],
-		neutralNo:["Sorry but no.","I decline.","I regret I must refuse."],
-		neutralYes:["As you wish!","So be it!","I agree!"],
-
-		hateHello:"You again, it seems...",
-		hateLetsHearIt:["Speak your mind.","I'm listening!"],
-		hateNo:["No.","It shall not be.","Thanks, but no thanks."],
-		hateYes:["Fine...","I accept."],
-		
-		afterPeace:"The war is over, for now. At least I see it alive.",
-		tradeRequest:"I hope you will receive my offer with my sincerest thanks.",
-				
-		outerColor:[0,102,0],
-		innerColor:[255,255,0],
-		uniqueName:"Land Down Under",
-		unique:"+1 Food in coastal Cities. +1 Culture from Pastures",
-		cities:["Sydney", "Launceston", "Ballaarat", "Perth", "Brisbane", "Melbourne", "Townsville", "Geelong", "Adelaide", 
-			"Hobart", "Bendigo", "Broken Hill", "Cairns", "Newcastle", "Maitland", "Rockhampton", "Wagga Wagga", 
-			"Wollongong", "Albury", "Alice Springs", "Bathurst", "Queanbeyan", "Bundaberg", "Coffs Harbor", "Darwin", 
-			"Fremantle", "Gladstone", "Goulburn", "Hervey Bay", "Kalgoorlie", "Lismore", "Lithgow", "Maryborough", 
-			"Orange", "Port Macquarie", "Port Pirie", "Boomahnoomoonah", "Tweed Heads"]
-	///Unique unit: Digger (replaces Infantry, and has +10% Strenght against anti-cavalry units, +10% Strenght on coastal tiles)
-	///Unique building: Outback Station (replaces Windmill, adds +1 Food)
-	},
-	{   /// MOD CIV
-		name:"Nubia",
-		leaderName:"Amanitore",
-		adjective:["Nubian"],
-		startBias:["Desert"],
-		preferredVictoryType:"Domination",
-
-		startIntroPart1: "O wise Queen of Nubia, Amanitore, we greet thee. You are the leader of the mysterious and fascinating Nubian civilization. For centuries, your people has known lots and lots of centuries of trade, friendships and warfare with the Egyptians, from which they have been culturally inspired, building pyramids and burial tombs that, while not as big as the majestic Pyramids of Kheops, Khephren and Menkaure, were no less amazing than these. After some centuries of servitude under the ambitious Pharaohs of Egypt, your ancestor Piankhi took revenge and subdued the entire land of the Pharaohs."
-		startIntroPart2: "Amanitore, watchful Queen of Nubia, the empire you command shall claim the horizon as its border. Fear not enemies, for your cities shall know prosperity and piety. Can you build a civilization that stands the test of time?"
-
-		declaringWar:"We have arrows, finely honed. We shall deliver them freely to your throat."
-		attacked:"As predicted, you know only how to take. Come, then - choose the manner of your defear."
-		defeated:"Though Nubia falls, our pyramids shall remain long after your plans and palaces fall to ruin."
-		introduction:"I am Amanitore of Nubia. All are welcome in our magnificent cities - provided they come as friends."
-
-		neutralHello:"Greetings to you."
-		neutralLetsHearIt:["Let us hear.","Please, talk.","What do you suggest?"]
-		neutralNo:["I must refuse.","Sorry, but no.","I'm afraid this is unacceptable."]
-		neutralYes:["How gracious of you.","So shall it be.","Of course!"]
-
-		hateHello:"You again?"
-		hateLetsHearIt:["What are you to say?","What is it?","Speak."]
-		hateNo:["The Gods forbid this!","Are you out of your mind?","I cannot do that."]
-		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
-
-		afterPeace:"At least you know how to speak of peace. May war never touch us again!"
-		tradeRequest:"Our delegation brings goodwill. Oh, here's also some fresh camel liver. Just don't cook it!"
-
-		outerColor:[255,255,51],
-		innerColor:[153,76,0],
-		uniqueName:"Ta-Seti"
-		unique:"+50% Production toward Ranged units, which gain +50% combat experience. +1 Production from Mines over a Strategic Resource, and +2 Gold from Mines over a Luxury Resource.",
-		cities:["Kerma","Napata","Nuri","El-Kurru","Kawa","Sedeinga","Heh","Qasr Ibrim","Faras","Shaat","Iken","Abu Simbel","Buhen",
-			"Dengeil","Miam","Tombos","Kurgus","Toshka","Soleb","Wad ban Naqa","Debba","Bugdumbush","Baki","Amara",
-			"Musawwarat es-Sufra","El Fura","Ukma","Pedeme","Defeia"]
-		//Nubians should have Pitati Archer as their unique unit, which replaces Archer and it's stronger. Can also move three tiles.
-		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
-	},
-	*/
+	   
 	
-	    
 
 	//City states
 	{
@@ -1078,7 +1004,7 @@
 		
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
+		afterPeace:"May peace forever bless our lands."
 		defeated:"You fiend! History shall remember this!"
 
 		
