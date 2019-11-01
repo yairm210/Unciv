@@ -90,6 +90,7 @@
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
 		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
+		Russian:"'Все вещи подвергаются воздействию со стороны времени... ибо время само по себе скорее причина уничтожения.' - Аристотель" //from Civ5
 		Simplified_Chinese:"“时间能粉碎一切；所有事物终将在时流中衰老并被遗忘。”——亚里士多德"
 		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
@@ -178,6 +179,7 @@
 	"Free Technology":{
 		Italian:"Dona una tecnologia gratuita"
 		Simplified_Chinese:"获得1项免费科技"
+		Russian:"Бесплатная технология"
 		Czech:"Technologie zdarma"
 		Polish:"Darmowa technologia"
 		German:"Kostenlose Technologie"
@@ -188,7 +190,7 @@
 		Simplified_Chinese:"“图书馆就像是供奉古代圣哲全部遗物的圣坛，充满了真正的美德，保护着一切非谬误无伪装的事物在其中安眠。”——弗朗西斯·培根爵士"
 		Czech:"'Knihovny jsou svatyně, ve kterých jsou zachovány a uloženy všechny relikvie starověkých světců, plné skutečné ctnosti, to vše bez klamů nebo podvodů.' - Sir Francis Bacon"
 		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
-
+		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
 }
 
 	"Circus":{
@@ -245,6 +247,7 @@
 		Simplified_Chinese:"“哦，别让你所受的死亡痛苦进入我的身体。我是创世神泰姆，我处在天界的最高层，神力护佑着我和所有其他神灵直到永远。”——“死者之书”译文，欧内斯特·阿尔弗雷德·沃利斯·巴吉爵士（英国考古学家）"
 		Polish:"'Niech ból śmierci, którego zaznasz, wejdzie w me ciało. Jam jest bóg Tem, najznamienitsza część nieba, a chroni mnie moc, która na zawsze jest wśród wszystkich bogów.'– Księga Umarłych, przetłumaczona przez Sir Ernesta Alfreda Wallisa Budge'a"
 		Czech:"'Ó, ať bolesti smrti vstoupí do mého těla. Já jsem Bůh Tem a jsem především části oblohy, moc která mě chrání je ta, jenž je navždy se všemi bohy.' - Kniha mrtvých, přeložil sir Ernest Alfred Wallis Budge"
+		Russian:"'А вы даруйте мне, когда я есмь там, погребальные тризны, и воскурение ладана, и мази для умащения, и все чистые и прекрасные вещи, в которых обитает бог...' -  - из египетской 'Книги мертвых'" //civ 5 official
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -327,6 +330,7 @@
 		Simplified_Chinese:"“嘿，老兄，他像一个巨人似的跨越这狭隘的世界；我们这些渺小的凡人一个个在他粗大的两腿下行走，四处张望着，替自己寻找不光荣的坟墓。”——威廉·莎士比亚：《尤利乌斯·恺撒》"
 		Polish:"'Człowiek ten stanął okrakiem nad światem jak Kolos, gdy my, ludzie malusieńcy, spod jego wielkich nóg zerkamy wokół, szukając sobie upodlonych grobów.'– William Szekspir, Juliusz Cezar"
 		Czech:"'Proč člověk, řídil úzký svět jako kolos, a my drobní muži kráčíme pod jeho obrovskýma nohama, abychom spočinuli v nečestných hrobech.' - William Shakespeare, Julius Caesar"
+		Russian:"'По миру тесному шагает колосс, а мы, ничтожные людишки, у исполинских ног его снуем и для себя могил бесславных ищем.' - Уильям Шекспир, 'Юлий Цезарь'"
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -390,6 +394,7 @@
 		Simplified_Chinese:"“先知的神谕曾说我是全希腊最聪明的人。因为我是所有希腊人中唯一知道自己一无所知的人。”——苏格拉底"
 		Polish:"'Starożytna Wyrocznia powiedziała, że jestem najmądrzejszym z Greków. Bo tylko ja ze wszystkich Greków wiem, że nic nie wiem.' - Sokrates"
 		Czech:"'Starověké Orakulum řeklo, že jsem nejmoudřejší ze všech Řeků. Je to proto, že já sám ze všech Řeků vím, že nic nevím' - Sókratés"
+		Russian:"'Он спросил, есть ли кто-нибудь на свете мудрее меня, и Пифия ему ответила, что никого нет мудрее... потому что я коли уж не знаю, то и не думаю, что знаю' - Сократ в «Апологии Сократа» Платона" //civ 5 official. Sounds bad
 }
 
 	"Free Social Policy":{
@@ -437,6 +442,7 @@
 		Simplified_Chinese:"“这个卡吞建立在奇琴伊察。伊察将在那里定居。格查尔鸟将会到来，绿色的鸟将会到来。阿·坎特纳尔将会到来。这是神的预言。伊察将会到来。”——《奇兰巴兰之书》（玛雅人的预言书）"
 		Polish:"'Katun jest w Chichen Itza. Tam powstanie osada Itza. Przybędzie kwezal, przybędzie zielony ptak. Przybędzie Ah Kantenal. Oto słowo boże. Itza przybędzie.' – Księgi Chilam Balam"
 		Czech:"'Katun je zřízen v Chichén Itza. Tam musí probíhat vypořádání Itzy. Quetzal musí přijít, zelený pták musí přiletět. Ah Kantenal musí přijít. Je to Boží slovo. Itza musí přijde.' - Knihy Chilama Baláma"
+		Russian:"'Катун установлен в Чичен-Итце. Здесь будет поселение Итца. Кетцаль придет, зеленая птица придет. Ах Кантеналь придет. Вот слово Бога. Народ Итца придет.' - из книг Чилам Балам"
 }
 
 	"Golden Age length increases +50%":{
@@ -507,6 +513,7 @@
 		Simplified_Chinese:"“在大海上坐船，在大水里经理事务的；他们看到耶和华的作为，并他在深水中的奇事。”——圣经·诗篇 107:23-24"
 		Polish:"'Ci, którzy na statkach ruszyli na morze, aby uprawiać handel na ogromnych wodach, ci widzieli dzieła Pana i jego cuda wśród głębiny.'– Biblia, Księga Psalmów 107,23-24"
 		Czech:"'Ti, kteří se vydávají na lodích na moře, kdo konají dílo na nesmírných vodách, spatřili Hospodinovy skutky, jeho divy na hlubině.' - Bible, Žalm 107: 23-24"
+		Russian:"'Отправляющиеся на кораблях в море, производящие дела на больших водах, видят дела Господа и чудеса Его в пучине...' - Bible, Псалом 106:23-24" // yes, 106. Just another numbering for us. 
 }
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -524,6 +531,7 @@
 
 	"Courthouse":{
 		Italian:"Palazzo di giustizia"
+		Russian:"Здание суда"
 		French:"Palais de justice"
 		Polish:"Sąd"
 		Simplified_Chinese:"法庭"
@@ -538,6 +546,7 @@
 		Simplified_Chinese:"消除来自吞并的城市的额外不满"
 		Czech:"Odstraní nespokojenost občanů v anektovaných městech"
 		German:"Entferne zusätzliche Unzufriedenheit von annektierten Städten"
+		Russian:"Убрирает дополнительное недовольство из захваченных городов" 
 }
 
 	"Can only be built in annexed cities":{
@@ -546,6 +555,7 @@
 		Czech:"Lze vybudovat pouze v anektovaných městech"
 		Polish:"Budowa możliwa tylko w okupowanych miastach"
 		German:"Kann nur in annektierten Städten gebaut werden."
+		Russian:"Строительство возможно только в захваченных городах"
 
 }
 
@@ -604,6 +614,7 @@
 		Polish:"'Gdyby śmiertelnik usłyszał głos Pana Boga, znalazłby w sadzie wraz z wiatren dniowym.' - F. Frankfort Moore" //hard to translate
 		German:"'Wenn ein sterbliches Wesen je die Stimme Gottes hören würde, dann in einem Garten beim Wehen des Abendwindes.' - F. Frankfort Moore"
 		Czech:"'Myslím, že kdyby někdy smrtelník slyšel Boží slovo, bylo by to v zahradě za chladného dne.' - F. Frankfort Moore"
+		Russian:"'Если бы смертному когда-либо прозвучал голос Бога, это случилось бы в саду на закате дня.' - Ф. Франкфорт Мур"
 }
 
 	/*
@@ -713,6 +724,7 @@
 		Polish:"'Traktuj swoich żołnierzy jak ukochane dzieci, a z chęcią zginą wraz z Tobą.' - Sun Tzu"
 		German:"'Behandle Deine Soldaten als seien sie Deine Kinder und sie werden Dir in die tiefsten Täler folgen; betrachte sie als Deine geliebten Söhne und sie werden an Deiner Seite stehen, sogar bis zum Tode.' -Sun Tzu"
 		Czech:"'Považujte své vojáky za své děti a budou vás následovat do nejhlubších údolí; podívej se na ně jako na své milované syny, a ti budou za vámi stát až do smrti.' - Sun Tzu"
+		Russian:"'Если будешь смотреть на солдат, как на детей, сможешь отправиться с ними в самое глубокое ущелье; если будешь смотреть на солдат, как на любимых сыновей, сможешь идти с ними хоть на смерть.' - Сунь Цзы"
 }
 
 	"Market":{
@@ -796,6 +808,7 @@
 		Polish:"'Architektura to zapis wspaniałych idei ludzkości. W tej obszernej księdze swe miejsce ma nie tylko każdy symbol religijny, ale także każda myśl człowiecza.' - Victor Hugo"
 		German:"'Die Architektur hat viele großartige Ideen der Menschheit festgehalten. Nicht nur jedes religiöse Symbol, sondern auch jeder menschliche Gedanke hat seine eigene Seite in diesem gewaltigen Buch.' - Victor Hugo"
 		Czech:"'Architektura zaznamenala skvělé myšlenky lidské rasy. Nejen každý náboženský symbol, ale každá lidská myšlenka má svou stránku v této obrovské knize.' - Victor Hugo"
+		Russian:"'Зодчество было главной летописью человечества... каждая общедоступная идея, как и каждый религиозный закон, имела свой памятник.' - Виктор Гюго" //civ 5 official
 }
 
 	"Hagia Sophia":{
@@ -816,6 +829,7 @@
 		Simplified_Chinese:"“它高耸入云，从城市中矗立而起，俯视周遭；它是城中之物，但有超俗之美。”——《论建筑》，普罗科匹厄斯（拜占庭学者）"
 		Polish:"'Wyrasta aż po sam nieboskłon, jakby wystrzeliwując spośród innych budynków, stoi wysoko i spogląda w dół na resztę miasta, podziwiając je, bo jest jego częścią, a jednocześnie pławi się we własnym pięknie.' – Prokopiusz De Aedificis"
 		Czech:"'Stoupá do výšky, aby se vyrovnal nebi, a jako by stoupal z ostatních budov, stojí vysoko a dívá se dolů na zbytek města, zdobí jej, protože je jeho součástí, oslavován svou vlastní krásou' - Procopius, De Aedificis"
+		Russian:"'В высоту он поднимается как будто до неба и, как корабль на высоких волнах моря, он выделяется среди других строений, как бы склоняясь над остальным городом, украшая его как составная его часть, и сам украшается им.' - Прокопий, 'О постройках'" //civ 5 official = 'В высоту он (Собор Святой Софии) поднимается...' 
 }
 
 	"+33% great person generation in all cities":{
@@ -863,6 +877,7 @@
 		Simplified_Chinese:"“很少有能超越这座建立在马丘比丘顶峰峭壁上的石头城塞的浪漫，它是印加的皇冠。”——海勒姆·宾厄姆（美国探险家）"
 		Polish:"'Niewiele romansów może się równać ze związkiem granitowej cytadeli stojącej na strzelistych urwiskach Machu Picchu, korony Kraju Inków.' – Hiram Bingham"
 		Czech:"'Těžko se hledá romantika, jenž může někdy překonat žulové citadely na vrcholu broukavých srázů Machu Picchu, koruny Incké země.' - Hiram Bingham"
+		Russian:"'Даже самый захватывающий вид не вызовет такого движения сердца, как гранитная крепость на крутых уступах Мачу-Пикчу - короны земли инков.' - Хирам Бингам"
 }
 
 	"Gold from all trade routes +25%":{
@@ -920,6 +935,7 @@
 		Simplified_Chinese:"“故用兵之法：无恃其不来，恃吾有以待也。无恃其不攻，恃吾有所不可攻也。”——孙子"
 		Polish:"'Sztuka wojny uczy nas nie polegać na prawdopodobieństwie tego, iż wróg nie zaatakuje, a na tym, że nasze pozycje są niedostępne.' – Sun Zi"
 		Czech:"'Umění války nás učí nespoléhat na pravděpodobnost, že nepřítel neútočí, ale spíše na skutečnost, že je naše pozice nepřekonatelná.' - Sun Tzu"
+		Russian:"'Искуство ведения войны заключается в том, чтобы не полагаться на то, что враг не нападет, а на то, что я сделаю нападение на себя невозможным.' - Сунь Цзы"
 }
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
@@ -946,6 +962,7 @@
 
 	"Longhouse":{	// Iroquois unique
 		Italian:"Casa Lunga"
+		Russian:"Длинный дом"
 		French:"Longère"
 		Polish:"Długi dom"
 		Simplified_Chinese:"长屋"
@@ -954,6 +971,7 @@
 
 	"+1 Production from each worked Forest tile":{
 		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
+		Russian:"+1 Производство за каждую обрабатываемую лесную клетку"
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 		Polish:"+1 do produkcji za każde pracujące pole lasu"
 		Simplified_Chinese:"每个工作的森林地块+1产能"
@@ -1098,6 +1116,7 @@
 		Simplified_Chinese:"“正义是一座牢不可破的堡垒，屹立在山巅，既不为肆虐的洪流所冲倒，也不为军队的武力所毁坏。”——约瑟夫·艾迪生（英国散文家）"
 		Polish:"'Sprawiedliwość jest twierdzą nie do zdobycia, wybudowaną na grzbiecie góry, której nie straszne ani gwałtowne wichury, ani potężne armie.' - Joseph Addison"
 		Czech: "'Spravedlnost je nepřekonatelná pevnost postavená na vrcholu hory, kterou nesvrhne dravá voda ani nemůže být zničena silou armád.' - Joseph Addison"
+		Russian:"'Справедливость - это неприступная крепость, построенная на гребне горы, которую не может разрушить ярость стихий или уничтожить армия солдат.' - Джозеф Эддисон"
 }
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -1128,6 +1147,7 @@
 		Simplified_Chinese:"“这座寺庙不同于世界上的其他任何建筑。它拥有人类的天才们能够构想出的最精致的高塔和装饰。”——安东尼奥·达·马格达连那（葡萄牙传教士，最早游历吴哥窟的西方人）"
 		Polish:"'Ta świątynia… nie ma sobie równych w całym świecie. Ma wieże, zdobienia i całe wyrafinowanie, które mógł stworzyć geniusz człowieka.' - Antonio da Magdalena"
 		Czech:"'Chrám je jako žádná jiná budova na světě. Má věže a výzdobu a všechna vylepšení, která si lidský génius dokáže představit.' - Antonio da Magdalena"
+		Russian:"'Храм - выдающееся сооружение. Оно имеет башни, рельефы и украшения, какие только может вообразить человеческий гений.' - Антонио де Магдалена"
 }
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -1162,6 +1182,7 @@
 		Simplified_Chinese:"“我们所失去的总是要在回望之时才更知道它的美好，而那曾经不可一世的高塔如今是多么的渴望能够有所依靠。”——詹姆斯·罗素·洛威尔（美国诗人）"
 		Polish:"'Kiedy patrzymy w przeszłość, wszystko wydaje się piękniejsze i właśnie w tej niedostępnej wieży przeszłości rodzi się Tęsknota.' - James Russell Lowell"
 		Czech:"'Věci se vždy zdají spravedlivější, když se na ně podíváme zpět, a to je z té nepřístupné věže minulosti, která se dlouze naklání a kývá.' - James Russell Lowell"
+		Russian:"'Многое начинает казаться лучше, когда остается в прошлом - и из этой неприступной башни Прошлого нас зовет и манит рукою Тоска.' - Джеймс Расселл Лоуэлл" //civ 5 official
 }
 
 	"Free great scientist appears":{
@@ -1247,6 +1268,7 @@
 		Simplified_Chinese:"“我在上帝的圣光之下爱与生活。”——米开朗基罗·博纳洛第"
 		Polish:"'Żyję i kocham w bożym blasku.' – Michał Anioł Buonarroti"
 		Czech:"'Žiji a miluji v zvláštním božím světle.' - Michelangelo Buonarroti"
+		Russian:"'Я живу и люблю в особом свете Господа.' - Микеланджело Буонаротти"
 }
 
 	"Culture in all cities increased by 25%":{
@@ -1300,6 +1322,7 @@
 		Polish:"Dwór Satrapy"
 		Simplified_Chinese:"总督府"
 		Czech:"Satrapův dvůr"
+		Russian:"Двор сатрапа"
 }
 
 	"Forbidden Palace":{
@@ -1320,6 +1343,7 @@
 		Simplified_Chinese:"“我们中的大多数都能够自己做出选择，是把这个世界变成一座宫殿还是一座监狱。”——约翰·鲁伯克（英国学者）"
 		Polish:"'Większość z nas może wybrać, czy świat będzie nam pałacem, czy więzieniem.' – John Lubbock"
 		Czech:"'Většina z nás se může rozhodnout, jestli si z tohoto světa uděláme palác nebo vězení.' - John Lubbock"
+		Russian:"'Фактически любой из нас может по собственному желанию превратить мир во дворец или в темницу' - Джон Лаббок"
 }
 
 	"Unhappiness from population decreased by 10%":{
@@ -1366,6 +1390,7 @@
 		Simplified_Chinese:"“别拍那么重——这是座非常古老的建筑。”——约翰·奥斯本（英国剧作家）"
 		Polish:"'Nie klaszczcie za mocno - to bardzo stary budynek.' – John Osborne"
 		Czech:"'Příliš netleskejte - je to velmi stará budova' - John Osbourne"
+		Russian:"'Не хлопайте так громко - здание старое, может развалиться.' - Джон Осборн"
 }
 
 	"Free Great Person":{
@@ -1410,6 +1435,7 @@
 		Simplified_Chinese:"“所谓武士道，就是看透死亡。于生死两难之际，应果断选择死，而不需要任何原因。”——山本常朝（日本江户时代武士）"
 		Polish:"'Bushido - Droga wojownika - ujawnia się w obecności śmierci. Oznacza wybranie śmierci, gdy do wyboru jest życie lub śmierć. Nie ma innego uzasadnienia.' – Yamamoto Tsunetomo"
 		Czech:"'Bushido je realizováno v přítomnosti smrti. To znamená vybrat si smrt, kdykoli je na výběr mezi životem a smrtí. Neexistuje žádná jiná volba.' - Yamamoto Tsunetomo"
+		Russian:"'Бусидо - путь воина - означает смерть. Когда для выбора имеются два пути, выбирай тот, который ведет к смерти. Не рассуждай! Направь мысль на путь, который ты предпочел, и иди.' - Ямамото Цунетомо"
 }
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1440,6 +1466,7 @@
 		Simplified_Chinese:"“泰姬陵伫立在河岸，如同时间的脸颊上一滴孤单的泪水。”——罗宾德拉纳特·泰戈尔"
 		Polish:"'Tadż Mahal wznosi się nad brzegiem rzeki niczym samotna łza wisząca na policzku czasu.' – Rabindranath Tagore"
 		Czech:"'Tádž Mahal stoupá nad břehy řeky jako osamělá slza zavěšená na tváři času.' - Rabindranath Tagore"
+		Russian:"'Пусть великолепие алмаза, рубина исчезнет, как магическое мерцание от радуги, только пусть одна слеза - Тадж-Махал - ярко сияет на щеке времени.' - Рабиндарат Тагор"
 }
 
 	"Empire enters golden age":{
@@ -1522,6 +1549,7 @@
 		Simplified_Chinese:"“每一件伟大的艺术品都应如日月般长存。”——拉尔夫·沃尔多·爱默生"
 		Polish:"'Każde prawdziwe dzieło sztuki pod wieloma względami przypomina ziemię i słońce.' – Ralph Waldo Emerson"
 		Czech:"'Každé opravdové umělecké dílo má tolik důvodů k bytí jako Země a Slunce' - Ralph Waldo Emerson"
+		Russian:"'У подлинного произведения искусства столько же прав на существование, сколько у солнца и земли.' - Ральф Уолдо Эмерсон"
 }
 
 	"Free Great Artist Appears":{
@@ -1657,6 +1685,7 @@
 		Simplified_Chinese:"“为了完成伟大的工作，有两样东西是必须的：一个计划，以及不多的时间。”——伦纳德·伯恩斯坦（美国音乐家）"
 		Polish:"'Żeby dokonać czegoś wielkiego, potrzeba dwóch rzeczy: planu i zbyt mało czasu.' – Leonard Bernstein"
 		Czech:"'K dosažení velkých věcí jsou zapotřebí dvě věci: plán a nedostatek času.' - Leonard Bernstein"
+		Russian:"'Для великих свершений потребны две вещи: план действий и недостаток времени.' - Леонард Бернстайн"
 }
 
 	"-15% to purchasing items in cities":{
@@ -1686,6 +1715,7 @@
 		Simplified_Chinese:"“凡劳苦担重担的人，可以到我这里来，我就使你们得安息。”——圣经·马太福音 11:28"
 		Polish:"'Przyjdźcie do Mnie wszyscy, którzy utrudzeni i obciążeni jesteście, a Ja was pokrzepię.' – Biblia, Ew. wg św. Mateusza 25,28"
 		Czech:"'Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout.' - Nový Zákon, Matouš 11:28"
+		Russian:"'Придите ко Мне все трудящиеся и обремененные, и Я успокою вас.' - Евангелие от Матфея, 11:28"
 }
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -1718,6 +1748,7 @@
 		Simplified_Chinese:"“律法当如山巅之城：无论是敌人还是洪水都无法征服。”——先知穆罕默德"
 		Polish:"'Prawo to forteca na wzgórzu, którego nie zdobędzie żadna armia i nie pochłonie powódź.' – Prorok Mahomet"
 		Czech:"'Zákon je pevnost na kopci, kterou nezničí armády a povodeň neodplaví.' - Proork Mohamed"
+		Russian:"'Закон - это крепость на холме, которую не подточат воды, не возьмут осаждающие' - пророк Мухаммед"
 }
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -1743,6 +1774,7 @@
 		Simplified_Chinese:"“……选址是所能找到的当中风景最美丽的，圣洁而不可亵渎，一座配得起神圣朋友的圣所，他们给这个世界带来超度和真正的赐福。”——巴伐利亚国王路德维希二世"
 		Polish:"'...miejsce to jest jednym z najpiękniejszych, jakie można znaleźć. Święte i niedostępne. Prawdziwa świątynia ku czci boskiego przyjaciela, który przyprowadził wybawienie i prawdziwe błogosławieństwo dla świata.' – Król Ludwig II Bawarski"
 		Czech:"'... místo je jedním z nejkrásnějších které lze nalézt, svatých a nepřístupných, hodných chrámů pro božského přítele, který přinesl světu spasení a skutečné požehnání.' - Král Ludvík II. Bavorský"
+		Russian"'... это одно из самых красивых мест, святое и безупречное, достойный монастырь для божественного друга, который принес спасение и благословение миру.' - Король Баварии Людвиг II"
 }
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -1797,6 +1829,7 @@
 		Italian:"'Chi può pensare che, siccome siamo ingegneri, la bellezza non ci preoccupi, o che non cerchiamo di costruire strutture belle oltre che solide e durature?' - Gustave Alexandre Eiffel"
 		Simplified_Chinese:"“我们活着只为去发现美。其他一切都是某种形式的等待。”——哈里利·纪伯伦"
 		Czech:"'Žijeme jenom kvůli odhalování krásy, všechno ostatní je jen formou čekání.' - Kahlil Gibran"
+		Russian:"'Мы живем лишь для того, чтобы познавать красоту. Все прочее – ожидание' - Халиль Джебран"
 }
 
 	"Provides 1 happiness per social policy":{
@@ -1827,6 +1860,7 @@
 		Italian:"'Datemi coloro che sono esausti, i poveri / Le folle accalcate che bramano di respirare libere, / I miseri rifiuti delle vostre coste brulicanti. / Mandatemi chi non ha casa, squassato dalle tempeste, / Sollevo la fiaccola accanto alla porta d'oro!' - Emma Lazarus"
 		Simplified_Chinese:"“给我你们的疲乏，你们的贫困，拥挤在旅途渴望自由呼吸的人们，被彼岸无情抛弃颠沛流离的惊魂。把这些无家可归，饱尝风雨的苦难者全都给我，我伫立在金色的大门旁高举起灯火！”——艾玛·拉扎路斯（美国诗人）"
 		Czech:"'Dej mi své unavené, své ubohé, tvé schoulené masy toužící po svobodném nadechnutí, uboze odmítnuté tvým oplývajícím břehem. Pošli mi ty, bez domova, zmítané bouří. Pozvednu svou lampu u zlatých dveří!' - Emma Lazarus"
+		Russian:"'А мне отдайте ваших усталых, ваших бедных... А мне отдайте из глубин бездонных, Своих изгоев, люд забитый свой, Пошлите мне отверженных, бездомных,Я им свечу у двери золотой...' - Эмма Лазарус"
 }
 
 	"+1 Production from specialists":{
@@ -1944,6 +1978,7 @@
 		Italian:"'Quelli che perdono i sogni sono perduti.' - Massima degli aborigeni australiani"
 		Simplified_Chinese:"“没有梦想的人，人生也是迷茫的。”——澳大利亚土著谚语"
 		Czech:"Ti, kteří ztratili sny, jsou ztraceni - Australské domorodé přísloví"
+		Russian:"'У кого погибли мечты, тот и сам погиб.' - пословица австралийских аборигенов"
 }
 
 	/*
@@ -1992,6 +2027,7 @@
 		Italian:"'Preparandomi alla battaglia ho sempre constatato che i piani sono inutili, ma la pianificazione è indispensabile.' - Dwight D. Eisenhower"
 		Simplified_Chinese:"“在准备作战时，我常常发现定好的计划没有用处，但计划的过程仍必不可少。”——德怀特·戴维·艾森豪威尔"
 		Czech:"'Při přípravě bitvy jsem vždy zjistil, že plány jsou k ničemu ale plánování je nezbytné.' - Dwight D. Eisenhower"
+		Russian:"'При подготовке к битве планы незаменимы, но, как только битва началась, план становится совершенно бесполезным.' - Дуайт Эйзенхауэр"
 }
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -2101,6 +2137,7 @@
 		Italian:"'La meraviglia non sta nella vastità del campo di stelle, ma nel fatto che l'uomo lo abbia misurato.' - Anatole France"
 		Simplified_Chinese:"“奇迹的不是那片星域如此辽阔，而是人类竟然成功测量了它。”——阿纳托尔·法郎士（法国小说家）"
 		Czech:"'Je zázrakem, nikoliv to že je noční obloha naplněná nekonečnem hvězd, ale že je člověk dokázal změřit' - Anatole France"
+		Russian:"'Чудо не в том, что звездный небосклон столь обширен, но в том, что человек сумел измерить его' -  Анатоль Франс"
 }
 
 	"2 free great scientists appear":{
