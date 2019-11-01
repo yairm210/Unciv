@@ -138,6 +138,7 @@
 		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ — ВАС ПОПЕРЕДЖЕНО!"
 		Traditional_Chinese:"⚠︎警告！實驗性功能！"
 		Czech:"VYSOCE EXPERIMENTÁLNÍ - BYLI JSTE VAROVÁNÍ!"
+		Russian:"В РАЗРАБОТКЕ И НЕСТАБИЛЬНО - ВЫ ПРЕДУПРЕЖДЕНЫ!"
 }
 
 	"Online Multiplayer": {
@@ -146,6 +147,7 @@
 		Traditional_Chinese:"線上多人遊戲",
 		Ukrainian:"Багатокористувацька мережева"
 		Czech:"Online pro více hráčů"
+		Russian:"Online мультиплеер"
 }
 
 	// Map sizes
@@ -398,6 +400,7 @@
                 Korean:"제거"
 		Czech:"Odstranit"
 		Ukrainian:"Видалити"
+		Russian:"Удалить"
 }
 
 	"Random":{
@@ -407,6 +410,7 @@
                 Korean:"무작위"
 		Czech:"Náhodně"
 		Ukrainian:"Випадково"
+		Russian:"Случайно"
 }
 
 	"Human":{
@@ -536,6 +540,7 @@
 		Simplified_Chinese:"设置为当前玩家",
 		Traditional_Chinese:"設定為目前玩家",
 		Ukrainian:"Обрати поточного гравця"
+		Russian:"выбрать текущего игрока"
 }
 
 	"Player ID from clipboard":{
@@ -545,6 +550,7 @@
 		Simplified_Chinese:"从剪贴板获取玩家ID",
 		Traditional_Chinese:"從剪貼簿取得玩家ID",
 		Ukrainian:"Ідентифікатор гравця з буфера обміну"
+		Russian:"Player ID из буфера обмена"
 }
 
 	/// tutorials for multiplayer
@@ -647,6 +653,7 @@
     		Korean:"시작 시대"
 		Czech:"Doba počátku hry"
 		Ukrainian:"Початкова епоха"
+		Russian:"Начальная эпоха"
 }
 
 ////
@@ -678,6 +685,7 @@
                 Korean:"인간 플레이어가 선택 되지 않았습니다!"
 		Czech:"Nebyl vybrán lidský hráč!"
 		Ukrainian:"Не обрано людей-гравців!"
+		Russian:"Не выбраны игроки(люди)"
 }
 
 
@@ -706,6 +714,7 @@
                 Korean:"자동 저장 표시"
 		Czech:"Zobrazit automaticky uložené hry"
 		Ukrainian:"Показати автозбереження"
+		Russian:"Показать автосохранения"
 }
 
 	"Saved game name":{
@@ -743,6 +752,7 @@
                 Korean:"클립보드에 저장된 게임 복사"
 		Czech:"Zkopírovat uloženou hru do schránky"
 		Ukrainian:"Копіювати збережену гру до буфера обміну"
+		Russian:"Копировать сохранённую игру в буфер обмена"
 }
 
 	"Could not load game":{
@@ -857,6 +867,7 @@
 		Czech:"Mapa úspěšně nahrána!"
 		Ukrainian:"Мапа вивантажена успішно!"
 		Simplified_Chinese:"地图上传成功！"
+		Russian:"Карта успешно загружена!"
 },
 
 
@@ -963,6 +974,7 @@
 		Traditional_Chinese:"顯示工作地區",
 		Czech:"Zobrazit obdělávané políčka"
 		Ukrainian:"Показати оброблювані комірки"
+		Russian:"Показать обрабатываемые клетки"
 }
 
 	"Show resources and improvements":{
@@ -971,6 +983,7 @@
 		Traditional_Chinese:"顯示資源與設施"
 		Czech:"Zobrazit zdroje a vylepšení"
 		Ukrainian:"Показати ресурси і вдосконалення"
+		Russian:"Показать ресурсы и улучшения"
 }
 
 	"Check for idle units":{
@@ -1025,6 +1038,7 @@
 		Simplified_Chinese:"自动建造道(铁)路",
 		Traditional_Chinese:"自動建造道(鐵)路",
 		Ukrainian:"Автоматичне будівництво доріг"
+		Russian:"Автоматическое строительство дорог"
 }
 
 	"Show minimap":{
