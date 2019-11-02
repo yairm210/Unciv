@@ -10,6 +10,7 @@
 		Portuguese:"Requer"
 		German:"Benötigt"
 		Czech:"Požadavky"
+		Ukrainian:"Потребує"
 }
 
 	"Adopt policy":{
@@ -46,6 +47,7 @@
 		Portuguese:"Desbloqueado em"
 		German:"Freigeschaltet bei" //this could be wrong, "at" is very flexible and its translation depends on the context
 		Czech:"Odemkne se po"
+		Ukrainian:"Розблокується у"
 }
 
 ////// Tradition branch
@@ -60,6 +62,7 @@
 		Portuguese:"Tradição"
 		//same in German
 		Czech:"Tradice"
+		Ukrainian:"Традиція"
 }
 
 	"+3 culture in capital and increased rate of border expansion":{
@@ -72,6 +75,7 @@
 		German:"+3 Kultur in der Hauptstadt und erhöhte Grenzerweiterungsrate"
 		French:"+3 culture dans la capitale and accélère la vitesse d'expension du territoire"
 		Czech:"+3 kulturní body v hlavním městě a rychlejší rozšiřuvání území města"
+		Ukrainian:"+3 культури в столиці і підвищення швидкості розширення кордонів"
 }
 
 	"Aristocracy":{
@@ -84,6 +88,7 @@
 		German:"Aristokratie"
 		French:"Aristocratie"
 		Czech:"Aristokracie"
+		Ukrainian:"Аристокатія"
 }
 
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
