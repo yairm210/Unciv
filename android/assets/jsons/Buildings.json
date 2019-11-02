@@ -706,6 +706,15 @@
 		requiredTech:"Military Science"
 	},
 	{
+		name:"Brandenburg Gate",
+		culture:1,
+		xpForNewUnits:15,
+		isWonder:true,
+		uniques:["Free Great General appears near the Capital"],
+		requiredTech:"Military Science",
+		quote:"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace"
+	},
+	{
 		name:"Hospital",
 		food:5,
 		requiredBuilding:"Aqueduct",

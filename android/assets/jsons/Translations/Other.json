@@ -799,7 +799,7 @@
 		Portuguese:"Carregar partida"
 		Japanese:"ゲームをロード"
 		Czech:"Načíst hru"
-		Ukrainian:"Завантажити гру
+		Ukrainian:"Завантажити гру"
 }
 
 
@@ -1319,7 +1319,7 @@
 		Traditional_Chinese:"[greatPerson]點數"
 	    	Russian:"Очки [greatPerson]",
 		Czech:"[greatPerson] - body"
-		Ukrainian:[greatPerson] очків""
+		Ukrainian:"[greatPerson] очків"
 }
 
 	"Great person points":{ // e.g ?
@@ -1525,7 +1525,7 @@
 		Portuguese:"Maravilhas habilitadas"
 		Japanese:"有効不思議"
 		Czech:"Odemknuté Divy"
-		Ukrainian:""Нові дива
+		Ukrainian:"Нові дива"
 }
 
 	"Tile improvements enabled":{
@@ -2521,7 +2521,7 @@
 		Czech:"Město s loutkovou vládou lze kdykoliv anektovat."
 		Simplified_Chinese:"可以在任何时候选择吞并已傀儡城市。"
 		Ukrainian:"Маріонеткові міста можуть бути анексованими будь-коли"
-		Traditional_Chinese:"可以在任何時候併吞傀儡城市。"r
+		Traditional_Chinese:"可以在任何時候併吞傀儡城市。"
 }
 
 	"Liberate":{
@@ -2956,7 +2956,7 @@
 
 	"Clear terrain features":{
 		Italian:"Elimina caratteristica del terreno"
-		Simplified_Chinese:"清除地貌
+		Simplified_Chinese:"清除地貌"
 		Traditional_Chinese:"清除地貌"
 		Czech:"Smazat vlastnosti terénu"
 		Ukrainian:"Очистити особливості місцевості"
