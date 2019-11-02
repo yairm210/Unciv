@@ -852,6 +852,7 @@
 		Italian:"Dichiara guerra a [nation]"
 		Simplified_Chinese:"宣战[nation]",
 		Czech:"Vyhlásit válku národů [nation]"
+		Russian:"Объявить войну [nation]"
 }
 
 	"Luxury resources":{
@@ -1003,7 +1004,7 @@
 		Portuguese:"Grande general fornece bônus de combate duplo e é gerado 50% mais rápido"
 		Russian:"Великий полководец дает двойной боевой бонус и появляется на 50% быстрее"
 		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
-		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее"
+		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее" // Russian x2. As it should be?
 		Czech:"Velký Generál poskytne dvojnásobný bojový bonus a rodí se o 50% rychleji"
 }
 
@@ -1399,6 +1400,7 @@
 		Italian:"Dario I"
 		Simplified_Chinese:"大流士一世"
 		Czech:"Dareios I."
+		Russian:"Дарий I"
 }
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
@@ -1415,12 +1417,14 @@
 		Portuguese:"Polinésia"
 		Czech:"Polynésie"
 		Simplified_Chinese:"波利尼西亚"
+		Russian:"Полинезия"
 }
 
 	"Kamehameha I":{
 		Italian:"Kamehameha I"
 		Czech:"Kamehameha I."
 		Simplified_Chinese:"卡美哈梅哈一世"
+		Russian:"Камеамеа I"
 }
 
 	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.":{
