@@ -496,8 +496,8 @@
 		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
 		tradeRequest:"Let us do business! Would you be interested?"
 				
-		outerColor:[18,84,30],
-		innerColor:[245,248,185],
+		outerColor:[245,248,185],
+		innerColor:[18,84,30],
 		uniqueName:"Barbary Corsairs"
 		unique:"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.",
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
