@@ -374,7 +374,6 @@
 		Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された",
 		Czech:"Nepřátelská jednotka [unit] byla zničena při útoku na město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] знищено при атаці нашого міста [cityname]"
-				
 	}
 
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
@@ -734,7 +733,7 @@
 		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 		Ukrainian:"Договір [tradeOffer] з [otherCivName] закінчено"
 	}
-	
+
 	"[tradeOffer] to [otherCivName] has ended":{
 	}
 
