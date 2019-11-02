@@ -203,6 +203,7 @@
 		Simplified_Chinese:"攻击范围",
 		Traditional_Chinese:"攻擊範圍",
 		Czech:"Vzdálenost"
+		Russian:"Радиус"
 	}
 
 /////// Unit actions
@@ -681,6 +682,7 @@
 		Czech:"[year] př. n. l."
 		Simplified_Chinese:"公元前[year]年"
 		Traditional_Chinese:"公元前[year]年"
+		Russian:"[year] до н.э."
 	}
 
 	"[year] AD":{ // Anno Domini
@@ -688,6 +690,7 @@
 		Czech:"[year] n. l."
 		Simplified_Chinese:"公元[year]年"
 		Traditional_Chinese:"公元[year]年"
+		Russian:"[year] н.э."
 	}
 
 /////// Menu table
@@ -943,6 +946,7 @@
 		Simplified_Chinese:"获得资源：[resource]"
 		Traditional_Chinese:"獲得資源：[resource]"
 		Czech:"Poskytuje [resource]"
+		Russian:"Обеспечивает [resource]"
 	}
 	
 	"Replaces [improvement]":{
@@ -950,6 +954,7 @@
 		Simplified_Chinese:"替换现有设施：[improvement]"
 		Traditional_Chinese:"替換現有設施：[improvement]"
 		Czech:"Nahrazuje [improvement]"
+		Russian:"Заменяет [improvement]"
 	}
 
 	"Pick now!": { //sample needed
@@ -1026,6 +1031,7 @@
 		Simplified_Chinese:"吞并城市"
 		Traditional_Chinese:"併吞城市"
 		Czech:"Anektovat město"
+		Russian:"Захватить город"
 }
 
 	"Specialist Buildings":{ // !!!!! DUPLICATE KEY !!!!!
@@ -1153,6 +1159,7 @@
 		Czech:"Jídlo směnit za produkci"
 		Simplified_Chinese:"食物转化为产能",
 		Traditional_Chinese:"食物轉化為產能"
+		Russian:"Обмен еды на производство"
 }
 
 	"[turnsToStarvation] turns to lose population":{
@@ -1270,6 +1277,7 @@
 		Simplified_Chinese:"转化1/4产能为金钱",
 		Traditional_Chinese:"轉換1/4產能為金錢"
 		Czech:"Konvertovat produkci na zlato v poměru 4 ku 1"
+		Russian:"Обмен производства на золото 4 к 1"
 }
 
 	"Convert production to science at a rate of 4 to 1":{
@@ -1277,6 +1285,7 @@
 		Simplified_Chinese:"转化1/4产能为科研",
 		Traditional_Chinese:"轉換1/4產能為科研",
 		Czech:"Konvertovat produkci na výzkum v poměru 4 ku 1"
+		Russian:"Обмен производства на науку 4 к 1"
 }
 
 	"The city will not produce anything.":{
@@ -1284,6 +1293,7 @@
 		Simplified_Chinese:"城市将不会建造/组建任何项目"
 		Traditional_Chinese:"城市將不會建造/訓練任何項目"
 		Czech:"Město nebude nic vyrábět"
+		Russian:"Город не будет производить ничего"
 }
 
 ////// Tech picker
@@ -1537,6 +1547,7 @@
 		Simplified_Chinese:"可以占领！"
 		Traditional_Chinese:"已佔領！" // not sure
 		Czech:"Obsazené!"
+		Russian:"Оккупирован!" // not sure too
 }
 
 	"Attack":{
@@ -1558,6 +1569,7 @@
 		Simplified_Chinese:"轰击"
 		Traditional_Chinese:"轟炸"
 		Czech:"Bombardovat"
+		Russian:"Бомбардировать"
 }
 
 	"Captured!":{// Shown in the battle table when attacking a civilian unit
@@ -1579,6 +1591,7 @@
 		Simplified_Chinese:"对远程攻击防御"
 		Traditional_Chinese:"對遠程攻擊防禦"
 		Czech:"obrana v boji na dálku"
+		Russian:"Защита против дальнего боя"
 }
 
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
@@ -1600,6 +1613,7 @@
 		Simplified_Chinese:"主动攻击加成"
 		Traditional_Chinese:"主動攻擊加成"
 		Czech:"Útočný bonus"
+		Russian:"Бонус атакующего"
 }
 
 	"Landing":{
@@ -1607,6 +1621,7 @@
 		Simplified_Chinese:"登陆作战"
 		Traditional_Chinese:"登陸作戰"
 		Czech:"Přistání"
+		Russian:"Высадка"
 }
 
 	"Flanking":{
@@ -1614,6 +1629,7 @@
 		Simplified_Chinese:"侧翼夹击",
 		Traditional_Chinese:"側翼夾擊",
 		Czech:"Doprovod"
+		Russian:"Атака с фланга"
 }
 
 	"vs [unitType]":{
@@ -1621,6 +1637,7 @@
 		Simplified_Chinese:"对战[unitType]"
 		Traditional_Chinese:"對戰[unitType]"
 		Czech:"proti [unitType]"
+		Russian:"против [unitType]"
 }
 
 	"Terrain":{
@@ -1628,6 +1645,7 @@
 		Simplified_Chinese:"地形修正",
 		Traditional_Chinese:"地形修正",
 		Czech:"Terén"
+		Russian:"Местность"
 }
 
 ///////// Unit uniques
@@ -1699,6 +1717,7 @@
 		Simplified_Chinese:"人民为您英明领导下取得的丰功伟绩欢欣鼓舞，您的帝国进入了黄金时代！",
 		Traditional_Chinese:"人民為您英明領導下取得的豐功偉業歡欣鼓舞，您的帝國進入了黃金時代！",
 		Czech:"Naši občané jsou spokojeni s vaší vládou po dlouhou dobu díky čemuž říše vstoupila do Zlatého věku!"
+		Russian:"Граждане настолько счастливы при вашей власти, что ваша империя вступает в золотой век!"
 }
 
 ////// Policy picker screen
@@ -1805,6 +1824,7 @@
 		Czech:"Obsazená města"
 		Simplified_Chinese:"吞并的城市"
 		Traditional_Chinese:"併吞的城市"
+		Russian:"Базовое счастье"
 	}
 
 	"Buildings":{
@@ -1851,6 +1871,7 @@
 		Simplified_Chinese:"基础产出"
 		Traditional_Chinese:"基礎產出"
 		Czech:"Základ"
+		Russian:"Базовые значения"
 }
 
 	"Bonuses":{
@@ -1858,6 +1879,7 @@
 		Czech:"Bonusy"
 		Simplified_Chinese:"相关加成"
 		Traditional_Chinese:"相關加成"
+		Russian:"Бонусы"
 }
 
 
@@ -1866,6 +1888,7 @@
 		Simplified_Chinese:"实际产出"
 		Traditional_Chinese:"實際產出"
 		Czech:"Celkem"
+		Russian:"Итоговые"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
@@ -2039,6 +2062,7 @@
 		Czech:"Činnost"
 		Simplified_Chinese:"行动"
 		Traditional_Chinese:"行動"
+		Russian:"Действие"
 }
 
 	"Defeated":{
@@ -2059,6 +2083,7 @@
 		Simplified_Chinese:"地块"
 		Traditional_Chinese:"地區"
 		Czech:"Políčka"
+		Russian:"Клетки"
 }
 
 ////// Victory Screen
@@ -2468,6 +2493,7 @@
 		Czech:"Návody"
 		Simplified_Chinese:"教程"
 		Traditional_Chinese:"教學"
+		Russian:"Советы"
 }
 
 	"Cost":{
@@ -2688,6 +2714,7 @@
 		Czech:"Vyčistit mapu"
 		Simplified_Chinese:"清除当前地图"
 		Traditional_Chinese:"清除目前地圖"
+		Russian:"Очистить карту"
 }
 
 	"Save map":{
@@ -2695,6 +2722,7 @@
 		Czech:"Uložit mapu"
 		Simplified_Chinese:"保存地图"
 		Traditional_Chinese:"儲存地圖"
+		Russian:"Сохранить карту"
 }
 
 	"Load map":{
@@ -2702,6 +2730,7 @@
 		Czech:"Načíst mapu"
 		Simplified_Chinese:"读取地图"
 		Traditional_Chinese:"讀取地圖"
+		Russian:"Загрузить карту"
 }
 
 	"Download map":{
@@ -2709,6 +2738,7 @@
 		Czech:"Stáhnout mapu"
 		Simplified_Chinese:"下载地图"
 		Traditional_Chinese:"下載地圖"
+		Russian:"Скачать карту"
 }
 
 	"Exit map editor":{
@@ -2716,6 +2746,7 @@
 		Czech:"Ukončit editování mapy"
 		Simplified_Chinese:"退出地图编辑器"
 		Traditional_Chinese:"退出地圖編輯器"
+		Russian:"Выйти из редактора карт"
 }
 
 	"[nation] starting location":{

@@ -323,7 +323,8 @@
 		Simplified_Chinese:"敌方的[RangedUnit]摧毁了[cityname]的防御",
 		Traditional_Chinese:"敵方的[RangedUnit]摧毀了[cityname]的防禦",
 		Italian:"L'unità nemica [RangedUnit] ha distrutto le difese di [cityname]!"
-		Czech:"Nepřátelská jednotka [unit] zničila obranu města [ourUnit]"
+		Czech:"Nepřátelská jednotka [unit] zničila obranu města [ourUnit]" //Need to fix
+		Russian:"Вражеский [RangedUnit] прорвал оборону города [cityname]"
 	}
 
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
@@ -647,6 +648,7 @@
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
 		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
 		Traditional_Chinese:"[cityName]以建立與您的首都的連接！"
+		Russian:"От города [cityName] был проложен путь к столице!"
 	}
 
 	// Trade

@@ -356,6 +356,7 @@
 		Italian:"Dona [giftAmount] oro (+[influenceAmount] Influenza)"
 		Simplified_Chinese:"赠予[giftAmount]金钱(+[influenceAmount]影响力)",
 		Czech:"Darujme [giftAmount] Zlata (+ [influenceAmount] Vlivu)"
+		Russian:"Подарить [giftAmount] золота (+[influenceAmount] Влияния)"
 }
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
@@ -852,7 +853,7 @@
 		Italian:"Dichiara guerra a [nation]"
 		Simplified_Chinese:"宣战[nation]",
 		Czech:"Vyhlásit válku národů [nation]"
-		Russian:"Объявить войну [nation]"
+		Russian:"Объявить войну: [nation]"
 }
 
 	"Luxury resources":{
@@ -1369,6 +1370,7 @@
 		Portuguese:"Tribo Iroquois" //tribo meaning tribe of course
 		Simplified_Chinese:"易洛魁",
 		Czech:"Irokézové"
+		Russian:"Ирокезы."
 }
 
 	"Hiawatha":{
@@ -1384,6 +1386,7 @@
 		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
 		Simplified_Chinese:"单位在己方森林和丛林地块上移动时视同在道路上移动，此类地块在研究轮子科技后可建立城市连接"
 		Czech:"Všechny jednotky se pohybují lesem a džunglí, jako by na nich byla postavená cesta. Tyto pole zároveň slouží pro propojení měst před vynalezením technologie 'Kolo'."
+		Russian:"Все юниты двигаются по клеткам с джунглями и лесами как если бы на них были дороги. С помощью таких клеток можно установить соединение между городами после исследования Колеса."
 }
 
 
@@ -1409,6 +1412,7 @@
 		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
 		Simplified_Chinese:"黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力"
 		Czech:"Zlatá věk trvá o 50% déle. Během Zlatého věku získají všechny jednotky +1 Pohyb a +10% Síly"
+		Russian:"Золотой век длится на 50% дольше. Во время Золотого века юниты получают +1 к движению и +10% к силе."
 }
 
 	"Polynesia":{
@@ -1433,6 +1437,7 @@
 		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
 		Czech:"Může se okamžitě přesunovat mezi pevninou a oceánem. +1 při nalodění. +10% bonus k bojové síle, pokud je v okolí 2 polí Moai."
 		Simplified_Chinese:"单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力"
+		Russian:"Сразу может погружаться на корабль, а также плавать по побережьям и океанам. +1 к обзору при погружении на корабль. +10% к силе если находинтся в радиусе 2х клеток от Моаи."
 }
 
 	/*
