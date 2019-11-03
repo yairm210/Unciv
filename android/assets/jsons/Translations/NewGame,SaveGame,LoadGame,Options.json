@@ -89,7 +89,7 @@
 }
 
 	"No ancient ruins": {
-		
+		Italian:"Niente antiche rovine"
 	}
 
 	"Victory conditions": {
@@ -939,7 +939,12 @@
 }
 
 	"Music volume":{
+		Italian:"Volume musica"
 		Simplified_Chinese:"音乐音量"
+}
+
+	"Download music":{
+		Italian:"Scarica musica"
 }
 
 	"Show":{
