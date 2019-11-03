@@ -2361,6 +2361,14 @@
 		Czech:"Srovnat se zemí"
 }
 
+	"Destory":{
+
+}
+
+	"Destroying the city instantly razes the city to the ground.":{
+
+}
+
 	"Razing the city annexes it, and starts razing the city to the ground.":{
 		Italian:"Questa opzione ti permetterà di annettere la città e poi di raderla al suolo."
 		Czech:"Vyhlazování města zároveň způsobí jeho anektování a započne srovnávání města ze zemí."
