@@ -215,8 +215,8 @@
 		Simplified_Chinese:"攻击范围",
 		Traditional_Chinese:"攻擊範圍",
 		Czech:"Vzdálenost"
-    Russian:"Радиус"
-    Ukrainian:"Дальність"
+    		Russian:"Радиус"
+    		Ukrainian:"Дальність"
 	}
 
 /////// Unit actions
@@ -2694,9 +2694,13 @@
 		Italian:"Tutorial"
 		Czech:"Návody"
 		Simplified_Chinese:"教程"
-    Ukrainian:"Навчальні посібники"
+    		Ukrainian:"Навчальні посібники"
 		Traditional_Chinese:"教學"
 		Russian:"Советы"
+}
+
+	"Wonders": { //This should be a new Civilopedia section
+		Italian:"Meraviglie"
 }
 
 	"Cost":{
