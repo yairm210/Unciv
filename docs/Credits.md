@@ -183,6 +183,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 ### Medieval Era
 
 * [College](https://thenounproject.com/term/college/129978/) By Alexander Skowalsky for University
+* [Wat Arun Ratchawararam Ratchawaramahawihan](https://thenounproject.com/term/wat-arun-ratchawararam-ratchawaramahawihan/320664/) By József Balázs-Hegedüs for Wat
 * [College](https://thenounproject.com/term/college/1203703/) By Vectors Market for National College
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
@@ -446,6 +447,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 * Two [Sword] Scimitars(https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) by Those Icons for Persia
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
+* [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
+
 
 ## Promotions
 

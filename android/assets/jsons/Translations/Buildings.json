@@ -1141,15 +1141,12 @@
 		Polish:"+2 nauki z pól dżungli"
 		Czech:"+2 Výzkum za každého dělníka na políčku džungle"
 }
-
-	/*
 	"Wat":{	//Siamese unique
 		Italian:"Wat"
 		Polish:"Wat"
 		//same in French
 		Czech:"Vat"
 }
-	*/
 
 	"Oxford University":{
 		Italian:"Università di Oxford"

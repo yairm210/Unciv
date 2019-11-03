@@ -426,6 +426,19 @@
 		requiredTech:"Education"
 	},
 	{
+		name:"Wat",
+		replaces:"University",
+		uniqueTo:"Siam",
+		maintenance:2,
+		hurryCostModifier:15,
+		percentStatBonus:{science:33},
+		specialistSlots:{science:2},
+		culture:3,
+		requiredBuilding:"Library",
+		uniques:["+2 Science from each worked Jungle tile"],
+		requiredTech:"Education"
+	},
+	{
 		name:"Oxford University",
 		science:3,
 		culture:1,
@@ -435,21 +448,6 @@
 		uniques:["Free Technology"],
 		requiredTech:"Education"
 	},
-	/*
-	{
-		name:"Wat",
-		replaces:"University",
-		uniqueTo:"Siam",
-		maintenance:2,
-		hurryCostModifier:15,
-		percentStatBonus:{science:33},
-		specialistSlots:{science:2},
-		culture:1,
-		requiredBuilding:"Library",
-		uniques:["+2 Science from each worked Jungle tile"],
-		requiredTech:"Education"
-	},
-	*/
 	{
 		name:"Castle",
 		cityStrength:7,
