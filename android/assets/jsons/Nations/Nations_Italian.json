@@ -650,44 +650,6 @@
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
 			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
-	
-	/*
-	{
-		name:"Mongolia",
-		translatedName:"Mongolia",
-		leaderName:"Genghis Khan",
-		adjective:["mongolo"],
-		startBias:["Plains"],
-		
-		startIntroPart1: "Salute a te, o grande Temujin, immortale imperatore dell'impero mongolo! I tuoi pugni frantumano le mura delle città e la tua voce annunciaa disperazione ai nemici che la odano. O khan, tu riunisti le tribù in lotta nell'Asia settentrionale facendone il tuo popolo e creando la più temibile cavalleria che il mondo abbia mai visto. L'astuta diplomazia dei tuoi divideva il nemico, lo rendeva debole e inerme di fronte all'esercito conquistatore della Mongolia, che in pochi anni s'impadronì di gran parte della Cina e dell'Asia orientale. E l'impero continuò a crescere, fino a estendersi dall'Europa al sud della Corea, dai confini con Bisanzio fino a Giava. Invero fu l'impero più vasto mai creato, di fronte al quale quello romano e quello greco impallidiscono."
-		startIntroPart2: "Temujin, il tuo popolo desidera cavalcare di nuovo verso la lotta e la conquista sotto la tua guida! Tremerà ancora il mondo al suono poderoso della tua cavalleria che avanza nella steppa? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
-		
-		declaringWar:"Sei sulla strada dei miei eserciti. Se non ti vuoi sottomettere con le buone, allora risolviamola come guerrieri!"
-		attacked:"Basta con le parole. Oggi, la Mongolia marcia per la tua sconfitta!"
-		defeated:"Hai sottomesso i clan della Mongolia. Il mio rispetto per te è quasi uguale al mio disprezzo. Attendo la tua giustizia."
-		introduction:"Io sono Temujin, conquistatore di città e paesi. Davanti a me si estendono le future terre mongole. Dietro di me cavalca la tempesta."
-		
-		neutralHello:"Salve."
-		neutralLetsHearIt:["Ti ascolto.","Che c'è?"]
-		neutralNo:["No.","Certo che no!"]
-		neutralYes:["Bene.","Sta bene.","Ma certo!"]
-
-		hateHello:"E dunque?"
-		hateLetsHearIt:["E poi?","Continua..."]
-		hateNo:["Smetti di scherzare.","Questo non lo tollero!"]
-		hateYes:["Va bene...","D'accordo!"]
-		
-		afterPeace:"Sembra che ti abbia sottovalutato. Molto bene... per ora la tua testa rimane sulle tue spalle."
-		tradeRequest:"Non sono sempre così generoso, ma spero tu accolga questa rara opportunità che noi ti diamo."
-				
-		outerColor:[51,0,0],
-		innerColor:[0,204,102],
-		uniqueName:"Terrore mongolo",
-		unique:"+1 Movimento per le unità a cavallo. +30% Forza quando assali una Città-Stato o ne attacchi le unità.",
-		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
-		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
-		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
-	},
 	{
 		name:"Siam",
 		translatedName:"Siam",
@@ -725,6 +687,44 @@
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
 			"Ban Phai","Loci","Khan Kaen","Surin"]
+	},
+	
+	/*
+	{
+		name:"Mongolia",
+		translatedName:"Mongolia",
+		leaderName:"Genghis Khan",
+		adjective:["mongolo"],
+		startBias:["Plains"],
+		
+		startIntroPart1: "Salute a te, o grande Temujin, immortale imperatore dell'impero mongolo! I tuoi pugni frantumano le mura delle città e la tua voce annunciaa disperazione ai nemici che la odano. O khan, tu riunisti le tribù in lotta nell'Asia settentrionale facendone il tuo popolo e creando la più temibile cavalleria che il mondo abbia mai visto. L'astuta diplomazia dei tuoi divideva il nemico, lo rendeva debole e inerme di fronte all'esercito conquistatore della Mongolia, che in pochi anni s'impadronì di gran parte della Cina e dell'Asia orientale. E l'impero continuò a crescere, fino a estendersi dall'Europa al sud della Corea, dai confini con Bisanzio fino a Giava. Invero fu l'impero più vasto mai creato, di fronte al quale quello romano e quello greco impallidiscono."
+		startIntroPart2: "Temujin, il tuo popolo desidera cavalcare di nuovo verso la lotta e la conquista sotto la tua guida! Tremerà ancora il mondo al suono poderoso della tua cavalleria che avanza nella steppa? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Sei sulla strada dei miei eserciti. Se non ti vuoi sottomettere con le buone, allora risolviamola come guerrieri!"
+		attacked:"Basta con le parole. Oggi, la Mongolia marcia per la tua sconfitta!"
+		defeated:"Hai sottomesso i clan della Mongolia. Il mio rispetto per te è quasi uguale al mio disprezzo. Attendo la tua giustizia."
+		introduction:"Io sono Temujin, conquistatore di città e paesi. Davanti a me si estendono le future terre mongole. Dietro di me cavalca la tempesta."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Ti ascolto.","Che c'è?"]
+		neutralNo:["No.","Certo che no!"]
+		neutralYes:["Bene.","Sta bene.","Ma certo!"]
+
+		hateHello:"E dunque?"
+		hateLetsHearIt:["E poi?","Continua..."]
+		hateNo:["Smetti di scherzare.","Questo non lo tollero!"]
+		hateYes:["Va bene...","D'accordo!"]
+		
+		afterPeace:"Sembra che ti abbia sottovalutato. Molto bene... per ora la tua testa rimane sulle tue spalle."
+		tradeRequest:"Non sono sempre così generoso, ma spero tu accolga questa rara opportunità che noi ti diamo."
+				
+		outerColor:[51,0,0],
+		innerColor:[0,204,102],
+		uniqueName:"Terrore mongolo",
+		unique:"+1 Movimento per le unità a cavallo. +30% Forza quando assali una Città-Stato o ne attacchi le unità.",
+		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
+		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
+		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
 	},
 	{
 		name:"Songhai",
