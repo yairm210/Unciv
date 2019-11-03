@@ -27,6 +27,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
+        addNoRuinsCheckbox()
 
         addIsOnlineMultiplayerCheckbox()
 
@@ -43,6 +44,17 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         })
         add(noBarbariansCheckbox).colspan(2).row()
     }
+
+    private fun addNoRuinsCheckbox() {
+        val noRuinsCheckbox = CheckBox("No ancient ruins".tr(), CameraStageBaseScreen.skin)
+        noRuinsCheckbox.isChecked = newGameParameters.noRuins
+        noRuinsCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.noRuins = noRuinsCheckbox.isChecked
+            }
+        })
+        add(noRuinsCheckbox).colspan(2).row()
+    }    
 
     private fun addIsOnlineMultiplayerCheckbox() {
 
