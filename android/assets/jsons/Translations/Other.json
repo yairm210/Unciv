@@ -215,12 +215,8 @@
 		Simplified_Chinese:"攻击范围",
 		Traditional_Chinese:"攻擊範圍",
 		Czech:"Vzdálenost"
-<<<<<<< HEAD
-		Ukrainian:"Дальність"
-=======
     Russian:"Радиус"
     Ukrainian:"Дальність"
->>>>>>> upstream/master
 	}
 
 /////// Unit actions
@@ -732,11 +728,8 @@
 		Italian:"[year] a.C."
 		Czech:"[year] př. n. l."
 		Simplified_Chinese:"公元前[year]年"
-<<<<<<< HEAD
-=======
 		Traditional_Chinese:"公元前[year]年"
 		Russian:"[year] до н.э."
->>>>>>> upstream/master
 		Ukrainian:"до н.е."
 	}
 
@@ -744,11 +737,8 @@
 		Italian:"[year] d.C."
 		Czech:"[year] n. l."
 		Simplified_Chinese:"公元[year]年"
-<<<<<<< HEAD
-=======
 		Traditional_Chinese:"公元[year]年"
 		Russian:"[year] н.э."
->>>>>>> upstream/master
 		Ukrainian:"після н.е."
 	}
 
@@ -814,11 +804,7 @@
 		Portuguese:"Carregar partida"
 		Japanese:"ゲームをロード"
 		Czech:"Načíst hru"
-<<<<<<< HEAD
-		Ukrainian:"Завантажити гру
-=======
 		Ukrainian:"Завантажити гру"
->>>>>>> upstream/master
 }
 
 
@@ -1025,10 +1011,7 @@
 		Italian:"Dona [resource]"
 		Simplified_Chinese:"获得资源：[resource]"
 		Czech:"Poskytuje [resource]"
-<<<<<<< HEAD
-=======
 		Russian:"Обеспечивает [resource]"
->>>>>>> upstream/master
 		Ukrainian:"Забезпечити [resource]"
 	}
 
@@ -1037,10 +1020,7 @@
 		Simplified_Chinese:"替换现有设施：[improvement]"
 		Traditional_Chinese:"替換現有設施：[improvement]"
 		Czech:"Nahrazuje [improvement]"
-<<<<<<< HEAD
-=======
 		Russian:"Заменяет [improvement]"
->>>>>>> upstream/master
 		Ukrainian:"Замінити [improvement]"
 	}
 
@@ -1123,10 +1103,7 @@
 		Simplified_Chinese:"吞并城市"
 		Traditional_Chinese:"併吞城市"
 		Czech:"Anektovat město"
-<<<<<<< HEAD
-=======
 		Russian:"Захватить город"
->>>>>>> upstream/master
 		Ukrainian:"Анексоване місто"
 }
 
@@ -1351,11 +1328,8 @@
 		Traditional_Chinese:"[greatPerson]點數"
 	    	Russian:"Очки [greatPerson]",
 		Czech:"[greatPerson] - body"
-<<<<<<< HEAD
 		Ukrainian:[greatPerson] очків""
-=======
 		Ukrainian:"[greatPerson] очків"
->>>>>>> upstream/master
 }
 
 	"Great person points":{ // e.g ?
@@ -1396,10 +1370,7 @@
 		Simplified_Chinese:"转化1/4产能为金钱",
 		Traditional_Chinese:"轉換1/4產能為金錢"
 		Czech:"Konvertovat produkci na zlato v poměru 4 ku 1"
-<<<<<<< HEAD
-=======
 		Russian:"Обмен производства на золото 4 к 1"
->>>>>>> upstream/master
 		Ukrainian:"Перетворити виробництво на золото з курсом 4 до 1"
 }
 
@@ -1408,10 +1379,7 @@
 		Simplified_Chinese:"转化1/4产能为科研",
 		Traditional_Chinese:"轉換1/4產能為科研",
 		Czech:"Konvertovat produkci na výzkum v poměru 4 ku 1"
-<<<<<<< HEAD
-=======
 		Russian:"Обмен производства на науку 4 к 1"
->>>>>>> upstream/master
 		Ukrainian:"Перетворити виробництво на науку з курсом 4 до 1"
 }
 
@@ -1420,10 +1388,7 @@
 		Simplified_Chinese:"城市将不会建造/组建任何项目"
 		Traditional_Chinese:"城市將不會建造/訓練任何項目"
 		Czech:"Město nebude nic vyrábět"
-<<<<<<< HEAD
-=======
 		Russian:"Город не будет производить ничего"
->>>>>>> upstream/master
 		Ukrainian:"Місто не буде нічого виробляти"
 }
 
@@ -1573,11 +1538,7 @@
 		Portuguese:"Maravilhas habilitadas"
 		Japanese:"有効不思議"
 		Czech:"Odemknuté Divy"
-<<<<<<< HEAD
-		Ukrainian:""Нові дива
-=======
 		Ukrainian:"Нові дива"
->>>>>>> upstream/master
 }
 
 	"Tile improvements enabled":{
@@ -1699,10 +1660,7 @@
 		Simplified_Chinese:"可以占领！"
 		Traditional_Chinese:"已佔領！" // not sure
 		Czech:"Obsazené!"
-<<<<<<< HEAD
-=======
 		Russian:"Оккупирован!" // not sure too
->>>>>>> upstream/master
 		Ukrainian:"Окуповано!"
 }
 
@@ -1726,10 +1684,7 @@
 		Simplified_Chinese:"轰击"
 		Traditional_Chinese:"轟炸"
 		Czech:"Bombardovat"
-<<<<<<< HEAD
-=======
 		Russian:"Бомбардировать"
->>>>>>> upstream/master
 		Ukrainian:"Обстрілювати"
 }
 
@@ -1753,10 +1708,7 @@
 		Simplified_Chinese:"对远程攻击防御"
 		Traditional_Chinese:"對遠程攻擊防禦"
 		Czech:"obrana v boji na dálku"
-<<<<<<< HEAD
-=======
 		Russian:"Защита против дальнего боя"
->>>>>>> upstream/master
 		Ukrainian:"захист проти дальнобійників"
 }
 
@@ -1775,16 +1727,13 @@
 		Ukrainian:"[percentage] до захисту підрозділу"
 }
 
-	"Бонус для нападників":{
+	"Attacker Bonus":{
 		Italian:"Bonus attaccante"
 		Simplified_Chinese:"主动攻击加成"
 		Traditional_Chinese:"主動攻擊加成"
 		Czech:"Útočný bonus"
-<<<<<<< HEAD
-=======
 		Russian:"Бонус атакующего"
->>>>>>> upstream/master
-		Ukrainian:""
+		Ukrainian:"Бонус нападника"
 }
 
 	"Landing":{
@@ -1792,10 +1741,7 @@
 		Simplified_Chinese:"登陆作战"
 		Traditional_Chinese:"登陸作戰"
 		Czech:"Přistání"
-<<<<<<< HEAD
-=======
 		Russian:"Высадка"
->>>>>>> upstream/master
 		Ukrainian:"Висадка"
 }
 
@@ -1804,10 +1750,7 @@
 		Simplified_Chinese:"侧翼夹击",
 		Traditional_Chinese:"側翼夾擊",
 		Czech:"Doprovod"
-<<<<<<< HEAD
-=======
 		Russian:"Атака с фланга"
->>>>>>> upstream/master
 		Ukrainian:"Атака з флангу"
 }
 
@@ -1816,10 +1759,7 @@
 		Simplified_Chinese:"对战[unitType]"
 		Traditional_Chinese:"對戰[unitType]"
 		Czech:"proti [unitType]"
-<<<<<<< HEAD
-=======
 		Russian:"против [unitType]"
->>>>>>> upstream/master
 		Ukrainian:"проти [unitType]"
 }
 
@@ -1828,10 +1768,7 @@
 		Simplified_Chinese:"地形修正",
 		Traditional_Chinese:"地形修正",
 		Czech:"Terén"
-<<<<<<< HEAD
-=======
 		Russian:"Местность"
->>>>>>> upstream/master
 		Ukrainian:"Місцевість"
 }
 
@@ -1908,10 +1845,8 @@
 		Simplified_Chinese:"人民为您英明领导下取得的丰功伟绩欢欣鼓舞，您的帝国进入了黄金时代！",
 		Traditional_Chinese:"人民為您英明領導下取得的豐功偉業歡欣鼓舞，您的帝國進入了黃金時代！",
 		Czech:"Naši občané jsou spokojeni s vaší vládou po dlouhou dobu díky čemuž říše vstoupila do Zlatého věku!"
-<<<<<<< HEAD
-=======
 		Russian:"Граждане настолько счастливы при вашей власти, что ваша империя вступает в золотой век!"
->>>>>>> upstream/master
+
 		Ukrainian:"Ваші громадяни були задоволені вашим правлінням так довго, що імперія вступає в Золотий вік!"
 }
 
@@ -2077,10 +2012,7 @@
 		Simplified_Chinese:"基础产出"
 		Traditional_Chinese:"基礎產出"
 		Czech:"Základ"
-<<<<<<< HEAD
-=======
 		Russian:"Базовые значения"
->>>>>>> upstream/master
 		Ukrainian:"Початкове значення"
 }
 
@@ -2099,11 +2031,8 @@
 		Simplified_Chinese:"实际产出"
 		Traditional_Chinese:"實際產出"
 		Czech:"Celkem"
-<<<<<<< HEAD
-=======
 		Russian:"Итоговые"
->>>>>>> upstream/master
-		Ukrainian:"Фінал"
+		Ukrainian:"Остаточні"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
@@ -2289,7 +2218,7 @@
 		Italian:"Azione"
 		Czech:"Činnost"
 		Simplified_Chinese:"行动"
-		Ukrainian:"Дія"		
+		Ukrainian:"Дія"
 		Traditional_Chinese:"行動"
 		Russian:"Действие"
 }
@@ -2313,10 +2242,7 @@
 		Simplified_Chinese:"地块"
 		Traditional_Chinese:"地區"
 		Czech:"Políčka"
-<<<<<<< HEAD
-=======
 		Russian:"Клетки"
->>>>>>> upstream/master
 		Ukrainian:"Клітини"
 }
 
@@ -2624,11 +2550,7 @@
 		Czech:"Město s loutkovou vládou lze kdykoliv anektovat."
 		Simplified_Chinese:"可以在任何时候选择吞并已傀儡城市。"
 		Ukrainian:"Маріонеткові міста можуть бути анексованими будь-коли"
-<<<<<<< HEAD
-		Traditional_Chinese:"可以在任何時候併吞傀儡城市。"r
-=======
 		Traditional_Chinese:"可以在任何時候併吞傀儡城市。"
->>>>>>> upstream/master
 }
 
 	"Liberate":{
