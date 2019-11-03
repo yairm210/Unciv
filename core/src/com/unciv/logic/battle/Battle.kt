@@ -235,10 +235,10 @@ class Battle(val gameInfo:GameInfo) {
         }
         city.hasJustBeenConquered = true
 
-        if (attacker.getCivInfo().isPlayerCivilization())
+        if (attackerCiv.isPlayerCivilization())
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         else {
-            city.puppetCity(attacker.getCivInfo())
+            city.puppetCity(attackerCiv)
             if (city.population.population < 4) {
                 city.annexCity()
                 city.isBeingRazed = true
