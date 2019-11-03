@@ -917,7 +917,7 @@
 		requiredTech:"Dynamite",
 		upgradesTo:"Rocket Artillery",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus",
-			"Must set up to ranged attack","Limited Visibility","Indirect Fire"],
+			"Must set up to ranged attack","Limited Visibility","Ranged attacks may be performed over obstacles"],
 		hurryCostModifier:20
 	},
 	{
@@ -1038,7 +1038,7 @@
 		cost: 375,
 		requiredResource:"Oil",
 		requiredTech:"Electronics",
-		uniques:["Indirect Fire", "Bonus vs City 30%"],
+		uniques:["Ranged attacks may be performed over obstacles", "Bonus vs City 30%"],
 		hurryCostModifier:20
 	},
 	{
@@ -1163,7 +1163,7 @@
 		requiredTech:"Rocketry",
 		requiredResource:"Aluminum",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus",
-			"Limited Visibility","Indirect Fire"],
+			"Limited Visibility","Ranged attacks may be performed over obstacles"],
 		hurryCostModifier:20
 	},
 	{

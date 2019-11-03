@@ -154,7 +154,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             innerTable.add("Music volume".tr())
 
             val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
-            musicVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
+            musicVolumeSlider.value = UnCivGame.Current.settings.musicVolume
             musicVolumeSlider.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     UnCivGame.Current.settings.musicVolume = musicVolumeSlider.value
