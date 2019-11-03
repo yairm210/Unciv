@@ -111,7 +111,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
                 } else {
 
-                    add(TextButton("Destory".tr(), skin).onClick {
+                    add(TextButton("Destroy".tr(), skin).onClick {
                         city.puppetCity(conqueringCiv)
                         city.destroyCity()
                         worldScreen.shouldUpdate=true
