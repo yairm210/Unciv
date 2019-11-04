@@ -110,9 +110,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         } else {
             nextLevelString = "Reach highest influence above 60 for alliance."
         }
-        diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt().toString().tr() + " "
-                + nextLevelString.tr()).toLabel()).row()
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
+        if (nextLevelString != "") {
+            diplomacyTable.add(nextLevelString.tr().toLabel()).row()
+        }
 
         val friendBonusText = when (otherCiv.getCityStateType()) {
             CityStateType.Cultured -> ("Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence").tr()
