@@ -735,6 +735,7 @@
 	}
 
 	"[tradeOffer] to [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
 	}
 
 
