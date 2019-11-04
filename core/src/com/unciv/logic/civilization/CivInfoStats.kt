@@ -65,7 +65,10 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
-                cultureBonus.add(Stat.Culture, 3f * (civInfo.getEra().ordinal+1))
+                var culture = 3f * (civInfo.getEra().ordinal+1)
+                if(civInfo.nation.unique=="Food and Culture from Friendly City-States are increased by 50%")
+                    culture*=1.5f
+                cultureBonus.add(Stat.Culture, culture)
                 statMap.add("City States",cultureBonus)
             }
         }
