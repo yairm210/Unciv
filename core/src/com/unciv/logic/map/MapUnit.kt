@@ -467,7 +467,7 @@ class MapUnit {
 
         actions.add {
             val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random()
-            if (!civInfo.isCityState() || chosenUnit != Constants.settler) { //City states don't get settler from ruins
+            if (!(civInfo.isCityState() || civInfo.isPlayerOneCityChallenger()) || chosenUnit != Constants.settler) { //City states and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)
                 civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
             }

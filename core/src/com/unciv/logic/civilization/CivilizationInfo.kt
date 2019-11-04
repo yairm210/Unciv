@@ -126,6 +126,10 @@ class CivilizationInfo {
 
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
+    fun isPlayerOneCityChallenger() = (
+            playerType==PlayerType.Human && 
+            !cities.isEmpty() &&
+            gameInfo.gameParameters.oneCityChallenge)
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
     fun isCityState(): Boolean = nation.isCityState()
