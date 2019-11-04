@@ -1010,6 +1010,7 @@
 	"Provides [resource]":{
 		Italian:"Dona [resource]"
 		Simplified_Chinese:"获得资源：[resource]"
+		Traditional_Chinese:"獲得資源：[resource]"
 		Czech:"Poskytuje [resource]"
 		Russian:"Обеспечивает [resource]"
 		Ukrainian:"Забезпечити [resource]"
@@ -1240,8 +1241,8 @@
 		Italian:"Converte il Cibo in Produzione"
 		Czech:"Jídlo směnit za produkci"
 		Simplified_Chinese:"食物转化为产能"
-		Ukrainian:"Їжа перетворюється на виробництво"
 		Traditional_Chinese:"食物轉化為產能"
+		Ukrainian:"Їжа перетворюється на виробництво"
 		Russian:"Обмен еды на производство"
 }
 
@@ -1958,8 +1959,8 @@
 		Italian:"Città occupata"
 		Czech:"Obsazená města"
 		Simplified_Chinese:"吞并的城市"
-		Ukrainian:"Окуповане місто"
 		Traditional_Chinese:"併吞的城市"
+		Ukrainian:"Окуповане місто"
 		Russian:"Базовое счастье"
 	}
 
@@ -2018,8 +2019,8 @@
 		Italian:"Bonus"
 		Czech:"Bonusy"
 		Simplified_Chinese:"相关加成"
-		Ukrainian:"Бонуси"
 		Traditional_Chinese:"相關加成"
+		Ukrainian:"Бонуси"
 		Russian:"Бонусы"
 }
 
@@ -2216,8 +2217,8 @@
 		Italian:"Azione"
 		Czech:"Činnost"
 		Simplified_Chinese:"行动"
-		Ukrainian:"Дія"		
 		Traditional_Chinese:"行動"
+		Ukrainian:"Дія"
 		Russian:"Действие"
 }
 
@@ -2498,17 +2499,17 @@
 	"Annexed cities become part of your regular empire.":{
 		Italian:"Le città annesse faranno parte regolare del tuo impero."
 		Czech:"Anektované města se stanou regulérní součástí naší říše."
-		Simplified_Chinese:"“吞并城市”意味着该城市将成为您的帝国直辖的一部分。"
+		Simplified_Chinese:"“吞并城市”意味着该城市将成为您的帝国直辖的一部分。",
+		Traditional_Chinese:"“併吞城市”意味著該城市將成為您的帝國的一部分。",
 		Ukrainian:"Анексовані міста стануть частиною вашою імперією."
-		Traditional_Chinese:"“併吞城市”意味著該城市將成為您的帝國的一部分。"
 }
 
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
 		Italian:"I loro cittadini genereranno il doppio dell'Infelicità, fino a quando non costruirai un Palazzo di giustizia."
 		Czech:"Jejich obyvatelé produkují 2x tolik nespokojenosti dokud napostavíte Soud."
 		Simplified_Chinese:"该城市人口产生的不满将是正常值的2倍，建造“法庭”可以使该值降低到正常值。"
-		Ukrainian:"Їх громадяни породжують 2x нещастя, якщо ви не побудуєте будинок суду."
 		Traditional_Chinese:"該城市人口產生的不滿將是一般城市的2倍，建造“法院”可以使其降低到正常值。"
+		Ukrainian:"Їх громадяни породжують 2x нещастя, якщо ви не побудуєте будинок суду."
 }
 
 	"Puppet":{
@@ -2522,33 +2523,33 @@
 	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
 		Italian:"Le città fantoccio non incrementano i costi di Scienza e Cultura, ma i loro cittadini generano Infelicità pari a una volta e mezzo."
 		Czech:"Města s loutkovou vládou nezvyšují náklady na výzkum a kulturu, ale jejich obyvatelé generují 1,5x tolik nespokojenosti."
-		Simplified_Chinese:"“傀儡城市”不会额外增加您研发科技和推行社会政策时的花费，但其人口产生的不满是正常值的1.5倍。"
+		Simplified_Chinese:"“傀儡城市”不会额外增加您研发科技和推行社会政策时的花费，但其人口产生的不满是正常值的1.5倍。",
+		Traditional_Chinese:"“傀儡城市”不會額外增加您研發科技和推行社會政策時的花費，但其人口產生的不滿是一般城市的1.5倍。",
 		Ukrainian:"Маріонеткові міста не збільшують ваші витрати на техніку чи політику, але їхні жителі створюють у 1.5 рази регулярне нещастя."
-		Traditional_Chinese:"“傀儡城市”不會額外增加您研發科技和推行社會政策時的花費，但其人口產生的不滿是一般城市的1.5倍。"
 }
 
 	"You have no control over the the production of puppeted cities.":{
 		Italian:"Non hai alcun controllo sulla produzione delle città fantoccio."
 		Czech:"Nemáme kontrolu nad produkcí ve městech s loutkovou vládou."
 		Simplified_Chinese:"您无法控制已傀儡城市的产能。"
-		Ukrainian:"Ви не маєте контролю над виробництвом маріонеткових міст."
 		Traditional_Chinese:"您無法控制傀儡城市的產能。"
+		Ukrainian:"Ви не маєте контролю над виробництвом маріонеткових міст."
 }
 
 	"Puppeted cities also generate 25% less Gold and Science.":{
 		Italian:"Gli stati fantoccio generano anche il 25% di Oro e Scienza in meno."
 		Czech:"Města s loutkovou vládou také generují o 25% méně Zlata a Výzkumu."
 		Simplified_Chinese:"已傀儡城市的金钱和科研产出-25%。"
-		Ukrainian:"маріонеткові міста також генерують на 25% менше золота та науки."
 		Traditional_Chinese:"傀儡城市的金錢和科研產出-25%。"
+		Ukrainian:"маріонеткові міста також генерують на 25% менше золота та науки."
 }
 
 	"A puppeted city can be annexed at any time.":{
 		Italian:"Puoi annettere una città fantoccio ogni volta che vuoi"
 		Czech:"Město s loutkovou vládou lze kdykoliv anektovat."
+		Traditional_Chinese:"可以在任何時候併吞傀儡城市。"
 		Simplified_Chinese:"可以在任何时候选择吞并已傀儡城市。"
 		Ukrainian:"Маріонеткові міста можуть бути анексованими будь-коли"
-		Traditional_Chinese:"可以在任何時候併吞傀儡城市。"
 }
 
 	"Liberate":{
@@ -2563,8 +2564,8 @@
 		Italian:"Liberare una città la restituirà al suo possessore originale, dandoti un'enorme bonus diplomatico nei loro confronti!"
 		Czech:"Osvobozené město se vrátí zpět k původnímu majiteli, což nám přinese masivní zlepšení vzájemných vztahů."
 		Simplified_Chinese:"“解放城市”会将该城市归还给初始拥有者，这样做会极大增进两者的关系！"
-		Ukrainian:"Визволення міста повертає його своєму первісному власнику, надаючи вам масовий приріст відносин з ними!"
 		Traditional_Chinese:"“解放城市”會將該城市歸還給初始擁有者，這樣做會極大增進兩者的關係！"
+		Ukrainian:"Визволення міста повертає його своєму первісному власнику, надаючи вам масовий приріст відносин з ними!"
 }
 
 	"Raze":{
@@ -2580,9 +2581,8 @@
 	"Razing the city annexes it, and starts razing the city to the ground.":{
 		Italian:"Questa opzione ti permetterà di annettere la città e poi di raderla al suolo."
 		Czech:"Vyhlazování města zároveň způsobí jeho anektování a započne srovnávání města ze zemí."
-		Simplified_Chinese:"“摧毁城市”意味着吞并该城市，同时开始将该城市夷为平地。"
 		Ukrainian:"Анексуючи місто ви можете його зруйнувати."
-		Simplified_Chinese:"“摧毁城市”意味着吞并该城市，同时开始将该城市夷为平地。",
+		Simplified_Chinese:"“摧毁城市”意味着吞并该城市，同时开始将该城市夷为平地。"
 		Traditional_Chinese:"“摧毀城市”意味著併吞該城市，同時開始將該城市夷為平地。"
 }
 
@@ -2590,8 +2590,8 @@
 		Italian:"La popolazione diminuirà gradualmente fino alla distruzione della città."
 		Czech:"Populace se bude postupně snižovat, až do úplného zmizení z mapy.."
 		Simplified_Chinese:"城市人口将会持续地减少直至该城市被完全摧毁。"
-		Ukrainian:"Населення поступово зменшиться, поки місто не буде зруйновано."
 		Traditional_Chinese:"城市人口將會持續減少直到該城市被完全摧毀。"
+		Ukrainian:"Населення поступово зменшиться, поки місто не буде зруйновано."
 }
 
 
@@ -2694,8 +2694,8 @@
 		Italian:"Tutorial"
 		Czech:"Návody"
 		Simplified_Chinese:"教程"
-    Ukrainian:"Навчальні посібники"
 		Traditional_Chinese:"教學"
+    	Ukrainian:"Навчальні посібники"
 		Russian:"Советы"
 }
 
@@ -2937,8 +2937,8 @@
 		Italian:"Ripulisci mappa"
 		Czech:"Vyčistit mapu"
 		Simplified_Chinese:"清除当前地图"
-		Ukrainian:"Очистити поточну мапу"
 		Traditional_Chinese:"清除目前地圖"
+		Ukrainian:"Очистити поточну мапу"
 		Russian:"Очистить карту"
 }
 
@@ -2946,8 +2946,8 @@
 		Italian:"Salva mappa"
 		Czech:"Uložit mapu"
 		Simplified_Chinese:"保存地图"
-		Ukrainian:"Зберегти мапу"
 		Traditional_Chinese:"儲存地圖"
+		Ukrainian:"Зберегти мапу"
 		Russian:"Сохранить карту"
 }
 
@@ -2955,8 +2955,8 @@
 		Italian:"Carica mappa"
 		Czech:"Načíst mapu"
 		Simplified_Chinese:"读取地图"
-		Ukrainian:"Завантажити мапу"
 		Traditional_Chinese:"讀取地圖"
+		Ukrainian:"Завантажити мапу"
 		Russian:"Загрузить карту"
 }
 
@@ -2964,8 +2964,8 @@
 		Italian:"Scarica mappa"
 		Czech:"Stáhnout mapu"
 		Simplified_Chinese:"下载地图"
-		Ukrainian:"Завантажити мапу"
 		Traditional_Chinese:"下載地圖"
+		Ukrainian:"Завантажити мапу"
 		Russian:"Скачать карту"
 }
 
@@ -2973,8 +2973,8 @@
 		Italian:"Esci dall'editor"
 		Czech:"Ukončit editování mapy"
 		Simplified_Chinese:"退出地图编辑器"
-		Ukrainian:"Вийти з редактора мап"
 		Traditional_Chinese:"退出地圖編輯器"
+		Ukrainian:"Вийти з редактора мап"
 		Russian:"Выйти из редактора карт"
 }
 
