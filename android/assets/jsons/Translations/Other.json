@@ -215,8 +215,8 @@
 		Simplified_Chinese:"攻击范围",
 		Traditional_Chinese:"攻擊範圍",
 		Czech:"Vzdálenost"
-    Russian:"Радиус"
-    Ukrainian:"Дальність"
+    		Russian:"Радиус"
+    		Ukrainian:"Дальність"
 	}
 
 /////// Unit actions
@@ -2569,21 +2569,13 @@
 }
 
 	"Raze":{
-		Italian:"Distruggi"
+		Italian:"Radi al suolo"
 		French:"Razer"
 		Simplified_Chinese:"摧毁"
 		Traditional_Chinese:"摧毀"
 		Russian:"Разорить"
 		Czech:"Srovnat se zemí"
 		Ukrainian:"Зруйнувати"
-}
-
-	"Destroy":{
-
-}
-
-	"Destroying the city instantly razes the city to the ground.":{
-
 }
 
 	"Razing the city annexes it, and starts razing the city to the ground.":{
@@ -2600,6 +2592,14 @@
 		Simplified_Chinese:"城市人口将会持续地减少直至该城市被完全摧毁。"
 		Traditional_Chinese:"城市人口將會持續減少直到該城市被完全摧毀。"
 		Ukrainian:"Населення поступово зменшиться, поки місто не буде зруйновано."
+}
+
+	"Destroy":{
+		Italian:"Distruggi"
+}
+
+	"Destroying the city instantly razes the city to the ground.":{
+		Italian:"Questa opzione ti consente di radere immediatamente al suolo la città"
 }
 
 
@@ -2703,7 +2703,7 @@
 		Czech:"Návody"
 		Simplified_Chinese:"教程"
 		Traditional_Chinese:"教學"
-    	Ukrainian:"Навчальні посібники"
+    		Ukrainian:"Навчальні посібники"
 		Russian:"Советы"
 }
 
