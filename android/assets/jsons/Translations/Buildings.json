@@ -109,7 +109,6 @@
 		Traditional_Chinese:"“時間能粉碎一切；所有事物中將在時流中衰老並被遺忘。”——亞里士多德"
 		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
-		Hungarian:"Stonehenge"
 }
 
 	/*
@@ -168,7 +167,7 @@
 		Portuguese:"+1 Ciência a cada 2 habitantes"
 		Polish:"+1 do nauki na 2 obywateli"
 		Czech:"+1 Výzkum za každé 2 členy Populace"
-		Hungarian:"+1 tudomány per 2 népesség"
+		Hungarian:"+1 tudomány 2 népességenként"
 }
 
 	"Paper Maker":{
@@ -197,7 +196,7 @@
 		German:"Die Große Bibliothek"
 		Polish:"Wielka Biblioteka"
 		Czech:"Alexandrijská knihovna"
-		Hungarian:"A nagy könyvtár"
+		Hungarian:"Alexandriai könyvtár"
 }
 
 	"Free Technology":{
@@ -218,7 +217,6 @@
 		Czech:"'Knihovny jsou svatyně, ve kterých jsou zachovány a uloženy všechny relikvie starověkých světců, plné skutečné ctnosti, to vše bez klamů nebo podvodů.' - Sir Francis Bacon"
 		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
 		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
-		Hungarian:"'A könyvtárak olyan szentélyként szolgálnak, ahol az ősi szentek minden ereklyéje tele van valódi erényekkel, és minden más megtévesztés vagy bevezetés nélkül megőrizhető és áthelyezésre kerül.' - Sir Francis Bacon "
 }
 
 	"Circus":{
@@ -248,7 +246,7 @@
 		German:"Mauern"
 		Polish:"Mury"
 		Czech:"Hradby"
-		Hungarian:„Falak”
+		Hungarian:"Falak"
 }
 
 	"Walls of Babylon":{
@@ -300,7 +298,7 @@
 		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
 		Polish:"Prędkość pracy robotnika zwiększona o 25%"
 		Czech:"Rychlost dělníka se zvýšila o 25% "
-		Hungarian:"A munkavállalók építése 25% -kal nőtt"
+		Hungarian:"A munkások építési sebessége 25%-kal nőtt"
 }
 
 	"Provides 2 free workers":{
@@ -316,7 +314,7 @@
 		Portuguese:"Proporciona 2 trabalhadores gratis"
 		Polish:"Dostarcza 2-óch darmowych robotników"
 		Czech:"Poskytuje 2 dělníky zdarma"
-		Hungarian:"2 szabad munkavállalót biztosít"
+		Hungarian:"2 ingyenes munkást ad"
 }
 
 	"Barracks":{
@@ -331,7 +329,7 @@
 		German:"Baracken"
 		Polish:"Koszary"
 		Czech:"Kasárny"
-		Hungarian:"Barracks"
+		Hungarian:"Laktanyák"
 }
 
 	"Krepost":{ // russian uique, transliterate this probably, this is a russian word
@@ -359,7 +357,7 @@
 		Polish:"Koszt uzyskania nowego pola (w kulturze lub złocie) zmniejszony o 25% w tym mieście"
 		Russian:"-25% к необходимому количеству Культура и Золото для получения клеток вокруг данного города"
 		Czech:"Zlato a kulturní body na nákup nového území ve městě se snížily o 25%"
-		Hungarian:"Az új burkolólapok megvásárlásának kulturális és aranyköltsége 25% -kal csökkent ebben a városban"
+		Hungarian:"Új területek kultúra és arany költsége 25%-al csökkent ebben a városban"
 }
 
 	"Colossus":{
@@ -381,7 +379,6 @@
 		Polish:"'Człowiek ten stanął okrakiem nad światem jak Kolos, gdy my, ludzie malusieńcy, spod jego wielkich nóg zerkamy wokół, szukając sobie upodlonych grobów.'– William Szekspir, Juliusz Cezar"
 		Czech:"'Proč člověk, řídil úzký svět jako kolos, a my drobní muži kráčíme pod jeho obrovskýma nohama, abychom spočinuli v nečestných hrobech.' - William Shakespeare, Julius Caesar"
 		Russian:"'По миру тесному шагает колосс, а мы, ничтожные людишки, у исполинских ног его снуем и для себя могил бесславных ищем.' - Уильям Шекспир, 'Юлий Цезарь'"
-		Hungarian:"'Miért, az ember, elhúzza a szűk világot, mint egy kolossz, és mi kicsinyes emberek sétálunk az ő hatalmas lábai alatt, és bámulunk, hogy megkeressük a tiszteletlen sírokat.' - William Shakespeare, Julius Caesar "
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -392,7 +389,7 @@
 		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
 		Russian:"+1 Золото от обрабатываемых водных клеток вокруг города"
 		Czech:"+1 zlata za každé pole s vodou v tomto městě"
-		Hungarian:"+1 arany megmunkált vízkőből a városban"
+		Hungarian:"+1 arany a megmunkált vízi területekből a városban"
 }
 
 	"Temple":{
@@ -430,7 +427,6 @@
 		French:"Mosquée d'adobe" //official translation
 		Polish:"Wielki Meczet w Dżennie" //from civipedia
 		Czech:"Velká mešita v Djenné"
-		Hungarian:"Sár piramis mecset"
 }
 	*/
 
@@ -511,7 +507,6 @@
 		Polish:"'Katun jest w Chichen Itza. Tam powstanie osada Itza. Przybędzie kwezal, przybędzie zielony ptak. Przybędzie Ah Kantenal. Oto słowo boże. Itza przybędzie.' – Księgi Chilam Balam"
 		Czech:"'Katun je zřízen v Chichén Itza. Tam musí probíhat vypořádání Itzy. Quetzal musí přijít, zelený pták musí přiletět. Ah Kantenal musí přijít. Je to Boží slovo. Itza musí přijde.' - Knihy Chilama Baláma"
 		Russian:"'Катун установлен в Чичен-Итце. Здесь будет поселение Итца. Кетцаль придет, зеленая птица придет. Ах Кантеналь придет. Вот слово Бога. Народ Итца придет.' - из книг Чилам Балам"
-		Hungarian:"'A katun a Chichen Itza-nál jön létre. Az Itza településén ott történik. Jön a quetzal, eljön a zöld madár. Ah Kantenal jön. Isten szavát jelenti. Ez Itza jön.' - Chilam Balam könyvei "
 }
 
 	"Golden Age length increases +50%":{
@@ -527,7 +522,7 @@
 		Portuguese:"Duração de idade dourada aumentada em 50%"
 		Polish:"Czas trwania Złotego Wieku zwiększony o 50%"
 		Czech:"Délka Zlatého věku se prodloužila o 50%"
-		Hungarian:"Az aranykor hossza + 50% -kal növekszik"
+		Hungarian:"Az aranykor hossza +50%-kal növekszik"
 }
 
 	"Lighthouse":{
@@ -569,7 +564,7 @@
 		Polish:"+1 do żywności z pól wybrzeża i oceanicznych"
 		Russian:"+1 Еда от клеток около берега и в океане"
 		Czech:"+1 Jídlo z oceánu a pobřežních polí"
-		Hungarian:"+1 étel az óceán- és parti csempékből"
+		Hungarian:"+1 étel az óceán- és parti területekből"
 }
 
 	"The Great Lighthouse":{
@@ -584,7 +579,7 @@
 		Polish:"Latarnia z Faros" //common polish name
 		Russian:"Фаросский маяк"
 		Czech:"Maják na ostrově Faru"
-		Hungarian:"A nagy világítótorony"
+		Hungarian:"Pharoszi világítótorony"
 }
 
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
@@ -608,7 +603,7 @@
 		Polish:"Każda jednostka marynarki otrzymuje +1 do ruchu i pola widzenia"
 		Russian:"Все военно-морские юниты получают +1 к движению и обзору"
 		Czech:"Všechny vojenské námořní jednotky získají +1 pohyb a +1 větší rozhled"
-		Hungarian:"Minden katonai haditengerészeti egység +1 mozgást és +1 látványt kap"
+		Hungarian:"Minden haditengerészeti egység +1 mozgást és +1 látótávolságot kap"
 }
 
 	"Courthouse":{
@@ -657,7 +652,7 @@
 		German:"Stall"
 		Polish:"Stajnia"
 		Czech:"Stáje"
-		Hungarian:"Stabil"
+		Hungarian:"Istálló"
 }
 
 	"+15% Production when building Mounted Units in this city":{
@@ -669,7 +664,7 @@
 		Polish:"+15% do produkcji jednostek kawalerii w tym mieście"
 		Russian:"+15% Производство при постройке конных юнитов в данном городе"
 		Czech:"+15% produkce při výstavbě jízdních jednotek v tomto městě"
-		Hungarian:"+ 15% termelés a városba szerelt egységek építésekor"
+		Hungarian:"+15% termelés a városban kiképzett lovas egységekre"
 }
 
 	"Circus Maximus":{
@@ -699,7 +694,7 @@
 		German:"Hängende Gärten"
 		Polish:"Wiszące Ogrody"
 		Czech:"Visuté zahrady Semiramidiny"
-		Hungarian:"Függő kertek"
+		Hungarian:"Szemiramisz függőkertje"
 }
 
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
@@ -710,7 +705,6 @@
 		German:"'Wenn ein sterbliches Wesen je die Stimme Gottes hören würde, dann in einem Garten beim Wehen des Abendwindes.' - F. Frankfort Moore"
 		Czech:"'Myslím, že kdyby někdy smrtelník slyšel Boží slovo, bylo by to v zahradě za chladného dne.' - F. Frankfort Moore"
 		Russian:"'Если бы смертному когда-либо прозвучал голос Бога, это случилось бы в саду на закате дня.' - Ф. Франкфорт Мур"
-		Hungarian:"'Azt hiszem, ha valaha egy halandó meghallja Isten szavát, az a kertben lenne, a nap hideg napján.' - F. Frankfort Moore "
 }
 
 	/*
@@ -722,7 +716,6 @@
 		Traditional_Chinese:"宙斯神像"
 		Polish:"Posąg Zeusa Olimpijskiego" //common polish name
 		Czech:"Socha Zeuse"
-		Hungarian:"Zeusz szobra"
 }
 
 	"+15% Combat Strenght when attacking Cities":{
@@ -732,14 +725,12 @@
 		Traditional_Chinese:"在攻擊城市時所有單位+15%戰鬥力"
 		Polish:"+15% siły bojowej do ataku na miasta"
 		Czech:"+15% k bojové síle při útoku na město"
-		Hungarian:"+ 15% harci erő a városok támadásakor"
 }
 
 	"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad":{
 		Italian:"'Così parlò, il figlio di Crono, e con le nere sopracciglia accennò; le chiome immortali del sire si scompigliarono sul capo divino: scosse tutto l'Olimpo.' - L'Iliade"
 		Polish:"'Syn Kronosa przemówił i skinął głową z ciemnymi brwiami i na wieki namaszczone włosy wielkiego boga spłynęły z boskiej głowy, a cały Olimp zatrząsł się w posadach.' - Iliada"
 		Czech:"'Promluvil, syn Kronosů, přikývl hlavou, temným obočím a nesmrtelně pomazané vlasy velkého boha se mu z jeho božské hlavy vyvalily a celý Olymp se otřásl.' - Ilias"
-		Hungarian:"'Beszélt, Kronos fia, és bólintott a fejével a sötét szemöldökkel, és a nagy istennek halhatatlanul felkentett haja söpört az isteni fejéből, és az összes Olimpos megrázódott.' - Az Iliad "
 }
 
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
@@ -750,7 +741,6 @@
 		Traditional_Chinese:"摩索拉斯陵墓"
 		Polish:"Mauzoleum w Halikarnasie"
 		Czech:"Mauzoleum v Halikarnassu"
-		Hungarian:"Halicarnassus mauzóleum"
 }
 
 	"+2 Gold from every source of Marble and Stone":{
@@ -760,49 +750,42 @@
 		Traditional_Chinese:"所在城市開發的每處大理石或花崗岩資源額外+2金钱"
 		Polish:"+2 do złota z każdego złoża marmuru i kamienia"
 		Czech:"+2 zlata za každý zdroj Mramoru a Kamene"
-		Hungarian:"+2 Arany minden forrásból, márványból és kőből"
 }
 
 	"Gain 100 Gold when you use a Great Person.":{
 		Italian:"Guadagni 100 Oro ogni volta che consumi un Grande Personaggio"
 		Czech:"Získáme 100 Zlata za každé použití Velké Osobnosti"
 		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka"
-		Hungarian:"Nyerj 100 aranyat, ha nagyszerű embert használ."
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
 		Italian:"'Tutta la terra è tomba di uomini eroici; la loro storia non resta solo sulla pietra sopra la loro creta, ma si ritrova ovunque, invisibile, intessuta nella vita degli altri.' - Pericle"
 		Polish:"'Cała ziemia jest grobowcem bohaterskich mężczyzn, a ich historia jest nie tylko wyryta w kamieniu, lecz splata się niewidocznymi nićmi z losami innych ludzi.' – Perykles"
 		Czech:"'Celá Země je hrobkou hrdinských mužů a jejich příběh není vytesán do kamene, ale zůstává všude bez viditelného symbolu vpleteného do života jiných lidí.' - Periklés"
-		Hungarian:"Az egész föld a hősies emberek sírja, és történetüket nemcsak az agyag fölött kőre adják, hanem mindenütt ott marad, anélkül, hogy látható szimbólum lenne beágyazva más emberek életébe." - Periklész "
 }
 
 	"Petra":{
 		Italian:"Petra"
 		Czech:"Petra"
 		Polish:"Petra"
-		Hungarian:"Petra"
 }
 
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
 		Italian:"+1 Cibo e +1 Produzione da tutte le caselle desertiche sfruttate dalla città (eccetto Terreni allagati)"
 		Czech:"+1 Jídlo a +1 Produkce za každé obděláváné políčkou pouště ve měste (kromě Údolní nivy)"
 		Polish:"+1 żywności i produkcji ze wszystkich pustynnych pól w mieście"
-		Hungarian:"+1 Élelmiszer és +1 termelés az összes megmunkált sivatagi lapkából a városban (az ártéri síkság kivételével)"
 }
 
 	"+6 Culture when discovering Archeology":{
 		Italian:"+6 Cultura quando scopri l'Archeologia"
 		Czech:"+6 Kulturních bodů při objevení Archeologie"
 		Polish:"+6 do kultury za wynalezienie Archeologii"
-		Hungarian:"+6 kultúra a régészet felfedezésekor"
 }
 
 	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
 		Italian:"'...colui che beve l'acqua che io gli darò, dice il Signore, avrà dentro di sé una sorgente inesauribile dalla quale sgorgherà la vita eterna. Lasciate che mi conducano alla tua montagna sacra nel luogo dove dimori, attraverso il deserto e oltre la montagna, nella Gola della Luna Crecente...' - Indiana Jones"
 		Polish:"'...kto zaś będzie pił wodę, którą Ja mu dam, nie będzie pragnął na wieki, lecz woda, którą Ja mu dam, stanie się w nim źródłem wody wytryskującej ku życiu wiecznemu. Niech dane mi będzie dotrzeć do Świętej Góry poprzez pustynię, góry i Dolinę Półksiężyca, aż do świątyni, gdzie spoczywa Czara.' - Indiana Jones"
 		Czech:"'... kdo vypije vodu, kterou mu dám, řekl Lord, bude mít v sobě pramen věčného života. Nechť mě přivedou na svatou horu. Přes poušť a přes hory do kaňonu půlměsíce ...' - Indiana Jones"
-		Hungarian:"" ... aki ivja a vizet, azt adom neki, azt mondja az Úr, és benne lesz egy forrás benne, amely az örök életre gyógyul. Hadd vigyenek a szent hegyére a helyedre, ahol lakolsz. A sivatagon keresztül és keresztül a hegy a félhold kanyonjáig ... '- Indiana Jones "
 }
 	*/
 
@@ -830,7 +813,7 @@
 		Russian:"Терракотовая армия"
 		Czech:"Terakotová armáda"
 		German:"Terrakotta Armee"
-		Hungarian:"Terrakotta hadsereg"
+		Hungarian:"Agyaghadsereg"
 }
 
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
@@ -841,7 +824,6 @@
 		German:"'Behandle Deine Soldaten als seien sie Deine Kinder und sie werden Dir in die tiefsten Täler folgen; betrachte sie als Deine geliebten Söhne und sie werden an Deiner Seite stehen, sogar bis zum Tode.' -Sun Tzu"
 		Czech:"'Považujte své vojáky za své děti a budou vás následovat do nejhlubších údolí; podívej se na ně jako na své milované syny, a ti budou za vámi stát až do smrti.' - Sun Tzu"
 		Russian:"'Если будешь смотреть на солдат, как на детей, сможешь отправиться с ними в самое глубокое ущелье; если будешь смотреть на солдат, как на любимых сыновей, сможешь идти с ними хоть на смерть.' - Сунь Цзы"
-		Hungarian:"'A katonáit gyermekeinek tekintjük, és követnek téged a legmélyebb völgyekbe; nézz rájuk, mint saját szeretett fiaidra, és halálig is állnak majd mellettetek.' - Sun Tzu "
 }
 
 	"Market":{
@@ -884,7 +866,7 @@
 		Polish:"Każdy luksusowy surowiec w granicach miasta jest liczony podwójnie"
 		Russian:"Предоставляет копию каждого обрабатываемого редкого ресурса около данного города"
 		Czech:"Poskytne 1 extra kopii každé luxusní suroviny na území tohoto města"
-		Hungarian:"Minden további továbbfejlesztett luxusforrásból 1 extra példányt biztosít a város közelében"
+		Hungarian:"Minden megmunkált luxus alapanyagból kapsz egy extra példányt ebben a városban"
 }
 
 	"+2 Gold for each source of Oil and oasis":{
@@ -978,7 +960,6 @@
 		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
 		Polish:"+33% do produkcji Wielkich Ludzi we wszystkich miastach"
 		Czech:"+33% produkce Velkých Osobností ve všech městech"
-		Hungarian:"+ 33% nagyszerű ember generáció minden városban"
 }
 
 	"Mint":{
@@ -993,7 +974,7 @@
 		German:"Prägerei"
 		Polish:"Mennica"
 		Czech:"Mincovna"
-		Hungarian:"Menta"
+		Hungarian:"Zecca"
 }
 
 	"Machu Picchu":{
@@ -1018,7 +999,6 @@
 		Polish:"'Niewiele romansów może się równać ze związkiem granitowej cytadeli stojącej na strzelistych urwiskach Machu Picchu, korony Kraju Inków.' – Hiram Bingham"
 		Czech:"'Těžko se hledá romantika, jenž může někdy překonat žulové citadely na vrcholu broukavých srázů Machu Picchu, koruny Incké země.' - Hiram Bingham"
 		Russian:"'Даже самый захватывающий вид не вызовет такого движения сердца, как гранитная крепость на крутых уступах Мачу-Пикчу - короны земли инков.' - Хирам Бингам"
-		Hungarian:"'Kevés római szerepet tölt be valaha a gránit fellegváré, amely Machu Picchu, az inkaföld korona korbácsoló üledékei felett van.' - Hiram Bingham "
 }
 
 	"Gold from all trade routes +25%":{
@@ -1034,7 +1014,7 @@
 		Portuguese:"+25% de ouro de todas as linhas comerciais" // Linhas comerciais= comertial lines, replace with rotas de comércio if needed
 		Polish:"+25% złota ze wszystkich szlaków handlowych"
 		Czech:"+25% Zlata ze všech obchodních cest"
-		Hungarian:"Arany minden forgalmi útról + 25%"
+		Hungarian:"+25%-al több arany minden kereskedelmi útra"
 }
 
 	"Aqueduct":{
@@ -1065,7 +1045,6 @@
 		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
 		Polish:"40% więcej żywności za każdego nowego obywatela"
 		Czech:"40% Jídla je zachováno poté, co se město rozroste o nového obyvatele"
-		Hungarian:"Az élelmiszer 40% -át átviszik egy új polgár születése után"
 }
 
 	"Great Wall":{
@@ -1076,7 +1055,7 @@
 		Polish:"Wielki Mur Chiński"
 		Russian:"Великая стена"
 		Czech:"Velká čínská zeď"
-		Hungarian:"Nagy Fal"
+		Hungarian:"Kínai nagy fal"
 }
 
 	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
@@ -1086,7 +1065,6 @@
 		Polish:"'Sztuka wojny uczy nas nie polegać na prawdopodobieństwie tego, iż wróg nie zaatakuje, a na tym, że nasze pozycje są niedostępne.' – Sun Zi"
 		Czech:"'Umění války nás učí nespoléhat na pravděpodobnost, že nepřítel neútočí, ale spíše na skutečnost, že je naše pozice nepřekonatelná.' - Sun Tzu"
 		Russian:"'Искуство ведения войны заключается в том, чтобы не полагаться на то, что враг не нападет, а на то, что я сделаю нападение на себя невозможным.' - Сунь Цзы"
-		Hungarian:"'A háború művészete arra tanít bennünket, hogy nem az ellenfél támadásának valószínűségére támaszkodunk, hanem arra a tényre, hogy helyzetünket megmenthetetlenné tettük.' - Sun Tzu "
 }
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
@@ -1097,7 +1075,7 @@
 		Polish:"Każda lądowa jednostka wroga musi zużyć dodatkowy 1 punkt ruchu by wejść na twoje terytorium (przestarzały po odkryciu dynamitu)"
 		Russian:"Вражеские наземные юниты должны тратить дополнительное очко передвижения на вашей территории (устаревает при открытии Динамита)"
 		Czech:"Nepřátelské pozemní jednotky spotřebují 1 extra bod pohybu uvnitř našeho území (do vynalezení dynamitu)"
-		Hungarian:"Az ellenséges szárazföldi egységeknek 1 extra mozgási pontot kell költeniük, amikor a területén vannak (elavult a Dynamite-ra)"
+		Hungarian:"Az ellenséges szárazföldi egységeknek egy extra mozgási pontot kell költeniük ha a területeden belül tartózkodnak (a dinamit kikutatása megszünteti a hatást)"
 }
 
 	"Workshop":{
@@ -1123,7 +1101,6 @@
 		Simplified_Chinese:"长屋"
 		Traditional_Chinese:"長屋"
 		Czech:"Dlouhý dům"
-		Hungarian:"Longhouse"
 }
 
 	"+1 Production from each worked Forest tile":{
@@ -1134,7 +1111,7 @@
 		Simplified_Chinese:"每个工作的森林地块+1产能"
 		Traditional_Chinese:"每個工作的森林地區+1產能"
 		Czech:"+1 produkce pro každého dělníka na políčku s lesem"
-		Hungarian:"+1 Termelés minden megmunkált erdőlapból"
+		Hungarian:"+1 Termelés minden megmunkált erdős területből"
 }
 
 	"Forge":{
@@ -1209,7 +1186,7 @@
 		German:"Universität"
 		Polish:"Uniwersytet"
 		Czech:"Univerzita"
-		Hungarian:"Egyetemi"
+		Hungarian:"Egyetem"
 }
 
 	"+2 Science from each worked Jungle tile":{
@@ -1225,14 +1202,13 @@
 		Portuguese:"Selvas proporcionam +2 ciência"
 		Polish:"+2 nauki z pól dżungli"
 		Czech:"+2 Výzkum za každého dělníka na políčku džungle"
-		Hungarian:"+2 Tudomány minden megmunkált dzsungellapból"
+		Hungarian:"+2 Tudomány minden megmunkált dzsungel területből"
 }
 	"Wat":{	//Siamese unique
 		Italian:"Wat"
 		Polish:"Wat"
 		//same in French
 		Czech:"Vat"
-		Hungarian:"Wat"
 }
 
 	"Oxford University":{
@@ -1273,7 +1249,6 @@
 		Traditional_Chinese:"莫臥兒城塞"
 		Russian:"Красный Форт"
 		Czech:"Mughalská pevnost"
-		Hungarian:"Mughal erőd"
 }
 
 	"Alhambra":{
@@ -1295,7 +1270,6 @@
 		Polish:"'Sprawiedliwość jest twierdzą nie do zdobycia, wybudowaną na grzbiecie góry, której nie straszne ani gwałtowne wichury, ani potężne armie.' - Joseph Addison"
 		Czech: "'Spravedlnost je nepřekonatelná pevnost postavená na vrcholu hory, kterou nesvrhne dravá voda ani nemůže být zničena silou armád.' - Joseph Addison"
 		Russian:"'Справедливость - это неприступная крепость, построенная на гребне горы, которую не может разрушить ярость стихий или уничтожить армия солдат.' - Джозеф Эддисон"
-		Hungarian:"'Az igazságosság egy elhagyhatatlan erőd, amely egy hegy homlokára épül, amelyet nem lehet megdönteni a fellegvár erőszakával, és a hadsereg erőivel sem bontható le.' - Joseph Addison "
 }
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -1307,7 +1281,7 @@
 		Polish:"Każdy nowo wyszkolona w tym mieście jednostka walcząca w zwarciu otrzymuje umiejętność Musztra I"
 		Russian:"Производимые в данном городе юниты конные, бронированные, а также ближнего боя получают повышение Муштра I"
 		Czech:"Všechny nově postavené jednotky pro boj zblízka, na dálku a obrněné jednotky v tomto městě získají povýšení Dril 1 "
-		Hungarian:"Az összes újonnan kiképzett közelharci, szerelt és páncélozott egység ebben a városban megkapja a Drill I promóciót"
+		Hungarian:"Az összes újonnan kiképzett közelharci, lovas és páncélozott egység ebben a városban megkapja a Drill I promóciót"
 }
 
 	"Angkor Wat":{
@@ -1332,7 +1306,6 @@
 		Polish:"'Ta świątynia… nie ma sobie równych w całym świecie. Ma wieże, zdobienia i całe wyrafinowanie, które mógł stworzyć geniusz człowieka.' - Antonio da Magdalena"
 		Czech:"'Chrám je jako žádná jiná budova na světě. Má věže a výzdobu a všechna vylepšení, která si lidský génius dokáže představit.' - Antonio da Magdalena"
 		Russian:"'Храм - выдающееся сооружение. Оно имеет башни, рельефы и украшения, какие только может вообразить человеческий гений.' - Антонио де Магдалена"
-		Hungarian:"'A templom nem olyan, mint egy másik épület a világon. Tornyaival és dekorációjával, valamint minden olyan finomítással rendelkezik, amelyekre az emberi zseni képes gondolkodni.' - Antonio da Magdalena "
 }
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -1348,7 +1321,7 @@
 		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
 		Polish:"Koszt zakupu nowych pól obniżony o 25%"
 		Czech:"Cena za nákup nového území města se sníží o 25%"
-		Hungarian:"Az új burkolólapok beszerzésének költsége 25% -kal csökkent"
+		Hungarian:"Az új területek vásárlási költsége 25%-kal csökkent"
 }
 
 	"Porcelain Tower":{
@@ -1387,7 +1360,7 @@
 		Polish:"Pojawia się darmowy Wielki Naukowiec"
 		Russian:"Появляется бесплатный Великий Учёный"
 		Czech:"Získáme Velkého Vědce zdarma"
-		Hungarian:"Megjelenik a szabad tudós"
+		Hungarian:"Megjelenik egy nagy feltaláló"
 }
 
 	"Ironworks":{
@@ -1472,7 +1445,6 @@
 		Polish:"'Żyję i kocham w bożym blasku.' – Michał Anioł Buonarroti"
 		Czech:"'Žiji a miluji v zvláštním božím světle.' - Michelangelo Buonarroti"
 		Russian:"'Я живу и люблю в особом свете Господа.' - Микеланджело Буонаротти"
-		Hungarian:"'Élek és szeretek Isten sajátos fényében.' - Michelangelo Buonarroti "
 }
 
 	"Culture in all cities increased by 25%":{
@@ -1488,7 +1460,7 @@
 		Portuguese:"Cultura em todas as cidades incrementada em 25%"
 		Polish:"Kultura we wszystkich miastach wzrasta o 25%"
 		Czech:"Kultura ve všech městech vzroste o 25%"
-		Hungarian:"A kultúra minden városban 25% -kal nőtt"
+		Hungarian:"A kultúra minden városban 25%-kal nőtt"
 }
 
 	"Bank":{
@@ -1514,7 +1486,6 @@
 		Polish:"Hanza"
 		Russian:"Ганзея"
 		Czech:"Hanza"
-		Hungarian:"Hanse"
 }
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
@@ -1525,7 +1496,7 @@
 		Traditional_Chinese:"每調通往城邦的貿易路線+5%產能"
 		Russian:"+5% Производство за каждый торговый маршрут с городом-государством"
 		Czech:"+5% produkce pro každou obchodní stezku s hlavním městem říše"
-		Hungarian:"+ 5% termelés minden birodalomban lévő városi állammal folytatott útvonalhoz"
+		Hungarian:"+5% termelés minden a birodalomban lévő városi állammal folytatott útvonalhoz"
 }
 
 	"Satrap's Court":{	//Persian unique
@@ -1536,7 +1507,6 @@
 		Traditional_Chinese:"總督府"
 		Czech:"Satrapův dvůr"
 		Russian:"Двор сатрапа"
-		Hungarian:"Satrap's Court"
 }
 
 	"Forbidden Palace":{
@@ -1561,7 +1531,6 @@
 		Polish:"'Większość z nas może wybrać, czy świat będzie nam pałacem, czy więzieniem.' – John Lubbock"
 		Czech:"'Většina z nás se může rozhodnout, jestli si z tohoto světa uděláme palác nebo vězení.' - John Lubbock"
 		Russian:"'Фактически любой из нас может по собственному желанию превратить мир во дворец или в темницу' - Джон Лаббок"
-		Hungarian:"'Legtöbbünk, ahogy választunk, ebből a világból akár palotát, akár börtönöt készíthet' - John Lubbock"
 }
 
 	"Unhappiness from population decreased by 10%":{
@@ -1577,7 +1546,7 @@
 		Portuguese:"Infelicidade da população reduzida em 10%"
 		Polish:"Niezadowolenie z populacji zmniejszone o 10%"
 		Czech:"Nespokojenost za celkovou Populaci se snižuje o 10%"
-		Hungarian:"A népességtől való boldogtalanság 10% -kal csökkent"
+		Hungarian:"A népességből fakadó boldogtalanság 10%-kal csökkent"
 }
 
 	"Theatre":{
@@ -1616,7 +1585,6 @@
 		Polish:"'Nie klaszczcie za mocno - to bardzo stary budynek.' – John Osborne"
 		Czech:"'Příliš netleskejte - je to velmi stará budova' - John Osbourne"
 		Russian:"'Не хлопайте так громко - здание старое, может развалиться.' - Джон Осборн"
-		Hungarian:"'Ne tapsolj túl keményen - ez egy nagyon régi épület.' - John Osbourne "
 }
 
 	"Free Great Person":{
@@ -1630,7 +1598,6 @@
 		Polish:"Darmowy Wielki Człowiek"
 		Russian:"Бесплатный Великий человек"
 		Czech:"Velká Osobnost zdarma"
-		Hungarian:"Ingyenes nagy ember"
 }
 
 	"Choose a free great person":{
@@ -1641,7 +1608,6 @@
 		Polish:"Wybierz darmowego Wielkiego Człowieka"
 		Russian:"Выбор великого человека"
 		Czech:"Vyberme si Velkou Osobnost zdarma"
-		Hungarian:"Válasszon egy ingyenes nagyszerű embert"
 }
 
 	"Get ":{
@@ -1650,7 +1616,6 @@
 		Traditional_Chinese:"獲得"
 		Czech:"Vybrat: "
 		Polish:"Otrzymaj"
-		Hungarian:"Get"
 }
 
 	"Himeji Castle":{
@@ -1671,7 +1636,6 @@
 		Polish:"'Bushido - Droga wojownika - ujawnia się w obecności śmierci. Oznacza wybranie śmierci, gdy do wyboru jest życie lub śmierć. Nie ma innego uzasadnienia.' – Yamamoto Tsunetomo"
 		Czech:"'Bushido je realizováno v přítomnosti smrti. To znamená vybrat si smrt, kdykoli je na výběr mezi životem a smrtí. Neexistuje žádná jiná volba.' - Yamamoto Tsunetomo"
 		Russian:"'Бусидо - путь воина - означает смерть. Когда для выбора имеются два пути, выбирай тот, который ведет к смерти. Не рассуждай! Направь мысль на путь, который ты предпочел, и иди.' - Ямамото Цунетомо"
-		Hungarian:"'A Bushido halál jelenlétében valósul meg. Ez azt jelenti, hogy a halált választjuk, amikor választhatunk az élet és a halál között. Nincs más érvelés.' - Yamamoto Tsunetomo "
 }
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1682,7 +1646,7 @@
 		Polish:"+15% do siły ataku jednostek walczących na przyjaznym terytorium"
 		Russian:"+15% к силе атаки юнитов, сражающихся на дружественной территории"
 		Czech:"+15% bojové síly pro jednotky bojující v přátelském území"
-		Hungarian:"+ 15% harci erő a barátságos területen harcoló egységek számára"
+		Hungarian:"+15% harci erő a barátságos területen harcoló egységek számára"
 }
 
 	"Taj Mahal":{
@@ -1708,7 +1672,6 @@
 		Polish:"'Tadż Mahal wznosi się nad brzegiem rzeki niczym samotna łza wisząca na policzku czasu.' – Rabindranath Tagore"
 		Czech:"'Tádž Mahal stoupá nad břehy řeky jako osamělá slza zavěšená na tváři času.' - Rabindranath Tagore"
 		Russian:"'Пусть великолепие алмаза, рубина исчезнет, как магическое мерцание от радуги, только пусть одна слеза - Тадж-Махал - ярко сияет на щеке времени.' - Рабиндарат Тагор"
-		Hungarian:"'A Taj Mahal úgy emelkedik fel a folyó partján, mint egy magányos könny, amelyet az idő arcán függesztettek fel.' - Rabindranath Tagore "
 }
 
 	"Empire enters golden age":{
@@ -1805,7 +1768,6 @@
 		Polish:"'Każde prawdziwe dzieło sztuki pod wieloma względami przypomina ziemię i słońce.' – Ralph Waldo Emerson"
 		Czech:"'Každé opravdové umělecké dílo má tolik důvodů k bytí jako Země a Slunce' - Ralph Waldo Emerson"
 		Russian:"'У подлинного произведения искусства столько же прав на существование, сколько у солнца и земли.' - Ральф Уолдо Эмерсон"
-		Hungarian:"'Minden valódi műnek ugyanolyan oka van a létezéséhez, mint a földnek és a napnak' - Ralph Waldo Emerson"
 }
 
 	"Free Great Artist Appears":{
@@ -1821,7 +1783,7 @@
 		German:"Kostenloser Großer Künstler erscheint"
 		Polish:"Pojawił się darmowy Wielki Artysta"
 		Czech:"Získáme Velkéhu Umělce zdarma"
-		Hungarian:"Megjelenik a szabad nagy művész"
+		Hungarian:"Megjelenik egy ingyenes nagy művész"
 }
 
 	"Seaport":{
@@ -1866,7 +1828,7 @@
 		Polish:"+15% do produkcji jednostek marynarki"
 		Russian:"+15% Производство при постройке кораблей"
 		Czech:"+15% produkce pro námořní jednotky"
-		Hungarian:"+ 15% tengeri egységek termelése"
+		Hungarian:"+15% tengeri egységek kiképzésére"
 }
 
 	"Public School":{
@@ -1881,7 +1843,6 @@
 		German:"Öffentliche Schule"
 		Polish:"Szkoła powszechna"
 		Czech:"Veřejná škola"
-		Hungarian:"Public School"
 }
 
 	"Hospital":{
@@ -1912,7 +1873,6 @@
 		Portuguese:"25% da comida é mantida depois de um novo cidadão nascer"
 		Polish:"25% więcej żywności po pojawieniu się nowego obywatela"
 		Czech:"25% Jídla je zachováno poté, co se město rozroste o nového obyvatele"
-		Hungarian:"Az élelmiszer 25% -át átviszik egy új polgár születése után"
 }
 
 	"Factory":{
@@ -1963,7 +1923,6 @@
 		Polish:"'Żeby dokonać czegoś wielkiego, potrzeba dwóch rzeczy: planu i zbyt mało czasu.' – Leonard Bernstein"
 		Czech:"'K dosažení velkých věcí jsou zapotřebí dvě věci: plán a nedostatek času.' - Leonard Bernstein"
 		Russian:"'Для великих свершений потребны две вещи: план действий и недостаток времени.' - Леонард Бернстайн"
-		Hungarian:"'A nagy dolgok eléréséhez két dologra van szükség: egy tervre, és nem elég időre.' - Leonard Bernstein "
 }
 
 	"-15% to purchasing items in cities":{
@@ -1974,7 +1933,6 @@
 		Polish:"-15% do ceny budynków i jednostek kupowanych w miastach"
 		Russian:"-15% к стоимости покупки в городах"
 		Czech:"-15% ceny při nákupu věcí ve městech"
-		Hungarian:"-15% tételek vásárlása a városokban"
 }
 
 	"Cristo Redentor":{
@@ -1989,7 +1947,6 @@
 		//same in German
 		Polish:"Statua Chrystusa Zbawiciela"
 		Czech:"Socha Krista Spasitele"
-		Hungarian:"Cristo Redentor"
 }
 
 	"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28":{
@@ -1999,7 +1956,6 @@
 		Polish:"'Przyjdźcie do Mnie wszyscy, którzy utrudzeni i obciążeni jesteście, a Ja was pokrzepię.' – Biblia, Ew. wg św. Mateusza 25,28"
 		Czech:"'Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout.' - Nový Zákon, Matouš 11:28"
 		Russian:"'Придите ко Мне все трудящиеся и обремененные, и Я успокою вас.' - Евангелие от Матфея, 11:28"
-		Hungarian:"'Jöjjön hozzám mindazok, akik munkát végeznek és nehéz terhekben vannak, és pihenni foglak nektek.' - Újszövetség, Máté 11:28 "
 }
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -2015,7 +1971,7 @@
 		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
 		Polish:"Wdrożenie nowych ustrojów społecznych zmniejszone o 10% kultury"
 		Czech:"Počet Kulturních bodů na získání nové sociální politiky se sníží o 10%"
-		Hungarian:"Az új politikák elfogadásának kulturális költsége 10% -kal csökkent"
+		Hungarian:"Az új politikák elfogadásának kulturális költsége 10%-kal csökkent"
 }
 
 	"Kremlin":{
@@ -2038,7 +1994,6 @@
 		Polish:"'Prawo to forteca na wzgórzu, którego nie zdobędzie żadna armia i nie pochłonie powódź.' – Prorok Mahomet"
 		Czech:"'Zákon je pevnost na kopci, kterou nezničí armády a povodeň neodplaví.' - Proork Mohamed"
 		Russian:"'Закон - это крепость на холме, которую не подточат воды, не возьмут осаждающие' - пророк Мухаммед"
-		Hungarian:"'A törvény egy erőd egy dombon, amelyet a seregek nem tudnak elvinni, vagy az áradások elmoshatják.' - Muhammed próféta"
 }
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -2049,7 +2004,7 @@
 		Polish:"+25% skuteczności budowli obronnych w miastach"
 		Russian:"Защитные сооружения во всех городах на 25% эффективнее"
 		Czech:"Obranné budovy ve všech městech budou o 25% účinnější"
-		Hungarian:"A védekező épületek minden városban 25% -kal hatékonyabbak"
+		Hungarian:"A védelmi épületek minden városban 25%-kal hatékonyabbak"
 }
 
 	"Neuschwanstein":{
@@ -2060,7 +2015,6 @@
 		Polish:"Zamek Neuschwanstein"
 		Russian:"Замок Нойшванштайн"
 		Czech:"Zámek Neuschwanstein"
-		Hungarian:"Neuschwanstein"
 }
 
 	"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria":{
@@ -2070,7 +2024,6 @@
 		Polish:"'...miejsce to jest jednym z najpiękniejszych, jakie można znaleźć. Święte i niedostępne. Prawdziwa świątynia ku czci boskiego przyjaciela, który przyprowadził wybawienie i prawdziwe błogosławieństwo dla świata.' – Król Ludwig II Bawarski"
 		Czech:"'... místo je jedním z nejkrásnějších které lze nalézt, svatých a nepřístupných, hodných chrámů pro božského přítele, který přinesl světu spasení a skutečné požehnání.' - Král Ludvík II. Bavorský"
 		Russian:"'... это одно из самых красивых мест, святое и безупречное, достойный монастырь для божественного друга, который принес спасение и благословение миру.' - Король Баварии Людвиг II"
-		Hungarian:"'... a hely az egyik legszebb megtalálható, szent és megközelíthetetlen, méltó templom az isteni barátnak, aki megváltást és valódi áldást hozott a világnak.' - II. Ludwig király, Bajorország "
 }
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -2122,7 +2075,6 @@
 		German:"Fernmeldeturm"
 		Polish:"Wieża transmisyjna"
 		Czech:"Vysílací věž"
-		Hungarian:"Broadcast Tower"
 }
 
 	"Eiffel Tower":{
@@ -2146,7 +2098,6 @@
 		Traditional_Chinese:"“我們活著只為去發現美。其他一切都是某種形式的等待。”——哈里利·紀伯倫"
 		Czech:"'Žijeme jenom kvůli odhalování krásy, všechno ostatní je jen formou čekání.' - Kahlil Gibran"
 		Russian:"'Мы живем лишь для того, чтобы познавать красоту. Все прочее – ожидание' - Халиль Джебран"
-		Hungarian:"'Csak a szépség felfedezésénél élünk, minden más egyfajta várakozás' - Kahlil Gibran"
 }
 
 	"Provides 1 happiness per social policy":{
@@ -2183,7 +2134,6 @@
 		Traditional_Chinese:"“給我你們的貧乏，你們的貧困，擁擠在旅途渴望自由呼吸的人們，被彼岸無情拋棄顛沛流離的驚魂。把這些無家可歸，飽嚐風雨的苦難者全部給我，我佇立在金色的大門旁高舉起燈火！”——艾瑪·拉扎路斯（美國詩人）"
 		Czech:"'Dej mi své unavené, své ubohé, tvé schoulené masy toužící po svobodném nadechnutí, uboze odmítnuté tvým oplývajícím břehem. Pošli mi ty, bez domova, zmítané bouří. Pozvednu svou lampu u zlatých dveří!' - Emma Lazarus"
 		Russian:"'А мне отдайте ваших усталых, ваших бедных... А мне отдайте из глубин бездонных, Своих изгоев, люд забитый свой, Пошлите мне отверженных, бездомных,Я им свечу у двери золотой...' - Эмма Лазарус"
-		Hungarian:"'Adj nekem fáradt, szegényeidet, összehúzódó tömegeit, akik vágyakoznak arra, hogy szabadon lélegezzen, a csapott partjának nyomorult hulladékán. Küldd el nekem ezeket a hajléktalanok, szélsőségesen nekem, felemelem a lámpaomat az aranyajtó mellé!' - Emma Lazarus "
 }
 
 	"+1 Production from specialists":{
@@ -2210,7 +2160,6 @@
 		German:"Medizinisches Labor"
 		Polish:"Laboratorium medyczne"
 		Czech:"Lékařská laboratoř"
-		Hungarian:"Medical Lab"
 }
 
 	"Research Lab":{
@@ -2225,7 +2174,6 @@
 		German:"Forschungslabor"
 		Polish:"Ośrodek badawczy"
 		Czech:"Výzkumná laboratoř"
-		Hungarian:"Research Lab"
 }
 
 	"Hydro Plant":{
@@ -2240,7 +2188,6 @@
 		German:"Wasserkraftwerk"
 		Polish:"Elektrownia wodna"
 		Czech:"Vodní elektrárna"
-		Hungarian:"Hydro Plant"
 }
 
 	"Stadium":{
@@ -2255,7 +2202,7 @@
 		German:"Stadion"
 		Polish:"Stadion"
 		Czech:"Stadión"
-		Hungarian:"Stádium"
+		Hungarian:"Stadion"
 }
 
 	"Solar Plant":{
@@ -2270,7 +2217,6 @@
 		German:"Solarkraftwerk"
 		Polish:"Elektrownia słoneczna"
 		Czech:"Solární elektrárna"
-		Hungarian:"Solar Plant"
 }
 
 	"Must be next to desert":{
@@ -2286,7 +2232,7 @@
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 		Polish:"Musi być obok pustyni"
 		Czech:"Musí být vedle pouště"
-		Hungarian:"A sivatag mellett kell lennie"
+		Hungarian:"Sivatag mellett kell lennie"
 }
 
 	"Must be next to mountain":{
@@ -2297,7 +2243,7 @@
 		Polish:"Musi być przy górze"
 		Russian:"Должно быть построено рядом с горой"
 		Czech:"Musí být vedle hor"
-		Hungarian:"A hegy mellett kell lennie"
+		Hungarian:"Hegy mellett kell lennie"
 }
 
 	"Sydney Opera House":{
@@ -2321,7 +2267,6 @@
 		Traditional_Chinese:"“沒有夢想的人，人生也是迷茫的。”——澳大利亞土著諺語"
 		Czech:"Ti, kteří ztratili sny, jsou ztraceni - Australské domorodé přísloví"
 		Russian:"'У кого погибли мечты, тот и сам погиб.' - пословица австралийских аборигенов"
-		Hungarian:"'Azok, akik elveszítik az álmot, elvesznek.' - ausztrál őslakosok mondása"
 }
 
 	/*
@@ -2334,7 +2279,6 @@
 		Traditional_Chinese:"西恩塔"
 		Polish:"Wieża CN"
 		Czech:"CN Tower"
-		Hungarian:"CN torony"
 }
 	*/
 
@@ -2380,7 +2324,6 @@
 		Traditional_Chinese:"“在準備作戰時，我常常發現訂好的計畫沒有用處，但計畫的過程仍不可或缺。”——德懷特·戴維·艾森豪威爾"
 		Czech:"'Při přípravě bitvy jsem vždy zjistil, že plány jsou k ničemu ale plánování je nezbytné.' - Dwight D. Eisenhower"
 		Russian:"'При подготовке к битве планы незаменимы, но, как только битва началась, план становится совершенно бесполезным.' - Дуайт Эйзенхауэр"
-		Hungarian:"'A csata előkészítésekor mindig azt tapasztaltam, hogy a tervek haszontalanok, de a tervezés elengedhetetlen.' - Dwight D. Eisenhower "
 }
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -2395,7 +2338,7 @@
 		French:"Le coût en or de l'amélioration des unités militaires est réduit de 33%"
 		Polish:"Koszt ulepszenia jednostki bojowej zmniejszony o 33%"
 		Czech:"Cena Zlata za vylepšení vojenských jednotek bude snížena o 33%"
-		Hungarian:"A katonai egységek korszerűsítésének aranyköltsége 33% -kal csökkent"
+		Hungarian:"A katonai egységek korszerűsítésének aranyköltsége 33%-kal csökkent"
 }
 
 	"Apollo Program":{
@@ -2471,7 +2414,7 @@
 		Portuguese:"Torna a construção de partes de nave em 50%"
 		Polish:"Zwiększa produkcję części statku kosmicznego o 50%"
 		Czech:"Zvyšuje produkci částí vesmírných lodí o 50%"
-		Hungarian:"50% -kal növeli az űrhajó-alkatrészek gyártását"
+		Hungarian:"50%-kal növeli az űrhajó-alkatrészek gyártását"
 }
 
 	"Spaceship part":{
@@ -2487,7 +2430,7 @@
 		Portuguese:"Parte de Nave Espacial"
 		Polish:"Część statku kosmicznego"
 		Czech:"Části kosmické lodi"
-		Hungarian:"Űrhajó része"
+		Hungarian:"Űrhajó alkatrész"
 }
 
 	"Hubble Space Telescope":{
@@ -2508,7 +2451,6 @@
 		Traditional_Chinese:"“奇蹟的不是那片星海如此遼闊，而是人類竟然成功的測量了它。”——阿納托爾·法郎士（法國小說家）"
 		Czech:"'Je zázrakem, nikoliv to že je noční obloha naplněná nekonečnem hvězd, ale že je člověk dokázal změřit' - Anatole France"
 		Russian:"'Чудо не в том, что звездный небосклон столь обширен, но в том, что человек сумел измерить его' -  Анатоль Франс"
-		Hungarian:"'A csoda az, hogy nem a csillagok területe olyan hatalmas, hanem az, hogy az ember megmérte.' - Anatole France "
 }
 
 	"2 free great scientists appear":{
@@ -2520,7 +2462,6 @@
 		Polish:"Pojawiają się 2 darmowi Wielcy Naukowcy"
 		Russian:"Появляется 2 бесплатных Великих учёных"
 		Czech:"2 Velcí Vědci zdarma"
-		Hungarian:"2 ingyenes nagyszerű tudós jelent meg"
 }
 
 	"Increases production of spaceship parts by 25%":{
@@ -2532,7 +2473,7 @@
 		Polish:"Zwiększa produkcję części statku kosmicznego o 25%"
 		Russian:"+25% Производство при постройке частей космического корабля"
 		Czech:"Zvyšuje produkci částí vesmírné lodi o 25%"
-		Hungarian:"25% -kal növeli az űrhajó-alkatrészek gyártását"
+		Hungarian:"25%-kal növeli az űrhajó-alkatrészek gyártását"
 }
 
 	"SS Booster":{	//no translation that I know of
@@ -2547,7 +2488,6 @@
 		Polish:"Dopalacz SK"
 		Russian:"Ускоритель КК"
 		Czech:"SS Pomocný motor"
-		Hungarian:"SS Booster"
 }
 
 	"SS Cockpit":{	//no translation that I know of
@@ -2562,7 +2502,6 @@
 		Polish:"Kokpit SK"
 		Russian:"Кокпит КК"
 		Czech:"SS Kabina"
-		Hungarian:"SS pilótafülke"
 }
 
 	"SS Engine":{	//no translation that I know of
@@ -2577,7 +2516,6 @@
 		Polish:"Silnik SK"
 		Russian:"Двигатель КК"
 		Czech:"SS Motor"
-		Hungarian:"SS motor"
 }
 
 	"SS Stasis Chamber":{	//no translation that I know of
@@ -2592,7 +2530,6 @@
 		Polish:"Komora statyczna SK"
 		Russian:"Стазис-капусла КК"
 		Czech:"SS Stázová komora"
-		Hungarian:"SS Stasis Chamber"
 }
 
 
@@ -2608,7 +2545,6 @@
 		Polish:"[buildingName] musi być wzniesiony w mieście"
 		Russian:"Требует постройки [buildingName] в городе"
 		Czech:"Nejprve musíte vybodovat [buildingName] ve městě"
-		Hungarian:"Requires [buildingName] to be built in the city"
 }
 
 	"Requires [buildingName] to be built in all cities":{
@@ -2620,7 +2556,6 @@
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует постройки [buildingName] во всех городах"
 		Czech:"Vyžaduje vybudování [buildingName] ve všech městech"
-		Hungarian:"Requires [buildingName] to be built in all cities"
 }
 
 	"Provides a free [buildingName] in the city":{
@@ -2632,7 +2567,6 @@
 		Polish:"Zapewnia darmowy budynek [buildingName] w mieście"
 		Russian:"Даёт бесплатный [buildingName] в городе"
 		Czech:"Poskytuje zdarma budovu [buildingName] ve městě"
-		Hungarian:"Provides a free [buildingName] in the city"
 }
 
 	"Requires worked [resource] near city":{
@@ -2644,7 +2578,6 @@
 		Polish:"Wymaga w mieście surowca [resource]"
 		Russian:"Требует добычи [resource] в городе"
 		Czech:"Vyžaduje zdroj suroviny [resource] na území města"
-		Hungarian:"Requires worked [resource] near city"
 }
 
 	"Wonder is being built elsewhere":{
@@ -2656,7 +2589,6 @@
 		Polish:"Cud jest już budowany gdzie indziej"
 		Russian:"Чудо света строится где-то ещё"
 		Czech:"Div světa již stavíte v jiném městě"
-		Hungarian:"Wonder is being built elsewhere"
 }
 
 	"Requires a [buildingName] in all cities":{
@@ -2668,7 +2600,6 @@
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует [buildingName] во всех городах"
 		Czech:"Vyžaduje: [buildingName] ve všech městech"
-		Hungarian:"Requires a [buildingName] in all cities"
 }
 
 	"Requires a [buildingName] in this city":{
@@ -2680,7 +2611,6 @@
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
 		Russian:"Требует [buildingName] в городе"
 		Czech:"Vyžaduje: [buildingName] v tomto městě"
-		Hungarian:"Requires a [buildingName] in this city"
 }
 
 	"Requires [resource]":{
@@ -2692,7 +2622,6 @@
 		Polish:"Wymaga surowca [resource]"
 		Russian:"Требует [resource]"
 		Czech:"Vyžaduje surovinu [resource]"
-		Hungarian:"Requires [resource]"
 }
 
 	"Required tech: [requiredTech]":{
@@ -2704,7 +2633,6 @@
 		Polish:"Wymaga odkrycia technologii [requiredTech]"
 		Russian:"Требуется технология: [requiredTech]"
 		Czech:"Vyžaduje technologii: [requiredTech]"
-		Hungarian:"Required tech: [requiredTech]"
 }
 
 }
