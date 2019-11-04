@@ -95,8 +95,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add(("Type: ".tr() + otherCiv.getCityStateType().toString().tr()).toLabel()).row()
+        val ally = otherCiv.getAllyCiv()
+        if (ally != null)
+        {
+            diplomacyTable.add(("Ally: ".tr() + ally!!.tr() + " influence: ".tr()
+                    + otherCiv.getDiplomacyManager(ally).influence.toString().tr()).toLabel()).row()
+        }
         diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
-
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 
         val friendBonusText = when (otherCiv.getCityStateType()) {

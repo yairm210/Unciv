@@ -125,32 +125,9 @@ class CityInfo {
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
-            if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
-
-            // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-            if (resource.improvement!=null){
-                val improvement = GameBasics.TileImprovements[resource.improvement!!]!!
-                if(improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired!!)) continue
-            }
-
-            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
-                    // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-                    || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){
-                var amountToAdd = 1
-                if(resource.resourceType == ResourceType.Strategic){
-                    amountToAdd = 2
-                    if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
-                    if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
-                        && resource.name in listOf("Horses","Iron","Uranium"))
-                        amountToAdd *= 2
-                    if(resource.name=="Oil" && civInfo.nation.unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
-                        amountToAdd *= 2
-                }
-                if(resource.resourceType == ResourceType.Luxury
-                        && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
-                    amountToAdd*=2
-
-                cityResources.add(resource, amountToAdd, "Tiles")
+            val amount = getTileResourceAmount(tileInfo)
+            if (amount > 0) {
+                cityResources.add(resource, amount, "Tiles")
             }
 
         }
@@ -161,6 +138,52 @@ class CityInfo {
         }
 
         return cityResources
+    }
+
+    fun getCityResourcesForAlly(): ResourceSupplyList {
+        val cityResources = ResourceSupplyList()
+
+        for (tileInfo in getTiles().filter { it.resource != null }) {
+            val resource = tileInfo.getTileResource()
+            val amount = getTileResourceAmount(tileInfo)
+            if (amount > 0) {
+                cityResources.add(resource, amount, "City-States")
+            }
+        }
+        return cityResources
+    }
+
+    fun getTileResourceAmount(tileInfo: TileInfo): Int {
+        if (tileInfo.resource == null) return 0
+        val resource = tileInfo.getTileResource()
+        if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
+
+        // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
+        if (resource.improvement!=null){
+            val improvement = GameBasics.TileImprovements[resource.improvement!!]!!
+            if(improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
+        }
+
+        if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
+                // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
+                || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){
+            var amountToAdd = 1
+            if(resource.resourceType == ResourceType.Strategic){
+                amountToAdd = 2
+                if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
+                if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
+                        && resource.name in listOf("Horses","Iron","Uranium"))
+                    amountToAdd *= 2
+                if(resource.name=="Oil" && civInfo.nation.unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
+                    amountToAdd *= 2
+            }
+            if(resource.resourceType == ResourceType.Luxury
+                    && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
+                amountToAdd*=2
+
+            return amountToAdd
+        }
+        return 0
     }
 
     fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }

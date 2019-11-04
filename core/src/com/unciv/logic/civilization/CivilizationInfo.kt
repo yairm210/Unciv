@@ -467,5 +467,13 @@ class CivilizationInfo {
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }
 
+    fun getAllyCiv(): String? {
+        if (!isCityState()) return null
+        val maxInfluence = diplomacy.filter{ !it.value.otherCiv().isCityState() }.maxBy { it.value.influence }
+        if (maxInfluence == null) return null
+        if (maxInfluence.value.influence < 60) return null
+        return maxInfluence.key
+    }
+
     //endregion
 }
