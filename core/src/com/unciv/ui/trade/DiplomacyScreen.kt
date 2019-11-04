@@ -95,13 +95,23 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add(("Type: ".tr() + otherCiv.getCityStateType().toString().tr()).toLabel()).row()
+        otherCiv.updateAllyCivForCityState()
         val ally = otherCiv.getAllyCiv()
-        if (ally != null)
+        if (ally != "")
         {
-            diplomacyTable.add(("Ally: ".tr() + ally!!.tr() + " influence: ".tr()
+            diplomacyTable.add(("Ally: ".tr() + ally!!.tr() + " " + "Influence: ".tr()
                     + otherCiv.getDiplomacyManager(ally).influence.toString().tr()).toLabel()).row()
         }
-        diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
+        val nextLevelString: String
+        if (otherCivDiplomacyManager.influence.toInt() < 30) {
+            nextLevelString = "Reach 30 for friendship."
+        } else if (ally == viewingCiv.civName) {
+            nextLevelString = ""
+        } else {
+            nextLevelString = "Reach highest influence above 60 for alliance."
+        }
+        diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt().toString().tr() + " "
+                + nextLevelString.tr()).toLabel()).row()
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 
         val friendBonusText = when (otherCiv.getCityStateType()) {

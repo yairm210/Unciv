@@ -342,6 +342,7 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+        if (otherCiv.isCityState()) otherCiv.updateAllyCivForCityState()
 
         if (!civInfo.isCityState()) {
             for (thirdCiv in civInfo.getKnownCivs()) {
