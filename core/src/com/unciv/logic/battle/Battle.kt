@@ -254,11 +254,11 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
-        // barbarians, City-states, OCC don't capture civilians don't capture settlers
-        var cannotCaptureSettler = (attacker.getCivInfo().isBarbarian()
-                || attacker.getCivInfo().isCityState()
-                || attacker.getCivInfo().isPlayerOneCityChallenger())
-        if(cannotCaptureSettler && defender.getName()==Constants.settler){
+        // barbarians don't capture civilians
+        // City-states & OCC don't capture settlers
+        if(attacker.getCivInfo().isBarbarian()
+                || ((attacker.getCivInfo().isCityState() || attacker.getCivInfo().isPlayerOneCityChallenger())
+                        && defender.getName()==Constants.settler)){
             defender.takeDamage(100)
             return
         }
