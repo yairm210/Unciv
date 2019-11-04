@@ -15,6 +15,7 @@
                 Korean:"복사 된 데이터 로드"
 		Czech:"Načíst zkopírované data"
 		Ukrainian:"Завантажити копію даних"
+		Hungarian:"Másolt adatok betöltése"
 }
 
 	"Could not load game from clipboard!":{
@@ -32,6 +33,7 @@
                 Korean:"클립보드에서 게임을 불러 올 수 없습니다!"
 		Czech:"Nepodařilo se nahrát hru ze schránky!"
 		Ukrainian:"Неможливо завантажити гру з буфера обміну"
+		Hungarian:"Nem lehet betölteni a játékot a vágólapra!"
 }
 
 	"Start game!":{
@@ -48,6 +50,7 @@
                 Korean:"게임 시작!"
 		Czech:"Začít hru!"
 		Ukrainian:"Почати!"
+		Hungarian:"Játék kezdése!"
 }
 
 	"Map type":{
@@ -64,6 +67,7 @@
                 Korean:"지도 유형"
 		Czech:"Typ mapy"
 		Ukrainian:"Тип мапи"
+		Hungarian:"Térkép típusa"
 }
 
 	"Number of city-states":{
@@ -75,6 +79,7 @@
                 Korean:"도시 국가 수"
 		Czech:"Počet městských států"
 		Ukrainian:"Міст-держав"
+		Hungarian:"Városállamok száma"
 }
 
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
@@ -86,6 +91,7 @@
                 Korean:"야만인 없음"
 		Czech:"Bez barbarů"
 		Ukrainian:"Без варварів"
+		Hungarian:"Nincs barbár"
 }
 
 	"No ancient ruins": {
@@ -101,6 +107,7 @@
                 Korean:"승리 조건"
 		Czech:"Způsoby výhry"
 		Ukrainian:"Умови перемоги"
+		Hungarian:"Nincs ősi rom"
 }
 
 	"Scientific": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -112,6 +119,7 @@
                 Korean:"과학"
 		Czech:"Vědecká"
 		Ukrainian:"Наукова"
+		Hungarian:"Győzelem feltételei"
 }
 
 	"Domination": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -123,6 +131,7 @@
                 Korean:"정복"
 		Czech:"Dominance"
 		Ukrainian:"Загарбання"
+		Hungarian:"Tudományos"
 }
 
 	"Cultural": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -134,6 +143,7 @@
                 Korean:"문화"
 		Czech:"Kulturní"
 		Ukrainian:"Культурна"
+		Hungarian:"Uralom"
 }
 
 	"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!": {
@@ -143,6 +153,7 @@
 		Traditional_Chinese:"⚠︎警告！實驗性功能！"
 		Czech:"VYSOCE EXPERIMENTÁLNÍ - BYLI JSTE VAROVÁNÍ!"
 		Russian:"В РАЗРАБОТКЕ - ВЫ ПРЕДУПРЕЖДЕНЫ!"
+		Hungarian:"Kulturális"
 }
 
 	"Online Multiplayer": {
@@ -152,6 +163,7 @@
 		Ukrainian:"Багатокористувацька мережева"
 		Czech:"Online pro více hráčů"
 		Russian:"Online мультиплеер"
+		Hungarian:"Nagyon kísérleti - FIGYELMEZTETTEK!"
 }
 
 	// Map sizes
@@ -169,6 +181,7 @@
                 Korean:"세계 크기"
 		Czech:"Velikost světa"
 		Ukrainian:"Розмір світу"
+		Hungarian:"Online multiplayer"
 }
 
 
@@ -185,6 +198,7 @@
                 Korean:"초소형"
 		Czech:"Miniaturní"
 		Ukrainian:"Крихітний"
+		Hungarian:"Világ méretű"
 }
 
 	"Small":{
@@ -200,6 +214,7 @@
                 Korean:"소형"
 		Czech:"Malý"
 		Ukrainian:"Малий"
+		Hungarian:"Apró"
 }
 
 	"Medium":{
@@ -215,6 +230,7 @@
                 Korean:"중형"
 		Czech:"Střední"
 		Ukrainian:"Середній"
+		Hungarian:"Kicsi"
 }
 
 	"Large":{
@@ -230,6 +246,7 @@
                 Korean:"대형"
 		Czech:"Velký"
 		Ukrainian:"Великий"
+		Hungarian:"Közepes"
 }
 
 	"Huge":{
@@ -245,6 +262,7 @@
                 Korean:"초대형"
 		Czech:"Obrovský"
 		Ukrainian:"Величезний"
+		Hungarian:"Nagy"
 }
 
 
@@ -263,6 +281,7 @@
                 Korean:"난이도"
 		Czech:"Obtížnost"
 		Ukrainian:"Складність"
+		Hungarian:"Hatalmas"
 }
 
 
@@ -279,6 +298,7 @@
                 Korean:"개척자"
 		Czech:"Osadník"
 		Ukrainian:"Поселенець"
+		Hungarian:"Nehézség"
 }
 
 	"Chieftain":{
@@ -294,6 +314,7 @@
                 Korean:"족장"
 		Czech:"Náčelník"
 		Ukrainian:"Вождь"
+		Hungarian:"Telepes"
 }
 
 	"Warlord":{
@@ -309,6 +330,7 @@
                 Korean:"장군"
 		Czech:"Válečník"
 		Ukrainian:"Генерал"
+		Hungarian:"Törzsfőnök"
 }
 
 	"Prince":{
@@ -324,6 +346,7 @@
                 Korean:"왕자"
 		Czech:"Princ"
 		Ukrainian:"Герцог"
+		Hungarian:"Hadvezér"
 }
 
 	"King":{
@@ -339,6 +362,7 @@
                 Korean:"왕"
 		Czech:"Král"
 		Ukrainian:"Король"
+		Hungarian:"Herceg"
 }
 
 	"Emperor":{
@@ -354,6 +378,7 @@
                 Korean:"황제"
 		Czech:"Emperor"
 		Ukrainian:"Імператор"
+		Hungarian:"Király"
 }
 
 	"Immortal":{
@@ -369,6 +394,7 @@
                 Korean:"불멸"
 		Czech:"Polobůh"
 		Ukrainian:"Безсмертний"
+		Hungarian:"Császár"
 }
 
 	"Deity":{
@@ -384,6 +410,7 @@
                 Korean:"신"
 		Czech:"Bůh"
 		Ukrainian:"Бог"
+		Hungarian:"Halhatatlan"
 }
 
 	//Civilization select
@@ -395,6 +422,7 @@
 		Russian:"ИИ"
 		Czech:"UI"
 		Ukrainian:"ШІ"
+		Hungarian:"Istenség"
 }
 
 	"Remove":{
@@ -405,6 +433,7 @@
 		Czech:"Odstranit"
 		Ukrainian:"Видалити"
 		Russian:"Удалить"
+		Hungarian:"AI"
 }
 
 	"Random":{
@@ -415,6 +444,7 @@
 		Czech:"Náhodně"
 		Ukrainian:"Випадково"
 		Russian:"Случайно"
+		Hungarian:"Remove"
 }
 
 	"Human":{
@@ -425,6 +455,7 @@
                 Korean:"인간"
 		Czech:"Člověk"
 		Ukrainian:"Людина"
+		Hungarian:"Véletlen"
 }
 
 	"Hotseat":{
@@ -435,6 +466,7 @@
                 Korean:"핫시트"
 		Czech:"Na tomto zařízení"
 		Ukrainian:"Почергово"
+		Hungarian:"Emberi"
 }
 
 	"User ID":{
@@ -445,6 +477,7 @@
                 Korean:"사용자 Id"
 		Czech:"Uživatelské ID"
 		Ukrainian:"Ідентифікатор гравця"
+		Hungarian:"Hotseat"
 }
 
 	"Click to copy":{
@@ -455,6 +488,7 @@
                 Korean:"복사하려면 클릭하십시오"
 		Czech:"Klikni pro kopírování"
 		Ukrainian:"Натисніть для копіювання"
+		Hungarian:"Felhasználói azonosító"
 }
 
 	"Username":{
@@ -465,6 +499,7 @@
                 Korean:"사용자이름"
 		Czech:"Uživatelské jméno"
 		Ukrainian:"Імʼя гравця"
+		Hungarian:"Kattintson a másoláshoz"
 }
 
 	"Multiplayer":{
@@ -475,6 +510,7 @@
                 Korean:"멀티플레이어"
 		Czech:"Více hráčů"
 		Ukrainian:"Багатокористувацька"
+		Hungarian:"Felhasználónév"
 }
 
 	"Could not download game!":{
@@ -485,6 +521,7 @@
 		Simplified_Chinese:"无法下载游戏数据！",
 		Traditional_Chinese:"無法下載遊戲資料！",
 		Ukrainian:"Неможливо завантажити гру!"
+		Hungarian:"Multiplayer"
 }
 
 	"Could not upload game!":{
@@ -495,6 +532,7 @@
 		Simplified_Chinese:"无法上传游戏数据！",
 		Traditional_Chinese:"無法上傳遊戲資料！",
 		Ukrainian:"Неможливо надіслати гру!"
+		Hungarian:"Nem lehet letölteni a játékot!"
 }
 
 	"Join Game":{
@@ -505,6 +543,7 @@
                 Korean:"게임 참여"
 		Czech:"Připojit se ke hře"
 		Ukrainian:"Приєднатися до гри"
+		Hungarian:"Nem lehet feltölteni a játékot!"
 }
 
 	"Invalid game ID!":{
@@ -515,6 +554,7 @@
                 Korean:"잘못된 게임 ID 입니다!"
 		Czech:"Chybné ID hry"
 		Ukrainian:"Недопустимий ідентифікатор гри"
+		Hungarian:"Belépni a játékba"
 }
 
 	"Copy User ID":{
@@ -525,6 +565,7 @@
                 Korean:"사용자 Id 복사"
 		Czech:"Kopírovat uživatelské ID"
 		Ukrainian:"Копіювати ідентифікатор гравця"
+		Hungarian:"Érvénytelen játék-azonosító!"
 }
 
 	"Copy Game ID":{
@@ -535,6 +576,7 @@
                 Korean:"게임 Id 복사"
 		Czech:"Kopírovat ID hry"
 		Ukrainian:"Копіювати ідентифікатор гри"
+		Hungarian:"Felhasználói azonosító másolása"
 }
 
 	"Set current user":{
@@ -545,6 +587,7 @@
 		Traditional_Chinese:"設定為目前玩家",
 		Ukrainian:"Обрати поточного гравця"
 		Russian:"выбрать текущего игрока"
+		Hungarian:"Játék azonosító másolása"
 }
 
 	"Player ID from clipboard":{
@@ -555,6 +598,7 @@
 		Traditional_Chinese:"從剪貼簿取得玩家ID",
 		Ukrainian:"Ідентифікатор гравця з буфера обміну"
 		Russian:"Player ID из буфера обмена"
+		Hungarian:"Aktuális felhasználó beállítása"
 }
 
 	/// tutorials for multiplayer
@@ -566,6 +610,7 @@
 		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач «Багатокористувацька» у віконці «Нова гра» і для кожної людини-гравця введіть відповідний ідентифікатор"
 		Traditional_Chinese:"建立多人遊戲時，請先選擇“開始新遊戲”選單的“線上多人遊戲”，並將參與遊戲的玩家ID填入對應扮演的文明的“Player ID”文字框。"
 		Russian:"Чтобы создать многопользовательскую игру поставьте флажок 'Online мультиплеер' на экране создания новой игры и для каждого игрока(человека) введите Player ID."
+		Hungarian:"Player ID a vágólapról"
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
@@ -576,6 +621,7 @@
 		Ukrainian:"Тут ви можете легко вказати власний ідентифікатор гравця, а інші гравці можуть скопіювати їхні ідентифікатори і надіслати вам для додавання до гри."
 		Traditional_Chinese:"直接點擊“設定為目前玩家”就可自動填入自己的玩家ID。其他玩家則需在打開遊戲後點擊“複製玩家ID”按鈕將ID複製到剪貼簿，然後透過網路傳送給您，你可以在“開始新遊戲”界面將接收到的ID填入他們想扮演的文明的“Player ID”文字框內讓他們加入遊戲。"
 		Russian:"Вы можете указать собственный Player ID, а другие игроки могут скопировать их идентификаторы и отправить вам для добавления их к игре."
+		Hungarian:"Többjátékos játék létrehozásához ellenőrizze a 'multiplayer' kapcsolót az Új játék képernyőn, és minden emberi játékoshoz adja meg a játékos felhasználói azonosítóját."
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
@@ -586,6 +632,7 @@
 		Ukrainian:"Щойно ви створите власну гру, зайдіть до цього віконця для копіювання ідентифікатора гри і надішліть його іншим гравцям."
 		Traditional_Chinese:"當你建立了多人遊戲後，進入本界面並按下“複製遊戲ID”按鈕將遊戲ID複製到剪貼簿並透過網路分享給其他玩家。"
 		Russian:"Когда вы создадитье новую игру скопируйте отсюда ID игры и перешлите остальным игрокам."
+		Hungarian:"Könnyedén hozzárendelheti saját felhasználói azonosítóját, és más játékosok itt másolhatják felhasználói azonosítójukat, és elküldhetik neked, hogy beépítsék őket a játékba."
 }
 
 	"Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button":{
@@ -596,6 +643,7 @@
 		Ukrainian:"Гравці можуть приєднатися до вашої гри, скопіювавши ідентифікатор гри до буфера обміну і натиснувши на кнопку «Приєднатися до гри»"
 		Traditional_Chinese:"其他玩家可以將接收到的遊戲ID複製到剪貼簿，並按下“加入遊戲”按鈕加入遊戲"
 		Russian:"Игроки смогут присоединиться скопировав ID игры в буфер обмена и нажав на кнопку «Подключиться»."
+		Hungarian:"Miután elkészítette a játékát, írja be újra ezt a képernyőt, hogy másolja a játék azonosítóját, és elküldje a többi játékosnak."
 }
 
 
@@ -610,6 +658,7 @@
                 Korean:"게임 속도"
 		Czech:"Rychlost hry"
 		Ukrainian:"Швидкість гри"
+		Hungarian:"A játékosok beléphetnek a játékba, ha a játék azonosítóját a vágólapra másolják, és rákattintanak a Csatlakozás a játékra gombra."
 }
 
 	"Quick":{
@@ -620,6 +669,7 @@
                 Korean:"빠름"
 		Czech:"Rychlá"
 		Ukrainian:"Швидка"
+		Hungarian:"Játék sebesség"
 }
 
 	"Standard":{
@@ -630,6 +680,7 @@
                 Korean:"표준"
 		Czech:"Normální"
 		Ukrainian:"Нормальна"
+		Hungarian:"Gyors"
 }
 
 	"Epic":{
@@ -640,6 +691,7 @@
                 Korean:"서사시"
 		Czech:"Dlouhá"
 		Ukrainian:"Епічна"
+		Hungarian:"Alapértelmezett"
 }
 
 	"Marathon":{
@@ -650,6 +702,7 @@
     		Korean:"마라톤"
 		Czech:"Maratónská"
 		Ukrainian:"Марафон"
+		Hungarian:"Epikus"
 }
 
 
@@ -662,6 +715,7 @@
 		Czech:"Doba počátku hry"
 		Ukrainian:"Початкова епоха"
 		Russian:"Начальная эпоха"
+		Hungarian:"Marathon"
 }
 
 ////
@@ -674,6 +728,7 @@
                 Korean:"당신이 요청한 매개변수로 지도를 만들 수 없을 것 같습니다!"
 		Czech:"Vypadá to, že nelze vytvořit mapu dle vašeho zadání!"
 		Ukrainian:"Схоже, що неможливо створити мапу з обраними параметрами!"
+		Hungarian:"Kezdő korszak"
 }
 
 	"Maybe you put too many players into too small a map?":{
@@ -684,6 +739,7 @@
                 Korean:"너무 작은 지도에 너무 많은 플레이어를 넣었나요?"
 		Czech:"Nevložili jste příliš mnoho hráčů do moc malé mapy?"
 		Ukrainian:"Можливо забагато гравців на замаленьку мапу?"
+		Hungarian:"Úgy tűnik, hogy nem tudunk térképet készíteni a kért paraméterekkel!"
 }
 
 	"No human players selected!":{
@@ -694,6 +750,7 @@
 		Czech:"Nebyl vybrán lidský hráč!"
 		Ukrainian:"Не обрано людей-гравців!"
 		Russian:"Не выбраны игроки(люди)"
+		Hungarian:"Lehet, hogy túl sok játékost fektetett be egy túl kicsi térképbe?"
 }
 
 
@@ -713,6 +770,7 @@
                 Korean:"현재 게임 저장"
 		Czech:"Aktuálně uložené hry"
 		Ukrainian:"Поточні збереження"
+		Hungarian:"Nincs emberi játékos kiválasztva!"
 }
 
 	"Show autosaves":{
@@ -723,6 +781,7 @@
 		Czech:"Zobrazit automaticky uložené hry"
 		Ukrainian:"Показати автозбереження"
 		Russian:"Показать автосохранения"
+		Hungarian:"Aktuális mentés"
 }
 
 	"Saved game name":{
@@ -739,6 +798,7 @@
                 Korean:"저장된 게임 이름"
 		Czech:"Uložit hru jako"
 		Ukrainian:"Назва збереженої гри"
+		Hungarian:"Automatikus mentés megjelenítése"
 }
 
 	"Copy to clipboard":{ //this button exsits in "Save game" and "Map editor", it means that we can copy "current game status" to clipboard, "current game status" is not a existing file but some words.
@@ -751,6 +811,7 @@
                 Korean:"클립보드에 복사"
 		Czech:"Zkopírovat do schránky"
 		Ukrainian:"Зберегти до буфера обміну"
+		Hungarian:"Mentett játék neve"
 }
 
 	"Copy saved game to clipboard":{//this button exsits in "Load game",it means that we have a "saved game" file, so we can copy its data to clipboard.
@@ -761,6 +822,7 @@
 		Czech:"Zkopírovat uloženou hru do schránky"
 		Ukrainian:"Копіювати збережену гру до буфера обміну"
 		Russian:"Копировать сохранённую игру в буфер обмена"
+		Hungarian:"Másolja a vágólapra"
 }
 
 	"Could not load game":{
@@ -777,6 +839,7 @@
                 Korean:"게임을 불러올 수 없습니다"
 		Czech:"Nepodařilo se načíst hru"
 		Ukrainian:"Неможливо завантажити гру"
+		Hungarian:"A mentett játék másolása a vágólapra"
 }
 
 	"Load [saveFileName]":{ // as in "Load SaveFile2"
@@ -793,6 +856,7 @@
                 Korean:"불러오기 [saveFileName]",
 		Czech:"Načíst hru [saveFileName]"
 		Ukrainian:"Завантажити [saveFileName]"
+		Hungarian:"Nem sikerült betölteni a játékot"
 }
 
 	"Delete save":{
@@ -809,6 +873,7 @@
                 Korean:"저장 삭제"
 		Czech:"Smazat uloženou hru"
 		Ukrainian:"Видалити збережене"
+		Hungarian:"Betöltése [saveFileName] betöltése"
 }
 
 	"Saved at":{
@@ -825,6 +890,7 @@
                 Korean:"저장 시간"
 		Czech:"Uloženo jako"
 		Ukrainian:"Збережено до"
+		Hungarian:"Mentés törlése"
 }
 
 	////////////// Load map
@@ -837,6 +903,7 @@
                 Korean:"지도 불러오기"
 		Czech:"Načíst mapu"
 		Ukrainian:"Завантажити мапу"
+		Hungarian:"Mentve itt:"
 }
 
 	"Are you sure you want to delete this map?":{
@@ -847,6 +914,7 @@
                 Korean:"이 지도를 삭제하시겠습니까?"
 		Czech:"Jste si jistý(á), že chcete smazat tuto mapu?"
 		Ukrainian:"Ви впевнені, що бажаєте видалити цю мапу?"
+		Hungarian:"Térkép betöltése"
 }
 
 	"Upload map":{
@@ -857,6 +925,7 @@
                 Korean:"업로드"
   		Czech:"Nahrát mapu"
 		Ukrainian:"Вивантажити мапу"
+		Hungarian:"Biztosan törli ezt a térképet?"
 }
 
 	"Could not upload map!":{
@@ -867,6 +936,7 @@
                 Korean:"지도를 업로드할 수 없습니다!"
 		Czech:"Nelze nahrát mapu!"
 		Ukrainian:"Неможливо вивантажити мапу!"
+		Hungarian:"Térkép feltöltése"
 }
 
 	"Map uploaded successfully!":{
@@ -876,6 +946,7 @@
 		Ukrainian:"Мапа вивантажена успішно!"
 		Simplified_Chinese:"地图上传成功！"
 		Russian:"Карта успешно загружена!"
+		Hungarian:"Nem sikerült feltölteni a térképet!"
 },
 
 
@@ -896,6 +967,7 @@
                 Korean:"설정"
 		Czech:"Možnosti"
 		Ukrainian:"Налаштування"
+		Hungarian:"A térkép sikeresen feltöltve!"
 }
 
 	"Display options":{
@@ -913,6 +985,7 @@
                 Korean:"해상도 설정"
 		Czech:"Zobrazit možnosti"
 		Ukrainian:"Налаштування екрану"
+		Hungarian:"Lehetőségek"
 }
 
 	"Turns between autosaves":{
@@ -925,6 +998,7 @@
                 Korean:"자동 저장 라운드"
 		Czech:"Počet kol mezi automatickým uložením hry"
 		Ukrainian:"Ходів між автозбереженням"
+		Hungarian:"Megjelenítési lehetőségek"
 }
 
 	"Sound effects volume":{
@@ -936,15 +1010,18 @@
                 Korean:"음향효과 음량"
 		Czech:"Hlasitost zvuků"
 		Ukrainian:"Гучність звуків"
+		Hungarian:"Váltás az automatikus mentések között"
 }
 
 	"Music volume":{
 		Italian:"Volume musica"
 		Simplified_Chinese:"音乐音量"
+		Hungarian:"Hanghatások hangereje"
 }
 
 	"Download music":{
 		Italian:"Scarica musica"
+		Hungarian:"Zenei kötet"
 }
 
 	"Show":{
@@ -962,6 +1039,7 @@
                 Korean:"보이기"
 		Czech:"Zobrazit"
 		Ukrainian:"Показати"
+		Hungarian:"Zene letöltés"
 }
 
 	"Hide":{
@@ -979,6 +1057,7 @@
                 Korean:"숨기기"
 		Czech:"Schovat"
 		Ukrainian:"Сховати"
+		Hungarian:"Előadás"
 }
 
 	"Show worked tiles":{
@@ -988,6 +1067,7 @@
 		Czech:"Zobrazit obdělávané políčka"
 		Ukrainian:"Показати оброблювані комірки"
 		Russian:"Показать обрабатываемые клетки"
+		Hungarian:"Elrejt"
 }
 
 	"Show resources and improvements":{
@@ -997,6 +1077,7 @@
 		Czech:"Zobrazit zdroje a vylepšení"
 		Ukrainian:"Показати ресурси і вдосконалення"
 		Russian:"Показать ресурсы и улучшения"
+		Hungarian:"Megmunkált csempe megjelenítése"
 }
 
 	"Check for idle units":{
@@ -1010,6 +1091,7 @@
 		Korean:"턴이 끝나기 전에 미행동 유닛 보기"
 		Czech:"Kontrolovat zahálející jednotky"
 		Ukrainian:"Перевіряти неробочі підрозділи"
+		Hungarian:"Erőforrások és fejlesztések megjelenítése"
 }
 
 	"Move units with a single tap":{
@@ -1022,6 +1104,7 @@
                 Korean:"한 번의 탭으로 유닛 이동"
 		Czech:"Pohyb jednotek na jeden klik"
 		Ukrainian:"Переміщення підрозділів одним натиском"
+		Hungarian:"Alapjárat ellenőrzése"
 }
 
 	"Show tutorials":{
@@ -1032,6 +1115,7 @@
                 Korean:"튜토리얼 보이기"
 		Czech:"Zobrazit tutoriál"
 		Ukrainian:"Показати навчання"
+		Hungarian:"Mozgatni az egységeket egyetlen érintéssel"
 }
 
 	"Auto-assign city production":{
@@ -1042,6 +1126,7 @@
                 Korean:"도시 생산 자동 할당"
 		Czech:"Automatické přiřazení produkce ve městě"
 		Ukrainian:"Автомачне виробництво у містах"
+		Hungarian:"Oktatóanyagok megjelenítése"
 }
 
 	"Auto-build roads":{
@@ -1052,6 +1137,7 @@
 		Traditional_Chinese:"自動建造道(鐵)路",
 		Ukrainian:"Автоматичне будівництво доріг"
 		Russian:"Автоматическое строительство дорог"
+		Hungarian:"Városkiállítás automatikus hozzárendelése"
 }
 
 	"Show minimap":{
@@ -1062,6 +1148,7 @@
                 Korean:"미니맵 보이기"
 		Czech:"Zobrazit minimapu"
 		Ukrainian:"Показати мінімапу"
+		Hungarian:"Autóépítés utakon"
 }
 
 	"Show pixel units":{
@@ -1071,6 +1158,7 @@
 		Ukrainian:"Показати піксельні підрозділи"
 		Czech:"Zobrazit jednotky jako pixely"
 		Russian:"Показать текстуру юнитов"
+		Hungarian:"Minimum mutatása"
 }
 
 	"Show pixel improvements":{
@@ -1080,6 +1168,7 @@
 		Traditional_Chinese:"顯示像素設施"
 		Czech:"Zobrazit vylepšení jako pixely"
 		Russian:"Показать текстуру улучшений"
+		Hungarian:"Képpont egységek megjelenítése"
 }
 
 	"Fontset":{
@@ -1090,6 +1179,7 @@
                 Korean:"폰트 설정"
 		Czech:"Typ písma"
 		Ukrainian:"Шрифт"
+		Hungarian:"Képpontjavítások megjelenítése"
 }
 
 }
