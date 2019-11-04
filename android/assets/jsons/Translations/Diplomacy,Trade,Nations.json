@@ -14,6 +14,7 @@
 		German:"Diplomatie"
                 Polish:"Dyplomacja"
 		Czech:"Diplomacie"
+		Hungarian:"Diplomácia"
 }
 
 	"War":{
@@ -28,6 +29,7 @@
 		German:"Krieg"
                 Polish:"Wojna"
 		Czech:"Válka"
+		Hungarian:"Háború"
 }
 
 	"Peace":{
@@ -42,6 +44,7 @@
 		German:"Frieden"
                 Polish:"Pokój"
 		Czech:"Mír"
+		Hungarian:"Béke"
 }
 
 	"Declare war":{
@@ -56,6 +59,7 @@
 		German:"Krieg erklären"
                 Polish:"Wypowiedz wojnę"
 		Czech:"Vyhlásit válku"
+		Hungarian:"Hadat üzen"
 }
 
 	"Declare war on [civName]?":{ //Don't translate in diplomacy view
@@ -67,6 +71,7 @@
                 Polish:"Wypowiedz wojnę cywilizacji [civName]"
 		Russian:"Объявить войну [civName]?",
 		Czech:"Vyhlásit válku civilizaci [civName]?"
+		Hungarian:"Hirdesse háborút a [civName] ellen?"
 }
 
 	"[civName] has declared war on us!":{
@@ -81,6 +86,7 @@
 		German:"[civName] hat uns den Krieg erklärt!"
                 Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!",
 		Czech:"Civilizace [civName] nám vyhlásila válku!"
+		Hungarian:"A [civName] háborút hirdett nekünk!"
 }
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -95,6 +101,7 @@
 		Romanian:"[leaderName] de [nation]"
                 Polish:"[leaderName], władca cywilizacji [nation]",
 		Czech:"[leaderName], [nation]"
+		Hungarian:"a (nemzet) [leaderName] neve"
 }
 
 	"You'll pay for this!":{
@@ -109,6 +116,7 @@
 		Traditional_Chinese:"你會為此付出代價的！"
                 Polish:"Zapłacisz za swą zuchwałość!"
 		Czech:"Za tohle zaplatite!"
+		Hungarian:"Fizetni fogsz érte!"
 }
 
 	"Negotiate Peace":{
@@ -120,6 +128,7 @@
                 Polish:"Negocjuj pokój"
 		Russian:"Предложить мир"
 		Czech:"Mírové jednání"
+		Hungarian:"Békés tárgyalás"
 }
 
 	"Very well.":{
@@ -131,6 +140,7 @@
                 Polish:"Niech tak będzie."
 		Russian:"Очень хорошо."
 		Czech:"Jak je libo"
+		Hungarian:"Nagyon jól."
 }
 
 	"Farewell.":{
@@ -142,6 +152,7 @@
                 Polish:"Żegnaj."
 		Russian:"До встречи."
 		Czech:"Sbohem"
+		Hungarian:"Búcsú."
 }
 
 	"Sounds good!":{
@@ -152,6 +163,7 @@
                 Polish:"Bardzo dobrze!"
 		Russian:"Звучит неплохо!"
 		Czech:"To zní dobře"
+		Hungarian:"Jól hangzik!"
 }
 
 	"Not this time.":{ // declining trade text
@@ -163,6 +175,7 @@
                 Polish:"To się nie uda"
 		Russian:"Не в этот раз."
 		Czech:"Z toho nic nebude"
+		Hungarian:"Ezúttal nem."
 }
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
@@ -174,6 +187,7 @@
                 Polish:"Wyśmienicie!"
 		Russian:"Превосходно!"
 		Czech:"Skvěle!"
+		Hungarian:"Kiváló!"
 }
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
@@ -185,6 +199,7 @@
                 Polish:"Oto nasza oferta."
 		Russian:"Как насчёт другого..."
 		Czech:"Co třeba zkusit něco jiného..."
+		Hungarian:"Mi lenne valami mással ..."
 }
 
 	"A pleasure to meet you.":{
@@ -196,6 +211,7 @@
                 Polish:"Czuję się zaszczycony."
 		Russian:"Рады видеть вас."
 		Czech:"Rádi vás poznáváme"
+		Hungarian:"Örülök, hogy találkoztunk."
 }
 
 	"Our relationship: ":{
@@ -207,6 +223,7 @@
                 Polish:"Nasze relacje:"
 		Russian:"Наши отношения: "
 		Czech:"Náš vzájemný vztah "
+		Hungarian:"A kapcsolatunk: "
 }
 
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
@@ -218,6 +235,7 @@
 		Traditional_Chinese:"我們遇到了城邦[name]！"
 		Russian:"Мы обнаружили город-государство [name]!",
 		Czech:"Poprvé jsme se setkali s městským státem [name]"
+		Hungarian:"Találkoztunk a [név] városállammal!"
 }
 
 	// Friendship declaration flavor texts
@@ -230,6 +248,7 @@
                 Polish:"Zadeklaruj przyjaźń na [numberOfTurns] tur"
 		Russian:"Объявить о дружбе на [numberOfTurns] ходов",
 		Czech:"Deklarace přátelství ([numberOfTurns] kol)"
+		Hungarian:"Barátság bejelentése ([numberOfTurns] fordul)"
 }
 
 	"May our nations forever remain united!":{
@@ -241,6 +260,7 @@
                 Polish:"Oby ta przyjaźń już zawsze łączyła nasze cywilizacje!"
 		Russian:"Да будут наши державы навеки едины!"
 		Czech:"Nechť naše národy zůstanou navždy spojené"
+		Hungarian:"Nemzetek örökké egységes maradhatnak!"
 }
 
 	"Indeed!":{
@@ -252,6 +272,7 @@
                 Polish:"Wspaniale!"
 		Russian:"Разумеется!"
 		Czech:"Vskutku!"
+		Hungarian:"Valóban!"
 }
 
 	// Denunceation flavour texts
@@ -263,6 +284,7 @@
                 Polish:"Potęp cywilizację na [numberOfTurns] tur"
 		Russian:"Осуждение на [numberOfTurns] ходов",
 		Czech:"Odsoudit ([numberOfTurns] kol)"
+		Hungarian:"Felmondás ([numberOfTurns] fordul)"
 }
 
 	"We will remember this.":{
@@ -272,6 +294,7 @@
 		Traditional_Chinese:"這種侮辱我們絕不會忘記。請好自為之！"
 		Russian:"Мы это запомним"
 		Czech:"To vám nikdy nezapomeneme!"
+		Hungarian:"Emlékezni fogunk erre."
 }
 
 
@@ -285,6 +308,7 @@
 		Portuguese:"Imperdoável"
 		Russian:"Непростительно враждебные"
   		Czech:"Nenávist"
+		Hungarian:"Megbocsáthatatlan"
 }
 
   	"Enemy":{
@@ -295,6 +319,7 @@
 		Portuguese:"Inimigos" //as in 'we are enemies' not just 'they are our enemy'
 		Russian:"Враждебные"
   		Czech:"Nepřátelství"
+		Hungarian:"Ellenség"
 }
 
   	"Competitor":{
@@ -305,6 +330,7 @@
 		Portuguese:"Adversários"
 		Russian:"Соперничающие"
   		Czech:"Negativní"
+		Hungarian:"Versenyző"
 }
 
   	"Neutral":{
@@ -315,6 +341,7 @@
 		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
 		Russian:"Нейтральные"
   		Czech:"Neutrální"
+		Hungarian:"Semleges"
 }
 
   	"Favorable":{
@@ -325,6 +352,7 @@
 		Portuguese:"Favorável"
 		Russian:"Приемлемые"
   		Czech:"Pozitivní"
+		Hungarian:"Kedvező"
 }
 
   	"Friend":{
@@ -335,6 +363,7 @@
 		Portuguese:"Amigos"
 		Russian:"Дружеские"
  	 	Czech:"Přátelství"
+		Hungarian:"Friend"
 }
 
   	"Ally":{
@@ -345,6 +374,7 @@
 		Portuguese:"Aliado"
 		Russian:"Союзнические"
   		Czech:"Aliance"
+		Hungarian:"Szövetséges"
 }
 
 	// City States
@@ -356,6 +386,7 @@
 		Traditional_Chinese:"當影響力不低於30時提供[amountOfCulture]文化"
 		Russian:"Даёт [amountOfCulture] культуры при 30 Влияния",
 		Czech:"Poskytují [amountOfCulture] bodů Kultury při Vlivu [30] "
+		Hungarian:"Biztosítja a [sumaOfCulture] tenyésztést a [30] befolyásnál"
 }
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
@@ -365,6 +396,7 @@
 		Traditional_Chinese:"當影響力不低於30時為首都提供3食物，為其他城市提供1食物"
 		Russian:"Даёт 3 Еды в столице и 1 Еда в остальных городах при 30 Влияния"
 		Czech:"Poskytuje 3 jídla v hlavním městě a 1 jídlo ve všech ostatních městech při Vlivu 30"
+		Hungarian:"3 élelmet biztosít fővárosban és 1 ételt más városokban 30-as hatással"
 }
 
 	"Provides 3 happiness at 30 Influence":{
@@ -374,6 +406,7 @@
 		Traditional_Chinese:"當影響力不低於30時提供3快樂"
 		Russian:"Даёт 3 Счастья при 30 Влияния"
 		Czech:"Poskytuje 3 body Spokojenosti při Vlivu 30"
+		Hungarian:"3 boldogságot biztosít 30 befolyásnál"
 },
 
 	"Provides land units every 20 turns at 30 Influence":{
@@ -383,6 +416,7 @@
 		Traditional_Chinese:"當影響力不低於30時每20回合提供陸軍單位"
 		Russian:"Даёт сухопутные юниты каждые 20 ходов при 30 Влияния"
 		Czech:"Poskytuje pozemní jednotky každých 20 kol při Vlivu 30"
+		Hungarian:"Szárazföldi egységeket biztosít minden 20 fordulásnál 30 befolyásnál"
 },
 
 	"Gift [giftAmount] gold (+[influenceAmount] influence)":{
@@ -391,6 +425,7 @@
 		Traditional_Chinese:"贈予[giftAmount]金錢(+[influenceAmount]影響力)"
 		Czech:"Darujme [giftAmount] Zlata (+ [influenceAmount] Vlivu)"
 		Russian:"Подарить [giftAmount] золота (+[influenceAmount] Влияния)"
+		Hungarian:"Ajándék [ajándék összege] arany (+ [befolyás összege] befolyás)"
 }
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
@@ -400,6 +435,7 @@
 		Traditional_Chinese:"將在[turnsToRelationshipChange]回合後失去對該城邦的影響"
 		Russian:"Отношения изменятся в следующие [turnsToRelationshipChange] ходов",
 		Czech:"Mezinárodní vztahy se změní během příštích/ho [turnsToRelationshipChange] kol(a)"
+		Hungarian:"A kapcsolat megváltozik egy másik [TurnToRelationshipChange] fordulóban"
 }
 
 
@@ -414,6 +450,7 @@
 		Portuguese:"Você declarou guerra contra nós!"
 		Russian:"Вы объявляли нам войну!"
 		Czech:"Vyhlásili jste nám válku!"
+		Hungarian:"Ön háborút hirdett nekünk!"
 }
 
 	"Your warmongering ways are unacceptable to us.":{
@@ -424,6 +461,7 @@
 		Portuguese:"Seus costumes de guerra são inaceitáveis para nós."
 		Russian:"Ваша воинственность для нас неприемлема."
 		Czech:"Vaše chování je pro nás nepřijatelné."
+		Hungarian:"Számodra elfogadhatatlan az ön harcoló módszere."
 }
 
 	"You have captured our cities!":{
@@ -434,6 +472,7 @@
 		Portuguese:"Você capturou nossas(nossa) cidades(cidade)!"
 		Russian:"Вы захватывали наши города!"
 		Czech:"Obsadili jste naše města!"
+		Hungarian:"Elfogták városunkat!"
 }
 
 	"Years of peace have strengthened our relations.":{
@@ -444,6 +483,7 @@
 		Portuguese:"Anos de paz fortaleceram nossas relações."
 		Russian:"Годы мира укрепили наши отношения"
 		Czech:"Roky míru posílily naše vzájemné vztahy."
+		Hungarian:"A béke évei megerősítették kapcsolatainkat."
 }
 
 	"Our mutual military struggle brings us closer together.":{
@@ -454,6 +494,7 @@
 		Portuguese:"Nossas lutas mutuas nos fazem mais próximos."
 		Russian:"Наши совместные боевые действия сблизили нас"
 		Czech:"Naše společné vélečné tažení nás sblížíli"
+		Hungarian:"A kölcsönös katonai harcunk közelebb hoz minket."
 }
 
 	"We have signed a public declaration of friendship":{
@@ -464,6 +505,7 @@
 		Portuguese:"Assinamos uma declaração pública de amizade"
 		Russian:"Мы подписали публичную декларацию дружбы"
 		Czech:"Podepsali jsme veřejnou deklaraci přátelství"
+		Hungarian:"Nyilvános barátsági nyilatkozatot írtunk alá"
 }
 
 	"You have declared friendship with our enemies!":{
@@ -474,6 +516,7 @@
 		Portuguese:"Voçê declarou amizade a um de nossos inimigos!"
 		Russian:"Вы дружите с нашими врагами!"
 		Czech:"Deklarovali jste přátelství s našimi nepřáteli!"
+		Hungarian:"Ön bejelentette barátságát az ellenségeinkkel!"
 }
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
@@ -483,6 +526,7 @@
 		Portuguese:"Voçê declarou amizade a um de nossos aliados"
 		Russian:"Вы дружите с нашими союзниками"
 		Czech:"Deklarovali jste přátelství s našimi spojenci"
+		Hungarian:"Ön bejelentette barátságát szövetségeseinkkel"
 }
 
 	"Our open borders have brought us closer together.":{
@@ -493,6 +537,7 @@
 		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
 		Russian:"Наши открытые границы сблизили нас"
 		Czech:"Dohoda o otevřených hranicích nás sblížila."
+		Hungarian:"Nyitott határoink közelebb hoztak minket."
 }
 
 
@@ -504,6 +549,7 @@
 		Traditional_Chinese:"你所謂的“友誼”一文不值。"
 		Russian:"Ваше так называемое дружелюбие ничего не значит."
 		Czech:"Naše takzvané 'přátelství' pro vás nic neznamená."
+		Hungarian:"Az úgynevezett" barátságod "nem ér semmit."
 }
 
 	"You have publicly denounced us!":{
@@ -513,6 +559,7 @@
 		Traditional_Chinese:"批判的武器不能代替武器的批判，譴責是無力的懦夫行為。"
 		Russian:"Вы публично осудили нас!"
 		Czech:"Veřejně jste nás odsoudili!"
+		Hungarian:"Nyilvánvalóan elítélte minket!"
 }
 
 	"You have denounced our allies":{
@@ -522,6 +569,7 @@
 		Traditional_Chinese:"對我們盟友的汙辱也是對我們的冒犯，請好自為之！"
 		Russian:"Вы осудили наших союзников!"
 		Czech:"Osdoudili jsme naše spojence"
+		Hungarian:"Ön elítélte szövetségeseinket"
 }
 
 	"You have denounced our enemies":{
@@ -531,6 +579,7 @@
 		Traditional_Chinese:"敵人的敵人就是朋友，你的譴責是維護公正的仗義執言。"
 		Russian:"Вы осудили наших врагов"
 		Czech:"Odsoudili jsme naše nepřátele"
+		Hungarian:"Ön elítélte ellenségeinket"
 }
 
 	// Demands
@@ -541,6 +590,7 @@
 		Traditional_Chinese:"要求"
 		Russian:"Требования"
 		Czech:"Požadavky:"
+		Hungarian:"Igények"
 }
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
@@ -549,6 +599,7 @@
 		Traditional_Chinese:"請不要在我們附近建立新的城市。"
 		Russian:"Пожалуйста, не закладывайте новых городов рядом с нами."
 		Czech:"Prosím nezakládejte města poblíž našeho území."
+		Hungarian:"Kérjük, ne telepítsen új városokat a közelben."
 }
 	"Very well, we shall look for new lands to settle.":{
 		Italian:"Ti porgiamo le nostre scuse."
@@ -557,6 +608,7 @@
 		Traditional_Chinese:"好的，我們將會尋找其他位置建立城市。"
 		Russian:"Хорошо, мы найдем другие земли для поселений"
 		Czech:"Nu dobrá, podíváme se po nových místech k zakládání měst."
+		Hungarian:"Nagyon jól, új földeket fogunk keresni letelepedésre."
 }
 	"We shall do as we please.":{
 		Italian:"Colonizzeremo la terra che ci pare e piace."
@@ -565,6 +617,7 @@
 		Traditional_Chinese:"我們只依照自己的意志行事。"
 		Russian:"Мы поступим, как сочтем нужным"
 		Czech:"Uděláme si to po svém."
+		Hungarian:"Megteszjük, ahogy tetszik."
 }
 
 	"You betrayed your promise to not settle cities near us":{
@@ -574,6 +627,7 @@
 		Traditional_Chinese:"你違背了不在我們附近建立城市的承諾，請好自為之。"
 		Russian:"Вы нарушили ваше обещание не закладывать города рядом с нами"
 		Czech:"Porušili jste svůj slib nezakládat města u našich hranic"
+		Hungarian:"Ön elárulta az ígéretét, hogy nem települ a közelben fekvő városokban"
 }
 
 	"You fulfilled your promise to stop settling cities near us!":{
@@ -583,6 +637,7 @@
 		Traditional_Chinese:"感謝你履行了不在我們附近建立城市的承諾。"
 		Russian:"Вы выполнили ваше обещание не закладывать города рядом с нами"
 		Czech:"Dodrželi jste svůj slib nezakládat města poblíž našich hranic."
+		Hungarian:"Ön teljesítette az ígéretét, hogy abbahagyja a közelben fekvő városok települését!"
 }
 
 	"You refused to stop settling cities near us":{
@@ -592,6 +647,7 @@
 		Traditional_Chinese:"你拒絕停止在我們附近建立城市的決定是愚蠢的，好自為之！"
 		Russian:"Вы отказались не закладывать города рядом с нами"
 		Czech:"Odmítli jste žádost o nezakládání měst poblíž našich hranic"
+		Hungarian:"Ön nem volt hajlandó leállítani a közelben fekvő városokat."
 }
 
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
@@ -601,6 +657,7 @@
 		Traditional_Chinese:"儘管你答應了，我們還是注意到你在我們邊境附近建立了新城市。如果有不好的影響...這將是你自找的！"
 		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
 		Czech:"Odhalili jsme nové město poblíž našich hranic navzdory vašim slibům. To bude mít... patřičné následky."
+		Hungarian:"Észrevettük a határaink közelében lévő új városát, az ígéreted ellenére. Ennek következményei lesznek."
 }
 
 	"Your arrogant demands are in bad taste":{
@@ -610,6 +667,7 @@
 		Traditional_Chinese:"你的傲慢要求不合情理。"
 		Russian:"Ваши высокомерные требования раздражают"
 		Czech:"Vaše arogantní požadavky jsou dalším důkazem vaší zkaženosti"
+		Hungarian:"Arrogáns igényei rossz ízlésűek"
 }
 
 
@@ -623,6 +681,7 @@
 		Traditional_Chinese:"文化型"
 		Russian:"Культурный"
 		Czech:"Kulturní"
+		Hungarian:"Kulturált"
 }
 
 	"Maritime":{
@@ -632,6 +691,7 @@
 		Traditional_Chinese:"航海型"
 		Russian:"Морской"
 		Czech:"Nomořní"
+		Hungarian:"Tengeri"
 }
 
 	"Mercantile":{
@@ -641,6 +701,7 @@
 		Traditional_Chinese:"商業型"
 		Russian:"Торговый"
 		Czech:"Obchodní"
+		Hungarian:"Kereskedelmi"
 }
 
 	"Militaristic":{
@@ -650,6 +711,7 @@
 		Traditional_Chinese:"軍事型"
 		Russian:"Воинственный"
 		Czech:"Militaristický"
+		Hungarian:"Militarista"
 }
 
 	"Type: ":{
@@ -659,6 +721,7 @@
 		Russian:"Тип: "
 
 		Czech:"Typ:"
+		Hungarian:"Típus: "
 }
 
 	"Influence: ":{
@@ -667,6 +730,7 @@
 		Traditional_Chinese:"影響力："
 		Russian:"Влияние: "
 		Czech:"Vliv: "
+		Hungarian:"Befolyás: "
 }
 
 ////// Trade
@@ -682,6 +746,7 @@
 		Portuguese:"Comércio"
 		German:"Handel"
 		Czech:"Obchod"
+		Hungarian:"Kereskedelmi"
 }
 
 	"Offer trade":{
@@ -695,6 +760,7 @@
 		Portuguese:"Oferecer uma troca comercial" // seems like not one person wants to :D
 		German:"Handel anbieten"
 		Czech:"Učinit nabídku"
+		Hungarian:"Ajánlat kereskedelem"
 }
 
 	"Retract offer":{
@@ -703,6 +769,7 @@
 		Simplified_Chinese:"撤回报价"
 		Traditional_Chinese:"撤回報價"
 		Czech:"Zrušit nabídku"
+		Hungarian:"Visszavonási ajánlat"
 }
 
 	"What do you have in mind?":{
@@ -716,6 +783,7 @@
 		Portuguese:"O que tens em mente?" //tens as in have or has nor tens of thousands of course
 		German:"Was schwebt Ihnen vor?"
 		Czech:"Co máte na mysli?"
+		Hungarian:"Mi jár a fejedben?"
 }
 
 	"Our items":{
@@ -729,6 +797,7 @@
 		Portuguese:"Nossos itens/recursos"
 		German:"Unsere Gegenstände"
 		Czech:"Naše obchodní artikly"
+		Hungarian:"Tételeink"
 }
 
 	"Our trade offer":{
@@ -742,6 +811,7 @@
 		Portuguese:"Nossa oferta"
 		German:"Unser Handelsangebot"
 		Czech:"My nabízíme k obchodování"
+		Hungarian:"Kereskedelmi ajánlatunk"
 }
 
 	"[otherCiv]'s trade offer":{
@@ -755,6 +825,7 @@
 		Portuguese:"Oferta da(o/e) [otherCiv]" // da(o/e) meaning of in diffenrent genders
 		German:"[otherCiv]s Handelsangebot",
 		Czech:"[otherCiv] nabízí k obchodování"
+		Hungarian:"[otherCiv] kereskedelmi ajánlat"
 }
 
 	"[otherCiv]'s items":{
@@ -768,6 +839,7 @@
 		Portuguese:"Itens da(o/e) [otherCiv]"
 		German:"[otherCiv]s Gegenstände",
 		Czech:"[otherCiv] obchodní artikly"
+		Hungarian:"[otherCiv] elemei"
 }
 
 	"Pleasure doing business with you!":{
@@ -781,6 +853,7 @@
 		Portuguese:"É um prazer fazer negócios com voçê" // can remove 'É um prazer' as it translates to 'it is a pleasure'
 		German:"Angenehm mit Ihnen Geschäfte zu machen!"
 		Czech:"Bylo nám potěšení s vámi obchodovat!"
+		Hungarian:"Öröm veled üzletelni!"
 }
 
 	"I think not.":{
@@ -794,6 +867,7 @@
 		Portuguese:"Acho que não"
 		German:"Lieber nicht."
 		Czech:"Myslím, že to neklapne."
+		Hungarian:"Azt hiszem, nem."
 }
 
 	"That is acceptable.":{
@@ -807,6 +881,7 @@
 		Portuguese:"Isto é aceitavel"
 		German:"Das ist akzeptabel."
 		Czech:"To se zdá přijatelné."
+		Hungarian:"Ez elfogadható."
 }
 
 	"Accept":{
@@ -820,6 +895,7 @@
 		Portuguese:"Aceitar"
 		German:"Annehmen"
 		Czech:"Souhlasíme"
+		Hungarian:"Elfogad"
 }
 
 	"Keep going":{
@@ -830,6 +906,7 @@
 		Portuguese:"Prossiga"
 		Russian:"Продолжить"
 		Czech:"Pokračujte"
+		Hungarian:"Folytasd"
 }
 
 	"There's nothing on the table":{
@@ -843,6 +920,7 @@
 		Portuguese:"Não ha nada á mesa"
 		German:"Der Verhandlungstisch ist leer"
 		Czech:"Nemáme se o čem bavit"
+		Hungarian:"Nincs semmi az asztalon"
 }
 
 	"Peace Treaty":{//Corrected
@@ -856,6 +934,7 @@
 		Portuguese:"Tratado de paz"
 		German:"Friedensabkommen"
 		Czech:"Mírová smlouva"
+		Hungarian:"Békeszerződés"
 }
 
 	"Agreements":{
@@ -866,6 +945,7 @@
 		Portuguese:"Acordos"
 		Russian:"Соглашения"
 		Czech:"Obchodní dohody"
+		Hungarian:"Megállapodás"
 }
 
 	"Open Borders":{
@@ -876,6 +956,7 @@
 		Portuguese:"Acordo de fronteiras abertas"
 		Russian:"Открытые границы"
 		Czech:"Otevřené hranice"
+		Hungarian:"Nyitott határok"
 }
 
 	"Gold per turn":{
@@ -889,6 +970,7 @@
 		Portuguese:"Ouro por turno"
 		German:"Gold pro Runde"
 		Czech:"Zlato za kolo"
+		Hungarian:"Arany per ford"
 }
 
 	"Cities":{
@@ -903,6 +985,7 @@
 		Portuguese:"Cidades"
 		Russian:"Города"
 		Czech:"Města"
+		Hungarian:"Városok"
 }
 
 	"Technologies":{
@@ -914,6 +997,7 @@
 		Portuguese:"Tecnologias"
 		Russian:"Технологии"
 		Czech:"Technologie"
+		Hungarian:"Technológiák"
 }
 
 	"Declarations of war":{
@@ -924,6 +1008,7 @@
 		Portuguese:"Declarações de guerra"
 		Russian:"Объявления войны"
 		Czech:"Vyhlášení války"
+		Hungarian:"Háborús nyilatkozatok"
 }
 
 	"Introduction to [nation]":{
@@ -932,6 +1017,7 @@
 		Traditional_Chinese:"介紹認識[nation]"
 		Russian:"Представиться [nation]",
 		Czech:"Představení národa [nation]"
+		Hungarian:"Bevezetés a nemzetbe"
 }
 
 	"Declare war on [nation]":{
@@ -940,6 +1026,7 @@
 		Traditional_Chinese:"宣戰[nation]"
 		Czech:"Vyhlásit válku národů [nation]"
 		Russian:"Объявить войну: [nation]"
+		Hungarian:"Hirdesse háborút a nemzet ellen"
 }
 
 	"Luxury resources":{
@@ -950,6 +1037,7 @@
 		Portuguese:"Recursos raros/luxuosos" //raros = rare luxuosos = luxurious
 		Russian:"Редкие ресуры"
 		Czech:"Luxusní zdroje"
+		Hungarian:"Luxus források"
 }
 
 	"Strategic resources":{
@@ -960,6 +1048,7 @@
 		Portuguese:"Recursos estratégicos"
 		Russian:"Стратегические ресуры"
 		Czech:"Strategiské zdroje"
+		Hungarian:"Stratégiai források"
 }
 
 
@@ -977,6 +1066,7 @@
 		Portuguese:"substitui"
 		Russian:"заменяет"
 		Czech:"nahrazuje"
+		Hungarian:"Helyettesíti"
 }
 
 	"[resourceName] not required":{
@@ -987,6 +1077,7 @@
 		Portuguese:"[resourceName] não requirido"
 		Russian:"[resourceName] не требуется",
 		Czech:"[resourceName] není potřeba"
+		Hungarian:"[resourceName] nem szükséges"
 }
 
 	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
@@ -995,6 +1086,7 @@
 		Traditional_Chinese:"失去能力"
 		Russian:"Не имеет "
 		Czech:"Ztráta schopnosti"
+		Hungarian:"Elveszett képesség"
 }
 
 	"National ability":{ // the unique ability that each nation has
@@ -1008,6 +1100,7 @@
 		Simplified_Chinese:"民族特性"
 		Traditional_Chinese:"民族特性"
 		Czech:"Národní schopnost"
+		Hungarian:"Nemzeti képesség"
 }
 
 	"Babylon":{
@@ -1021,6 +1114,7 @@
 		Portuguese:"Babilônia"
 		German:"Babylonien"
 		Czech:"Babylonie"
+		Hungarian:"Babilon"
 }
 
 	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
@@ -1034,6 +1128,7 @@
 		Traditional_Chinese:"發明文字後立即獲得一個大科學家，大科學家點數累積速率+50%"
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 		Czech:"Obdržíte Velkého Vědce při objevení technologie 'Písemnictví', získejte Velkého Vědce o 50% rychleji"
+		Hungarian:"Ingyen nagy tudós, ha felfedezi az írást, 50% -kal gyorsabban keresnek nagy tudósokat"
 }
 
 	"Nebuchadnezzar II":{//Babylonian Leader
@@ -1043,6 +1138,7 @@
 		Traditional_Chinese:"尼布甲尼薩二世"
 		Russian:"Навуходоносор II",
 		Czech:"Nebukadnesar II."
+		Hungarian:"Nebukadnezzár II"
 }
 
 	"Greece":{
@@ -1056,6 +1152,7 @@
 		Portuguese:"Grécia"
 		German:"Griechenland"
 		Czech:"Řecko"
+		Hungarian:"Görögország"
 }
 
 	"Alexander":{
@@ -1065,6 +1162,7 @@
 		Traditional_Chinese:"亞歷山大"
 		Russian:"Александр"
 		Czech:"Alexandr Veliký"
+		Hungarian:"Sándor"
 },
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
@@ -1073,6 +1171,7 @@
 		Italian:"L'influenza sulle Città-Stato diminuisce il doppio più lentamente e aumenta il doppio più velocemente."
 		Russian:"Влияние на города-государства снижается вдвое медленнее и увеличивается вдвое быстрее"
 		Czech:"Vliv Městských států degraduje o polovinu a přibívá dvojnásobnou rychlostí."
+		Hungarian:"A város-állam befolyása felére csökken, és a normál sebesség kétszeresére tér vissza"
 },
 
 	"China":{
@@ -1086,6 +1185,7 @@
 		Portuguese:"China"
 		German:"China"
 		Czech:"Čína"
+		Hungarian:"Kína"
 }
 
 	"Wu Zetian":{
@@ -1094,6 +1194,7 @@
 		Traditional_Chinese:"武則天"
 		Russian:"У Цзэтянь",
 		Czech:"Wu Ce-tchien"
+		Hungarian:"Wu Zetian"
 },
 
 	"Great general provides double combat bonus, and spawns 50% faster":{
@@ -1108,6 +1209,7 @@
 		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
 		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее" // Russian x2. As it should be?
 		Czech:"Velký Generál poskytne dvojnásobný bojový bonus a rodí se o 50% rychleji"
+		Hungarian:"A nagy tábornok kettős harci bónuszt nyújt, és 50% -kal gyorsabban szaporodik"
 }
 
 	"Egypt":{
@@ -1121,6 +1223,7 @@
 		Portuguese:"Egíto"
 		German:"Ägypten"
 		Czech:"Egypt"
+		Hungarian:"Egyiptom"
 }
 
 	"Ramesses II":{
@@ -1130,6 +1233,7 @@
 		Traditional_Chinese:"拉美西斯二世"
 		Russian:"Рамзес II"
 		Czech:"Ramesse II."
+		Hungarian:"Ramesses II"
 }
 
 	"+20% production towards Wonder construction":{
@@ -1143,6 +1247,7 @@
 		Simplified_Chinese:"建造奇观时产能积累速率+20%"
 		Traditional_Chinese:"建造奇觀時產能累積速率+20%"
 		Czech:"+20% produkce při stavbě Divu světa"
+		Hungarian:"+ 20% termelés a Wonder építkezés felé"
 }
 
 	"England":{
@@ -1156,6 +1261,7 @@
 		Portuguese:"Inglaterra"
 		German:"England"
 		Czech:"Anglie"
+		Hungarian:"Anglia"
 }
 
 	"Elizabeth":{
@@ -1165,6 +1271,7 @@
 		Traditional_Chinese:"伊麗莎白"
 		Russian:"Елизавета"
 		Czech:"Alžběta I."
+		Hungarian:"Erzsébet"
 }
 
 	"+2 movement for all naval units":{
@@ -1178,6 +1285,7 @@
 		Portuguese:"+2 movimento para todas as unidades navais"
 		Russian:"+2 движение для всех военно-морских подразделений"
 		Czech:"+2 pohyb pro všechny námořní jednotky"
+		Hungarian:"+2 mozgás az összes haditengerészeti egység számára"
 }
 
 	"France":{
@@ -1191,6 +1299,7 @@
 		Portuguese:"França"
 		German:"Frankreich"
 		Czech:"Francie"
+		Hungarian:"Franciaország"
 }
 
 	"Napoleon":{
@@ -1200,6 +1309,7 @@
 		Traditional_Chinese:"拿破崙"
 		Russian:"Наполеон",
 		Czech:"Napoleon Bonaparte"
+		Hungarian:"Napóleon"
 }
 
 	"+2 Culture per turn from cities before discovering Steam Power":{
@@ -1213,6 +1323,7 @@
 		Simplified_Chinese:"在发明蒸汽机之前，每座城市的文化+2"
 		Traditional_Chinese:"在發明蒸汽機之前，每座城市的文化+2"
 		Czech:"+2 body kultury ze všech měst před objevením technologie 'Parní stroj'"
+		Hungarian:"+2 kultúra fordulónként a városokból, mielőtt felfedezné a Steam Power-t"
 }
 
 	"Russia":{
@@ -1226,6 +1337,7 @@
 		Portuguese:"Rússia"
 		Russian:"Россия"
 		Czech:"Rusko"
+		Hungarian:"Oroszország"
 }
 
 	"Catherine":{
@@ -1235,6 +1347,7 @@
 		Traditional_Chinese:"葉卡捷琳娜二世"
 		Russian:"Екатерина Великая"
 		Czech:"Kateřina II. Veliká"
+		Hungarian:"Catherine"
 }
 
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
@@ -1248,6 +1361,7 @@
 		Portuguese:"Recursos Estratégicos fornecem Produção de +1, recursos de cavalos, ferro e urânio fornecem quantidade dupla"
 		Russian:"Стратегические ресурсы дают +1 к производству, а количество ресуров Лошади, Железо и Уран удваивается"
 		Czech:"Strategické zdroje poskytují +1 produkci. Zdroje Koní, Železné rudy a Uranu jsou dvojnásobné"
+		Hungarian:"A stratégiai források +1 termelést biztosítanak, a ló-, vas- és uránkészletek dupla mennyiséget biztosítanak"
 }
 
 	"Rome":{
@@ -1261,6 +1375,7 @@
 		Portuguese:"Roma"
 		Russian:"Рим"
 		Czech:"Řím"
+		Hungarian:"Róma"
 }
 
 	"Augustus Caesar":{
@@ -1270,6 +1385,7 @@
 		Traditional_Chinese:"奧古斯都·凱薩"
 		Russian:"Октавиан Август",
 		Czech:"Gaius Iulius Caesar"
+		Hungarian:"Augustus Caesar"
 }
 
 	"+25% Production towards any buildings that already exist in the Capital":{
@@ -1283,6 +1399,7 @@
 		Simplified_Chinese:"在其他城市建造首都已建有的建筑时产能积累速率+25%"
 		Traditional_Chinese:"在其他城市建造首都已建有的建築時產能累積速率+25%"
 		Czech:"+25% produkce při stavbě všech budov, které už jsou postavené v hlavním městě"
+		Hungarian:"+ 25% termelés olyan épületekhez, amelyek már léteznek a fővárosban"
 }
 
 	"Arabia":{
@@ -1297,6 +1414,7 @@
 		Russian:"Аравия"
 		Dutch:"Saudi"
 		Czech:"Arábie"
+		Hungarian:"Arábia"
 }
 
 	"Harun al-Rashid":{
@@ -1306,6 +1424,7 @@
 		Traditional_Chinese:"哈倫·拉希德"
 		Russian:"Гарун-аль-Рашид",
 		Czech:"Hárún ar-Rašíd"
+		Hungarian:"Harun al-Rashid"
 }
 
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
@@ -1316,6 +1435,7 @@
 		French:"+1 Or pour chaque route commerciale, la quantité de pétrole est doublée"
 		Russian:"+1 Золото от каждого торгового маршрута, количество ресурса Нефть удваивается"
 		Czech:"+1 Zlata za každou obchodní cestu, zdroje Ropy poskytují dvojnásobné množství"
+		Hungarian:"+1 arany minden egyes útvonalból, az olajkészletek kettős mennyiséget biztosítanak"
 }
 
 	"America":{
@@ -1329,6 +1449,7 @@
 		Portuguese:"América"
 		Russian:"Америка"
 		Czech:"Amerika"
+		Hungarian:"Amerika"
 }
 
 	"George Washington":{
@@ -1338,6 +1459,7 @@
 		Traditional_Chinese:"喬治·華盛頓"
 		Russian:"Джордж Вашингтон",
 		Czech:"George Washington"
+		Hungarian:"George Washington"
 }
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
@@ -1351,6 +1473,7 @@
 		Portuguese:"Todas as unidades militares terrestres ganham +1 alcançe devisão e 50% de desconto na compra de terrenos" //i don't remember my translations being this bad? who was the monster?
 		Russian:"Все наземные военные юниты имеют +1 обзор, скидка 50% при покупке клетки"
 		Czech:"Všechny pozemní vojenské jednotky získají +1 viditelnost, 50% sleva na nákup nového území města"
+		Hungarian:"Minden szárazföldi katonai egységnek +1 látványa van, 50% kedvezmény a csempék vásárlásakor"
 }
 
 	"Japan":{
@@ -1364,6 +1487,7 @@
 		Portuguese:"Japão"
 		Russian:"Япония"
 		Czech:"Japonsko"
+		Hungarian:"Japán"
 }
 
 	"Oda Nobunaga":{
@@ -1373,6 +1497,7 @@
 		Traditional_Chinese:"織田信長"
 		Russian:"Ода Нобунага",
 		Czech:"Nobunaga Oda"
+		Hungarian:"Oda Nobunaga"
 }
 
 	"Units fight as though they were at full strength even when damaged":{
@@ -1386,6 +1511,7 @@
 		Portuguese:"Unidades lutam como se estivessem em força total mesmo quando danificadas"
 		Russian:"Юниты сражаются в полную силу, даже будучи ранеными"
 		Czech:"Jednotky bojují pořád v plné síle, i když jsou zraněné"
+		Hungarian:"Az egységek úgy harcolnak, mintha teljes erőn lennének, még akkor is, ha sérültek."
 }
 
 	"Germany":{
@@ -1396,6 +1522,7 @@
 		Portuguese:"Alemanha"
 		Russian:"Германия"
 		Czech:"Německo"
+		Hungarian:"Németország"
 }
 
 	"Otto von Bismark":{
@@ -1405,6 +1532,7 @@
 		Traditional_Chinese:"奧托·馮·俾斯麥"
 		Russian:"Отто фон Бисмарк",
 		Czech:"Otto von Bismarck"
+		Hungarian:"Otto von Bismark"
 }
 
 	"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.":{
@@ -1414,6 +1542,7 @@
 		Traditional_Chinese:"擊敗蠻族營地中的蠻族單位有67%機率得到25金錢並使其加入，路上單位維護費-25%"
 		Russian:"Шанс 67% получить 25 Золото и варварский юнит из захваченного лагеря. -25% к стоимости содержания наземных юнитов."
 		Czech:"67% šance získat 25 Zlata a naverbovat Barbarskou jednotku z dobytého tábora, -25% žoldu pro všechny jednotky"
+		Hungarian:"67% esély a 25 arany megszerzésére és egy barbár egység toborzására meghódított táborból, -25% földi egységek karbantartása."
 }
 
 	"India":{
@@ -1424,6 +1553,7 @@
 		Traditional_Chinese:"印度"
 		Russian:"Индия"
 		Czech:"Indie"
+		Hungarian:"India"
 }
 
 	"Gandhi":{
@@ -1433,6 +1563,7 @@
 		Traditional_Chinese:"甘地"
 		Russian:"Махатма Ганди",
 		Czech:"Mahátma Gándhí"
+		Hungarian:"Gandhi"
 }
 
 	"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.":{
@@ -1443,6 +1574,7 @@
 		Traditional_Chinese:"城市數量導致的不滿加倍，市民數量導致的不滿減半"
 		Russian:"Удвоенное недовольство от числа городов. Недовольство от количества горожан в два раза меньше."
 		Czech:"Nespokojenost za počet měst je dvojnásobné, nespokojenost za počet obyvatel měst je poloviční."
+		Hungarian:"A városok száma miatt a boldogtalanság megduplázódott, az állampolgárok száma a felére csökkent."
 }
 
 	"The Ottomans":{
@@ -1453,6 +1585,7 @@
 		Traditional_Chinese:"奧斯曼"
 		Russian:"Турция"
 		Czech:"Osmanská říše"
+		Hungarian:"A török"
 }
 
 	"Suleiman I":{
@@ -1462,6 +1595,7 @@
 		Traditional_Chinese:"蘇萊曼一世"
 		Russian:"Сулейман I",
 		Czech:"Sulejman I."
+		Hungarian:"Suleiman I"
 }
 
 	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
@@ -1472,6 +1606,7 @@
 		Traditional_Chinese:"海上單位維護費為正常值的1/3，海軍近戰單位擁有1/3機率俘獲戰敗的敵方海軍單位"
 		Russian:"Содержание морских юнитов стоит треть обычной цены. Морские юниты ближнего боя имеют 1/3 шанс захвата побеждённых кораблей."
 		Czech:"Platí pouze 1/3 žoldu námořním jednotkám. Námořní jednotky při boji zblízka mají 33% šanci na zajmutí poražené námořní jednotky."
+		Hungarian:"Csak egyharmadát fizeti a haditengerészeti egységek karbantartásának szokásos költségeiből. A közelharci haditengerészeti egységeknek 1/3-es esélyük van a legyőzött haditengerészeti egységek rögzítésére."
 }
 
 	"Korea":{
@@ -1482,6 +1617,7 @@
 		Traditional_Chinese:"朝鮮"
     		Russian:"Корея"
 		Czech:"Korea"
+		Hungarian:"Korea"
 }
 
 	"Sejong":{
@@ -1490,6 +1626,7 @@
 		Traditional_Chinese:"李祹"
 		Russian:"Седжон",
 		Czech:"Sedžong Veliký"
+		Hungarian:"Sejong"
 }
 
 	"+2 Science for all specialists and Great Person tile improvements":{
@@ -1498,6 +1635,7 @@
 		Traditional_Chinese:"所有專業人員和偉人設施+2科研"
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 		Czech:"+2 Výzkum pro všechny specialisty a Velké osobnosti při vylepšení polí města."
+		Hungarian:"+2 Tudomány minden szakember számára és a Great Person csempe fejlesztése"
 }
 
 
@@ -1509,6 +1647,7 @@
 		Traditional_Chinese:"易洛魁"
 		Czech:"Irokézové"
 		Russian:"Ирокезы."
+		Hungarian:"Irokéz"
 }
 
 	"Hiawatha":{
@@ -1517,6 +1656,7 @@
 		Traditional_Chinese:"海華沙"
 		Russian:"Хайавата",
 		Czech:"Hiawatha"
+		Hungarian:"Hiawatha"
 }
 
 	"All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.":{
@@ -1527,6 +1667,7 @@
 		Traditional_Chinese:"單位在己方森林和叢林地區上移動時視同在道路上移動，此類地區在研究輪子科技後可建立城市連結"
 		Czech:"Všechny jednotky se pohybují lesem a džunglí, jako by na nich byla postavená cesta. Tyto pole zároveň slouží pro propojení měst před vynalezením technologie 'Kolo'."
 		Russian:"Все юниты двигаются по клеткам с джунглями и лесами как если бы на них были дороги. С помощью таких клеток можно установить соединение между городами после исследования Колеса."
+		Hungarian:"Az egységek barátságos területen mozognak az erdő és a dzsungel csempe között, mintha utak lennének. Ezek a lapok felhasználhatók a városi kapcsolatok létrehozására a kerék kutatásakor."
 }
 
 
@@ -1538,6 +1679,7 @@
 		Traditional_Chinese:"波斯"
 		Russian:"Персия"
 		Czech:"Persie"
+		Hungarian:"Perzsia"
 }
 
 	"Darius I":{
@@ -1546,6 +1688,7 @@
 		Traditional_Chinese:"大流士一世"
 		Czech:"Dareios I."
 		Russian:"Дарий I"
+		Hungarian:"Darius I"
 }
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
@@ -1556,6 +1699,7 @@
 		Traditional_Chinese:"黃金時代持續時間+50%，處於黃金時代時單位+1移動力、+10%戰鬥力"
 		Czech:"Zlatá věk trvá o 50% déle. Během Zlatého věku získají všechny jednotky +1 Pohyb a +10% Síly"
 		Russian:"Золотой век длится на 50% дольше. Во время Золотого века юниты получают +1 к движению и +10% к силе."
+		Hungarian:"Az aranykor 50% -kal tovább tart. Az aranykorban az egységek +1 mozgást és + 10% erőt kapnak."
 }
 
 	"Polynesia":{
@@ -1566,6 +1710,7 @@
 		Simplified_Chinese:"波利尼西亚"
 		Traditional_Chinese:"波利尼西亞"
 		Russian:"Полинезия"
+		Hungarian:"Polinézia"
 }
 
 	"Kamehameha I":{
@@ -1574,6 +1719,7 @@
 		Simplified_Chinese:"卡美哈梅哈一世"
 		Traditional_Chinese:"卡美哈梅哈一世"
 		Russian:"Камеамеа I"
+		Hungarian:"Kamehameha I"
 }
 
 	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.":{
@@ -1584,6 +1730,7 @@
 		Simplified_Chinese:"单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力"
 		Traditional_Chinese:"單位初始時就擁有船運能力，可進入海濱和海洋地區，單位處於船運狀態時+1視野。摩艾石像群周圍2格內單位+10%戰鬥力"
 		Russian:"Сразу может погружаться на корабль, а также плавать по побережьям и океанам. +1 к обзору при погружении на корабль. +10% к силе если находинтся в радиусе 2х клеток от Моаи."
+		Hungarian:"Azonnal felszállhat és áthaladhat a partok és az óceánok felett. +1 Látnivaló, amikor felszállnak. + 10% harci erő bónusz, ha a Moai két lapja belül van."
 }
 
 	"Siam":{
@@ -1591,10 +1738,12 @@
 		French:"Siam"
 		Portuguese:"Siam" //not sure but will do
 		Czech:"Siam"
+		Hungarian:"Sziám"
 }
 
 	"Ramkhamhaeng":{
-		Italian:"Ramkhamhaeng" //Same as in Italian
+		Italian:"Ramkhamhaeng" //Same as in Italian"
+		Hungarian:"Ramkhamhaeng"
 }
 
 	"Food and Culture from friendly City-States increased by 50%.":{
@@ -1602,6 +1751,7 @@
 		Portuguese:"Comida e cultura de cidades-estado amigas aumentada em 50%."
 		French:"La Nourriture et la Culture fournit par les cités-états sont augmentées de 50%"
 		Czech:"Jídlo a Kulturní body z spřátelených Městských států se zvednou o 50%."
+		Hungarian:"A barátságos városi államok élelme és kultúrája 50% -kal nőtt."
 }
 
 	/*
@@ -1610,6 +1760,7 @@
 		French:"Aztèques"
 		Portuguese:"Astecas"
 		Czech:"Aztékové"
+		Hungarian:"Aztékok"
 }
 
 	"Gain Culture for the empire from each enemy unit killed.":{
@@ -1617,6 +1768,7 @@
 		Portuguese:"Ganhe cultura para seu império por cada inimigo morto"
 		French:"Gagne de la Culture à chaque unité ennemie détruite."
 		Czech:"Získají kulturní bod pro říši za každou zabitou nepřátelskou jednotku."
+		Hungarian:"Szerezzen kultúrát a birodalom számára minden megölt ellenséges egységgel."
 }
 
 	"Denmark":{
@@ -1624,12 +1776,14 @@
 		French:"Danemark"
 		Portuguese:"Dinamarca"
 		Czech:"Dánsko"
+		Hungarian:"Dánia"
 }
 
 	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
 		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
 		Portuguese:"Unidades embarcadas tem um movimento a mais e usam apenas 1 ponto de movimento para se mover de terra a mar. Unidades corpo-a-corpo não gastam pontos de movimento para pilhar"
 		French:"Les unités embarquées ont +1 de mouvement et ne perde qu'un point de mouvement en débarquant. Le pillage ne coûte pas de point de déplacement pour les unités de mélée"
+		Hungarian:"A belépő egységek +1 mozgással rendelkeznek, és csak egy mozgási pontot fizetnek, hogy a tengertől a szárazföldig mozogjanak. A közelharci egységek nem fizetnek mozgási pont költségeit a pillézésért."
 }
 
 	"Inca":{
@@ -1637,11 +1791,13 @@
 		French:"Incas"
 		Portuguese:"Inca"
 		Czech:"Inkové"
+		Hungarian:"Inca"
 }
 
 	"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills, half cost elsewhere.":{
 		Italian:"Le unità si muovono senza costi di terreno sulle Colline. I miglioramenti sulle Colline sono azzerati, e sono dimezzati altrove."
 		Czech:"Jednotky ignorují obtížný terén v horách. Žádná pravidelná platba za vylepšení v horách, na ostatních polích stojí polovinu."
+		Hungarian:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills, half cost elsewhere."
 }
 
 	"Mongolia":{
@@ -1649,6 +1805,7 @@
 		French:"Mongolie"
 		Portuguese:"Mongolia"
 		Czech:"Mongolové"
+		Hungarian:"Mongolia"
 }
 
 	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
@@ -1656,6 +1813,7 @@
 		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
 		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
 		Czech:"+30% bojové síly při boji s jednotkami městského státu, nebo útoku na městský stát. +1 Pohyb pro všechny jízdní jednotky."
+		Hungarian:"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units."
 }
 
 	"Songhai":{
@@ -1663,6 +1821,7 @@
 		French:"Songhaï"
 		Portuguese:"Songhai" //not sure but will do
 		Czech:"Songhajská říše"
+		Hungarian:"Songhai"
 }
 
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
@@ -1670,16 +1829,19 @@
 		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
 		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
 		Czech:"Získává trojnásobek zlata z Barbarských táborů a drancování měst. Jednotky při naloďování se můžou bránit."
+		Hungarian:"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves."
 }
 
 	"Spain":{
 		Italian:"Spagna"
 		Czech:"Španělsko"
+		Hungarian:"Spain"
 }
 
 	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders are doubled.":{
 		Italian:"Ottieni Oro bonus quando scopri una Meraviglia Naturale (aumenta se la scopri per primo). Doppia Cultura, Felicità e resa generale dalle Meraviglie Naturali."
 		Czech:"Bonus Zlata za objevení přírodních divů (pokud jste první), Kulturní body, Spokojenost a výnosy z polí s přírodními divy jsou zdvojnásobené."
+		Hungarian:"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders are doubled."
 }
 
 
@@ -1696,6 +1858,7 @@
 		Portuguese:"Únicos(a)"
 		Russian:"Уникальные юниты"
 		Czech:"Unikátní dovednosti"
+		Hungarian:"Uniques"
 }
 
 	"Promotions":{
@@ -1709,6 +1872,7 @@
 		Portuguese:"Promoções"
 		Russian:"Повышения"
 		Czech:"Povýšení"
+		Hungarian:"Promotions"
 }
 
 	"Barbarians":{
@@ -1722,6 +1886,7 @@
 		Portuguese:"Bárbaros"
 		Russian:"Варвары"
 		Czech:"Barbaři"
+		Hungarian:"Barbárok"
 }
 
 }
