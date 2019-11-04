@@ -45,7 +45,7 @@ class MapGenerator() {
 
         setWaterTiles(map)
 
-        for(tile in map.values) randomizeTile(tile)
+        for(tile in map.values) randomizeTile(tile,gameParameters)
 
         randomizeResources(map, mapRadius)
 
@@ -95,13 +95,13 @@ class MapGenerator() {
         }
     }
 
-    fun randomizeTile(tileInfo: TileInfo){
+    fun randomizeTile(tileInfo: TileInfo,gameParameters : GameParameters){
         if(tileInfo.getBaseTerrain().type==TerrainType.Land && Math.random()<0.05f){
             tileInfo.baseTerrain = Constants.mountain
             tileInfo.setTransients()
         }
         addRandomTerrainFeature(tileInfo)
-        maybeAddAncientRuins(tileInfo)
+        maybeAddAncientRuins(tileInfo,gameParameters)
     }
 
     fun getLatitude(vector: Vector2): Float {
@@ -195,9 +195,9 @@ class MapGenerator() {
     }
 
 
-    fun maybeAddAncientRuins(tile: TileInfo) {
+    fun maybeAddAncientRuins(tile: TileInfo, gameParameters: GameParameters) {
         val baseTerrain = tile.getBaseTerrain()
-        if(baseTerrain.type!=TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f/100)
+        if(!gameParameters.noRuins &&  baseTerrain.type!=TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f/100)
             tile.improvement = Constants.ancientRuins
     }
 

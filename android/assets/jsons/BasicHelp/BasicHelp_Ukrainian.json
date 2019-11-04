@@ -1,46 +1,46 @@
 [
 	{
 		name:"Місто",
-		description: "Ваши міста — основа вашої імперії.  Кожне місто має певне населення і багато плиток, and can work as many tiles as it has population.\nThe center tile of a city is always worked and does not require population.\nNew Cities can be constructed by building a Settler.\nEach city in your empire removes 3 Happiness from the empire, and each population removes another 1 Happiness, so plan carefully!"
+		description: "Ваши міста — основа вашої імперії. Кожне місто має певне населення і багато плиток, і може працювати на стількох клітин, скільки населення. \nЦентральна клітина міста завжди працює і не потребує населення.\nНові міста можна побудувати, побудувавши поселення.\nКожне місто в вашій імперії видаляє 3 щастя з імперії , і кожна одиниця населення знімає ще 1 Щастя, тому ретельно плануйте вашу імперію!"
 	},
 	{
-		name:"Tile",
-		description: "Tiles are areas where your population can work the land.\nEvery tile has a base terrain, such as Grassland, Tundra etc, and some have terrain overlays, like Hill, Forest etc.\nDepending on the terrain, tiles can hold tile resources.\nEach tile can have one improvement at any given time."
+		name:"Клітини",
+		description: "Клітини — це ділянки, де ваше населення може обробляти землю.\nКожна клітина має початкову місцевість, таку як Пасовища, Тундра і т.д. , а деякі мають місцеві перекриття, як Гори, Ліс і т.д.\nЗалежно від місцевості, клітини може містити ресурси плитки.\nКожна клітина може мати одне вдосконалення в будь-який момент часу."
 	},
 	{
 		name:"Населення",
-		description: "Represents the number of people in your city, who can work the city's tiles.\nPopulation grows by having enough surplus food, and will shrink if there isn't enough food to go around.\nEach Population consumes 2 Food per turn.\nWhen a new population is added, it will automatically work the tile producing the most food.\nYou can manually assign population to tiles by clicking the population icon on a tile - you'll have to remove a population from a tile to assign it somewhere else!"
+		description: "Представляє кількість людей у вашому місті, які можуть працювати на клітинах міста.\nНаселення зростає, маючи достатню кількість надлишків їжі, і зменшиться, якщо їжі не буде достатньо.\nКожний житель споживає 2 їжі за хід.\nКоли з’явиться новий мешканець, то він автоматично буде оброблювати клітину, яка виробляє найбільше їжі.\nВи можете вручну призначити мешканцям клітини, натиснувши на значок населення на клітині. Вам доведеться видалити мешканця з клітини, щоб призначити його деінде!"
 	},
 	{
 		name:"Основні ресурси",
-		description: "There are 6 basic resources in Civ: Food, Production, Gold, Science, Happiness and Culture.\rProduction and Food are calculated per individual city, while the other resources are empire-wide.\rBasic resources are produced by working city tiles and by buildings."
+		description: "У грі є 6 основних ресурсів: їжа, виробництво, золото, наука, щастя і культура.\rВиробництво та їжа розраховуються на кожне місто, тоді як інші ресурси загальноімперські.\rОсновні ресурси виробляються містяними, які працюють на клітинах, і спорудами."
 	},
 	{
-		name:"Продовольство",
-		description: "Основний ресурс. Each city can store surplus food.\nWhen the surplus food reaches a certain amount dependant on the population, it is consumed and the city gains another population.\nIf all the suplus food is depleted, and there is a food shortage, the city will lose a population."
+		name:"Їжа",
+		description: "Основний ресурс. Кожне місто може зберігати надлишки їжі.\nКоли надлишок їжі досягне певної кількості, залежно від населення, він споживається, а місто набирає інше населення.\nЯкщо вся надмірна їжа закінчиться, і є дефіцит, то місто втратить одного мешканця."
 	},
 	{
 		name:"Виробництво",
-		description: "Основний ресурс. Production is used to build buildings and units in the city.\r\nEach idle population (not working a tile) produces 1 production."
+		description: "Основний ресурс. Виробництво використовується для будівництва споруд та підрозділів місті. \nКожний непрацюючий мешканець (який не працює на клітині) дає 1 виробництво."
 	},
 	{
 		name:"Наука",
-		description: "Основний ресурс.Represents the scientific advancement of your empire.\nEach Technology requires a certain amount of Science, which increases as the technologies become more advanced.\nEach Population produces 1 Science."
+		description: "Основний ресурс.Представляє науковий прогрес вашої імперії.\nКожна технологія вимагає певної кількості науки, яка збільшується в міру того, як технології стають більш досконалими. \nКожний мешканець виробляє 1 науку."
 	},
 	{
 		name:"Золото",
-		description: "Основний ресурс. Represents the wealth of your empire.\nMost buildings have mainainance costs, which require Gold per turn.\nEvery turn you are in a gold deficit, you will lose science points equal to your debt, which can halt your scientific advancement entirely!\nCities connected to the capital by roads will generate gold from the trade route, so connect your large cities to the capital!"
+		description: "Основний ресурс. RЯвляє собою багатство вашої імперії.\nБільшість споруд мають видаткові витрати, які вимагають золота за обіг.\nЯкщо у вас дефіцит золота, то ви втратите наукові балипропорційно вашій заборгованості, що може повністю зупинити ваш науковий прогрес!\nМіста, які під’єднані до столиці дорогами, будуть створювати золото з торгового шляху, тому під’єднайте свої великі міста до столиці!"
 	},
 	{
 		name:"Щастя",
-		description: "Основний ресурс.\nEach city decreases your empire's happiness by 3, and each population by 1.\nYou can increase your happiness by buildings, or by working Luxury resources.\nWhen in an unhappy state, your surplus food added is reduced to 1/4, dramatically slowing your city growth.\nWhen enough Happiness is accrued, your empire will enter a Golden Age!"
+		description: "Основний ресурс.\nКожне місто зменшує щастя вашої імперії на 3, а кожний мешканець на 1.\nВи можете збільшити своє щастя спорудами, або ресурсами розкоші.\nКоли ви знаходитесь в нещасному стані, то ваш надлишок їжі зменшується до 1/4, різко уповільнюючи зростання вашого міста.\nКоли накопичиться достатньо щастя, ваша імперія вступить у Золотий вік!"
 	},
 	{
-		name:"Підрозділи та Битви",
-		description:"You can move across the map icons representing civilian and military forces. Maintenance of each unit costs 1 gold per turn.\nEach unit has 100 health points which may be reduced in effect of combat. Military units can attack other units and cities causing losses dependant on their strength.\nSiege and ranged attack units may attack from the distance, while other units only from a neighboring tile.\nAn injured unit will slowly heal each turn only if left inactive."
+		name:"Підрозділи і битви",
+		description:"Ви можете переміщатися по значках мапи, що представляють цивільні та військові сили. Технічне обслуговування кожної одиниці коштує 1 золото за хід.\nКожна одиниця має 100 очок здоров’я, які можуть бути зменшені внаслідок бою. Військові підрозділи можуть атакувати інші підрозділи та міста, завдаючи збитків залежно від їхньої сили.\nОсадові та дальньої атаки підрозділи можуть атакувати з відстані, тоді як інші підрозділи лише із сусідньої клітини.\nПоранений підрозділ повільно загоюватиметься кожним ходом лише у тому випадку, якщо він залишиться бездіяльним".
 	},
 	{
-		name:"Capturing Cities",
-		description: "Cities can be conquered by reducing their health to 1, and entering the city with a melee unit.\nSince cities heal each turn, it is best to attack with ranged units, and use your melee units to defend them until the city has been defeated!"
+		name:"Захоплення міст",
+		description: "Міста можна завоювати, зменшивши стан здоров’я до 1 і ввійшовши до міста підрозділами ближнього бою.\nМіста підвищують своє здоров’я кожний хід, тому краще нападати підрозділами дальних дистанцій, а також використовувати свої підрозділи ближнього бою, щоб захищати їх, поки місто не буде розгромлено!"
 	}
 ]
