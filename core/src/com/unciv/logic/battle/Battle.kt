@@ -255,10 +255,7 @@ class Battle(val gameInfo:GameInfo) {
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
         // barbarians don't capture civilians
-        // City-states & OCC don't capture settlers
-        if(attacker.getCivInfo().isBarbarian()
-                || ((attacker.getCivInfo().isCityState() || attacker.getCivInfo().isPlayerOneCityChallenger())
-                        && defender.getName()==Constants.settler)){
+        if(attacker.getCivInfo().isBarbarian()){
             defender.takeDamage(100)
             return
         }
@@ -272,8 +269,16 @@ class Battle(val gameInfo:GameInfo) {
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
 
-        capturedUnit.civInfo.removeUnit(capturedUnit)
-        capturedUnit.assignOwner(attacker.getCivInfo())
+        // Apparently in Civ V, captured settlers are converted to workers.
+        if(capturedUnit.name==Constants.settler){
+            val tile = capturedUnit.getTile()
+            capturedUnit.destroy()
+            attacker.getCivInfo().placeUnitNearTile(tile.position, Constants.worker)
+        }
+        else {
+            capturedUnit.civInfo.removeUnit(capturedUnit)
+            capturedUnit.assignOwner(attacker.getCivInfo())
+        }
         capturedUnit.updateVisibleTiles()
     }
 
