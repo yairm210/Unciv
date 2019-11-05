@@ -182,10 +182,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techPolicyandVictoryHolder.setPosition(10f, topBar.y - techPolicyandVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
-        updateNextTurnButton() // This must be before the notifications update, since its position is based on it
-        notificationsScroll.update(viewingCiv.notifications)
-        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
-                nextTurnButton.y - notificationsScroll.height - 5f)
 
         val isSomethingOpen = tutorials.isTutorialShowing || stage.actors.any { it is TradePopup }
                 || alertPopupIsOpen
@@ -198,6 +194,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
             }
         }
+        updateNextTurnButton(isSomethingOpen) // This must be before the notifications update, since its position is based on it
+        notificationsScroll.update(viewingCiv.notifications)
+        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
+                nextTurnButton.y - notificationsScroll.height - 5f)
+
     }
 
     private fun displayTutorialsOnUpdate() {
@@ -388,7 +389,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    fun updateNextTurnButton() {
+    fun updateNextTurnButton(isSomethingOpen: Boolean) {
         val text = when {
             !isPlayersTurn -> "Waiting for other players..."
             viewingCiv.shouldGoToDueUnit() -> "Next unit"
@@ -400,7 +401,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if (text == "Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
-        if (alertPopupIsOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
+        if (isSomethingOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
         else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }

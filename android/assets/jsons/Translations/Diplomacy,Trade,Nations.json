@@ -670,12 +670,15 @@
 }
 
 	"Reach 30 for friendship.":{
+		Italian:"Stringi un'amicizia superando il limite minimo di 30 Influenza."
 }
 
 	"Reach highest influence above 60 for alliance.":{
+		Italian:"Stringi un'alleanza superando 60 Influenza al di sopra di tutti."
 }
 
 	"Ally: ":{
+		Italian:"Alleati: "
 }
 
 ////// Trade
