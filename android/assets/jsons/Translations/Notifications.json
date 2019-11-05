@@ -735,6 +735,7 @@
 	}
 
 	"[tradeOffer] to [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
 	}
 
 
@@ -777,4 +778,9 @@
 		Ukrainian:"[nation]: відмова не будувати міста поруч з нами!"
 	}
 
+	"We have allied with [nation].": {
+	}
+
+	"We have lost alliance with [nation].": {
+	}
 }

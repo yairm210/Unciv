@@ -85,19 +85,18 @@ object ImageGetter {
     }
 
     fun getNationIndicator(nation: Nation, size:Float): IconCircleGroup {
-        val civIndicator = getCircle().apply { color = nation.getOuterColor() }
-                .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
-
         val civIconName = if(nation.isCityState()) "CityState" else nation.name
         if(nationIconExists(civIconName)){
             val cityStateIcon = getNationIcon(civIconName)
-            cityStateIcon.setSize(size*0.7f,size*0.7f)
-            cityStateIcon.center(civIndicator)
             cityStateIcon.color = nation.getInnerColor()
-            civIndicator.addActor(cityStateIcon)
+            return cityStateIcon.surroundWithCircle(size*0.9f).apply { circle.color = nation.getOuterColor() }
+                    .surroundWithCircle(size,false).apply { circle.color=nation.getInnerColor() }
         }
+        else{
+            return getCircle().apply { color = nation.getOuterColor() }
+                    .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
 
-        return civIndicator
+        }
     }
 
     fun nationIconExists(nation:String) = imageExists("NationIcons/$nation")
