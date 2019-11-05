@@ -9,12 +9,12 @@
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)  
 
 
-## What is this?
+# What is this?
 
 An Android port of Civ V
 Made with LibGDX on Android Studio
 
-# What's been implemented?
+## What's been implemented?
 
 * Map tiles (including water), resources and improvements
 * Units and movement
@@ -30,7 +30,7 @@ Made with LibGDX on Android Studio
 * Multiplayer (hotseat and across internet)
 * Map editor
 
-# What's the roadmap?
+## What's the roadmap?
 
 Is this order:
 
@@ -58,22 +58,6 @@ If not, then the feature won't be added until we've finished all the features fr
 
 THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
 
-## How can I translate to {language}?
-
-Awesome!
-
-Like most open-source projects, Unciv is developed at Github
-
-The​​​ translation​ files are at​​​ https://github.com/yairm210/UnCiv/tree/master/android/assets/jsons/Translations
-
-When you feel that you're ready to add your​​​ translation​​ to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
-
-Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
-
-You don't need to download anything, all translation work can be done on the Github website :)
-
-Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
-
 ## Will you implement Civ VI?
 
 Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
@@ -86,6 +70,8 @@ However, it's difficult enough for me to handle one release cycle (on Google Pla
 
 If you really want to, you could install Android Studio and build it yourself :)
 
+# Contributing
+
 ## How can I help?
 
 If you're a programmer, you can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
@@ -94,12 +80,28 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 
 If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
 
+## How can I translate to {language}?
+
+Awesome!
+
+Like most open-source projects, Unciv is developed at Github
+
+The translation files are at https://github.com/yairm210/UnCiv/tree/master/android/assets/jsons/Translations
+
+When you feel that you're ready to add your translation to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
+
+Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
+
+You don't need to download anything, all translation work can be done on the Github website :)
+
+Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
+
 ## How can I get started working on this?
 
 - Install Android Studio
 - Fork the repo, and clone your fork
 - Configure an Application run configuration with DesktopLauncher as the Main Class and \<repo_folder\>\android\assets\ as the Working directory
 
-# [Adding a new Civ](docs/NewCivs.md)
+## [Adding a new Civ](docs/NewCivs.md)
 
 # [Credits and 3rd parties](docs/Credits.md)
