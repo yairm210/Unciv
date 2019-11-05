@@ -342,6 +342,22 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+        if (otherCiv.isCityState()) otherCiv.updateAllyCivForCityState()
+
+        if (!civInfo.isCityState()) {
+            for (thirdCiv in civInfo.getKnownCivs()) {
+                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == civInfo.civName && thirdCiv.getDiplomacyManager(otherCiv).canDeclareWar()) {
+                    thirdCiv.getDiplomacyManager(otherCiv).declareWar()
+                }
+            }
+        }
+        if (!otherCiv.isCityState()) {
+            for (thirdCiv in otherCiv.getKnownCivs()) {
+                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
+                    thirdCiv.getDiplomacyManager(civInfo).declareWar()
+                }
+            }
+        }
     }
 
     fun makePeace(){
