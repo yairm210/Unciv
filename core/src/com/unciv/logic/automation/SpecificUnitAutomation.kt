@@ -75,8 +75,7 @@ class SpecificUnitAutomation{
                 .asSequence()
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
-                .toList()
-        var rank = top5Tiles.asSequence().map { nearbyTileRankings[it]!! }.sum()
+        var rank = top5Tiles.map { nearbyTileRankings[it]!! }.sum()
         if (tileInfo.isCoastalTile()) rank += 5
 
         val luxuryResourcesInCityArea = tileInfo.getTilesAtDistance(2).filter { it.resource!=null }
