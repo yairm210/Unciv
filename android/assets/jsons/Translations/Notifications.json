@@ -779,8 +779,10 @@
 	}
 
 	"We have allied with [nation].": {
+		Italian:"Abbiamo stretto un'alleanza con [nation]."
 	}
 
 	"We have lost alliance with [nation].": {
+		Italian:"Non siamo più alleati di [nation]."
 	}
 }
