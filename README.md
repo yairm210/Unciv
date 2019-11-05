@@ -70,6 +70,16 @@ However, it's difficult enough for me to handle one release cycle (on Google Pla
 
 If you really want to, you could install Android Studio and build it yourself :)
 
+## How can I learn to play? Where's the wiki?
+
+All the tutorial information is available in-game at menu > civilopedia > tutorials
+
+All the information is included in the amazing [Civ V wiki](https://civilization.fandom.com/wiki/)
+
+Since this is a Civ V clone, you can search Google for how to play Civ V and there are loads of answers =)
+
+Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
+
 # Contributing
 
 ## How can I help?
