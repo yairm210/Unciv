@@ -154,7 +154,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             innerTable.add("Music volume".tr())
 
             val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
-            musicVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
+            musicVolumeSlider.value = UnCivGame.Current.settings.musicVolume
             musicVolumeSlider.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     UnCivGame.Current.settings.musicVolume = musicVolumeSlider.value
@@ -195,7 +195,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         val resolutionSelectBox = SelectBox<String>(skin)
         val resolutionArray = Array<String>()
-        resolutionArray.addAll("900x600", "1050x700", "1200x800", "1500x1000")
+        resolutionArray.addAll("750x500","900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UnCivGame.Current.settings.resolution
         innerTable.add(resolutionSelectBox).pad(10f).row()

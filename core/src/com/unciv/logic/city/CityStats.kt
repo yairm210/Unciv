@@ -125,6 +125,9 @@ class CityStats {
                     && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (cityInfo.isCapital()) stats.food += 3
                 else stats.food += 1
+
+                if (cityInfo.civInfo.nation.unique == "Food and Culture from Friendly City-States are increased by 50%")
+                    stats.food *= 1.5f
             }
         }
 

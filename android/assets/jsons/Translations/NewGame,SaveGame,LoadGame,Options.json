@@ -77,6 +77,10 @@
 		Ukrainian:"Міст-держав"
 }
 
+	"One City Challenge":{
+		Italian:"Sfida a città singola"
+	}
+
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
 		Italian:"Niente barbari"
 		French:"Pas de barbare"
@@ -87,6 +91,10 @@
 		Czech:"Bez barbarů"
 		Ukrainian:"Без варварів"
 }
+
+	"No ancient ruins": {
+		Italian:"Niente antiche rovine"
+	}
 
 	"Victory conditions": {
 		Italian:"Condizioni di Vittoria"
@@ -138,7 +146,7 @@
 		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ — ВАС ПОПЕРЕДЖЕНО!"
 		Traditional_Chinese:"⚠警告！實驗性功能！"
 		Czech:"VYSOCE EXPERIMENTÁLNÍ - BYLI JSTE VAROVÁNÍ!"
-		Russian:"В РАЗРАБОТКЕ И НЕСТАБИЛЬНО - ВЫ ПРЕДУПРЕЖДЕНЫ!"
+		Russian:"В РАЗРАБОТКЕ - ВЫ ПРЕДУПРЕЖДЕНЫ!"
 }
 
 	"Online Multiplayer": {
@@ -561,6 +569,7 @@
 		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“在线多人游戏”复选框，同时将每个参与游戏的玩家ID填入其想扮演文明的“Player ID”文本框内。"
 		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач «Багатокористувацька» у віконці «Нова гра» і для кожної людини-гравця введіть відповідний ідентифікатор"
 		Traditional_Chinese:"建立多人遊戲時，請先選擇“開始新遊戲”選單的“線上多人遊戲”，並將參與遊戲的玩家ID填入對應扮演的文明的“Player ID”文字框。"
+		Russian:"Чтобы создать многопользовательскую игру поставьте флажок 'Online мультиплеер' на экране создания новой игры и для каждого игрока(человека) введите Player ID."
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
@@ -570,6 +579,7 @@
 		Simplified_Chinese:"直接点击“设置为当前玩家”就可自动填入你自己的玩家ID。对于其他玩家，他们可在终端上打开游戏并在当前界面点击“复制玩家ID”按钮将他们的ID复制到剪贴板，然后通过网络发送给你，你可以在“开始新游戏”界面将接收到的ID填入他们想扮演文明的“Player ID”文本框内使其加入游戏。"
 		Ukrainian:"Тут ви можете легко вказати власний ідентифікатор гравця, а інші гравці можуть скопіювати їхні ідентифікатори і надіслати вам для додавання до гри."
 		Traditional_Chinese:"直接點擊“設定為目前玩家”就可自動填入自己的玩家ID。其他玩家則需在打開遊戲後點擊“複製玩家ID”按鈕將ID複製到剪貼簿，然後透過網路傳送給您，你可以在“開始新遊戲”界面將接收到的ID填入他們想扮演的文明的“Player ID”文字框內讓他們加入遊戲。"
+		Russian:"Вы можете указать собственный Player ID, а другие игроки могут скопировать их идентификаторы и отправить вам для добавления их к игре."
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
@@ -579,6 +589,7 @@
 		Simplified_Chinese:"当你创建了多人游戏后，进入此界面同时点击“复制游戏ID”按钮将游戏ID复制到剪贴板并通过网络发送给其他玩家。"
 		Ukrainian:"Щойно ви створите власну гру, зайдіть до цього віконця для копіювання ідентифікатора гри і надішліть його іншим гравцям."
 		Traditional_Chinese:"當你建立了多人遊戲後，進入本界面並按下“複製遊戲ID”按鈕將遊戲ID複製到剪貼簿並透過網路分享給其他玩家。"
+		Russian:"Когда вы создадитье новую игру скопируйте отсюда ID игры и перешлите остальным игрокам."
 }
 
 	"Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button":{
@@ -588,6 +599,7 @@
 		Simplified_Chinese:"其他玩家可以将接收到的游戏ID复制到剪贴板，同时点击“加入游戏”按钮加入游戏"
 		Ukrainian:"Гравці можуть приєднатися до вашої гри, скопіювавши ідентифікатор гри до буфера обміну і натиснувши на кнопку «Приєднатися до гри»"
 		Traditional_Chinese:"其他玩家可以將接收到的遊戲ID複製到剪貼簿，並按下“加入遊戲”按鈕加入遊戲"
+		Russian:"Игроки смогут присоединиться скопировав ID игры в буфер обмена и нажав на кнопку «Подключиться»."
 }
 
 
@@ -931,7 +943,12 @@
 }
 
 	"Music volume":{
+		Italian:"Volume musica"
 		Simplified_Chinese:"音乐音量"
+}
+
+	"Download music":{
+		Italian:"Scarica musica"
 }
 
 	"Show":{
@@ -1057,6 +1074,7 @@
 		Traditional_Chinese:"顯示像素單位",
 		Ukrainian:"Показати піксельні підрозділи"
 		Czech:"Zobrazit jednotky jako pixely"
+		Russian:"Показать текстуру юнитов"
 }
 
 	"Show pixel improvements":{
@@ -1065,13 +1083,14 @@
 		Ukrainian:"Показати піксельні вдосконалення"
 		Traditional_Chinese:"顯示像素設施"
 		Czech:"Zobrazit vylepšení jako pixely"
+		Russian:"Показать текстуру улучшений"
 }
 
 	"Fontset":{
 		Italian:"Fontset"
 		Simplified_Chinese:"字体设置",
 		Traditional_Chinese:"字體設定",
-		Russian:"Шрифты"
+		Russian:"Шрифт"
                 Korean:"폰트 설정"
 		Czech:"Typ písma"
 		Ukrainian:"Шрифт"

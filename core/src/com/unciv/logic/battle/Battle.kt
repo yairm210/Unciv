@@ -235,10 +235,10 @@ class Battle(val gameInfo:GameInfo) {
         }
         city.hasJustBeenConquered = true
 
-        if (attacker.getCivInfo().isPlayerCivilization())
+        if (attackerCiv.isPlayerCivilization())
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         else {
-            city.puppetCity(attacker.getCivInfo())
+            city.puppetCity(attackerCiv)
             if (city.population.population < 4) {
                 city.annexCity()
                 city.isBeingRazed = true
@@ -254,9 +254,11 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
-        // barbarians don't capture civilians, City-states don't capture settlers
+        // barbarians don't capture civilians
+        // City-states & OCC don't capture settlers
         if(attacker.getCivInfo().isBarbarian()
-                || (attacker.getCivInfo().isCityState() && defender.getName()==Constants.settler)){
+                || ((attacker.getCivInfo().isCityState() || attacker.getCivInfo().isPlayerOneCityChallenger())
+                        && defender.getName()==Constants.settler)){
             defender.takeDamage(100)
             return
         }

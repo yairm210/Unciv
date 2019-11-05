@@ -347,6 +347,7 @@
 		Italian:"L'unità nemica [RangedUnit] ha distrutto le difese di [cityname]!"
 		Czech:"Nepřátelská jednotka [RangedUnit] zničila obranu města [cityname]"
 		Ukrainian:"Ворожий підрозділ [RangedUnit] знищив оборону нашого міста [cityname]"
+		Russian:"Вражеский [RangedUnit] прорвал оборону города [cityname]"
 	}
 
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
@@ -373,7 +374,6 @@
 		Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された",
 		Czech:"Nepřátelská jednotka [unit] byla zničena při útoku na město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] знищено при атаці нашого міста [cityname]"
-				
 	}
 
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
@@ -700,6 +700,7 @@
 		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
 		Traditional_Chinese:"[cityName]以建立與您的首都的連接！"
 		Ukrainian:"Місто [cityName] зʼєднано з нашею столицею!"
+		Russian:"От города [cityName] был проложен путь к столице!"
 	}
 
 	// Trade
@@ -732,8 +733,9 @@
 		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 		Ukrainian:"Договір [tradeOffer] з [otherCivName] закінчено"
 	}
-	
+
 	"[tradeOffer] to [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
 	}
 
 
@@ -776,4 +778,9 @@
 		Ukrainian:"[nation]: відмова не будувати міста поруч з нами!"
 	}
 
+	"We have allied with [nation].": {
+	}
+
+	"We have lost alliance with [nation].": {
+	}
 }

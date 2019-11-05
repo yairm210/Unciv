@@ -25,6 +25,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner()!=civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
         newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence()})
+
+        if (!civInfo.isCityState()) {
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (otherCiv.getAllyCiv() == civInfo.civName) {
+                    newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles().asSequence() })
+                }
+            }
+        }
+
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
@@ -138,6 +147,17 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
     fun updateDetailedCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
+
+        if (!civInfo.isCityState()) {
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (otherCiv.getAllyCiv() == civInfo.civName) {
+                    for (city in otherCiv.cities) {
+                        newDetailedCivResources.add(city.getCityResourcesForAlly())
+                    }
+                }
+            }
+        }
+
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
         for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
             newDetailedCivResources.add(resource,-1,"Units")
