@@ -29,7 +29,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs()) {
                 if (otherCiv.getAllyCiv() == civInfo.civName) {
-                    otherCiv.setTransients()
                     newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles().asSequence() })
                 }
             }

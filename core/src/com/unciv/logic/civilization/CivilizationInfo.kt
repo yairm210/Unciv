@@ -323,6 +323,9 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
+    }
+
+    fun updateSightAndResources() {
         updateViewableTiles()
         updateHasActiveGreatWall()
         updateDetailedCivResources()
