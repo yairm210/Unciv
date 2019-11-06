@@ -736,6 +736,7 @@
 
 	"[tradeOffer] to [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
+		Traditional_Chinese:"與[otherCivName]的[tradeOffer]協議已經結束"
 	}
 
 
@@ -780,9 +781,11 @@
 
 	"We have allied with [nation].": {
 		Italian:"Abbiamo stretto un'alleanza con [nation]."
+		Traditional_Chinese:"我們已和 [nation] 結為同盟"
 	}
 
 	"We have lost alliance with [nation].": {
 		Italian:"Non siamo più alleati di [nation]."
+		Traditional_Chinese:"我們和 [nation] 不再是同盟關係"
 	}
 }
