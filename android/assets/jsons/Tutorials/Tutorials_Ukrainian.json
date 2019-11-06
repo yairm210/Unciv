@@ -5,15 +5,15 @@
 
 	New_Game: [
 		[
-			"Hello, and welcome to Unciv!",
-			"Civilization games can be complex, so we'll  be guiding you step-by-step.",
-			"Your first mission is to found your capital city.",
-			"This is actually an important task because your capital city will probably be your most prosperous.",
-			"Many game bonuses apply only to your capital city and it will probably be the center of your empire."
+			"Привіт, і ласкаво просимо до Unciv!",
+			"Ігри про цивілізацію можуть бути складними, тому ми будемо вести вас покроково.",
+			"Ваша перша місія — заснувати свою столицю.",
+			"Це насправді важливе завдання, адже саме ваша столиця буде, мабуть, найбільш процвітаючою.",
+			"Багато бонусів стосуються лише вашої столиці, і, ймовірно, вона буде центром вашої імперії."
 		],
 		[
-			"How do you know a spot is appropriate?",
-			"That’s not an easy question to answer, but looking for and building next to luxury resources is a good rule of thumb.",
+			"Як дізнатися, що це місце підходить для заснування міста?",
+			"На це питання складно відповісти, але шукайте і засновуйте місто біля ресурсів розкоші.",
 			"Luxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)",
 			"These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron."
 		],
