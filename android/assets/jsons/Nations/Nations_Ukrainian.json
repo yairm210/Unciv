@@ -1428,7 +1428,7 @@
 		adjective:["Helsinki"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
+		declaringWar:"Ви не залишаєте нам вибору. Війна тут має бути.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
 		defeated:"The day of judgement has come to us. But rest assured, the same will go for you!"
@@ -1443,7 +1443,7 @@
 	//Barbarian
 	{
 		name:"Barbarians",
-    translatedName:"",
+    translatedName:"Варвари",
 		outerColor:[0,0,0],
 		innerColor:[182,0,0]
 	}
