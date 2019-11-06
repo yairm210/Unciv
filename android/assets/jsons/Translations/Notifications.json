@@ -703,6 +703,9 @@
 		Russian:"От города [cityName] был проложен путь к столице!"
 	}
 
+	"[cityName] has been disconnected from your capital!":{
+	}
+
 	// Trade
 	"[civName] has accepted your trade request":{
 		Italian:"[civName] ha accettato la nostra offerta commerciale."

@@ -136,8 +136,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
         if(!initialSetup){ // In the initial setup we're loading an old game state, so it doesn't really count
             for(city in citiesReachedToMediums.keys)
-                if(city !in civInfo.citiesConnectedToCapital)
+                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",city.location, Color.GOLD)
+
+            for(city in civInfo.citiesConnectedToCapital)
+                if(!citiesReachedToMediums.containsKey(city) && city.civInfo==civInfo)
+                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",city.location, Color.GOLD)
         }
 
         civInfo.citiesConnectedToCapital = citiesReachedToMediums.keys.toList()
