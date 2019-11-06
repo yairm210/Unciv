@@ -584,6 +584,21 @@
 		attackSound:"arrow"
 		//Camel Archer should have no penalty attacking cities
 	},
+	{
+		name:"Naresuan's Elephant",
+		unitType:"Mounted",
+		replaces:"Knight",
+		uniqueTo:"Siam",
+		movement:3,
+		strength:25,
+		cost: 120,
+		requiredTech:"Chivalry",
+		obsoleteTech:"Military Science",
+		upgradesTo:"Cavalry",
+		uniques:["Can move after attacking","No defensive terrain bonus","Bonus vs Mounted 50%","Penalty vs City 33%"],
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
 	/*
 	{
 		name:"Mandekalu Cavalry",
@@ -619,22 +634,6 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 		//Mongolian unique unit.
-	},
-	{
-		name:"Naresuan's Elephant",
-		unitType:"Mounted",
-		replaces:"Knight",
-		uniqueTo:"Siam",
-		movement:3,
-		strength:25,
-		cost: 225,
-		requiredTech:"Chivalry",
-		obsoleteTech:"Military Science",
-		upgradesTo:"Cavalry",
-		uniques:["Can move after attacking","No defensive terrain bonus","50% Bonus vs. Mounted","33% Penalty vs. Cities"],
-		hurryCostModifier:20,
-		attackSound:"shot"
-		//Siamese unique unit. Doesn't require Horses.
 	},
 	*/
 	

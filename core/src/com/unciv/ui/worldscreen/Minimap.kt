@@ -116,20 +116,20 @@ class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
 
         val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
         populationImage.circle.color = Color.BLACK
-        populationImage.image.color.a = if(settings.showWorkedTiles) 1f else 0.5f
+        populationImage.actor.color.a = if(settings.showWorkedTiles) 1f else 0.5f
         populationImage.onClick {
             settings.showWorkedTiles = !settings.showWorkedTiles
-            populationImage.image.color.a = if(settings.showWorkedTiles) 1f else 0.5f
+            populationImage.actor.color.a = if(settings.showWorkedTiles) 1f else 0.5f
             worldScreen.shouldUpdate=true
         }
         toggleIconTable.add(populationImage).row()
 
         val resourceImage = ImageGetter.getResourceImage("Cattle",30f).surroundWithCircle(40f)
         resourceImage.circle.color = Color.BLACK
-        resourceImage.image.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
+        resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
-            resourceImage.image.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
+            resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
             worldScreen.shouldUpdate=true
         }
         toggleIconTable.add(resourceImage)

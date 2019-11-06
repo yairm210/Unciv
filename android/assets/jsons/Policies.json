@@ -172,7 +172,50 @@
 				description:"Reduce culture cost of future policies by 10%"
 			}
 		]
-	},{
+	},/*{
+		name:"Patronage",
+		era:"Classical",
+		description:"Influence with City-States degrades 25% slower than normal",
+		policies:[
+			{
+				name:"Philantropy",
+				description:"Gifting Gold to a City-State generates 25% more Influence",
+				row:1,
+				column:2
+			},
+			{
+				name:"Aesthetics",
+				description:"Resting point for Influence level with all City-States is increased by 20",
+				row:1,
+				column:4
+			},
+			{
+				name:"Scholasticism",
+				description:"All Allied City-States provide a Science bonus equal to 25% of what they produce for themselves",
+				requires:["Philantropy"],
+				row:2,
+				column:2
+			},
+			{
+				name:"Cultural Diplomacy",
+				description:"Happiness from gifted Luxuries increased by 50%",
+				requires:["Scholasticism"],
+				row:3,
+				column:2
+			},
+			{
+				name:"Educated Elite",
+				description:"Allied City-States will occasionally gift you Great People",
+				requires:["Scholasticism","Aesthetics"],
+				row:3,
+				column:4
+			},
+			{
+				name:"Patronage Complete",
+				description:"Influence with City-States degrades 25% slower than normal"
+			}
+		]
+	},*/{
 		name:"Commerce",
 		description:"+25% gold in capital",
 		era:"Medieval",
@@ -260,6 +303,49 @@
 			}
 		]
 	},
+	/*{
+		name:"Order",
+		era:"Industrial",
+		description:"+1 Happiness per City",
+		policies:[
+			{
+				name:"Nationalism",
+				description:"25% Attack bonus when fighting in friendly territory",
+				row:1,
+				column:1
+			},
+			{
+				name:"United Front",
+				description:"Militaristic City-States grant units twice as often when you are at war with a common foe",
+				row:1,
+				column:3
+			},
+			{
+				name:"Planned Economy",
+				description:"Factories increase a cities Science output by 25%",
+				row:2,
+				column:5
+			},
+			{
+				name:"Socialism",
+				description:"Gold maintenance costs of Buildings reduced by 15%",
+				requires:["Planned Economy"],
+				row:2,
+				column:3
+			},
+			{
+				name:"Communism",
+				description:"+2 Production per City and +10% Production when constructing buildings",
+				requires:["Socialism"],
+				row:3,
+				column:3
+			},
+			{
+				name:"Order Complete",
+				description:"+1 Food, Production, Science, Gold and Culture per city"
+			}
+		]
+	},*/
 	{
 		name:"Freedom",
 		era:"Renaissance",

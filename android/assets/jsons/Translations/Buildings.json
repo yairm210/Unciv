@@ -1128,7 +1128,7 @@
 }
 
 	"+2 Science from each worked Jungle tile":{
-		Italian:"+2 Scienza dalle Giungle"
+		Italian:"+2 Scienza per ogni casella di Giungla sfruttata"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
@@ -1141,15 +1141,12 @@
 		Polish:"+2 nauki z pól dżungli"
 		Czech:"+2 Výzkum za každého dělníka na políčku džungle"
 }
-
-	/*
 	"Wat":{	//Siamese unique
 		Italian:"Wat"
 		Polish:"Wat"
 		//same in French
 		Czech:"Vat"
 }
-	*/
 
 	"Oxford University":{
 		Italian:"Università di Oxford"
@@ -1951,12 +1948,16 @@
 	}
 	
 	"Brandenburg Gate":{
+		Italian:"Porta di Brandeburgo"
 	}
 	
 	"Free Great General appears near the Capital":{
+		Italian:"Appare un Grande Generale vicino alla Capitale"
+        Traditional_Chinese:"免費的大軍事家已經在首都附近出現"
 	}
 	
 	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
+		Italian:"'La pallida morte batte ugualmente alla porta del povero e al palazzo del re.' - Orazio"
 	}
 
 	"Broadcast Tower":{
