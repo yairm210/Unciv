@@ -14,6 +14,7 @@
 		Japanese:"コピーしたデータを読み込む"
                 Korean:"복사 된 데이터 로드"
 		Czech:"Načíst zkopírované data"
+		Polish:"Wczytaj skopiowane dane"
 		Ukrainian:"Завантажити копію даних"
 }
 
@@ -30,6 +31,7 @@
 		Dutch:"Kon game niet van klembord laden!"
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
                 Korean:"클립보드에서 게임을 불러 올 수 없습니다!"
+		Polish:"Nie można wczytać danych ze schowka!"
 		Czech:"Nepodařilo se nahrát hru ze schránky!"
 		Ukrainian:"Неможливо завантажити гру з буфера обміну"
 }
@@ -47,6 +49,7 @@
 		Japanese:"ゲームを始める！"
                 Korean:"게임 시작!"
 		Czech:"Začít hru!"
+		Polish:"Zacznij grę:"
 		Ukrainian:"Почати!"
 }
 
@@ -60,6 +63,7 @@
 		Traditional_Chinese:"地圖類型"
 		Portuguese:"Tipo de mapa"
 		German:"Kartentyp"
+		Polish:"Rodzaj mapy"
 		Dutch:"Kaarttype"
                 Korean:"지도 유형"
 		Czech:"Typ mapy"
@@ -72,6 +76,7 @@
 		Simplified_Chinese:"城邦数量"
 		Traditional_Chinese:"城邦數量"
 		Russian:"Число городов-государств"
+		Polish:"Liczba miast-państw"
                 Korean:"도시 국가 수"
 		Czech:"Počet městských států"
 		Ukrainian:"Міст-держав"
@@ -79,6 +84,7 @@
 
 	"One City Challenge":{
 		Italian:"Sfida a città singola"
+		Polish:"Wyzwanie z limitem 1 miasta"
 	}
 
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
@@ -88,12 +94,14 @@
 		Traditional_Chinese:"停用蠻族"
 		Russian:"Без варваров"
                 Korean:"야만인 없음"
+		Polish:"Brak barbarzyńców"
 		Czech:"Bez barbarů"
 		Ukrainian:"Без варварів"
 }
 
 	"No ancient ruins": {
 		Italian:"Niente antiche rovine"
+		Polish:"Bez antycznych ruin"
 	}
 
 	"Victory conditions": {
@@ -104,6 +112,7 @@
 		Russian:"Условия победы"
                 Korean:"승리 조건"
 		Czech:"Způsoby výhry"
+		Polish:"Warunki zwycięstwa"
 		Ukrainian:"Умови перемоги"
 }
 
@@ -114,6 +123,7 @@
 		Traditional_Chinese:"科技"
 		Russian:"Научная"
                 Korean:"과학"
+		Polish:"Naukowe"
 		Czech:"Vědecká"
 		Ukrainian:"Наукова"
 }
@@ -126,6 +136,7 @@
 		Russian:"Завоевание"
                 Korean:"정복"
 		Czech:"Dominance"
+		Polish:"Dominacja"
 		Ukrainian:"Загарбання"
 }
 
@@ -137,6 +148,7 @@
 		Russian:"Культурная"
                 Korean:"문화"
 		Czech:"Kulturní"
+		Polish:"Kulturowe"
 		Ukrainian:"Культурна"
 }
 
@@ -146,6 +158,7 @@
 		Ukrainian:"ПЕРЕБУВАЄ В РОЗРОБЦІ — ВАС ПОПЕРЕДЖЕНО!"
 		Traditional_Chinese:"⚠︎警告！實驗性功能！"
 		Czech:"VYSOCE EXPERIMENTÁLNÍ - BYLI JSTE VAROVÁNÍ!"
+		Polish:"TRYB EKSPERYMENTALNY - NA WŁASNĄ ODPOWIEDZIALNOŚĆ!"
 		Russian:"В РАЗРАБОТКЕ - ВЫ ПРЕДУПРЕЖДЕНЫ!"
 }
 
@@ -155,6 +168,7 @@
 		Traditional_Chinese:"線上多人遊戲",
 		Ukrainian:"Багатокористувацька мережева"
 		Czech:"Online pro více hráčů"
+		Polish:"Tryb wieloosobowy"
 		Russian:"Online мультиплеер"
 }
 
@@ -172,6 +186,7 @@
 		German:"Kartengröße"
                 Korean:"세계 크기"
 		Czech:"Velikost světa"
+		Polish:"Rozmiar mapy"
 		Ukrainian:"Розмір світу"
 }
 
@@ -202,6 +217,7 @@
 		Portuguese:"Pequeno"
 		German:"Klein"
                 Korean:"소형"
+		Polish:"Mały"
 		Czech:"Malý"
 		Ukrainian:"Малий"
 }
@@ -217,6 +233,7 @@
 		Portuguese:"Médio"
 		German:"Mittel"
                 Korean:"중형"
+		Polish:"Średni"
 		Czech:"Střední"
 		Ukrainian:"Середній"
 }
@@ -231,6 +248,7 @@
 		Traditional_Chinese:"大",
 		Portuguese:"Grande"
 		German:"Groß"
+		Polish:"Wielki"
                 Korean:"대형"
 		Czech:"Velký"
 		Ukrainian:"Великий"
@@ -247,6 +265,7 @@
 		Portuguese:"Imenso"
 		German:"Enorm"
                 Korean:"초대형"
+		Polish:"Ogromny"
 		Czech:"Obrovský"
 		Ukrainian:"Величезний"
 }
@@ -265,6 +284,7 @@
 		Portuguese:"Dificuldade"
 		German:"Schwierigkeitsgrad"
                 Korean:"난이도"
+		Polish:"Poziom trudności"
 		Czech:"Obtížnost"
 		Ukrainian:"Складність"
 }
@@ -281,6 +301,7 @@
 		Portuguese:"Colonizador"
 		German:"Siedler"
                 Korean:"개척자"
+		Polish:"Osadnik"
 		Czech:"Osadník"
 		Ukrainian:"Поселенець"
 }
@@ -295,6 +316,7 @@
 		Traditional_Chinese:"酋長",
 		Portuguese:"Cacique"
 		German:"Häuptling"
+		Polish:"Kapitan"
                 Korean:"족장"
 		Czech:"Náčelník"
 		Ukrainian:"Вождь"
@@ -311,6 +333,7 @@
 		Portuguese:"General"
 		German:"Kriegsherr"
                 Korean:"장군"
+		Polish:"Generał"
 		Czech:"Válečník"
 		Ukrainian:"Генерал"
 }
@@ -325,6 +348,7 @@
 		Traditional_Chinese:"王子",
 		Portuguese:"Príncipe"
 		German:"Prinz"
+		Polish:"Książę"
                 Korean:"왕자"
 		Czech:"Princ"
 		Ukrainian:"Герцог"
@@ -340,6 +364,7 @@
 		Traditional_Chinese:"國王",
 		Portuguese:"Rei"
 		German:"König"
+		Polish:"Król"
                 Korean:"왕"
 		Czech:"Král"
 		Ukrainian:"Король"
@@ -357,6 +382,7 @@
 		German:"Kaiser"
                 Korean:"황제"
 		Czech:"Emperor"
+		Polish:"Imperator"
 		Ukrainian:"Імператор"
 }
 
@@ -370,6 +396,7 @@
 		Traditional_Chinese:"仙人",
 		Portuguese:"Imortal"
 		German:"Unsterblicher"
+		Polish:"Nieśmiertelny"
                 Korean:"불멸"
 		Czech:"Polobůh"
 		Ukrainian:"Безсмертний"
@@ -385,6 +412,7 @@
 		Traditional_Chinese:"天神",
 		Portuguese:"Semi-Deus"
 		German:"Gott"
+		Polish:"Bóg"
                 Korean:"신"
 		Czech:"Bůh"
 		Ukrainian:"Бог"
@@ -398,6 +426,7 @@
 		Traditional_Chinese:"電腦",
 		Russian:"ИИ"
 		Czech:"UI"
+		Polish:"Computer"
 		Ukrainian:"ШІ"
 }
 
@@ -408,6 +437,7 @@
                 Korean:"제거"
 		Czech:"Odstranit"
 		Ukrainian:"Видалити"
+		Polish:"Usuń"
 		Russian:"Удалить"
 }
 
@@ -418,6 +448,7 @@
                 Korean:"무작위"
 		Czech:"Náhodně"
 		Ukrainian:"Випадково"
+		Polish:"Losowo"
 		Russian:"Случайно"
 }
 
@@ -428,6 +459,7 @@
 		Russian:"Человек"
                 Korean:"인간"
 		Czech:"Člověk"
+		Polish:"Gracz"
 		Ukrainian:"Людина"
 }
 
@@ -437,6 +469,7 @@
 		Simplified_Chinese:"热座模式",
 		Traditional_Chinese:"熱座模式",
                 Korean:"핫시트"
+		Polish:"Gorące krzesło"
 		Czech:"Na tomto zařízení"
 		Ukrainian:"Почергово"
 }
@@ -447,6 +480,7 @@
 		Traditional_Chinese:"玩家ID",
 		Russian:"ID игрока"
                 Korean:"사용자 Id"
+		Polish:"ID użytkownika"
 		Czech:"Uživatelské ID"
 		Ukrainian:"Ідентифікатор гравця"
 }
@@ -457,6 +491,7 @@
 		Traditional_Chinese:"點此複製",
 		Russian:"Нажмите, чтобы скопировать"
                 Korean:"복사하려면 클릭하십시오"
+		Polish:"Naciśnij aby skopiować"
 		Czech:"Klikni pro kopírování"
 		Ukrainian:"Натисніть для копіювання"
 }
@@ -467,6 +502,7 @@
 		Traditional_Chinese:"玩家姓名",
 		Russian:"Пользователь"
                 Korean:"사용자이름"
+		Polish:"Nazwa użytkownika"
 		Czech:"Uživatelské jméno"
 		Ukrainian:"Імʼя гравця"
 }
@@ -477,6 +513,7 @@
 		Italian:"Multigiocatore"
 		Russian:"Сетевая игра"
                 Korean:"멀티플레이어"
+		Polish:"Wieloosobowy"
 		Czech:"Více hráčů"
 		Ukrainian:"Багатокористувацька"
 }
@@ -486,6 +523,7 @@
 		Russian:"Невозможно загрузить игру!"
                 Korean:"게임을 다운로드할 수 없습니다!"
 		Czech:"Nepodařilo se načíst hru!"
+		Polish:"Nie można pobrać gry!"
 		Simplified_Chinese:"无法下载游戏数据！",
 		Traditional_Chinese:"無法下載遊戲資料！",
 		Ukrainian:"Неможливо завантажити гру!"
@@ -496,6 +534,7 @@
 		Russian:"Невозможно отправить игру!"
                 Korean:"게임을 업로드할 수 없습니다!"
 		Czech:"Nepodařilo se nahrát hru!"
+		Polish:"Nie można przesłać gry!"
 		Simplified_Chinese:"无法上传游戏数据！",
 		Traditional_Chinese:"無法上傳遊戲資料！",
 		Ukrainian:"Неможливо надіслати гру!"
@@ -506,6 +545,7 @@
 		Simplified_Chinese:"加入游戏",
 		Traditional_Chinese:"加入遊戲",
 		Russian:"Подключиться"
+		Polish:"Dołącz do gry"
                 Korean:"게임 참여"
 		Czech:"Připojit se ke hře"
 		Ukrainian:"Приєднатися до гри"
@@ -516,6 +556,7 @@
 		Simplified_Chinese:"无效的游戏ID！"
 		Traditional_Chinese:"無效的遊戲ID！"
 		Russian:"Некорректный ID игры!"
+		Polish:"Nieprawidłowy ID gry!"
                 Korean:"잘못된 게임 ID 입니다!"
 		Czech:"Chybné ID hry"
 		Ukrainian:"Недопустимий ідентифікатор гри"
@@ -526,6 +567,7 @@
 		Simplified_Chinese:"复制玩家ID",
 		Traditional_Chinese:"複製玩家ID",
 		Russian:"Скопировать ID игрока"
+		Polish:"Skopiuj ID użytkownika"
                 Korean:"사용자 Id 복사"
 		Czech:"Kopírovat uživatelské ID"
 		Ukrainian:"Копіювати ідентифікатор гравця"
@@ -537,6 +579,7 @@
 		Traditional_Chinese:"複製遊戲ID",
 		Russian:"Скопировать ID игры"
                 Korean:"게임 Id 복사"
+		Polish:"Skopiuj ID gry"
 		Czech:"Kopírovat ID hry"
 		Ukrainian:"Копіювати ідентифікатор гри"
 }
@@ -544,6 +587,7 @@
 	"Set current user":{
 		Italian:"Imposta utente attuale"
                 Korean:"현재 사용자 설정"
+		Polish:"Ustaw aktualnego użytkownika"
 		Czech:"Nastavit aktuálního uživatele"
 		Simplified_Chinese:"设置为当前玩家",
 		Traditional_Chinese:"設定為目前玩家",
@@ -554,6 +598,7 @@
 	"Player ID from clipboard":{
 		Italian:"Copia ID giocatore dagli appunti"
                 Korean:"클립보드의 플레이어 ID"
+		Polish:"Wklej ID użytkownika ze schowka"
 		Czech:"Kopírovat ID hráče ze schránky"
 		Simplified_Chinese:"从剪贴板获取玩家ID",
 		Traditional_Chinese:"從剪貼簿取得玩家ID",
@@ -564,7 +609,8 @@
 	/// tutorials for multiplayer
 	"To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.":{
 		Italian:"Per creare una partita multigiocatore, attiva la spunta su 'Multigiocatore' nella schermata Nuova Partita, e inserisci l'ID utente per del giocatore per ogni rispettivo giocatore umano"
-                Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
+                Polish:"Aby utworzyć grę wieloosobową, zaznacz 'wieloosobowa' w oknie Nowej Gry, i dla każdego gracza wprowadź jego ID użytkownika"
+		Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
 		Czech:"Pro vytvoření hry pro více hráčů zaškrtněte 'Více hráčů' na obrazovce s novou hrou a pro každého lidského hráče vložte jeho hráčské ID."
 		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“在线多人游戏”复选框，同时将每个参与游戏的玩家ID填入其想扮演文明的“Player ID”文本框内。"
 		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач «Багатокористувацька» у віконці «Нова гра» і для кожної людини-гравця введіть відповідний ідентифікатор"
@@ -576,6 +622,7 @@
 		Italian:"Puoi assegnarvi facilmente il tuo ID Utente, e altri giocatori possono copiarvi il loro ID Utente e mandartelo per unirsi alla partita."
                 Korean:"당신은 당신의 사용자 ID를 쉽게 거기에 할당할 수 있고, 다른 플레이어는 당신의 사용자 ID를 여기에 복사하여 당신이 게임에 포함하도록 당신에게 보낼 수 있습니다."
 		Czech:"Svoje vlastní ID můžete přiřadit jednoduše, ostatní hráči můžou zkopírovat svoje uživatelské ID tady a poslat vám ho, aby jste je připojil ke hře."
+		Polish:"Możesz łatwo przypisać własny ID użytkownika, a inni gracze mogą skopiować tutaj swoje ID użytkownika i wysłać je do Ciebie, abyś mógł ich włączyć do gry"
 		Simplified_Chinese:"直接点击“设置为当前玩家”就可自动填入你自己的玩家ID。对于其他玩家，他们可在终端上打开游戏并在当前界面点击“复制玩家ID”按钮将他们的ID复制到剪贴板，然后通过网络发送给你，你可以在“开始新游戏”界面将接收到的ID填入他们想扮演文明的“Player ID”文本框内使其加入游戏。"
 		Ukrainian:"Тут ви можете легко вказати власний ідентифікатор гравця, а інші гравці можуть скопіювати їхні ідентифікатори і надіслати вам для додавання до гри."
 		Traditional_Chinese:"直接點擊“設定為目前玩家”就可自動填入自己的玩家ID。其他玩家則需在打開遊戲後點擊“複製玩家ID”按鈕將ID複製到剪貼簿，然後透過網路傳送給您，你可以在“開始新遊戲”界面將接收到的ID填入他們想扮演的文明的“Player ID”文字框內讓他們加入遊戲。"
@@ -586,6 +633,7 @@
 		Italian:"Una volta creata la tua partita, ritorna in questa schermata per copiare l'ID Partita e mandala ad altri giocatori."
                 Korean:"게임을 만든 후 이 화면을 다시 입력하여 게임 ID를 복사하여 다른 플레이어에게 전송하십시오."
 		Czech:"Ve chvíli kdy vytvoříte hru, vraťte se zpět na tuto obrazovku, zkopírujte ID hry a pošlete ho ostatním hráčům."
+		Polish:"Po utworzeniu gry ponownie wejdź na ten ekran, aby skopiować ID gry i wysłać go innym graczom"
 		Simplified_Chinese:"当你创建了多人游戏后，进入此界面同时点击“复制游戏ID”按钮将游戏ID复制到剪贴板并通过网络发送给其他玩家。"
 		Ukrainian:"Щойно ви створите власну гру, зайдіть до цього віконця для копіювання ідентифікатора гри і надішліть його іншим гравцям."
 		Traditional_Chinese:"當你建立了多人遊戲後，進入本界面並按下“複製遊戲ID”按鈕將遊戲ID複製到剪貼簿並透過網路分享給其他玩家。"
@@ -597,6 +645,7 @@
                 Korean:"플레이어는 게임 ID를 클립보드에 복사하고 게임 참여 버튼을 클릭하여 게임에 들어갈 수 있습니다."
 		Czech:"Ostatní hráči můžou vstoupit do hry zkopírováním ID hry do schránky a kliknutím na tlačítko 'Připojit se ke hře'"
 		Simplified_Chinese:"其他玩家可以将接收到的游戏ID复制到剪贴板，同时点击“加入游戏”按钮加入游戏"
+		Polish:"Gracze mogą wejść do gry, kopiując ID gry do schowka i klikając przycisk 'Dołącz do gry'"
 		Ukrainian:"Гравці можуть приєднатися до вашої гри, скопіювавши ідентифікатор гри до буфера обміну і натиснувши на кнопку «Приєднатися до гри»"
 		Traditional_Chinese:"其他玩家可以將接收到的遊戲ID複製到剪貼簿，並按下“加入遊戲”按鈕加入遊戲"
 		Russian:"Игроки смогут присоединиться скопировав ID игры в буфер обмена и нажав на кнопку «Подключиться»."
@@ -609,6 +658,7 @@
 	"Game Speed":{
 		Italian:"Velocità di gioco"
 		Russian:"Скорость игры"
+		Polish:"Prędkość gry"
 		Simplified_Chinese:"游戏速度",
 		Traditional_Chinese:"遊戲速度",
                 Korean:"게임 속도"
@@ -620,6 +670,7 @@
 		Italian:"Rapida"
 		Russian:"Быстрая"
 		Simplified_Chinese:"快速",
+		Polish:"Szybka"
 		Traditional_Chinese:"快速",
                 Korean:"빠름"
 		Czech:"Rychlá"
@@ -630,6 +681,7 @@
 		Italian:"Standard"
 		Russian:"Обычная"
 		Simplified_Chinese:"标准",
+		Polish:"Standardowa"
 		Traditional_Chinese:"標準",
                 Korean:"표준"
 		Czech:"Normální"
@@ -641,7 +693,8 @@
 		Simplified_Chinese:"史诗",
 		Traditional_Chinese:"史詩",
 		Russian:"Эпическая"
-                Korean:"서사시"
+                Polish:"Szybka"
+		Korean:"서사시"
 		Czech:"Dlouhá"
 		Ukrainian:"Епічна"
 }
@@ -652,6 +705,7 @@
 		Traditional_Chinese:"馬拉松",
 		Russian:"Марафон"
     		Korean:"마라톤"
+		Polish:"Błyskawiczna"
 		Czech:"Maratónská"
 		Ukrainian:"Марафон"
 }
@@ -662,7 +716,8 @@
 		Italian:"Epoca iniziale"
 		Simplified_Chinese:"起始时代"
 		Traditional_Chinese:"初始時代"
-    		Korean:"시작 시대"
+    		Polish:"Początkowa era"
+		Korean:"시작 시대"
 		Czech:"Doba počátku hry"
 		Ukrainian:"Початкова епоха"
 		Russian:"Начальная эпоха"
