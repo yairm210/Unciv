@@ -695,7 +695,7 @@
 	}
 
 	"[cityName] has been connected to your capital!":{
-		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
+		Italian:"Collegamento stabilito tra la Capitale e [cityName]!",
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
 		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
 		Traditional_Chinese:"[cityName]以建立與您的首都的連接！"
@@ -704,6 +704,7 @@
 	}
 
 	"[cityName] has been disconnected from your capital!":{
+		Italian:"Collegamento tra la Capitale e [cityName] interrotto!",
 	}
 
 	// Trade
