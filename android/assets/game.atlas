@@ -1224,9 +1224,9 @@ OtherIcons/tileTableBackground
   index: -1
 OtherIcons/whiteDot
   rotate: false
-  xy: 1604, 1851
-  size: 1, 1
-  orig: 1, 1
+  xy: 406, 1222
+  size: 10, 10
+  orig: 10, 10
   offset: 0, 0
   index: -1
 PolicyIcons/Aristocracy
