@@ -71,7 +71,7 @@
                 Polish:"Wypowiedz wojnę cywilizacji [civName]"
 		Russian:"Объявить войну [civName]?",
 		Czech:"Vyhlásit válku civilizaci [civName]?"
-		Hungarian:"Hirdesse háborút a [civName] ellen?"
+		Hungarian:"Háború kihirdetése a [civName] civilizáció ellen?"
 }
 
 	"[civName] has declared war on us!":{
@@ -86,7 +86,7 @@
 		German:"[civName] hat uns den Krieg erklärt!"
                 Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!",
 		Czech:"Civilizace [civName] nám vyhlásila válku!"
-		Hungarian:"A [civName] háborút hirdett nekünk!"
+		Hungarian:"A [civName] civilizáció háborút hirdetett ellenünk!"
 }
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -101,7 +101,7 @@
 		Romanian:"[leaderName] de [nation]"
                 Polish:"[leaderName], władca cywilizacji [nation]",
 		Czech:"[leaderName], [nation]"
-		Hungarian:"a (nemzet) [leaderName] neve"
+		Hungarian:"[leaderName], [nation]"
 }
 
 	"You'll pay for this!":{
@@ -116,7 +116,7 @@
 		Traditional_Chinese:"你會為此付出代價的！"
                 Polish:"Zapłacisz za swą zuchwałość!"
 		Czech:"Za tohle zaplatite!"
-		Hungarian:"Fizetni fogsz érte!"
+		Hungarian:"Fizetni fogsz ezért!"
 }
 
 	"Negotiate Peace":{
@@ -140,7 +140,7 @@
                 Polish:"Niech tak będzie."
 		Russian:"Очень хорошо."
 		Czech:"Jak je libo"
-		Hungarian:"Nagyon jól."
+		Hungarian:"Nagyon jó."
 }
 
 	"Farewell.":{
@@ -199,7 +199,7 @@
                 Polish:"Oto nasza oferta."
 		Russian:"Как насчёт другого..."
 		Czech:"Co třeba zkusit něco jiného..."
-		Hungarian:"Mi lenne valami mással ..."
+		Hungarian:"Mi lenne ha..."
 }
 
 	"A pleasure to meet you.":{
@@ -235,7 +235,7 @@
 		Traditional_Chinese:"我們遇到了城邦[name]！"
 		Russian:"Мы обнаружили город-государство [name]!",
 		Czech:"Poprvé jsme se setkali s městským státem [name]"
-		Hungarian:"Találkoztunk a [név] városállammal!"
+		Hungarian:"Találkoztunk a(z) [name] városállammal!"
 }
 
 	// Friendship declaration flavor texts
@@ -248,7 +248,7 @@
                 Polish:"Zadeklaruj przyjaźń na [numberOfTurns] tur"
 		Russian:"Объявить о дружбе на [numberOfTurns] ходов",
 		Czech:"Deklarace přátelství ([numberOfTurns] kol)"
-		Hungarian:"Barátság bejelentése ([numberOfTurns] fordul)"
+		Hungarian:"Barátság bejelentése ([numberOfTurns] kör)"
 }
 
 	"May our nations forever remain united!":{
@@ -260,7 +260,7 @@
                 Polish:"Oby ta przyjaźń już zawsze łączyła nasze cywilizacje!"
 		Russian:"Да будут наши державы навеки едины!"
 		Czech:"Nechť naše národy zůstanou navždy spojené"
-		Hungarian:"Nemzetek örökké egységes maradhatnak!"
+		Hungarian:"Nemzeteink örökké egységet alkotnak majd!"
 }
 
 	"Indeed!":{
@@ -284,7 +284,7 @@
                 Polish:"Potęp cywilizację na [numberOfTurns] tur"
 		Russian:"Осуждение на [numberOfTurns] ходов",
 		Czech:"Odsoudit ([numberOfTurns] kol)"
-		Hungarian:"Felmondás ([numberOfTurns] fordul)"
+		Hungarian:"Felmondás ([numberOfTurns] kör)"
 }
 
 	"We will remember this.":{
@@ -363,7 +363,7 @@
 		Portuguese:"Amigos"
 		Russian:"Дружеские"
  	 	Czech:"Přátelství"
-		Hungarian:"Friend"
+		Hungarian:"Barát"
 }
 
   	"Ally":{
@@ -386,7 +386,7 @@
 		Traditional_Chinese:"當影響力不低於30時提供[amountOfCulture]文化"
 		Russian:"Даёт [amountOfCulture] культуры при 30 Влияния",
 		Czech:"Poskytují [amountOfCulture] bodů Kultury při Vlivu [30] "
-		Hungarian:"Biztosítja a [sumaOfCulture] tenyésztést a [30] befolyásnál"
+		Hungarian:"[amountOfCulture] kultúrát biztosít [30] befolyásnál"
 }
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
@@ -396,7 +396,7 @@
 		Traditional_Chinese:"當影響力不低於30時為首都提供3食物，為其他城市提供1食物"
 		Russian:"Даёт 3 Еды в столице и 1 Еда в остальных городах при 30 Влияния"
 		Czech:"Poskytuje 3 jídla v hlavním městě a 1 jídlo ve všech ostatních městech při Vlivu 30"
-		Hungarian:"3 élelmet biztosít fővárosban és 1 ételt más városokban 30-as hatással"
+		Hungarian:"3 élelmet biztosít fővárosban és 1 ételt minden más városban 30-as bafolyásnál"
 }
 
 	"Provides 3 happiness at 30 Influence":{
@@ -416,7 +416,7 @@
 		Traditional_Chinese:"當影響力不低於30時每20回合提供陸軍單位"
 		Russian:"Даёт сухопутные юниты каждые 20 ходов при 30 Влияния"
 		Czech:"Poskytuje pozemní jednotky každých 20 kol při Vlivu 30"
-		Hungarian:"Szárazföldi egységeket biztosít minden 20 fordulásnál 30 befolyásnál"
+		Hungarian:"Szárazföldi egységeket biztosít minden 20 körnél 30 befolyásnál"
 },
 
 	"Gift [giftAmount] gold (+[influenceAmount] influence)":{
@@ -425,7 +425,7 @@
 		Traditional_Chinese:"贈予[giftAmount]金錢(+[influenceAmount]影響力)"
 		Czech:"Darujme [giftAmount] Zlata (+ [influenceAmount] Vlivu)"
 		Russian:"Подарить [giftAmount] золота (+[influenceAmount] Влияния)"
-		Hungarian:"Ajándék [ajándék összege] arany (+ [befolyás összege] befolyás)"
+		Hungarian:"[giftAmount] aranyat (+[influenceAmount] befolyást) ajándékoz"
 }
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
@@ -435,7 +435,7 @@
 		Traditional_Chinese:"將在[turnsToRelationshipChange]回合後失去對該城邦的影響"
 		Russian:"Отношения изменятся в следующие [turnsToRelationshipChange] ходов",
 		Czech:"Mezinárodní vztahy se změní během příštích/ho [turnsToRelationshipChange] kol(a)"
-		Hungarian:"A kapcsolat megváltozik egy másik [TurnToRelationshipChange] fordulóban"
+		Hungarian:"A kapcsolat megváltozik a következő [TurnToRelationshipChange] körben"
 }
 
 
@@ -450,7 +450,7 @@
 		Portuguese:"Você declarou guerra contra nós!"
 		Russian:"Вы объявляли нам войну!"
 		Czech:"Vyhlásili jste nám válku!"
-		Hungarian:"Ön háborút hirdett nekünk!"
+		Hungarian:"Ön háborút hirdetett ellenünk!"
 }
 
 	"Your warmongering ways are unacceptable to us.":{
@@ -461,7 +461,7 @@
 		Portuguese:"Seus costumes de guerra são inaceitáveis para nós."
 		Russian:"Ваша воинственность для нас неприемлема."
 		Czech:"Vaše chování je pro nás nepřijatelné."
-		Hungarian:"Számodra elfogadhatatlan az ön harcoló módszere."
+		Hungarian:"Számunkra elfogadhatatlan az ön hadviselése."
 }
 
 	"You have captured our cities!":{
@@ -472,7 +472,7 @@
 		Portuguese:"Você capturou nossas(nossa) cidades(cidade)!"
 		Russian:"Вы захватывали наши города!"
 		Czech:"Obsadili jste naše města!"
-		Hungarian:"Elfogták városunkat!"
+		Hungarian:"Elfoglaltad városainkat!"123
 }
 
 	"Years of peace have strengthened our relations.":{
