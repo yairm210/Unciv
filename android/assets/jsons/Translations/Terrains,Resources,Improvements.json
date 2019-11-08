@@ -590,6 +590,7 @@
                 Korean:"상아"
 		Czech:"Slonovina"
 		Ukrainian:"Слонова кістка"
+		Spanish:"Marfil"
 }
 
 	"Silk":{
@@ -966,6 +967,7 @@
                 Korean:"도로 제거"
 		Czech:"Odstranit cestu"
 		Ukrainian:"Видалити дорогу"
+		Spanish:"Quitar carrettera"
 }
 
 	"Railroad":{
@@ -975,7 +977,7 @@
 		Romanian:"Cale ferată"
 		German:"Schienen"
 		Dutch:"Spoorweg"
-		Spanish:"Línea de ferrocarril"
+		Spanish:"Ferrocarril"
 		Simplified_Chinese:"铁路",
 		Traditional_Chinese:"鐵路",
 		Portuguese:"Estrada de ferro"
@@ -993,6 +995,7 @@
                 Korean:"철도 제거"
 		Czech:"Odstranit železnici"
 		Ukrainian:"Прибрати колію"
+		Spanish:"Quitar ferrocarril"
 }
 
 	"Remove Forest":{
@@ -1147,6 +1150,7 @@
 		Czech:"Moai (kamenná socha)"
 		Simplified_Chinese:"摩艾石像群",
 		Traditional_Chinese:"摩艾石像群"
+		Spanish:"Moai"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
@@ -1156,6 +1160,7 @@
 		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
 		Ukrainian:"+1 додаткова Культура за кожну сусідню Moai"
 		Traditional_Chinese:"每個相鄰的摩艾石像群額外+1文化"
+		Spanish:"+1 Cultura adicional para cada Moai adyacente"
 }
 
 	"Can only be built on Coastal tiles":{
@@ -1165,6 +1170,7 @@
 		Simplified_Chinese:"只能建造在沿海地块"
 		Ukrainian:"Можна побудувати лише на прибрежній плитці"
 		Traditional_Chinese:"只能在沿海地塊建造"
+		Spanish:"Edificable solo en Costa"
 }
 
 
@@ -1176,6 +1182,7 @@
                 Korean:"야만인 야영지"
 		Czech:"Barbarský tábor"
 		Ukrainian:"Табір варварів"
+		Spanish:"Campamento bárbaro"
 	}
 
 }
