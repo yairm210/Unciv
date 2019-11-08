@@ -79,6 +79,14 @@
 		improvingTechStats:{gold:1}
 	},
 	
+	//Defensive
+	{
+		name:"Fort"
+		terrainsCanBeBuiltOn:["Plains","Grassland","Hill","Desert","Tundra","Snow"],
+		turnsToBuild:6,
+		techRequired:"Engineering"
+	},
+
 	// Transportation
 	{
 		name:"Road",

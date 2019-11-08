@@ -15,6 +15,11 @@ class BattleDamageModifier(val vs:String,val modificationAmount:Float){
     fun getText(): String = "vs $vs"
 }
 
+enum class CombatantRole{
+    ATTACKER,
+    DEFENDER
+}
+
 class BattleDamage{
 
     private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
@@ -105,7 +110,7 @@ class BattleDamage{
         val modifiers = getGeneralModifiers(attacker, defender)
 
         if(attacker is MapUnitCombatant) {
-            modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
+            modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile(),CombatantRole.ATTACKER))
 
             for (ability in attacker.unit.getUniques()) {
                 val regexResult = Regex("""Bonus as Attacker [(\d*)]%""").matchEntire(ability) //to do: extend to defender, and penalyy
@@ -146,7 +151,7 @@ class BattleDamage{
 
         val modifiers = getGeneralModifiers(defender, attacker)
 
-        modifiers.putAll(getTileSpecificModifiers(defender, defender.getTile()))
+        modifiers.putAll(getTileSpecificModifiers(defender, defender.getTile(),CombatantRole.DEFENDER))
 
         if (!defender.unit.hasUnique("No defensive terrain bonus")) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
@@ -165,8 +170,12 @@ class BattleDamage{
         return modifiers
     }
 
-    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
+    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo,role: CombatantRole ): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
+
+
+        val isFortTile = role == CombatantRole.DEFENDER && tile.improvement != null && tile.improvement == "Fort"
+
         val isFriendlyTerritory = tile.getOwner()!=null && !unit.getCivInfo().isAtWarWith(tile.getOwner()!!)
         if(isFriendlyTerritory && unit.getCivInfo().containsBuildingUnique("+15% combat strength for units fighting in friendly territory"))
             modifiers["Himeji Castle"] = 0.15f
