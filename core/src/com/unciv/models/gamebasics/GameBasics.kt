@@ -41,7 +41,7 @@ object GameBasics {
         val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
         for (techColumn in techColumns) {
             for (tech in techColumn.techs) {
-                tech.cost = techColumn.techCost
+                if (tech.cost==0) tech.cost = techColumn.techCost
                 tech.column = techColumn
                 Technologies[tech.name] = tech
             }
