@@ -167,7 +167,10 @@ object ImageGetter {
     fun getCircle() = getImage("OtherIcons/Circle")
 
     fun getBackground(color:Color): Drawable {
-        return getDrawable(whiteDotLocation).tint(color)
+        val drawable = getDrawable("OtherIcons/TableBackground")
+        drawable.minHeight=0f
+        drawable.minWidth=0f
+        return drawable.tint(color)
     }
 
 
