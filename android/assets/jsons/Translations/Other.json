@@ -1689,6 +1689,9 @@
 		Ukrainian:"Обстрілювати"
 }
 
+	"NUKE":{
+}
+
 	"Captured!":{// Shown in the battle table when attacking a civilian unit
 		Italian:"Cattura!"
 		Russian:"Захвачен!"

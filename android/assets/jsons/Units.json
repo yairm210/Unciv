@@ -1004,6 +1004,19 @@
 		attackSound:"shot"
 	},
 	{
+		name:"Nuclear Missile",
+		unitType:"Missile",
+		movement:1,
+		strength:300,
+		rangedStrength:300,
+		range:12,
+		cost: 1000,
+		requiredTech:"Rocketry",
+		requiredResource:"Uranium",
+		uniques:["Requires Manhattan Project"],
+		hurryCostModifier:20,
+	},
+	{
 		name:"Landship",
 		unitType:"Armor",
 		movement:4,

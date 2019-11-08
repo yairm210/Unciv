@@ -160,7 +160,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = GameBasics.Terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
-                    tileInfo.baseTerrain = terrainObject.occursOn!!.first()
+                    tileInfo.baseTerrain = when {
+                        terrainObject.occursOn == null -> terrainObject.occursOn!!.first()
+                        else -> "Grassland"
+                    }
                     tileInfo.terrainFeature = terrain
                 } else tileInfo.baseTerrain = terrain
 
@@ -177,7 +180,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         for (terrain in GameBasics.Terrains.values) {
             val tileInfo = TileInfo()
             if (terrain.type == TerrainType.TerrainFeature) {
-                tileInfo.baseTerrain = terrain.occursOn!!.first()
+                tileInfo.baseTerrain = when {
+                    terrain.occursOn == null -> terrain.occursOn!!.first()
+                    else -> "Grassland"
+                }
                 tileInfo.terrainFeature = terrain.name
             } else tileInfo.baseTerrain = terrain.name
 

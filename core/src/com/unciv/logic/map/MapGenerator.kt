@@ -189,7 +189,7 @@ class MapGenerator() {
     fun addRandomTerrainFeature(tileInfo: TileInfo) {
         if (tileInfo.getBaseTerrain().canHaveOverlay && Math.random() > 0.7f) {
             val secondaryTerrains = GameBasics.Terrains.values
-                    .filter { it.type === TerrainType.TerrainFeature && it.occursOn!!.contains(tileInfo.baseTerrain) }
+                    .filter { it.type === TerrainType.TerrainFeature && it.occursOn != null && it.occursOn!!.contains(tileInfo.baseTerrain) }
             if (secondaryTerrains.any()) tileInfo.terrainFeature = secondaryTerrains.random().name
         }
     }

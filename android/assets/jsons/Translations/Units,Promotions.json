@@ -1288,6 +1288,9 @@
 		Czech:"[percent]% šance zabránit leteckým útokům"
 	}
 
+	"Requires Manhattan Project":{
+},
+
 	"6 tiles in every direction always visible":{
 		Italian:"6 caselle in ogni direzione sempre visibili"
 		Simplified_Chinese:"全方向6格视野范围"
@@ -1499,13 +1502,11 @@
 		Italian:"Missile guidato"
 		Czech:"Naváděná střela"
 	}
-
+*/
 	"Nuclear Missile":{
 		Italian:"Missile nucleare"
 		Czech:"Jaderná raketa"
 	}
-
-	*/
 
 ////// Great units
 

@@ -160,6 +160,9 @@
 		Czech:"Bažina"
 }
 
+	"Fallout":{
+}
+
 	"Oasis":{
 		Italian:"Oasi"
 		Russian:"Оазис"
@@ -1039,6 +1042,9 @@
 		Czech:"Odstranit bažinu"
 		Ukrainian:"Висушити болото"
 }
+
+	"Remove Fallout":{
+},
 
 	"Ancient ruins":{
 		Italian:"Antiche rovine"

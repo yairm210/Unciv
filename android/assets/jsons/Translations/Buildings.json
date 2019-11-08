@@ -456,6 +456,8 @@
 		Polish:"Akademia Narodowa"
 		Czech:"Národní Akademie"
 }
+	"Manhattan Project":{
+}
 
 	"Chichen Itza":{
 		Italian:"Chichen Itza"
@@ -493,6 +495,9 @@
 		Portuguese:"Duração de idade dourada aumentada em 50%"
 		Polish:"Czas trwania Złotego Wieku zwiększony o 50%"
 		Czech:"Délka Zlatého věku se prodloužila o 50%"
+}
+
+	"Enables nuclear weapon":{
 }
 
 	"Lighthouse":{

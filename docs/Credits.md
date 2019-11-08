@@ -95,6 +95,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
 * [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
+* [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
+* [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 
 ### Great People
 

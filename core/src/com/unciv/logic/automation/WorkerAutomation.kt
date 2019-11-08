@@ -176,6 +176,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == Constants.jungle -> "Remove Jungle"
             tile.terrainFeature == Constants.forest && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
             else -> tile.getTileResource().improvement
