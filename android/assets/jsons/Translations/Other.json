@@ -41,6 +41,7 @@
 		Russian:"Ожидание других игроков..."
 		Czech:"Čekáme na ostatní hráče..."
 		Ukrainian:"Очікування інших гравців…"
+		Spanish:"Esperando a otros jugadores"
 }
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -120,6 +121,7 @@
 		French:"tour"
 		Czech:"tah"
 		Ukrainian:"ходів"
+		Spanish:"turno"
 }
 
 	"Next unit":{
@@ -131,6 +133,7 @@
                 Russian:"Следующий юнит"
 		Czech:"Další jednotka"
 		Ukrainian:"Наступний підрозділ"
+		Spanish:"Siguente unidad"
 }
 
 	"Pick a policy":{
@@ -142,6 +145,7 @@
 		Russian:"Выбрать институт"
 		Czech:"Vyberme politiku"
 		Ukrainian:"Вибрати політику"
+		Spanish:"Elegir política"
 }
 
 /////// Unit
@@ -217,6 +221,7 @@
 		Czech:"Vzdálenost"
     		Russian:"Радиус"
     		Ukrainian:"Дальність"
+		Spanish:"Alcance"
 	}
 
 /////// Unit actions
@@ -310,6 +315,7 @@
 		Traditional_Chinese:"建造道路",
 		Czech:"Postavit cestu"
 		Ukrainian:"Побудувати дорогу"
+		Spanish:"Construir carretera"
 }
 
 	"Fortify":{
@@ -369,6 +375,7 @@
 		Russian:"В движении"
 		Czech:"Pohyb "
 		Ukrainian:"У русі"
+		Spanish:"En movimiento"
 }
 
 	"Set up":{ // For siege units
@@ -491,6 +498,7 @@
                 Russian:"Остановить исследование"
 		Czech:"Konec průzkumu"
 		Ukrainian:"Зупинити розвідку"
+		Spanish:"Detener exploración"
 }
 
 	"Pillage":{
@@ -548,6 +556,7 @@
 		Russian:"Создать [improvement]",
 		Czech:"Vybudovat [improvement]"
 		Ukrainian:"Створити [improvement]"
+		Spanish:"Crear [improvement]"
 }
 
 	"Start Golden Age":{
@@ -558,6 +567,7 @@
                 Russian:"Начать золотой век"
 		Czech:"Zahájit Zlatý věk"
 		Ukrainian:"Почати золотий вік"
+		Spanish:"Comienza Edad de Oro"
 }
 
 	"Yes":{
@@ -599,6 +609,7 @@
 		Traditional_Chinese:"變更為本城市所屬"
 		Czech:"Získat"
 		Ukrainian:"Отримати"
+		Spanish:"Adquirir"
 }
 
 /////// Stats / Basics ressources
@@ -706,7 +717,7 @@
 		Romanian:"EPOCA DE AUR"
 		German:"GOLDENES ZEITALTER"
 		Dutch:"GOUDEN EEUW"
-		Spanish:"EDAD DORADA"
+		Spanish:"EDAD DE ORO"
 		Simplified_Chinese:"黄金时代"
 		Traditional_Chinese:"黃金時代"
 		Portuguese:"IDADE DOURADA"
@@ -722,6 +733,7 @@
 		Czech:"Zlatý Věk"
 		Ukrainian:"Золотий вік"
 		Russian:"Золотой век"
+		Spanish:"Edad de Oro"
 }
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
@@ -732,6 +744,7 @@
 		Traditional_Chinese:"公元前[year]年"
 		Russian:"[year] до н.э."
 		Ukrainian:"до н.е."
+		Spanish:"[year] a. C."
 	}
 
 	"[year] AD":{ // Anno Domini
@@ -741,6 +754,7 @@
 		Traditional_Chinese:"公元[year]年"
 		Russian:"[year] н.э."
 		Ukrainian:"після н.е."
+		Spanish:"[year] d. C."
 	}
 
 /////// Menu table
@@ -848,6 +862,7 @@
 		Russian:"Сообщество"
 		Czech:"Komunita"
 		Ukrainian:"Громада"
+		Spanish:"Comunidad"
 }
 
 
@@ -956,7 +971,7 @@
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
 		German:"Möchten Sie [constructionName] für [buildingGoldCost] gold kaufen?"
 		Dutch:"Wilt u [constructionName] kopen voor [buildGoldCost] goud?"
-		Spanish:"¿Te gustaría comprar [constructionName] para [buildingGoldCost] gold?"
+		Spanish:"¿Quieres comprar [constructionName] para [buildingGoldCost] gold?"
 		Simplified_Chinese:"你想花费[buildingGoldCost]金钱购买[constructionName]吗？",
 		Traditional_Chinese:"你想花費[buildingGoldCost]金錢購買[constructionName]嗎？",
 		Portuguese:"Gostaria de comprar o [constructionName] por [buildingGoldCost] ouro?"
@@ -1005,6 +1020,7 @@
 		Portuguese:"Escolha uma melhoria"
                 Russian:"Выбрать улучшение"
 		Czech:"Vyberte vylepšení"
+		Spanish:"Elegir mejora"
 		Ukrainian:"Вибрати вдосконалення"
 }
 
@@ -1015,6 +1031,7 @@
 		Czech:"Poskytuje [resource]"
 		Russian:"Обеспечивает [resource]"
 		Ukrainian:"Забезпечити [resource]"
+		Spanish:"Proporciona [resource]"
 	}
 
 	"Replaces [improvement]":{
@@ -1024,6 +1041,7 @@
 		Czech:"Nahrazuje [improvement]"
 		Russian:"Заменяет [improvement]"
 		Ukrainian:"Замінити [improvement]"
+		Spanish:"Reemplaza [improvement]"
 	}
 
 	"Pick now!": { //sample needed
@@ -1035,6 +1053,7 @@
                 Russian:"Выбрать сейчас!"
 		Czech:"Zvolte teď!"
 		Ukrainian:"Вибрати зараз!"
+		Spanish:"¡Escoge ahora!"
 }
 
 	"Build [building]":{ // eg Build Granary
