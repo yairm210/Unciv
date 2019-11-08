@@ -79,6 +79,7 @@
 		Traditional_Chinese:"城市不能位於平原"
 		Czech:"Nesmí být na pláních."
 		German:"Darf nicht auf dem Flachland sein."
+		Spanish:"No debe estar en la llanura"
 }
 
 	"Stonehenge":{
@@ -102,6 +103,7 @@
 		Traditional_Chinese:"“時間能粉碎一切；所有事物中將在時流中衰老並被遺忘。”——亞里士多德"
 		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
+		Spanish:"'El tiempo desmorona las cosas. Todo envejece y cae olvidado bajo su poder.' - Aristóteles"
 }
 
 	/*
@@ -205,6 +207,7 @@
 		Czech:"'Knihovny jsou svatyně, ve kterých jsou zachovány a uloženy všechny relikvie starověkých světců, plné skutečné ctnosti, to vše bez klamů nebo podvodů.' - Sir Francis Bacon"
 		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
 		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
+		Spanish:"'Las bibliotecas son los santuarios donde reposan y se convervan las reliquias de los antiguos santos, todas llenas de auténtica virdud y libres de engaños e imposturas.' - Sir Francis Bacon"
 }
 
 	"Circus":{
@@ -244,6 +247,7 @@
 		Russian:"Стены Вавилона"
 		Czech:"Babylonské hradby"
 		German:"Babylons Mauern"
+		Spanish:"Murallas de Babilonia"
 }
 
 	"The Pyramids":{
@@ -267,6 +271,7 @@
 		Polish:"'Niech ból śmierci, którego zaznasz, wejdzie w me ciało. Jam jest bóg Tem, najznamienitsza część nieba, a chroni mnie moc, która na zawsze jest wśród wszystkich bogów.'– Księga Umarłych, przetłumaczona przez Sir Ernesta Alfreda Wallisa Budge'a"
 		Czech:"'Ó, ať bolesti smrti vstoupí do mého těla. Já jsem Bůh Tem a jsem především části oblohy, moc která mě chrání je ta, jenž je navždy se všemi bohy.' - Kniha mrtvých, přeložil sir Ernest Alfred Wallis Budge"
 		Russian:"'А вы даруйте мне, когда я есмь там, погребальные тризны, и воскурение ладана, и мази для умащения, и все чистые и прекрасные вещи, в которых обитает бог...' -  - из египетской 'Книги мертвых'" //civ 5 official
+		Spanish:"'Oh, no dejaré que los dolores de la muerte que os aflige entren en mi cuerpo. Porque soy el dios Atón, y me encuentro en la parte más destacada del firmamento, y el poder que me protege es el mismo que acompaña a los dioses para siempre.' - El Libro de los Muertos"
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -348,6 +353,7 @@
 		Russian:"Колосс Родосский"
 		Czech:"Rhodský kolos"
 		German:"Koloss"
+		Spanish:"Coloso"
 }
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -357,6 +363,7 @@
 		Polish:"'Człowiek ten stanął okrakiem nad światem jak Kolos, gdy my, ludzie malusieńcy, spod jego wielkich nóg zerkamy wokół, szukając sobie upodlonych grobów.'– William Szekspir, Juliusz Cezar"
 		Czech:"'Proč člověk, řídil úzký svět jako kolos, a my drobní muži kráčíme pod jeho obrovskýma nohama, abychom spočinuli v nečestných hrobech.' - William Shakespeare, Julius Caesar"
 		Russian:"'По миру тесному шагает колосс, а мы, ничтожные людишки, у исполинских ног его снуем и для себя могил бесславных ищем.' - Уильям Шекспир, 'Юлий Цезарь'"
+		Spanish:"'¡Claro, hombre! Él se pasea por el mundo, quel le parece estrecho, come un coloso, y nostros, míseros mortales, tenemos que caminar bajo sus piernas enormes y atisbar por todas partes para hallar una tumba ignominiosa.' - William Shakespeare: Julio César"
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -367,6 +374,7 @@
 		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
 		Russian:"+1 Золото от обрабатываемых водных клеток вокруг города"
 		Czech:"+1 zlata za každé pole s vodou v tomto městě"
+		Spanish:"+1 de oro por cada recurso anfibio explotado por la ciudad"
 }
 
 	"Temple":{
@@ -426,6 +434,7 @@
 		Polish:"'Starożytna Wyrocznia powiedziała, że jestem najmądrzejszym z Greków. Bo tylko ja ze wszystkich Greków wiem, że nic nie wiem.' - Sokrates"
 		Czech:"'Starověké Orakulum řeklo, že jsem nejmoudřejší ze všech Řeků. Je to proto, že já sám ze všech Řeků vím, že nic nevím' - Sókratés"
 		Russian:"'Он спросил, есть ли кто-нибудь на свете мудрее меня, и Пифия ему ответила, что никого нет мудрее... потому что я коли уж не знаю, то и не думаю, что знаю' - Сократ в «Апологии Сократа» Платона" //civ 5 official. Sounds bad
+		Spanish:"'El oráculo de Delfos ha dicho que soy el más sabio de todos los griegos. Eso es porque, de todos ellos, solo yo sé que no sé nada.' - Sócrates"
 }
 
 	"Free Social Policy":{
