@@ -547,7 +547,7 @@
 		Traditional_Chinese:"我們在廢墟中找到了倖存者 - [cityName]的人口增加了",
 		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]",
 		Czech:"V troskách jsme našli přeživší - populace se připojila k městu [cityName]"
-		Ukrainian:"В руїнах знайдено вцілілих - вони приєдналися до населення міста [cityName]"
+		Ukrainian:"В руїнах знайдено вцілілих — вони приєдналися до населення міста [cityName]"
 	}
 	"We have discovered the lost technology of [techName] in the ruins!":{
 		Italian:"Abbiamo scoperto i segreti della tecnologia perduta [techName]!"
