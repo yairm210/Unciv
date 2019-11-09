@@ -695,12 +695,16 @@
 	}
 
 	"[cityName] has been connected to your capital!":{
-		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
+		Italian:"Collegamento stabilito tra la Capitale e [cityName]!",
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
 		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
 		Traditional_Chinese:"[cityName]以建立與您的首都的連接！"
 		Ukrainian:"Місто [cityName] зʼєднано з нашею столицею!"
 		Russian:"От города [cityName] был проложен путь к столице!"
+	}
+
+	"[cityName] has been disconnected from your capital!":{
+		Italian:"Collegamento tra la Capitale e [cityName] interrotto!",
 	}
 
 	// Trade
@@ -736,6 +740,7 @@
 
 	"[tradeOffer] to [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
+		Traditional_Chinese:"與[otherCivName]的[tradeOffer]協議已經結束"
 	}
 
 
@@ -780,9 +785,11 @@
 
 	"We have allied with [nation].": {
 		Italian:"Abbiamo stretto un'alleanza con [nation]."
+		Traditional_Chinese:"我們已和 [nation] 結為同盟"
 	}
 
 	"We have lost alliance with [nation].": {
 		Italian:"Non siamo più alleati di [nation]."
+		Traditional_Chinese:"我們和 [nation] 不再是同盟關係"
 	}
 }

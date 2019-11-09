@@ -16,6 +16,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
+import kotlin.concurrent.thread
 
 class UnCivGame(val version: String) : Game() {
     var gameInfo: GameInfo = GameInfo()
@@ -56,7 +57,7 @@ class UnCivGame(val version: String) : Game() {
         }
         else setScreen(LanguagePickerScreen())
 
-        startMusic()
+        thread { startMusic() }
     }
 
     fun startMusic(){

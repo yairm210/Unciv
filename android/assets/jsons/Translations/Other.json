@@ -554,6 +554,7 @@
 		Italian:"Avvia Età dell'Oro"
 		French:"Commencer un Age d'Or"
 		Simplified_Chinese:"开启黄金时代"
+		Traditional_Chinese:"開啟黃金時代"
                 Russian:"Начать золотой век"
 		Czech:"Zahájit Zlatý věk"
 		Ukrainian:"Почати золотий вік"
@@ -2596,10 +2597,12 @@
 
 	"Destroy":{
 		Italian:"Distruggi"
+		Traditional_Chinese:"摧毀"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
 		Italian:"Questa opzione ti consente di radere immediatamente al suolo la città"
+		Traditional_Chinese:"摧毀一座城市會將城市夷為平地"
 }
 
 

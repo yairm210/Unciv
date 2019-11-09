@@ -671,14 +671,17 @@
 
 	"Reach 30 for friendship.":{
 		Italian:"Stringi un'amicizia superando il limite minimo di 30 Influenza."
+		Traditional_Chinese:"到達30以建立友誼"
 }
 
 	"Reach highest influence above 60 for alliance.":{
 		Italian:"Stringi un'alleanza superando 60 Influenza al di sopra di tutti."
+		Traditional_Chinese:"到達60以成為友邦同盟"
 }
 
 	"Ally: ":{
 		Italian:"Alleati: "
+		Traditional_Chinese:"同盟: "
 }
 
 ////// Trade
@@ -1614,6 +1617,7 @@
 		Portuguese:"Comida e cultura de cidades-estado amigas aumentada em 50%."
 		French:"La Nourriture et la Culture fournit par les cités-états sont augmentées de 50%"
 		Czech:"Jídlo a Kulturní body z spřátelených Městských států se zvednou o 50%."
+		Traditional_Chinese:"來自友好城邦的食物和文化增加50%"
 }
 
 	/*
