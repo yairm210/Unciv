@@ -179,6 +179,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck for Mint
 * [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
 * [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
+* [Fort](https://thenounproject.com/search/?q=castle&i=1697648) Castle by Adrien Coquet
  
 ### Medieval Era
 
