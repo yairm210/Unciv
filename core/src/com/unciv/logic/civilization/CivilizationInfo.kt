@@ -390,7 +390,7 @@ class CivilizationInfo {
 
         if (cities.isNotEmpty()) tech.nextTurn(nextTurnStats.science.toInt())
 
-        greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn())
+        if(isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
