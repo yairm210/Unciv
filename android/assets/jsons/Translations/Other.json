@@ -1330,7 +1330,7 @@
 		Traditional_Chinese:"[greatPerson]點數"
 	    	Russian:"Очки [greatPerson]",
 		Czech:"[greatPerson] - body"
-		Ukrainian:[greatPerson] очків""
+		Ukrainian:"[greatPerson] очків"
 		Ukrainian:"[greatPerson] очків"
 }
 
@@ -2220,10 +2220,6 @@
 		Italian:"Azione"
 		Czech:"Činnost"
 		Simplified_Chinese:"行动"
-<<<<<<< HEAD
-		Ukrainian:"Дія"
-=======
->>>>>>> upstream/master
 		Traditional_Chinese:"行動"
 		Ukrainian:"Дія"
 		Russian:"Действие"
@@ -3006,7 +3002,7 @@
 
 	"Clear terrain features":{
 		Italian:"Elimina caratteristica del terreno"
-		Simplified_Chinese:"清除地貌
+		Simplified_Chinese:"清除地貌"
 		Traditional_Chinese:"清除地貌"
 		Czech:"Smazat vlastnosti terénu"
 		Ukrainian:"Очистити особливості місцевості"
