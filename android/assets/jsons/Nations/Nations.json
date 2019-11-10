@@ -1057,7 +1057,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
-		defeated:"Why must you do such a thing?"
+		defeated:"Oh Nanna, have mercy on us, and have the enemy be merciful on us!"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
@@ -1274,6 +1274,34 @@
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
 		cities:["Helsinki"]
+	},
+	{
+		name:"Kuala Lumpur",
+		adjective:["Kuala Lumpur"],
+		cityStateType:"Cultured",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Today, the Malay people obey you, but do not think this is over..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,102,102],
+		cities:["Kuala Lumpur"]
+	},
+	{
+		name:"Manila",
+		adjective:["Manila"],
+		cityStateType:"Maritime",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Why would you do such a thing? What are you pursuing?"
+
+		outerColor:[0, 0, 0],
+		innerColor:[96,96,96],
+		cities:["Manila"]
 	},
 	
 	        
