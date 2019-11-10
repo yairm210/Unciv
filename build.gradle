@@ -128,7 +128,45 @@ project(":core") {
         implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
-}
+
+
+    // Taken from https://github.com/TomGrill/gdx-testing
+    project(":tests") {
+        apply plugin: "java"
+
+        test{
+            workingDir= file("../android/assets")
+        }
+
+        sourceSets.test.java.srcDirs = ["src/"]
+
+        dependencies {
+
+            /**
+             * If you do have some classes to test in os specific code you may want to uncomment
+             * some of these lines.
+             *
+             * BUT: I recommend to create seperate test sub projects for each platform. Trust me :)
+             *
+             */
+
+
+            compile project(":core")
+
+            compile "junit:junit:4.12"
+            compile "org.mockito:mockito-all:1.9.5"
+
+            compile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+            compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+
+            testCompile 'junit:junit:4.12'
+            testCompile "org.mockito:mockito-all:1.9.5"
+
+            testCompile "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+            testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
+            testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        }
+    }}
 
 tasks.eclipse.doLast {
     delete ".project"
