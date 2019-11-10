@@ -547,7 +547,7 @@
 		Traditional_Chinese:"我們在廢墟中找到了倖存者 - [cityName]的人口增加了",
 		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]",
 		Czech:"V troskách jsme našli přeživší - populace se připojila k městu [cityName]"
-		Ukrainian:"В руїнах знайдено вцілілих - вони приєдналися до населення міста [cityName]"
+		Ukrainian:"В руїнах знайдено вцілілих — вони приєдналися до населення міста [cityName]"
 	}
 	"We have discovered the lost technology of [techName] in the ruins!":{
 		Italian:"Abbiamo scoperto i segreti della tecnologia perduta [techName]!"
@@ -695,7 +695,7 @@
 	}
 
 	"[cityName] has been connected to your capital!":{
-		Italian:"Itinerario costruito tra la Capitale e [cityName]!",
+		Italian:"Collegamento stabilito tra la Capitale e [cityName]!",
 		Czech:"Město [cityName] bylo propojeno s naším hlavním městem!"
 		Simplified_Chinese:"[cityName]已建立与您的首都的连接！"
 		Traditional_Chinese:"[cityName]以建立與您的首都的連接！"
@@ -704,6 +704,7 @@
 	}
 
 	"[cityName] has been disconnected from your capital!":{
+		Italian:"Collegamento tra la Capitale e [cityName] interrotto!",
 	}
 
 	// Trade

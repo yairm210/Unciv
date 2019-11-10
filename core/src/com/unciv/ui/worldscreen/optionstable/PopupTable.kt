@@ -12,8 +12,7 @@ import com.unciv.ui.utils.*
 
 open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin) {
     init {
-        val tileTableBackground = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
-        background = tileTableBackground
+        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
         this.pad(20f)
         this.defaults().pad(5f)
