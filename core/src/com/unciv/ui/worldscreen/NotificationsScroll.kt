@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.getfillRoundRectBackground
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import kotlin.math.min
@@ -35,20 +36,20 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
 
             listItem.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(10f).pad(5f)
-            listItem.background = ImageGetter.getTableBackground()
-            listItem.add(label).pad(5f).padRight(10f)
+            listItem.add(label).padRight(10f)
 
             // using a large click area with no gap in between each message item.
             // this avoids accidentally clicking in between the messages, resulting in a map click
             val clickArea = Table().apply {
-                add(listItem).pad(3f)
+                add(listItem)
+                getfillRoundRectBackground(Color.WHITE,prefHeight.toInt(),prefHeight.toInt())
                 touchable = Touchable.enabled
                 onClick {
                     notification.action?.execute(worldScreen)
                 }
             }
 
-            notificationsTable.add(clickArea).right().row()
+            notificationsTable.add(clickArea).padBottom(5f).padRight(10f).right().row()
         }
         notificationsTable.pack()
         pack()

@@ -6,10 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.surroundWithCircle
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class TechButton(techName:String, val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
     val text= "".toLabel().apply { setAlignment(Align.center) }
@@ -17,7 +14,6 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
     init {
         touchable = Touchable.enabled
         defaults().pad(10f)
-        background = ImageGetter.getTableBackground()
         if (ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName, 60f))
 
@@ -30,11 +26,14 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         } else add().width(2f)
 
         if (isWorldScreen) rightSide.add(text).row()
-        else rightSide.add(text).height(25f).row()
+        else rightSide.add(text).size(150f,36f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
 
         add(rightSide)
+
+        getfillRoundRectBackground(Color.WHITE)
+
         pack()
     }
 
@@ -80,6 +79,6 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
                     .apply { color = Color.BLACK }.surroundWithCircle(30f))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
-        else rightSide.add(techEnabledIcons).width(150f)
+        else rightSide.add(techEnabledIcons)
     }
 }

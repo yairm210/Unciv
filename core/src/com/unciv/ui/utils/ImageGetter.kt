@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
@@ -14,6 +15,10 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
+import java.awt.RenderingHints
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -62,15 +67,6 @@ object ImageGetter {
         if(textureRegionDrawables.containsKey(fileName)) return textureRegionDrawables[fileName]!!
         else return textureRegionDrawables[whiteDotLocation]!!
     }
-
-    fun getTableBackground(tintColor: Color?=null): Drawable? {
-        val drawable = getDrawable("OtherIcons/civTableBackground")
-        drawable.minHeight=0f
-        drawable.minWidth=0f
-        if(tintColor==null) return drawable
-        return drawable.tint(tintColor)
-    }
-
 
     fun imageExists(fileName:String) = textureRegionDrawables.containsKey(fileName)
     fun techIconExists(techName:String) = imageExists("TechIcons/$techName")
@@ -272,3 +268,15 @@ object ImageGetter {
     }
 }
 
+fun Table.getfillRoundRectBackground(color: Color, radiusX: Int = prefHeight.toInt()/2,radiusY: Int = prefHeight.toInt()/2): Table {
+    val bi = BufferedImage(prefWidth.toInt(), prefHeight.toInt(), BufferedImage.TYPE_4BYTE_ABGR)
+    val g = bi.createGraphics()
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+    g.fillRoundRect(0, 0, prefWidth.toInt(), prefHeight.toInt(), radiusX, radiusY)
+    val buffer = ByteArrayOutputStream()
+    ImageIO.write(bi, "png", buffer)
+    val pixmap = Pixmap(buffer.toByteArray(), 0, buffer.toByteArray().size).apply { filter = Pixmap.Filter.BiLinear }
+    buffer.close()
+    g.dispose()
+    return this.apply { background = TextureRegionDrawable(TextureRegion(Texture(pixmap))).tint(color) }
+}

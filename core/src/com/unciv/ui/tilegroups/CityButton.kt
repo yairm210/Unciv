@@ -47,12 +47,12 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
-        airUnitTable.background = ImageGetter.getTableBackground(city.civInfo.nation.getOuterColor())
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
         airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel(secondarycolor,14))
         add(airUnitTable).row()
+        airUnitTable.getfillRoundRectBackground(city.civInfo.nation.getOuterColor())
     }
 
     private fun belongsToViewingCiv() = city.civInfo == UnCivGame.Current.worldScreen.viewingCiv
@@ -92,7 +92,6 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getTableBackground(city.civInfo.nation.getOuterColor())
 
         if (city.resistanceCounter > 0) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
@@ -136,7 +135,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             nationIcon.color = secondaryColor
             iconTable.add(nationIcon).size(20f).padRight(10f)
         }
-        return iconTable
+        return iconTable.apply { getfillRoundRectBackground(city.civInfo.nation.getOuterColor(), prefHeight.toInt(), prefHeight.toInt()) }
     }
 
     private fun moveButtonDown() {
