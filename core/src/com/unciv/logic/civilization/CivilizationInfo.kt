@@ -58,6 +58,7 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
+    var allyCivName = ""
 
     //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -87,6 +88,7 @@ class CivilizationInfo {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
+        toReturn.allyCivName = allyCivName
         for (diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
         toReturn.cities = cities.map { it.clone() }
@@ -126,6 +128,10 @@ class CivilizationInfo {
 
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
+    fun isPlayerOneCityChallenger() = (
+            playerType==PlayerType.Human && 
+            !cities.isEmpty() &&
+            gameInfo.gameParameters.oneCityChallenge)
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
     fun isCityState(): Boolean = nation.isCityState()
@@ -278,7 +284,7 @@ class CivilizationInfo {
             leaderName += " (" + "AI".tr() + ")"
         else if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)
             leaderName += " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
-        else leaderName += " (" + "Human".tr() + " - " + UnCivGame.Current.settings.userName + ")"
+        else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
         return leaderName
     }
     //endregion
@@ -321,6 +327,9 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
+    }
+
+    fun updateSightAndResources() {
         updateViewableTiles()
         updateHasActiveGreatWall()
         updateDetailedCivResources()
@@ -365,7 +374,7 @@ class CivilizationInfo {
         policies.endTurn(nextTurnStats.culture.toInt())
 
         // disband units until there are none left OR the gold values are normal
-        if(!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
+        if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
                 var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
                 if (civMilitaryUnits.isNotEmpty()) {
@@ -381,7 +390,7 @@ class CivilizationInfo {
 
         if (cities.isNotEmpty()) tech.nextTurn(nextTurnStats.science.toInt())
 
-        greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn())
+        if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
@@ -389,7 +398,8 @@ class CivilizationInfo {
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
-        diplomacy.values.forEach{it.nextTurn()}
+        diplomacy.values.forEach { it.nextTurn() }
+        updateAllyCivForCityState()
         updateHasActiveGreatWall()
     }
 
@@ -455,6 +465,7 @@ class CivilizationInfo {
         if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
         gold -= giftAmount
         otherCiv.getDiplomacyManager(this).influence += giftAmount/10
+        otherCiv.updateAllyCivForCityState()
         updateStatsForNextTurn()
     }
 
@@ -465,6 +476,37 @@ class CivilizationInfo {
                 .random()
         placeUnitNearTile(city.location, militaryUnit.name)
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
+    }
+
+    fun getAllyCiv(): String {
+        return allyCivName
+    }
+
+    fun updateAllyCivForCityState() {
+        var newAllyName = ""
+        if (!isCityState()) return
+        val maxInfluence = diplomacy.filter{ !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }.maxBy { it.value.influence }
+        if (maxInfluence != null && maxInfluence.value.influence >= 60) {
+            newAllyName = maxInfluence.key
+        }
+
+        if (allyCivName != newAllyName) {
+            val oldAllyName = allyCivName
+            allyCivName = newAllyName
+
+            if (newAllyName != "") {
+                val newAllyCiv = gameInfo.getCivilization(newAllyName)
+                newAllyCiv.addNotification("We have allied with [${civName}].", Color.GREEN)
+                newAllyCiv.updateViewableTiles()
+                newAllyCiv.updateDetailedCivResources()
+            }
+            if (oldAllyName != "") {
+                val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
+                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", Color.RED)
+                oldAllyCiv.updateViewableTiles()
+                oldAllyCiv.updateDetailedCivResources()
+            }
+        }
     }
 
     //endregion

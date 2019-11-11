@@ -5,6 +5,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.ui.saves.Gzip
 import java.io.BufferedReader
 import java.io.DataOutputStream
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -12,7 +13,7 @@ import java.nio.charset.StandardCharsets
 
 class DropBox(){
 
-    fun dropboxApi(url:String, data:String="",contentType:String="",dropboxApiArg:String=""):String {
+    fun dropboxApi(url:String, data:String="",contentType:String="",dropboxApiArg:String=""): InputStream? {
 
         with(URL(url).openConnection() as HttpURLConnection) {
             requestMethod = "POST"  // default is GET
@@ -32,16 +33,12 @@ class DropBox(){
                     outputStream.flush()
                 }
 
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val output = reader.readText()
-
-                println(output)
-                return output
+                return inputStream
             } catch (ex: Exception) {
                 println(ex.message)
                 val reader = BufferedReader(InputStreamReader(errorStream))
                 println(reader.readText())
-                return ""
+                return null
             }
         }
     }
@@ -52,20 +49,26 @@ class DropBox(){
         return GameSaver().json().fromJson(FolderList::class.java,response)
     }
 
-    fun downloadFile(fileName:String):String{
+    fun downloadFile(fileName:String): InputStream {
         val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
                 contentType = "text/plain",dropboxApiArg = "{\"path\":\"$fileName\"}")
-        return response
+        return response!!
+    }
+
+    fun downloadFileAsString(fileName:String): String {
+        val inputStream = downloadFile(fileName)
+        val text = BufferedReader(InputStreamReader(inputStream)).readText()
+        return text
     }
 
     fun uploadFile(fileName: String, data: String, overwrite:Boolean=false){
         val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
-        val response = dropboxApi("https://content.dropboxapi.com/2/files/upload",
+        dropboxApi("https://content.dropboxapi.com/2/files/upload",
                 data,"application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
     }
 
     fun deleteFile(fileName:String){
-        val response = dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
+        dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
                 "{\"path\":\"$fileName\"}","application/json")
     }
 
@@ -90,7 +93,7 @@ class OnlineMultiplayer(){
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = DropBox().downloadFile(getGameLocation(gameId))
+        val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
         return GameSaver().gameInfoFromString(Gzip.unzip(zippedGameInfo))
     }
 }

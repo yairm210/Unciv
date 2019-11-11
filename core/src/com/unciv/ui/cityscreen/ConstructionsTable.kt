@@ -46,7 +46,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             pickProductionButton.background = ImageGetter.getBackground(Color.BLACK)
 
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
-        pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
+        pickProductionButton.add(buttonText.toLabel())
 
         if(rejectionReason=="" && UnCivGame.Current.worldScreen.isPlayersTurn) { // no rejection reason means we can build it!
             pickProductionButton.onClick {
@@ -63,7 +63,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         else {
             pickProductionButton.color = Color.GRAY
             pickProductionButton.row()
-            pickProductionButton.add(rejectionReason.toLabel().setFontColor(Color.RED)).colspan(pickProductionButton.columns)
+            pickProductionButton.add(rejectionReason.toLabel(Color.RED)).colspan(pickProductionButton.columns)
         }
 
         if(construction==cityScreen.city.cityConstructions.currentConstruction)
@@ -75,7 +75,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if(list.isEmpty()) return
         val titleTable = Table()
         titleTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        titleTable.add(title.toLabel().setFontSize(24))
+        titleTable.add(title.toLabel(fontSize = 24))
 
         addSeparator()
         add(titleTable).fill().row()
@@ -185,7 +185,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     .pad(5f)
 
             val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-            currentConstructionTable.add(buildingText.toLabel().setFontColor(Color.WHITE)).row()
+            currentConstructionTable.add(buildingText.toLabel()).row()
         }
         else{
             currentConstructionTable.add() // no icon

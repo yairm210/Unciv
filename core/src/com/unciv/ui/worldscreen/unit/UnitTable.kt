@@ -41,13 +41,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         add(VerticalGroup().apply {
             pad(5f)
 
-            deselectUnitButton.add(Label("X",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
+            deselectUnitButton.add(Label("X",CameraStageBaseScreen.skin)).pad(10f)
             deselectUnitButton.pack()
             deselectUnitButton.touchable = Touchable.enabled
             deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true;this@UnitTable.isVisible=false }
             addActor(deselectUnitButton)
 
-            helpUnitButton.add(Label("?",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
+            helpUnitButton.add(Label("?",CameraStageBaseScreen.skin)).pad(10f)
             helpUnitButton.pack()
             helpUnitButton.touchable = Touchable.enabled
             helpUnitButton.onClick {

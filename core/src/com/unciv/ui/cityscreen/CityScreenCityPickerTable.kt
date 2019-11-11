@@ -1,13 +1,15 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 
 class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
@@ -34,12 +36,12 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         }
 
         if(city.isCapital()){
-            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star").tint(Color.LIGHT_GRAY))
+            val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color= Color.LIGHT_GRAY }
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
         if(city.isPuppet){
-            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Puppet").tint(Color.LIGHT_GRAY))
+            val starImage = ImageGetter.getImage("OtherIcons/Puppet").apply { color= Color.LIGHT_GRAY }
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
@@ -49,8 +51,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
         }
 
-        val currentCityLabel = Label(city.name, CameraStageBaseScreen.skin)
-        currentCityLabel.setFontSize(30)
+        val currentCityLabel = city.name.toLabel(fontSize = 30)
         currentCityLabel.onClick {
             val editCityNamePopup = PopupTable(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)

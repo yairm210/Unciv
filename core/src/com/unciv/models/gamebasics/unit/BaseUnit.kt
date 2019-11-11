@@ -140,6 +140,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
+        if (name == Constants.settler && civInfo.isPlayerOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
     }
 

@@ -164,7 +164,7 @@
 	{
 		columnNumber: 5,
 		era:"Medieval",
-		techCost: 250,
+		techCost: 275,
 		buildingCost:160,
 		wonderCost:400,
 		techs:[
@@ -199,12 +199,13 @@
 	{
 		columnNumber: 6,
 		era:"Medieval",
-		techCost: 440, 
+		techCost: 485, 
 		buildingCost:200,
 		wonderCost:500,
 		techs:[
 			{
 				name:"Compass",
+				cost:375,
 				row:1,
 				prerequisites:["Optics","Theology"],
 				quote:"'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes"
@@ -246,7 +247,7 @@
 	{
 		columnNumber: 7,
 		era:"Renaissance",
-		techCost: 650, 
+		techCost: 780, 
 		buildingCost:250,
 		wonderCost:625,
 		techs:[
@@ -286,7 +287,7 @@
 	{
 		columnNumber: 8,
 		era:"Renaissance",
-		techCost: 900, 
+		techCost: 1150, 
 		buildingCost:300,
 		wonderCost:750,
 		techs:[
@@ -325,7 +326,7 @@
 	{
 		columnNumber: 9,
 		era:"Industrial",
-		techCost: 1300,
+		techCost: 1600,
 		buildingCost:360,
 		wonderCost:920,
 		techs:[
@@ -370,7 +371,7 @@
 	{
 		columnNumber: 10,
 		era:"Industrial",
-		techCost: 1680,
+		techCost: 2350,
 		buildingCost:500,
 		wonderCost:1060,
 		techs:[
@@ -404,7 +405,7 @@
 	{
 		columnNumber: 11,
 		era:"Modern",
-		techCost: 3000,
+		techCost: 3100,
 		buildingCost:500,
 		wonderCost:1250,
 		techs:[
@@ -476,7 +477,7 @@
 	{
 		columnNumber: 13,
 		era:"Information",
-		techCost: 5330,
+		techCost: 5100,
 		buildingCost:500,
 		wonderCost:1250,
 		techs:[
@@ -509,7 +510,7 @@
 	{
 		columnNumber: 14,
 		era:"Information",
-		techCost: 6850,
+		techCost: 6400,
 		buildingCost:750,
 		wonderCost:2000,
 		techs:[
@@ -543,7 +544,7 @@
 	{
 		columnNumber: 15,
 		era:"Future",
-		techCost: 8182,
+		techCost: 7700,
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[
@@ -579,7 +580,7 @@
 	{
 		columnNumber: 16,
 		era:"Future",
-		techCost: 9500,
+		techCost: 8800,
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[

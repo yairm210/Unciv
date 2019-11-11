@@ -337,6 +337,7 @@ class Building : NamedStats(), IConstruction{
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
         if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
         if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
         if ("2 free great scientists appear" in uniques) {
             civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
