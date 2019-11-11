@@ -374,7 +374,7 @@ class CivilizationInfo {
         policies.endTurn(nextTurnStats.culture.toInt())
 
         // disband units until there are none left OR the gold values are normal
-        if(!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
+        if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
                 var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
                 if (civMilitaryUnits.isNotEmpty()) {
@@ -390,7 +390,7 @@ class CivilizationInfo {
 
         if (cities.isNotEmpty()) tech.nextTurn(nextTurnStats.science.toInt())
 
-        greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn())
+        if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
@@ -398,7 +398,7 @@ class CivilizationInfo {
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
-        diplomacy.values.forEach{it.nextTurn()}
+        diplomacy.values.forEach { it.nextTurn() }
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
     }
