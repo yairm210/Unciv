@@ -163,8 +163,8 @@ project(":core") {
             testImplementation "org.mockito:mockito-all:1.9.5"
 
             testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-            testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
-            testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+            testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
+            testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         }
     }}
 
