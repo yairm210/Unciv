@@ -672,16 +672,19 @@
 	"Reach 30 for friendship.":{
 		Italian:"Stringi un'amicizia superando il limite minimo di 30 Influenza."
 		Traditional_Chinese:"到達30以建立友誼"
+		Czech:"Získejte vliv 30 a více pro dosažení přátelství."
 }
 
 	"Reach highest influence above 60 for alliance.":{
 		Italian:"Stringi un'alleanza superando 60 Influenza al di sopra di tutti."
 		Traditional_Chinese:"到達60以成為友邦同盟"
+		Czech:"Získejte vliv 60 a více pro dosažení aliance."
 }
 
 	"Ally: ":{
 		Italian:"Alleati: "
 		Traditional_Chinese:"同盟: "
+		Czech:"Aliance: "
 }
 
 ////// Trade
@@ -1610,6 +1613,7 @@
 
 	"Ramkhamhaeng":{
 		Italian:"Ramkhamhaeng" //Same as in Italian
+		Czech: "Ram Khamhaeng"
 }
 
 	"Food and Culture from Friendly City-States increased by 50%.":{

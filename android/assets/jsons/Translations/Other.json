@@ -2600,11 +2600,13 @@
 	"Destroy":{
 		Italian:"Distruggi"
 		Traditional_Chinese:"摧毀"
+		Czech:"Zničit"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
 		Italian:"Questa opzione ti consente di radere immediatamente al suolo la città"
 		Traditional_Chinese:"摧毀一座城市會將城市夷為平地"
+		Czech:"Zničení města okamžitě srovná město se zemí."
 }
 
 
