@@ -189,6 +189,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.containsUnfinishedGreatImprovement() -> null
             tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
