@@ -1331,6 +1331,7 @@
 	    	Russian:"Очки [greatPerson]",
 		Czech:"[greatPerson] - body"
 		Ukrainian:"[greatPerson] очків"
+		Ukrainian:"[greatPerson] очків"
 }
 
 	"Great person points":{ // e.g ?
@@ -1731,13 +1732,13 @@
 		Ukrainian:"[percentage] до захисту підрозділу"
 }
 
-	"Бонус для нападників":{
+	"Attacker Bonus":{
 		Italian:"Bonus attaccante"
 		Simplified_Chinese:"主动攻击加成"
 		Traditional_Chinese:"主動攻擊加成"
 		Czech:"Útočný bonus"
 		Russian:"Бонус атакующего"
-		Ukrainian:""
+		Ukrainian:"Бонус нападника"
 }
 
 	"Landing":{
@@ -1850,6 +1851,7 @@
 		Traditional_Chinese:"人民為您英明領導下取得的豐功偉業歡欣鼓舞，您的帝國進入了黃金時代！",
 		Czech:"Naši občané jsou spokojeni s vaší vládou po dlouhou dobu díky čemuž říše vstoupila do Zlatého věku!"
 		Russian:"Граждане настолько счастливы при вашей власти, что ваша империя вступает в золотой век!"
+
 		Ukrainian:"Ваші громадяни були задоволені вашим правлінням так довго, що імперія вступає в Золотий вік!"
 }
 
@@ -2035,7 +2037,7 @@
 		Traditional_Chinese:"實際產出"
 		Czech:"Celkem"
 		Russian:"Итоговые"
-		Ukrainian:"Фінал"
+		Ukrainian:"Остаточні"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
@@ -2601,11 +2603,13 @@
 	"Destroy":{
 		Italian:"Distruggi"
 		Traditional_Chinese:"摧毀"
+		Czech:"Zničit"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
 		Italian:"Questa opzione ti consente di radere immediatamente al suolo la città"
 		Traditional_Chinese:"摧毀一座城市會將城市夷為平地"
+		Czech:"Zničení města okamžitě srovná město se zemí."
 }
 
 

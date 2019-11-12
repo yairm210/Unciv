@@ -644,7 +644,7 @@
 		Traditional_Chinese:"大競技場"
 		Portuguese:"Circo Máximo" //can also be spelled normally as Circus Maximus altough that (Circo Máximo) is written in normal portuguese not latin
 		German:"Circus Maximus"
-		Polish:"Circus Maximus"
+		Polish:"Cyrk maksymalny"
 		Czech:"Circus Maximus"
 }
 
@@ -773,7 +773,7 @@
 		Simplified_Chinese:"兵马俑"
 		Traditional_Chinese:"兵馬俑"
 		French:"Armée de Terre Cuite"
-		Polish:"Terakotowa Armia"
+		Polish:"Armia z terakoty"
 		Russian:"Терракотовая армия"
 		Czech:"Terakotová armáda"
 		German:"Terrakotta Armee"
@@ -1954,15 +1954,18 @@
 	
 	"Brandenburg Gate":{
 		Italian:"Porta di Brandeburgo"
+		Czech:"Brandenburgská brána"
 	}
 	
 	"Free Great General appears near the Capital":{
 		Italian:"Appare un Grande Generale vicino alla Capitale"
         Traditional_Chinese:"免費的大軍事家已經在首都附近出現"
+		Czech:"Velký Generál zdarma se objevil poblíž hlavního města"
 	}
 	
 	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
-		Italian:"'La pallida morte batte ugualmente alla porta del povero e al palazzo del re.' - Orazio"
+		Italian:"'La pallida morte batte ugualmente alla porta del povero e al palazzo del re.' - Orazio",
+		Czech:"'Bledá smrt klepe u vrat chudáka stejně jako na královský palác.' - Horatius"
 	}
 
 	"Broadcast Tower":{
@@ -2334,6 +2337,7 @@
 		Traditional_Chinese:"“奇蹟的不是那片星海如此遼闊，而是人類竟然成功的測量了它。”——阿納托爾·法郎士（法國小說家）"
 		Czech:"'Je zázrakem, nikoliv to že je noční obloha naplněná nekonečnem hvězd, ale že je člověk dokázal změřit' - Anatole France"
 		Russian:"'Чудо не в том, что звездный небосклон столь обширен, но в том, что человек сумел измерить его' -  Анатоль Франс"
+		Polish:"Zadziwiające jest to, że pole gwiazd nie jest tak ogromne, ale że człowiek je zmierzył. - Anatole France"
 }
 
 	"2 free great scientists appear":{

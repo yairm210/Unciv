@@ -165,7 +165,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             innerTable.add(musicVolumeSlider).row()
         }
         else{
-            val downloadMusicButton = TextButton("Download music",CameraStageBaseScreen.skin)
+            val downloadMusicButton = TextButton("Download music".tr(),CameraStageBaseScreen.skin)
             innerTable.add(downloadMusicButton).colspan(2).row()
             val errorTable = Table()
             innerTable.add(errorTable).colspan(2).row()
