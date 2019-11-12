@@ -24,9 +24,10 @@ task debug(dependsOn: classes, type: JavaExec) {
 }
 
 task dist(type: Jar) {
-    from files(sourceSets.main.output.classesDirs)
     from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
+    from files(sourceSets.main.output.classesDirs)
+    // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
+    from {configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
     from files(project.assetsDir)
  
     manifest {
@@ -55,6 +56,6 @@ task afterEclipseImport(description: "Post processing after project generation",
 }
 
 dependencies {
-    compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-    compile project(path: ':core')
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    implementation project(path: ':core')
 }

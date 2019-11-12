@@ -675,14 +675,14 @@
 		Ukrainian:"Розірвано альянс з містом-державою [name]"
 	}
 
-	"[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
-		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
-		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
-		Russian:"[civName] передал нам в дар [untiName] около города [cityName]!"
-		Simplified_Chinese:"[civName]将[cityName]附近的[untiName]赠予我们！",
-		Traditional_Chinese:"[civName]將[cityName]附近的[untiName]贈與我們！",
-		Czech:"Civilizace [civName] nám darovala jednotku [untiName] poblíž města [cityName]"
-		Ukrainian:"Цивілізація [civName] дарує підрозділ [untiName] біля міста [cityName]"
+	"[civName] gave us a [unitName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
+		Italian:"[civName] ci ha dato [unitName] come regalo vicino a [cityName]!"
+		French:"[civName] nous offre un(e) [unitName] prêt de [cityName]!"
+		Russian:"[civName] передал нам в дар [unitName] около города [cityName]!"
+		Simplified_Chinese:"[civName]将[cityName]附近的[unitName]赠予我们！",
+		Traditional_Chinese:"[civName]將[cityName]附近的[unitName]贈與我們！",
+		Czech:"Civilizace [civName] nám darovala jednotku [unitName] poblíž města [cityName]"
+		Ukrainian:"Цивілізація [civName] дарує підрозділ [unitName] біля міста [cityName]"
 	}
 
 	"[civName] has denounced us!":{
@@ -704,7 +704,8 @@
 	}
 
 	"[cityName] has been disconnected from your capital!":{
-		Italian:"Collegamento tra la Capitale e [cityName] interrotto!",
+		Italian:"Collegamento tra la Capitale e [cityName] interrotto!"
+		Czech:"Město [cityName] bylo odpojeno od našeho hlavního města!"
 	}
 
 	// Trade
@@ -734,13 +735,14 @@
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
 		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось",
-		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
+		Czech:"[tradeOffer] od civilizace [otherCivName] je u konce."
 		Ukrainian:"Договір [tradeOffer] з [otherCivName] закінчено"
 	}
 
 	"[tradeOffer] to [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
 		Traditional_Chinese:"與[otherCivName]的[tradeOffer]協議已經結束"
+		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 	}
 
 
@@ -786,10 +788,12 @@
 	"We have allied with [nation].": {
 		Italian:"Abbiamo stretto un'alleanza con [nation]."
 		Traditional_Chinese:"我們已和 [nation] 結為同盟"
+		Czech:"Uzavřeli jsme alianci s civilizací [nation]."
 	}
 
 	"We have lost alliance with [nation].": {
 		Italian:"Non siamo più alleati di [nation]."
 		Traditional_Chinese:"我們和 [nation] 不再是同盟關係"
+		Czech:"Ztratili jsme alianci s civilizací [nation]."
 	}
 }
