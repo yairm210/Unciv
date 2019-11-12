@@ -384,6 +384,13 @@ class MapUnit {
         currentMovement = getMaxMovement().toFloat()
         attacksThisTurn=0
         due = true
+
+        // Wake sleeping units if there's an enemy nearby
+        if(action==Constants.unitActionSleep && currentTile.getTilesInDistance(2).any {
+                    it.militaryUnit!=null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
+                })
+            action=null
+
         val tileOwner = getTile().getOwner()
         if(tileOwner!=null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
@@ -460,7 +467,7 @@ class MapUnit {
 
         actions.add {
             val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random()
-            if (!civInfo.isCityState() || chosenUnit != Constants.settler) { //City states don't get settler from ruins
+            if (!(civInfo.isCityState() || civInfo.isPlayerOneCityChallenger()) || chosenUnit != Constants.settler) { //City states and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)
                 civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
             }

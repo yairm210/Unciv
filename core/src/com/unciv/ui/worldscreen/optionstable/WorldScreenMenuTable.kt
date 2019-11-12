@@ -13,7 +13,6 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -98,17 +97,17 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
         multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
 
-        multiplayerPopup.addButton("Copy User Id"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
+        multiplayerPopup.addButton("Copy User ID"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
 
         multiplayerPopup.addGoodSizedLabel("Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.").row()
 
-        val copyGameIdButton = multiplayerPopup.addButton("Copy game ID".tr()) {
+        val copyGameIdButton = multiplayerPopup.addButton("Copy Game ID".tr()) {
             Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }.apply { row() }
         if(!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             copyGameIdButton.actor.disable()
 
         multiplayerPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button").row()
-        val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
+        val badGameIdLabel = "".toLabel(Color.RED)
         badGameIdLabel.isVisible = false
         multiplayerPopup.addButton("Join Game") {
             val gameId = Gdx.app.clipboard.contents
@@ -142,6 +141,11 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
         }
 
         addButton("Github"){
+            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            remove()
+        }
+
+        addButton("Patreon"){
             Gdx.net.openURI("https://github.com/yairm210/UnCiv")
             remove()
         }

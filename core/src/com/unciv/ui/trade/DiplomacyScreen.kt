@@ -93,11 +93,27 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         diplomacyTable.add(("Type: ".tr() + otherCiv.getCityStateType().toString().tr()).toLabel()).row()
-        diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
-
+        otherCiv.updateAllyCivForCityState()
+        val ally = otherCiv.getAllyCiv()
+        if (ally != "")
+        {
+            diplomacyTable.add(("Ally: ".tr() + ally!!.tr() + " " + "Influence: ".tr()
+                    + otherCiv.getDiplomacyManager(ally).influence.toString().tr()).toLabel()).row()
+        }
+        val nextLevelString: String
+        if (otherCivDiplomacyManager.influence.toInt() < 30) {
+            nextLevelString = "Reach 30 for friendship."
+        } else if (ally == viewingCiv.civName) {
+            nextLevelString = ""
+        } else {
+            nextLevelString = "Reach highest influence above 60 for alliance."
+        }
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
+        if (nextLevelString != "") {
+            diplomacyTable.add(nextLevelString.tr().toLabel()).row()
+        }
 
         val friendBonusText = when (otherCiv.getCityStateType()) {
             CityStateType.Cultured -> ("Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence").tr()
@@ -106,14 +122,16 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence".tr()
         }
 
-        val friendBonusLabel = friendBonusText.toLabel()
-        diplomacyTable.add(friendBonusLabel).row()
+        val friendBonusLabelColor:Color
         if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
-            friendBonusLabel.setFontColor(Color.GREEN)
+            friendBonusLabelColor = Color.GREEN
             val turnsToRelationshipChange = otherCivDiplomacyManager.influence.toInt() - 30 + 1
             diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel()).row()
         } else
-            friendBonusLabel.setFontColor(Color.GRAY)
+            friendBonusLabelColor = Color.GRAY
+
+        val friendBonusLabel = friendBonusText.toLabel(friendBonusLabelColor)
+        diplomacyTable.add(friendBonusLabel).row()
 
 
         diplomacyTable.addSeparator()
@@ -158,7 +176,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
-        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
         val translatedNation = otherCiv.getTranslatedNation()
         if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
             diplomacyTable.add(translatedNation.hateHello.toLabel()).row()
@@ -262,7 +280,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if (modifier.value > 0) text += "+"
             text += modifier.value.roundToInt()
             val color = if (modifier.value < 0) Color.RED else Color.GREEN
-            diplomacyModifiersTable.add(text.toLabel().setFontColor(color)).row()
+            diplomacyModifiersTable.add(text.toLabel(color)).row()
         }
         return diplomacyModifiersTable
     }
@@ -300,7 +318,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             else -> Color.RED
         }
 
-        relationshipTable.add(relationshipText.toLabel().setFontColor(relationshipColor))
+        relationshipTable.add(relationshipText.toLabel(relationshipColor))
         return relationshipTable
     }
 

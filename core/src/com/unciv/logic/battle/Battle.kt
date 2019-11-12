@@ -100,13 +100,20 @@ class Battle(val gameInfo:GameInfo) {
     private fun postBattleNotifications(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (attacker.getCivInfo() != defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
-                    if (attacker !is CityCombatant && attacker.isDefeated()) " {was destroyed while attacking}"
-                    else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
+                    if (attacker !is CityCombatant && attacker.isDefeated()) " was destroyed while attacking"
+                    else " has " + (
+                            if (defender.isDefeated())
+                                if (defender.getUnitType() == UnitType.City && attacker.isMelee())
+                                    "captured"
+                                else "destroyed"
+                            else "attacked")
             val attackerString =
                     if (attacker.getUnitType() == UnitType.City) "Enemy city [" + attacker.getName() + "]"
                     else "An enemy [" + attacker.getName() + "]"
             val defenderString =
-                    if (defender.getUnitType() == UnitType.City) " [" + defender.getName() + "]"
+                    if (defender.getUnitType() == UnitType.City)
+                        if (defender.isDefeated() && attacker.isRanged()) " the defence of [" + defender.getName() + "]"
+                        else " [" + defender.getName() + "]"
                     else " our [" + defender.getName() + "]"
             val notificationString = attackerString + whatHappenedString + defenderString
             defender.getCivInfo().addNotification(notificationString, attackedTile.position, Color.RED)
@@ -228,10 +235,10 @@ class Battle(val gameInfo:GameInfo) {
         }
         city.hasJustBeenConquered = true
 
-        if (attacker.getCivInfo().isPlayerCivilization())
+        if (attackerCiv.isPlayerCivilization())
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         else {
-            city.puppetCity(attacker.getCivInfo())
+            city.puppetCity(attackerCiv)
             if (city.population.population < 4) {
                 city.annexCity()
                 city.isBeingRazed = true
@@ -247,9 +254,8 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
-        // barbarians don't capture civilians, City-states don't capture settlers
-        if(attacker.getCivInfo().isBarbarian()
-                || (attacker.getCivInfo().isCityState() && defender.getName()==Constants.settler)){
+        // barbarians don't capture civilians
+        if(attacker.getCivInfo().isBarbarian()){
             defender.takeDamage(100)
             return
         }
@@ -263,8 +269,16 @@ class Battle(val gameInfo:GameInfo) {
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
 
-        capturedUnit.civInfo.removeUnit(capturedUnit)
-        capturedUnit.assignOwner(attacker.getCivInfo())
+        // Apparently in Civ V, captured settlers are converted to workers.
+        if(capturedUnit.name==Constants.settler){
+            val tile = capturedUnit.getTile()
+            capturedUnit.destroy()
+            attacker.getCivInfo().placeUnitNearTile(tile.position, Constants.worker)
+        }
+        else {
+            capturedUnit.civInfo.removeUnit(capturedUnit)
+            capturedUnit.assignOwner(attacker.getCivInfo())
+        }
         capturedUnit.updateVisibleTiles()
     }
 

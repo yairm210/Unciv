@@ -68,6 +68,6 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
 
     fun selectCity(city: CityInfo?) : Boolean {
         if (city == null) return false
-        return worldScreen.bottomBar.unitTable.citySelected(city)
+        return worldScreen.bottomUnitTable.citySelected(city)
     }
 }

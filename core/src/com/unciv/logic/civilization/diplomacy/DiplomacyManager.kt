@@ -248,7 +248,9 @@ class DiplomacyManager() {
             for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration > 0 }) {
                 offer.duration--
                 if (offer.duration == 0) {
-                    civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", null, Color.GOLD)
+                    if(offer in trade.theirOffers)
+                        civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", null, Color.GOLD)
+                    else civInfo.addNotification("[" + offer.name + "] to [$otherCivName] has ended", null, Color.GOLD)
 
                     civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
                     civInfo.updateDetailedCivResources() // if they were giving us resources
@@ -340,6 +342,26 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+        if (otherCiv.isCityState()) otherCiv.updateAllyCivForCityState()
+
+        if (!civInfo.isCityState()) {
+            for (thirdCiv in civInfo.getKnownCivs()) {
+                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == civInfo.civName
+                        && thirdCiv.knows(otherCiv)
+                        && thirdCiv.getDiplomacyManager(otherCiv).canDeclareWar()) {
+                    thirdCiv.getDiplomacyManager(otherCiv).declareWar()
+                }
+            }
+        }
+        if (!otherCiv.isCityState()) {
+            for (thirdCiv in otherCiv.getKnownCivs()) {
+                if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
+                        && thirdCiv.knows(civInfo)
+                        && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
+                    thirdCiv.getDiplomacyManager(civInfo).declareWar()
+                }
+            }
+        }
     }
 
     fun makePeace(){

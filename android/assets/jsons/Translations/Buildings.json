@@ -1,16 +1,18 @@
 {
-		
+
 	// Buildings!
-	"Palace":{	
+	"Palace":{
 		Italian:"Palazzo"
 		Russian:"Дворец"
 		French:"Palais"
 		Romanian:"Palat"
 		Spanish:"Palacio"
 		Simplified_Chinese:"宫殿"
+		Traditional_Chinese:"宮殿"
 		Portuguese:"Palácio"
 		German:"Palast"
 		Polish:"Pałac"
+		Czech:"Palác"
 }
 
 	"Indicates the capital city":{
@@ -18,103 +20,131 @@
 		Romanian:"Stabilește orașul capitală"
 		Spanish:"Indica la capital"
 		Simplified_Chinese:"表示首都"
+		Traditional_Chinese:"表示首都"
 		German:"Gibt die Hauptstadt an"
 		French:"Indique la capitale"
 		Polish:"Wskazuje stolicę"
 		Russian:"Показывает столицу"
-	}
-	
-	"Monument":{	
+		Czech:"Označuje hlavní město"
+}
+
+	"Monument":{
 		Italian:"Monumento"
 		Russian:"Монумент"
 		French:"Monument"
 		Romanian:"Monument"
 		Spanish:"Monumento"
 		Simplified_Chinese:"纪念碑"
+		Traditional_Chinese:"紀念碑"
 		Portuguese:"Monumento"
 		German:"Monument"
 		Polish:"Pomnik"
-	}
+		Czech:"Pomník"
+}
 
-	"Granary":{	
+	"Granary":{
 		Italian:"Granaio"
 		Russian:"Амбар"
 		French:"Grenier"
 		Romanian:"Grânar"
 		Spanish:"Granero"
 		Simplified_Chinese:"粮仓"
+		Traditional_Chinese:"糧倉"
 		Portuguese:"Celeiro"
 		German:"Kornspeicher"
 		Polish:"Spichlerz"
-	}
+		Czech:"Sýpka"
+}
 
-	"Stone Works":{	
+	"Stone Works":{
 		Italian:"Scalpellino"
 		Russian:"Каменные мастерские"
 		French:"Ouvrages de maçonnerie"
 		Romanian:"Carieră de piatră"
 		Spanish:"Cantería"
 		Simplified_Chinese:"石工坊"
+		Traditional_Chinese:"石工坊"
 		Portuguese:"Obras de pedras"
 		German:"Mauerwerk"
 		Polish:"Kamieniarz"
-	}
-	
+		Czech:"Kamenictví"
+}
+
 	"Must not be on plains":{
 		French:"Ne doit pas être sur une plaine"
 		Italian:"Non deve trovarsi su Pianura"
 		Polish:"Nie może być na równinach"
 		Russian:"Не может быть построено на равнинах"
 		Simplified_Chinese:"城市不能位于平原"
-	}
+		Traditional_Chinese:"城市不能位於平原"
+		Czech:"Nesmí být na pláních."
+		German:"Darf nicht auf dem Flachland sein."
+}
 
-	"Stonehenge":{	
+	"Stonehenge":{
 		Italian:"Stonehenge"
 		Russian:"Стоунхендж"
 		French:"Stonehenge"
 		Romanian:"Stonehenge"
 		Spanish:"Stonehenge"
 		Simplified_Chinese:"巨石阵"
+		Traditional_Chinese:"巨石陣"
 		Portuguese:"Stonehenge"
 		Polish:"Stonehenge"
-	}
+		Czech:"Stonehenge"
+		German:"Stonehenge"
+}
 
-	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle":{
+	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
 		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
+		Russian:"'Все вещи подвергаются воздействию со стороны времени... ибо время само по себе скорее причина уничтожения.' - Аристотель" //from Civ5
 		Simplified_Chinese:"“时间能粉碎一切；所有事物终将在时流中衰老并被遗忘。”——亚里士多德"
-	}
+		Traditional_Chinese:"“時間能粉碎一切；所有事物中將在時流中衰老並被遺忘。”——亞里士多德"
+		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
+		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
+}
 
 	/*
-	
+
 	"Temple of Artemis":{
 		Italian:"Tempio di Artemide"
+		Czech:"Chrám Artemis"
+		Polish:"Świątynia Artemidy"
 	}
-	
+
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
 		Italian:"'Non è tanto con la sua bellezza che la foresta tocca il cuore degli uomini, ma con un'indefinibile sottigliezza, una certa qualità dell'aria, con l'emanazione degli antichi alberi, che così meravigliosamente muta e rinnova uno spirito fiaccato.' - Robert Louis Stevenson"
+		Czech:"'Není to ani tak pro svou krásu, že les působí na lidská srdce, jako na to jemné cosi, ta kvalitu vzduchu, energie vyzařující ze starých stromů, které tak úžasně mění a osvěžuje unaveného ducha.' - Robert Louis Stevenson"
+		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
 	}
-	
+
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
+		Czech:"10% Růst populace ve všech městech"
+		Polish:"10% Wzrostu populacji we wszystkich miastach"
 	}
-	
+
 	"+15% Production towards Ranged Units":{
 		Italian:"+15% Produzione per le unità a distanza"
+		Czech:"15% Produkce jednotek pro boj na dálku"
+		Polish:+15% Wzrostu produkcji jednostek walczących w dystansie"
 	}
 
 	*/
-	
-	"Library":{	
+
+	"Library":{
 		Italian:"Biblioteca"
 		Russian:"Библиотека"
 		French:"Bibliothèque"
 		Romanian:"Bibliotecă"
 		Spanish:"Biblioteca"
 		Simplified_Chinese:"图书馆"
+		Traditional_Chinese:"圖書館"
 		Portuguese:"Livraria"
 		German:"Bibliothek"
 		Polish:"Biblioteka"
-	}
+		Czech:"Knihovna"
+}
 
 	"+1 Science Per 2 Population":{
 		Italian:"+1 Scienza ogni 2 abitanti"
@@ -125,91 +155,119 @@
 		Dutch:"+1 Wetenschap per 2 Populatie"
 		Spanish:"+1 Ciencia cada 2 habitantes"
 		Simplified_Chinese:"每2人口+1科研"
+		Traditional_Chinese:"每2人口+1科研"
 		Portuguese:"+1 Ciência a cada 2 habitantes"
 		Polish:"+1 do nauki na 2 obywateli"
-	}
+		Czech:"+1 Výzkum za každé 2 členy Populace"
+}
 
 	"Paper Maker":{
 		Italian:"Cartiera"
 		Romanian:"Fabricant de hârtie"
 		Spanish:"Papelera"
 		Simplified_Chinese:"造纸坊"
+		Traditional_Chinese:"造紙坊"
 		German:"Papiermacher"
 		French:"Fabricant de papier"
 		Polish:"Wytwórca papieru"
 		Russian:"Бумажная мануфактура"
-	}
-	
-	"The Great Library":{	
+		Czech:"Papírny"
+}
+
+	"The Great Library":{
 		Italian:"Grande Biblioteca"
 		Russian:"Великая Библиотека"
 		French:"La Grande Bibliothèque"
 		Romanian:"Marea Bibliotecă"
 		Spanish:"La Gran Biblioteca"
 		Simplified_Chinese:"大图书馆"
+		Traditional_Chinese:"大圖書館"
 		Portuguese:"A Grande Biblioteca"
 		German:"Die Große Bibliothek"
 		Polish:"Wielka Biblioteka"
-	}
-	
+		Czech:"Alexandrijská knihovna"
+}
+
 	"Free Technology":{
 		Italian:"Dona una tecnologia gratuita"
 		Simplified_Chinese:"获得1项免费科技"
-	}
+		Traditional_Chinese:"獲得1項免費科技"
+		Russian:"Бесплатная технология"
+		Czech:"Technologie zdarma"
+		Polish:"Darmowa technologia"
+		German:"Kostenlose Technologie"
+}
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
 		Italian:"'Le biblioteche sono come una cappella in cui sono conservate e protette tutte le reliquie dei santi antichi, colme di vera virtù, e tutto ciò che è privo di illusione e inganno' - Sir Francis Bacon"
 		Simplified_Chinese:"“图书馆就像是供奉古代圣哲全部遗物的圣坛，充满了真正的美德，保护着一切非谬误无伪装的事物在其中安眠。”——弗朗西斯·培根爵士"
-	}
+		Traditional_Chinese:"“圖書館就像是供奉古代聖哲全部遺物的聖壇，充滿了真正的美德，保護著一切非謬誤無偽裝的事物在其中安眠。”——弗朗西斯·培根爵士"
+		Czech:"'Knihovny jsou svatyně, ve kterých jsou zachovány a uloženy všechny relikvie starověkých světců, plné skutečné ctnosti, to vše bez klamů nebo podvodů.' - Sir Francis Bacon"
+		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
+		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
+}
 
-	"Circus":{	
+	"Circus":{
 		Italian:"Circo"
 		Russian:"Цирк"
 		French:"Cirque"
 		Romanian:"Circ"
 		Spanish:"Circo"
 		Simplified_Chinese:"马戏场"
+		Traditional_Chinese:"馬戲團"
 		Portuguese:"Circo"
 		German:"Zirkus"
 		Polish:"Cyrk"
-	}
+		Czech:"Cirkus"
+}
 
-	"Walls":{	
+	"Walls":{
 		Italian:"Mura"
 		Russian:"Стены"
 		French:"Murs"
 		Romanian:"Ziduri"
 		Spanish:"Muros"
 		Simplified_Chinese:"城墙"
+		Traditional_Chinese:"城牆"
 		Portuguese:"Muralhas"
 		German:"Mauern"
 		Polish:"Mury"
-	}
+		Czech:"Hradby"
+}
 
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
 		Simplified_Chinese:"巴比伦城墙"
+		Traditional_Chinese:"巴比倫城牆"
         	French:"Murs de Babylone"
 		Polish:"Mury Babilonu"
 		Russian:"Стены Вавилона"
-	}
-	
-	"The Pyramids":{	
+		Czech:"Babylonské hradby"
+		German:"Babylons Mauern"
+}
+
+	"The Pyramids":{
 		Italian:"Grandi Piramidi"
 		Russian:"Пирамиды"
 		French:"Les pyramides"
 		Romanian:"Piramidele"
 		Spanish:"Las Pirámides"
 		Simplified_Chinese:"大金字塔"
+		Traditional_Chinese:"大金字塔"
 		Portuguese:"Pirâmides"
 		German:"Die Pyramiden"
 		Polish:"Piramidy"
-	}
+		Czech:"Pyramidy"
+}
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
 		Italian:"'Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
 		Simplified_Chinese:"“哦，别让你所受的死亡痛苦进入我的身体。我是创世神泰姆，我处在天界的最高层，神力护佑着我和所有其他神灵直到永远。”——“死者之书”译文，欧内斯特·阿尔弗雷德·沃利斯·巴吉爵士（英国考古学家）"
-	}
+		Traditional_Chinese:"“哦，別讓你所受的死亡痛苦進入我的身體。我是創世神泰姆，我處在天界的最高層，神力護佑著我和所有其他神靈直到永遠。”——“死者之書”譯文，歐內斯特·阿爾弗雷德·沃利斯·巴吉爵士（英國考古學家）"
+		Polish:"'Niech ból śmierci, którego zaznasz, wejdzie w me ciało. Jam jest bóg Tem, najznamienitsza część nieba, a chroni mnie moc, która na zawsze jest wśród wszystkich bogów.'– Księga Umarłych, przetłumaczona przez Sir Ernesta Alfreda Wallisa Budge'a"
+		Czech:"'Ó, ať bolesti smrti vstoupí do mého těla. Já jsem Bůh Tem a jsem především části oblohy, moc která mě chrání je ta, jenž je navždy se všemi bohy.' - Kniha mrtvých, přeložil sir Ernest Alfred Wallis Budge"
+		Russian:"'А вы даруйте мне, когда я есмь там, погребальные тризны, и воскурение ладана, и мази для умащения, и все чистые и прекрасные вещи, в которых обитает бог...' -  - из египетской 'Книги мертвых'" //civ 5 official
+}
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
 		Italian:"+25% velocità costruzione lavoratori"
@@ -220,9 +278,11 @@
 		Dutch:"Werkerproducktie met 25% vehoogt"
 		Spanish:"+25% velocidad de construcción trabajador"
 		Simplified_Chinese:"设施建造速度+25%"
+		Traditional_Chinese:"設施建造速度+25%"
 		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
 		Polish:"Prędkość pracy robotnika zwiększona o 25%"
-	}
+		Czech:"Rychlost dělníka se zvýšila o 25% "
+}
 
 	"Provides 2 free workers":{
 		Italian:"Appaiono 2 Lavoratori gratuiti"
@@ -233,112 +293,140 @@
 		Dutch:"Geeft 2 gratis werkers"
 		Spanish:"Proporciona 2 trabajadores gratis"
 		Simplified_Chinese:"提供2个免费工人"
+		Traditional_Chinese:"提供2個免費工人"
 		Portuguese:"Proporciona 2 trabalhadores gratis"
-		Polish:"Pojawiają się 2 darmowi robotnicy"
-	}
-	
-	"Barracks":{	
+		Polish:"Dostarcza 2-óch darmowych robotników"
+		Czech:"Poskytuje 2 dělníky zdarma"
+}
+
+	"Barracks":{
 		Italian:"Caserma"
 		Russian:"Казармы"
 		French:"Caserne"
 		Romanian:"Cazarmă"
 		Spanish:"Barracones"
 		Simplified_Chinese:"军营"
+		Traditional_Chinese:"軍營"
 		Portuguese:"Quartéis"
 		German:"Baracken"
 		Polish:"Koszary"
-	}
-	
+		Czech:"Kasárny"
+}
+
 	"Krepost":{ // russian uique, transliterate this probably, this is a russian word
 		Italian:"Krepost"
 		Romanian:"Fortăreață"
 		Spanish:"Krepost"
 		Simplified_Chinese:"俄罗斯营垒"
+		Traditional_Chinese:"俄羅斯營壘"
 		German:"Krepost"
 		Russian:"Острог"
 		French:"Krepost"
-		Polish:"Krepost"
-	}
-	
+		Polish:"Twierdza"
+		Czech:"Krepost"
+}
+
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
 		Italian:"-25% costi in Cultura e Oro nell'acquisto di nuove celle nella Città"
 		Romanian:"Costurile în Cultură și Aur pentru cumpărarea noilor celule în acest oraș sunt reduse cu 25%"
 		Spanish:"El coste de comprar terrenos en esta ciudad se reduce un 25%"
 		Simplified_Chinese:"所在城市扩展新地块所需文化和金钱花费-25%"
+		Traditional_Chinese:"所在城市擴展新地區所需文化和金錢花費-25%"
 		German:"Kultur- und Goldkosten für den Erwerb neuer Felder in dieser Stadt sind um 25% reduziert"
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
-		Polish:"Koszt uzyskania nowego pola (w kulturze lub złocie) zmniejszony o 25% w tym mieście" 
+		Polish:"Koszt uzyskania nowego pola (w kulturze lub złocie) zmniejszony o 25% w tym mieście"
 		Russian:"-25% к необходимому количеству Культура и Золото для получения клеток вокруг данного города"
-	}
-	
+		Czech:"Zlato a kulturní body na nákup nového území ve městě se snížily o 25%"
+}
+
 	"Colossus":{
 		Italian:"Colosso"
 		Simplified_Chinese:"太阳神巨像"
+		Traditional_Chinese:"太陽神巨像"
 		French:"Colosse"
-		Polish:"Kolos rodyjski"
+		Polish:"Kolos Rodyjski"
 		Russian:"Колосс Родосский"
-	}
+		Czech:"Rhodský kolos"
+		German:"Koloss"
+}
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
 		Italian:"'Già, lui cavalca questo stretto mondo ormai come un colosso; e noi, gli omuncoli, passiamo sotto le sue gambe enormi e ci scrutiamo intorno, per ritrovarci tutti quanti siamo come tanti sepolcri senza onore' - William Shakespeare: Giulio Cesare"
 		Simplified_Chinese:"“嘿，老兄，他像一个巨人似的跨越这狭隘的世界；我们这些渺小的凡人一个个在他粗大的两腿下行走，四处张望着，替自己寻找不光荣的坟墓。”——威廉·莎士比亚：《尤利乌斯·恺撒》"
-	}
+		Traditional_Chinese:"“嘿，老兄，他像一個巨人似的跨越這狹隘的世界；我們這些渺小的凡人一個個在他粗大的兩腿上行走，四處張望著，替自己尋找不光榮的墳墓。”——威廉·莎士比亞：《尤利烏斯·凱薩》"
+		Polish:"'Człowiek ten stanął okrakiem nad światem jak Kolos, gdy my, ludzie malusieńcy, spod jego wielkich nóg zerkamy wokół, szukając sobie upodlonych grobów.'– William Szekspir, Juliusz Cezar"
+		Czech:"'Proč člověk, řídil úzký svět jako kolos, a my drobní muži kráčíme pod jeho obrovskýma nohama, abychom spočinuli v nečestných hrobech.' - William Shakespeare, Julius Caesar"
+		Russian:"'По миру тесному шагает колосс, а мы, ничтожные людишки, у исполинских ног его снуем и для себя могил бесславных ищем.' - Уильям Шекспир, 'Юлий Цезарь'"
+}
 
 	"+1 gold from worked water tiles in city":{
 		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
-		Simplified_Chinese:"所在城市每个水上地块+1金钱"
+		Simplified_Chinese:"所在城市每个工作的水上地块+1金钱"
+		Traditional_Chinese:"所在城市每個工作的水域+1金錢"
 		French:"+1 or pour les cases maritimes exploitées par la ville"
 		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
 		Russian:"+1 Золото от обрабатываемых водных клеток вокруг города"
-	}
-	
-	"Temple":{	
+		Czech:"+1 zlata za každé pole s vodou v tomto městě"
+}
+
+	"Temple":{
 		Italian:"Tempio"
 		Russian:"Храм"
 		French:"Temple"
 		Romanian:"Templu"
 		Spanish:"Templo"
 		Simplified_Chinese:"神庙"
+		Traditional_Chinese:"神廟"
 		Portuguese:"Templo"
 		German:"Tempel"
 		Polish:"Świątynia"
-	}
+		Czech:"Chrám"
+}
 
 	"Burial Tomb":{
 		Italian:"Sepolcro"
 		Romanian:"Loc de veci"
 		Spanish:"Tumba Sagrada"
 		Simplified_Chinese:"陵墓"
+		Traditional_Chinese:"陵墓"
 		German:"Grabstätte"
 		French:"Tombeau"
 		Polish:"Grobowiec"
 		Russian:"Гробница"
-	}
+		Czech:"Hrobka"
+}
 
 	/*
 	"Mud Pyramid Mosque":{	//Songhai unique
 		Italian:"Moschea della Piramide di Fango"
 		French:"Mosquée d'adobe" //official translation
 		Polish:"Wielki Meczet w Dżennie" //from civipedia
-	}
+		Czech:"Velká mešita v Djenné"
+}
 	*/
 
-	"The Oracle":{	
+	"The Oracle":{
 		Italian:"Oracolo"
 		Russian:"Оракул"
 		French:"L'oracle"
 		Romanian:"Oracolul"
 		Spanish:"El Oráculo"
 		Simplified_Chinese:"神谕所"
+		Traditional_Chinese:"神諭所"
 		Portuguese:"O Oráculo"
 		German:"Das Orakel"
 		Polish:"Wyrocznia"
-	}
+		Czech:"Věštírna"
+}
 
 	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
 		Italian:"'L'antico Oracolo ha detto che sono il più saggio di tutti i greci. Questo perché io solo, di tutti i greci, so di non sapere nulla.' - Socrate"
 		Simplified_Chinese:"“先知的神谕曾说我是全希腊最聪明的人。因为我是所有希腊人中唯一知道自己一无所知的人。”——苏格拉底"
-	}
+		Traditional_Chinese:"“先知的神諭曾說我是全希臘最聰明的人。因為我是所有希臘人中唯一知道自己一無所知的人。”——蘇格拉底"
+		Polish:"'Starożytna Wyrocznia powiedziała, że jestem najmądrzejszym z Greków. Bo tylko ja ze wszystkich Greków wiem, że nic nie wiem.' - Sokrates"
+		Czech:"'Starověké Orakulum řeklo, že jsem nejmoudřejší ze všech Řeků. Je to proto, že já sám ze všech Řeků vím, že nic nevím' - Sókratés"
+		Russian:"'Он спросил, есть ли кто-нибудь на свете мудрее меня, и Пифия ему ответила, что никого нет мудрее... потому что я коли уж не знаю, то и не думаю, что знаю' - Сократ в «Апологии Сократа» Платона" //civ 5 official. Sounds bad
+}
 
 	"Free Social Policy":{
 		Italian:"Ricevi una politica sociale gratuita"
@@ -349,38 +437,48 @@
 		Dutch:"Gratis sociaalbeleid"
 		Spanish:"Política social gratis"
 		Simplified_Chinese:"免费推行1项社会政策"
+		Traditional_Chinese:"免費推行1項社會政策"
 		Portuguese:"Politica social gratis"
 		Polish:"Darmowy ustrój społeczny"
-	}
-	
-	"National College":{	
+		Czech:"Sociální politika zdarma"
+}
+
+	"National College":{
 		Italian:"Colleggio Nazionale"
 		Russian:"Национальный колледж"
 		French:"Collège National"
 		Romanian:"Colegiu Național"
 		Spanish:"Universidad Nacional"
 		Simplified_Chinese:"国立研究院"
+		Traditional_Chinese:"國立研究院"
 		Portuguese:"Universidade Nacional"
 		German:"Nationale Hochschule"
 		Polish:"Akademia Narodowa"
-	}
-	
-	"Chichen Itza":{	
+		Czech:"Národní Akademie"
+}
+
+	"Chichen Itza":{
 		Italian:"Chichen Itza"
 		Russian:"Чичен-Ица"
 		French:"Chichen Itza"
 		Romanian:"Chichen Itza"
 		Spanish:"Chichén Itzá"
 		Simplified_Chinese:"奇琴伊察"
+		Traditional_Chinese:"奇琴伊察"
 		Portuguese:"Chichen Itza"
 		German:"Chichen Itza"
 		Polish:"Chichen Itza"
-	}
+		Czech:"Chichén Itzá"
+}
 
 	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
 		Italian:"'Il katun è stabilito a Chichèn Itzà. L'insediamento degli Itzà avrà luogo. Arriverà il quetzal, arriverà l'uccello verde. Ah Kantenal arriverà. È la parola di Dio. Gli Itzà arriveranno. - I Libri di Chilam Balam"
 		Simplified_Chinese:"“这个卡吞建立在奇琴伊察。伊察将在那里定居。格查尔鸟将会到来，绿色的鸟将会到来。阿·坎特纳尔将会到来。这是神的预言。伊察将会到来。”——《奇兰巴兰之书》（玛雅人的预言书）"
-	}
+		Traditional_Chinese:"“這個卡吞建立在奇琴伊察。伊察將在那裡定居。格查爾鳥將會到來，綠色的鳥將會到來。阿·坎特納爾將會到來。這是神的預言。伊察將會到來。”——《奇蘭巴蘭之書》（馬雅人的預言書）"
+		Polish:"'Katun jest w Chichen Itza. Tam powstanie osada Itza. Przybędzie kwezal, przybędzie zielony ptak. Przybędzie Ah Kantenal. Oto słowo boże. Itza przybędzie.' – Księgi Chilam Balam"
+		Czech:"'Katun je zřízen v Chichén Itza. Tam musí probíhat vypořádání Itzy. Quetzal musí přijít, zelený pták musí přiletět. Ah Kantenal musí přijít. Je to Boží slovo. Itza musí přijde.' - Knihy Chilama Baláma"
+		Russian:"'Катун установлен в Чичен-Итце. Здесь будет поселение Итца. Кетцаль придет, зеленая птица придет. Ах Кантеналь придет. Вот слово Бога. Народ Итца придет.' - из книг Чилам Балам"
+}
 
 	"Golden Age length increases +50%":{
 		Italian:"+50% durata dell'Età dell'Oro"
@@ -391,32 +489,38 @@
 		Dutch:"Gouden eeuw lengte neem toe met +50%"
 		Spanish:"La Edad Dorada dura 50% más"
 		Simplified_Chinese:"黄金时代持续时间+50%"
+		Traditional_Chinese:"黃金時代持續時間+50%"
 		Portuguese:"Duração de idade dourada aumentada em 50%"
 		Polish:"Czas trwania Złotego Wieku zwiększony o 50%"
-	}
-	
+		Czech:"Délka Zlatého věku se prodloužila o 50%"
+}
+
 	"Lighthouse":{
 		Spanish:"faro"
 		Italian:"Faro"
 		French:"Phare"
 		Romanian:"Far"
 		Simplified_Chinese:"灯塔"
+		Traditional_Chinese:"燈塔"
 		Portuguese:"Farol" // farol also means that thing wich has a red ligh (i do not remember it's name) so if deemed nescessarry can add costeira to the beggining
 		German:"Leuchtturm"
 		Polish:"Latarnia morska"
 		Russian:"Маяк"
-	}
+		Czech:"Maják"
+}
 
 	"Can only be built in coastal cities":{
 		Italian:"La città deve trovarsi sulla costa"
 		French:"Peut seulement être construit dans les villes côtières"
 		Romanian:"Poate fi construit doar în orașe de pe țărm"
 		Simplified_Chinese:"只能建在海滨城市"
+		Traditional_Chinese:"只能建在海濱城市"
 		Portuguese:"Só pode ser construido em cidades costeiras"
 		German:"Kann nur in Küstenstädten gebaut werden"
 		Polish:"Może być zbudowane tylko w miastach nadbrzeżnych"
 		Russian:"Может быть построен только в прибрежных городах"
-	}
+		Czech:"Lze budovat pouze ve městech na pobřeží"
+}
 
 	"+1 food from Ocean and Coast tiles":{
 		Italian:"+1 Cibo da caselle Oceano e costiere"
@@ -424,26 +528,34 @@
 		German:"+1 Nahrung von Ozean und Küsten Feldern"
 		French:"+1 nourriture des cases océans et côtes"
 		Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
+		Traditional_Chinese:"每個海濱地區和海洋地區+1食物"
 		Polish:"+1 do żywności z pól wybrzeża i oceanicznych"
 		Russian:"+1 Еда от клеток около берега и в океане"
-	}
-	
+		Czech:"+1 Jídlo z oceánu a pobřežních polí"
+}
+
 	"The Great Lighthouse":{
 		Spanish:"El Faro Del Fin Del Mundo"
 		Italian:"Grande Faro"
 		French:"le Grand Phare"
 		Romanian:"Marele Far"
 		Simplified_Chinese:"大灯塔"
+		Traditional_Chinese:"大燈塔"
 		Portuguese:"O Grande Farol"
 		German:"Der Große Leuchtturm"
-		Polish:"Latarnia na Faros" //common polish name
+		Polish:"Latarnia z Faros" //common polish name
 		Russian:"Фаросский маяк"
-	}
+		Czech:"Maják na ostrově Faru"
+}
 
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
 		Italian:"'Ecco quelli che scendon nel mare su navi, che trafficano sulle grandi acque; essi veggono le opere dell'Eterno e le sue meraviglie nell'abisso.' - Salmi 107:23-24"
 		Simplified_Chinese:"“在大海上坐船，在大水里经理事务的；他们看到耶和华的作为，并他在深水中的奇事。”——圣经·诗篇 107:23-24"
-	}
+		Traditional_Chinese:"“在大海上坐船，在大水裡處理事物的；他們看到耶和華的作為，並他在深水中的奇事。”——聖經·詩篇 107:23-24"
+		Polish:"'Ci, którzy na statkach ruszyli na morze, aby uprawiać handel na ogromnych wodach, ci widzieli dzieła Pana i jego cuda wśród głębiny.'– Biblia, Księga Psalmów 107,23-24"
+		Czech:"'Ti, kteří se vydávají na lodích na moře, kdo konají dílo na nesmírných vodách, spatřili Hospodinovy skutky, jeho divy na hlubině.' - Bible, Žalm 107: 23-24"
+		Russian:"'Отправляющиеся на кораблях в море, производящие дела на больших водах, видят дела Господа и чудеса Его в пучине...' - Bible, Псалом 106:23-24" // yes, 106. Just another numbering for us. 
+}
 
 	"All military naval units receive +1 movement and +1 sight":{
 		Spanish:"Todas las unidades militares navales reciben +1de movimiento y +1 de vision"
@@ -451,240 +563,318 @@
 		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
 		Romanian:"Toate unitățile militare navale primesc +1 deplasare și +1 raza vizuală"
 		Simplified_Chinese:"所有海军军事单位+1移动力和+1视野"
+		Traditional_Chinese:"所有海軍軍事單位+1移動力和+1視野"
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 		Polish:"Każda jednostka marynarki otrzymuje +1 do ruchu i pola widzenia"
 		Russian:"Все военно-морские юниты получают +1 к движению и обзору"
-	}
+		Czech:"Všechny vojenské námořní jednotky získají +1 pohyb a +1 větší rozhled"
+}
 
 	"Courthouse":{
 		Italian:"Palazzo di giustizia"
+		Russian:"Здание суда"
 		French:"Palais de justice"
 		Polish:"Sąd"
 		Simplified_Chinese:"法庭"
-	}
-		
+		Traditional_Chinese:"法院"
+		Czech:"Soud"
+		German:"Gerichtsgebäude"
+}
+
 	"Remove extra unhappiness from annexed cities":{
 		Italian:"Elimina l'Infelicità extra proveniente dalle Città occupate"
 		French:"Enlève le mécontentement supplémentaire des villes occupées"
 		Polish:"Usuwa niezadowolenie z okupowanych miast"
-		Simplified_Chinese:"消除来自被占领城市的额外不满"
-	}
-		
+		Simplified_Chinese:"消除来自吞并的城市的额外不满"
+		Traditional_Chinese:"消除來自被併吞的城市的額外不滿"
+		Czech:"Odstraní nespokojenost občanů v anektovaných městech"
+		German:"Entferne zusätzliche Unzufriedenheit von annektierten Städten"
+		Russian:"Убрирает дополнительное недовольство из захваченных городов" 
+}
+
 	"Can only be built in annexed cities":{
 		Italian:"Costruibile solamente nelle città annesse"
-		Simplified_Chinese:"只能建造在被占领城市"
-	}
+		Simplified_Chinese:"只能建造在吞并的城市"
+		Traditional_Chinese:"只能在被併吞的城市建造"
+		Czech:"Lze vybudovat pouze v anektovaných městech"
+		Polish:"Budowa możliwa tylko w okupowanych miastach"
+		German:"Kann nur in annektierten Städten gebaut werden."
+		Russian:"Строительство возможно только в захваченных городах"
 
-	"Stable":{	
+}
+
+	"Stable":{
 		Italian:"Scuderia"
 		Russian:"Конюшня"
 		French:"Écurie"
 		Romanian:"Grajd"
 		Spanish:"Establos"
 		Simplified_Chinese:"马厩"
+		Traditional_Chinese:"馬廄"
 		Portuguese:"Estabulos"
 		German:"Stall"
 		Polish:"Stajnia"
-	}
+		Czech:"Stáje"
+}
 
 	"+15% Production when building Mounted Units in this city":{
 		Italian:"+15% Produzione per le unità a cavallo"
 		German:"+15% Produktion beim Ausbilden von berittenen Einheiten in dieser Stadt"
 		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
-		Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
-		Polish:"+15% do produkcji jednostek kawalerii"
+		Simplified_Chinese:"所在城市组建骑乘单位时产能积累速率+15%"
+		Traditional_Chinese:"所在城市訓練騎乘單位時產能累積速率+15%"
+		Polish:"+15% do produkcji jednostek kawalerii w tym mieście"
 		Russian:"+15% Производство при постройке конных юнитов в данном городе"
-	}
-	
-	"Circus Maximus":{	
+		Czech:"+15% produkce při výstavbě jízdních jednotek v tomto městě"
+}
+
+	"Circus Maximus":{
 		Italian:"Circo Massimo"
 		Russian:"Цирк Максимус"
 		French:"Circus Maximus"
 		Romanian:"Circus Maximus"
 		Spanish:"Circo Máximo"
 		Simplified_Chinese:"大竞技场"
+		Traditional_Chinese:"大競技場"
 		Portuguese:"Circo Máximo" //can also be spelled normally as Circus Maximus altough that (Circo Máximo) is written in normal portuguese not latin
 		German:"Circus Maximus"
-		Polish:"Circus Maximus"
-	}
+		Polish:"Cyrk maksymalny"
+		Czech:"Circus Maximus"
+}
 
-	"Hanging Gardens":{	
+	"Hanging Gardens":{
 		Italian:"Giardini Pensili"
 		Russian:"Висячие сады"
 		French:"Jardins suspendus"
 		Romanian:"Grădini suspendate"
 		Spanish:"Jardines Colgantes"
 		Simplified_Chinese:"空中花园"
+		Traditional_Chinese:"空中花園"
 		Portuguese:"Jardins Suspensos"
 		German:"Hängende Gärten"
 		Polish:"Wiszące Ogrody"
-	}
+		Czech:"Visuté zahrady Semiramidiny"
+}
 
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
 		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
 		Simplified_Chinese:"“我相信如果有凡人能听到神谕，那一定是在天气凉爽时的花园之中。”——弗兰克·法兰克福·摩尔（英国作家）"
-	}
+		Traditional_Chinese:"“我相信如果有凡人能聽到神諭，那一定是在天氣涼爽時的花園之中。”——弗蘭克·法蘭克福·摩爾（英國作家）"
+		Polish:"'Gdyby śmiertelnik usłyszał głos Pana Boga, znalazłby w sadzie wraz z wiatren dniowym.' - F. Frankfort Moore" //hard to translate
+		German:"'Wenn ein sterbliches Wesen je die Stimme Gottes hören würde, dann in einem Garten beim Wehen des Abendwindes.' - F. Frankfort Moore"
+		Czech:"'Myslím, že kdyby někdy smrtelník slyšel Boží slovo, bylo by to v zahradě za chladného dne.' - F. Frankfort Moore"
+		Russian:"'Если бы смертному когда-либо прозвучал голос Бога, это случилось бы в саду на закате дня.' - Ф. Франкфорт Мур"
+}
 
 	/*
 	//New Wonder: Statue of Zeus! Suggested by Smashfanful
-	"Statue of Zeus":{	
+	"Statue of Zeus":{
 		Italian:"Statua di Zeus"
 		French:"Statue de Zeus"
 		Simplified_Chinese:"宙斯神像"
-		Polish:"Posąg Zeusa olimpijskiego" //common polish name
-	}
+		Traditional_Chinese:"宙斯神像"
+		Polish:"Posąg Zeusa Olimpijskiego" //common polish name
+		Czech:"Socha Zeuse"
+}
 
 	"+15% Combat Strenght when attacking Cities":{
 		Italian:"+15% Forza quando attacchi le Città"
 		French:"+15% force lors d'attaque de villes"
 		Simplified_Chinese:"在攻击城市时所有单位+15%战斗力"
+		Traditional_Chinese:"在攻擊城市時所有單位+15%戰鬥力"
 		Polish:"+15% siły bojowej do ataku na miasta"
-	}
-	
+		Czech:"+15% k bojové síle při útoku na město"
+}
+
 	"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad":{
 		Italian:"'Così parlò, il figlio di Crono, e con le nere sopracciglia accennò; le chiome immortali del sire si scompigliarono sul capo divino: scosse tutto l'Olimpo.' - L'Iliade"
-	}
+		Polish:"'Syn Kronosa przemówił i skinął głową z ciemnymi brwiami i na wieki namaszczone włosy wielkiego boga spłynęły z boskiej głowy, a cały Olimp zatrząsł się w posadach.' - Iliada"
+		Czech:"'Promluvil, syn Kronosů, přikývl hlavou, temným obočím a nesmrtelně pomazané vlasy velkého boha se mu z jeho božské hlavy vyvalily a celý Olymp se otřásl.' - Ilias"
+}
 
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
-	"Mausoleum of Halicarnassus":{	
+	"Mausoleum of Halicarnassus":{
 		Italian:"Mausoleo di Alicarnasso"
 		French:"Mausolé d'Halicarnasse"
 		Simplified_Chinese:"摩索拉斯陵墓"
+		Traditional_Chinese:"摩索拉斯陵墓"
 		Polish:"Mauzoleum w Halikarnasie"
-	}
+		Czech:"Mauzoleum v Halikarnassu"
+}
 
 	"+2 Gold from every source of Marble and Stone":{
 		Italian:"+2 Oro da ogni fonte di Marmo e Pietra"
 		French:"+2 or pour chaque ressources de marbre et de pierre"
 		Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
+		Traditional_Chinese:"所在城市開發的每處大理石或花崗岩資源額外+2金钱"
 		Polish:"+2 do złota z każdego złoża marmuru i kamienia"
-	}
+		Czech:"+2 zlata za každý zdroj Mramoru a Kamene"
+}
 
 	"Gain 100 Gold when you use a Great Person.":{
 		Italian:"Guadagni 100 Oro ogni volta che consumi un Grande Personaggio"
-	}
-	
+		Czech:"Získáme 100 Zlata za každé použití Velké Osobnosti"
+		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka"
+}
+
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
 		Italian:"'Tutta la terra è tomba di uomini eroici; la loro storia non resta solo sulla pietra sopra la loro creta, ma si ritrova ovunque, invisibile, intessuta nella vita degli altri.' - Pericle"
-	}
-	
+		Polish:"'Cała ziemia jest grobowcem bohaterskich mężczyzn, a ich historia jest nie tylko wyryta w kamieniu, lecz splata się niewidocznymi nićmi z losami innych ludzi.' – Perykles"
+		Czech:"'Celá Země je hrobkou hrdinských mužů a jejich příběh není vytesán do kamene, ale zůstává všude bez viditelného symbolu vpleteného do života jiných lidí.' - Periklés"
+}
+
 	"Petra":{
 		Italian:"Petra"
-	}
-	
+		Czech:"Petra"
+		Polish:"Petra"
+}
+
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
 		Italian:"+1 Cibo e +1 Produzione da tutte le caselle desertiche sfruttate dalla città (eccetto Terreni allagati)"
-	}
-	
+		Czech:"+1 Jídlo a +1 Produkce za každé obděláváné políčkou pouště ve měste (kromě Údolní nivy)"
+		Polish:"+1 żywności i produkcji ze wszystkich pustynnych pól w mieście"
+}
+
 	"+6 Culture when discovering Archeology":{
 		Italian:"+6 Cultura quando scopri l'Archeologia"
-	}
-	
+		Czech:"+6 Kulturních bodů při objevení Archeologie"
+		Polish:"+6 do kultury za wynalezienie Archeologii"
+}
+
 	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
 		Italian:"'...colui che beve l'acqua che io gli darò, dice il Signore, avrà dentro di sé una sorgente inesauribile dalla quale sgorgherà la vita eterna. Lasciate che mi conducano alla tua montagna sacra nel luogo dove dimori, attraverso il deserto e oltre la montagna, nella Gola della Luna Crecente...' - Indiana Jones"
-	}
+		Polish:"'...kto zaś będzie pił wodę, którą Ja mu dam, nie będzie pragnął na wieki, lecz woda, którą Ja mu dam, stanie się w nim źródłem wody wytryskującej ku życiu wiecznemu. Niech dane mi będzie dotrzeć do Świętej Góry poprzez pustynię, góry i Dolinę Półksiężyca, aż do świątyni, gdzie spoczywa Czara.' - Indiana Jones"
+		Czech:"'... kdo vypije vodu, kterou mu dám, řekl Lord, bude mít v sobě pramen věčného života. Nechť mě přivedou na svatou horu. Přes poušť a přes hory do kaňonu půlměsíce ...' - Indiana Jones"
+}
 	*/
 
-	"Colosseum":{	
+	"Colosseum":{
 		Italian:"Colosseo"
 		Russian:"Колизей"
 		French:"Collisée"
 		Romanian:"Coloseum"
 		Spanish:"Coliseo"
 		Simplified_Chinese:"竞技场"
+		Traditional_Chinese:"競技場"
 		Portuguese:"Coliseu"
-		German:"Collosseum"
+		German:"Kolosseum"
 		Polish:"Koloseum"
-	}
-	
+		Czech:"Koloseum"
+}
+
 	"Terracotta Army":{
 		Italian:"Esercito di terracotta"
 		Simplified_Chinese:"兵马俑"
+		Traditional_Chinese:"兵馬俑"
 		French:"Armée de Terre Cuite"
-		Polish:"Terakotowa armia"
+		Polish:"Armia z terakoty"
 		Russian:"Терракотовая армия"
-	}
+		Czech:"Terakotová armáda"
+		German:"Terrakotta Armee"
+}
 
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
 		Italian:"'Trattate i soldati come figli, e vi seguiranno nelle valli più profonde; considerateli la vostra amata progenie, e resteranno accanto a voi fino alla morte.' - Sun Tzu"
-		Simplified_Chinese:"“视卒如婴儿，故可以与之赴深溪；视卒如爱子，故可与之俱死。”——孙子"
-	}
-	
-	"Market":{	
+		Simplified_Chinese:"“视卒如婴儿，故可与之赴深溪；视卒如爱子，故可与之俱死。”——孙子"
+		Traditional_Chinese:"“視卒如嬰兒，故可與之赴深溪；視卒如愛子，故可與之俱死。”——孫子"
+		Polish:"'Traktuj swoich żołnierzy jak ukochane dzieci, a z chęcią zginą wraz z Tobą.' - Sun Tzu"
+		German:"'Behandle Deine Soldaten als seien sie Deine Kinder und sie werden Dir in die tiefsten Täler folgen; betrachte sie als Deine geliebten Söhne und sie werden an Deiner Seite stehen, sogar bis zum Tode.' -Sun Tzu"
+		Czech:"'Považujte své vojáky za své děti a budou vás následovat do nejhlubších údolí; podívej se na ně jako na své milované syny, a ti budou za vámi stát až do smrti.' - Sun Tzu"
+		Russian:"'Если будешь смотреть на солдат, как на детей, сможешь отправиться с ними в самое глубокое ущелье; если будешь смотреть на солдат, как на любимых сыновей, сможешь идти с ними хоть на смерть.' - Сунь Цзы"
+}
+
+	"Market":{
 		Italian:"Mercato"
 		Russian:"Рынок"
 		French:"Marché"
 		Romanian:"Piaţă"
 		Spanish:"Mercado"
 		Simplified_Chinese:"市场"
+		Traditional_Chinese:"市場"
 		Portuguese:"Mercado"
 		German:"Markt"
 		Polish:"Targowisko"
-	}
-	
+		Czech:"Tržiště"
+}
+
 	"Bazaar":{ // Arabian unique - transliterate?
 		Italian:"Bazaar"
 		Romanian:"Bazar"
 		Spanish:"Bazar"
 		Simplified_Chinese:"巴扎"
+		Traditional_Chinese:"巴扎"
 		German:"Basar"
 		French:"Bazar"
 		Russian:"Восточный базар"
 		Polish:"Bazar"
-	}
-	
+		Czech:"Bazar Chán al-Chalílí"
+}
+
 	"Provides 1 extra copy of each improved luxury resource near this City":{
 		Italian:"Concede 1 copia aggiuntiva di ogni risorsa di lusso migliorata vicino alla città"
 		Romanian:"Oferă o copie în plus pentru fiecare resursă de lux din apropierea acestui oraș"
 		Spanish:"Proporciona una copia extra de los recursos de lujo de la ciudad"
-		Simplified_Chinese:"所在城市每处已开发的奢侈资源额外增加1处"
+		Simplified_Chinese:"所在城市每处已开发的奢侈资源额外增加1份"
+		Traditional_Chinese:"所在城市每處已開發的奢侈資源額外增加1份"
 		German:"Gibt 1 extra Einheit jeder verbesserten Luxusresource in der Nähe dieser Stadt"
 		French:"Produit un exemplaire supplémentaire de chaque ressources de luxe à côté de cette ville"
 		Polish:"Każdy luksusowy surowiec w granicach miasta jest liczony podwójnie"
 		Russian:"Предоставляет копию каждого обрабатываемого редкого ресурса около данного города"
-	}
+		Czech:"Poskytne 1 extra kopii každé luxusní suroviny na území tohoto města"
+}
 
 	"+2 Gold for each source of Oil and oasis":{
 		Italian:"+2 Oro per ogni fonte di Petrolio e ogni casella di Oasi"
 		Romanian:"+2 Aur pentru fiecare sursă de Petrol sau oază"
 		Spanish:"+2 de Oro por cada fuente de Petroleo o Oasis"
 		Simplified_Chinese:"每处石油资源和每处绿洲+2金钱"
+		Traditional_Chinese:"每處石油資源和每處綠洲+2金錢"
 		German:"+2 Gold für jede Ölquelle oder Oase"
 		French:"+2 or pour chaque ressources de pétrole et d'oasis"
 		Polish:"+2 do złota z każdej oazy lub złoża ropy"
 		Russian:"+2 Золото от каждого источника Нефть и оазиса"
-	}
-			
-	"Monastery":{	
+		Czech:"+2 Zlata za každý zdroj Ropy a Oázu"
+}
+
+	"Monastery":{
 		Italian:"Monastero"
 		Russian:"Монастырь"
 		French:"Monastère"
 		Romanian:"Mănăstire"
 		Spanish:"Monasterio"
 		Simplified_Chinese:"修道院"
+		Traditional_Chinese:"修道院"
 		Portuguese:"Monastério"
 		German:"Kloster"
 		Polish:"Klasztor"
-	}
+		Czech:"Klášter"
+}
 
-	"Notre Dame":{	
+	"Notre Dame":{
 		Italian:"Notre Dame"
 		Russian:"Нотр-Дам"
 		French:"Notre-Dame"
 		Romanian:"Notre Dame"
 		Spanish:"Notre Dame"
 		Simplified_Chinese:"巴黎圣母院"
+		Traditional_Chinese:"巴黎聖母院"
 		Portuguese:"Notre Dame"
 		German:"Notre-Dame"
 		Polish:"Notre Dame"
-	}
+		Czech:"Katedrála Notre-Dame"
+}
 
 	"'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
 		Italian:"'L'architettura ha registrato le più grandi idee della razza umana. Non solo ogni simbolo religioso, ma ogni pensiero umano ha la sua pagina in quel vasto libro.' - Victor Hugo"
 		Simplified_Chinese:"“建筑记录了人类所有的伟大理念：不仅包括每一种宗教符号，还包括人类思想史的每一页。”——维克多·雨果"
-	}
-	
+		Traditional_Chinese:"“建築紀錄了人類所有的偉大理念：不僅包括每一種宗教符號，還包括人類思想史的每一頁。”——維克多·雨果"
+		Polish:"'Architektura to zapis wspaniałych idei ludzkości. W tej obszernej księdze swe miejsce ma nie tylko każdy symbol religijny, ale także każda myśl człowiecza.' - Victor Hugo"
+		German:"'Die Architektur hat viele großartige Ideen der Menschheit festgehalten. Nicht nur jedes religiöse Symbol, sondern auch jeder menschliche Gedanke hat seine eigene Seite in diesem gewaltigen Buch.' - Victor Hugo"
+		Czech:"'Architektura zaznamenala skvělé myšlenky lidské rasy. Nejen každý náboženský symbol, ale každá lidská myšlenka má svou stránku v této obrovské knize.' - Victor Hugo"
+		Russian:"'Зодчество было главной летописью человечества... каждая общедоступная идея, как и каждый религиозный закон, имела свой памятник.' - Виктор Гюго" //civ 5 official
+}
+
 	"Hagia Sophia":{
 		Italian:"Hagia Sophia"
 		Russian:"Собор Святой Софии"
@@ -692,15 +882,21 @@
 		Romanian:"Sfânta Sofia"
 		Spanish:"Santa Sofía"
 		Simplified_Chinese:"圣索菲亚大教堂"
+		Traditional_Chinese:"聖索菲亞大教堂"
 		Portuguese:"Santa Sofia"
 		German:"Hagia Sophia"
 		Polish:"Hagia Sophia"
-	}
+		Czech:"Hagia Sophia"
+}
 
 	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis":{
 		Italian:"'Perché si erge così alta da toccare il cielo, e come fluttuando sugli altri edifici guarda dall'alto in basso il resto della città, abbellendola, perché fa parte di essa, ma gloriandosi della propria bellezza.' - Procopio, De Aedificis (Sugli edifici)"
 		Simplified_Chinese:"“它高耸入云，从城市中矗立而起，俯视周遭；它是城中之物，但有超俗之美。”——《论建筑》，普罗科匹厄斯（拜占庭学者）"
-	}
+		Traditional_Chinese:"“它高聳入雲，從城市中矗立而起，俯視周遭；它是城中之物，但有超俗之美。”——《論建築》，普羅科匹厄斯（拜占庭學者）"
+		Polish:"'Wyrasta aż po sam nieboskłon, jakby wystrzeliwując spośród innych budynków, stoi wysoko i spogląda w dół na resztę miasta, podziwiając je, bo jest jego częścią, a jednocześnie pławi się we własnym pięknie.' – Prokopiusz De Aedificis"
+		Czech:"'Stoupá do výšky, aby se vyrovnal nebi, a jako by stoupal z ostatních budov, stojí vysoko a dívá se dolů na zbytek města, zdobí jej, protože je jeho součástí, oslavován svou vlastní krásou' - Procopius, De Aedificis"
+		Russian:"'В высоту он поднимается как будто до неба и, как корабль на высоких волнах моря, он выделяется среди других строений, как бы склоняясь над остальным городом, украшая его как составная его часть, и сам украшается им.' - Прокопий, 'О постройках'" //civ 5 official = 'В высоту он (Собор Святой Софии) поднимается...' 
+}
 
 	"+33% great person generation in all cities":{
 		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
@@ -710,39 +906,49 @@
 		German:"+33% erhöhte Wahrscheinlichkeit für die Geburt Großer Persönlichkeiten"
 		Dutch:"+33% Geweldig persoon generatie in alle steden"
 		Spanish:"+33% generación de Grandes Personas en todas las ciudades"
-		Simplified_Chinese:"+33%所有城市伟人点数积累"
+		Simplified_Chinese:"所有城市伟人点数积累速率+33%"
+		Traditional_Chinese:"所有城市偉人點數累積速率+33%"
 		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
-		Polish:"+33% do produkcji Wielkich Ludzi"
-	}
-	
-	"Mint":{ 
+		Polish:"+33% do produkcji Wielkich Ludzi we wszystkich miastach"
+		Czech:"+33% produkce Velkých Osobností ve všech městech"
+}
+
+	"Mint":{
 		Italian:"Zecca"
 		Russian:"Монетный двор"
 		French:"Hôtel de la monnaie"
 		Romanian:"Fabrică de bani"
 		Spanish:"Casa de la moneda"
 		Simplified_Chinese:"铸币厂"
+		Traditional_Chinese:"鑄幣廠"
 		Portuguese:"Casa da moeda"
 		German:"Prägerei"
 		Polish:"Mennica"
-	}
-	
-	"Machu Picchu":{	
+		Czech:"Mincovna"
+}
+
+	"Machu Picchu":{
 		Italian:"Machu Picchu"
 		Russian:"Мачу-Пикчу"
 		French:"Machu Picchu"
 		Romanian:"Machu Picchu"
 		Spanish:"Machu Picchu"
 		Simplified_Chinese:"马丘比丘"
+		Traditional_Chinese:"馬丘比丘"
 		Portuguese:"Machu Picchu"
 		German:"Machu Picchu"
 		Polish:"Machu Picchu"
-	}
+		Czech:"Machu Picchu"
+}
 
 	"'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham":{
 		Italian:"'Pochi racconti fantastici possono sorpassare quello della cittadella di granito sospesa in cima ai precipizi, Machu Picchu, la corona delle terre degli Inca.' - Hiram Bingham"
 		Simplified_Chinese:"“很少有能超越这座建立在马丘比丘顶峰峭壁上的石头城塞的浪漫，它是印加的皇冠。”——海勒姆·宾厄姆（美国探险家）"
-	}
+		Traditional_Chinese:"“很少有能超越這座建立在馬丘比丘頂峰峭壁上的石頭城塞的浪漫，它是印加的皇冠。”——海勒姆·賓厄姆（美國探險家）"
+		Polish:"'Niewiele romansów może się równać ze związkiem granitowej cytadeli stojącej na strzelistych urwiskach Machu Picchu, korony Kraju Inków.' – Hiram Bingham"
+		Czech:"'Těžko se hledá romantika, jenž může někdy překonat žulové citadely na vrcholu broukavých srázů Machu Picchu, koruny Incké země.' - Hiram Bingham"
+		Russian:"'Даже самый захватывающий вид не вызовет такого движения сердца, как гранитная крепость на крутых уступах Мачу-Пикчу - короны земли инков.' - Хирам Бингам"
+}
 
 	"Gold from all trade routes +25%":{
 		Italian:"+25% oro da ogni rotta commerciale"
@@ -753,21 +959,25 @@
 		Dutch:"Van alle handelroutes +25% goud"
 		Spanish:"+25% de oro en todas las rutas de comercio"
 		Simplified_Chinese:"所有贸易路线的金币收益+25%"
+		Traditional_Chinese:"所有貿易路線的金錢收益+25%"
 		Portuguese:"+25% de ouro de todas as linhas comerciais" // Linhas comerciais= comertial lines, replace with rotas de comércio if needed
-		Polish:"+25% ze wszystkich szlaków handlowych"
-	}
-	
-	"Aqueduct":{	
+		Polish:"+25% złota ze wszystkich szlaków handlowych"
+		Czech:"+25% Zlata ze všech obchodních cest"
+}
+
+	"Aqueduct":{
 		Italian:"Acquedotto"
 		Russian:"Акведук"
 		French:"Aqueduc"
 		Romanian:"Apeduct"
 		Spanish:"Acueducto"
 		Simplified_Chinese:"引水渠"
+		Traditional_Chinese:"引水渠"
 		Portuguese:"Aqueduto"
 		German:"Aquädukt"
 		Polish:"Akwedukt"
-	}
+		Czech:"Akvadukt"
+}
 
 	"40% of food is carried over after a new citizen is born":{
 		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
@@ -778,119 +988,147 @@
 		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
 		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
 		Simplified_Chinese:"城市增加新的市民后保留40%食物储备以加速成长"
+		Traditional_Chinese:"城市增加新的市民後保留40%食物儲備以加速成長"
 		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
 		Polish:"40% więcej żywności za każdego nowego obywatela"
-	}
-	
+		Czech:"40% Jídla je zachováno poté, co se město rozroste o nového obyvatele"
+}
+
 	"Great Wall":{
 		Italian:"Grande Muraglia"
 		Simplified_Chinese:"长城"
+		Traditional_Chinese:"長城"
 		French:"La Grande Muraille"
 		Polish:"Wielki Mur Chiński"
 		Russian:"Великая стена"
-	}
+		Czech:"Velká čínská zeď"
+}
 
 	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
 		Italian:"'L'arte della guerra ci insegna a non affidarci alla possibilità che il nemico... non ci attacchi, ma piuttosto alla certezza di aver reso la nostra posizione inattaccabile.' - Sun Tzu"
 		Simplified_Chinese:"“故用兵之法：无恃其不来，恃吾有以待也。无恃其不攻，恃吾有所不可攻也。”——孙子"
-	}
+		Traditional_Chinese:"“故用兵之法：無恃其不來，是吾有以待也。無恃其不攻，恃吾有所不可攻也。”——孫子"
+		Polish:"'Sztuka wojny uczy nas nie polegać na prawdopodobieństwie tego, iż wróg nie zaatakuje, a na tym, że nasze pozycje są niedostępne.' – Sun Zi"
+		Czech:"'Umění války nás učí nespoléhat na pravděpodobnost, že nepřítel neútočí, ale spíše na skutečnost, že je naše pozice nepřekonatelná.' - Sun Tzu"
+		Russian:"'Искуство ведения войны заключается в том, чтобы не полагаться на то, что враг не нападет, а на то, что я сделаю нападение на себя невозможным.' - Сунь Цзы"
+}
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
 		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
 		Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
+		Traditional_Chinese:"境內敵方陸軍單位在任何地區額外消耗1移動力"
 		French:"Les unités terrestre ennemies doivent dépenser un point de déplacement supplémentaires quand elles sont dans votre territoire (rendus obsolète par la Dynamite)"
 		Polish:"Każda lądowa jednostka wroga musi zużyć dodatkowy 1 punkt ruchu by wejść na twoje terytorium (przestarzały po odkryciu dynamitu)"
 		Russian:"Вражеские наземные юниты должны тратить дополнительное очко передвижения на вашей территории (устаревает при открытии Динамита)"
-	}
-	
-	"Workshop":{	
+		Czech:"Nepřátelské pozemní jednotky spotřebují 1 extra bod pohybu uvnitř našeho území (do vynalezení dynamitu)"
+}
+
+	"Workshop":{
 		Italian:"Bottega"
 		Russian:"Мастерская"
 		French:"Atelier"
 		Romanian:"Atelier"
 		Spanish:"Taller"
 		Simplified_Chinese:"工坊"
+		Traditional_Chinese:"工坊"
 		Portuguese:"Oficina"
 		German:"Werkstatt"
 		Polish:"Warsztat"
-	}
-	
+		Czech:"Dílna"
+}
+
 	"Longhouse":{	// Iroquois unique
 		Italian:"Casa Lunga"
+		Russian:"Длинный дом"
 		French:"Longère"
 		Polish:"Długi dom"
 		Simplified_Chinese:"长屋"
-	}
-	
-	"+1 Production from each worked Forest tile":{	
+		Traditional_Chinese:"長屋"
+		Czech:"Dlouhý dům"
+}
+
+	"+1 Production from each worked Forest tile":{
 		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
+		Russian:"+1 Производство за каждую обрабатываемую лесную клетку"
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 		Polish:"+1 do produkcji za każde pracujące pole lasu"
 		Simplified_Chinese:"每个工作的森林地块+1产能"
-	}
+		Traditional_Chinese:"每個工作的森林地區+1產能"
+		Czech:"+1 produkce pro každého dělníka na políčku s lesem"
+}
 
-	"Forge":{	
+	"Forge":{
 		Italian:"Fucina"
 		Russian:"Кузница"
 		French:"Forge"
 		Romanian:"Forjă"
 		Spanish:"Forja"
-		Simplified_Chinese:"煅造场"
+		Simplified_Chinese:"锻造场"
+		Traditional_Chinese:"鍛造場"
 		Portuguese:"Forja"
 		German:"Schmiede"
 		Polish:"Kuźnia"
-	}
-	
+		Czech:"Kovárna"
+}
+
 	"Harbor":{
 		Spanish:"Puerto"
 		Italian:"Porto"
 		French:"Havre"
 		Romanian:"Port"
 		Simplified_Chinese:"港口"
+		Traditional_Chinese:"港口"
 		Portuguese:"Porto"
 		German:"Hafen"
 		Russian:"Порт"
 		Polish:"Port"
-	}
+		Czech:"Přístav"
+}
 
 	"+1 production from all sea resources worked by the city":{
 		Spanish:"+1 de produccion a todos los recursos acuaticos trabajados por la ciudad"
 		Italian:"+1 Produzione per ogni risorsa marittima sfruttata"
 		French:"+1 de production pour toutes les ressources maritimes exploitées par la ville"
 		Romanian:"+1 producție din toate resursele maritime prelucrate de oraș"
-		Simplified_Chinese:"所在城市每个海洋资源+1产能"
+		Simplified_Chinese:"所在城市每个已开发的海洋资源+1产能"
+		Traditional_Chinese:"所在城市每個已開發的海洋資源+1產能"
 		Portuguese:"1+ de produção de todos os recursos marítimos trabalhados pelo cidade"
 		German:"+1 Produktion von allen Meer Ressourcen die von dieser Stadt bewirtschaftet werden"
 		Polish:"+1 do produkcji za każdy wydobywany surowiec morski"
 		Russian:"+1 Производство от всех обрабатываемых городом морских клеток"
-	}
+		Czech:"+1 produkce ze všech mořských zdrojů využívaných městem"
+}
 
 	"Connects trade routes over water":{
 		Spanish:"Conecta rutas de comercio por el agua"
 		Italian:"Consente le rotte commerciali marittime"
 		French:"Connecter des routes commerciales maritimes"
 		Romanian:"Leagă rute comerciale pe apă"
-		Simplified_Chinese:"连接水上贸易路线"
+		Simplified_Chinese:"通过水路建立贸易路线"
+		Traditional_Chinese:"通過水路建立貿易路線"
 		Portuguese:"Conecta rotas comerciais pela água"
 		German:"Verbindet Handelsrouten über Wasser"
 		Polish:"Tworzy wodne szlaki handlowe"
 		Russian:"Создаёт водные торговые пути"
-	}
-	
-	"University":{	
+		Czech:"Propojí obchodní cesty přes vodu (oceán)"
+}
+
+	"University":{
 		Italian:"Università"
 		Russian:"Университет"
 		French:"Université"
 		Romanian:"Universitate"
 		Spanish:"Universidad"
 		Simplified_Chinese:"大学"
+		Traditional_Chinese:"大學"
 		Portuguese:"Universidade"
 		German:"Universität"
 		Polish:"Uniwersytet"
-	}
+		Czech:"Univerzita"
+}
 
 	"+2 Science from each worked Jungle tile":{
-		Italian:"+2 Scienza dalle Giungle"
+		Italian:"+2 Scienza per ogni casella di Giungla sfruttata"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
@@ -898,89 +1136,109 @@
 		Dutch:"Oerwouden leveren +2 Wetenschap"
 		Spanish:"Las selvas proporcionan +2 ciencia"
 		Simplified_Chinese:"每个工作的丛林地块+2科研"
+		Traditional_Chinese:"每個工作的叢林地塊+2科研"
 		Portuguese:"Selvas proporcionam +2 ciência"
 		Polish:"+2 nauki z pól dżungli"
-	}
-
-	/*
+		Czech:"+2 Výzkum za každého dělníka na políčku džungle"
+}
 	"Wat":{	//Siamese unique
 		Italian:"Wat"
 		Polish:"Wat"
 		//same in French
-	}
-	*/
-	
-	"Oxford University":{	
+		Czech:"Vat"
+}
+
+	"Oxford University":{
 		Italian:"Università di Oxford"
 		Russian:"Оксфордский университет"
 		French:"L'université d'Oxford"
 		Romanian:"Universitatea Oxford"
 		Spanish:"Universidad de Oxford"
 		Simplified_Chinese:"牛津大学"
+		Traditional_Chinese:"牛津大學"
 		Portuguese:"Universidade de Oxford"
 		German:"Oxford Universität"
 		Polish:"Uniwersytet Oksfordzki"
-	}
+		Czech:"Oxfordská Universita"
+}
 
-	"Castle":{	
+	"Castle":{
 		Italian:"Castello"
 		Russian:"Замок"
 		French:"Château"
 		Romanian:"Castel"
 		Spanish:"Castillo"
 		Simplified_Chinese:"城堡"
+		Traditional_Chinese:"城堡"
 		Portuguese:"Castelo"
 		German:"Burg"
 		Polish:"Zamek"
-	}
+		Czech:"Hrad"
+}
 
 	"Mughal Fort":{	//Indian unique
 		Italian:"Forte Mughal"
 		French:"Fort Monghol"
 		Polish:"Fort Mogołów"
 		Simplified_Chinese:"莫卧儿城塞"
+		Traditional_Chinese:"莫臥兒城塞"
 		Russian:"Красный Форт"
-	}
-	
+		Czech:"Mughalská pevnost"
+}
+
 	"Alhambra":{
 		Italian:"Alhambra"
 		German:"Alhambra"
 		French:"Alhambra"
 		Simplified_Chinese:"阿尔罕布拉宫"
+		Traditional_Chinese:"阿爾罕布拉宮"
 		Polish:"Alhambra"
 		Russian:"Альгамбра"
-	}
+		Czech:"Alhambra"
+}
 
 	"'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison":{
 		Italian:"'La giustizia è una fortezza inespugnabile, costruita sulla cresta di una montagna che non può essere rovesciata dalla violenza dei torrenti né demolita dalla forza degli eserciti.' - Joseph Addison"
 		Simplified_Chinese:"“正义是一座牢不可破的堡垒，屹立在山巅，既不为肆虐的洪流所冲倒，也不为军队的武力所毁坏。”——约瑟夫·艾迪生（英国散文家）"
-	}
+		Traditional_Chinese:"“正義是一座牢不可破的堡壘，屹立在山巔，既不為肆虐的洪流所沖倒，也不為軍隊的武力所毀壞。”——約瑟夫·愛迪生（英國散文家）"
+		Polish:"'Sprawiedliwość jest twierdzą nie do zdobycia, wybudowaną na grzbiecie góry, której nie straszne ani gwałtowne wichury, ani potężne armie.' - Joseph Addison"
+		Czech: "'Spravedlnost je nepřekonatelná pevnost postavená na vrcholu hory, kterou nesvrhne dravá voda ani nemůže být zničena silou armád.' - Joseph Addison"
+		Russian:"'Справедливость - это неприступная крепость, построенная на гребне горы, которую не может разрушить ярость стихий или уничтожить армия солдат.' - Джозеф Эддисон"
+}
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
 		Simplified_Chinese:"所在城市新组建的近战、骑乘和装甲单位获得“操练I级”晋升"
+		Traditional_Chinese:"所在城市新訓練的近戰、騎乘和裝甲單位獲得“操練I級”升級"
 		Polish:"Każdy nowo wyszkolona w tym mieście jednostka walcząca w zwarciu otrzymuje umiejętność Musztra I"
 		Russian:"Производимые в данном городе юниты конные, бронированные, а также ближнего боя получают повышение Муштра I"
-	}
-	
-	"Angkor Wat":{	
+		Czech:"Všechny nově postavené jednotky pro boj zblízka, na dálku a obrněné jednotky v tomto městě získají povýšení Dril 1 "
+}
+
+	"Angkor Wat":{
 		Italian:"Angkor Wat"
 		Russian:"Ангкор-Ват"
 		French:"Angkor Wat"
 		Romanian:"Angkor Wat"
 		Spanish:"Angkor Wat"
 		Simplified_Chinese:"吴哥窟"
+		Traditional_Chinese:"吳哥窟"
 		Portuguese:"Angkor Wat"
 		German:"Angkor Wat"
 		Polish:"Angkor Wat"
-	}
+		Czech:"Angkor Vat"
+}
 
 	"'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena":{
 		Italian:"'Il tempio non ha eguali nel mondo. Ha torri e decorazioni e tutti gli abbellimenti che il genio dell'uomo può concepire.' - Antonio da Magdalena"
 		Simplified_Chinese:"“这座寺庙不同于世界上的其他任何建筑。它拥有人类的天才们能够构想出的最精致的高塔和装饰。”——安东尼奥·达·马格达连那（葡萄牙传教士，最早游历吴哥窟的西方人）"
-	}
+		Traditional_Chinese:"“這座寺廟不同於世界上的其他任何建築。它擁有人類的天才們構想出的最精緻的高塔和裝飾。”——安東尼奧·達·瑪格達蓮那（葡萄牙傳教士，最早遊歷吳哥窟的西方人）"
+		Polish:"'Ta świątynia… nie ma sobie równych w całym świecie. Ma wieże, zdobienia i całe wyrafinowanie, które mógł stworzyć geniusz człowieka.' - Antonio da Magdalena"
+		Czech:"'Chrám je jako žádná jiná budova na světě. Má věže a výzdobu a všechna vylepšení, která si lidský génius dokáže představit.' - Antonio da Magdalena"
+		Russian:"'Храм - выдающееся сооружение. Оно имеет башни, рельефы и украшения, какие только может вообразить человеческий гений.' - Антонио де Магдалена"
+}
 
 	"Cost of acquiring new tiles reduced by 25%":{
 		Italian:"-25% costo per l'acquisto di nuove celle"
@@ -990,27 +1248,35 @@
 		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
 		Dutch:"Kosten voor het kopen van nieuwe velden verlaagt met 25%"
 		Spanish:"El coste de adquirir nuevas casillas se reduce 25%"
-		Simplified_Chinese:"购买新地块花费降低25%"
+		Simplified_Chinese:"购买新地块花费-25%"
+		Traditional_Chinese:"購買新地塊花費-25%"
 		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
 		Polish:"Koszt zakupu nowych pól obniżony o 25%"
-	}
-	
-	"Porcelain Tower":{	
+		Czech:"Cena za nákup nového území města se sníží o 25%"
+}
+
+	"Porcelain Tower":{
 		Italian:"Torre di Porcellana"
 		Russian:"Фарфоровая башня"
 		French:"Tour de Porcelaine"
 		Romanian:"Turnul de Porțelan"
 		Spanish:"Torre de Porcelana"
 		Simplified_Chinese:"大报恩寺塔"
+		Traditional_Chinese:"大報恩寺塔"
 		Portuguese:"Torre de Porcelana"
 		German:"Porzellan Turm"
-		Polish:"Porcelanowa wieża"
-	}
+		Polish:"Porcelanowa Wieża"
+		Czech:"Porcelánová pagoda"
+}
 
 	"'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell":{
 		Italian:"'Le cose sembrano sempre più belle quando ci voltiamo indietro per guardarle, ed è dall'inaccessibile torre del passato che la nostalgia si protende e chiama.' - James Russel Lowell"
 		Simplified_Chinese:"“我们所失去的总是要在回望之时才更知道它的美好，而那曾经不可一世的高塔如今是多么的渴望能够有所依靠。”——詹姆斯·罗素·洛威尔（美国诗人）"
-	}
+		Traditional_Chinese:"“我們所失去的總是要在回望之時才更知道它的美好，而那曾經不可一世的高塔如今是多麼的可望能夠有所依靠。”——詹姆斯·羅素·洛威爾（美國詩人）"
+		Polish:"'Kiedy patrzymy w przeszłość, wszystko wydaje się piękniejsze i właśnie w tej niedostępnej wieży przeszłości rodzi się Tęsknota.' - James Russell Lowell"
+		Czech:"'Věci se vždy zdají spravedlivější, když se na ně podíváme zpět, a to je z té nepřístupné věže minulosti, která se dlouze naklání a kývá.' - James Russell Lowell"
+		Russian:"'Многое начинает казаться лучше, когда остается в прошлом - и из этой неприступной башни Прошлого нас зовет и манит рукою Тоска.' - Джеймс Расселл Лоуэлл" //civ 5 official
+}
 
 	"Free great scientist appears":{
 		Spanish:"Aparece una Gran Científico gratis"
@@ -1018,76 +1284,92 @@
 		French:"Un scientifique illustre gratuit apparaît"
 		Romanian:"Apare un mare om de știință gratuit"
 		Simplified_Chinese:"免费的大科学家出现"
+		Traditional_Chinese:"免費的大科學家出現"
 		Portuguese:"Aparece um Grande Cientista grátis"
 		German:"Ein kostenloser Großer Wissenschaftler erscheint"
 		Polish:"Pojawia się darmowy Wielki Naukowiec"
 		Russian:"Появляется бесплатный Великий Учёный"
-	}
-	
-	"Ironworks":{	
+		Czech:"Získáme Velkého Vědce zdarma"
+}
+
+	"Ironworks":{
 		Italian:"Ferriera"
 		Russian:"Металлургический завод"
 		French:"Atelier métallurgique"
 		Romanian:"Fierărie"
 		Spanish:"Herrería"
-		Simplified_Chinese:"大铁厂"
+		Simplified_Chinese:"钢铁厂"
+		Traditional_Chinese:"鋼鐵廠"
 		Portuguese:"Siderurgia"
 		German:"Eisenhüttenwerk"
 		Polish:"Huta"
-	}
+		Czech:"Železárny"
+}
 
-	"Armory":{	
+	"Armory":{
 		Italian:"Armeria"
 		Russian:"Оружейная"
 		French:"Arsenal"
 		Romanian:"Depozit de arme"
 		Spanish:"Armería"
 		Simplified_Chinese:"军械所"
+		Traditional_Chinese:"軍械所"
 		Portuguese:"Arsenal"
 		German:"Waffenkammer"
 		Polish:"Zbrojownia"
-	}
+		Czech:"Zbrojnice"
+}
 
-	"Observatory":{	
+	"Observatory":{
 		Italian:"Osservatorio"
 		Russian:"Обсерватория"
 		French:"Observatoire"
 		Romanian:"Observator"
 		Spanish:"Observatorio"
 		Simplified_Chinese:"天文台"
+		Traditional_Chinese:"天文台"
 		Portuguese:"Observatório"
 		German:"Observatorium"
 		Polish:"Obserwatorium"
-	}
+		Czech:"Observatoř"
+}
 
-	"Opera House":{	
+	"Opera House":{
 		Italian:"Teatro dell'opera"
 		Russian:"Оперный театр"
 		French:"Opéra"
 		Romanian:"Operă"
 		Spanish:"Teatro de la Ópera"
 		Simplified_Chinese:"歌剧院"
+		Traditional_Chinese:"歌劇院"
 		Portuguese:"Casa de Ópera"
 		German:"Opernhaus"
 		Polish:"Opera"
-	}
-	
-	"Sistine Chapel":{	
+		Czech:"Operní dům"
+}
+
+	"Sistine Chapel":{
 		Italian:"Cappella Sistina"
 		Russian:"Сикстинская капелла"
 		French:"Chapelle Sixtine"
 		Romanian:"Capela Sixtină"
 		Spanish:"Capilla Sixtina"
 		Simplified_Chinese:"西斯廷教堂"
+		Traditional_Chinese:"西斯廷教堂"
 		Portuguese:" Capela Sistina"
 		German:"Sistinische Kapelle"
 		Polish:"Kaplica Sykstyńska"
-	}
+		Czech:"Sixtinská kaple"
+}
 
 	"'I live and love in God's peculiar light.' - Michelangelo Buonarroti":{
 		Italian:"'Vivo e amo sotto la peculiare luce di Dio.' - Michelangelo Buonarroti"
 		Simplified_Chinese:"“我在上帝的圣光之下爱与生活。”——米开朗基罗·博纳洛第"
-	}
+		Traditional_Chinese:"“我在上帝的聖光之下愛與生活。”——米開朗基羅·博納洛第"
+		Polish:"'Żyję i kocham w bożym blasku.' – Michał Anioł Buonarroti"
+		Czech:"'Žiji a miluji v zvláštním božím světle.' - Michelangelo Buonarroti"
+		Russian:"'Я живу и люблю в особом свете Господа.' - Микеланджело Буонаротти"
+}
 
 	"Culture in all cities increased by 25%":{
 		Italian:"+25% cultura in ogni città"
@@ -1098,61 +1380,78 @@
 		Dutch:"Cultuur word in alle steden verhoogd met 25%"
 		Spanish:"Cultura en todas las ciudades incrementada 25%"
 		Simplified_Chinese:"所有城市的文化产出+25%"
+		Traditional_Chinese:"所有城市的文化產出+25%"
 		Portuguese:"Cultura em todas as cidades incrementada em 25%"
 		Polish:"Kultura we wszystkich miastach wzrasta o 25%"
-	}
-	
-	"Bank":{	
+		Czech:"Kultura ve všech městech vzroste o 25%"
+}
+
+	"Bank":{
 		Italian:"Banca"
 		Russian:"Банк"
 		French:"Banque"
 		Romanian:"Bancă"
 		Spanish:"Banco"
 		Simplified_Chinese:"银行"
+		Traditional_Chinese:"銀行"
 		Portuguese:"Banco"
 		German:"Bank"
 		Polish:"Bank"
-	}
-	
+		Czech:"Banka"
+}
+
 	"Hanse":{	//German unique
 		Italian:"Hansa" //Same as in Italian
 		Simplified_Chinese:"汉萨会馆"
+		Traditional_Chinese:"漢薩會館"
 		French:"Hanse" //same in French
 		Polish:"Hanza"
-		Russian:"Ганзея" 
-	}
+		Russian:"Ганзея"
+		Czech:"Hanza"
+}
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
 		Italian:"+5% Produzione per ogni Rotta Commerciale con una Città-Stato nell'impero"
 		French:"+5% de production pour chaque routes commerciales connectées à une Cité état"
 		Polish:"+5% do produkcji za każdy szlak handlowy z państwem-miastem"
 		Simplified_Chinese:"每条通往城邦的贸易路线+5%产能"
+		Traditional_Chinese:"每調通往城邦的貿易路線+5%產能"
 		Russian:"+5% Производство за каждый торговый маршрут с городом-государством"
-	}
+		Czech:"+5% produkce pro každou obchodní stezku s hlavním městem říše"
+}
 
 	"Satrap's Court":{	//Persian unique
 		Italian:"Corte del Satrapo"
 		French:"Cour de Satrape"
-		Polish:"Dwór satrapy"
+		Polish:"Dwór Satrapy"
 		Simplified_Chinese:"总督府"
-	}
+		Traditional_Chinese:"總督府"
+		Czech:"Satrapův dvůr"
+		Russian:"Двор сатрапа"
+}
 
-	"Forbidden Palace":{	
-		Italian:"Palazzo Proibito"
+	"Forbidden Palace":{
+		Italian:"Città Proibita"
 		Russian:"Запретный дворец"
 		French:"Cité Interdite"
 		Romanian:"Palatul interzis"
 		Spanish:"Palacio Prohibido"
 		Simplified_Chinese:"紫禁城"
+		Traditional_Chinese:"紫禁城"
 		Portuguese:"Palácio Proibido"
 		German:"Verbotener Palast"
-		Polish:"Zakazane miasto"
-	}
+		Polish:"Zakazany Pałac"
+		Czech:"Zakázané město"
+}
 
 	"'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock":{
 		Italian:"'La maggior parte di noi può, a sua volontà, fare di questo mondo un palazzo o una prigione.' - John Lubbock"
 		Simplified_Chinese:"“我们中的大多数都能够自己做出选择，是把这个世界变成一座宫殿还是一座监狱。”——约翰·鲁伯克（英国学者）"
-	}
+		Traditional_Chinese:"“我們中的大多數都能夠自己做出選擇，是把這個世界變成一座宮殿還是一座監獄。”——約翰·魯伯克（英國學者）"
+		Polish:"'Większość z nas może wybrać, czy świat będzie nam pałacem, czy więzieniem.' – John Lubbock"
+		Czech:"'Většina z nás se může rozhodnout, jestli si z tohoto světa uděláme palác nebo vězení.' - John Lubbock"
+		Russian:"'Фактически любой из нас может по собственному желанию превратить мир во дворец или в темницу' - Джон Лаббок"
+}
 
 	"Unhappiness from population decreased by 10%":{
 		Italian:"-10% infelicità dalla popolazione"
@@ -1163,22 +1462,26 @@
 		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
 		Spanish:"Infelicidad de la población reducida 10%"
 		Simplified_Chinese:"来自人口的不满-10%"
+		Traditional_Chinese:"來自人口的不滿-10%"
 		Portuguese:"Infelicidade da população reduzida em 10%"
 		Polish:"Niezadowolenie z populacji zmniejszone o 10%"
-	}
-	
-	"Theatre":{	
+		Czech:"Nespokojenost za celkovou Populaci se snižuje o 10%"
+}
+
+	"Theatre":{
 		Italian:"Teatro"
 		Russian:"Tеатр"
 		French:"Théâtre"
 		Romanian:"Teatru"
 		Spanish:"Teatro"
 		Simplified_Chinese:"剧院"
+		Traditional_Chinese:"劇院"
 		Portuguese:"Teatro"
 		German:"Theater"
 		Polish:"Teatr"
-	}
-	
+		Czech:"Divadlo"
+}
+
 	"Leaning Tower of Pisa":{
 		Italian:"Torre pendente di Pisa"
 		Romanian:"Turnul din Pisa"
@@ -1186,14 +1489,20 @@
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
 		Simplified_Chinese:"比萨斜塔"
+		Traditional_Chinese:"比薩斜塔"
 		Polish:"Krzywa Wieża w Pizie"
 		Russian:"Пизанская башня"
-	}
+		Czech:"Šikmá Věž V Pise"
+}
 
 	"'Don't clap too hard - it's a very old building.' - John Osbourne":{
 		Italian:"'Non applaudite troppo forte - è un edificio molto vecchio.' - John Osborne"
 		Simplified_Chinese:"“别拍那么重——这是座非常古老的建筑。”——约翰·奥斯本（英国剧作家）"
-	}
+		Traditional_Chinese:"“別拍那麼重——這是座非常古老的建築。”——約翰·奧斯本（英國劇作家）"
+		Polish:"'Nie klaszczcie za mocno - to bardzo stary budynek.' – John Osborne"
+		Czech:"'Příliš netleskejte - je to velmi stará budova' - John Osbourne"
+		Russian:"'Не хлопайте так громко - здание старое, может развалиться.' - Джон Осборн"
+}
 
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
@@ -1202,62 +1511,83 @@
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
 		Simplified_Chinese:"免费的伟人"
+		Traditional_Chinese:"免費的偉人"
 		Polish:"Darmowy Wielki Człowiek"
 		Russian:"Бесплатный Великий человек"
-	}
-	
+		Czech:"Velká Osobnost zdarma"
+}
+
 	"Choose a free great person":{
 		Italian:"Scegli un Grande Personaggio gratuito"
 		Simplified_Chinese:"选择1个免费的伟人"
+		Traditional_Chinese:"選擇1個免費的偉人"
 		French:"Choisissez un personnage illustre gratuit"
 		Polish:"Wybierz darmowego Wielkiego Człowieka"
 		Russian:"Выбор великого человека"
-	}
+		Czech:"Vyberme si Velkou Osobnost zdarma"
+}
 
 	"Get ":{
 		Italian:"Ottieni "
 		Simplified_Chinese:"获得"
-	}
+		Traditional_Chinese:"獲得"
+		Czech:"Vybrat: "
+		Polish:"Otrzymaj"
+}
 
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
 		Simplified_Chinese:"姬路城"
+		Traditional_Chinese:"姬路城"
 		French:"Le château de Himeji"
 		Polish:"Zamek Himeji"
 		Russian:"Замок Химэдзи"
-	}
+		Czech:"Hrad Himedži"
+}
 
 	"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo":{
 		Italian:"'Il Bushido si realizza in presenza della morte. Significa, ogni volta che c'è una scelta tra la vita e la morte, scegliere la seconda. Non c'è alcun altro ragionamento' - Yamamoto Tsunetomo"
 		Simplified_Chinese:"“所谓武士道，就是看透死亡。于生死两难之际，应果断选择死，而不需要任何原因。”——山本常朝（日本江户时代武士）"
-	}
+		Traditional_Chinese:"“所謂武士道，就是看透死亡。於生死兩難之際，應果斷選擇死，而不需要任何原因。”——山本常朝（日本江戶時代武士）"
+		Polish:"'Bushido - Droga wojownika - ujawnia się w obecności śmierci. Oznacza wybranie śmierci, gdy do wyboru jest życie lub śmierć. Nie ma innego uzasadnienia.' – Yamamoto Tsunetomo"
+		Czech:"'Bushido je realizováno v přítomnosti smrti. To znamená vybrat si smrt, kdykoli je na výběr mezi životem a smrtí. Neexistuje žádná jiná volba.' - Yamamoto Tsunetomo"
+		Russian:"'Бусидо - путь воина - означает смерть. Когда для выбора имеются два пути, выбирай тот, который ведет к смерти. Не рассуждай! Направь мысль на путь, который ты предпочел, и иди.' - Ямамото Цунетомо"
+}
 
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
 		Simplified_Chinese:"单位在境内+15%战斗力"
+		Traditional_Chinese:"單位在境內+15%戰鬥力"
 		French:"+15% de force de combat pour les unités combattants sur un territoire allié"
 		Polish:"+15% do siły ataku jednostek walczących na przyjaznym terytorium"
 		Russian:"+15% к силе атаки юнитов, сражающихся на дружественной территории"
-	}
-	
-	"Taj Mahal":{	
+		Czech:"+15% bojové síly pro jednotky bojující v přátelském území"
+}
+
+	"Taj Mahal":{
 		Italian:"Taj Mahal" //same in Italian
 		Russian:"Тадж-Махал"
 		French:"Taj Mahal"
 		Romanian:"Taj Mahal"
 		Spanish:"Taj Mahal"
 		Simplified_Chinese:"泰姬陵"
+		Traditional_Chinese:"泰姬陵"
 		Portuguese:"Taj Mahal" // somethimes h has no sound in the portuguese language (brazilian variation [altough i am not sure about other variations]) and others it has the sound of h (weak sound)
 					   // so that is why i would double check it later to see if Taj Mahal is correctly written in portuguese
 		German:"Taj Mahal"
 		Polish:"Tadź Mahal"
-	}
+		Czech:"Tádž Mahal"
+}
 
 	"'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore":{
 		Italian:"'Il Taj Mahal sorge sulle rive del fiume come una lacrima solitaria sospesa sulla guancia del tempo.' - Rabindranath Tagore"
 		Simplified_Chinese:"“泰姬陵伫立在河岸，如同时间的脸颊上一滴孤单的泪水。”——罗宾德拉纳特·泰戈尔"
-	}
-	
+		Traditional_Chinese:"“泰姬陵佇立在河岸，如同時間的臉頰上一滴孤單的淚水。”——羅賓德拉納特·泰戈爾"
+		Polish:"'Tadż Mahal wznosi się nad brzegiem rzeki niczym samotna łza wisząca na policzku czasu.' – Rabindranath Tagore"
+		Czech:"'Tádž Mahal stoupá nad břehy řeky jako osamělá slza zavěšená na tváři času.' - Rabindranath Tagore"
+		Russian:"'Пусть великолепие алмаза, рубина исчезнет, как магическое мерцание от радуги, только пусть одна слеза - Тадж-Махал - ярко сияет на щеке времени.' - Рабиндарат Тагор"
+}
+
 	"Empire enters golden age":{
 		Italian:"L'impero entra nell'Età dell'Oro"
 		Russian:"Империя вступает в золотой век"
@@ -1267,70 +1597,86 @@
 		Dutch:"Het rijk betreed een gouden eeuw"
 		Spanish:"El imperio comienza una Edad Dorada"
 		Simplified_Chinese:"帝国进入黄金时代"
+		Traditional_Chinese:"帝國進入黃金時代"
 		Portuguese:"Império entra idade dourada"
 		Polish:"Imperium wkroczyło w złotą erę"
-	}
-	
-	"Windmill":{	
+		Czech:"Naše říše vstoupila do Zlatého věku"
+}
+
+	"Windmill":{
 		Italian:"Mulino a vento"
 		Russian:"Ветряная мельница"
 		French:"Moulin à vent"
 		Romanian:"Moară de vant"
 		Spanish:"Molino de viento"
 		Simplified_Chinese:"风车"
+		Traditional_Chinese:"風車"
 		Portuguese:"Moinho de vento"
 		German:"Windmühle"
 		Polish:"Wiatrak"
-	}
-	
+		Czech:"Větrný mlýn"
+}
+
 	"Must not be on hill":{
 		Italian:"Non deve trovarsi su Collina"
 		French:"Doit être sur une colline"
 		Polish:"Nie może być na wzgórzu"
 		Russian:"Не может быть построено на холме"
 		Simplified_Chinese:"城市不能位于山脉"
-	}
+		Traditional_Chinese:"城市不能位於山脈"
+		Czech:"Nesmí být na kopci"
+}
 
-	"Museum":{	
+	"Museum":{
 		Italian:"Museo"
 		Russian:"Музей"
 		French:"Musée"
 		Romanian:"Muzeu"
 		Spanish:"Museo"
 		Simplified_Chinese:"博物馆"
+		Traditional_Chinese:"博物館"
 		Portuguese:"Museu"
 		Polish:"Muzeum"
 		//same in German
-	}
+		Czech:"Muzeum"
+}
 
-	"Hermitage":{	
+	"Hermitage":{
 		Italian:"Hermitage"
 		Russian:"Эрмитаж"
 		French:"Ermitage"
 		Romanian:"Schit"
 		Spanish:"Ermita"
 		Simplified_Chinese:"冬宫"
+		Traditional_Chinese:"冬宮"
 		Portuguese:"Eremitério"
 		German:"Eremitage"
 		Polish:"Ermitaż"
-	}
-	
-	"The Louvre":{	
+		Czech:"Ermitáž"
+}
+
+	"The Louvre":{
 		Italian:"Il Louvre"
 		Russian:"Лувр"
 		French:"Le Louvre"
 		Romanian:"Luvru"
 		Spanish:"El Louvre"
 		Simplified_Chinese:"卢浮宫"
+		Traditional_Chinese:"羅浮宮"
 		Portuguese:"O Louvre"
 		German:"Der Louvre"
 		Polish:"Luwr"
-	}
+		Czech:"Muzeum Louvre"
+}
 
 	"'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson":{
 		Italian:"'Ogni opera d'arte genuina ha tanta ragione d'esistere quanto la terra e il sole.' - Ralph Waldo Emerson"
 		Simplified_Chinese:"“每一件伟大的艺术品都应如日月般长存。”——拉尔夫·沃尔多·爱默生"
-	}
+		Traditional_Chinese:"“每一件偉大的藝術品都應如日月般長存。”——拉爾夫·沃爾多·愛默生"
+		Polish:"'Każde prawdziwe dzieło sztuki pod wieloma względami przypomina ziemię i słońce.' – Ralph Waldo Emerson"
+		Czech:"'Každé opravdové umělecké dílo má tolik důvodů k bytí jako Země a Slunce' - Ralph Waldo Emerson"
+		Russian:"'У подлинного произведения искусства столько же прав на существование, сколько у солнца и земли.' - Ральф Уолдо Эмерсон"
+}
 
 	"Free Great Artist Appears":{
 		Italian:"Appare un Grande Artista gratuito"
@@ -1340,70 +1686,82 @@
 		Dutch:"Een gratis geweldige artiest verschijnt"
 		Spanish:"Aparece un Gran Artista gratis"
 		Simplified_Chinese:"免费的大艺术家出现"
+		Traditional_Chinese:"免費的大藝術家出現"
 		Portuguese:"Aparece um Grande Artista grátis"
 		German:"Kostenloser Großer Künstler erscheint"
 		Polish:"Pojawił się darmowy Wielki Artysta"
-	}
-	
+		Czech:"Získáme Velkéhu Umělce zdarma"
+}
+
 	"Seaport":{
 		Spanish:"Astillero"
 		Italian:"Cantiere navale"
 		French:"Port"
 		Romanian:"Port maritim"
 		Simplified_Chinese:"海运码头"
+		Traditional_Chinese:"海運碼頭"
 		Portuguese:"Port"
 		German:"Seehafen"
 		Polish:"Port morski"
 		Russian:"Морской порт"
-	}
+		Czech:"Námořní přístav"
+}
 
 	"+1 production and gold from all sea resources worked by the city":{
 		Spanish:"+1 de produccion y oro por todos los recursos acuaticos trabajados por la ciudad"
 		Italian:"+1 Produzione e Oro da ogni risorsa marittima sfruttata dalla città"
 		French:"+1 de production et d'or pour toutes les ressources maritimes exploitées par la ville"
 		Romanian:"+1 producție și aur din toate resursele maritime prelucrate de oraș"
-		Simplified_Chinese:"所在城市每个海洋资源+1产能和金钱"
+		Simplified_Chinese:"所在城市每个已开发的海洋资源+1产能和金钱"
+		Traditional_Chinese:"所在城市每個已開發的海洋資源+1產能和金錢"
 		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
 		German:"+1 Produktion und Gold von allen Meeresressourcen die von der Stadt bewirtschaftet werden"
 		Polish:"+1 do produkcji i złota ze wszystkich surowców morskich wydobywanych w mieście"
 		Russian:"+1 Производство и Золото от всех обрабатываемых морских клеток вокруг города"
-	}
+		Czech:"+1 produkce Zlata a všech mořských zdrojů v tomto městě"
+}
 
 	"+15% production of naval units":{
 		Spanish:"+15% A la produccion de unidades navales"
 		Italian:"+15% Produzione per le unità marittime"
 		French:"+15% à la production d'unités maritimes"
 		Romanian:"+15% producție de unități navale"
-		Simplified_Chinese:"组建海上单位时+15%产能积累"
+		Simplified_Chinese:"组建海上单位时产能积累速率+15%"
+		Traditional_Chinese:"訓練海上單位時產能累積速率+15%"
 		Portuguese:"15% na produção de unidades marítimas"
 		German:"+15% Produktion für Marineeinheiten"
 		Polish:"+15% do produkcji jednostek marynarki"
 		Russian:"+15% Производство при постройке кораблей"
-	}
-	
-	"Public School":{	
+		Czech:"+15% produkce pro námořní jednotky"
+}
+
+	"Public School":{
 		Italian:"Scuola pubblica"
 		Russian:"Школа"
 		French:"École publique"
 		Romanian:"Școală publică"
 		Spanish:"Escuela pública"
 		Simplified_Chinese:"公立学校"
+		Traditional_Chinese:"公立學校"
 		Portuguese:"Escola Pública"
 		German:"Öffentliche Schule"
 		Polish:"Szkoła powszechna"
-	}
-	
-	"Hospital":{	
+		Czech:"Veřejná škola"
+}
+
+	"Hospital":{
 		Italian:"Ospedale"
 		Russian:"Больница"
 		French:"Hôpital"
 		Romanian:"Spital"
 		Spanish:"Hospital"
 		Simplified_Chinese:"医院"
+		Traditional_Chinese:"醫院"
 		Portuguese:"Hospital"
 		German:"Krankenhaus"
 		Polish:"Szpital"
-	}
+		Czech:"Nemocnice"
+}
 
 	"25% of food is carried over after a new citizen is born":{
 		Italian:"Il 25% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
@@ -1414,54 +1772,68 @@
 		Dutch:"25% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
 		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
 		Simplified_Chinese:"城市增加新的市民后保留25%食物储备以加速成长"
+		Traditional_Chinese:"城市增加新的市民後保留25%食物儲備以加速成長"
 		Portuguese:"25% da comida é mantida depois de um novo cidadão nascer"
-		Polish:"25% więcej żywności po pojawieniu się nowego obywatela" 
-	}
-	
-	"Factory":{	
+		Polish:"25% więcej żywności po pojawieniu się nowego obywatela"
+		Czech:"25% Jídla je zachováno poté, co se město rozroste o nového obyvatele"
+}
+
+	"Factory":{
 		Italian:"Fabbrica"
 		Russian:"Завод"
 		French:"Usine"
 		Romanian:"Uzină"
 		Spanish:"Fábrica"
 		Simplified_Chinese:"工厂"
+		Traditional_Chinese:"工廠"
 		Portuguese:"Fábrica"
 		German:"Fabrik"
 		Polish:"Fabryka"
-	}
+		Czech:"Továrna"
+}
 
-	"Stock Exchange":{	
+	"Stock Exchange":{
 		Italian:"Borsa valori"
 		Russian:"Фондовая биржа"
 		French:"Bourse"
 		Romanian:"Bursa de Valori"
 		Spanish:"Bolsa de valores"
 		Simplified_Chinese:"证券交易所"
+		Traditional_Chinese:"證券交易所"
 		Portuguese:"Bolsa de valores"
 		German:"Börse"
 		Polish:"Giełda"
-	}
+		Czech:"Burza"
+}
 
-    	"Big Ben":{	
+    	"Big Ben":{
 		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
+		Traditional_Chinese:"大笨鐘"
 		French:"Big Ben"
 		Polish:"Big Ben"
 		Russian:"Биг Бен"
-	}
+		Czech:"Big Ben"
+}
 
 	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
 		Italian:"'Per ottenere grandi risultati servono due cose: un piano e un sacco di tempo.' - Leonard Bernstein"
 		Simplified_Chinese:"“为了完成伟大的工作，有两样东西是必须的：一个计划，以及不多的时间。”——伦纳德·伯恩斯坦（美国音乐家）"
-	}
+		Traditional_Chinese:"“為了完成偉大的工作，有兩樣東西是必須的：一個計畫，以及不多的時間。”——倫納德·伯恩斯坦（美國音樂家）"
+		Polish:"'Żeby dokonać czegoś wielkiego, potrzeba dwóch rzeczy: planu i zbyt mało czasu.' – Leonard Bernstein"
+		Czech:"'K dosažení velkých věcí jsou zapotřebí dvě věci: plán a nedostatek času.' - Leonard Bernstein"
+		Russian:"'Для великих свершений потребны две вещи: план действий и недостаток времени.' - Леонард Бернстайн"
+}
 
 	"-15% to purchasing items in cities":{
 		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
-		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
+		Simplified_Chinese:"所有城市购买项目所需的金钱花费-15%"
+		Traditional_Chinese:"所有城市購買項目所需的金錢花費-15%"
 		French:"-15% d'or pour les achats dans les villes"
-		Polish:"-15% ceny budynków i jednostek kupowanych w złocie"
+		Polish:"-15% do ceny budynków i jednostek kupowanych w miastach"
 		Russian:"-15% к стоимости покупки в городах"
-	}
+		Czech:"-15% ceny při nákupu věcí ve městech"
+}
 
 	"Cristo Redentor":{
 		Italian:"Cristo Redentor" //Same in Italian
@@ -1470,15 +1842,21 @@
 		Romanian:"Cristo Redentor"
 		Spanish:"Cristo Redentor"
 		Simplified_Chinese:"救世基督像"
+		Traditional_Chinese:"救世基督像"
 		Portuguese:"Cristo Redentor"
 		//same in German
 		Polish:"Statua Chrystusa Zbawiciela"
-	}
+		Czech:"Socha Krista Spasitele"
+}
 
 	"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28":{
 		Italian:"'Venite a me, voi tutti che siete affaticati e oppressi, e io vi ristorerò.' - Matteo 11:28"
 		Simplified_Chinese:"“凡劳苦担重担的人，可以到我这里来，我就使你们得安息。”——圣经·马太福音 11:28"
-	}
+		Traditional_Chinese:"“凡勞苦擔重擔的人，可以到我這裡來，我就使你們得安息。”——聖經·馬太福音 11:28"
+		Polish:"'Przyjdźcie do Mnie wszyscy, którzy utrudzeni i obciążeni jesteście, a Ja was pokrzepię.' – Biblia, Ew. wg św. Mateusza 25,28"
+		Czech:"'Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout.' - Nový Zákon, Matouš 11:28"
+		Russian:"'Придите ко Мне все трудящиеся и обремененные, и Я успокою вас.' - Евангелие от Матфея, 11:28"
+}
 
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in Cultura per ogni nuova politica"
@@ -1489,10 +1867,12 @@
 		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
 		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
 		Simplified_Chinese:"推行新的社会政策所需的文化点数-10%"
+		Traditional_Chinese:"推行新的社會政策所需的文化點數-10%"
 		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
-		Polish:"Koszt wdrożenia nowych ustrojów społecznych zmniejszony o 10%"
-	}
-	
+		Polish:"Wdrożenie nowych ustrojów społecznych zmniejszone o 10% kultury"
+		Czech:"Počet Kulturních bodů na získání nové sociální politiky se sníží o 10%"
+}
+
 	"Kremlin":{
 		Italian:"Cremlino"
 		French:"Kremlin"
@@ -1500,83 +1880,124 @@
 		Spanish:"Kremlin"
 		Russian:"Кремль"
 		Simplified_Chinese:"克里姆林宫"
+		Traditional_Chinese:"克里姆林宮"
 		Polish:"Kreml"
-	}
+		Czech:"Kreml"
+}
 
 	"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed":{
 		Italian:"'La Legge è una fortezza su una collina che gli eserciti non possono catturare e le inondazioni non possono spazzare via. - Il profeta Maometto"
 		Simplified_Chinese:"“律法当如山巅之城：无论是敌人还是洪水都无法征服。”——先知穆罕默德"
-	}
+		Traditional_Chinese:"“律法當如山巔之城：無論是敵人還是洪水都無法征服。”——先知穆罕默德"
+		Polish:"'Prawo to forteca na wzgórzu, którego nie zdobędzie żadna armia i nie pochłonie powódź.' – Prorok Mahomet"
+		Czech:"'Zákon je pevnost na kopci, kterou nezničí armády a povodeň neodplaví.' - Proork Mohamed"
+		Russian:"'Закон - это крепость на холме, которую не подточат воды, не возьмут осаждающие' - пророк Мухаммед"
+}
 
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
-		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
+		Simplified_Chinese:"所有城市防御建筑防御力+25%"
+		Traditional_Chinese:"所有城市防禦建築防禦力+25%"
 		French:"Les batiments de défense sont 25% plus efficace dans toutes les villes"
 		Polish:"+25% skuteczności budowli obronnych w miastach"
 		Russian:"Защитные сооружения во всех городах на 25% эффективнее"
-	}
-	
+		Czech:"Obranné budovy ve všech městech budou o 25% účinnější"
+}
+
 	"Neuschwanstein":{
 		Italian:"Castello di Neuschwanstein"
 		Simplified_Chinese:"新天鹅堡"
+		Traditional_Chinese:"新天鵝堡"
 		French:"Château de Neuschwanstein"
-		Polish:"Neuschwanstein"
+		Polish:"Zamek Neuschwanstein"
 		Russian:"Замок Нойшванштайн"
-	}
+		Czech:"Zámek Neuschwanstein"
+}
 
 	"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria":{
 		Italian:"'...la posizione è una delle più belle che si possano trovare, sacra e inaccessibile, degno tempio per l'amico divino che ha portato salvezza e vera benedizione a tutto il mondo.' - Re Ludovico II di Baviera"
 		Simplified_Chinese:"“……选址是所能找到的当中风景最美丽的，圣洁而不可亵渎，一座配得起神圣朋友的圣所，他们给这个世界带来超度和真正的赐福。”——巴伐利亚国王路德维希二世"
-	}
+		Traditional_Chinese:"“……選只是所能找到的之中風景最美麗的，聖潔而不可褻瀆，一座配的起神聖朋友的神聖場所，他們給這個世界帶來超渡和真正的庇佑。”——巴伐利亞國王路德維希二世"
+		Polish:"'...miejsce to jest jednym z najpiękniejszych, jakie można znaleźć. Święte i niedostępne. Prawdziwa świątynia ku czci boskiego przyjaciela, który przyprowadził wybawienie i prawdziwe błogosławieństwo dla świata.' – Król Ludwig II Bawarski"
+		Czech:"'... místo je jedním z nejkrásnějších které lze nalézt, svatých a nepřístupných, hodných chrámů pro božského přítele, který přinesl světu spasení a skutečné požehnání.' - Král Ludvík II. Bavorský"
+		Russian:"'... это одно из самых красивых мест, святое и безупречное, достойный монастырь для божественного друга, который принес спасение и благословение миру.' - Король Баварии Людвиг II"
+}
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
 		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello posseduto"
 		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
+		Traditional_Chinese:"每座城堡+3金錢、+2文化和+1快樂"
 		French:"+1 bonheur, +2 culture et +3 or produits par tous les châteaux"
 		Polish:"+1 do zadowolenia, +2 do kultury i +3 do złota z każdego zamku"
 		Russian:"+1 Счастье, +2 Культура и +3 Золото от каждого замка"
-	}
-	
-	"Military Academy":{	
+		Czech:"+1 Spokojenost +2 Kulturní body a +3 Zlata za každý Hrad"
+}
+
+	"Military Academy":{
 		Italian:"Accademia militare"
 		Russian:"Военная академия"
 		French:"Académie militaire"
 		Romanian:"Academie militară"
 		Spanish:"Academia militar"
 		Simplified_Chinese:"军事学院"
+		Traditional_Chinese:"軍事學院"
 		Portuguese:"Academia militar"
 		German:"Militärakademie"
 		Polish:"Akademia wojskowa"
+		Czech:"Vojenská akademie"
+	}
+	
+	"Brandenburg Gate":{
+		Italian:"Porta di Brandeburgo"
+		Czech:"Brandenburgská brána"
+	}
+	
+	"Free Great General appears near the Capital":{
+		Italian:"Appare un Grande Generale vicino alla Capitale"
+        Traditional_Chinese:"免費的大軍事家已經在首都附近出現"
+		Czech:"Velký Generál zdarma se objevil poblíž hlavního města"
+	}
+	
+	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
+		Italian:"'La pallida morte batte ugualmente alla porta del povero e al palazzo del re.' - Orazio",
+		Czech:"'Bledá smrt klepe u vrat chudáka stejně jako na královský palác.' - Horatius"
 	}
 
-	"Broadcast Tower":{	
+	"Broadcast Tower":{
 		Italian:"Ripetitore"
 		Russian:"Широковещательная башня"
 		French:"Tour de diffusion"
 		Romanian:"Turn radio"
 		Spanish:"Torre de emisión"
 		Simplified_Chinese:"广播塔"
+		Traditional_Chinese:"廣播塔"
 		Portuguese:"Torre de Transmissão"
 		German:"Fernmeldeturm"
 		Polish:"Wieża transmisyjna"
-	}
-	
-	"Eiffel Tower":{	
+		Czech:"Vysílací věž"
+}
+
+	"Eiffel Tower":{
 		Italian:"Torre Eiffel"
 		Russian:"Эйфелева башня"
 		French:"La Tour Eiffel"
 		Romanian:"Turnul Eiffel"
 		Spanish:"Torre Eiffel"
 		Simplified_Chinese:"艾菲尔铁塔"
+		Traditional_Chinese:"艾菲爾鐵塔"
 		Portuguese:"Torre Eiffel"
 		German:"Eiffel-Turm"
 		Polish:"Wieża Eiffla"
-	}
+		Czech:"Eiffelova věž"
+}
 
 	"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran":{
 		Italian:"'Chi può pensare che, siccome siamo ingegneri, la bellezza non ci preoccupi, o che non cerchiamo di costruire strutture belle oltre che solide e durature?' - Gustave Alexandre Eiffel"
 		Simplified_Chinese:"“我们活着只为去发现美。其他一切都是某种形式的等待。”——哈里利·纪伯伦"
-	}
+		Traditional_Chinese:"“我們活著只為去發現美。其他一切都是某種形式的等待。”——哈里利·紀伯倫"
+		Czech:"'Žijeme jenom kvůli odhalování krásy, všechno ostatní je jen formou čekání.' - Kahlil Gibran"
+		Russian:"'Мы живем лишь для того, чтобы познавать красоту. Все прочее – ожидание' - Халиль Джебран"
+}
 
 	"Provides 1 happiness per social policy":{
 		Italian:"+1 Felicità per ogni politica sociale"
@@ -1587,92 +2008,111 @@
 		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
 		Spanish:"Otorga 1 felicidad por cada política social"
 		Simplified_Chinese:"每项已推行的社会政策+1快乐"
+		Traditional_Chinese:"每項已推行的社會政策+1快樂"
 		Portuguese:"Provem 1 felicade por política social"
 		Polish:"+1 do zadowolenia z każdego ustroju społecznego"
-	}
-	
+		Czech:"Poskytuje 1 Spokojenost za každou sociální politiku"
+}
+
 	"Statue of Liberty":{
 		Italian:"Statua della Libertà"
 		German:"Freiheitsstatue"
 		French:"Statue de la Liberté"
 		Simplified_Chinese:"自由女神像"
+		Traditional_Chinese:"自由女神像"
 		Polish:"Statua wolności"
 		Russian:"Статуя Свободы"
-	}
+		Czech:"Socha Svobody"
+}
 
 	"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus":{
 		Italian:"'Datemi coloro che sono esausti, i poveri / Le folle accalcate che bramano di respirare libere, / I miseri rifiuti delle vostre coste brulicanti. / Mandatemi chi non ha casa, squassato dalle tempeste, / Sollevo la fiaccola accanto alla porta d'oro!' - Emma Lazarus"
 		Simplified_Chinese:"“给我你们的疲乏，你们的贫困，拥挤在旅途渴望自由呼吸的人们，被彼岸无情抛弃颠沛流离的惊魂。把这些无家可归，饱尝风雨的苦难者全都给我，我伫立在金色的大门旁高举起灯火！”——艾玛·拉扎路斯（美国诗人）"
-	}
+		Traditional_Chinese:"“給我你們的貧乏，你們的貧困，擁擠在旅途渴望自由呼吸的人們，被彼岸無情拋棄顛沛流離的驚魂。把這些無家可歸，飽嚐風雨的苦難者全部給我，我佇立在金色的大門旁高舉起燈火！”——艾瑪·拉扎路斯（美國詩人）"
+		Czech:"'Dej mi své unavené, své ubohé, tvé schoulené masy toužící po svobodném nadechnutí, uboze odmítnuté tvým oplývajícím břehem. Pošli mi ty, bez domova, zmítané bouří. Pozvednu svou lampu u zlatých dveří!' - Emma Lazarus"
+		Russian:"'А мне отдайте ваших усталых, ваших бедных... А мне отдайте из глубин бездонных, Своих изгоев, люд забитый свой, Пошлите мне отверженных, бездомных,Я им свечу у двери золотой...' - Эмма Лазарус"
+}
 
 	"+1 Production from specialists":{
 		Italian:"+1 Produzione dagli Specialisti"
 		German:"+1 Produktion von Spezialisten"
 		French:"+1 Production par spécialiste"
 		Simplified_Chinese:"每个专业人员+1产能"
+		Traditional_Chinese:"每個專業人員+1產能"
 		Polish:"+1 do produkcji ze specjalistów"
 		Russian:"+1 Производство от специалистов"
-	}
-	
-	"Medical Lab":{	
+		Czech:"+1 Produkce od specialistů"
+}
+
+	"Medical Lab":{
 		Italian:"Laboratorio medico"
 		Russian:"Медицинская лаборатория"
 		French:"Laboratoire médical"
 		Romanian:"Laborator medical"
 		Spanish:"Laboratorio médico"
 		Simplified_Chinese:"医学实验室"
+		Traditional_Chinese:"醫學實驗室"
 		Portuguese:"Laboratório médico"
 		German:"Medizinisches Labor"
 		Polish:"Laboratorium medyczne"
-	}
+		Czech:"Lékařská laboratoř"
+}
 
-	"Research Lab":{	
+	"Research Lab":{
 		Italian:"Laboratorio di ricerca"
 		Russian:"Исследовательская лаборатория"
 		French:"Laboratoire de recherche"
 		Romanian:"Laborator de cercetare"
 		Spanish:"Laboratorio de investigación"
 		Simplified_Chinese:"研发实验室"
+		Traditional_Chinese:"研發實驗室"
 		Portuguese:"Laboratório de investigação"
 		German:"Forschungslabor"
 		Polish:"Ośrodek badawczy"
-	}
+		Czech:"Výzkumná laboratoř"
+}
 
-	"Hydro Plant":{	
+	"Hydro Plant":{
 		Italian:"Centrale idroelettrica"
 		Russian:"ГЭС"
 		French:"Centrale hydroélectrique"
 		Romanian:"Hidrocentrală"
 		Spanish:"Central hidroeléctrica"
 		Simplified_Chinese:"水电站"
+		Traditional_Chinese:"水力發電廠"
 		Portuguese:"Central hidroelétrica"
 		German:"Wasserkraftwerk"
 		Polish:"Elektrownia wodna"
-	}
+		Czech:"Vodní elektrárna"
+}
 
-	"Stadium":{	
+	"Stadium":{
 		Italian:"Stadio"
 		Russian:"Стадион"
 		French:"Stade"
 		Romanian:"Stadion"
 		Spanish:"Estadio"
 		Simplified_Chinese:"体育场"
+		Traditional_Chinese:"體育館"
 		Portuguese:"Estadio"
 		German:"Stadion"
 		Polish:"Stadion"
-	}
-	
-	"Solar Plant":{	
+		Czech:"Stadión"
+}
+
+	"Solar Plant":{
 		Italian:"Centrale ad energia solare"
 		Russian:"Солнечные электростанции"
 		French:"Centrale solaire"
 		Romanian:"Centrală solară"
 		Spanish:"Planta Solar"
 		Simplified_Chinese:"太阳能电站"
+		Traditional_Chinese:"太陽能電廠"
 		Portuguese:"Planta Solar"
 		German:"Solarkraftwerk"
 		Polish:"Elektrownia słoneczna"
-	}
+		Czech:"Solární elektrárna"
+}
 
 	"Must be next to desert":{
 		Italian:"Deve rasentare Deserto"
@@ -1683,17 +2123,21 @@
 		Dutch:"Moet aan een woestijn grenzen"
 		Spanish:"Debe estar próximo a un desierto"
 		Simplified_Chinese:"城市必须紧邻沙漠"
+		Traditional_Chinese:"城市必須緊鄰沙漠"
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 		Polish:"Musi być obok pustyni"
-	}
+		Czech:"Musí být vedle pouště"
+}
 
 	"Must be next to mountain":{
 		Italian:"Deve rasentare Montagna"
 		Simplified_Chinese:"城市必须紧邻山脉"
+		Traditional_Chinese:"城市必須緊鄰山脈"
 		French:"Doit être à côté d'une montagne"
 		Polish:"Musi być przy górze"
 		Russian:"Должно быть построено рядом с горой"
-	}
+		Czech:"Musí být vedle hor"
+}
 
 	"Sydney Opera House":{
 		Spanish:"Casa De La Opera De Sidney"
@@ -1701,16 +2145,21 @@
 		French:"Opéra de Sydney"
 		Romanian:"Opera din Sydney"
 		Simplified_Chinese:"悉尼歌剧院"
+		Traditional_Chinese:"雪梨歌劇院"
 		Portuguese:"Ópera de Sydney"
 		German:"Opernhaus Sydney"
 		Polish:"Opera w Sydney"
 		Russian:"Сиднейский Оперный театр"
-	}
+		Czech:"Opera v Sydney"
+}
 
 	"'Those who lose dreaming are lost.'  - Australian Aboriginal saying":{
 		Italian:"'Quelli che perdono i sogni sono perduti.' - Massima degli aborigeni australiani"
 		Simplified_Chinese:"“没有梦想的人，人生也是迷茫的。”——澳大利亚土著谚语"
-	}
+		Traditional_Chinese:"“沒有夢想的人，人生也是迷茫的。”——澳大利亞土著諺語"
+		Czech:"Ti, kteří ztratili sny, jsou ztraceni - Australské domorodé přísloví"
+		Russian:"'У кого погибли мечты, тот и сам погиб.' - пословица австралийских аборигенов"
+}
 
 	/*
 	"CN Tower":{
@@ -1719,8 +2168,10 @@
 		French:"Tour du CN"
 		Spanish:"Torre CN"
 		Simplified_Chinese:"西恩塔"
+		Traditional_Chinese:"西恩塔"
 		Polish:"Wieża CN"
-	}
+		Czech:"CN Tower"
+}
 	*/
 
 	"+1 population in each city":{
@@ -1728,55 +2179,68 @@
 		German:"+1 Einwohner in jeder Stadt"
 		French:"+1 population dans chaque villes"
 		Simplified_Chinese:"每座城市+1人口"
+		Traditional_Chinese:"每座城市+1人口"
 		Polish:"+1 do populacji w każdym mieście"
 		Russian:"+1 к населению в каждом городе"
-	}
+		Czech:"+1 Populace v každém městě"
+}
 
 	"+1 happiness in each city":{
 		Italian:"+1 Felicità in ogni città"
 		German:"+1 Zufriedenheit in jeder Stadt"
 		French:"+1 bonheur dans chaque villes"
 		Simplified_Chinese:"每座城市+1快乐"
+		Traditional_Chinese:"每座城市+1快樂"
 		Polish:"+1 do zadowolenia w każdym mieście"
 		Russian:"+1 Счастье в каждом городе"
-	}
-	
+		Czech:"+1 Spokojenost v každém městě"
+}
+
 	"Pentagon":{
 		Italian:"Pentagono"
 		French:"Pentagone"
 		//same in German
-		Simplified_Chinese:"五角大楼"
+		Simplified_Chinese:"五角大楼",
+		Traditional_Chinese:"五角大廈",
 		Polish:"Pentagon"
 		Russian:"Пентагон"
-	}
+		Czech:"Pentagon"
+}
 
 	"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower":{
 		Italian:"'Preparandomi alla battaglia ho sempre constatato che i piani sono inutili, ma la pianificazione è indispensabile.' - Dwight D. Eisenhower"
 		Simplified_Chinese:"“在准备作战时，我常常发现定好的计划没有用处，但计划的过程仍必不可少。”——德怀特·戴维·艾森豪威尔"
-	}
+		Traditional_Chinese:"“在準備作戰時，我常常發現訂好的計畫沒有用處，但計畫的過程仍不可或缺。”——德懷特·戴維·艾森豪威爾"
+		Czech:"'Při přípravě bitvy jsem vždy zjistil, že plány jsou k ničemu ale plánování je nezbytné.' - Dwight D. Eisenhower"
+		Russian:"'При подготовке к битве планы незаменимы, но, как только битва началась, план становится совершенно бесполезным.' - Дуайт Эйзенхауэр"
+}
 
 	"Gold cost of upgrading military units reduced by 33%":{
 		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
 		Italian:"-33% costi in Oro per aggiornare un'unità militare"
 		Romanian:"Costurile în aur pentru dezvoltarea unităților militare reduse cu 33%"
 		Simplified_Chinese:"升级军事单位所需的金钱-33%"
+		Traditional_Chinese:"升級軍事單位所需金錢-33%"
 		Portuguese:"-33% custo de ouro para unidades militares"
 		Russian:"Стоимость улучшения юнита снижается на 33%"
 		German:"Goldkosten für die Verbesserung von Militäreinheiten ist um 33% reduziert"
 		French:"Le coût en or de l'amélioration des unités militaires est réduit de 33%"
 		Polish:"Koszt ulepszenia jednostki bojowej zmniejszony o 33%"
-	}
-	
-	"Apollo Program":{	
+		Czech:"Cena Zlata za vylepšení vojenských jednotek bude snížena o 33%"
+}
+
+	"Apollo Program":{
 		Italian:"Programma Apollo"
 		Russian:"Программа Аполлон"
 		French:"Programme Apollo"
 		Romanian:"Programul Apollo"
 		Simplified_Chinese:"阿波罗计划"
+		Traditional_Chinese:"阿波羅計畫"
 		Spanish:"Programa Apollo"
 		German:"Apollo Programm"
 		Polish:"Program Apollo"
-	}
+		Czech:"Program Apollo"
+}
 
 	"Enables construction of Spaceship parts":{
 		Italian:"Consente la costruzione di parti dell'astronave"
@@ -1787,34 +2251,40 @@
 		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
 		Spanish:"Habilita la construcción de partes de Nave Espacial"
 		Simplified_Chinese:"允许建造太空飞船的部件"
+		Traditional_Chinese:"允許建造太空飛船的零件"
 		Portuguese:"Habilita a construção de partes da nave espacial"
 		Polish:"Pozwala na konstrukcję części statku kosmicznego"
-	}
-	
-	"Nuclear Plant":{	
+		Czech:"Zpřístupní kunstrukci části vesmírné lodi"
+}
+
+	"Nuclear Plant":{
 		Italian:"Centrale nucleare"
 		Russian:"АЭС"
 		French:"Centrale nucléaire"
 		Romanian:"Centrală nucleară"
 		Spanish:"Central nuclear"
 		Simplified_Chinese:"核电站"
+		Traditional_Chinese:"核電廠"
 		Portuguese:"Planta Nuclear"
 		German:"Atomkraftwerk"
 		Polish:"Elektrownia atomowa"
-	}
-	
-	"Spaceship Factory":{	
+		Czech:"Jaderná elektrárna"
+}
+
+	"Spaceship Factory":{
 		Italian:"Fabbrica di astronavi"
 		Russian:"Завод космических кораблей"
 		French:"Chantier spatial"
 		Romanian:"Fabrică de nave spațiale"
 		Spanish:"Fábrica de Nave Espacial"
-		Simplified_Chinese:"太空船工厂"
+		Simplified_Chinese:"太空飞船工厂"
+		Traditional_Chinese:"太空飛船工廠"
 		Portuguese:"Fábrica de Naves Espaciais"
 		German:"Raumschiff-Fabrik"
 		Polish:"Fabryka statków kosmicznych"
-	}
-    
+		Czech:"Továrna na výrobu kosmických lodí"
+}
+
 	"Increases production of spaceship parts by 50%":{
 		Italian:"+50% produzione per le parti dell'astronave"
 		Russian:"Ускоряет производство частей космического корабля на 50%"
@@ -1823,11 +2293,13 @@
 		German:"Erhöht die Produktion von Raumschiffteilen um 50%"
 		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
 		Spanish:"Incrementa la producción de partes de Nave Espacial 50%"
-		Simplified_Chinese:"建造太空船部件时+50%产能"
+		Simplified_Chinese:"建造太空飞船部件时产能积累速率+50%"
+		Traditional_Chinese:"建造太空飛船零件時產能累積速率+50%"
 		Portuguese:"Torna a construção de partes de nave em 50%"
 		Polish:"Zwiększa produkcję części statku kosmicznego o 50%"
-	}
-	
+		Czech:"Zvyšuje produkci částí vesmírných lodí o 50%"
+}
+
 	"Spaceship part":{
 		Italian:"Parte dell'astronave"
 		Russian:"Часть космического корабля"
@@ -1836,54 +2308,68 @@
 		German:"Raumschiffteil"
 		Dutch:"Ruimteschip onderdeel"
 		Spanish:"Parte de Nave Espacial"
-		Simplified_Chinese:"太空船的部件"
+		Simplified_Chinese:"太空飞船的部件"
+		Traditional_Chinese:"太空飛船的零件"
 		Portuguese:"Parte de Nave Espacial"
 		Polish:"Część statku kosmicznego"
-	}
-	
+		Czech:"Části kosmické lodi"
+}
+
 	"Hubble Space Telescope":{
 		Italian:"Telescopio spaziale Hubble"
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
 		Simplified_Chinese:"哈勃太空望远镜"
+		Traditional_Chinese:"哈柏太空望遠鏡"
 		Polish:"Teleskop Hubble'a"
 		Russian:"Телескоп Хаббл"
-	}
+		Czech:"Hubblův vesmírný dalekohled"
+}
 
 	"'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France":{
 		Italian:"'La meraviglia non sta nella vastità del campo di stelle, ma nel fatto che l'uomo lo abbia misurato.' - Anatole France"
 		Simplified_Chinese:"“奇迹的不是那片星域如此辽阔，而是人类竟然成功测量了它。”——阿纳托尔·法郎士（法国小说家）"
-	}
+		Traditional_Chinese:"“奇蹟的不是那片星海如此遼闊，而是人類竟然成功的測量了它。”——阿納托爾·法郎士（法國小說家）"
+		Czech:"'Je zázrakem, nikoliv to že je noční obloha naplněná nekonečnem hvězd, ale že je člověk dokázal změřit' - Anatole France"
+		Russian:"'Чудо не в том, что звездный небосклон столь обширен, но в том, что человек сумел измерить его' -  Анатоль Франс"
+		Polish:"Zadziwiające jest to, że pole gwiazd nie jest tak ogromne, ale że człowiek je zmierzył. - Anatole France"
+}
 
 	"2 free great scientists appear":{
 		Italian:"Appaiono 2 grandi scenziati gratuiti"
 		German:"2 kostenlose Große Wissenschaftler erscheinen"
 		French:"2 scientifiques illustres apparaissent"
 		Simplified_Chinese:"2个免费的大科学家出现"
+		Traditional_Chinese:"2個免費的大科學家出現"
 		Polish:"Pojawiają się 2 darmowi Wielcy Naukowcy"
 		Russian:"Появляется 2 бесплатных Великих учёных"
-	}
+		Czech:"2 Velcí Vědci zdarma"
+}
 
 	"Increases production of spaceship parts by 25%":{
 		Italian:"+25% Produzione per le parti dell'astronave"
 		German:"Erhöht die Produktion von Raumschiffteilen um 25%"
 		French:"Améliore la production de pièces de vaisseau spatial de 25%"
-		Simplified_Chinese:"建造太空船部件时+25%产能"
+		Simplified_Chinese:"建造太空飞船部件时产能积累速率+25%"
+		Traditional_Chinese:"建造太空飛船零件時產能累積速率+25%"
 		Polish:"Zwiększa produkcję części statku kosmicznego o 25%"
 		Russian:"+25% Производство при постройке частей космического корабля"
-	}
-	
+		Czech:"Zvyšuje produkci částí vesmírné lodi o 25%"
+}
+
 	"SS Booster":{	//no translation that I know of
 		Italian:"Propulsore dell'astronave"
 		Spanish:"Potenciador (Nave espacial)"
 		French:"Propulseur (Vaisseau Spatial)" // official translate is "Fusée de lancement"
 		Romanian:"Propulsor pentru nave spațiale"
 		Simplified_Chinese:"飞船助推器"
+		Traditional_Chinese:"飛船推進器"
 		Portuguese:"Propulsor de Nave Espacial"
 		German:"Raumschiff Booster"
 		Polish:"Dopalacz SK"
 		Russian:"Ускоритель КК"
-	}
+		Czech:"SS Pomocný motor"
+}
 
 	"SS Cockpit":{	//no translation that I know of
 		Italian:"Abitacolo dell'astronave"
@@ -1891,11 +2377,13 @@
 		French:"Cabine (Vaisseau Spatial)"
 		Romanian:"Cabină pentru nave spațiale"
 		Simplified_Chinese:"飞船驾驶舱"
+		Traditional_Chinese:"飛船駕駛艙"
 		Portuguese:"Cabine de Nave Espacial"
 		German:"Raumschiff Cockpit"
 		Polish:"Kokpit SK"
 		Russian:"Кокпит КК"
-	}
+		Czech:"SS Kabina"
+}
 
 	"SS Engine":{	//no translation that I know of
 		Italian:"Motore dell'astronave"
@@ -1903,11 +2391,13 @@
 		French:"Moteur (Vaisseau Spatial)"
 		Romanian:"Motor pentru nave spațiale"
 		Simplified_Chinese:"飞船发动机"
+		Traditional_Chinese:"飛船發動機"
 		Portuguese:"Propulsor principal de Nave Espacial"
 		German:"Raumschiff Triebwerke"
 		Polish:"Silnik SK"
 		Russian:"Двигатель КК"
-	}
+		Czech:"SS Motor"
+}
 
 	"SS Stasis Chamber":{	//no translation that I know of
 		Italian:"Camera di stasi dell'astronave"
@@ -1915,95 +2405,115 @@
 		French:"Module de biostase (Vaisseau Spatial)"
 		Romanian:"Cameră de biostază pentru nave spațiale"
 		Simplified_Chinese:"飞船休眠舱"
+		Traditional_Chinese:"飛船休眠艙"
 		Portuguese:"Câmara  de biostase de Nave Espacial"
 		German:"Raumschiff Stase-Kammer"
 		Polish:"Komora statyczna SK"
 		Russian:"Стазис-капусла КК"
-	}
-	
-	
+		Czech:"SS Stázová komora"
+}
+
+
 	// UI notifications of building info/conditions
-	
-	
+
+
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
 		French:"Requiert la construction de [buildingName] dans la ville"
 		Simplified_Chinese:"需要城市建有[buildingName]"
+		Traditional_Chinese:"需要城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido na cidade"
 		Polish:"[buildingName] musi być wzniesiony w mieście"
 		Russian:"Требует постройки [buildingName] в городе"
-	}
+		Czech:"Nejprve musíte vybodovat [buildingName] ve městě"
+}
 
 	"Requires [buildingName] to be built in all cities":{
 		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
 		French:"Requiert la construction de [buildingName] dans toutes les villes"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		Traditional_Chinese:"需要所有城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido em todas as cidades"
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует постройки [buildingName] во всех городах"
-	}
+		Czech:"Vyžaduje vybudování [buildingName] ve všech městech"
+}
 
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
 		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+		Traditional_Chinese:"城市獲得一座免費的建築：[buildingName]"
 		Portuguese:"Provê um(a) [buildingName] grátis na cidade"
 		Polish:"Zapewnia darmowy budynek [buildingName] w mieście"
 		Russian:"Даёт бесплатный [buildingName] в городе"
-	}
+		Czech:"Poskytuje zdarma budovu [buildingName] ve městě"
+}
 
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
 		French:"Nécessite l'exploitation de [resource] près de la ville"
 		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
+		Traditional_Chinese:"需要城市附近有已開發的資源：[resource]"
 		Portuguese:"Requer [resource] trabalhado perto da cidade"
 		Polish:"Wymaga w mieście surowca [resource]"
 		Russian:"Требует добычи [resource] в городе"
-	}
+		Czech:"Vyžaduje zdroj suroviny [resource] na území města"
+}
 
 	"Wonder is being built elsewhere":{
 		Italian:"Meraviglia in costruzione altrove"
-		Simplified_Chinese:"正在其他城市建造该奇观"
+		Simplified_Chinese:"其他城市正在建造该奇观"
+		Traditional_Chinese:"其他城市正在建造該奇觀"
         	French:"Cette merveille est déjà en construction ailleurs"
 		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
 		Polish:"Cud jest już budowany gdzie indziej"
 		Russian:"Чудо света строится где-то ещё"
-	}
+		Czech:"Div světa již stavíte v jiném městě"
+}
 
 	"Requires a [buildingName] in all cities":{
 		Italian:"Richiede [buildingName] in tutte le città"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		Traditional_Chinese:"需要所有城市建有[buildingName]"
 		French:"Nécessite un(e) [buildingName] dans toutes les villes"
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует [buildingName] во всех городах"
-	}
+		Czech:"Vyžaduje: [buildingName] ve všech městech"
+}
 
 	"Requires a [buildingName] in this city":{
 		Italian:"Richiede [buildingName] nella città"
 		Simplified_Chinese:"需要城市建有[buildingName]"
+		Traditional_Chinese:"需要城市建有[buildingName]"
         	French:"Nécessite un(e) [buildingName] dans cette ville"
 		Portuguese:"Requer um [buildingName] nessa cidade"
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
 		Russian:"Требует [buildingName] в городе"
-	}
+		Czech:"Vyžaduje: [buildingName] v tomto městě"
+}
 
 	"Requires [resource]":{
 		Italian:"Richiede [resource]"
 		Simplified_Chinese:"需要资源：[resource]"
+		Traditional_Chinese:"需要資源：[resource]"
 		French:"[resource] requis(e)"
 		Portuguese:"Requer [resource]"
 		Polish:"Wymaga surowca [resource]"
 		Russian:"Требует [resource]"
-	}
+		Czech:"Vyžaduje surovinu [resource]"
+}
 
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
 		French:"Nécessite la technologie: [requiredTech]"
 		Simplified_Chinese:"需要科技：[requiredTech]"
+		Traditional_Chinese:"需要科技：[requiredTech]"
 		Portuguese:"Requer tecnologia: [requiredTech]"
 		Polish:"Wymaga odkrycia technologii [requiredTech]"
 		Russian:"Требуется технология: [requiredTech]"
-	}
+		Czech:"Vyžaduje technologii: [requiredTech]"
+}
 
 }

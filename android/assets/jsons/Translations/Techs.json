@@ -1,6 +1,6 @@
 {
 	///////// Technologies (Ancient Era)
-	
+
 	"Agriculture":{
 		Italian:"Agricoltura"
 		Russian:"Земледелие"
@@ -9,15 +9,20 @@
 		Dutch:"Agricultuur"
 		Spanish:"Agricultura"
 		Simplified_Chinese:"农业"
+        Traditional_Chinese:"農業"
 		Portuguese:"Agricultura"
 		German:"Landwirtschaft"
-	}
-	
+		Czech:"Zemědělství"
+}
+
 	"'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster":{
 		Italian:"'Dove arriva la coltivazione, seguono le altre arti. I contadini sono quindi i fondatori della civiltà umana.' - Daniel Webster"
 		Simplified_Chinese:"“只要人们开始耕作，其他艺术将随之而生。因此农夫是人类文明的奠基者。”——丹尼尔·韦伯斯特（美国政治家）"
-	}
-	
+        Traditional_Chinese:"“只要人們開始耕作，其他藝術將隨之而生。因此農夫是人類文明的奠基者。”——丹尼爾·偉伯斯特（美國政治家）"
+		Czech:"'Začalo to obděláváním půdy, ostatní umění následovaly. Farmáři jsou tedy zakladatelé lidské civilizace.' - Daniel Webster"
+		Russian:"'Лишь на возделанной почве расцветают другие искусства. Поэтому фермеры — основатели цивилизации.' - Даниэль Уэбстер"
+}
+
 	"Pottery":{
 		Italian:"Ceramica"
 		Russian:"Гончарное дело"
@@ -27,13 +32,18 @@
 		Dutch:"Aardwerk"
 		Spanish:"Cerámica"
 		Simplified_Chinese:"制陶"
+        Traditional_Chinese:"製陶"
 		Portuguese:"Cerâmica"
-	}
-	
+		Czech:"Hrnčířství"
+}
+
 	"'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9":{
 		Italian:"'L'argilla dirà forse a colui che le dà forma: 'Che fai'?' - La Bibbia, Isaia, 45:9"
 		Simplified_Chinese:"“泥土岂可对陶工说：你在做什么呢？”——圣经·以赛亚书 45:9"
-	}
+        Traditional_Chinese:"“泥土豈可對陶工說：你在做什麼呢？”——聖經·以賽亞書 45:9"
+		Czech:"'Běda tomu, kdo se chce přít se svým tvůrcem, střep z hliněných střepů!' - Bible Izajáš, 45:9"
+		Russian:"'Разве скажет глиняный сосуд гончару: Что ты делаешь?' - книга Исайи, 45:9"
+}
 
 	"Animal Husbandry":{
 		Italian:"Allevamento di animali"
@@ -44,13 +54,18 @@
 		Dutch:"Veeteelt"
 		Spanish:"Ganadería"
 		Simplified_Chinese:"家畜驯养"
+        Traditional_Chinese:"家畜馴養"
 		Portuguese:"Pecuária"
-	}
-	
+		Czech:"Chov zvířat"
+}
+
 	"'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4":{
 		Italian:"'Non mettere la musoliera al bue mentre sta trebbiando.' - Deuteronomio, 25:4"
 		Simplified_Chinese:"“牛在踹谷的时候，不可笼住它的嘴。”——圣经·申命记　25:4"
-	}
+        Traditional_Chinese:"“牛在踹谷的時候，不可籠住它的嘴。”——聖經·申命記　25:4"
+		Czech: "'Mlátícímu dobytčeti nedáš náhubek.' - Bible Mojžíšova 25:4"
+		Russian:"'Не заграждай рта волу, когда он молотит.' - Второзаконие 25:4"
+}
 
 	"Archery":{
 		Italian:"Tiro con l'arco"
@@ -61,13 +76,18 @@
 		Dutch:"Boogschieten"
 		Spanish:"Tiro con arco"
 		Simplified_Chinese:"弓箭"
+        Traditional_Chinese:"弓箭"
 		Portuguese:"Arquearia"
-	}
-	
+		Czech:"Lukostřelba"
+}
+
 	"'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop":{
 		Italian:"'La freccia è piumata con le penne dell'aquila. Così, spesso diamo ai nemici i mezzi per la nostra stessa distruzione.' - Esopo"
 		Simplified_Chinese:"“那老鹰所中箭矢的箭尾是由一根它自己的羽毛制成的。我们总是给敌人提供毁灭我们自己的工具。”——伊索"
-	}
+        Traditional_Chinese:"“那老鷹所中箭矢的箭尾是由一根他自己的羽毛製成的。我們總是給敵人提供毀滅我們自己的工具。”——伊索"
+		Czech:"'Dřík šípu byl opeřen orlím peřím, často dáváme nepřátelům prostředky na vlastní zničení' - Ezop"
+		Russian:"'Оперение на древке стрелы было сделано из орлиного пера. Мы сами вкладываем в руки врагов средства к своему уничтожению.' - Эзоп"
+}
 
 	"Mining":{
 		Italian:"Estrazione mineraria"
@@ -78,13 +98,18 @@
 		Dutch:"Mijnbouw"
 		Spanish:"Minería"
 		Simplified_Chinese:"采矿"
+        Traditional_Chinese:"採礦"
 		Portuguese:"Mineração"
-	}
-	
+		Czech:"Hornictví"
+}
+
 	"'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty":{
 		Italian:"'Gli umili erediteranno la terra, ma non i suoi diritti minerari.' - J. Paul Getty"
 		Simplified_Chinese:"“谦卑的人会继承地球，而不是它的采矿权。”——吉恩·保罗·盖蒂（美国实业家）"
-	}
+        Traditional_Chinese:"“謙卑的人會繼承地球，而不是它的採礦權。”——吉恩·保羅·蓋第（美國實業家）"
+		Czech:"'Pokorní zdědí Zemi, ale ne její nerostné bohatství.' - J. Paul Getty"
+		Russian:"'Кроткие унаследуют землю, но не ее минеральные ресурсы.' - Пол Гетти"
+}
 
 	"Sailing":{
 		Italian:"Vela"
@@ -95,13 +120,18 @@
 		Dutch:"Zeilen"
 		Spanish:"Náutica"
 		Simplified_Chinese:"帆船"
+        Traditional_Chinese:"帆船"
 		Portuguese:"Navegação"
-	}
-	
+		Czech:"Plachtění"
+}
+
 	"'He who commands the sea has command of everything.' - Themistocles":{
 		Italian:"'Chi ha il dominio del mare ha il dominio di tutto.' - Temistocle"
 		Simplified_Chinese:"“谁主宰了海洋，谁就主宰了一切。”——地米斯托克利（古希腊政治家兼军事家）"
-	}
+        Traditional_Chinese:"“誰主宰了海洋，誰就主宰了一切。”——地米斯托克利（古希臘政治家兼軍事家）"
+		Czech:"'Ten, kdo vládne na moři, ten ovládá všechno' - Themistocles"
+		Russian:"'Тот, кто господствует на море, хозяин положения.' - Фемистокл"
+}
 
 	"Calendar":{
 		Italian:"Calendario"
@@ -112,13 +142,18 @@
 		Dutch:"Kalender"
 		Spanish:"Calendario"
 		Simplified_Chinese:"历法"
+        Traditional_Chinese:"曆法"
 		Portuguese:"Calendário"
-	}
-	
+		Czech:"Kalendář"
+}
+
 	"'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12":{
 		Italian:"'Insegnaci a contare i nostri giorni e giungeremo alla sapienza del cuore.' - Salmi, 90:12"
 		Simplified_Chinese:"“求你指教我们怎样数算自己的日子，好叫我们得着智慧的心。”——圣经·诗篇 90:12"
-	}
+        Traditional_Chinese:"“求你指教我們怎樣數算自己的日子，好叫我們得著智慧的心。”——聖經·詩篇 90:12"
+		Czech:"'Naučiž nás počítati dnů našich, abychom uvodili moudrost v srdce.' - Bible Kralická, 90:12"
+		Russian:"'Научи нас так счислять дни наши, чтобы нам приобрести сердце мудрое.' - Псалом 89:12"
+}
 
 	"Writing":{
 		Italian:"Scrittura"
@@ -129,13 +164,18 @@
 		Dutch:"Schrift"
 		Spanish:"Escritura"
 		Simplified_Chinese:"文字"
+        Traditional_Chinese:"文字"
 		Portuguese:"Literatura"
-	}
-	
+		Czech:"Písemnictví"
+}
+
 	"'He who destroys a good book kills reason itself.' - John Milton":{
 		Italian:"'Chi distrugge un buon libro uccide la ragione stessa.' - John Milton"
 		Simplified_Chinese:"“毁禁一本好书就是杀死理性本身。”——弥尔顿"
-	}
+        Traditional_Chinese:"“毀禁一本好書就是殺死理性本身。”——彌爾頓"
+		Czech:"'Kdo zabíjí člověka, zabíjí rozumnou bytost; kdo však zabíjí dobrou knihu, zabíjí rozum sám.' - John Milton"
+		Russian:"'Тот, кто уничтожает книгу, убивает самый разум.' - Джон Мильтон"
+}
 
 	"Trapping":{
 		Italian:"Trappole per animali"
@@ -146,13 +186,18 @@
 		Dutch:"Valstrikken"
 		Spanish:"Caza"
 		Simplified_Chinese:"捕猎"
+        Traditional_Chinese:"補獵"
 		Portuguese:"Caça"
-	}
-	
+		Czech:"Lov do pastí"
+}
+
 	"'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome":{
 		Italian:"'Persino le ferali bestie e gli uccelli vagabondi non cadono due volte nelle stesse trappole.' - San Girolamo"
 		Simplified_Chinese:"“即便是凶残的野兽和恍惚的小鸟也不会落入相同的陷阱或罗网两次。”——圣哲罗姆（古罗马学者）"
-	}
+        Traditional_Chinese:"“即便是兇殘的野獸和恍惚的小鳥也不會落入相同的陷阱兩次。”——聖哲羅姆（古羅馬學者）"
+		Czech:"'Ani divoká zvířata, ani putující ptáci se nechytí do stejné pasti dvakrát' - Svatý Jeremiáš"
+		Russian:"'Даже примитивные звери и перелётные птицы не попадают в одни и те же ловушки.' - Джон Мильтон" // not official
+}
 
 	"The Wheel":{
 		Italian:"Ruota"
@@ -163,13 +208,18 @@
 		Dutch:"Het Wiel"
 		Spanish:"La rueda"
 		Simplified_Chinese:"轮子"
+        Traditional_Chinese:"輪子"
 		Portuguese:"A roda"
-	}
-	
+		Czech:"Kolo"
+}
+
 	"'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb":{
 		Italian:"'La saggezza e la virtù sono come le due ruote di un carretto.' - Proverbio giapponese"
 		Simplified_Chinese:"“智慧和美德就像是一辆手推车的两个轮子。”——日本俗语"
-	}
+        Traditional_Chinese:"“智慧和美德就像是一輛手推車的兩個輪子。”——日本俗語"
+		Czech:"'Moudrost a ctnost jsou jako dvě kola vozíku' - Japonské přísloví"
+		Russian:"'Мудрость и добродетель — как два колеса телеги.' - японская пословица"
+}
 
 	"Masonry":{
 		Italian:"Muratura"
@@ -180,13 +230,18 @@
 		Dutch:"Metselkunst"
 		Spanish:"Albañilería"
 		Simplified_Chinese:"石工术"
+        Traditional_Chinese:"石工術"
 		Portuguese:"Alvenaria"
-	}
-	
+		Czech:"Zdivo"
+}
+
 	"'How happy are those whose walls already rise!' - Virgil":{
 		Italian:"'Lieti coloro le cui mura già si ergono!' - Virgilio"
 		Simplified_Chinese:"“你们是多么的幸运，因为你们的城墙已经筑起！”——维吉尔"
-	}
+        Traditional_Chinese:"“你們是多麼的幸運，因為你們的城牆已經築起！”——維吉爾"
+		Czech:"'Jak šťastni jsou ti, jejichž zdi už byly vybudovány!' - Vergilius"
+		Russian:"'Счастливы те, для кого уж возводятся крепкие стены!' - Вергилий, «Энеида»"
+}
 
 	"Bronze Working":{
 		Italian:"Lavorazione del bronzo"
@@ -197,16 +252,21 @@
 		Dutch:"Brons Bewerking"
 		Spanish:"Trabajo del bronce"
 		Simplified_Chinese:"青铜器"
+        Traditional_Chinese:"青銅器"
 		Portuguese:"Trabalha com Bronze"
-	}
-	
+		Czech:"Zpracování bronzu"
+}
+
 	"'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer":{
 		Italian:"'Ed ecco che entrò Ettore, impugnando una lancia lunga undici cubiti; la punta di bronzo brillava davanti a lui ed era fissata all'asta con un anello d'oro.' - Omero"
 		Simplified_Chinese:"“赫克托耳手持十一肘的长矛走上战场；黄金圆环固定的青铜矛尖在他身前闪耀。”——荷马"
-	}
-	
+        Traditional_Chinese:"“赫克托耳手持十一肘的長矛走上戰場；黃金圓環固定的青銅茅尖在他身前閃耀。”——荷馬"
+		Czech:"'Zde vstoupil Hektor s kopím jedenáct loktů dlouhým v ruce; bronzový hrot před ním se leskl a byl připevněn na špici oštěpu kroužkem ze zlata' - Homér"
+		Russian:"'В двери вступил божественный Гектор; в деснице держал он пику в одиннадцать локтей; далеко на древке сияло медное жало копья и кольцо вкруг него золотое.' - Гомер"
+}
+
 ///////// Technologies (Classical Era)
-	
+
 	"Optics":{
 		Italian:"Ottica"
 		Russian:"Оптика"
@@ -216,13 +276,18 @@
 		Dutch:"Optica"
 		Spanish:"Óptica"
 		Simplified_Chinese:"光学"
+        Traditional_Chinese:"光學"
 		Portuguese:"Óptica"
-	}
-	
+		Czech:"Optika"
+}
+
 	"'He made an instrument to know if the moon shine at full or no.' - Samuel Butler":{
 		Italian:"'Costruì uno strumento per sapere se la luna brilla in pieno oppure no.' - Samuel Butler"
 		Simplified_Chinese:"“他制造了一种仪器来仔细观察月亮的光芒。”——塞缪尔·巴特勒（英国学者）"
-	}
+        Traditional_Chinese:"“他製造了一種儀器來仔細觀察月亮的光芒。”——賽繆爾·巴特勒（英國學者）"
+		Czech:"'Vyrobil nástroj aby poznal, jestli můsíc svítí úplně či nikoliv.' - Samuel Butler"
+		Russian:"'Он создал новый инструмент. Проверить, месяц есть иль нет.' - Сэмюэль Батлер"
+}
 
 	"Horseback Riding":{
 		Italian:"Equitazione"
@@ -233,13 +298,18 @@
 		Dutch:"Paardrijden"
 		Spanish:"Equitación"
 		Simplified_Chinese:"骑术"
+        Traditional_Chinese:"騎術"
 		Portuguese:"Montaria"
-	}
-	
+		Czech:"Jízda na koni"
+}
+
 	"'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)":{
 		Italian:"'Un cavallo! Un cavallo! Il mio regno per un cavallo!' - William Shakespeare (Riccardo III)"
 		Simplified_Chinese:"“用我的王国换一匹马！”——威廉·莎士比亚：《理查三世》"
-	}
+        Traditional_Chinese:"“用我的王國換一匹馬！”——威廉·莎士比亞：《理查三世》"
+		Czech:"'Království za koně!' - Shakespeare (Richard III)"
+		Russian:"'Коня! Коня! Престол мой за коня!' - Уильям Шекспир, «Ричард III»"
+}
 
 	"Mathematics":{
 		Italian:"Matematica"
@@ -250,13 +320,18 @@
 		Dutch:"Wiskunde"
 		Spanish:"Matemáticas"
 		Simplified_Chinese:"数学"
+        Traditional_Chinese:"數學"
 		Portuguese:"Matemáticas"
-	}
-	
+		Czech:"Matematika"
+}
+
 	"'Mathematics is the gate and key to the sciences.' - Roger Bacon":{
 		Italian:"'La matematica è la porta e la chiave delle scienze.' - Ruggero Bacone"
 		Simplified_Chinese:"“数学是通向科学世界的大门钥匙。”——罗杰·培根（中世纪英国科学家）"
-	}
+        Traditional_Chinese:"“數學是通向科學世界的大門鑰匙。”——羅傑·培根（中世紀英國科學家）"
+		Czech:"'Matematika je bránou a klíčem do světa vědy' - Roger Bacon"
+		Russian:"'Математика — врата и ключ всех наук.' - Роджер Бэкон"
+}
 
 	"Construction":{
 		Italian:"Costruzione"
@@ -267,14 +342,19 @@
 		Dutch:"Bouwkunde"
 		Spanish:"Construcción"
 		Simplified_Chinese:"建筑构造学"
+        Traditional_Chinese:"建築構造學"
 		Portuguese:"Construção"
-	}
-	
+		Czech:"Konstrukce"
+}
+
 	"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfulyl executed.' - Johann Wolfgang von Goethe":{
 		Italian:"'Di un edificio bisogna guardare tre cose: che sia collocato nel posto giusto; che abbia fondamenta solide; che la costruzione sia eseguita con perizia.' - Johann Wolfgang von Goethe"
 		Simplified_Chinese:"“在一幢建筑里要看三样东西：它是否被正确地选址；它是否被牢固地奠基；它是否被成功地建造。”——约翰·沃尔夫冈·冯·歌德"
-	}
-    
+        Traditional_Chinese:"“在一棟建築裡要看三樣東西：它是否被正確選址；它是否被牢固奠基；它是否被成功建造。”——約翰·沃爾夫剛·馮·歌德"
+		Czech:"'Na budově musí být zřetelné tři věci: že stojí na správném místě, že má pevné základy, že je kvalitně postavena.' - Johann Wolfgang von Goethe"
+		Russian:"'Три правила следует помнить при всякой постройке: здание должно стоять на подобающем месте, иметь прочное основание и быть полностью завершено.' - Иоганн Гете"
+}
+
 	"Philosophy":{
 		Italian:"Filosofia"
 		Russian:"Философия"
@@ -284,13 +364,18 @@
 		Dutch:"Filosofie"
 		Spanish:"Filosofía"
 		Simplified_Chinese:"哲学"
+        Traditional_Chinese:"哲學"
 		Portuguese:"Filosofia"
-	}
-	
+		Czech:"Filozofie"
+}
+
 	"'There is only one good, knowledge, and one evil, ignorance.' - Socrates":{
 		Italian:"'C'è un solo bene, la conoscenza, e un solo male, l'ignoranza.' - Socrate"
 		Simplified_Chinese:"“世上只有一种善，那就是知识，也只有一种恶，那就是无知。”——苏格拉底"
-	}
+        Traditional_Chinese:"“世上只有一種善，那就是知識，也只有一種惡，那就是無知。”——蘇格拉底"
+		Czech:"'Existuje jen jedno dobro a to je vědění. Existuje jen jedno zlo a to je nevědomost.' - Sókratés"
+		Russian:"'Есть лишь один бог - знание, и лишь один порок - невежество.' - Сократ"
+}
 
 	"Currency":{
 		Italian:"Valuta"
@@ -301,13 +386,18 @@
 		Dutch:"Geld"
 		Spanish:"Moneda"
 		Simplified_Chinese:"货币制度"
+        Traditional_Chinese:"貨幣制度"
 		Portuguese:"Moeda"
-	}
-	
+		Czech:"Platidlo"
+}
+
 	"'Better is bread with a happy heart than wealth with vexation.' - Amenemope":{
 		Italian:"'Meglio il pane con un cuore felice, che la ricchezza con l'afflizione.' - Amenemope"
 		Simplified_Chinese:"“快乐的温饱胜过烦恼的富裕。”——阿蒙尼莫普（古埃及学者）"
-	}
+        Traditional_Chinese:"“快樂的溫飽勝過煩惱的富裕。”——阿蒙尼莫普（古埃及學者）"
+		Czech:"'Je lepší jíst se šťastným srdce, než se soužit v bohatství.' - Amenemope"
+		Russian:"'Лучше хлеб, который съедается с радостным сердцем, чем богатство с заботами.' - Аменемоп"
+}
 
 	"Engineering":{
 		Italian:"Ingegneria"
@@ -318,13 +408,18 @@
 		Dutch:"Ingenieurswezen"
 		Spanish:"Ingeniería"
 		Simplified_Chinese:"工程学"
+        Traditional_Chinese:"工程學"
 		Portuguese:"Engenharia"
-	}
-	
+		Czech:"Inženýrství"
+}
+
 	"'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci":{
 		Italian:"'La scienza degli strumenti e della meccanica è la più nobile di tutte, e soprattutto la più utile.' - Leonardo da Vinci"
 		Simplified_Chinese:"“研究工具或机械的学问是最崇高的，也是所有学问当中最有用的。”——列奥纳多·达·芬奇"
-	}
+        Traditional_Chinese:"“研究工具或機械的學問是最崇高的，也是所有學問當中最有用的。”——列奧納多·達·芬奇"
+		Czech:"'Instrumentální nebo mechanická věda je ze všech nejušlechtileší a především nejužitešnější.' - Leonardo da Vinci"
+		Russian:"'Механика — самая благородная и, главное, самая полезная из наук.' - Леонардо да Винчи"
+}
 
 	"Iron Working":{
 		Italian:"Lavorazione del ferro"
@@ -335,16 +430,21 @@
 		Dutch:"Ijzer Bewerking"
 		Spanish:"Trabajo del hierro"
 		Simplified_Chinese:"铁器"
+        Traditional_Chinese:"鐵器"
 		Portuguese:"Trabalho com ferro"
-	}
-	
+		Czech:"Zpracování železa"
+}
+
 	"'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats":{
 		Italian:"'Non aspettate che il ferro sia caldo prima di batterlo; rendetelo caldo con i vostri colpi.' - William Butler Yeats"
 		Simplified_Chinese:"“不要等铁变热才对其锻打；而要通过锻打而使其变热。”——威廉·巴特勒·叶芝"
-	}
-	
+        Traditional_Chinese:"“不要等鐵變熱才對其鍛打；而要通過鍛打而使其變熱。”——威廉·巴特勒·葉芝"
+		Czech:"'Nečekejte s útokem, dokud se nerozžhaví železo, ale rozžhavte ho údery.' - William Butler Yeats"
+		Russian:"'Не жди, пока железо станет горячим для ковки - но куй, и оно станет горячим.' - Уильям Батлер Йейтс"
+}
+
 /////////   Technologies (Medieval Era)
-	
+
 	"Theology":{
 		Italian:"Teologia"
 		Russian:"Богословие"
@@ -354,13 +454,18 @@
 		Dutch:"Theologie"
 		Spanish:"Teología"
 		Simplified_Chinese:"神学"
+        Traditional_Chinese:"神學"
 		Portuguese:"Teologia"
-	}
-	
+		Czech:"Teologie"
+}
+
 	"'Three things are necessary for the salvarion of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas":{
 		Italian:"'Tre cose sono necessarie per la salvezza dell'uomo: sapere in cosa deve credere; sapere che cosa deve desiderare; sapere cosa deve fare.' - San Tommaso d'Aquino"
 		Simplified_Chinese:"“有三点是自我救赎所必需的：知道自己应该信什么；知道自己应该要什么；知道自己应该做什么。”——圣托马斯·阿奎那"
-	}
+        Traditional_Chinese:"“有三點是自我救贖所必須的：知道自己應該信什麼；知道自己應該要什麼；知道自己應該做什麼。”——聖湯碼士·阿奎那"
+Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; vědět co si přát; a vědet co mám dělat.' - Tomáš Akvinský"
+		Russian:"'Человеку для спасения нужно знать три вещи: чему он должен верить, чего желать и что делать.' - Фома Аквинский"
+}
 
 	"Civil Service":{
 		Italian:"Pubblica amministrazione"
@@ -371,21 +476,28 @@
 		Dutch:"Overheidsdienst"
 		Spanish:"Servicio civil"
 		Simplified_Chinese:"文官制度"
+        Traditional_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
-	}
-	
+		Czech:"Státní služba"
+}
+
 	"'The only thing that saves us from the bureaucracy is it inefficiency' - Eugene McCarthy":{
 		Italian:"'L'unica cosa che ci salva dalla burocrazia è la sua inefficienza.' - Eugene McCarthy"
 		Simplified_Chinese:"“唯一能从官僚主义里拯救我们的是它自己的低效。”——尤金·麦卡锡（美国政治家）"
-	}
+        Traditional_Chinese:"“唯一能從官僚主義裡拯救我們的是它自己的低效。”——尤金·麥卡錫（美國政治家）"
+		Czech:"'Jediná věc, která nás ochrání před byrokracií je neefektivnost.' - Eugene McCarthy"
+		Russian:"'Единственное, что нас спасает от бюрократии, это ее неэффективность.' - Юджин Маккарти"
+}
 
 	"Enables Open Borders agreements":{
 		Italian:"Consente accordi su Diritti di Passaggio"
 		Simplified_Chinese:"允许签订开放边境协定"
+        Traditional_Chinese:"允許簽訂開放邊境協定"
 		French:"Permet l'accord des frontières ouvertes"
 		Russian:"Открывает Договор об открытых границах"
-	}
-	
+		Czech:"Lze uzavřít Dohodu o otevřených hranicích"
+}
+
 	"Guilds":{
 		Italian:"Gilde"
 		Russian:"Гильдии"
@@ -394,14 +506,19 @@
 		Dutch:"Gildes"
 		Spanish:"Gremios"
 		Simplified_Chinese:"行会"
+        Traditional_Chinese:"行會"
 		Portuguese:"Guildas"
 		German:"Gilden"
-	}
-	
+		Czech:"Cechy"
+}
+
 	"'The merchants and the traders have come; their profits are pre-ordained...' - Sri Guru Granth Sahib":{
 		Italian:"'I mercanti e i bottegai sono arrivati; i loro profitti sono prestabiliti...' - Sri Guru Granth Sahib"
 		Simplified_Chinese:"“商人和贸易者利润的大小，早在他们开始经营的时候就已经决定了……”——锡克教圣典《格兰斯·沙希伯》"
-	}
+        Traditional_Chinese:"“商人和貿易者利潤的大小，早在他們開始經營的時候就已經決定了……”——錫克教聖典《格蘭斯·沙希伯》"
+		Czech:"'Když přichází obchodníci a kupci, jejich zisky jsou předem stanoveny...' - Sri Guru Granth Sahib"
+		Russian:"'Пришли купцы и торговцы; их прибыли предопределены...' - Шри Гуру Грант Сахиб"
+}
 
 	"Physics":{
 		Italian:"Fisica"
@@ -412,13 +529,18 @@
 		Dutch:"Fysica"
 		Spanish:"Física"
 		Simplified_Chinese:"物理学"
+        Traditional_Chinese:"物理學"
 		Portuguese:"Física"
-	}
-	
+		Czech:"Fyzika"
+}
+
 	"'Measure what is measurable, and make measurable what is not so.' - Galileo Galilei":{
 		Italian:"'Misura ciò che è misurabile, e rendi misurabile ciò che non lo è.' - Galileo Galilei"
 		Simplified_Chinese:"“测量一切可测之物，并把不可测的变为可测。”——伽利略"
-	}
+        Traditional_Chinese:"“測量一切可測之物，並把不可測的變為可測。”——伽利略"
+		Czech:"'Změřte vše co lze změřit a udělejte měřitelným to, co změřit nelze.' - Galileo Galilei"
+		Russian:"'Измеряй измеримое и делай неизмеримое измеримым.' - Галилео Галилей"
+}
 
 	"Metal Casting":{
 		Italian:"Fusione del metallo"
@@ -429,13 +551,18 @@
 		Dutch:"Metaal gieten"
 		Spanish:"Fundición"
 		Simplified_Chinese:"金属铸造"
+        Traditional_Chinese:"金屬鑄造"
 		Portuguese:"Fundição"
-	}
-	
+		Czech:"Lití kovů"
+}
+
 	"'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib":{
 		Italian:"'Quando pezzi di bronzo o d'oro o di ferro si rompono, il fabbro li rinsalda ancora con il fuoco e il legame è ristabilito.' - Sri Guru Granth Sahib"
 		Simplified_Chinese:"“当整块的青铜、黄金或黑铁碎裂时，工匠们会用火重新熔铸，让它们再次结为一体。”——锡克教圣典《格兰斯·沙希伯》"
-	}
+        Traditional_Chinese:"“當整塊的青銅、黃金或黑鐵碎裂時，工匠們會用火重新鎔鑄，讓它們再次結為一體。”——錫克教聖典《格蘭斯·沙希伯》"
+		Czech:"'Když se kusy bronzu, zlata nebo železa zlomí, kovář je znovu zkuje v ohni a spojení je vytvořeno.' - Sri Guru Granth Sahib"
+		Russian:"'Случись изделию из бронзы, золота или железа сломаться - кузнец сплавит обломки в огне, восстанавливая узы.' - Из книги 'Гратнх Сахиб'"
+}
 
 	"Steel":{
 		Italian:"Acciaio"
@@ -445,14 +572,19 @@
 		Dutch:"Staal"
 		Spanish:"Acero"
 		Simplified_Chinese:"炼钢"
+        Traditional_Chinese:"煉鋼"
 		Portuguese:"Aço"
 		German:"Stahl"
-	}
-	
+		Czech:"Ocel"
+}
+
 	"'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man":{
 		Italian:"'John Henry disse al cuo Capitano, 'Un uomo non è che un uomo, e prima che la tua perforatrice a vapore mi batta, morirò col martello in mano.' - Anonimo: La ballata di John Henry, l'uomo che batte l'acciaio"
 		Simplified_Chinese:"他向队长立誓言：“硬汉虽说只是人，若要气钻胜过我，除非我死把锤扔。”——佚名：钢铁汉子约翰·亨利之歌（美国民谣）"
-	}
+        Traditional_Chinese:"他向隊長立誓：“硬漢雖說只是人，若要氣鑽勝過我，除非我死把槌扔。”——佚名：鋼鐵漢子約翰·亨利之歌（美國民謠）"
+		Czech:"'John Henry řekl svému kapitánovi: Člověk nic neznamená, ale muž, a před tím než mě nahradí váš parní stroj, tak zemřu s kladivem v ruce.' - Autor neznámy"
+		Russian:"'Закали свои порывы, / Преврати порывы в сталь / И лети мечтой игривой / Ты в заоблачную даль.' - Сергей Есенин" // Another text in official russian localization
+}
 
 	"Compass":{
 		Italian:"Bussola"
@@ -463,13 +595,18 @@
 		Dutch:"Kompas"
 		Spanish:"Brújula"
 		Simplified_Chinese:"罗盘"
+        Traditional_Chinese:"羅盤"
 		Portuguese:"Bússola"
-	}
-	
+		Czech:"Kompas"
+}
+
 	"'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes":{
 		Italian:"'Trovo che la cosa grandiosa di questo mondo non sia tanto dove siamo, ma verso dove stiamo andando.' - Oliver Wendell Holmes"
 		Simplified_Chinese:"“我认为现代世界里最重要的不是我们所处的位置，而是我们前进的方向。”——老奥利弗·温德尔·霍姆斯（美国诗人）"
-	}
+        Traditional_Chinese:"“我認為現代世界裡最重要的不是我們所處的位置，而是我們前進的方向。”——老奧利弗·溫德爾·霍姆斯（美國詩人）"
+		Czech:"'Zjistil jsem úžasnou věc o tomto světě. Není podstatné kde stojíme, ale kterým směrem se vydáme.' - Oliver Wendell Holmes"
+		Russian:"'Главное в этом мире не то, где мы стоим, а то, в каком направлении движемся.' - Оливер Уэнделл Холмс"
+}
 
 	"Education":{
 		Italian:"Educazione"
@@ -480,13 +617,18 @@
 		Dutch:"Educatie"
 		Spanish:"Educación"
 		Simplified_Chinese:"教育学"
+        Traditional_Chinese:"教育學"
 		Portuguese:"Educação"
-	}
-	
+		Czech:"Školství"
+}
+
 	"'Education is the best provision for old age.' - Aristotle":{
 		Italian:"'L'educazione è la migliore previdenza per la vecchiaia.' - Aristotele"
 		Simplified_Chinese:"“教育是老年生活最好的保障。”——亚里士多德"
-	}
+        Traditional_Chinese:"“教育是老年生活最好的保障。”——亞里士多德"
+		Czech:"'Vzdělávání je nejlepším opatřením pro stáří.' - Aristoteles"
+		Russian:"'Воспитание - лучший припас к старости.' - Аристотель"
+}
 
 	"Chivalry":{
 		Italian:"Codice cavalleresco"
@@ -497,13 +639,18 @@
 		Dutch:"Ridderlijkheid"
 		Spanish:"Caballería"
 		Simplified_Chinese:"骑士制度"
+        Traditional_Chinese:"騎士制度"
 		Portuguese:"Cavalheirismo"
-	}
-	
+		Czech:"Rytířství"
+}
+
 	"'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory":{
 		Italian:"'Chi estrae questa spada dall'incudine e dalla roccia è per diritto nato re di tutta l'Inghilterra.' - Malory"
 		Simplified_Chinese:"“谁能将这柄剑从石台中拔出，他就是全英格兰真正的国王。”——托马斯·马洛里（中世纪英国诗人）"
-	}
+        Traditional_Chinese:"“誰能將這把劍從石台中拔出，他就是全英格蘭真正的國王。”——湯碼士·馬洛里（中世紀英國詩人）"
+		Czech:"'Kdo vytýhne tento meč z kamene, stane se právoplatným králem Anglie.' - Thomas Malory"
+		Russian:"'Кто вытащит сей меч из-под наковальни, тот и есть по праву рождения король над всей землей английской.' - Сэр Томас Мэлори"
+}
 
 	"Machinery":{
 		Italian:"Meccanica"
@@ -514,16 +661,21 @@
 		Dutch:"Machinebouw"
 		Spanish:"Mecánica"
 		Simplified_Chinese:"机械"
+        Traditional_Chinese:"機械"
 		Portuguese:"Maquinária"
-	}
-	
+		Czech:"Stroje"
+}
+
 	"'The press is the best instrument for enlightening the mind of man, and improving him as a rational, moral and social being.' - Thomas Jefferson":{
 		Italian:"'La stampa è il migliore strumento per illuminare la mente dell'uomo e migliorarlo come essere razionale, morale e sociale.' - Thomas Jefferson"
 		Simplified_Chinese:"“印刷机是启蒙人心的最好工具，能将人提升为有理性有道德的社会人。”——托马斯·杰斐逊"
-	}
-	
+        Traditional_Chinese:"“印刷機是啟蒙人心的最好工具，能將人提昇唯有理性有道德的社會人。”——湯碼士·杰佛遜"
+		Czech:"'Tisk je nejlepším nástrojem pro osvícení mysli člověka a zlepšení jeho racionálních, morálních a sociálních stránek.' - Thomas Jefferson"
+		Russian:"'Пресса - лучший способ просвещения и улучшения человека как существа мыслящего, нравственного и общительного.' - Томас Джефферсон"
+}
+
 ///////// Technologies (Renaissance Era)
-	
+
 	"Astronomy":{
 		Italian:"Astronomia"
 		Russian:"Астрономия"
@@ -533,13 +685,18 @@
 		Dutch:"Astronomie"
 		Spanish:"Astronomía"
 		Simplified_Chinese:"天文学"
+        Traditional_Chinese:"天文學"
 		Portuguese:"Astronomia"
-	}
-	
+		Czech:"Astronomie"
+}
+
 	"'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer":{
 		Italian:"'Gioiosamente il re Odisseo aprì la vela alla brezza e abilmente manovrò il remo.' - Omero"
 		Simplified_Chinese:"“愉快地乘着轻风，高贵的奥德修斯扬起他的船帆，熟练地掌控着他的舵柄。”——荷马"
-	}
+        Traditional_Chinese:"“愉快地乘著輕風，高貴的奧德修斯揚起他的船帆，熟練地掌握著他的舵柄。”——荷馬"
+		Czech:"'Radostně, do větru napnul Odyseus plachtu, a obratně řídil kormodlo.' - Homér"
+		Russian:"'Сидя на крепком плоту, искусной рукою все время правил рулем Одиссей.' - Гомер"
+}
 
 	"Acoustics":{
 		Italian:"Acustica"
@@ -550,13 +707,18 @@
 		Dutch:"Akoestiek"
 		Spanish:"Acústica"
 		Simplified_Chinese:"声学"
+        Traditional_Chinese:"聲學"
 		Portuguese:"Acústica"
-	}
-	
+		Czech:"Akustika"
+}
+
 	"'Their rising all at once was as the sound of thunder heard remote' - Milton":{
 		Italian:"'Quando si levarono tutti insieme, il suono fu come un tuono che rimbomba lontano.' - Milton"
 		Simplified_Chinese:"“他们立刻一同起立，发出的声响犹如一阵远雷。”——弥尔顿"
-	}
+        Traditional_Chinese:"“他們立刻一同起立，發出的聲響猶如一陣遠雷。”——彌爾頓"
+		Czech:"'Jejich povstání se najednou neslo jako zvuk hromu do dáleka.' - John Milton"
+		Russian:"'Под громовый рык рогов и труб воинственных он повелел поднять свою могучую хоругвь.' - Джон Мильтон"
+}
 
 	"Banking":{
 		Italian:"Sistema bancario"
@@ -567,13 +729,18 @@
 		Dutch:"Bank"
 		Spanish:"Banca"
 		Simplified_Chinese:"银行业"
+        Traditional_Chinese:"銀行業"
 		Portuguese:"Sistema bancário"
-	}
-	
+		Czech:"Bankovnictví"
+}
+
 	"'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau":{
 		Italian:"'La felicità è un buon conto in banca, una buona cuoca e una buona digestione.' - Jean-Jacques Rousseau"
 		Simplified_Chinese:"“幸福：一个好的银行账户，一个好厨师和一个好胃口。”——让·雅克·卢梭"
-	}
+        Traditional_Chinese:"“幸福：一個好的銀行帳戶，一個好廚師和一個好胃口。”——金·雅克·盧梭"
+		Czech:"'Štěstí: dobrý bankovní účet, dobrý kuchař a dobré zažívání.' - Jean Jacques Rousseau"
+		Russian:"'Счастье - хороший счет в банке, хороший повар и хорошее пищеварение.' - Жан-Жак Руссо"
+}
 
 	"Printing Press":{
 		Italian:"Tipografia"
@@ -584,13 +751,18 @@
 		Dutch:"Drukpers"
 		Spanish:"Imprenta"
 		Simplified_Chinese:"印刷机"
+        Traditional_Chinese:"印刷機"
 		Portuguese:"Impressora"
-	}
-	
+		Czech:"Tiskařský lis"
+}
+
 	"'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times":{
 		Italian:"'Il dovere di un giornale è pubblicare le notizie e scatenare polveroni.' - The Chicago Times"
 		Simplified_Chinese:"“报纸的任务就是印出新闻和制造麻烦。”——芝加哥时报"
-	}
+        Traditional_Chinese:"“報紙的任務就是印出新聞和製造麻煩。”——芝加哥時報"
+		Czech:"'Je povinností novin tisknout zprávy a nastolit peklo.' - The Chicago Times"
+		Russian:"'Долг газеты - печатать новости и поднимать скандалы.' - 'Чикаго Таймс'"
+}
 
 	"Gunpowder":{
 		Italian:"Polvere da sparo"
@@ -600,14 +772,19 @@
 		Dutch:"Buskruid"
 		Spanish:"Pólvora"
 		Simplified_Chinese:"火药"
+        Traditional_Chinese:"火藥"
 		Portuguese:"Pólvora"
 		German:"Schießpulver"
-	}
-	
+		Czech:"Střelný prach"
+}
+
 	"'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel":{
 		Italian:"'Il giorno in cui due eserciti potranno distruggersi l'un l'altro in un solo secondo, si può sperare che tutte le nazioni civilizzate rifuggiranno la guerra e scioglieranno le loro truppe.' - Alfred Nobel"
 		Simplified_Chinese:"“当在战场上交锋的两支军队能够在一秒钟之内同时毁灭对方的那一天到来时，也许他们会选择放弃战争并解除武装。”——阿尔弗雷德·诺贝尔"
-	}
+        Traditional_Chinese:"“當在戰場上交鋒的兩隻軍隊能夠在一秒鐘之內同時毀滅對方的那一天到來時，也許他們會選擇放棄戰爭並解除武裝。”——阿爾弗雷德·諾貝爾"
+		Czech:"'V den, kdy se dvě znepřátelené armády budou moci ve vteřině zničit, všechny civilizované národy, jak doufám, zastaví války a pošlou své vojáky domů.' - Alfred Nobel"
+		Russian:"'В тот день, когда у двух армий окажется возможность уничтожить друг друга за считанные секунды, все цивилизованные страны, надо надеяться, отвернутся от войны.' - Альфред Нобель"
+}
 
 	"Navigation":{
 		Italian:"Navigazione"
@@ -618,13 +795,18 @@
 		Dutch:"Navigatie"
 		Spanish:"Navegación"
 		Simplified_Chinese:"航海术"
+        Traditional_Chinese:"航海術"
 		Portuguese:"Navegação"
-	}
-	
+		Czech:"Navigace"
+}
+
 	"'The winds and the waves are always on the side of the ablest navigators.' - Edward Gibbon":{
 		Italian:"'I venti e le onde sono sempre dalla parte dei navigatori più abili.' - Edward Gibbon"
 		Simplified_Chinese:"“风浪永远站在最出色的领航员一边。”——爱德华·吉本（英国历史学家）"
-	}
+        Traditional_Chinese:"“風浪永遠站在最出色的領航員那邊。”——愛德華·吉本（英國歷史學家）"
+		Czech:"'Vítr a vlny jsou vždy na straně nejschopnějších navigátorů.' - Alfred Nobel"
+		Russian:"'Ветер и волны всегда на стороне самых искусных мореходов.' - 'Эдвард Гиббон'"
+}
 
 	"Architecture":{
 		Italian:"Architettura"
@@ -635,13 +817,18 @@
 		Dutch:"Architectuur"
 		Spanish:"Arquitectura"
 		Simplified_Chinese:"建筑设计学"
+        Traditional_Chinese:"建築設計學"
 		Portuguese:"Arquitetura"
-	}
-	
+		Czech:"Architektura"
+}
+
 	"'Architecture begins where engineering ends.' - Walter Gropius":{
 		Italian:"'L'architettura inizia dove finisce l'ingegneria.' - Walter Gropius"
 		Simplified_Chinese:"“建筑设计学起于工程学终止之处。”——沃尔特·格罗佩斯（著名德国建筑师）"
-	}
+        Traditional_Chinese:"“建築設計學起於工程學中止之處。”——沃爾特·格羅佩斯（著名德國設計師）"
+		Czech:"'Architektura začíná tam, kde končí inženýrství.' - Walter Gropius"
+		Russian:"'Архитектура начинается там, где кончается машина.' - Ле Корбюзье"
+}
 
 	"Economics":{
 		Italian:"Economia"
@@ -652,14 +839,19 @@
 		Dutch:"Economie"
 		Spanish:"Economía"
 		Simplified_Chinese:"经济学"
+        Traditional_Chinese:"經濟學"
 		Portuguese:"Economia"
-	}
-	
+		Czech:"Ekonomika"
+}
+
 	"'Compound interest is the most powerful force in the universe.' - Albert Einstein":{
 		Italian:"'L'interesse composto è la forza più potente dell'universo.' - Albert Einstein"
 		Simplified_Chinese:"“复息利率是宇宙中最强大的力量。”——阿尔伯特·爱因斯坦"
-	}
-	
+        Traditional_Chinese:"“複息利率是宇宙中最強大的力量。”——阿爾伯特·愛因斯坦"
+		Czech:"'Složený úrok je nejsilnější silou ve vesmíru.' - Albert Einstein"
+		Russian:"'Во всей Вселенной нет ничего более могущественного, чем сложный процент.' - Альберт Эйнштейн"
+}
+
 	"Metallurgy":{
 		Italian:"Metallurgia"
 		Russian:"Металлургия"
@@ -668,15 +860,20 @@
 		Dutch:"Metaalkunde"
 		Spanish:"Metalurgia"
 		Simplified_Chinese:"冶金学"
+        Traditional_Chinese:"冶金學"
 		Portuguese:"Metalurgia"
 		German:"Metallhüttenkunde"
-	}
-	
+		Czech:"Hutnictví"
+}
+
 	"'There never was a good knife made of bad steel.' - Benjamin Franklin":{
 		Italian:"'Non c'è mai stato un buon coltello fatto di cattivo acciaio.' - Bejamin Franklin"
 		Simplified_Chinese:"“从没有一把由坏钢铸成的好刀。”——本杰明·富兰克林"
-	}
-	
+        Traditional_Chinese:"“從沒有一把由壞鋼鑄成的好刀。”——班傑明·富蘭克林"
+		Czech:"'Nikdy by nevznikl dobrý nůž ze špatné oceli.' - Benjamin Franklin"
+		Russian:"'Из плохой стали не выковать хорошего клинка.' - Бенджамин Франклин"
+}
+
 	"Chemistry":{
 		Italian:"Chimica"
 		Russian:"Химия"
@@ -686,16 +883,21 @@
 		Dutch:"Chemie"
 		Spanish:"Química"
 		Simplified_Chinese:"化学"
+        Traditional_Chinese:"化學"
 		Portuguese:"Química"
-	}
-	
+		Czech:"Chemie"
+}
+
 	"'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge":{
 		Italian:"'Dovunque voltiamo gli occhi, il lavoro del chimico ha alzato il livello della nostra civiltà e incrementato la capacità produttiva della nazione.' - Calvin Coolidge"
 		Simplified_Chinese:"“无论从哪方面看，化学家的工作都提高了我们文明的程度，增加了国家的生产力。”——卡尔文·柯立芝（美国第30任总统）"
-	}
-	
+        Traditional_Chinese:"“無論從哪方面看，化學家的工作都提高了我們文明的程度，增加了國家的生產力。”——卡爾文·柯立芝（美國第30任總統）"
+		Czech:"'Kamkoli se podíváme, práce chemiků zvýšila úroveň naší civilizace a zvýšila výrobní kapacitu národa.' - Calvin Coolidge"
+		Russian:"'Куда ни посмотри, химия повсеместно повысила уровень цивилизации и продуктивную способность нации.' - Джон Калвин Кулидж"
+}
+
 ///////// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
-	
+
 	"Scientific Theory":{
 		Italian:"Teoria scientifica"
 		Russian:"Научная теория"
@@ -705,16 +907,21 @@
 		Dutch:"Wetenschappelijke Theorie"
 		Spanish:"Teoría científica"
 		Simplified_Chinese:"科学理论"
+        Traditional_Chinese:"科學理論"
 		Portuguese:"Teoria científica"
-	}
+		Czech:"Vědecká teorie"
+}
 
 	"'Every great advance in science has issued from a new audacity of imagination.' - John Dewey":{
 		Italian:"'Ogni grande progresso della scienza è scaturito da una nuova audacia dell'immaginazione.' - John Dewey"
 		Simplified_Chinese:"“科学的每一项重要进展都得力于大胆的想象力。”——约翰·杜威（美国教育家）"
-	}
+        Traditional_Chinese:"“科學的每一項重要進展都得力於大膽的想像力。”——約翰·杜威（美國教育家）"
+		Czech:"'Každý velký pokrok ve vědě pochází z troufalé fantazie.' - John Dewey"
+		Russian:"'Каждый великий успех науки имеет своим истоком великую дерзость воображения.' - Джон Дьюи"
+}
 
 	"Archaeology":{ //it should be in Industrial Age.
-		Italian:"Archeologia" 
+		Italian:"Archeologia"
 		Russian:"Aрхеология"
 		French:"Archéologie"
 		Romanian:"Arheologie"
@@ -722,13 +929,18 @@
 		Dutch:"Archeologie"
 		Spanish:"Arqueología"
 		Simplified_Chinese:"考古学"
+        Traditional_Chinese:"考古學"
 		Portuguese:"Arqueologia"
-	}
+		Czech:"Archeologie"
+}
 
 	"'Those who cannot remember the past are condemned to repeat it.' - George Santayana":{
 		Italian:"'Chi non ricorda il passato è condannato a riviverlo.' - George Santayana"
 		Simplified_Chinese:"“不能铭记历史的人注定要重蹈覆辙。”——乔治·桑塔亚那（西班牙哲学家）"
-	}
+        Traditional_Chinese:"“不能銘記歷史的人注定要重蹈覆轍。”——喬治·桑塔亞那（西班牙哲學家）"
+		Czech:"'Ti, kteří si nepamatují svoji minulost, jsou odsouzeni si ji zopakovat.' - George Santayana"
+		Russian:"'Те, кто не помнит своей истории, обречены повторять ее.'- Джордж Сантаяна"
+}
 
 	"Industrialization":{
 		Italian:"Industrializzazione"
@@ -738,15 +950,20 @@
 		Dutch:"Industrialisatie"
 		Spanish:"Industrialización"
 		Simplified_Chinese:"工业化"
+        Traditional_Chinese:"工業化"
 		Portuguese:"Industrialização"
 		German:"Industrialisierung"
-	}
+		Czech:"Industrializace"
+}
 
 	"'Industrialization based on machinery, already referred to as a characteristic of our age, is but one aspect of the revolution that is being wrought by technology.' - Emily Greene Balch":{
 		Italian:"'L'industrializzazione basata sui macchinari, già indicata come una caratteristica della nostra epoca, è solo uno degli aspetti della rivoluzione prodotta dalla tecnologia.' - Emily Greene Balch"
 		Simplified_Chinese:"“由机械的发展而产生的工业化大生产，虽被看作我们这个时代的标志，但它其实不过是科技进步带来的诸多革命之一。”——艾米莉·格伦尼·巴尔奇（美国女经济学家）"
-	}
-	
+        Traditional_Chinese:"“由機械的發展而產生的工業化大生產，雖被看作這個時代的標誌，但它其實不過是科技進步帶來的諸多革命之一。”——艾米莉·格倫尼·巴爾奇（美國女經濟學家）"
+		Czech:"'Industrializace založená na strojích, která se již označuje jako charakteristika našeho věku, je pouze jedním z aspektů revoluce, která je vyvolávána technologií.' - Emily Greene Balch"
+		Russian:"'Индустриализация, уже ставшая неотъемлемой чертой нашего века, - всего лишь *одно* из проявлений революции, которую произвели технические науки.'- Эмили Грин Болч"
+}
+
 	"Rifling":{
 		Italian:"Rigatura delle canne"
 		Russian:"Нарезные стволы"
@@ -755,14 +972,19 @@
 		Dutch:"Gedraaide loop"
 		Spanish:"Estriado"
 		Simplified_Chinese:"膛线"
+        Traditional_Chinese:"膛線"
 		German:"Gewehrkugeldrall"
 		// Portuguese translation not sure
-	}
+		Czech:"Puška"
+}
 
 	"'It is well that war is so terrible, or we should grow too fond of it.' - Robert E. Lee":{
 		Italian:"'È un bene che la guerra sia così terribile, altrimenti potrebbe cominciare a piacerci troppo.' - Robert E. Lee"
 		Simplified_Chinese:"“幸好战争是如此恐怖，否则我们将会打到乐此不疲。”——罗伯特·爱德华·李"
-	}
+        Traditional_Chinese:"“幸好戰爭是如此恐怖，否則我們將會打到樂此不疲。”——羅伯特·愛德華·李"
+		Czech:"'Je skvělé, že válka je tak příšerná, jinak bychom ji měli příliš rádi.' - Robert E. Lee"
+		Russian:"'Хорошо, что война так ужасна, иначе мы любили бы ее слишком сильно.'- генерал Роберт Ли"
+}
 
 	"Military Science":{
 		Italian:"Scienza militare"
@@ -772,31 +994,41 @@
 		Dutch:"Militaire Wetenschap"
 		Spanish:"Ciencia militar"
 		Simplified_Chinese:"军事科学"
+        Traditional_Chinese:"軍事科學"
 		Portuguese:"Ciência militar"
 		German:"Militärwissenschaft"
-	}
+		Czech:"Vojenská věda"
+}
 
 	"'Wars may be fought with weapons, but they are won by men. It is the spirit of the men who follow and of the man who leads that gains the victory.' - George S. Patton":{
 		Italian:"'Le guerre possono anche essere combattute con le armi, ma sono vinte dagli uomini. È lo spirito degli uomini che seguono e dell'uomo che conduce che porta alla vittoria.' - George S. Patton"
 		Simplified_Chinese:"“战争是武器间的较量，但胜利必定要由人来夺取。是引领者及其追随者们的精神力量使他们赢得了胜利。”——乔治·史密斯·巴顿"
-	}
+        Traditional_Chinese:"“戰爭是武器間的較量，但勝利必定要由人來奪取。是引領者及其追隨者們的精神力量使他們贏得了勝利。”——喬治·史密斯·巴頓"
+		Czech:"'Války mohou být bojovány se zbraněmi, ale vyhrávají je muži. Vítězství získává duch lidí, kteří ho následují, a člověka, který vede.' - George S. Patton"
+		Russian:"'Пусть войны ведутся оружием, выигрывают их люди. К победе приводит боевой дух того, кто ведет за собой, и тех, кто следует.' - Джордж Паттон"
+}
 
 	"Fertilizer":{
 		Italian:"Fertilizzanti"
-		Russian:"Yдобрения"
+		Russian:"Удобрения"
 		French:"Engrais"
 		Romanian:"Fertilizatori"
 		German:"Dünger"
 		Dutch:"Mest"
 		Spanish:"Fertilizante"
 		Simplified_Chinese:"化肥"
+        Traditional_Chinese:"肥料"
 		Portuguese:"Fertilizante"
-	}
-	
+		Czech:"Hnojivo"
+}
+
 	"'The nation that destroys its soil destroys itself.' - Franklin Delano Roosevelt":{
 		Italian:"'La nazione che distrugge il suo suolo distrugge se stessa.' - Franklin Delano Roosevelt"
 		Simplified_Chinese:"“一个毁掉自己所有土壤的国家也将毁灭自身。”——富兰克林·德拉诺·罗斯福"
-	}
+        Traditional_Chinese:"“一個毀掉自己所有土壤的國家也將毀滅自身。”——富蘭克林·德拉諾·羅斯福"
+		Czech:"'Národ, který ničí svou půdu, ničí sám sebe.' - Franklin Delano Roosevelt"
+		Russian:"'Народ, который разрушает свою почву, уничтожает сам себя.' - Франклин Делано Рузвельт"
+}
 
 	"Biology":{
 		Italian:"Biologia"
@@ -807,13 +1039,18 @@
 		Dutch:"Biologie"
 		Spanish:"Biología"
 		Simplified_Chinese:"生物学"
+        Traditional_Chinese:"生物學"
 		Portuguese:"Biologia"
-	}
+		Czech:"Biologie"
+}
 
 	"'If the brain were so simple we could understand it, we would be so simple we couldn't.' - Lyall Watson":{
 		Italian:"'Se il cervello fosse così semplice da poter essere compreso, noi saremmo troppo semplici per comprenderlo.' - Lyall Watson"
 		Simplified_Chinese:"“如果大脑简单到能让我们理解，我们的思维就会简单到不能理解大脑。”——莱尔·沃森（南非生物学家）"
-	}
+        Traditional_Chinese:"“如果大腦簡單到能讓我們理解，我們的思維就會簡單到不能理解大腦。”——萊爾·沃森（南非生物學家）"
+		Czech:"'Kdyby byl mozek tak jednoduchý, že bychom mu rozuměli, byli bychom tak prostí, že bychom nemohli' - Lyall Watson"
+		Russian:"'Если бы работа мозга была доступна для нашего понимания, мы были бы слишком глупы, чтобы понять.' - Лиалл Уотсон"
+}
 
 	"Electricity":{
 		Italian:"Elettricità"
@@ -824,13 +1061,18 @@
 		Dutch:"Elektriciteit"
 		Spanish:"Electricidad"
 		Simplified_Chinese:"电学"
+        Traditional_Chinese:"電學"
 		Portuguese:"Eletricidade"
-	}
+		Czech:"Elektrika"
+}
 
 	"'Is it a fact - or have I dreamt it - that, by means of electricity, the world of matter has become a great nerve, vibrating thousands of miles in a breathless point of time?' - Nathaniel Hawthorne":{
 		Italian:"'È un fatto - oppure l'ho sognato - che, per mezzo dell'elettricità, il mondo della materia è diventato un grande nervo, che vibra per migliaia di miglia in un battibaleno?' - Nathaniel Hawthornev"
 		Simplified_Chinese:"“这是事实还是我的空想：电流能把物质世界变成一个巨大的神经网络，让震颤在瞬息之间传送数千英里？”——纳撒尼尔·霍桑（美国作家）"
-	}
+        Traditional_Chinese:"“這是事實還是我的空想：電流能把物質世界變成一個巨大的神經網路，讓震顫在瞬息之間傳送數千英里？”——納撒尼爾·霍桑（美國作家）"
+		Czech:"'Je to skutečnost, nebo můj sen, že svět se stal díky elektřině obrovským nervem pulsujícím tisíce kilometrů během zlomku času.' - Nathaniel Hawthorne"
+		Russian:"'Верно ль - или мне почудилось? - что электричество преобразило мир вещей в гигантский трепещущий нерв, раскинувшийся на сотни километров в одно мгновение?' - Натаниель Готорн"
+}
 
 	"Steam Power":{
 		Italian:"Energia a vapore"
@@ -841,13 +1083,18 @@
 		Dutch:"Stoomkracht"
 		Spanish:"Energía de vapor"
 		Simplified_Chinese:"蒸汽机"
+        Traditional_Chinese:"蒸汽機"
 		Portuguese:"Energia a vapor"
-	}
+		Czech:"Parní stroj"
+}
 
 	"'The nations of the West hope that by means of steam communication all the world will become as one family.' - Townsend Harris":{
 		Italian:"'Le nazioni occidentali sperano che grazie alla comunicazione a vapore il mondo intero diventerà come una grande famiglia.' - Townsend Harris"
 		Simplified_Chinese:"“西方国家希望蒸汽机所推动的相互交流能让全世界亲如一家。”——唐森·哈利斯（美国政治家）"
-	}
+        Traditional_Chinese:"“西方國家希望蒸汽機所推動的相互交流能讓全世界親如一家。”——唐森·哈利斯（美國政治家）"
+		Czech:"'Západní národy doufají, že se prostřednictvím parní komunikace stane celý svět jednou velkoiu rodinou.' - Townsend Harris"
+		Russian:"'Западные народы надеются, что паровая тяга сделает весь мир большой семьей' - Таунсенд Харрис"
+}
 
 	"Dynamite":{
 		Italian:"Dinamite"
@@ -857,16 +1104,22 @@
 		Dutch:"Dynamiet"
 		Spanish:"Dinamita"
 		Simplified_Chinese:"炸药"
+        Traditional_Chinese:"炸藥"
 		Portuguese:"Dinamite"
 		German:"Dynamit"
-	}
+		Czech:"Dynamit"
+}
 	"'As soon as men decide that all means are permitted to fight an evil, then their good becomes indistinguishable from the evil that they set out to destroy.' - Christopher Dawson":{
 		Italian:"'Non appena si decide che per combattere il male tutti i mezzi sono leciti, il bene diventa indistinguibile dal male che si vuole distruggere.' - Christopher Dawson"
 		Simplified_Chinese:"“当人们决定可以使用一切方式来同邪恶斗争时，他们的善良将变得和他们想要消灭的邪恶一样可怕。”——克里斯托弗·道森（英国学者）"
-	}
-	
+        Traditional_Chinese:"“當人們決定可以使用一切方式來和邪惡鬥爭時，他們的善良將變得和他們想要消滅的邪惡一樣可怕。”——克里斯托弗·道森（英國學者）"
+		Czech:"'Jakmile se lidé rozhodnou, že budou mít všechny prostředky k boji proti zlu, jejich dobro se stane nerozeznatelným od zla, které se chystají zničit.' - Christopher Dawson"
+		Russian:"'Стоит человечеству решить, что для борьбы с пороком все средства хороши, как добро становится неотличимым от порока, который было призвано победить' - Кристофер Доусон"
+
+}
+
 ///////// Technologies (Modern Era)
-	
+
 	"Refrigeration":{
 		Italian:"Refrigerazione"
 		Russian:"Криогеника"
@@ -876,29 +1129,40 @@
 		Dutch:"Koeling"
 		Spanish:"Refrigeración"
 		Simplified_Chinese:"制冷"
+        Traditional_Chinese:"制冷"
 		Portuguese:"Refrigeração"
-	}
+		Czech:"Chlazení"
+}
 
 	"'And homeless near a thousand homes I stood, and near a thousand tables pined and wanted food.' - William Wordsworth":{
 		Italian:"'E senza dimora vicino a mille dimore stavo, e vicino a mille tavole mi struggevo e desideravo il cibo.' - William Wordsworth"
 		Simplified_Chinese:"“我站在无数无家可归者身边，无数空空如也的桌子面前，渴求着食物。”——威廉·华兹华斯"
-	}
+        Traditional_Chinese:"“我站在無數無家可歸的人們身邊，無數空空如也的桌子面前，渴求著食物。”——威廉·華茲華斯"
+		Czech:"'Bezdomovci před tisicem domů stáli, poblíž tisíce stolů z borovic a chtěli jídlo' - William Wordsworth"
+		Russian:"'Метели, снега и туманы / Покорны морозу всегда, / Пойду на моря-окияны / -Построю дворцы изо льда' - Николай Некрасов" // Another text in localization
+}
 
 	"Replaceable Parts":{
 		Italian:"Pezzi indipendenti"
 		Romanian:"Piese de schimb"
 		Spanish:"Produccion En Serie"
 		Simplified_Chinese:"可更换部件"
+        Traditional_Chinese:"可更換部件"
 		Portuguese:"Partes substituiveís"
 		German:"Ersetzbare Teile"
 		French:"Pièces de rechange"
-		Russian:"Сменные части"
-	}
+		Russian:"Стандартизация"  //official
+		Czech:"Vyměnitelné díly"
+}
 
 	"'Nothing is particularly hard if you divide it into small jobs.' - Henry Ford":{
 		Italian:"'Niente è troppo difficile se lo suddividi in piccole azioni.' - Henry Ford"
 		Simplified_Chinese:"“如果你把大任务分解成小任务，任何事都不会特别难。”——亨利·福特"
-	}
+        Traditional_Chinese:"“如果你把大任務分解成小任務，任何事都不會特別難。”——亨利·福特"
+		Czech:"'Nic není obzvláště těžké, pokud to rozdělíte na menší části.' - Henry Ford"
+		Russian:"'Никакое дело не покажется невыполнимым, если разбить его на мелкие части' - Генри Форд"
+
+}
 
 	"Radio":{
 		Italian:"Radio"
@@ -909,13 +1173,18 @@
 		Dutch:"Radio"
 		Spanish:"Radio"
 		Simplified_Chinese:"无线电"
+        Traditional_Chinese:"無線電"
 		Portuguese:"Rádio"
-	}
+		Czech:"Rádio"
+}
 
 	"'The whole country was tied together by radio. We all experienced the same heroes and comedians and singers. They were giants.' - Woody Allen":{
 		Italian:"'L'intero paese è stato unito dalla radio. Tutti avevamo in comune gli stessi eroi, gli stessi comici, gli stessi cantanti. Erano dei giganti.' - Woody Allen"
 		Simplified_Chinese:"“整个国家被无线电联结在一起，我们都熟识同样的英雄、同样的喜剧演员和同样的歌手。他们都是时代的巨人。”——伍迪·艾伦"
-	}
+        Traditional_Chinese:"“整個國家被無線電連結在一起，我們都熟識同樣的英雄、同樣的喜劇演員和同樣的歌手。他們都是時代的巨人。”——伍迪·艾倫"
+		Czech:"'Celá země byla propojena rádiem. Všichni jsme zažili stejné hrdiny a komiky a zpěváky. Byli to velikáni.' - Woody Allen"
+		Russian:"'Радио объединяло всю страну. Мы все росли на одних исполнителях, героях и юмористах' - Вуди Аллен, 'Радиодни'"
+}
 
 	"Combustion":{
 		Italian:"Combustione"
@@ -926,13 +1195,18 @@
 		Dutch:"Verbranding"
 		Spanish:"Combustión"
 		Simplified_Chinese:"内燃机"
+        Traditional_Chinese:"內燃機"
 		Portuguese:"Combustão"
-	}
+		Czech:"Spalování"
+}
 
 	"'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein":{
 		Italian:"'Un uomo che sappia guidare in tutta sicurezza mentre sta baciando una ragazza non sta dedicando al bacio tutta l'attenzione che si merita.' - Albert Einstein"
 		Simplified_Chinese:"“任何能够在安全行驶的同时亲吻一个年轻姑娘的男人一定没有给那个吻应有的注意力。”——阿尔伯特·爱因斯坦"
-	}
+        Traditional_Chinese:"“任何能夠在安全行駛的同時親吻一個年輕姑娘的男人一定沒有給那個吻應有的注意力。”——阿爾伯特·愛因斯坦"
+		Czech:"'Každý muž, který dokáže bezpečně řídit při líbání krásné dívky, jednoduše nevěnuje polibku pozornost, kterou si zaslouží.' - Albert Einstein"
+		Russian:"'Мужчина, который может спокойно вести машину, одновременно целуя красотку, просто не уделяет поцелую должного внимания.' - Альберт Эйнштейн"
+}
 
 	"Plastics":{
 		Italian:"Plastica"
@@ -943,13 +1217,18 @@
 		Dutch:"Plastic"
 		Spanish:"Plástico"
 		Simplified_Chinese:"塑料"
+        Traditional_Chinese:"塑膠"
 		Portuguese:"Plásticos"
-	}
+		Czech:"Plasty"
+}
 
 	"'Ben, I want to say one word to you, just one word: plastics.' - Buck Henry and Calder Willingham, The Graduate":{
 		Italian:"'Ben, voglio solo dirti una parola... una sola: plastica.' - Buck Henry e Calder Willingham, Il Laureato"
 		Simplified_Chinese:"“本，我只想对你说一个词，就一个词：塑料。”——巴克·亨利/卡尔德·威灵汉姆，《毕业生》"
-	}
+        Traditional_Chinese:"“班，我只想對你說一個詞，就一個詞：塑膠。”——巴克·亨利/卡爾德·威靈漢姆，《畢業生》"
+		Czech:"'Bene, chci ti říct jedno slovo, jediné slovo: plasty.' - Buck Henry a Calder Willingham, Absolvent"
+		Russian:"'Все на свете из пластмассы, и вокруг пластмассовая жизнь.' - группа 'Сплин'" //Another text
+}
 
 	"Electronics":{
 		Italian:"Elettronica"
@@ -960,13 +1239,18 @@
 		Dutch:"Elektronica"
 		Spanish:"Electrónica"
 		Simplified_Chinese:"电子学"
+        Traditional_Chinese:"電子學"
 		Portuguese:"Eletronicos"
-	}
-	
+		Czech:"Elektronika"
+}
+
 	"'There's a basic principle about consumer electronics: it gets more powerful all the time and it gets cheaper all the time.' - Trip Hawkins":{
 		Italian:"'Nell'elettronica di consumo esiste un principio di base: diventa sempre più potente e sempre meno costosa.' - Trip Hawkins"
 		Simplified_Chinese:"“消费类电子产品有一个基本法则：它的功能越来越强，它的价格越来越低。”——崔普·霍金斯（美国艺电(EA)公司创始人）"
-	}
+        Traditional_Chinese:"“消費類電子產品：它的功能越來越強，且價格越來越低。”——崔普·霍金斯（美國藝電(EA)公司創始人）"
+		Czech:"'Je zde základní princip o spotřební elektronice: Je pořád výkonnější a neustále levnější.' - Trip Hawkins"
+		Russian:"'Потребительские электротовары подчиняются простому принципу: они становятся все мощнее и все дешевле.' - Трип Хокинс"
+}
 
 	"Ballistics":{
 		Italian:"Balistica"
@@ -977,12 +1261,17 @@
 		Portuguese:"Balística"
 		Romanian:"Balistică"
 		Simplified_Chinese:"弹道学"
-	}
+        Traditional_Chinese:"彈道學"
+		Czech:"Balistika"
+}
 
 	"'Men, like bullets, go farthest when they are smoothest.' - Jean Paul":{
 		Italian:"'Gli uomini, come i proiettili, vanno più lontano quanto meno sono ruvidi.' - Jean Paul"
 		Simplified_Chinese:"“人就像子弹，最圆滑的才走得最远。”——让·保罗"
-	}
+        Traditional_Chinese:"“人就像子彈，最圓滑的才走得最遠。”——金·保羅"
+		Czech:"'Muži, stejně jako kulky, dojdou nejdál, pokud jsouuhlazení.' - Jean Paul"
+		Russian:"'Люди, подобно пулям, чем лучше обработаны, тем дальше летят.' - Жан Поль"
+}
 
 	"Mass Media":{
 		Italian:"Mass media"
@@ -993,8 +1282,10 @@
 		Dutch:"Massa Media"
 		Spanish:"Medios de comunicación"
 		Simplified_Chinese:"大众传媒"
+        Traditional_Chinese:"大眾傳媒"
 		Portuguese:"Mídia de massa"
-	}
+		Czech:"Hromadné sdělovací prostředky"
+}
 
 	"Flight":{
 		Italian:"Volo"
@@ -1005,65 +1296,88 @@
 		Dutch:"Vlucht"
 		Spanish:"Vuelo"
 		Simplified_Chinese:"航空"
+        Traditional_Chinese:"航空"
 		Portuguese:"Vôo"
-	}
-	
+		Czech:"Létání"
+}
+
 	"'Aeronautics was neither an industry nor a science. It was a miracle.' - Igor Sikorsky":{
 		Italian:"'L'aeronautica non è stata né un settore industriale né una scienza. È stata un miracolo.' - Igor Sikorsky"
-		Simplified_Chinese:"“航空既不是一种工业也不是一门科学。它是一个奇迹。”——伊戈尔·西科尔斯基（俄裔美籍飞机设计师）"
-	}
+		Simplified_Chinese:"“航空既不是一种工业也不是一门科学。它是一个奇迹。”——伊戈尔·西科尔斯基（美籍俄裔飞机设计师）"
+        Traditional_Chinese:"“航空既不是一種工業也不是一門科學。它是一個奇蹟。”——伊戈爾·西科爾斯基（美籍俄裔飛機設計師）"
+		Czech:"'' - "
+		Russian:"'Воздухоплавание не было ни наукой, ни отраслью промышленности. Оно было чудом.' - Игорь Сикорский"
+}
 
 	"'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson":{//"Railroad" Technology quotes, it has been translated somewhere.
 		Italian: "'L'introduzione sui carri a ruote di un agente potente come il vapore apporterà un grande cambiamento alla condizione dell'uomo.' - Thomas Jefferson"
 		Simplified_Chinese:"“引入蒸汽这样一个强大的助手来驱动车轮进行运输，将极大地改变人类的境地。”——托马斯·杰斐逊"
-	}
-	
+        Traditional_Chinese:"“引入蒸氣這樣一個強大的助手來驅動車輪進行運輸，將極大地改變人類的處境。”——湯碼士·杰佛遜"
+		Czech:"'Zavedení něčeho tak mocného jako je pára do vozu na kolech, bude velkou změnou pro člověka.' - Thomas Jefferson"
+		Russian:"'Применение к колесному транспорту столь мощной движущей силы, как пар, радикально изменит положение человечества.' - Томас Джефферсон"
+}
+
 ///////// Technologies (Information Era)
-	
+
 	"Pharmaceuticals":{
 		Italian:"Penicillina"
-		Russian:"Фармацевтика"
+		Russian:"Пенициллин"  // official version, but 'Фармацевтика' also suitable
 		French:"Médicaments"
 		Romanian:"Produse farmaceutice"
 		German:"Arzneimittel"
 		Dutch:"Farmaceutica"
 		Spanish:"Farmacéutica"
 		Simplified_Chinese:"制药学"
+        Traditional_Chinese:"製藥學"
 		Portuguese:"Farmacêuticas"
-	}
+		Czech:"Léčiva"
+}
 
 	"'In nothing do men more nearly approach the gods than in giving health to men.' - Cicero":{
 		Italian:"'Gli uomini non si avvicinano mai tanto agli dèi come quando danno la salute ad altri uomini.' - Cicerone"
 		Simplified_Chinese:"“没有什么比给予他人健康更使人接近诸神。”——西塞罗"
-	}
-	
+        Traditional_Chinese:"“沒有什麼比給予他人健康更使人接近諸神。”——希塞羅"
+		Czech:"'V ničem se lidé k božstvům blíží více, než když dávají lidem zdraví.' - Cicero"
+		Russian:"'Люди более всего приближаются к богам именно тогда, когда даруют людям спасение.' - Марк Туллий Цицерон"
+}
+
 	"Radar":{
 		Italian:"Radar"
 		Russian:"Радар"
 		Simplified_Chinese:"雷达"
-	}
+        Traditional_Chinese:"雷達"
+		Czech:"Radar"
+}
 
 	"'Vision is the art of seeing things invisible.' - Jonathan Swift":{
 		Italian:"'La visione è l'arte di vedere le cose invisibili' - Jonathan Swift"
 		Simplified_Chinese:"“洞察力是看到不可见事物的艺术。”——乔纳森·斯威夫特（英国作家）"
-	}
+        Traditional_Chinese:"“洞察力是看到不可見事物的藝術。”——喬納森·斯威夫特（英國作家）"
+		Czech:"'Vize je umění, vidět věci neviditelné' - Jonathan Swift"
+		Russian:"'Дальновидность - искусство узреть незримое' - Джонатан Свифт"
+}
 
 	"Atomic Theory":{
 		Italian:"Teoria atomica"
-		Russian:"Атомная Теория"
+		Russian:"Ядерная физика" // official
 		French:"Théorie atomique"
 		Romanian:"Teoria atomică"
 		German:"Atomtheorie"
 		Dutch:"Atoom theorie"
 		Spanish:"Teoría atómica"
 		Simplified_Chinese:"原子理论"
+        Traditional_Chinese:"原子理論"
 		Portuguese:"Teoria atômica"
-	}
+		Czech:"Atomová teorie"
+}
 
 	"'The unleashed power of the atom has changed everything save our modes of thinking, and we thus drift toward unparalleled catastrophes.' - Albert Einstein":{
 		Italian:"'Lo sfruttamento dell'energia dell'atomo ha cambiato tutto tranne il nostro modo di pensare e questo può condurci a catastrofi mai viste prima.' - Albert Einstein"
 		Simplified_Chinese:"“被释放的原子能已经改变了一切，除了我们的思维模式，因此我们正在滑向空前的灾难。”——阿尔伯特·爱因斯坦"
-	}
+        Traditional_Chinese:"“被釋放的原子能已經改變了一切，除了我們的思維模式，因此我們正在滑向空前的災難。”——阿爾伯特·愛因斯坦"
+		Czech:"'Uvolnění síly atomu změnilo všechno zachraňující naše způsoby myšlení a tak jsme se posunuli k neporovnatelným katastrofám.' - Albert Einstein"
+		Czech:"'Высвобожденная ядерная энергия изменила все, кроме нашего мышления. Поэтому мы медленно близимся к катастрофе невиданных масштабов.' - Альберт Эйнштейн"
+}
 
 	"Computers":{
 		Italian:"Computer"
@@ -1074,38 +1388,53 @@
 		Dutch:"Computers"
 		Spanish:"Ordenadores"
 		Simplified_Chinese:"电子计算机"
+        Traditional_Chinese:"電腦"
 		Portuguese:"Computadores"
-	}
+		Czech:"Počítače"
+}
 
 	"'Computers are like Old Testament gods: lots of rules and no mercy.' - Joseph Campbell":{
 		Italian:"'I computer sono come il Dio del vecchio testamento: tante regole e nessuna pietà.' - Joseph Campbell"
 		Simplified_Chinese:"“计算机就如同旧约中的上帝：诸多戒命且没有怜悯。”——约瑟夫·坎贝尔（美国学者）"
-	}
+        Traditional_Chinese:"“電腦就像舊約中的上帝：諸多戒命且沒有憐憫。”——約瑟夫·坎貝爾（美國學者）"
+		Czech:"'Počítače jsou jako bohové Starého zákona: spousta pravidel a žádné milosrdenství.' - Joseph Campbell"
+		Russian:"'Компьютеры похожи на ветхозаветных богов: сплошные правила и ни капли жалости.' - Дж. Кэмпбелл"
+}
 
 	"Mobile Tactics":{
 		Italian:"Tattiche mobili"
-		Russian:"Мобильная тактика"
+		Russian:"Тактика мобильной войны" // official
 		Simplified_Chinese:"机动战术"
-	}
+        Traditional_Chinese:"機動戰術"
+		Czech:"Mobilní taktika"
+}
 
 	"'All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.' - Sun Tzu":{
 		Italian:"'Tutti possono osservare le tattiche che mi portano alla conquista, ma quello che nessuno può vedere è la strategia che gradualmente conduce alla vittoria.' - Sun Tzu"
 		Simplified_Chinese:"“人皆知吾所以胜之形，而莫知吾所以制胜之形”——孙子"
-	}
+        Traditional_Chinese:"“人皆知吾所以勝其形，而莫知吾所以制勝之形”——孫子"
+		Czech:"'Všichni lidé vidí tyto taktiky, díky nimž dobývám, ale to, co nikdo nevidí, je strategie, z níž se rodí vítězství.' - Sun Tzu"
+		Russian:"'Все воины знают форму, благодаря которой мы добиваемся победы, но никто не знает той формы, с помощью которой мы управляем победой.' - Сунь Цзы"
+}
 
 	"Combined Arms":{
 		Italian:"Armi combinate"
-		Russian:"Современное вооружение"
+		Russian:"Общевойсковая бригада" // official
 		French:"Armes combinés"
 		German:"Verbundene Waffen"
 		Spanish:"Fuerzas combinadas"
 		Simplified_Chinese:"协同作战"
-	}
+        Traditional_Chinese:"協同作戰"
+		Czech:"Kombinované zbraně"
+}
 
 	"'The root of the evil is not the construction of new, more dreadful weapons. It is the spirit of conquest.' - Ludwig von Mises":{
 		Italian:"'La radice del male non sta nella costruzione di nuove, terribili armi, ma nello spirito stesso della conquista.' - Ludwig von Mises"
 		Simplified_Chinese:"“邪恶的根源并不是什么不断更新的致命武器，而是人对征服的欲望。”——路德维希·冯·米塞斯"
-	}
+        Traditional_Chinese:"“邪惡的根源並不是什麼不斷創新的致命武器，而是人對征服的欲望。”——路德維希·馮·米塞斯"
+		Czech:"'Kořenem zla není konstruování nových, strašlivějších zbraní. Je to dubyvatelský duch.' - Ludwig von Mises"
+		Russian:"'Корень зла лежит не в создании нового, более смертоносного оружия, а в духе завоевания.' - Людвиг фон Мизес"
+}
 
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
@@ -1116,13 +1445,18 @@
 		Dutch:"Kernsplijting"
 		Spanish:"Fisión nuclear"
 		Simplified_Chinese:"核裂变"
+        Traditional_Chinese:"核分裂"
 		Portuguese:"Fusão núclear"
-	}
+		Czech:"Jaderné štěpení"
+}
 
 	"'I am become Death, the destroyer of worlds.' - J. Robert Oppenheimer":{
 		Italian:"'Se migliaia di soli illuminassero il cielo sarebbe uno spettacolo di straordinaria potenza... Sono la Morte, Distruttrice di Mondi.' - J. Robert Oppenheimer"
 		Simplified_Chinese:"“我成了死神，世界的毁灭者。”——尤利乌斯·罗伯特·奥本海默"
-	}
+        Traditional_Chinese:"“我成了死神，世界的毀滅者。”——尤利烏斯·羅伯特·奧本海默"
+		Czech:"'Stávám se smrtí, ničitelem světů.' - J. Robert Oppenheimer"
+		Russian:"'И я стану Смертью, разрушителем миров.' - Роберт Оппенгеймер"
+}
 
 	"Ecology":{
 		Italian:"Ecologia"
@@ -1133,30 +1467,40 @@
 		Dutch:"Ecologie"
 		Spanish:"Ecología"
 		Simplified_Chinese:"生态学"
+        Traditional_Chinese:"生態學"
 		Portuguese:"Ecologia"
-	}
+		Czech:"Ekologie"
+}
 
 	"'Only within the moment of time represented by the present century has one species, man, acquired significant power to alter the nature of his world.' - Rachel Carson":{
 		Italian:"'Soltanto nel momento storico rappresentato dal secolo attuale una specie, quella dell'uomo, ha acquisito il potere necessario per alterare significativamente la natura del mondo.' - Rachel Carson"
 		Simplified_Chinese:"“直到进入本世纪的时候，作为一个物种的人类才获得了足以改变他所在世界的本质的强大能力。”——雷切尔·卡森（美国生态学家）"
-	}
+        Traditional_Chinese:"“直到進入本世紀的時候，作為一個物種的人類才獲得了足以改變他所在世界的本質的強大能力。”——雷切爾·卡森（美國生態學家）"
+		Czech:"'Teprve v okamžiku, který představuje současné století, získal jeden druh, člověk, významnou sílu změnit povahu svého světa.' - Rachel Carson"
+		Russian:"'В нашем столетии один вид - человек - стал достаточно могущественным для того, чтобы изменять окружающую среду.' - Рейчел Карсон"
+}
 
 	"Rocketry":{
 		Italian:"Missilistica"
 		Russian:"Ракетостроение"
-		French:"Fusées" //official translate 
+		French:"Fusées" //official translate
 		Romanian:"Rachete"
 		German:"Raketentechnik"
 		Dutch:"Rakettechniek"
 		Spanish:"Cohetería"
 		Simplified_Chinese:"火箭"
+        Traditional_Chinese:"火箭"
 		Portuguese:"Balística"
-	}
+		Czech:"Raketová technika"
+}
 
 	"'A good rule for rocket experimenters to follow is this: always assume that it will explode.' - Astronautics Magazine, 1937":{
 		Italian:"'Una buona regola di base per chi fa esperimenti con i razzi è la seguente: dai sempre per scontato che esploderà.' - Rivistica di astronautica, 1937"
 		Simplified_Chinese:"“火箭研究人员要遵守的最好规矩就是：永远要假定它会爆炸。”——航天学杂志，1937"
-	}
+        Traditional_Chinese:"“火箭研究人員要遵守的一條規矩：永遠要假設它會爆炸。”——航天學雜誌，1937"
+		Czech:"'Pro raketové experimenty je dobré držet se prvidla: Vždycky předpokládejte, že to vybouchne.' - Astronautický časopis, 1937"
+		Russian:"'Вот верное правило ракетостроения: всегда рассчитывайте на то, что в ходе эксперимента ракета взорвется.' - Журнал 'Астронавтика', 1937"
+}
 
 ///////// Technologies (Future Era)
 
@@ -1169,25 +1513,35 @@
 		Dutch:"Robotica"
 		Spanish:"Robótica"
 		Simplified_Chinese:"机器人学"
+        Traditional_Chinese:"機器人學"
 		Portuguese:"Robótica"
-	}
+		Czech:"Robotika"
+}
 
 	"'1. A robot may not injure a human being or, through inaction, allow a human being to come to harm. 2. A robot must obey any orders given to it by human beings, except when such orders would conflict with the First Law. 3. A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.' - Isaac Asimov":{
 		Italian:"'1. Un robot non può recar danno a un essere umano né permettere che, a causa del proprio mancato intervento, un essere umano riceva danno. 2. Un robot deve obbedire agli ordini impartiti dagli esseri umani, purché tali ordini non contravvengano alla Prima Legge. 3. Un robot deve proteggere la propria esistenza, purché questa autodifesa non contrasti con la Prima e la Seconda Legge.' - Isaac Asimov"
 		Simplified_Chinese:"“1、机器人不得伤害人，也不得见人受到伤害而袖手旁观。2、机器人应服从人的一切命令，但不得违反第一定律。3、机器人应保护自身的安全，但不得违反第一、第二定律。”——艾萨克·阿西莫夫"
-	}
+        Traditional_Chinese:"“1、機器人不得傷害人，也不能見人受到傷害時袖手旁觀。2、機器人應服從人的一切命令，但不得違反第一定律。3、機器人應保護自身安全，但不得違反第一、第二定律。”——艾薩克·阿西莫夫"
+		Czech:"'1. Robot nesmí člověku ublížit, ani nesmí v důsledku nečinnosti dovolit ublížit člověku. 2. Robot se musí řídit všemi příkazy, které mu byly dány lidmi, s výjimkou případů, kdy by takové příkazy byly v rozporu s prvním zákonem. 3. Robot musí chránit svou vlastní existenci, pokud taková ochrana není v rozporu s prvním nebo druhým zákonem.' - Isaac Asimov"
+		Russian:"'1. Робот не может причинить вреда человеку или своим бездействием допустить, чтобы человеку был причинен вред. 2. Робот должен повиноваться всем приказам, которые дает человек, кроме тех случаев, когда эти приказы противоречат Первому Закону. 3. Робот должен заботиться о своей безопасности в той мере, в которой это не противоречит Первому и Второму Законам.' - Айзек Азимов"
+}
 
 	"Lasers":{
 		Italian:"Laser"
 		French:"Lasers"
 		Russian:"Лазеры"
 		Simplified_Chinese:"激光"
-	}
+        Traditional_Chinese:"雷射"
+		Czech:"Lasery"
+}
 
 	"'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12":{
 		Italian:"'La notte è già inoltrata, presto arriverà il giorno: per questo dobbiamo scestirci delle cattive azioni delle tenebre e indossare l'armatura della luce.' - La Bibbia, Romani 13:12"
 		Simplified_Chinese:"“黑夜已深，白昼将近：我们当脱去暗昧的行为，带上光明的兵器。”——圣经·罗马书 13:12"
-	}
+        Traditional_Chinese:"“黑夜已深，白晝將近：我們當脫去暗昧的行為，帶上光明的武器。”——聖經·羅馬書 13:12"
+		Czech:"'Z pověření té první šelmy vykonává veškerou její moc. Nutí zemi a její obyvatele, aby klekali před první šelmou, které se zahojila její smrtelná rána.' - Svatá bible, 13:12"
+		Russian:"'Ночь прошла, а день приблизился: итак отвергнем дела тьмы и облечемся в оружия света.' - Послание к Римлянам, 13:12"
+}
 
 	"Nanotechnology":{
 		Italian:"Nanotecnologia"
@@ -1198,13 +1552,18 @@
 		Dutch:"Nanotechnologie"
 		Spanish:"Nanotecnología"
 		Simplified_Chinese:"纳米技术"
+        Traditional_Chinese:"奈米技術"
 		Portuguese:"Nano-tecnologia"
-	}
+		Czech:"Nanotechnologie"
+}
 
 	"'The impact of nanotechnology is expected to exceed the impact that the electronics revolution has had on our lives.' - Richard Schwartz":{
 		Italian:"'Si può prevedere che l'impatto delle nanotecnologie sulla nostra vita sarà superiore a quello della rivoluzione elettronica.' - Richard Schwartz"
 		Simplified_Chinese:"“纳米技术给我们的生活所带来的冲击预计将超过电子革命。”——理查德·舒瓦茨（美国学者）"
-	}
+        Traditional_Chinese:"“奈米技術給我們的生活所帶來的衝擊預計將超過電子革命。”——理查·舒瓦茲（美國學者）"
+		Czech:"'Očekává se, že vývoj nanotechnologií bude znamenat daleko větší dopad, než který na naše životy měla elektronická revoluce.' - Richard Schwartz"
+		Russian:"'Нанотехнологии, вероятно, наложат на нашу жизнь даже больший отпечаток, чем появление электронных приборов.' - Ричард Шварц"
+}
 
 	"Satellites":{
 		Italian:"Satelliti"
@@ -1215,13 +1574,18 @@
 		Dutch:"Satellieten"
 		Spanish:"Satélites"
 		Simplified_Chinese:"人造卫星"
+        Traditional_Chinese:"人造衛星"
 		Portuguese:"Satélites"
-	}
+		Czech:"Satelity"
+}
 
 	"'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson":{
 		Italian:"'Ora, in qualche modo nuovo, il cielo sembrava quasi alieno.' - Lyndon B. Johnson"
 		Simplified_Chinese:"“现在，不知怎的，通过某种新的手段，天空好像都被别国所占据了。”——林登·贝恩斯·约翰逊"
-	}
+        Traditional_Chinese:"“現在，不知道為什麼，由於某些新的因素，天空好像被外星人佔領了。”——林登·貝恩斯·約翰遜"
+		Czech:"'Nyní, nějakým novým způsobem, obloha vypadá úplně jinak.' - Lyndon B. Johnson"
+		Russian:"'Теперь вдруг небо выглядело почти чужим.' - Линдон Джонсон"
+}
 
 	"Particle Physics":{
 		Italian:"Fisica delle particelle"
@@ -1232,13 +1596,18 @@
 		Dutch:"Deeltjesfysica"
 		Spanish:"Física de partículas"
 		Simplified_Chinese:"粒子物理"
+        Traditional_Chinese:"粒子物理"
 		Portuguese:"Física de particulas"
-	}
+		Czech:"Částicová fyzika"
+}
 
 	"'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton":{
 		Italian:"'Ogni particella di materia è attratta da o gravita intorno a ogni altra particella con una forza inversamente proporzionale al quadrato della distanza.' - Isaac Newton"
 		Simplified_Chinese:"“任何物质粒子都会与其他物质粒子相互吸引，产生的引力和距离的平方成反比。”——艾萨克·牛顿"
-	}
+        Traditional_Chinese:"“任何物質粒子都會與其他物質粒子互相吸引，產生的引力和距離的平方成反比。”——艾薩克·牛頓"
+		Czech:"'Síla, kterou se přitahují každé dva hmotné body ve Vesmíru, je přímo úměrná součinu jejich hmotností a nepřímo úměrná čtverci vzdálenosti mezi nimi.' - Isaac Newton"
+		Russian:"'Две частицы притягиваются друг к другу с силой, прямо пропорциональной произведению масс и обратно пропорциональной квадрату расстояния между ними.' - Исаак Ньютон"
+}
 
 	"Future Tech":{
 		Italian:"Tecnologia futura"
@@ -1249,13 +1618,18 @@
 		Dutch:"Toekomst Technologie"
 		Spanish:"Tecnología del futuro"
 		Simplified_Chinese:"未来科技"
+        Traditional_Chinese:"未來科技"
 		Portuguese:"Tecnologia futurista" //means futuristic technology (not sure but i'll say that's right anyway)
-	}
+		Czech:"Budoucí technologie"
+}
 
 	"'I think we agree, the past is over.' - George W. Bush":{
 		Italian:"'Penso che siamo tutti d'accordo che il passato è finito.' - George W.Bush"
 		Simplified_Chinese:"“我想我们都同意：过去已经结束了。”——乔治·沃克·布什"
-	}
+        Traditional_Chinese:"“我想我們都同意：過去已經結束了。”——喬治·沃克·布什"
+		Czech:"'Myslím, že jsme se shodli, že minulost je za námi.' - George W. Bush"
+		Russian:"'Думаю, мы все согласны, что прошлое закончилось.' - Линдон Джонсон"
+}
 
 	"Who knows what the future holds?":{
 		Italian:"Chi sa cosa riservano i prossimi anni?"
@@ -1265,18 +1639,22 @@
 		Dutch:"Wie weet wat de toekomst inhoud?"
 		Spanish:"¿Quién sabe qué nos depara el futuro?"
 		Simplified_Chinese:"谁知道未来会怎样？"
+        Traditional_Chinese:"誰知道未來會怎樣？"
 		Portuguese:"Quem sabe o que o futuro reserva?"
 		German:"Wer weiß was die Zukunft für uns bereithält?"
-	}
-	
+		Czech:"Kdo ví, co nám přinese budoucnost?"
+}
+
 	/*
 	"A repeating technology that will increase your score each time it is researched.":{ //Future Tech description
 		Italian:"Questa tecnologia si può sempre ricercare; il tuo punteggio aumenterà ogni volta che viene scoperta."
 		French:"Une technologie qui augmente le score et qui peut être fait indéfiniment."
 		Simplified_Chinese:"一项可以重复研究的科技，每次研究完成时都会增加你的积分"
-	}
+		Traditional_Chinese:"一項可以重複研究的科技，每次研究完成時都會增加你的積分"
+		Czech:"Opakované vyzkoumání technologie pokaždé zvýší vaše skóre."
+}
 	*/
-	
+
 ///////// Tech uniques
 
 	"+10% science and production in all cities":{
@@ -1285,11 +1663,13 @@
 		Romanian:"+10% știință și producție în toate orașele"
 		Spanish:"+10% de ciencia y producción en todas las ciudades"
 		Simplified_Chinese:"所有城市+10%的科研和产能产出"
+        Traditional_Chinese:"所有城市+10%的科研和產能輸出"
 		Portuguese:"+10% de produção de ciência em todas as cidades"
 		German:"+10% Wissenschaft und Produktion in allen Städten"
 		French:"+10% science et production dans toutes les villes"
-	}
-	
+		Czech:"+10% Výzkum a Produkce ve všech městech"
+}
+
 	"Improves movement speed on roads":{ //Is this a duplicate? It appears 2 items back also. --> I removed the dup.
 		Italian:"Migliora la velocità di movimento sulle strade"
 		Russian:"Улучшает скорость передвижения по дорогам"
@@ -1297,9 +1677,11 @@
 		Romanian:"Îmbunătățește viteza de deplasare pe drumuri"
 		Spanish:"Mejora la velocidad de movimiento en carreteras"
 		Simplified_Chinese:"提高道路上的移动速度"
+        Traditional_Chinese:"提高道路上的移動速度"
 		Portuguese:"Melhora velocidade de movimento em estradas"
 		German:"Erhöht die Bewegungsgeschwindigkeit auf Straßen"
-	}
+		Czech:"Zvyšuje rychlost pohybu na cestách"
+}
 
 	"Enables conversion of city production to science":{
 		Italian:"Consente di convertire la Produzione nelle città in Scienza"
@@ -1308,9 +1690,11 @@
 		Romanian:"Permite conversia producției orașului la știință"
 		Spanish:"Habilita la conversión de producción a ciencia"
 		Simplified_Chinese:"可将城市产能转化为科研"
+        Traditional_Chinese:"可將城市產能轉化為科研"
 		Portuguese:"Habilita a conversão de produção das cidades para ciência"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Wissenschaft"
-	}
+		Czech:"Dovoluje přepnout městskou produkci na výzkum"
+}
 
 	"Enables conversion of city production to gold":{
 		Italian:"Consente di convertire la Produzione nelle città in Oro"
@@ -1319,10 +1703,12 @@
 		Romanian:"Permite conversia producției orașului la aur"
 		Spanish:"Habilita la conversión de producción a oro"
 		Simplified_Chinese:"可将城市产能转化为金钱"
+        Traditional_Chinese:"可將城市產能轉化為金錢"
 		Portuguese:"Habilita a conversão da produção das cidades para ouro"
-		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold"
-	}
-	
+		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold",
+		Czech:"Dovoluje přepnout městskou produkci na zlato"
+}
+
 	"Enables embarkation for land units":{
 		Italian:"Permette alle unità terrestri di imbarcarsi e attraversare le caselle acquatiche."
 		Romanian:"Permite îmbarcarea unităților terestre"
@@ -1331,9 +1717,11 @@
 		French:"Permet d'embarquer les unités terrestres"
 		Russian:"Позволяет наземным единицам передвигаться по воде"
 		Simplified_Chinese:"陆军单位拥有船运能力"
+        Traditional_Chinese:"陸軍單位擁有船運能力"
 		Portuguese:"Permite o embarque de unidades terrestres"
-	}
-	
+		Czech:"Zpřístupní možnost nalodění se pozemním jednotkám"
+}
+
 	"Enables embarked units to enter ocean tiles":{
 		Italian:"Permette alle unità di imbarcarsi nelle caselle oceaniche"
 		Romanian:"Permite unităților îmbarcate să meargă în celulele ocean"
@@ -1342,9 +1730,11 @@
 		French:"Permet aux unités embarqués de traverser les cases d'océan"
 		Russian:"Позволяет наземным единицам выходить в океан"
 		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
+        Traditional_Chinese:"擁有船運能力的單位能夠進入海洋"
 		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
-	}
-	
+		Czech:"Umožňuje naloděným jednotkám vyplout na oceán"
+}
+
 	"Increases embarked movement +1":{
 		Italian:"+1 Movimento per le unità imbarcate"
 		Spanish:"+1 a la velocidad de movimiento a las embarcaciones"
@@ -1352,15 +1742,17 @@
 		French:"Améliore le déplacement embarqué +1"
 		Romanian:"Crește mișcarea ambarcațiunilor +1"
 		Simplified_Chinese:"陆军单位处于船运状态时的移动力+1"
+        Traditional_Chinese:"陸軍單位處於船運狀態時的移動力+1"
 		Portuguese:"Aumenta movimento enquanto embarcado em +1"
 		German:"+1 für Bewegungen eingebooteter Einheiten"
 		Russian:"+1 к движению наземных единиц по воде"
-	}
-	
+		Czech:"Zvyšuje rychlost naloďování o +1"
+}
+
 ///////// Tech Eras
 	// In case of foreign languages it becomes gender sensitive words
 	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
-	
+
     "Ancient era":{
 		Italian:"Antichità" //one word translation, as in "Sei entrato in una era, l'Antichità"
 		Russian:"Древнейший мир"
@@ -1369,9 +1761,11 @@
 		Dutch:"Oude"
 		Spanish:"Edad antigua"
 		Simplified_Chinese:"远古时代"
+        Traditional_Chinese:"遠古時代"
 		Portuguese:"Era anciâ"
 		German:"Altertum"
-	}
+		Czech:"Starověká éra"
+}
 
 	"Classical era":{
 		Italian:"Classica"
@@ -1381,9 +1775,11 @@
 		Dutch:"Klasieke"
 		Spanish:"Edad clásica"
 		Simplified_Chinese:"古典时代"
+        Traditional_Chinese:"古典時代"
 		Portuguese:"Era clássica"
 		German:"Klassik"
-	}
+		Czech:"Klasická starověká éra"
+}
 
 	"Medieval era":{
 		Italian:"Medievale"
@@ -1393,9 +1789,11 @@
 		Dutch:"Middeleeuwse"
 		Spanish:"Edad medieval"
 		Simplified_Chinese:"中古时代"
+        Traditional_Chinese:"中古時代"
 		Portuguese:"Era medieval"
 		German:"Mittelalter"
-	}
+		Czech:"Středověká éra"
+}
 
 	"Renaissance era":{
 		Italian:"Rinascimentale"
@@ -1405,9 +1803,11 @@
 		Dutch:"Renaissance"
 		Spanish:"Renacimiento"
 		Simplified_Chinese:"启蒙时代"
+        Traditional_Chinese:"啟蒙時代"
 		Portuguese:"Era da Renascença"
 		German:"Renaissance"
-	}
+		Czech:"Renesanční éra"
+}
 
 	"Industrial era":{
 		Italian:"Industriale"
@@ -1417,9 +1817,11 @@
 		Dutch:"Industrieele"
 		Spanish:"Era industrial"
 		Simplified_Chinese:"工业时代"
+        Traditional_Chinese:"工業時代"
 		Portuguese:"Era industrial"
 		German:"Industrielle Revolution"
-	}
+		Czech:"Industriální éra"
+}
 
 	"Modern era":{
 		Italian:"Moderna"
@@ -1429,9 +1831,11 @@
 		Dutch:"Moderne"
 		Spanish:"Edad moderna"
 		Simplified_Chinese:"电气时代"
+        Traditional_Chinese:"電氣時代"
 		Portuguese:"Era moderna"
 		German:"Moderne"
-	}
+		Czech:"Moderní éra"
+}
 
 	"Information era":{
 		Italian:"Informatica"     //[newEra] +translation
@@ -1441,20 +1845,24 @@
 		Dutch:"Informatie"
 		Spanish:"Era de la información"
 		Simplified_Chinese:"信息时代"
+        Traditional_Chinese:"資訊時代"
 		Portuguese:"Era informação"
 		German:"Informationszeitalter"
-	}
+		Czech:"Informační éra"
+}
 
 	"Future era":{
 		Italian:"Futura"
 		Russian:"Будущее" //all one word translation
-		French:"Ère du futur" 
+		French:"Ère du futur"
 		Romanian:"Era viitorului"
 		Dutch:"Toekomst"
 		Spanish:"Era futura"
 		Simplified_Chinese:"未来时代"
+		Traditional_Chinese:"未來時代"
 		Portuguese:"Era futurista" //Futurista means futuristic if you want it replaced just put futura (same as spanish) in its place.
 		German:"Ära der Zukunft"
-	}
+		Czech:"Budoucí éra"
+}
 
 }

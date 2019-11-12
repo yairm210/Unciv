@@ -23,7 +23,7 @@ interface NotificationAction {
     fun execute(worldScreen: WorldScreen)
 }
 
-/** cycle through locations */
+/** cycle through tiles */
 data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : NotificationAction {
 
     constructor(locations: List<Vector2>): this(ArrayList(locations))
@@ -31,7 +31,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
     override fun execute(worldScreen: WorldScreen) {
         if (locations.isNotEmpty()) {
             var index = locations.indexOf(worldScreen.tileMapHolder.selectedTile?.position)
-            index = ++index % locations.size // cycle through locations
+            index = ++index % locations.size // cycle through tiles
             worldScreen.tileMapHolder.setCenterPosition(locations[index], selectUnit = false)
         }
     }

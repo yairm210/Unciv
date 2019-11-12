@@ -47,7 +47,8 @@ class WorkerAutomation(val unit: MapUnit) {
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
             citiesToNumberOfUnimprovedTiles[city.name] =
-                    city.getTiles().count { it.isLand && tileCanBeImproved(it, unit.civInfo) }
+                    city.getTiles().count { it.isLand && it.civilianUnit == null
+                            && tileCanBeImproved(it, unit.civInfo) }
         }
 
         val mostUndevelopedCity = unit.civInfo.cities
@@ -139,7 +140,7 @@ class WorkerAutomation(val unit: MapUnit) {
     }
 
     private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        if (!tile.isLand || tile.getBaseTerrain().impassable)
+        if (!tile.isLand || tile.getBaseTerrain().impassable || tile.isCityCenter())
             return false
         val city=tile.getCity()
         if (city == null || city.civInfo != civInfo)
@@ -148,11 +149,12 @@ class WorkerAutomation(val unit: MapUnit) {
         if(tile.improvement==null){
             if(tile.improvementInProgress!=null) return true
             val chosenImprovement = chooseImprovement(tile, civInfo)
-            if(chosenImprovement!=null) return true
+            if(chosenImprovement!=null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
         }
         else{
             if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-                    && tile.getTileResource().improvement != tile.improvement)
+                    && tile.getTileResource().improvement != tile.improvement
+                    && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
                 return true
         }
 
@@ -186,10 +188,11 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.containsUnfinishedGreatImprovement() -> null
             tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
-            tile.baseTerrain in listOf("Grassland","Desert",Constants.plains) -> "Farm"
-            tile.baseTerrain == "Tundra" -> "Trading post"
+            tile.baseTerrain in listOf(Constants.grassland,Constants.desert,Constants.plains) -> "Farm"
+            tile.baseTerrain == Constants.tundra -> "Trading post"
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
         if (improvementString == null) return null

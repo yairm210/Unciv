@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
@@ -53,8 +54,11 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             var labelText = improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}"
             if(tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name)
                 labelText += "\n"+"Provides [${tileInfo.resource}]".tr()
+            if(tileInfo.improvement!=null && improvement.name!=RoadStatus.Road.name
+                    && improvement.name!=RoadStatus.Railroad.name && !improvement.name.startsWith("Remove"))
+                labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
-            group.add(labelText.toLabel().setFontColor(Color.WHITE)).pad(10f)
+            group.add(labelText.toLabel()).pad(10f)
 
             group.touchable = Touchable.enabled
             group.onClick {

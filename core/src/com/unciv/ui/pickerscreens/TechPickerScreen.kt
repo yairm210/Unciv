@@ -55,8 +55,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
         for (i in 0..7) {
             val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
-            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().setFontColor(Color.WHITE).addBorder(2f, Color.BLUE)).fill().colspan(j)
-            else topTable.add((erasName[i]+" era").toLabel().setFontColor(Color.WHITE).addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
+            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.BLUE)).fill().colspan(j)
+            else topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
         }
 
         // Create tech table (row by row)

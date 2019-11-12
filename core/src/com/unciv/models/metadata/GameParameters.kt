@@ -14,8 +14,10 @@ class GameParameters { // Default values are the default new game
         for (i in 1..3) add(Player())
     }
     var numberOfCityStates = 0
-    var mapType = MapType.Perlin
+    var mapType = MapType.pangaea
     var noBarbarians = false
+    var oneCityChallenge = false
+    var noRuins = false;
     var mapFileName: String? = null
     var victoryTypes: ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
     var startingEra = TechEra.Ancient

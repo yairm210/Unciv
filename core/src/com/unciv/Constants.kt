@@ -13,6 +13,11 @@ class Constants{
         const val coast = "Coast"
         const val plains = "Plains"
         const val lakes = "Lakes"
+        const val desert = "Desert"
+        const val grassland = "Grassland"
+        const val tundra = "Tundra"
+
+
         const val barbarianEncampment = "Barbarian encampment"
         const val ancientRuins = "Ancient ruins"
 
@@ -23,7 +28,7 @@ class Constants{
 
         val unitActionSetUp = "Set Up"
         val unitActionSleep = "Sleep"
-        val unitActionAutomation = "automation"
+        val unitActionAutomation = "Automate"
         val unitActionExplore = "Explore"
         val futureTech = "Future Tech"
 

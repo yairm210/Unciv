@@ -85,6 +85,7 @@ class NewGameScreen: PickerScreen(){
                     cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
                     cantMakeThatMapPopup.addCloseButton()
                     cantMakeThatMapPopup.open()
+                    Gdx.input.inputProcessor = stage
                 }
             }
         }

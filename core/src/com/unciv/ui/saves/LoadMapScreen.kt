@@ -40,10 +40,10 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
 
         val rightSideTable = Table().apply { defaults().pad(10f) }
         val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
-        val couldNotLoadMapLabel = "Could not load map!".toLabel().setFontColor(Color.RED).apply { isVisible=false }
+        val couldNotLoadMapLabel = "Could not load map!".toLabel(Color.RED).apply { isVisible=false }
         loadFromClipboardButton.onClick {
-            val clipboardContentsString = Gdx.app.clipboard.contents.trim()
             try {
+                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
                 val loadedMap = MapSaver().mapFromJson(decoded)
                 UnCivGame.Current.setScreen(MapEditorScreen(loadedMap))

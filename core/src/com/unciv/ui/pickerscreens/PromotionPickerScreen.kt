@@ -51,8 +51,7 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
             val group = Table()
 
             group.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
-            group.add(promotion.name.toLabel()
-                    .setFontColor(Color.WHITE)).pad(10f).padRight(20f)
+            group.add(promotion.name.toLabel()).pad(10f).padRight(20f)
 
             group.touchable = Touchable.enabled
             group.onClick {

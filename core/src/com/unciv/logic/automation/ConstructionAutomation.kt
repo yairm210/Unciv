@@ -57,11 +57,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addHappinessBuildingChoice()
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
-        addWondersChoice()
         addCultureBuildingChoice()
-        addWorkerChoice()
-        addWorkBoatChoice()
-        addMilitaryUnitChoice()
+
+        if(!cityInfo.isPuppet) {
+            addWondersChoice()
+            addWorkerChoice()
+            addWorkBoatChoice()
+            addMilitaryUnitChoice()
+        }
 
         val production = cityInfo.cityStats.currentCityStats.production
 
@@ -112,6 +115,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkerChoice() {
+        if(civInfo.getIdleUnits().any { it.name==Constants.worker && it.action== Constants.unitActionAutomation})
+            return // If we have automated workers who have no work to do then it's silly to construct new workers.
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
         if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.name==Constants.worker && it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)

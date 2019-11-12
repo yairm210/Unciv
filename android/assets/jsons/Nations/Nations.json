@@ -496,8 +496,8 @@
 		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
 		tradeRequest:"Let us do business! Would you be interested?"
 				
-		outerColor:[18,84,30],
-		innerColor:[245,248,185],
+		outerColor:[245,248,185],
+		innerColor:[18,84,30],
 		uniqueName:"Barbary Corsairs"
 		unique:"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.",
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
@@ -646,7 +646,7 @@
 		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
 		tradeRequest:"Come, let our people feast together!"
 				
-		outerColor:[210,51,0],
+		outerColor:[225,105,0],
 		innerColor:[255,255,78],
 		uniqueName:"Wayfinding"
 		unique:"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.",
@@ -654,6 +654,43 @@
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
 			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
+	{
+		name:"Siam",
+		leaderName:"Ramkhamhaeng",
+		adjective:["Siamese"],
+		startBias:["Avoid Forest"],
+		//preferredVictoryType:"Diplomatic",
+		
+		startIntroPart1: "Greetings to you, Great King Ramkhamhaeng, leader of the glorious Siamese people! O mighty King, your people bow down before you in awe and fear! You are the ruler of Siam, an ancient country in the heart of Southeast Asia, a beautiful and mysterious land. Surrounded by foes, beset by bloody war and grinding poverty, the clever and loyal Siamese people have endured and trumphed. King Ramkhamhaeng, your empire was once part of the Khmer Empire, until the 13th century AD, when your ancestors revolted, forming the small Sukhothai kingdom. Through successful battle and cunning diplomacy, the tiny kingdom grew into a mighty empire, an empire which would dominate South East Asia for more than a century!"
+		startIntroPart2: "Oh, wise and puissant King Ramkhamhaeng, your people need you to once again lead them to greatness! Cann you use your wits and strenght of arms to protect your people and defeat your foes? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"You lowly, arrogant fool! I will make you regret of your insolence!"
+		attacked:"You scoundrel! I shall prepare to fend you off!"
+		defeated:"Althought I lost, my honor shall endure. I wish you good luck."
+		introduction:"I, Pho Kun Ramkhamhaeng, King of Siam, consider it a great honor that you have walked to visit my country of Siam."
+		
+		neutralHello:"Welcome."
+		neutralLetsHearIt:["Let us hear it.","You say?","I'm listening"]
+		neutralNo:["No.","Certainly no.","No way."]
+		neutralYes:["In that case...","Of course.","Agreed."]
+
+		hateHello:"Greetings."
+		hateLetsHearIt:["You were saying?.","Please proceed","So?"]
+		hateNo:["That is unacceptable.","You probably didn't mean that.","What did you say?"]
+		hateYes:["I think I must do as such.","Very well."]
+		
+		afterPeace:"You have won, but I shall return to repay this debt."
+		tradeRequest:"Greetings. I believe this is a fair proposal for both parties. What do you think?"
+				
+		outerColor:[228,208,43],
+		innerColor:[193,21,17],
+		uniqueName:"Father Governs Children"
+		unique:"Food and Culture from Friendly City-States are increased by 50%",
+		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
+			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
+			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
+			"Ban Phai","Loci","Khan Kaen","Surin"]
 	},
 	
 	/*
@@ -845,43 +882,6 @@
 			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
 	{
-		name:"Siam",
-		leaderName:"Ramkhamhaeng",
-		adjective:["Siamese"],
-		startBias:["Avoid Forest"],
-		//preferredVictoryType:"Diplomatic",
-		
-		startIntroPart1: "Greetings to you, Great King Ramkhamhaeng, leader of the glorious Siamese people! O mighty King, your people bow down before you in awe and fear! You are the ruler of Siam, an ancient country in the heart of Southeast Asia, a beautiful and mysterious land. Surrounded by foes, beset by bloody war and grinding poverty, the clever and loyal Siamese people have endured and trumphed. King Ramkhamhaeng, your empire was once part of the Khmer Empire, until the 13th century AD, when your ancestors revolted, forming the small Sukhothai kingdom. Through successful battle and cunning diplomacy, the tiny kingdom grew into a mighty empire, an empire which would dominate South East Asia for more than a century!"
-		startIntroPart2: "Oh, wise and puissant King Ramkhamhaeng, your people need you to once again lead them to greatness! Cann you use your wits and strenght of arms to protect your people and defeat your foes? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"You lowly, arrogant fool! I will make you regret of your insolence!"
-		attacked:"You scoundrel! I shall prepare to fend you off!"
-		defeated:"Althought I lost, my honor shall endure. I wish you good luck."
-		introduction:"I, Pho Kun Ramkhamhaeng, King of Siam, consider it a great honor that you have walked to visit my country of Siam."
-		
-		neutralHello:"Welcome."
-		neutralLetsHearIt:["Let us hear it.","You say?","I'm listening"]
-		neutralNo:["No.","Certainly no.","No way."]
-		neutralYes:["In that case...","Of course.","Agreed."]
-
-		hateHello:"Greetings."
-		hateLetsHearIt:["You were saying?.","Please proceed","So?"]
-		hateNo:["That is unacceptable.","You probably didn't mean that.","What did you say?"]
-		hateYes:["I think I must do as such.","Very well."]
-		
-		afterPeace:"You have won, but I shall return to repay this debt."
-		tradeRequest:"Greetings. I believe this is a fair proposal for both parties. What do you think?"
-				
-		outerColor:[51,25,0],
-		innerColor:[255,255,102],
-		uniqueName:"Father Governs Children"
-		unique:"Food and Culture from Friendly City-States are increased by 50%",
-		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
-			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
-			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
-			"Ban Phai","Loci","Khan Kaen","Surin"]
-	},
-	{
 		//NEEDS SNOW AND ICE
 		name:"Denmark",
 		leaderName:"Harald Bluetooth",
@@ -954,117 +954,6 @@
 		cities:["StockHolm","Malmo","Gothenburg","Visby","Upssala","Umea","Lund","Kiruna","Helsingborg",
 		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
 		"Copenhagen","Jonkoping",Boras",]
-	},
-	{    // THIS IS A FROM A MOD and so is the least important!
-	    name:"Philippines",
-		leaderName:"Jose Rizal",
-		adjective:["Filipinos"],
-		startBias:["Coastal"],
-		prefferedVictoryType:"Cultural",
-		
-		startIntroPart1:"O magnificent Rizal, your people call you to change their world once more. Can you defend this beautiful and tranquil omeland against all manner of foe?" 
-		startIntroPart2:"Can you forge a place for the Philippine Republic through peace and harmony with the world around you? Can you build a civilization that can stand the test of time?"
-
-		declaringWar:"We bleed into the same earth and bleed we must!"
-		attacked:"You sure about that!"
-		defeated: "You have destroyed a beautiful creation. In its place is the blood of the thousands that you have lustfully slain.",
-		introduction: "At long last a friendly face has come to our shores. I am José Rizal, leader of the Philippine Republic! Cometellme of your people and their culture.",
-		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["What do you need.","Go on"]
-		neutralNo:["Sorry I cannot do that.","No Sorry."]
-		neutralYes:["Of Course!","Yes"]
-		
-		hateHello:["You again"]
-		hateLetsHearIt:["Hurry Up!,"So?"]
-		hateNo:["Of Course Not!,"Are you crazy no"]
-		hateYes:["Ok Fine","I Agree"]
-	       
-	        afterPeace:"Impressive! I Offer you peace because war only bring destruction",
-		tradeRequest:"Here's the list for our own benefits",
-		innerColor:[185,132,66]
-		uniqueName:"Pearl Of The Orient"
-		unique:"Upon signing OpenBorders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
-		cities:["Manila","Quezon","Cebu",Pasig","Makati","Cagayan de Oro","Baguio","Davao City","Bacolod","Taguig","Pasay",
-		"Bataan","Angeles","Marikina"]
-	},
-	{   /// MOD CIV
-		name:"Australia",
-		leaderName:"John Curtin",
-		adjective:["Australian"],
-		startBias:["Avoid Tundra"],
-		preferredVictoryType:"Scientific",
-		
-		startIntroPart1: "The people of the Australian nation salute you, Johnatan Joseph Curtin, their Prime Minister, as their leader. You have been the fourteenth prime minister of this nation, once one of the largest colonies of the British empire. You were born in a land mixed with primal nature and human civilization, and ascended on your seat as minister while the accursed Japanese empire, planning to rule the entire Asian continent, sought to conquer Australia. Your wise and careful leadership, horever, united with some luck, twarted their plans, and contributed to the rise of an indipendent, British control-free Australia. Unfortunately, your very ill health prevented you to see that dream come true, as your life ended shortly before the Second World War finally come to a close after six years of bloodshed.",
-		startIntroPart2: "Mister Curtin, the Australian people consider you as one of their most famous people of their history, and the best leader they could ever have, but not they call for your leadership, so that they are free to ascend to true greatness. Will you answer the call? Will you build a civilization that will stand the test of time?",
-		
-		declaringWar:"After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself - war is upon us.",
-		attacked:"We will mobilize every means of resistance to stop this transgression against our nation!",
-		defeated:"The principles for which we have fought will survive longer than any nation you could ever build.",
-		introduction:"My name is Jonathan Joseph Curtin, and I speak for the people of Australia as their Prime Minister. We seek sympathetic allies in the fight against the hawks of war.",
-		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you have in mind?"],
-		neutralNo:["Sorry but no.","I decline.","I regret I must refuse."],
-		neutralYes:["As you wish!","So be it!","I agree!"],
-
-		hateHello:"You again, it seems...",
-		hateLetsHearIt:["Speak your mind.","I'm listening!"],
-		hateNo:["No.","It shall not be.","Thanks, but no thanks."],
-		hateYes:["Fine...","I accept."],
-		
-		afterPeace:"The war is over, for now. At least I see it alive.",
-		tradeRequest:"I hope you will receive my offer with my sincerest thanks.",
-				
-		outerColor:[0,102,0],
-		innerColor:[255,255,0],
-		uniqueName:"Land Down Under",
-		unique:"+1 Food in coastal Cities. +1 Culture from Pastures",
-		cities:["Sydney", "Launceston", "Ballaarat", "Perth", "Brisbane", "Melbourne", "Townsville", "Geelong", "Adelaide", 
-			"Hobart", "Bendigo", "Broken Hill", "Cairns", "Newcastle", "Maitland", "Rockhampton", "Wagga Wagga", 
-			"Wollongong", "Albury", "Alice Springs", "Bathurst", "Queanbeyan", "Bundaberg", "Coffs Harbor", "Darwin", 
-			"Fremantle", "Gladstone", "Goulburn", "Hervey Bay", "Kalgoorlie", "Lismore", "Lithgow", "Maryborough", 
-			"Orange", "Port Macquarie", "Port Pirie", "Boomahnoomoonah", "Tweed Heads"]
-	///Unique unit: Digger (replaces Infantry, and has +10% Strenght against anti-cavalry units, +10% Strenght on coastal tiles)
-	///Unique building: Outback Station (replaces Windmill, adds +1 Food)
-	},
-	{   /// MOD CIV
-		name:"Nubia",
-		leaderName:"Amanitore",
-		adjective:["Nubian"],
-		startBias:["Desert"],
-		preferredVictoryType:"Domination",
-
-		startIntroPart1: "O wise Queen of Nubia, Amanitore, we greet thee. You are the leader of the mysterious and fascinating Nubian civilization. For centuries, your people has known lots and lots of centuries of trade, friendships and warfare with the Egyptians, from which they have been culturally inspired, building pyramids and burial tombs that, while not as big as the majestic Pyramids of Kheops, Khephren and Menkaure, were no less amazing than these. After some centuries of servitude under the ambitious Pharaohs of Egypt, your ancestor Piankhi took revenge and subdued the entire land of the Pharaohs."
-		startIntroPart2: "Amanitore, watchful Queen of Nubia, the empire you command shall claim the horizon as its border. Fear not enemies, for your cities shall know prosperity and piety. Can you build a civilization that stands the test of time?"
-
-		declaringWar:"We have arrows, finely honed. We shall deliver them freely to your throat."
-		attacked:"As predicted, you know only how to take. Come, then - choose the manner of your defear."
-		defeated:"Though Nubia falls, our pyramids shall remain long after your plans and palaces fall to ruin."
-		introduction:"I am Amanitore of Nubia. All are welcome in our magnificent cities - provided they come as friends."
-
-		neutralHello:"Greetings to you."
-		neutralLetsHearIt:["Let us hear.","Please, talk.","What do you suggest?"]
-		neutralNo:["I must refuse.","Sorry, but no.","I'm afraid this is unacceptable."]
-		neutralYes:["How gracious of you.","So shall it be.","Of course!"]
-
-		hateHello:"You again?"
-		hateLetsHearIt:["What are you to say?","What is it?","Speak."]
-		hateNo:["The Gods forbid this!","Are you out of your mind?","I cannot do that."]
-		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
-
-		afterPeace:"At least you know how to speak of peace. May war never touch us again!"
-		tradeRequest:"Our delegation brings goodwill. Oh, here's also some fresh camel liver. Just don't cook it!"
-
-		outerColor:[255,255,51],
-		innerColor:[153,76,0],
-		uniqueName:"Ta-Seti"
-		unique:"+50% Production toward Ranged units, which gain +50% combat experience. +1 Production from Mines over a Strategic Resource, and +2 Gold from Mines over a Luxury Resource.",
-		cities:["Kerma","Napata","Nuri","El-Kurru","Kawa","Sedeinga","Heh","Qasr Ibrim","Faras","Shaat","Iken","Abu Simbel","Buhen",
-			"Dengeil","Miam","Tombos","Kurgus","Toshka","Soleb","Wad ban Naqa","Debba","Bugdumbush","Baki","Amara",
-			"Musawwarat es-Sufra","El Fura","Ukma","Pedeme","Defeia"]
-		//Nubians should have Pitati Archer as their unique unit, which replaces Archer and it's stronger. Can also move three tiles.
-		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
 	},
 	*/
 	
@@ -1168,7 +1057,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
-		defeated:"Why must you do such a thing?"
+		defeated:"Oh Nanna, have mercy on us, and have the enemy be merciful on us!"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
@@ -1385,6 +1274,34 @@
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
 		cities:["Helsinki"]
+	},
+	{
+		name:"Kuala Lumpur",
+		adjective:["Kuala Lumpur"],
+		cityStateType:"Cultured",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Today, the Malay people obey you, but do not think this is over..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,102,102],
+		cities:["Kuala Lumpur"]
+	},
+	{
+		name:"Manila",
+		adjective:["Manila"],
+		cityStateType:"Maritime",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Why would you do such a thing? What are you pursuing?"
+
+		outerColor:[0, 0, 0],
+		innerColor:[96,96,96],
+		cities:["Manila"]
 	},
 	
 	        

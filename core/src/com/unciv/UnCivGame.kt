@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.audio.Music
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -15,6 +16,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
+import kotlin.concurrent.thread
 
 class UnCivGame(val version: String) : Game() {
     var gameInfo: GameInfo = GameInfo()
@@ -23,15 +25,20 @@ class UnCivGame(val version: String) : Game() {
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
-    var viewEntireMapForDebug = true
+    var viewEntireMapForDebug = false
 
     /** For when you need to test something in an advanced game and don't have time to faff around */
     val superchargedForDebug = false
 
     lateinit var worldScreen: WorldScreen
 
+    var music : Music? =null
+    val musicLocation = "music/thatched-villagers.mp3"
+
     override fun create() {
         Current = this
+
+
         if(Gdx.app.type!= Application.ApplicationType.Desktop)
             viewEntireMapForDebug=false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
@@ -49,6 +56,19 @@ class UnCivGame(val version: String) : Game() {
             }
         }
         else setScreen(LanguagePickerScreen())
+
+        thread { startMusic() }
+    }
+
+    fun startMusic(){
+
+        val musicFile = Gdx.files.local(musicLocation)
+        if(musicFile.exists()){
+            music = Gdx.audio.newMusic(musicFile)
+            music!!.isLooping=true
+            music!!.volume = 0.4f*settings.musicVolume
+            music!!.play()
+        }
     }
 
     fun setScreen(screen: CameraStageBaseScreen) {

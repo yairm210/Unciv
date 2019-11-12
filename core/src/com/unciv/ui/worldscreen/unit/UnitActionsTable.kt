@@ -4,12 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -61,7 +59,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         if (unit == null) return
         if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
         for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
-            add(button).colspan(2).pad(5f).row()
+            add(button).colspan(2).padBottom(2f).row()
         pack()
     }
 
@@ -69,10 +67,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
-        actionButton.add(
-                Label(unitAction.title.tr(),CameraStageBaseScreen.skin)
-                        .setFontColor(if(unitAction.currentAction) Color.YELLOW else Color.WHITE))
-                .pad(5f)
+        val fontColor = if(unitAction.currentAction) Color.YELLOW else Color.WHITE
+        actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         actionButton.pack()
         actionButton.onClick(unitAction.sound) { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }
         if (!unitAction.canAct) actionButton.disable()

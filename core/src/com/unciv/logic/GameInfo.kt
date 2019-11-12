@@ -185,6 +185,19 @@ class GameInfo {
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
+
+
+        // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
+        // Needs to be BEFORE tileMap.setTransients, because the units' setTransients is called from there
+        for(tile in tileMap.values)
+            for(unit in tile.getUnits()){
+                if(unit.name=="Immortal") unit.name="Persian Immortal"
+                if(unit.promotions.promotions.contains("Range")){
+                    unit.promotions.promotions.remove("Range")
+                    unit.promotions.promotions.add("Extended Range")
+                }
+            }
+
         tileMap.setTransients()
 
         if(currentPlayer=="") currentPlayer=civilizations.first { it.isPlayerCivilization() }.civName
@@ -235,6 +248,7 @@ class GameInfo {
 
         for (civInfo in civilizations) civInfo.setNationTransient()
         for (civInfo in civilizations) civInfo.setTransients()
+        for (civInfo in civilizations) civInfo.updateSightAndResources()
 
         for (civInfo in civilizations){
             for(unit in civInfo.getCivUnits())

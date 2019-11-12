@@ -18,14 +18,15 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.WorldScreenMenuTable
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
-    private val turnsLabel = "Turns: 0/400".toLabel().setFontColor(Color.WHITE)
-    private val goldLabel = "Gold:".toLabel().setFontColor(colorFromRGB(225, 217, 71) )
-    private val scienceLabel = "Science:".toLabel().setFontColor(colorFromRGB(78, 140, 151) )
+    private val turnsLabel = "Turns: 0/400".toLabel()
+    private val goldLabel = "Gold:".toLabel(colorFromRGB(225, 217, 71) )
+    private val scienceLabel = "Science:".toLabel(colorFromRGB(78, 140, 151) )
     private val happinessLabel = "Happiness:".toLabel()
-    private val cultureLabel = "Culture:".toLabel().setFontColor(colorFromRGB(210, 94, 210) )
+    private val cultureLabel = "Culture:".toLabel(colorFromRGB(210, 94, 210) )
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Actor>()
     private val happinessImage = Group()
@@ -128,13 +129,14 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
             else -> 2020+(turns-440)/2
         }
 
-        turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ abs(year)+(if (year<0) " BC" else " AD"))
+        val yearText = "["+ abs(year)+"] "+ if (year<0) "BC" else "AD"
+        turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ yearText.tr())
 
         val nextTurnStats = civInfo.statsForNextTurn
-        val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + Math.round(nextTurnStats.gold) + ")"
-        goldLabel.setText(Math.round(civInfo.gold.toFloat()).toString() + goldPerTurn)
+        val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
+        goldLabel.setText(civInfo.gold.toFloat().roundToInt().toString() + goldPerTurn)
 
-        scienceLabel.setText("+" + Math.round(nextTurnStats.science))
+        scienceLabel.setText("+" + nextTurnStats.science.roundToInt())
 
         happinessLabel.setText(getHappinessText(civInfo))
 

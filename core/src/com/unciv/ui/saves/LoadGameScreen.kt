@@ -12,7 +12,10 @@ import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.text.SimpleDateFormat
 import java.util.*
@@ -54,7 +57,7 @@ class LoadGameScreen : PickerScreen() {
     private fun getRightSideTable(): Table {
         val rightSideTable = Table()
 
-        val errorLabel = "".toLabel().setFontColor(Color.RED)
+        val errorLabel = "".toLabel(Color.RED)
         val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
         loadFromClipboardButton.onClick {
             try {

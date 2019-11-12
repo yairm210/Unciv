@@ -25,6 +25,15 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner()!=civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
         newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence()})
+
+        if (!civInfo.isCityState()) {
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (otherCiv.getAllyCiv() == civInfo.civName) {
+                    newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles().asSequence() })
+                }
+            }
+        }
+
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
@@ -127,8 +136,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
         if(!initialSetup){ // In the initial setup we're loading an old game state, so it doesn't really count
             for(city in citiesReachedToMediums.keys)
-                if(city !in civInfo.citiesConnectedToCapital)
+                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo)
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",city.location, Color.GOLD)
+
+            for(city in civInfo.citiesConnectedToCapital)
+                if(!citiesReachedToMediums.containsKey(city) && city.civInfo==civInfo)
+                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",city.location, Color.GOLD)
         }
 
         civInfo.citiesConnectedToCapital = citiesReachedToMediums.keys.toList()
@@ -138,6 +151,17 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
     fun updateDetailedCivResources() {
         val newDetailedCivResources = ResourceSupplyList()
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
+
+        if (!civInfo.isCityState()) {
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (otherCiv.getAllyCiv() == civInfo.civName) {
+                    for (city in otherCiv.cities) {
+                        newDetailedCivResources.add(city.getCityResourcesForAlly())
+                    }
+                }
+            }
+        }
+
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
         for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
             newDetailedCivResources.add(resource,-1,"Units")
