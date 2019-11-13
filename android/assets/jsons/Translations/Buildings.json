@@ -1949,18 +1949,22 @@
 	
 	"Brandenburg Gate":{
 		Italian:"Porta di Brandeburgo"
+		Polish:"Brama Brandenburska"
 		Czech:"Brandenburgská brána"
 	}
 	
 	"Free Great General appears near the Capital":{
 		Italian:"Appare un Grande Generale vicino alla Capitale"
+		Polish:"Pojawia się Darmowy Wielski Generał w pobliżu Stolicy."
         Traditional_Chinese:"免費的大軍事家已經在首都附近出現"
 		Czech:"Velký Generál zdarma se objevil poblíž hlavního města"
 	}
 	
 	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
 		Italian:"'La pallida morte batte ugualmente alla porta del povero e al palazzo del re.' - Orazio",
+		Polish:"'Blada Śmierć puka zarówno do drzwi biedaka, jak i do pałaców królów.' - Horacy"
 		Czech:"'Bledá smrt klepe u vrat chudáka stejně jako na královský palác.' - Horatius"
+		
 	}
 
 	"Broadcast Tower":{
@@ -1994,6 +1998,7 @@
 	"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran":{
 		Italian:"'Chi può pensare che, siccome siamo ingegneri, la bellezza non ci preoccupi, o che non cerchiamo di costruire strutture belle oltre che solide e durature?' - Gustave Alexandre Eiffel"
 		Simplified_Chinese:"“我们活着只为去发现美。其他一切都是某种形式的等待。”——哈里利·纪伯伦"
+		Polish:"'Żyjemy tylko po to, aby odkrywać piękno. Wszystko inne jest jedynie sztuką oczekiwania.' - Kahlil Gibran"
 		Traditional_Chinese:"“我們活著只為去發現美。其他一切都是某種形式的等待。”——哈里利·紀伯倫"
 		Czech:"'Žijeme jenom kvůli odhalování krásy, všechno ostatní je jen formou čekání.' - Kahlil Gibran"
 		Russian:"'Мы живем лишь для того, чтобы познавать красоту. Все прочее – ожидание' - Халиль Джебран"
@@ -2028,6 +2033,7 @@
 	"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus":{
 		Italian:"'Datemi coloro che sono esausti, i poveri / Le folle accalcate che bramano di respirare libere, / I miseri rifiuti delle vostre coste brulicanti. / Mandatemi chi non ha casa, squassato dalle tempeste, / Sollevo la fiaccola accanto alla porta d'oro!' - Emma Lazarus"
 		Simplified_Chinese:"“给我你们的疲乏，你们的贫困，拥挤在旅途渴望自由呼吸的人们，被彼岸无情抛弃颠沛流离的惊魂。把这些无家可归，饱尝风雨的苦难者全都给我，我伫立在金色的大门旁高举起灯火！”——艾玛·拉扎路斯（美国诗人）"
+		Polish:"'Daj mi twoje zmęczenie i biedę, I twoich westchnień do wolności bezład, Wszystkie odrzucenia, nędze, całą życia schedę, Wyślij je, bezdomny, i rzuć je na wiatr: Podniosę mą lampę obok złotych drzwi. Jak wieniec na metę.' - Emma Lazarus"
 		Traditional_Chinese:"“給我你們的貧乏，你們的貧困，擁擠在旅途渴望自由呼吸的人們，被彼岸無情拋棄顛沛流離的驚魂。把這些無家可歸，飽嚐風雨的苦難者全部給我，我佇立在金色的大門旁高舉起燈火！”——艾瑪·拉扎路斯（美國詩人）"
 		Czech:"'Dej mi své unavené, své ubohé, tvé schoulené masy toužící po svobodném nadechnutí, uboze odmítnuté tvým oplývajícím břehem. Pošli mi ty, bez domova, zmítané bouří. Pozvednu svou lampu u zlatých dveří!' - Emma Lazarus"
 		Russian:"'А мне отдайте ваших усталых, ваших бедных... А мне отдайте из глубин бездонных, Своих изгоев, люд забитый свой, Пошлите мне отверженных, бездомных,Я им свечу у двери золотой...' - Эмма Лазарус"
@@ -2156,6 +2162,7 @@
 	"'Those who lose dreaming are lost.'  - Australian Aboriginal saying":{
 		Italian:"'Quelli che perdono i sogni sono perduti.' - Massima degli aborigeni australiani"
 		Simplified_Chinese:"“没有梦想的人，人生也是迷茫的。”——澳大利亚土著谚语"
+		Polish:"'Ci, którzy zgubią marzenia, sami są zgubieni.' - przysłowie Aborygenów"
 		Traditional_Chinese:"“沒有夢想的人，人生也是迷茫的。”——澳大利亞土著諺語"
 		Czech:"Ti, kteří ztratili sny, jsou ztraceni - Australské domorodé přísloví"
 		Russian:"'У кого погибли мечты, тот и сам погиб.' - пословица австралийских аборигенов"
@@ -2210,6 +2217,7 @@
 	"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower":{
 		Italian:"'Preparandomi alla battaglia ho sempre constatato che i piani sono inutili, ma la pianificazione è indispensabile.' - Dwight D. Eisenhower"
 		Simplified_Chinese:"“在准备作战时，我常常发现定好的计划没有用处，但计划的过程仍必不可少。”——德怀特·戴维·艾森豪威尔"
+		Polish:"'Przygotowując się do bitwy, zawsze się przekonywałem, że plany są bezużyteczne, ale planowanie jest niezbędne.'- Dwight D. Eisenhower"
 		Traditional_Chinese:"“在準備作戰時，我常常發現訂好的計畫沒有用處，但計畫的過程仍不可或缺。”——德懷特·戴維·艾森豪威爾"
 		Czech:"'Při přípravě bitvy jsem vždy zjistil, že plány jsou k ničemu ale plánování je nezbytné.' - Dwight D. Eisenhower"
 		Russian:"'При подготовке к битве планы незаменимы, но, как только битва началась, план становится совершенно бесполезным.' - Дуайт Эйзенхауэр"
