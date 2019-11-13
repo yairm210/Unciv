@@ -1,10 +1,9 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
 
-interface IConstruction : INamed, ICivilopedia {
+interface IConstruction : INamed {
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(construction: CityConstructions): Boolean
@@ -15,7 +14,7 @@ interface IConstruction : INamed, ICivilopedia {
 
 
 
-open class SpecialConstruction(override var name: String, override val description: String) : IConstruction{
+open class SpecialConstruction(override var name: String, val description: String) : IConstruction{
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         return isBuildable(construction)
     }

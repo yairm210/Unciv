@@ -6,7 +6,6 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.INamed
@@ -15,7 +14,7 @@ import com.unciv.models.stats.INamed
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction, ICivilopedia {
+class BaseUnit : INamed, IConstruction {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -36,12 +35,6 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     var replaces:String?=null
     var uniqueTo:String?=null
     var attackSound:String?=null
-
-    override val description: String
-        get(){
-            return getDescription(false)
-        }
-
 
 
     fun getShortDescription(): String {

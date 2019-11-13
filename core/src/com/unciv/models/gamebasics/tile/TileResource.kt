@@ -2,15 +2,13 @@ package com.unciv.models.gamebasics.tile
 
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import java.util.*
 
-class TileResource : NamedStats(), ICivilopedia {
-    override val description: String
-        get(){
+class TileResource : NamedStats() {
+    fun getDescription(): String {
             val stringBuilder = StringBuilder()
             stringBuilder.appendln(this.clone().toString())
             val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()

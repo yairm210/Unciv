@@ -6,13 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -46,19 +44,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             deselectUnitButton.touchable = Touchable.enabled
             deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true;this@UnitTable.isVisible=false }
             addActor(deselectUnitButton)
-
-            helpUnitButton.add(Label("?",CameraStageBaseScreen.skin)).pad(10f)
-            helpUnitButton.pack()
-            helpUnitButton.touchable = Touchable.enabled
-            helpUnitButton.onClick {
-                val pedia = CivilopediaScreen()
-                if (selectedUnit != null) {
-                    pedia.select("Units", selectedUnit?.name)
-                }
-                UnCivGame.Current.setScreen(pedia)
-            }
-            addActor(helpUnitButton)
-
         }).left()
 
         add(Table().apply {

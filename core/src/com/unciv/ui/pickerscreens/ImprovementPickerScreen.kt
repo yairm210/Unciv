@@ -1,6 +1,5 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -10,7 +9,10 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.addSeparatorVertical
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 
 class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
@@ -44,10 +46,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
             val group = Table()
 
-            val image = if(improvement.name.startsWith("Remove"))
-                ImageGetter.getImage("OtherIcons/Stop")
-            else
-                ImageGetter.getImprovementIcon(improvement.name,30f)
+            val image = ImageGetter.getImprovementIcon(improvement.name,30f)
 
             group.add(image).size(30f).pad(10f)
 
@@ -64,7 +63,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             group.onClick {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
-                descriptionLabel.setText(improvement.description)
+                descriptionLabel.setText(improvement.getDescription())
             }
 
             val pickNow = "Pick now!".toLabel()

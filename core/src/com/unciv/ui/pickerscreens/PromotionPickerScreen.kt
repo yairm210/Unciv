@@ -48,13 +48,11 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = mapUnit.promotions.promotions.contains(promotion.name)
 
-            val group = Table()
-
-            group.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
-            group.add(promotion.name.toLabel()).pad(10f).padRight(20f)
-
-            group.touchable = Touchable.enabled
-            group.onClick {
+            val selectPromotionButton = Button(skin)
+            selectPromotionButton.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
+            selectPromotionButton.add(promotion.name.toLabel()).pad(10f).padRight(20f)
+            selectPromotionButton.touchable = Touchable.enabled
+            selectPromotionButton.onClick {
                 selectedPromotion = promotion
                 rightSideButton.setText(promotion.name.tr())
                 if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()
@@ -73,26 +71,22 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
                 descriptionLabel.setText(descriptionText)
             }
 
-            val pickNow = "Pick now!".toLabel()
-            pickNow.setAlignment(Align.center)
-            pickNow.onClick {
-                acceptPromotion(promotion)
-            }
+            val promotionTable = Table()
+            promotionTable.add(selectPromotionButton)
 
-
-            val promotionButton = Button(skin)
-            promotionButton.add(group).fillY()
 
             if(isPromotionAvailable) {
-                promotionButton.addSeparatorVertical()
-                promotionButton.add(pickNow).padLeft(10f).fillY()
+                val pickNow = "Pick now!".toLabel()
+                pickNow.setAlignment(Align.center)
+                pickNow.onClick {
+                    acceptPromotion(promotion)
+                }
+                promotionTable.add(pickNow).padLeft(10f).fillY()
             }
-            else promotionButton.color= Color.GRAY
+            else if(unitHasPromotion) selectPromotionButton.color= Color.GREEN
+            else selectPromotionButton.color= Color.GRAY
 
-            if(unitHasPromotion) promotionButton.color = Color.GREEN
-            availablePromotionsGroup.addActor(promotionButton)
-
-
+            availablePromotionsGroup.addActor(promotionTable)
         }
         topTable.add(availablePromotionsGroup)
     }

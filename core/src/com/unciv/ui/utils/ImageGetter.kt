@@ -106,6 +106,8 @@ object ImageGetter {
     val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
     val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
+        if(improvementName.startsWith("Remove"))
+            return getImage("OtherIcons/Stop")
         if(improvementName.startsWith("StartingLocation ")){
             val nationName = improvementName.removePrefix("StartingLocation ")
             val nation = GameBasics.Nations[nationName]!!
