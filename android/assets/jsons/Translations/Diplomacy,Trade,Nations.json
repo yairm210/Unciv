@@ -79,7 +79,7 @@
 		Traditional_Chinese:"[civName]已經對我們宣戰！"
 		Portuguese:"[civName] declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
-                Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!",
+                Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!"
 		Czech:"Civilizace [civName] nám vyhlásila válku!"
 }
 
@@ -93,7 +93,7 @@
 		French:"[leaderName] de [nation]"
 		Russian:"[leaderName] из [nation]"
 		Romanian:"[leaderName] de [nation]"
-                Polish:"[leaderName], władca cywilizacji [nation]",
+                Polish:"[leaderName], władca cywilizacji [nation]"
 		Czech:"[leaderName], [nation]"
 }
 
@@ -573,7 +573,7 @@
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
 		French:"Veuillez ne pas construire de villes proches de nous."
-		Polish:"Proszę nie osiedlaj się w pobliżu naszych miast.
+		Polish:"Proszę nie osiedlaj się w pobliżu naszych miast."
 		Simplified_Chinese:"请不要在我们附近建立新的城市。"
 		Traditional_Chinese:"請不要在我們附近建立新的城市。"
 		Russian:"Пожалуйста, не закладывайте новых городов рядом с нами."
