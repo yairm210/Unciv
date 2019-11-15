@@ -68,7 +68,21 @@ Unciv is developed with LibGDX, which supports desktop.
 
 However, it's difficult enough for me to handle one release cycle (on Google Play), so I'm not planning on creating a second release cycle for desktop.
 
-If you really want to, you could install Android Studio and build it yourself :)
+If you have Java 8, there are JARs in the Releases which you can run with `java -jar <jarName>`
+
+If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
+
+### Windows
+
+Running: `gradlew desktop:run`
+Building: `gradlew desktop:dist`
+
+### Linux/Mac OS
+
+Running: `./gradlew desktop:run`
+Building: `./gradlew desktop:dist`
+
+For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
 
 ## How can I learn to play? Where's the wiki?
 
