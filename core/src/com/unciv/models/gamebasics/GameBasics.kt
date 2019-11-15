@@ -78,9 +78,20 @@ object GameBasics {
         Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
 
 
+        // Apparently you can't iterate over the files in a directory when running out of a .jar...
+        // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
+        // which means we need to list everything manually =/
 
-        for (file in Gdx.files.internal("jsons/Translations").list())
-            Translations.add(file.readString())
+        val translationFileNames = listOf("Buildings","Diplomacy,Trade,Nations",
+                "NewGame,SaveGame,LoadGame,Options", "Notifications","Other","Policies","Techs",
+                "Terrains,Resources,Improvements","Units,Promotions")
+
+        for (fileName in translationFileNames){
+            val file = Gdx.files.internal("jsons/Translations/$fileName.json")
+            if(file.exists()) {
+                Translations.add(file.readString())
+            }
+        }
     }
 }
 
