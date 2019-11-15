@@ -2,10 +2,6 @@ buildscript {
 
     ext.kotlinVersion = '1.3.50'
 
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
-
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs
@@ -20,6 +16,7 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
         classpath 'com.android.tools.build:gradle:3.5.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
@@ -66,6 +63,7 @@ project(":desktop") {
         implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 
         implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"  // This is for the TexturePacker class
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 
 

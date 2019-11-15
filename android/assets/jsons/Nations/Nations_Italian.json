@@ -688,6 +688,43 @@
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
 			"Ban Phai","Loci","Khan Kaen","Surin"]
 	},
+	{
+		name:"Songhai",
+		translatedName:"Songhai",
+		leaderName:"Askia",
+		adjective:["Songhai"],
+		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Che la benedizione di Dio, che è il più grande di tutti, scenda su di te, Askia, sovrano del popolo Songhai! Per molti anni il tuo regno rimase vassallo della potente nazione dell'Africa occidentale, il Mali, finché alla metà del XIV secolo, il re Sunni Ali Ber riuscì a conquistare l'indipendenza, impadronendosi di vasti territori e respingendo i numerosi nemici che intendevano distruggerlo. Alla fine, la conquista delle ricche città di Timbuctu e Djenné conferirono all'impero Songhai il potere economico per sopravvivere per circa 100 anni, fino alla sua distruzione dovuta alla tecnologia del moschetto, più avanzata di quella della lancia."
+		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Sei un abominio per la terra e il cielo, il capo di selvaggi ignoranti! Distruggerti sarà un vero piacere!"
+		attacked:"Quanta follia! Hai condannato il tuo popolo al rogo della distruzione!"
+		defeated:"Le fiamme dell'odio e dell'ira ci hanno consumati. Goditi la tua vittoria in questo mondo - pagherai un prezzo più grande nel prossimo!"
+		introduction:"Io sono Askia dei Songhai. Siamo gente giusta, ma coloro che ci ostacolano troveranno solo distruzione. Ti consiglio di evitare gli stessi errori che altri fecero in passato."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Sì?","Procedi."]
+		neutralNo:["No","Non ci siamo proprio."]
+		neutralYes:["Benissimo.","Sì.","D'accordo."]
+
+		hateHello:"Ah, sei tu."
+		hateLetsHearIt:["E...?","Continua."]
+		hateNo:["Stai scherzando, spero!","Questo è inaccettabile!","Niente da fare."]
+		hateYes:["Oh, va bene.","A posto."]
+		
+		afterPeace:"Ti ringraziamo per aver posto fine a questa inutile guerra."
+		tradeRequest:"Forse questo affare ti sarà di tuo gusto?"
+				
+		outerColor:[204,102,0],
+		innerColor:[255,0,0],
+		uniqueName:"Signore del fiume"
+		unique:"Le unità imbarcate sono rafforzate tramite le promozioni Canoe da guerra e Attacco anfibio. Gli accampamenti barbari saccheggiati fruttano quantità tripla di oro.",
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
+			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+	},
 	
 	/*
 	{
@@ -726,42 +763,6 @@
 		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
 		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
 	},
-	{
-		name:"Songhai",
-		translatedName:"Songhai",
-		leaderName:"Askia",
-		adjective:["Songhai"],
-		startBias:["Avoid Tundra"],
-		preferredVictoryType:"Domination",
-		
-		startIntroPart1: "Che la benedizione di Dio, che è il più grande di tutti, scenda su di te, Askia, sovrano del popolo Songhai! Per molti anni il tuo regno rimase vassallo della potente nazione dell'Africa occidentale, il Mali, finché alla metà del XIV secolo, il re Sunni Ali Ber riuscì a conquistare l'indipendenza, impadronendosi di vasti territori e respingendo i numerosi nemici che intendevano distruggerlo. Alla fine, la conquista delle ricche città di Timbuctu e Djenné conferirono all'impero Songhai il potere economico per sopravvivere per circa 100 anni, fino alla sua distruzione dovuta alla tecnologia del moschetto, più avanzata di quella della lancia."
-		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"Sei un abominio per la terra e il cielo, il capo di selvaggi ignoranti! Distruggerti sarà un vero piacere!"
-		attacked:"Quanta follia! Hai condannato il tuo popolo al rogo della distruzione!"
-		defeated:"Le fiamme dell'odio e dell'ira ci hanno consumati. Goditi la tua vittoria in questo mondo - pagherai un prezzo più grande nel prossimo!"
-		introduction:"Io sono Askia dei Songhai. Siamo gente giusta, ma coloro che ci ostacolano troveranno solo distruzione. Ti consiglio di evitare gli stessi errori che altri fecero in passato."
-		
-		neutralHello:"Saluti."
-		neutralLetsHearIt:["Sì?","Procedi."]
-		neutralNo:["No","Non ci siamo."]
-		neutralYes:["Benissimo.","Sì.","D'accordo."]
-
-		hateHello:"Ah, sei tu."
-		hateLetsHearIt:["E...?","Continua."]
-		hateNo:["Stai scherzando!","Questo è inaccettabile!","Niente da fare."]
-		hateYes:["Oh, va bene.","A posto."]
-		
-		afterPeace:"Ti ringraziamo per aver posto fine a questa inutile guerra."
-		tradeRequest:"Forse questo affare ti sarà di tuo gusto?"
-				
-		outerColor:[204,102,0],
-		innerColor:[255,0,0],
-		uniqueName:"Signore del fiume"
-		unique:"Le unità imbarcate sono rafforzate tramite le promozioni Canoe da guerra e Attacco anfibio. Gli accampamenti barbari saccheggiati fruttano quantità tripla di oro.",
-		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
-			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
-			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	*/
 
 	//City states
@@ -1010,6 +1011,7 @@
 	},
 	{
 		name:"Sydney",
+		translatedName:"Sydney",
 		adjective:["australiano"],
 		cityStateType:"Maritime",
 
@@ -1024,6 +1026,7 @@
 	},
 	{
 		name:"Cape Town",
+		translatedName:"Città del Capo",
 		adjective:["sudafricano"],
 		cityStateType:"Maritime",
 
@@ -1038,6 +1041,7 @@
 	},
 	{
 		name:"Kathmandu",
+		translatedName:"Kathmandu",
 		adjective:["nepalese"],
 		cityStateType:"Mercantile",
 
@@ -1052,6 +1056,7 @@
 	},
 	{
 		name:"Hanoi",
+		translatedName:"Hanoi",
 		adjective:["vietnamita"],
 		cityStateType:"Cultured",
 
@@ -1066,6 +1071,7 @@
 	},
 	{
 		name:"Quebec City",
+		translatedName:"Quebec",
 		adjective:["quebecchese"],
 		cityStateType:"Cultured",
 
@@ -1080,6 +1086,7 @@
 	},
 	{
 		name:"Helsinki",
+		translatedName:"Helsinki",
 		adjective:["finlandese"],
 		cityStateType:"Maritime",
 
@@ -1091,6 +1098,36 @@
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
 		cities:["Helsinki"]
+	},
+	{
+		name:"Kuala Lumpur",
+		translatedName:"Kuala Lumpur",
+		adjective:["malese"],
+		cityStateType:"Cultured",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Oggi il popolo malese ti obbedisce, ma non credere che non risorgeremo..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,102,102],
+		cities:["Kuala Lumpur"]
+	},
+	{
+		name:"Manila",
+		translatedName:"Manila",
+		adjective:["filippino"],
+		cityStateType:"Maritime",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Ah, Dèi! Perché ci avete abbandonati?"
+
+		outerColor:[0, 0, 0],
+		innerColor:[96,96,96],
+		cities:["Manila"]
 	},
 	
 	//Barbarian

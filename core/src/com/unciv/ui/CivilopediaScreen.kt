@@ -1,44 +1,48 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.scenes.scene2d.ui.List
-import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
-import com.unciv.models.gamebasics.BasicHelp
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.Tutorials
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 import java.util.*
-import kotlin.math.max
 
 class CivilopediaScreen : CameraStageBaseScreen() {
+    class CivilopediaEntry {
+        var name: String
+        var description: String
+        var image: Actor?=null
 
-    val categoryToInfos = LinkedHashMap<String, Collection<ICivilopedia>>()
+        constructor(name: String, description: String, image: Actor?=null) {
+            this.name = name
+            this.description = description
+            this.image = image
+        }
+
+        constructor() : this("","") // Needed for GameBAsics json deserializing
+    }
+
+    val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
     val categoryToButtons = LinkedHashMap<String, Button>()
-    val civPediaEntries = Array<ICivilopedia>()
 
-    val nameList = List<String>(skin)
+    val entrySelectTable = Table().apply { defaults().pad(5f) }
     val description = "".toLabel()
 
-    fun select(category: String, entry: String? = null) {
-        val nameItems=Array<String>()
-        civPediaEntries.clear()
-        for (civilopediaEntry in categoryToInfos[category]!!.sortedBy { it.toString().tr() }){  // Alphabetical order of localized names
-            civPediaEntries.add(civilopediaEntry)
-            nameItems.add(civilopediaEntry.toString().tr())
+    fun select(category: String) {
+        entrySelectTable.clear()
+        for (entry in categoryToEntries[category]!!
+                .sortedBy { it.name.tr() }){  // Alphabetical order of localized names
+            val entryButton = Button(skin)
+            if(entry.image!=null)
+                entryButton.add(entry.image).size(50f).padRight(10f)
+            entryButton.add(entry.name.toLabel())
+            entryButton.onClick {
+                description.setText(entry.description)
+            }
+            entrySelectTable.add(entryButton).row()
         }
-        nameList.setItems(nameItems)
-        val index = max(0, nameList.items.indexOf(entry?.tr()))
-        nameList.selected = nameList.items.get(index)
-        description.setText(civPediaEntries.get(index).description)
-        for (btn in categoryToButtons.values) btn.isChecked = false
-        categoryToButtons[category]?.isChecked = true
     }
 
     init {
@@ -67,39 +71,41 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())"BasicHelp/BasicHelp_$language"
         else "BasicHelp/BasicHelp"
 
-        categoryToInfos["Basics"] = GameBasics.getFromJson(kotlin.Array<BasicHelp>::class.java, basicHelpFileName).toList()
-        categoryToInfos["Buildings"] = GameBasics.Buildings.values
-        categoryToInfos["Resources"] = GameBasics.TileResources.values
-        categoryToInfos["Terrains"] = GameBasics.Terrains.values
-        categoryToInfos["Tile Improvements"] = GameBasics.TileImprovements.values
-        categoryToInfos["Units"] = GameBasics.Units.values
-        categoryToInfos["Technologies"] = GameBasics.Technologies.values
 
-        class Tutorial(var name:String, override var description:String):ICivilopedia{
-            override fun toString() = name
-        }
-        categoryToInfos["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
+        categoryToEntries["Basics"] = GameBasics.getFromJson(kotlin.Array<CivilopediaEntry>::class.java, basicHelpFileName).toList()
+        categoryToEntries["Buildings"] = GameBasics.Buildings.values
+                .map { CivilopediaEntry(it.name,it.getDescription(false, null),
+                        ImageGetter.getConstructionImage(it.name)) }
+        categoryToEntries["Resources"] = GameBasics.TileResources.values
+                .map { CivilopediaEntry(it.name,it.getDescription(),
+                        ImageGetter.getResourceImage(it.name,50f)) }
+        categoryToEntries["Terrains"] = GameBasics.Terrains.values
+                .map { CivilopediaEntry(it.name,it.getDescription()) }
+        categoryToEntries["Tile Improvements"] = GameBasics.TileImprovements.values
+                .map { CivilopediaEntry(it.name,it.getDescription(),
+                        ImageGetter.getImprovementIcon(it.name,50f)) }
+        categoryToEntries["Units"] = GameBasics.Units.values
+                .map { CivilopediaEntry(it.name,it.getDescription(false),
+                        ImageGetter.getConstructionImage(it.name)) }
+        categoryToEntries["Technologies"] = GameBasics.Technologies.values
+                .map { CivilopediaEntry(it.name,it.getDescription(),
+                        ImageGetter.getTechIconGroup(it.name,50f)) }
+
+        categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
                 .filter { !it.startsWith("_") }
-                .map { Tutorial(it.replace("_"," "),
-                        Tutorials().getTutorials(it, UnCivGame.Current.settings.language).joinToString("\n\n")) }
+                .map { CivilopediaEntry(it.replace("_"," "),
+                        Tutorials().getTutorials(it, UnCivGame.Current.settings.language)
+                                .joinToString("\n\n")) }
 
-        nameList.onClick {
-            if(nameList.selected!=null) description.setText(civPediaEntries.get(nameList.selectedIndex).description)
-        }
-        nameList.style = List.ListStyle(nameList.style)
-        nameList.style.fontColorSelected = Color.BLACK
-
-        for (category in categoryToInfos.keys) {
+        for (category in categoryToEntries.keys) {
             val button = TextButton(category.tr(), skin)
             button.style = TextButton.TextButtonStyle(button.style)
-            button.style.checkedFontColor = Color.YELLOW
             categoryToButtons[category] = button
             button.onClick { select(category) }
             buttonTable.add(button)
         }
         select("Basics")
-
-        val sp = ScrollPane(nameList)
+        val sp = ScrollPane(entrySelectTable)
         sp.setupOverscroll(5f, 1f, 200f)
         entryTable.add(sp).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))

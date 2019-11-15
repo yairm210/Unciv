@@ -12,9 +12,6 @@ import kotlin.math.pow
 
 class Building : NamedStats(), IConstruction{
 
-    override val description: String
-        get() = getDescription(false, null)
-
     var requiredTech: String? = null
 
     var cost: Int = 0

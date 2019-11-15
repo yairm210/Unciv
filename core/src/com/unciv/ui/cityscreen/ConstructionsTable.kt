@@ -199,7 +199,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             description = construction.getDescription(true)
         else if (construction is Building)
             description = construction.getDescription(true, city.civInfo)
-        else description = construction.description.tr()
+        else if(construction is SpecialConstruction)
+            description = construction.description.tr()
+        else description="" // Should never happen
 
         val descriptionLabel = description.toLabel()
         descriptionLabel.setWrap(true)

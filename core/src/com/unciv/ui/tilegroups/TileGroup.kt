@@ -17,24 +17,34 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
 
 
+
 open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : Group() {
     val groupSize = 54f
 
     /*
     Layers:
-    Base image + overlay
+    Base image (+ overlay)
     Feature overlay / city overlay
     Misc: Units, improvements, resources, border
     Circle, Crosshair, Fog layer
     City name
      */
     val baseLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
-    protected var tileBaseImage: Image = ImageGetter.getImage(tileSetStrings.hexagon)
-    var currentTileBaseImageLocation = ""
+    protected var tileBaseImages: ArrayList<Image> = ArrayList()
+    /** List of ;-delimited image locations comprising the layers -
+     * for instance, "desert+flood plains" might have an improvment for which there is a certain image eg "desert+flood plains+farm"
+     * or it might use a generic image, in which case you'd have the "desert+flood plains;academy"
+     * Easier to save and compare than with lists */
+    var tileImagesIdentifier = ""
+
+    // This is for OLD tiles - the "mountain" symbol on mountains for instance
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain: String = ""
 
+
     val terrainFeatureLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
+
+    // These are for OLD tiles - for instance the "forest" symbol on the forest
     protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature: String? = null
     protected var cityImage: Image? = null
@@ -120,37 +130,51 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         crosshairImage.isVisible = true
     }
 
-    fun getTileBaseImageLocation(isRevealed: Boolean): String {
-        if (!isRevealed) return tileSetStrings.hexagon
+
+    fun getTileBaseImageLocations(isRevealed: Boolean): List<String>{
+        if (!isRevealed) return listOf(tileSetStrings.hexagon)
         if (tileInfo.isCityCenter()) {
             val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain)
             if (ImageGetter.imageExists(terrainAndCity))
-                return terrainAndCity
+                return listOf(terrainAndCity)
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
-                return tileSetStrings.cityTile
+                return listOf(tileSetStrings.cityTile)
         }
-        val baseTerrainTileLocation = tileSetStrings.getBaseTerrainTile(tileInfo.baseTerrain)
+        val shouldShowImprovement = tileInfo.improvement!=null && UnCivGame.Current.settings.showPixelImprovements
+        val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain)
         if (tileInfo.terrainFeature != null) {
             val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
-            if(tileInfo.improvement!=null && UnCivGame.Current.settings.showPixelImprovements){
+            if(shouldShowImprovement){
                 val basefeatureAndImprovementTileLocation = "$baseTerrainAndFeatureTileLocation+${tileInfo.improvement}"
                 if (ImageGetter.imageExists(basefeatureAndImprovementTileLocation))
-                    return basefeatureAndImprovementTileLocation
+                    return listOf(basefeatureAndImprovementTileLocation)
             }
 
-            if (ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
-                return baseTerrainAndFeatureTileLocation
+            if (ImageGetter.imageExists(baseTerrainAndFeatureTileLocation)) {
+                if(shouldShowImprovement){
+                    val improvementImageLocation = tileSetStrings.getTile(tileInfo.improvement!!)
+                    if(ImageGetter.imageExists(improvementImageLocation))
+                        return listOf(baseTerrainAndFeatureTileLocation, improvementImageLocation)
+                }
+                return listOf(baseTerrainAndFeatureTileLocation)
+            }
         }
 
-        if(tileInfo.improvement != null && UnCivGame.Current.settings.showPixelImprovements){
+        if(shouldShowImprovement){
             val baseTerrainAndImprovement  = "$baseTerrainTileLocation+${tileInfo.improvement}"
-
             if (ImageGetter.imageExists(baseTerrainAndImprovement))
-                return baseTerrainAndImprovement
+                return listOf(baseTerrainAndImprovement)
         }
 
-        if (ImageGetter.imageExists(baseTerrainTileLocation)) return baseTerrainTileLocation
-        return tileSetStrings.hexagon
+        if (ImageGetter.imageExists(baseTerrainTileLocation)){
+            if(shouldShowImprovement){
+                val improvementImageLocation = tileSetStrings.getTile(tileInfo.improvement!!)
+                if(ImageGetter.imageExists(improvementImageLocation))
+                    return listOf(baseTerrainTileLocation, improvementImageLocation)
+            }
+            return listOf(baseTerrainTileLocation)
+        }
+        return listOf(tileSetStrings.hexagon)
     }
 
     // Used for both the underlying tile and unit overlays, perhaps for other things in the future
@@ -164,16 +188,20 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     private fun updateTileImage(isRevealed: Boolean) {
-        val tileBaseImageLocation = getTileBaseImageLocation(isRevealed)
-        if (tileBaseImageLocation == currentTileBaseImageLocation) return
+        val tileBaseImageLocations = getTileBaseImageLocations(isRevealed)
+        val identifier = tileBaseImageLocations.joinToString(";")
+        if (identifier == tileImagesIdentifier) return
 
-        tileBaseImage.remove()
-        tileBaseImage = ImageGetter.getImage(tileBaseImageLocation)
-        currentTileBaseImageLocation = tileBaseImageLocation
-
-        baseLayerGroup.addActor(tileBaseImage)
-        setHexagonImageSize(tileBaseImage)
-        tileBaseImage.toBack()
+        for(image in tileBaseImages) image.remove()
+        tileBaseImages.clear()
+        for(location in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
+            val image = ImageGetter.getImage(location)
+            tileBaseImages.add(image)
+            baseLayerGroup.addActor(image)
+            setHexagonImageSize(image)
+            image.toBack()
+        }
+        tileImagesIdentifier = identifier
     }
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
@@ -187,7 +215,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         hideCircle()
         if (viewingCiv != null && !showEntireMap
                 && !viewingCiv.exploredTiles.contains(tileInfo.position)) {
-            tileBaseImage.color = Color.DARK_GRAY
+            tileBaseImages.firstOrNull()?.color = Color.DARK_GRAY
             return
         }
 
@@ -354,12 +382,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
     private fun updateTileColor(isViewable: Boolean) {
-        tileBaseImage.color =
-                if (ImageGetter.imageExists(tileSetStrings.getBaseTerrainTile(tileInfo.baseTerrain)))
+        var color =
+                if (ImageGetter.imageExists(tileSetStrings.getTile(tileInfo.baseTerrain)))
                     Color.WHITE // no need to color it, it's already colored
                 else tileInfo.getBaseTerrain().getColor()
 
-        if (!isViewable) tileBaseImage.color = tileBaseImage.color.lerp(Color.BLACK, 0.6f)
+        if (!isViewable) color =color.cpy().lerp(Color.BLACK, 0.6f)
+        tileBaseImages.firstOrNull()?.color = color
     }
 
     private fun updateTerrainFeatureImage() {

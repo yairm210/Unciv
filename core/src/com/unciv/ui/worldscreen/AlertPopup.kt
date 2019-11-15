@@ -167,7 +167,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val centerTable = Table()
                 centerTable.add(tech.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
-                centerTable.add(tech.description.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(tech.getDescription().toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
                 add(getCloseButton("Close"))
             }
