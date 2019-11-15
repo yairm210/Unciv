@@ -14,21 +14,6 @@
 An Android port of Civ V
 Made with LibGDX on Android Studio
 
-## What's been implemented?
-
-* Map tiles (including water), resources and improvements
-* Units and movement
-  * Air units
-* Cities, production and buildings
-  * Population and Specialists
-* Science, Cultural and Domination victories
-* Policies and Golden Ages
-* Combat and barbarians
-   * Promotions and combat modifiers
-* Other civilizations, diplomacy and trade
-* City-states
-* Multiplayer (hotseat and across internet)
-* Map editor
 
 ## What's the roadmap?
 
@@ -36,10 +21,13 @@ Is this order:
 
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
-    * Filling out gaps (missing civs, wonders, etc)
-    * Better automation, AI etc.
-    
-* Missing features from Vanilla - Natural wonders, city-state quests, rivers etc.
+    * Better automation, AI etc. in-game
+* Development and distribution cycle
+   * Automated tests - done!
+   * Automated F-droid and Google Play version deployment
+   * Standalone Desktop executables
+   * Maybe Itch.io?
+* Missing features from Vanilla - Natural wonders, city-state quests, missing civs etc.
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
 
