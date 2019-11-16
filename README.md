@@ -84,11 +84,7 @@ Maybe, once we've finished with all of Civ V. But considering how long it took t
 
 ## Is there a desktop version?
 
-Unciv is developed with LibGDX, which supports desktop.
-
-However, it's difficult enough for me to handle one release cycle (on Google Play), so I'm not planning on creating a second release cycle for desktop.
-
-If you have Java 8, there are JARs in the Releases which you can run with `java -jar <jarName>`
+If you have Java 8, there are JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
 
 If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
 
