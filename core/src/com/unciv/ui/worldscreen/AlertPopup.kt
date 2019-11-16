@@ -76,7 +76,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addSeparator()
                 }
 
-                if (!conqueringCiv.isPlayerOneCityChallenger()){
+                if (!conqueringCiv.isOneCityChallenger()){
 
                     add(TextButton("Annex".tr(), skin).onClick {
                         city.puppetCity(conqueringCiv)
