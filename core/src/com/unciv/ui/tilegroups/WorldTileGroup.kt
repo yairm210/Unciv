@@ -36,17 +36,6 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
             updateCityButton(city, tileIsViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
 
         super.update(viewingCiv, UnCivGame.Current.settings.showResourcesAndImprovements)
-
-
-        // order by z index!
-        cityImage?.toFront()
-        terrainFeatureOverlayImage?.toFront()
-        icons.improvementIcon?.toFront()
-        resourceImage?.toFront()
-        cityButton?.toFront()
-        icons.civilianUnitIcon?.toFront()
-        icons.militaryUnitIcon?.toFront()
-        fogImage.toFront()
     }
 
 
