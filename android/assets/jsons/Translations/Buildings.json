@@ -1146,6 +1146,8 @@
 		Polish:"Wat"
 		//same in French
 		Czech:"Vat"
+		Simplified_Chinese:"经院"
+		Traditional_Chinese:"經院"
 }
 
 	"Oxford University":{
@@ -1951,12 +1953,15 @@
 		Italian:"Porta di Brandeburgo"
 		Polish:"Brama Brandenburska"
 		Czech:"Brandenburgská brána"
+		Simplified_Chinese:"勃兰登堡门"
+		Traditional_Chinese:"勃蘭登堡門"
 	}
 	
 	"Free Great General appears near the Capital":{
 		Italian:"Appare un Grande Generale vicino alla Capitale"
 		Polish:"Pojawia się Darmowy Wielski Generał w pobliżu Stolicy."
-        Traditional_Chinese:"免費的大軍事家已經在首都附近出現"
+		Simplified_Chinese:"免费的大軍事家出现在首都附近"
+        Traditional_Chinese:"免費的大軍事家出現在首都附近"
 		Czech:"Velký Generál zdarma se objevil poblíž hlavního města"
 	}
 	
@@ -1964,7 +1969,8 @@
 		Italian:"'La pallida morte batte ugualmente alla porta del povero e al palazzo del re.' - Orazio",
 		Polish:"'Blada Śmierć puka zarówno do drzwi biedaka, jak i do pałaców królów.' - Horacy"
 		Czech:"'Bledá smrt klepe u vrat chudáka stejně jako na královský palác.' - Horatius"
-		
+		Simplified_Chinese:"“苍白的死神平等地叩响穷人房舍的小门和国王宫殿的大门。”——昆图斯·贺拉斯·弗拉库斯"
+		Traditional_Chinese:"“蒼白的死神平等地叩響窮人房舍的小門和國王宮殿的大門。”——昆圖斯·賀拉斯·弗拉庫斯"
 	}
 
 	"Broadcast Tower":{
