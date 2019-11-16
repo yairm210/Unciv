@@ -1,4 +1,4 @@
-# [UnCiv - Civ V for Android](https://play.google.com/store/apps/details?id=com.unciv.app)
+# [UnCiv - Civ V for Android (+Desktop)](https://play.google.com/store/apps/details?id=com.unciv.app)
 
 ![](https://lh3.googleusercontent.com/UKRJog9ZI6w93hYLf_VXIKP5gRU9jP8IW3Ka9FhbFasdMjiFTA-ktmGzCMD-HFMsZw=w1920-h867-rw)
 
@@ -11,9 +11,8 @@
 
 # What is this?
 
-An Android port of Civ V
+An open-source Android/Desktop port of Civ V,
 Made with LibGDX on Android Studio
-
 
 ## What's the roadmap?
 
@@ -30,57 +29,6 @@ Is this order:
 * Missing features from Vanilla - Natural wonders, city-state quests, missing civs etc.
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
-
-
-# FAQ
-
-## Will you implement {feature}?
-
-If it's in the original Civ V, then yes!
-
-There's a lot left to implement, so it's hard to give an estimation of when exactly each feature will be added, but we're constantly improving!
-
-If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
-
-## Please add {Civilization}
-
-THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
-
-## Will you implement Civ VI?
-
-Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
-
-## Is there a desktop version?
-
-Unciv is developed with LibGDX, which supports desktop.
-
-However, it's difficult enough for me to handle one release cycle (on Google Play), so I'm not planning on creating a second release cycle for desktop.
-
-If you have Java 8, there are JARs in the Releases which you can run with `java -jar <jarName>`
-
-If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
-
-### Windows
-
-Running: `gradlew desktop:run`
-Building: `gradlew desktop:dist`
-
-### Linux/Mac OS
-
-Running: `./gradlew desktop:run`
-Building: `./gradlew desktop:dist`
-
-For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
-
-## How can I learn to play? Where's the wiki?
-
-All the tutorial information is available in-game at menu > civilopedia > tutorials
-
-All the information is included in the amazing [Civ V wiki](https://civilization.fandom.com/wiki/)
-
-Since this is a Civ V clone, you can search Google for how to play Civ V and there are loads of answers =)
-
-Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
 
 # Contributing
 
@@ -115,5 +63,57 @@ Note that Right-to-Left languages such as Arabic and Hebrew are not supported by
 - Configure an Application run configuration with DesktopLauncher as the Main Class and \<repo_folder\>\android\assets\ as the Working directory
 
 ## [Adding a new Civ](docs/NewCivs.md)
+
+# FAQ
+
+## Will you implement {feature}?
+
+If it's in the original Civ V, then yes!
+
+There's a lot left to implement, so it's hard to give an estimation of when exactly each feature will be added, but we're constantly improving!
+
+If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
+
+## Please add {Civilization}
+
+THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
+
+## Will you implement Civ VI?
+
+Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
+
+## Is there a desktop version?
+
+If you have Java 8, there are JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
+
+If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
+
+### Windows
+
+Running: `gradlew desktop:run`
+Building: `gradlew desktop:dist`
+
+### Linux/Mac OS
+
+Running: `./gradlew desktop:run`
+Building: `./gradlew desktop:dist`
+
+If the terminal returns Permission denied or Command not found on Mac/Linux, run chmod +x ./gradlew before running ./gradlew. *This is a one-time procedure.*
+
+Gradle may take up to several minutes to download files. Be patient.
+After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
+
+For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
+
+## How can I learn to play? Where's the wiki?
+
+All the tutorial information is available in-game at menu > civilopedia > tutorials
+
+All the information is included in the amazing [Civ V wiki](https://civilization.fandom.com/wiki/)
+
+Since this is a Civ V clone, you can search Google for how to play Civ V and there are loads of answers =)
+
+Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
+
 
 # [Credits and 3rd parties](docs/Credits.md)

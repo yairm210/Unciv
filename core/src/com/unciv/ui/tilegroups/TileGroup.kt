@@ -215,7 +215,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         hideCircle()
         if (viewingCiv != null && !showEntireMap
                 && !viewingCiv.exploredTiles.contains(tileInfo.position)) {
-            tileBaseImages.firstOrNull()?.color = Color.DARK_GRAY
+            for(image in tileBaseImages) image.color = Color.DARK_GRAY
             return
         }
 
@@ -388,7 +388,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 else tileInfo.getBaseTerrain().getColor()
 
         if (!isViewable) color =color.cpy().lerp(Color.BLACK, 0.6f)
-        tileBaseImages.firstOrNull()?.color = color
+        for(image in tileBaseImages) image.color = color
     }
 
     private fun updateTerrainFeatureImage() {
