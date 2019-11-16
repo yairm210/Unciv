@@ -125,7 +125,7 @@
 		Dutch:"[cityName] is gesticht!"
 		Spanish:"¡[cityName] ha sido fundada!"
 		Simplified_Chinese:"已建立城市：[cityName]！"
-		Traditional_Chinese:"已經建立了城市：[cityName]!"
+		Traditional_Chinese:"已建立城市：[cityName]!"
 		Portuguese:"[cityName] foi fundada!"
 		Japanese:"[cityName]が設立されました！",
 		Czech:"Město [cityName] bylo založeno!"
@@ -156,8 +156,8 @@
 		German:"[construction] wurde in [cityName] fertiggestellt"
 		Dutch:"[construction] is gebouwd in [cityName]"
 		Spanish:"[construction] se ha construido en [cityName]"
-		Simplified_Chinese:"[cityName]已建造/组建[construction]"
-		Traditional_Chinese:"[construction]已經在[cityName]被建造"
+		Simplified_Chinese:"[construction]已经在[cityName]被建造/组建"
+		Traditional_Chinese:"[construction]已經在[cityName]被建造/訓練"
 		Portuguese:"o(a) [construction] foi construirdo em [cityName]"
 		Japanese:"[construction]は[cityName]に建てられました",
 		Czech:"[construction] - stavba dokončena ve městě [cityName]"
@@ -169,7 +169,7 @@
 		French:"[wonder] a été construit(e) dans un lointain pays"
 		Russian:"[wonder] был построен в далёких землях"
 		Simplified_Chinese:"[wonder]已在遥远的土地上建成"
-		Traditional_Chinese:"[wonder]已在遙遠的土地上建造完畢"
+		Traditional_Chinese:"[wonder]已在遙遠的土地上建成"
 		Czech:"Div světa [wonder] byl vybudován ve vzdálené zemi"
 		Ukrainian:"[wonder] збудовано за тридевʼять земель"
 	}
@@ -183,7 +183,7 @@
 		Dutch:"Werk is begonen aan [construction]"
 		Spanish:"Se ha empezado a trabajar en [construction]"
 		Simplified_Chinese:"开始建造/组建：[construction]",
-		Traditional_Chinese:"開始建造：[construction]",
+		Traditional_Chinese:"開始建造/訓練：[construction]",
 		Portuguese:"Os trabalhos começaram no(a) [construction]"
 		Japanese:"[construction]の作業が開始されました",
 		Czech:"Začali jsme stavět - [construction]"
@@ -195,7 +195,7 @@
 		French:"[cityName] ne peut plus travailler sur [construction]"
 		Russian:"[cityName] не может продолжать работу над [construction]",
 		Simplified_Chinese:"[cityName]无法继续建造/组建[construction]",
-		Traditional_Chinese:"[cityName]無法繼續建造[construction]",
+		Traditional_Chinese:"[cityName]無法繼續建造/訓練[construction]",
 		Czech:"Město [cityName] nemůže pokračovat ve stavbě budovy [construction]"
 		Ukrainian:"[construction]: неможливо продовжити будувати в місті [cityName]"
 	}
@@ -618,8 +618,8 @@
 		German: "[unit] hat die Erkundung abgeschlossen."
 		French:"[unit] a fini d'explorer"
 		Russian:"[unit] завершил исследование местности."
-		Simplified_Chinese:"[unit]已完成探索。"
-		Traditional_Chinese:"[unit]已完成探索。"
+		Simplified_Chinese:"[unit]已完成探索"
+		Traditional_Chinese:"[unit]已完成探索"
 		Czech:"Jednotka [unit] dokončila průzkum."
 		Ukrainian:"Підрозділ [unit] закінчив обстеження."
 	}
@@ -629,8 +629,8 @@
 		German:"[unit] hat keine Arbeit mehr."
 		French:"[unit] n'a rien à faire"
 		Russian:"[unit] завершил все доступные работы."
-		Simplified_Chinese:"[unit]处于闲置状态。"
-		Traditional_Chinese:"[unit]處於閒置狀態。"
+		Simplified_Chinese:"[unit]处于闲置状态"
+		Traditional_Chinese:"[unit]處於閒置狀態"
 		Czech:"Jednotka [unit] nemá nic dalšího na práci."
 		Ukrainian:"Підрозділ [unit] без роботи."
 	}
@@ -639,8 +639,8 @@
 		Italian:"Stai perdendo il controllo di [name]."
 		French:"Vous perdez le contrôle de [name]"
 		Russian:"Вы теряете влияние на [name]."
-		Simplified_Chinese:"您正在失去与[name]的脆弱友谊。"
-		Traditional_Chinese:"您已經失去了與[name]的脆弱友誼。"
+		Simplified_Chinese:"您正在失去与[name]的脆弱友谊"
+		Traditional_Chinese:"您正在失去與[name]的脆弱友誼"
 		Czech:"Ztratili jsme přátelství s městským státem [name]."
 		Ukrainian:"Втрачається контроль над містом-державою [name]."
 	}
@@ -659,8 +659,8 @@
 		Italian:"L'alleanza con [name] si sta sfaldando."
 		French:"Votre alliance avec [name] est vacillante."
 		Russian:"Ваш союз с [name] заканчивается."
-		Simplified_Chinese:"您与[name]的盟友关系正日薄西山。"
-		Traditional_Chinese:"您與[name]的盟友關係正日薄西山。"
+		Simplified_Chinese:"您与[name]的盟友关系正日薄西山"
+		Traditional_Chinese:"您與[name]的盟友關係正日薄西山"
 		Czech:"Naše aliance s městským státem [name] slábne."
 		Ukrainian:"Захитався альянс з містом-державою [name]"
 	}
@@ -706,6 +706,8 @@
 	"[cityName] has been disconnected from your capital!":{
 		Italian:"Collegamento tra la Capitale e [cityName] interrotto!"
 		Czech:"Město [cityName] bylo odpojeno od našeho hlavního města!"
+		Simplified_Chinese:"[cityName]与您的首都的连接已经中断！"
+		Traditional_Chinese:"[cityName]與您的首都的連接已經中斷！"
 	}
 
 	// Trade
@@ -722,7 +724,7 @@
 		Italian:"[civName] ha rifiutato la nostra offerta commerciale."
 		Russian:"[civName] отклонил ваше торговое предложение"
 		Simplified_Chinese:"[civName]拒绝了您的贸易请求"
-		Traditional_Chinese:"[civName]否決了你的貿易請求"
+		Traditional_Chinese:"[civName]拒絕了你的貿易請求"
 		Czech:"Civilizace [civName] zamítla naši obchodní nabídku"
 		Ukrainian:"Цивілізація [civName] відкинула угоду"
 	}
@@ -741,6 +743,7 @@
 
 	"[tradeOffer] to [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] verso [otherCivName] terminato",
+		Simplified_Chinese:"与[otherCivName]的[tradeOffer]协议已经结束",
 		Traditional_Chinese:"與[otherCivName]的[tradeOffer]協議已經結束"
 		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 	}
@@ -752,7 +755,7 @@
 		French:"Un de nos échanges avec [nation] a pris fin"
 		Russian:"Торговая сделка с [nation] завершилась"
 		Simplified_Chinese:"我们与[nation]的一项贸易已经结束",
-		Traditional_Chinese:"我们与[nation]的贸易已经结束",
+		Traditional_Chinese:"我們與[nation]的一項贸易已經結束",
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] je u konce"
 		Ukrainian:"Закінчилася одна з наших угод з [nation]"
 	}
@@ -761,8 +764,8 @@
 		Italian:"Un nostro accordo con [nation] è stato interrotto."
 		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
 		Russian:"Торговая сделка с [nation] была завершена досрочно"
-		Simplified_Chinese:"我们与[nation]的贸易已被削减"
-		Traditional_Chinese:"我们与[nation]的贸易已被消减"
+		Simplified_Chinese:"我们与[nation]的一项贸易已被削减"
+		Traditional_Chinese:"我們與[nation]的一項貿易已被削减"
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] se blíží ke konci"
 		Ukrainian:"Достроково закінчилася одна з наших угод з [nation]"
 	}
@@ -787,13 +790,15 @@
 
 	"We have allied with [nation].": {
 		Italian:"Abbiamo stretto un'alleanza con [nation]."
-		Traditional_Chinese:"我們已和 [nation] 結為同盟"
+		Simplified_Chinese:"我们已和[nation]缔结同盟"
+		Traditional_Chinese:"我們已和[nation]締結同盟"
 		Czech:"Uzavřeli jsme alianci s civilizací [nation]."
 	}
 
 	"We have lost alliance with [nation].": {
 		Italian:"Non siamo più alleati di [nation]."
-		Traditional_Chinese:"我們和 [nation] 不再是同盟關係"
+		Simplified_Chinese:"我们和[nation]不再是同盟关系"
+		Traditional_Chinese:"我們和[nation]不再是同盟關係"
 		Czech:"Ztratili jsme alianci s civilizací [nation]."
 	}
 }
