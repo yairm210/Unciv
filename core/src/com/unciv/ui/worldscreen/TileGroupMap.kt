@@ -56,5 +56,6 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
         setSize(topX - bottomX + padding*2, topY - bottomY + padding*2)
+
     }
 }
