@@ -89,7 +89,7 @@ object GameBasics {
         for (fileName in translationFileNames){
             val file = Gdx.files.internal("jsons/Translations/$fileName.json")
             if(file.exists()) {
-                Translations.add(file.readString())
+                Translations.add(file.readString(Charsets.UTF_8.name()))
             }
         }
     }
