@@ -58,7 +58,7 @@ class TechManager {
             else -> floatArrayOf(1f, 0.05f) // Tiny and Small Size
         }
         techCost *= worldSizeModifier[0]
-        techCost *= 1 + (civInfo.cities.size -1 ) * worldSizeModifier[1]
+        techCost *= 1 + (civInfo.cities.size -1) * worldSizeModifier[1]
         return techCost.toInt()
     }
 
