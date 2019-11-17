@@ -2,6 +2,8 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.Constants
 import com.unciv.UnCivGame
@@ -21,6 +23,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
     private var tempTechsToResearch: ArrayList<String>
+    private var lines=ArrayList<Image>()
 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = GameBasics.Technologies.keys
@@ -61,7 +64,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
 
         // Create tech table (row by row)
         for (i in 0..9) {
-            topTable.row().pad(5f)
+            topTable.row().pad(5f).padRight(40f)
 
             for (j in techMatrix.indices) {
                 val tech = techMatrix[j][i]
@@ -119,7 +122,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
                 tempTechsToResearch.firstOrNull() == techName && !isFreeTechPick -> currentTechColor
                 researchableTechs.contains(techName) && !civTech.isResearched(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
-                else -> Color.BLACK
+                else -> Color.GRAY
             }
 
             var text = techName.tr()
@@ -136,6 +139,42 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
                 text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
 
             techButton.text.setText(text)
+        }
+
+
+        addConnectingLines()
+    }
+
+    private fun addConnectingLines() {
+        topTable.pack() // Needed for the lines to work!
+        for (line in lines) line.remove()
+        lines.clear()
+
+        for (tech in GameBasics.Technologies.values) {
+            val techButton = techNameToButton[tech.name]!!
+            for (prerequisite in tech.prerequisites) {
+                val prerequisiteButton = techNameToButton[prerequisite]!!
+                val techButtonCoords = Vector2(0f, techButton.height / 2)
+                techButton.localToStageCoordinates(techButtonCoords)
+                topTable.stageToLocalCoordinates(techButtonCoords)
+
+                val prerequisiteCoords = Vector2(prerequisiteButton.width, prerequisiteButton.height / 2)
+                prerequisiteButton.localToStageCoordinates(prerequisiteCoords)
+                topTable.stageToLocalCoordinates(prerequisiteCoords)
+
+                val line = ImageGetter.getLine(techButtonCoords.x, techButtonCoords.y,
+                        prerequisiteCoords.x, prerequisiteCoords.y, 2f)
+
+                val lineColor = when {
+                    civTech.isResearched(tech.name) && tech.name != Constants.futureTech -> researchedTechColor
+                    civTech.isResearched(prerequisite) -> researchableTechColor
+                    else -> Color.GRAY
+                }
+                line.color = lineColor
+
+                topTable.addActor(line)
+                lines.add(line)
+            }
         }
     }
 
