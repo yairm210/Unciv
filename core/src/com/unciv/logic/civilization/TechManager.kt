@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
@@ -44,7 +45,20 @@ class TechManager {
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
-        techCost *= 1 + (civInfo.cities.size -1 ) * 0.02f // each city increases tech cost by 2%, as per https://civilization.fandom.com/wiki/Science_(Civ5)
+        var techsResearchedKnownCivs = 0
+        civInfo.getKnownCivs().filter { it.isMajorCiv() }.forEach {
+            if (it.tech.isResearched(techName)) techsResearchedKnownCivs++
+        }
+        val undefeatedCivs= UnCivGame.Current.gameInfo.civilizations.filter { it.isMajorCiv() && !it.isDefeated() }.size
+        techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs * 0.3f
+        val worldSizeModifier = when(civInfo.gameInfo.gameParameters.mapRadius) {
+            20 -> floatArrayOf(1.1f, 0.05f) // Medium Size
+            30 -> floatArrayOf(1.2f, 0.03f) // Large Size
+            40 -> floatArrayOf(1.3f, 0.02f) // Huge Size
+            else -> floatArrayOf(1f, 0.05f) // Tiny and Small Size
+        }
+        techCost *= worldSizeModifier[0]
+        techCost *= 1 + (civInfo.cities.size -1 ) * worldSizeModifier[1]
         return techCost.toInt()
     }
 
