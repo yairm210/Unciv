@@ -45,11 +45,8 @@ class TechManager {
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
-        var techsResearchedKnownCivs = 0
-        civInfo.getKnownCivs().filter { it.isMajorCiv() }.forEach {
-            if (it.tech.isResearched(techName)) techsResearchedKnownCivs++
-        }
-        val undefeatedCivs= UnCivGame.Current.gameInfo.civilizations.filter { it.isMajorCiv() && !it.isDefeated() }.size
+        val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
+        val undefeatedCivs = UnCivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs * 0.3f
         val worldSizeModifier = when(civInfo.gameInfo.gameParameters.mapRadius) {
             20 -> floatArrayOf(1.1f, 0.05f) // Medium Size
