@@ -11,17 +11,20 @@ import java.io.File;
 class DesktopLauncher {
 	public static void main (String[] arg) {
 
-		if(new File("../Images").exists()) { // So we don't run this from within a fat JAR
+		if (new File("../Images").exists()) { // So we don't run this from within a fat JAR
 			TexturePacker.Settings settings = new TexturePacker.Settings();
-			settings.maxWidth = 2500;
-			settings.maxHeight = 2500;
-			settings.combineSubdirectories=true;
-			settings.pot=false;
-			settings.fast=true;
+			// Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
+			// don't support non-power-of-two texture sizes - kudos @yuroller!
+			// https://github.com/yairm210/UnCiv/issues/1340
+			settings.maxWidth = 2048;
+			settings.maxHeight = 2048;
+			settings.combineSubdirectories = true;
+			settings.pot = true;
+			settings.fast = true;
 
 			// This is so they don't look all pixelated
 			settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
-			settings.filterMin =  Texture.TextureFilter.MipMapLinearLinear;
+			settings.filterMin = Texture.TextureFilter.MipMapLinearLinear;
 			TexturePacker.process(settings, "../Images", ".", "game");
 		}
 
