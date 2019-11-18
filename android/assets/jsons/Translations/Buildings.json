@@ -367,6 +367,7 @@
 		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
 		Russian:"+1 Золото от обрабатываемых водных клеток вокруг города"
 		Czech:"+1 zlata za každé pole s vodou v tomto městě"
+		German:"+1 für bewirtschaftete Wasserfelder der Stadt"
 }
 
 	"Temple":{
@@ -525,7 +526,7 @@
 	"+1 food from Ocean and Coast tiles":{
 		Italian:"+1 Cibo da caselle Oceano e costiere"
 		Romanian:"+1 hrană din celule ocean și de țărm"
-		German:"+1 Nahrung von Ozean und Küsten Feldern"
+		German:"+1 Nahrung von Ozean- und Küstenfeldern"
 		French:"+1 nourriture des cases océans et côtes"
 		Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
 		Traditional_Chinese:"每個海濱地區和海洋地區+1食物"
@@ -922,7 +923,7 @@
 		Simplified_Chinese:"铸币厂"
 		Traditional_Chinese:"鑄幣廠"
 		Portuguese:"Casa da moeda"
-		German:"Prägerei"
+		German:"Prägeanstalt"
 		Polish:"Mennica"
 		Czech:"Mincovna"
 }
@@ -1002,6 +1003,7 @@
 		Polish:"Wielki Mur Chiński"
 		Russian:"Великая стена"
 		Czech:"Velká čínská zeď"
+		German:"die Große Mauer"
 }
 
 	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
@@ -1021,6 +1023,7 @@
 		Polish:"Każda lądowa jednostka wroga musi zużyć dodatkowy 1 punkt ruchu by wejść na twoje terytorium (przestarzały po odkryciu dynamitu)"
 		Russian:"Вражеские наземные юниты должны тратить дополнительное очко передвижения на вашей территории (устаревает при открытии Динамита)"
 		Czech:"Nepřátelské pozemní jednotky spotřebují 1 extra bod pohybu uvnitř našeho území (do vynalezení dynamitu)"
+		German:"Feindliche Landeinheiten müssen 1 extra Bewegungspunkt innerhalb deines Territoriums ausgeben (veraltet durch Dynamit)"
 }
 
 	"Workshop":{
@@ -1045,6 +1048,7 @@
 		Simplified_Chinese:"长屋"
 		Traditional_Chinese:"長屋"
 		Czech:"Dlouhý dům"
+		German:"Langhaus"
 }
 
 	"+1 Production from each worked Forest tile":{
@@ -1055,6 +1059,7 @@
 		Simplified_Chinese:"每个工作的森林地块+1产能"
 		Traditional_Chinese:"每個工作的森林地區+1產能"
 		Czech:"+1 produkce pro každého dělníka na políčku s lesem"
+		German:"+1 Produktion von jedem bewirtschafteten Waldfeld"
 }
 
 	"Forge":{
@@ -1132,7 +1137,7 @@
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
-		German:"Dschungel produziert +2 Wissenschaft"
+		German:"+2 Wissenschaft von jedem bewirtschafteten Dschungelfeld"
 		Dutch:"Oerwouden leveren +2 Wetenschap"
 		Spanish:"Las selvas proporcionan +2 ciencia"
 		Simplified_Chinese:"每个工作的丛林地块+2科研"
@@ -1186,6 +1191,7 @@
 		Traditional_Chinese:"莫臥兒城塞"
 		Russian:"Красный Форт"
 		Czech:"Mughalská pevnost"
+		German:"Fort Mughal"
 }
 
 	"Alhambra":{
@@ -1288,7 +1294,7 @@
 		Simplified_Chinese:"免费的大科学家出现"
 		Traditional_Chinese:"免費的大科學家出現"
 		Portuguese:"Aparece um Grande Cientista grátis"
-		German:"Ein kostenloser Großer Wissenschaftler erscheint"
+		German:"Eine kostenlose Große Wissenschaftlerin erscheint"
 		Polish:"Pojawia się darmowy Wielki Naukowiec"
 		Russian:"Появляется бесплатный Великий Учёный"
 		Czech:"Získáme Velkého Vědce zdarma"
@@ -1359,7 +1365,7 @@
 		Simplified_Chinese:"西斯廷教堂"
 		Traditional_Chinese:"西斯廷教堂"
 		Portuguese:" Capela Sistina"
-		German:"Sistinische Kapelle"
+		German:"Sixtinische Kapelle"
 		Polish:"Kaplica Sykstyńska"
 		Czech:"Sixtinská kaple"
 }
@@ -1410,6 +1416,7 @@
 		Polish:"Hanza"
 		Russian:"Ганзея"
 		Czech:"Hanza"
+		German:"Hanse"
 }
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
@@ -1420,6 +1427,7 @@
 		Traditional_Chinese:"每調通往城邦的貿易路線+5%產能"
 		Russian:"+5% Производство за каждый торговый маршрут с городом-государством"
 		Czech:"+5% produkce pro každou obchodní stezku s hlavním městem říše"
+		German:"+5% Produktion für jeden Handelsweg mit einem Stadtstaat innerhalb des Imperiums"
 }
 
 	"Satrap's Court":{	//Persian unique
@@ -1430,6 +1438,7 @@
 		Traditional_Chinese:"總督府"
 		Czech:"Satrapův dvůr"
 		Russian:"Двор сатрапа"
+		German:"Satraps Gerichtshaus"
 }
 
 	"Forbidden Palace":{
@@ -1460,7 +1469,7 @@
 		Russian:"Снижает недовольство от населения на 10%"
 		French:"Le mécontentement de la population a diminué de 10%"
 		Romanian:"Nefericirea de la populație a scăzut cu 10%"
-		German:"Unzufriedenheit durch Bevölkerung um 10% verringert"
+		German:"Unzufriedenheit der Bevölkerung um 10% verringert"
 		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
 		Spanish:"Infelicidad de la población reducida 10%"
 		Simplified_Chinese:"来自人口的不满-10%"
@@ -1527,6 +1536,7 @@
 		Polish:"Wybierz darmowego Wielkiego Człowieka"
 		Russian:"Выбор великого человека"
 		Czech:"Vyberme si Velkou Osobnost zdarma"
+		German:"Wähle eine kostenlose große Persönlichkeit"
 }
 
 	"Get ":{
@@ -1545,6 +1555,7 @@
 		Polish:"Zamek Himeji"
 		Russian:"Замок Химэдзи"
 		Czech:"Hrad Himedži"
+		German:"Schloss Himeji"
 }
 
 	"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo":{
@@ -1564,6 +1575,7 @@
 		Polish:"+15% do siły ataku jednostek walczących na przyjaznym terytorium"
 		Russian:"+15% к силе атаки юнитов, сражающихся на дружественной территории"
 		Czech:"+15% bojové síly pro jednotky bojující v přátelském území"
+		German:"+15% Kampfstärke für Einheiten, die in einem alliierten Gebiet kämpfen"
 }
 
 	"Taj Mahal":{
@@ -1627,6 +1639,7 @@
 		Simplified_Chinese:"城市不能位于山脉"
 		Traditional_Chinese:"城市不能位於山脈"
 		Czech:"Nesmí být na kopci"
+		German:"Darf sich nicht auf einem Hügel befinden"
 }
 
 	"Museum":{
@@ -1652,7 +1665,7 @@
 		Simplified_Chinese:"冬宫"
 		Traditional_Chinese:"冬宮"
 		Portuguese:"Eremitério"
-		German:"Eremitage"
+		German:"Einsiedelei"
 		Polish:"Ermitaż"
 		Czech:"Ermitáž"
 }
@@ -1690,7 +1703,7 @@
 		Simplified_Chinese:"免费的大艺术家出现"
 		Traditional_Chinese:"免費的大藝術家出現"
 		Portuguese:"Aparece um Grande Artista grátis"
-		German:"Kostenloser Großer Künstler erscheint"
+		German:"Kostenlose Große Künstlerin erscheint"
 		Polish:"Pojawił się darmowy Wielki Artysta"
 		Czech:"Získáme Velkéhu Umělce zdarma"
 }
@@ -1717,7 +1730,7 @@
 		Simplified_Chinese:"所在城市每个已开发的海洋资源+1产能和金钱"
 		Traditional_Chinese:"所在城市每個已開發的海洋資源+1產能和金錢"
 		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
-		German:"+1 Produktion und Gold von allen Meeresressourcen die von der Stadt bewirtschaftet werden"
+		German:"+1 Produktion und Gold von allen Meeresressourcen, die von der Stadt bewirtschaftet werden"
 		Polish:"+1 do produkcji i złota ze wszystkich surowców morskich wydobywanych w mieście"
 		Russian:"+1 Производство и Золото от всех обрабатываемых морских клеток вокруг города"
 		Czech:"+1 produkce Zlata a všech mořských zdrojů v tomto městě"
@@ -1816,6 +1829,7 @@
 		Polish:"Big Ben"
 		Russian:"Биг Бен"
 		Czech:"Big Ben"
+		German:"Big Ben"
 }
 
 	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
@@ -1835,6 +1849,7 @@
 		Polish:"-15% do ceny budynków i jednostek kupowanych w miastach"
 		Russian:"-15% к стоимости покупки в городах"
 		Czech:"-15% ceny při nákupu věcí ve městech"
+		German:"-15% auf Einkäufe innerhalb der Stadt"
 }
 
 	"Cristo Redentor":{
@@ -1904,6 +1919,7 @@
 		Polish:"+25% skuteczności budowli obronnych w miastach"
 		Russian:"Защитные сооружения во всех городах на 25% эффективнее"
 		Czech:"Obranné budovy ve všech městech budou o 25% účinnější"
+		German:"Defensive Gebäude in der Stadt sind 25% effektiver"
 }
 
 	"Neuschwanstein":{
@@ -1933,6 +1949,7 @@
 		Polish:"+1 do zadowolenia, +2 do kultury i +3 do złota z każdego zamku"
 		Russian:"+1 Счастье, +2 Культура и +3 Золото от каждого замка"
 		Czech:"+1 Spokojenost +2 Kulturní body a +3 Zlata za každý Hrad"
+		German:"+1 Zufriedenheit, +2 Kultur und +3 Gold für jedes Schloss"
 }
 
 	"Military Academy":{
@@ -1955,6 +1972,7 @@
 		Czech:"Brandenburgská brána"
 		Simplified_Chinese:"勃兰登堡门"
 		Traditional_Chinese:"勃蘭登堡門"
+		German:"Brandenburger Tor"
 	}
 	
 	"Free Great General appears near the Capital":{
@@ -1963,6 +1981,7 @@
 		Simplified_Chinese:"免费的大軍事家出现在首都附近"
         Traditional_Chinese:"免費的大軍事家出現在首都附近"
 		Czech:"Velký Generál zdarma se objevil poblíž hlavního města"
+		German:"Kostenloser neuer General erscheint nahe der Hauptstadt"
 	}
 	
 	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
@@ -2047,7 +2066,7 @@
 
 	"+1 Production from specialists":{
 		Italian:"+1 Produzione dagli Specialisti"
-		German:"+1 Produktion von Spezialisten"
+		German:"+1 Produktion von SpezialistInnen"
 		French:"+1 Production par spécialiste"
 		Simplified_Chinese:"每个专业人员+1产能"
 		Traditional_Chinese:"每個專業人員+1產能"
@@ -2149,6 +2168,8 @@
 		Polish:"Musi być przy górze"
 		Russian:"Должно быть построено рядом с горой"
 		Czech:"Musí být vedle hor"
+		Spanish:"Debe estar próximo a una montaña"
+		German:"Muss an einen Berg grenzen"
 }
 
 	"Sydney Opera House":{
@@ -2189,7 +2210,7 @@
 
 	"+1 population in each city":{
 		Italian:"+1 Popolazione in ogni città"
-		German:"+1 Einwohner in jeder Stadt"
+		German:"+1 EinwohnerIn in jeder Stadt"
 		French:"+1 population dans chaque villes"
 		Simplified_Chinese:"每座城市+1人口"
 		Traditional_Chinese:"每座城市+1人口"
@@ -2351,7 +2372,7 @@
 
 	"2 free great scientists appear":{
 		Italian:"Appaiono 2 grandi scenziati gratuiti"
-		German:"2 kostenlose Große Wissenschaftler erscheinen"
+		German:"2 kostenlose Große WissenschaftlerInnen erscheinen"
 		French:"2 scientifiques illustres apparaissent"
 		Simplified_Chinese:"2个免费的大科学家出现"
 		Traditional_Chinese:"2個免費的大科學家出現"
@@ -2440,6 +2461,7 @@
 		Polish:"[buildingName] musi być wzniesiony w mieście"
 		Russian:"Требует постройки [buildingName] в городе"
 		Czech:"Nejprve musíte vybodovat [buildingName] ve městě"
+		German:"Benötigt den Bau von [buildingName]"
 }
 
 	"Requires [buildingName] to be built in all cities":{
@@ -2451,6 +2473,7 @@
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует постройки [buildingName] во всех городах"
 		Czech:"Vyžaduje vybudování [buildingName] ve všech městech"
+		German:"Benötigt den Bau von [buildingName] in allen Städten"
 }
 
 	"Provides a free [buildingName] in the city":{
@@ -2462,6 +2485,7 @@
 		Polish:"Zapewnia darmowy budynek [buildingName] w mieście"
 		Russian:"Даёт бесплатный [buildingName] в городе"
 		Czech:"Poskytuje zdarma budovu [buildingName] ve městě"
+		German:"Stellt das Gebäude [buildingName] kostenlos bereit"
 }
 
 	"Requires worked [resource] near city":{
@@ -2473,6 +2497,7 @@
 		Polish:"Wymaga w mieście surowca [resource]"
 		Russian:"Требует добычи [resource] в городе"
 		Czech:"Vyžaduje zdroj suroviny [resource] na území města"
+		German:"Benötigte eine Bewirtschaftung von [resource] in der Nähe der Stadt"
 }
 
 	"Wonder is being built elsewhere":{
@@ -2484,6 +2509,7 @@
 		Polish:"Cud jest już budowany gdzie indziej"
 		Russian:"Чудо света строится где-то ещё"
 		Czech:"Div světa již stavíte v jiném městě"
+		German:"Das Wunder wird woanders gebaut"
 }
 
 	"Requires a [buildingName] in all cities":{
@@ -2495,6 +2521,7 @@
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 		Russian:"Требует [buildingName] во всех городах"
 		Czech:"Vyžaduje: [buildingName] ve všech městech"
+		German:"Benötigt das Gebäude [buildingName] in allen Städten"
 }
 
 	"Requires a [buildingName] in this city":{
@@ -2506,6 +2533,7 @@
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
 		Russian:"Требует [buildingName] в городе"
 		Czech:"Vyžaduje: [buildingName] v tomto městě"
+		German:"Benötigt das Gebäude [buildingName] in dieser Stadt" 
 }
 
 	"Requires [resource]":{
@@ -2517,6 +2545,7 @@
 		Polish:"Wymaga surowca [resource]"
 		Russian:"Требует [resource]"
 		Czech:"Vyžaduje surovinu [resource]"
+		German:"Benötigt [resource]"
 }
 
 	"Required tech: [requiredTech]":{
@@ -2528,6 +2557,7 @@
 		Polish:"Wymaga odkrycia technologii [requiredTech]"
 		Russian:"Требуется технология: [requiredTech]"
 		Czech:"Vyžaduje technologii: [requiredTech]"
+		German:"Benötigt Technologie: [requiredTech]"
 }
 
 }
