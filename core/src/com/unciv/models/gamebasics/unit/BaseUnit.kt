@@ -135,7 +135,7 @@ class BaseUnit : INamed, IConstruction {
             return "Requires Manhattan Project"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
-        if (name == Constants.settler && civInfo.isPlayerOneCityChallenger()) return "No settler for players in One City Challenge"
+        if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
     }
 

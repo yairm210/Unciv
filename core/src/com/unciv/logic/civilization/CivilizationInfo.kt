@@ -128,9 +128,8 @@ class CivilizationInfo {
 
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
-    fun isPlayerOneCityChallenger() = (
-            playerType==PlayerType.Human && 
-            !cities.isEmpty() &&
+    fun isOneCityChallenger() = (
+            playerType==PlayerType.Human &&
             gameInfo.gameParameters.oneCityChallenge)
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
@@ -359,8 +358,9 @@ class CivilizationInfo {
 
         for(tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
-            if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade,offeringCiv,this)) {
+            if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade,this, offeringCiv)) {
                 tradeRequests.remove(tradeRequest)
+                // Yes, this is the right direction. I checked.
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", Color.GOLD)
             }
         }

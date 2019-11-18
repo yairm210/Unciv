@@ -321,6 +321,7 @@ class CityInfo {
         if(!civInfo.policies.isAdopted("Police State")) {
             expansion.cultureStored = 0
             expansion.reset()
+            reassignWorkers()
         }
 
         isPuppet=false

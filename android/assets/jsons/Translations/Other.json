@@ -989,8 +989,8 @@
 		German:"Bauwerk auswählen"
 		Dutch:"Bouwwerk kiezen"
 		Spanish:"Elige la construcción"
-		Simplified_Chinese:"选择建筑"
-		Traditional_Chinese:"選擇建築"
+		Simplified_Chinese:"选择建造/组建项目"
+		Traditional_Chinese:"選擇建造/訓練項目"
 		Portuguese:"Escolher construção"
 		Japanese:"ピック建設"
 		Czech:"Zvolte konstrukci"
@@ -2602,13 +2602,15 @@
 
 	"Destroy":{
 		Italian:"Distruggi"
+		Simplified_Chinese:"摧毁"
 		Traditional_Chinese:"摧毀"
 		Czech:"Zničit"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
 		Italian:"Questa opzione ti consente di radere immediatamente al suolo la città"
-		Traditional_Chinese:"摧毀一座城市會將城市夷為平地"
+		Simplified_Chinese:"摧毁一座城市会將城市夷为平地。"
+		Traditional_Chinese:"摧毀一座城市會將城市夷為平地。"
 		Czech:"Zničení města okamžitě srovná město se zemí."
 }
 
@@ -2878,7 +2880,7 @@
 	"Version":{
 		Italian:"Versione"
 		Russian:"Версия"
-		Simplified_Chinese:"版本号"
+		Simplified_Chinese:"版本"
 		Traditional_Chinese:"版本"
 		French:"Version"
 		Portuguese:"Versão"

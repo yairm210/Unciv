@@ -114,8 +114,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size)).top()
-        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).top()
+        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size)).fillY()
+        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).fillY()
         return generalTable
     }
 
@@ -126,11 +126,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add(civ.civName.toLabel(civ.nation.getInnerColor())).row()
         table.addSeparator()
         for(offer in offersList){
-            val offerText = offer.getOfferText()
+            var offerText = offer.getOfferText()
+            if(!offerText.contains("\n")) offerText+="\n"
             table.add(offerText.toLabel(civ.nation.getInnerColor())).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)
-            table.add("".toLabel()).row() // we want both sides of the general table to have the same number of rows
+            table.add("\n".toLabel()).row() // we want both sides of the general table to have the same number of rows
         return table
     }
 

@@ -712,19 +712,22 @@
 
 	"Reach 30 for friendship.":{
 		Italian:"Stringi un'amicizia superando il limite minimo di 30 Influenza."
-		Traditional_Chinese:"到達30以建立友誼"
+		Simplified_Chinese:"影响力到达30以建立友谊"
+		Traditional_Chinese:"影響力到達30以建立友誼"
 		Czech:"Získejte vliv 30 a více pro dosažení přátelství."
 }
 
 	"Reach highest influence above 60 for alliance.":{
 		Italian:"Stringi un'alleanza superando 60 Influenza al di sopra di tutti."
-		Traditional_Chinese:"到達60以成為友邦同盟"
+		Simplified_Chinese:"影响力≥60且高于其他文明以成为友邦同盟"
+		Traditional_Chinese:"影響力≥60且高於其他文明以成為友邦同盟"
 		Czech:"Získejte vliv 60 a více pro dosažení aliance."
 }
 
 	"Ally: ":{
 		Italian:"Alleati: "
-		Traditional_Chinese:"同盟: "
+		Simplified_Chinese:"同盟："
+		Traditional_Chinese:"同盟："
 		Czech:"Aliance: "
 }
 
@@ -783,7 +786,7 @@
 		French:"Nos articles"
 		Romanian:"Articolele noastre"
 		Spanish:"Nuestros ítems"
-		Simplified_Chinese:"我们的交易项"
+		Simplified_Chinese:"我们的贸易项目"
 		Traditional_Chinese:"我們的貿易項目"
 		Portuguese:"Nossos itens/recursos"
 		German:"Unsere Gegenstände"
@@ -822,8 +825,8 @@
 		French:"Les articles de [otherCiv]"
 		Romanian:"Articolele de la [otherCiv]"
 		Spanish:"Ítems de [otherCiv]"
-		Simplified_Chinese:"[otherCiv]的交易项"
-		Traditional_Chinese:"[otherCiv]的交易項目"
+		Simplified_Chinese:"[otherCiv]的贸易项目"
+		Traditional_Chinese:"[otherCiv]的貿易項目"
 		Portuguese:"Itens da(o/e) [otherCiv]"
 		German:"[otherCiv]s Gegenstände",
 		Czech:"[otherCiv] obchodní artikly"
@@ -897,7 +900,7 @@
 		French:"Il n'y a rien a échangé" //if it's in case of empty trade it's accurate
 		Romanian:"Nu e nimic pe masă"
 		Spanish:"¿Estas de broma?"
-		Simplified_Chinese:"未选中任何交易项"
+		Simplified_Chinese:"未选择任何交易"
 		Traditional_Chinese:"未選擇任何交易"
 		Portuguese:"Não ha nada á mesa"
 		German:"Der Verhandlungstisch ist leer"
@@ -1650,19 +1653,24 @@
 		French:"Siam"
 		Portuguese:"Siam" //not sure but will do
 		Czech:"Siam"
+		Simplified_Chinese:"暹罗"
+		Traditional_Chinese:"暹羅"
 }
 
 	"Ramkhamhaeng":{
 		Italian:"Ramkhamhaeng" //Same as in Italian
 		Czech: "Ram Khamhaeng"
+		Simplified_Chinese:"兰甘亨"
+		Traditional_Chinese:"蘭甘亨"
 }
 
-	"Food and Culture from Friendly City-States increased by 50%.":{
+	"Food and Culture from Friendly City-States are increased by 50%":{
 		Italian:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche o alleate."
 		Portuguese:"Comida e cultura de cidades-estado amigas aumentada em 50%."
 		French:"La Nourriture et la Culture fournit par les cités-états sont augmentées de 50%"
 		Czech:"Jídlo a Kulturní body z spřátelených Městských států se zvednou o 50%."
-		Traditional_Chinese:"來自友好城邦的食物和文化增加50%"
+		Simplified_Chinese:"友好城邦提供的食物和文化增加50%"
+		Traditional_Chinese:"友好城邦提供的食物和文化增加50%"
 }
 
 	/*

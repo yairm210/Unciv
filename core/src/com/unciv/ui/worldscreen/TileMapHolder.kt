@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -28,11 +25,20 @@ import com.unciv.ui.worldscreen.unit.UnitContextMenu
 import kotlin.concurrent.thread
 import kotlin.math.sqrt
 
+
+
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
     var unitActionOverlay :Actor?=null
+
+    init{
+        // Remove the existing inputListener
+        // which defines that mouse scroll = vertical movement
+        val zoomListener = listeners.last { it is InputListener && it !in captureListeners }
+        removeListener (zoomListener)
+    }
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
@@ -45,20 +51,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
-        // Memory profiling reveals that creating an GestureDetector inside the ActorGestureListener
-        // for every tile is VERY memory-intensive
         for(tileGroup in tileGroups.values){
-            tileGroup.addListener (object: ActorGestureListener() {
-                override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
-                    onTileClicked(tileGroup.tileInfo)
-                }
-                override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
-                    if(!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
-                    return onTileLongClicked(tileGroup.tileInfo)
-                }
-
-            })
-
             tileGroup.cityButtonLayerGroup.onClick("") {
                 onTileClicked(tileGroup.tileInfo)
             }
@@ -69,11 +62,28 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         setSize(worldScreen.stage.width*2, worldScreen.stage.height*2)
         setOrigin(width/2,height/2)
         center(worldScreen.stage)
-        addZoomListener()
+
+        addGestureListener()
+        
+        addListener(object :InputListener(){
+            override fun scrolled(event: InputEvent?, x: Float, y: Float, amount: Int): Boolean {
+                if(amount>0) zoom(scaleX*0.8f)
+                else zoom(scaleX/0.8f)
+                return false
+            }
+        })
+
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
-    private fun addZoomListener() {
+    fun zoom(zoomScale:Float){
+        if (zoomScale < 0.5f) return
+        setScale(zoomScale)
+        for (tilegroup in tileGroups.values.filter { it.cityButton != null })
+            tilegroup.cityButton!!.setScale(1 / zoomScale)
+    }
+
+    private fun addGestureListener() {
         addListener(object : ActorGestureListener() {
             var lastScale = 1f
             var lastInitialDistance = 0f
@@ -86,10 +96,40 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     lastScale = scaleX
                 }
                 val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-                if (scale < 0.5f) return
-                setScale(scale)
-                for (tilegroup in tileGroups.values.filter { it.cityButton != null })
-                    tilegroup.cityButton!!.setScale(1 / scale)
+                zoom(scale)
+            }
+
+
+            // Memory profiling reveals that creating an GestureDetector inside the ActorGestureListener
+            // for every tile is VERY memory-intensive.
+            // Instead, we now create a single GestureListener, and in it check which tileGroup was hit.
+
+            fun toTileGroup(stageCoordinatesVector:Vector2): WorldTileGroup? {
+                for(tileGroup in tileGroups.values) {
+                    val point = stageCoordinatesVector.cpy()
+                    tileGroup.stageToLocalCoordinates(point)
+                    val hit = tileGroup.hit(point.x, point.y, false)
+                    if (hit != null) return tileGroup
+                }
+                return null
+            }
+
+            override fun tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int) {
+                val tileGroup = toTileGroup(Vector2(event.stageX,event.stageY))
+                if(tileGroup!=null) onTileClicked(tileGroup.tileInfo)
+            }
+
+            override fun longPress(actor: Actor, x: Float, y: Float): Boolean {
+                if(!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
+
+                // x and y are in local coordinates, so convert to stage coordinates
+                // (we're basically undoing what the ActorGestureListener did)
+                val coords = Vector2(x,y)
+                actor.localToStageCoordinates(coords)
+                val tileGroup = toTileGroup(coords)
+                if(tileGroup!=null)
+                    return onTileLongClicked(tileGroup.tileInfo)
+                return false
             }
 
         })

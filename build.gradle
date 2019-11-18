@@ -18,7 +18,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:3.5.1'
+        classpath 'com.android.tools.build:gradle:3.5.2'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
     }
 }
@@ -29,7 +29,7 @@ allprojects {
 
     version = '1.0.1'
     ext {
-        appName = "unciv-game"
+        appName = "Unciv"
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.1'
         box2DLightsVersion = '1.4'

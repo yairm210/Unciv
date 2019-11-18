@@ -29,6 +29,7 @@ task dist(type: Jar) {
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
     from {configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
     from files(project.assetsDir)
+    archiveFileName  = "${appName}.jar"
  
     manifest {
         attributes 'Main-Class': project.mainClassName
