@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.saves.Gzip
 
-class MapSaver(){
+class MapSaver {
     fun json() = GameSaver().json()
     private val mapsFolder = "maps"
 

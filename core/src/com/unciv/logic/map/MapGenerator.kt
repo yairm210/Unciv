@@ -25,7 +25,7 @@ class MapType {
     }
 }
 
-class MapGenerator() {
+class MapGenerator {
 
     fun generateMap(gameParameters: GameParameters): TileMap {
         val mapRadius = gameParameters.mapRadius
@@ -269,7 +269,7 @@ class MapGenerator() {
     }
 }
 
-class MapLandmassGenerator(){
+class MapLandmassGenerator {
 
     fun generateLandCellularAutomata(tileMap: TileMap, mapRadius: Int, mapType: String) {
 

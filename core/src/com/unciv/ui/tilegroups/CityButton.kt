@@ -101,7 +101,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
-            puppetImage.setColor(secondaryColor)
+            puppetImage.color = secondaryColor
             iconTable.add(puppetImage).size(20f).pad(2f).padLeft(5f)
         }
 
