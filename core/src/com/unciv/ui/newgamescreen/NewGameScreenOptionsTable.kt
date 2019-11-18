@@ -28,6 +28,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
         addOneCityChallengeCheckbox()
+        addNuclearWeaponCheckbox()
         addNoRuinsCheckbox()
 
         addIsOnlineMultiplayerCheckbox()
@@ -56,6 +57,18 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         })
         add(oneCityChallengeCheckbox).colspan(2).row()
     }
+
+    private fun addNuclearWeaponCheckbox() {
+        val nuclearWeaponCheckbox = CheckBox("Enable nuclear weapon".tr(), CameraStageBaseScreen.skin)
+        nuclearWeaponCheckbox.isChecked = newGameParameters.nuclearWeaponEnabled
+        nuclearWeaponCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.nuclearWeaponEnabled = nuclearWeaponCheckbox.isChecked
+            }
+        })
+        add(nuclearWeaponCheckbox).colspan(2).row()
+    }
+
     private fun addNoRuinsCheckbox() {
         val noRuinsCheckbox = CheckBox("No ancient ruins".tr(), CameraStageBaseScreen.skin)
         noRuinsCheckbox.isChecked = newGameParameters.noRuins

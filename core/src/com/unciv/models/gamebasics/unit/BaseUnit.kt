@@ -131,6 +131,8 @@ class BaseUnit : INamed, IConstruction {
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponEnabled
+                && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
