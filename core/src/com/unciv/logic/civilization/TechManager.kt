@@ -49,7 +49,7 @@ class TechManager {
         val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = UnCivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-        techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs * 0.3f
+        techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         val worldSizeModifier = when(civInfo.gameInfo.gameParameters.mapRadius) {
             20 -> floatArrayOf(1.1f, 0.05f) // Medium Size
