@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 class Language(val language:String){
     val percentComplete:Int
     init{
-        val availableTranslations = GameBasics.Translations.count() { it.value.containsKey(language) }
+        val availableTranslations = GameBasics.Translations.count { it.value.containsKey(language) }
         if(language=="English") percentComplete = 100
         else percentComplete = (availableTranslations*100 / GameBasics.Translations.size)
     }

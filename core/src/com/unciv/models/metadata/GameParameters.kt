@@ -17,7 +17,7 @@ class GameParameters { // Default values are the default new game
     var mapType = MapType.pangaea
     var noBarbarians = false
     var oneCityChallenge = false
-    var noRuins = false;
+    var noRuins = false
     var mapFileName: String? = null
     var victoryTypes: ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
     var startingEra = TechEra.Ancient

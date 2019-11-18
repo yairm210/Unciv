@@ -99,7 +99,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val ally = otherCiv.getAllyCiv()
         if (ally != "")
         {
-            diplomacyTable.add(("Ally: ".tr() + ally!!.tr() + " " + "Influence: ".tr()
+            diplomacyTable.add(("Ally: ".tr() + ally.tr() + " " + "Influence: ".tr()
                     + otherCiv.getDiplomacyManager(ally).influence.toString().tr()).toLabel()).row()
         }
         val nextLevelString: String

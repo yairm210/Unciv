@@ -11,7 +11,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 
-class DropBox(){
+class DropBox {
 
     fun dropboxApi(url:String, data:String="",contentType:String="",dropboxApiArg:String=""): InputStream? {
 
@@ -84,7 +84,7 @@ class DropBox(){
 
 }
 
-class OnlineMultiplayer(){
+class OnlineMultiplayer {
     fun getGameLocation(gameId:String) = "/MultiplayerGames/$gameId"
 
     fun tryUploadGame(gameInfo: GameInfo){

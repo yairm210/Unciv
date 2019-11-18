@@ -55,7 +55,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         currentCityLabel.onClick {
             val editCityNamePopup = PopupTable(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
-            textArea.setAlignment(Align.center)
+            textArea.alignment = Align.center
             editCityNamePopup.add(textArea).colspan(2).row()
             editCityNamePopup.addCloseButton()
             editCityNamePopup.addButton("Save".tr()){
