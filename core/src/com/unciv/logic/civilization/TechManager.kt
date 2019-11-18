@@ -63,7 +63,8 @@ class TechManager {
     }
 
     fun currentTechnology(): Technology? {
-        val currentTechnologyName = currentTechnologyName() ?: return null
+        val currentTechnologyName = currentTechnologyName()
+        if (currentTechnologyName == null) return null
         return GameBasics.Technologies[currentTechnologyName]
     }
 
@@ -114,7 +115,8 @@ class TechManager {
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
-        val currentTechnology = currentTechnologyName() ?: return
+        val currentTechnology = currentTechnologyName()
+        if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
