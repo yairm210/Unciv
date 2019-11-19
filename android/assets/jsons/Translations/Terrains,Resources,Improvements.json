@@ -161,6 +161,8 @@
 }
 
 	"Fallout":{
+		Simplified_Chinese:"核辐射"
+		Traditional_Chinese:"核輻射"
 }
 
 	"Oasis":{
@@ -1044,7 +1046,9 @@
 }
 
 	"Remove Fallout":{
-},
+		Simplified_Chinese:"消除核辐射"
+		Traditional_Chinese:"消除核輻射"
+}
 
 	"Ancient ruins":{
 		Italian:"Antiche rovine"
