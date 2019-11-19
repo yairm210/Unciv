@@ -28,9 +28,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
         addOneCityChallengeCheckbox()
-        addNuclearWeaponCheckbox()
         addNoRuinsCheckbox()
-
         addIsOnlineMultiplayerCheckbox()
 
         pack()
@@ -56,18 +54,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
             }
         })
         add(oneCityChallengeCheckbox).colspan(2).row()
-    }
-
-    private fun addNuclearWeaponCheckbox() {
-        add("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr()).colspan(2).row()
-        val nuclearWeaponCheckbox = CheckBox("Enable nuclear weapon".tr(), CameraStageBaseScreen.skin)
-        nuclearWeaponCheckbox.isChecked = newGameParameters.nuclearWeaponEnabled
-        nuclearWeaponCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.nuclearWeaponEnabled = nuclearWeaponCheckbox.isChecked
-            }
-        })
-        add(nuclearWeaponCheckbox).colspan(2).row()
     }
 
     private fun addNoRuinsCheckbox() {
