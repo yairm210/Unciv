@@ -44,23 +44,12 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
 
         val civName = techManager.civInfo.civName
 
-        val techEnabledUnits = GameBasics.Units.values.filter { it.requiredTech == techName }
-        val ourUniqueUnits = techEnabledUnits.filter { it.uniqueTo == civName }
-        val replacedUnits = ourUniqueUnits.map { it.replaces!! }
-        val ourEnabledUnits = techEnabledUnits.filter { it.uniqueTo == null && !replacedUnits.contains(it.name) }
-                .union(ourUniqueUnits)
+        val tech = GameBasics.Technologies[techName]!!
 
-        for (unit in ourEnabledUnits)
+        for (unit in tech.getEnabledUnits(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(30f))
 
-        val techEnabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech == techName }
-        val ourUniqueBuildings = techEnabledBuildings.filter { it.uniqueTo == civName }
-        val replacedBuildings = ourUniqueBuildings.map { it.replaces!! }
-        val ourEnabledBuildings = techEnabledBuildings
-                .filter { it.uniqueTo == null && !replacedBuildings.contains(it.name) }
-                .union(ourUniqueBuildings)
-
-        for (building in ourEnabledBuildings)
+        for (building in tech.getEnabledBuildings(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
 
         for (improvement in GameBasics.TileImprovements.values
@@ -74,7 +63,6 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         for (resource in GameBasics.TileResources.values.filter { it.revealedBy == techName })
             techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, 30f))
 
-        val tech = GameBasics.Technologies[techName]!!
         for (unique in tech.uniques)
             techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star")
                     .apply { color = Color.BLACK }.surroundWithCircle(30f))

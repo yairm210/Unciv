@@ -66,7 +66,7 @@ class Technology {
         return lineList.joinToString("\n") { it.tr() }
     }
 
-    private fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
+    fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
         var enabledBuildings = GameBasics.Buildings.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
