@@ -420,11 +420,11 @@
 		uniqueName:"Furor Teutonicus"
 		unique:"击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%",
 		cities:["柏林","汉堡","慕尼黑","科隆","法兰克福","埃森","多特蒙德","斯图加特","杜塞尔多夫","不来梅",
-			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
-			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
-			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrucken","Krefeld","Pirmasens","Potsdam","Solingen",
-			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
-			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
+			"汉诺威","杜伊斯堡","莱比锡","德累斯顿","波恩","波鸿","比勒菲尔德","卡尔斯鲁厄","盖尔森基兴","威斯巴登",
+			"芒斯特","罗斯托克","开姆尼斯","布伦瑞克","哈雷","门兴格拉德巴赫","基尔","伍珀塔尔","弗莱堡","哈根",
+			"埃尔福特","凯泽斯劳滕","卡塞尔","奥伯豪森","哈姆","萨尔布吕肯","克雷费尔德","皮尔马森斯","波茨坦","佐林根",
+			"奥斯纳布吕克","路德维希港","勒沃库森","奥尔登堡","诺伊斯","米尔海姆","达姆施塔特","黑尔纳","乌兹堡",
+			"雷克林豪森","哥廷根","沃尔夫斯堡","科布伦茨","希尔德斯海姆","埃尔朗根"]
 	},
 	{
 		name:"India",
@@ -588,7 +588,7 @@
 		outerColor:[0,0,255],
 		innerColor:[255,0,0],
 		unique:"所有专业人员和伟人设施+2科研",
-		cities:["首尔","釜山","全州","大邱","平壤","开城","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+		cities:["首尔","釜山","全州","大邱","平壤","开城","水原","光州","江陵","咸兴","原州","蔚山","昌原","安东","公州","海州","清州","木浦","东豆川","巨济","顺天","晋州","尚州","罗先","庆州","忠州","泗川","金堤","安州"]
 	},
 	/*
 	{
@@ -653,7 +653,7 @@
 		outerColor:[204,255,229],
 		innerColor:[0,102,0],
 		unique:"海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位",
-		cities:["伊斯坦布尔","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
+		cities:["伊斯坦布尔","埃迪尔内","安卡拉","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
 	},
 	{
 		name:"Iroquois",
@@ -688,7 +688,7 @@
 		innerColor:[246,205,137],
 		uniqueName:"The Great Warpath"
 		unique:"单位在己方森林和丛林地块上移动时视同在道路上移动，此类地块在研究轮子科技后可建立城市连接",
-		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
+		cities:["奥内达加","奥斯尼卡","格兰德里弗","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
 			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
@@ -725,7 +725,7 @@
 		innerColor:[244,232,54],
 		uniqueName:"Achaemenid Legacy"
 		unique:"黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力",
-		cities:["波斯波利斯","帕萨加迪","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
+		cities:["波斯波利斯","帕萨加迪","苏萨","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
 			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
@@ -766,7 +766,7 @@
 		innerColor:[255,255,78],
 		uniqueName:"Wayfinding"
 		unique:"单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力",
-		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+		cities:["火奴鲁鲁","萨摩亚","汤加","努库希瓦","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
 			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
