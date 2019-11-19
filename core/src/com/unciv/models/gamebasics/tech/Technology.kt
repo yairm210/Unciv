@@ -1,8 +1,11 @@
 package com.unciv.models.gamebasics.tech
 
 import com.unciv.UnCivGame
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.gamebasics.unit.BaseUnit
 import java.util.*
 
 class Technology {
@@ -30,30 +33,22 @@ class Technology {
         }
 
         val viewingCiv = UnCivGame.Current.worldScreen.viewingCiv
-        var enabledUnits = GameBasics.Units.values.filter {
-            it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == viewingCiv.civName)
-        }
-        val replacedUnits = enabledUnits.mapNotNull { it.replaces }
-        enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
+        val enabledUnits = getEnabledUnits(viewingCiv)
         if (enabledUnits.isNotEmpty()) {
             lineList += "{Units enabled}: "
             for (unit in enabledUnits)
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
-        var enabledBuildings = GameBasics.Buildings.values.filter {
-            it.requiredTech == name &&
-                    (it.uniqueTo == null || it.uniqueTo == viewingCiv.civName)
-        }
-        val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
-        enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
+        var enabledBuildings = getEnabledBuildings(viewingCiv)
+
         val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
                 lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
         }
+
         val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
@@ -69,6 +64,35 @@ class Technology {
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 
         return lineList.joinToString("\n") { it.tr() }
+    }
+
+    private fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
+        var enabledBuildings = GameBasics.Buildings.values.filter {
+            it.requiredTech == name &&
+                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
+        }
+        val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
+        enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
+
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponEnabled)
+            enabledBuildings=enabledBuildings.filterNot { it.name=="Manhattan Project" }
+
+        return enabledBuildings
+    }
+
+    fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
+        var enabledUnits = GameBasics.Units.values.filter {
+            it.requiredTech == name &&
+                    (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
+        }
+        val replacedUnits = enabledUnits.mapNotNull { it.replaces }
+        enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
+
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponEnabled)
+            enabledUnits=enabledUnits.filterNot { it.uniques.contains("Requires Manhattan Project") }
+
+
+        return enabledUnits
     }
 
     override fun toString(): String {
