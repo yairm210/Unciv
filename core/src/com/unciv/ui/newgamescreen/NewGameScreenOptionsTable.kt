@@ -59,6 +59,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
     }
 
     private fun addNuclearWeaponCheckbox() {
+        add("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr()).colspan(2).row()
         val nuclearWeaponCheckbox = CheckBox("Enable nuclear weapon".tr(), CameraStageBaseScreen.skin)
         nuclearWeaponCheckbox.isChecked = newGameParameters.nuclearWeaponEnabled
         nuclearWeaponCheckbox.addListener(object : ChangeListener() {
@@ -82,7 +83,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addIsOnlineMultiplayerCheckbox() {
 
-        add("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!".tr()).colspan(2).row()
         val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
         isOnlineMultiplayerCheckbox.isChecked = newGameParameters.isOnlineMultiplayer
         isOnlineMultiplayerCheckbox.addListener(object : ChangeListener() {
