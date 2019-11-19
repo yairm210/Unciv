@@ -104,8 +104,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             // for every tile is VERY memory-intensive.
             // Instead, we now create a single GestureListener, and in it check which tileGroup was hit.
 
-            fun toTileGroup(stageCoordinatesVector:Vector2): WorldTileGroup? {
-                for(tileGroup in tileGroups.values) {
+            fun toTileGroup(stageCoordinatesVector: Vector2): WorldTileGroup? {
+                for (tileGroup in tileGroups.values) {
                     val point = stageCoordinatesVector.cpy()
                     tileGroup.stageToLocalCoordinates(point)
                     val hit = tileGroup.hit(point.x, point.y, false)
@@ -115,19 +115,22 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
             override fun tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int) {
-                val tileGroup = toTileGroup(Vector2(event.stageX,event.stageY))
-                if(tileGroup!=null) onTileClicked(tileGroup.tileInfo)
+                val tileGroup = toTileGroup(Vector2(event.stageX, event.stageY))
+                if (tileGroup != null) onTileClicked(tileGroup.tileInfo)
             }
 
-            override fun longPress(actor: Actor, x: Float, y: Float): Boolean {
-                if(!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
 
+            override fun longPress(actor: Actor, x: Float, y: Float): Boolean {
+                if (!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
+                // otherwise it activates,
+                // since it's been a long time since the touchdown and no touchup has activates
+                if (isPanning || isFlinging) return false
                 // x and y are in local coordinates, so convert to stage coordinates
                 // (we're basically undoing what the ActorGestureListener did)
-                val coords = Vector2(x,y)
+                val coords = Vector2(x, y)
                 actor.localToStageCoordinates(coords)
                 val tileGroup = toTileGroup(coords)
-                if(tileGroup!=null)
+                if (tileGroup != null)
                     return onTileLongClicked(tileGroup.tileInfo)
                 return false
             }
