@@ -203,7 +203,7 @@ public class NativeFont extends BitmapFont {
                 EmojiDate date = this.emojiSet.get(css);
                 appendEmoji(c2 + "", date.path, date.size);
             } else {
-                putGlyph(c2, this.listener.getFontPixmap(txt, this.paint));
+                putGlyph(c2, listener.getFontPixmap(txt, this.paint));
             }
         }
 
@@ -265,7 +265,7 @@ public class NativeFont extends BitmapFont {
 
             for (Glyph glyph : page) {
                 if (glyph != null) {
-                    TextureRegion region = (TextureRegion) getRegions().get(glyph.page);
+                    TextureRegion region = getRegions().get(glyph.page);
                     if (region == null) {
                         throw new IllegalArgumentException("BitmapFont texture region array cannot contain null elements.");
                     }

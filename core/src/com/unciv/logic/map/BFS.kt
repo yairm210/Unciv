@@ -29,7 +29,7 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         for(tileInfo in tilesToCheck){
             for(neighbor in tileInfo.neighbors){
                 if(predicate(neighbor) && !tilesReached.containsKey(neighbor)){
-                    tilesReached[neighbor] = tileInfo;
+                    tilesReached[neighbor] = tileInfo
                     newTilesToCheck.add(neighbor)
                 }
             }
