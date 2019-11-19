@@ -16,7 +16,8 @@ enum class UnitType{
     WaterSubmarine,
 
     Fighter,
-    Bomber;
+    Bomber,
+    Missile;
 
     fun isMelee(): Boolean {
         return this == Melee
@@ -59,5 +60,10 @@ enum class UnitType{
     fun isAirUnit():Boolean{
         return this==Bomber
                 || this==Fighter
+                || this==Missile
+    }
+
+    fun isMissileUnit():Boolean{
+        return this == Missile
     }
 }

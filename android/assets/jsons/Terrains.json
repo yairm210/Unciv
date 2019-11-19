@@ -112,6 +112,16 @@
 		occursOn:["Grassland"]
 	},
 	{
+		name:"Fallout",
+		type:"TerrainFeature",
+		food:-3,
+		production:-3,
+		gold:-3,
+		movementCost:2,
+		unbuildable:true,
+		defenceBonus: -0.15,
+	},
+	{
 		name:"Oasis",
 		type:"TerrainFeature",
 		food:3,

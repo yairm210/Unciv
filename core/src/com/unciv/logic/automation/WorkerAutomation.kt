@@ -176,6 +176,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == Constants.jungle -> "Remove Jungle"
             tile.terrainFeature == Constants.forest && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
             else -> tile.getTileResource().improvement
@@ -188,6 +189,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.containsUnfinishedGreatImprovement() -> null
             tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
