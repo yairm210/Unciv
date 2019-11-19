@@ -41,6 +41,7 @@
 		Russian:"Ожидание других игроков..."
 		Czech:"Čekáme na ostatní hráče..."
 		Ukrainian:"Очікування інших гравців…"
+		German:"Warte auf andere SpielerInnen..."
 }
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -120,6 +121,7 @@
 		French:"tour"
 		Czech:"tah"
 		Ukrainian:"ходів"
+		German:"Runde"
 }
 
 	"Next unit":{
@@ -131,6 +133,7 @@
                 Russian:"Следующий юнит"
 		Czech:"Další jednotka"
 		Ukrainian:"Наступний підрозділ"
+		German:"Nächste Einheit"
 }
 
 	"Pick a policy":{
@@ -142,6 +145,7 @@
 		Russian:"Выбрать институт"
 		Czech:"Vyberme politiku"
 		Ukrainian:"Вибрати політику"
+		German:"Wähle einen Grundsatz"
 }
 
 /////// Unit
@@ -217,6 +221,7 @@
 		Czech:"Vzdálenost"
     		Russian:"Радиус"
     		Ukrainian:"Дальність"
+		German:"Reichweite"
 	}
 
 /////// Unit actions
@@ -362,7 +367,7 @@
 
 	"Moving": { //sample would be appreciated
 		Italian: "In movimento"
-		German: "Bewegen"
+		German: "in Bewegung"
 		French:"En mouvement"
 		Simplified_Chinese:"移动中",
 		Traditional_Chinese:"移動中",
@@ -491,6 +496,7 @@
                 Russian:"Остановить исследование"
 		Czech:"Konec průzkumu"
 		Ukrainian:"Зупинити розвідку"
+		German:"Erkundung stoppen"
 }
 
 	"Pillage":{
@@ -548,6 +554,7 @@
 		Russian:"Создать [improvement]",
 		Czech:"Vybudovat [improvement]"
 		Ukrainian:"Створити [improvement]"
+		German:"Erzeuge [improvement]"
 }
 
 	"Start Golden Age":{
@@ -558,6 +565,7 @@
                 Russian:"Начать золотой век"
 		Czech:"Zahájit Zlatý věk"
 		Ukrainian:"Почати золотий вік"
+		German:"Goldenes Zeitalter starten"
 }
 
 	"Yes":{
@@ -599,6 +607,7 @@
 		Traditional_Chinese:"變更為本城市所屬"
 		Czech:"Získat"
 		Ukrainian:"Отримати"
+		German:"Erwerben"
 }
 
 /////// Stats / Basics ressources
@@ -722,6 +731,7 @@
 		Czech:"Zlatý Věk"
 		Ukrainian:"Золотий вік"
 		Russian:"Золотой век"
+		German:"Goldenes Zeitalter"
 }
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
@@ -732,6 +742,7 @@
 		Traditional_Chinese:"公元前[year]年"
 		Russian:"[year] до н.э."
 		Ukrainian:"до н.е."
+		German:"[year] v. Chr."
 	}
 
 	"[year] AD":{ // Anno Domini
@@ -741,6 +752,7 @@
 		Traditional_Chinese:"公元[year]年"
 		Russian:"[year] н.э."
 		Ukrainian:"після н.е."
+		German:"[year] n. Chr."
 	}
 
 /////// Menu table
@@ -848,6 +860,7 @@
 		Russian:"Сообщество"
 		Czech:"Komunita"
 		Ukrainian:"Громада"
+		German:"Gemeinschaft"
 }
 
 
@@ -954,7 +967,7 @@
 		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золота?"
 		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
-		German:"Möchten Sie [constructionName] für [buildingGoldCost] gold kaufen?"
+		German:"Möchten Sie [constructionName] für [buildingGoldCost] Gold kaufen?"
 		Dutch:"Wilt u [constructionName] kopen voor [buildGoldCost] goud?"
 		Spanish:"¿Te gustaría comprar [constructionName] para [buildingGoldCost] gold?"
 		Simplified_Chinese:"你想花费[buildingGoldCost]金钱购买[constructionName]吗？",
@@ -1006,6 +1019,7 @@
                 Russian:"Выбрать улучшение"
 		Czech:"Vyberte vylepšení"
 		Ukrainian:"Вибрати вдосконалення"
+		German:"Verbesserung auswählen"
 }
 
 	"Provides [resource]":{
@@ -1015,6 +1029,7 @@
 		Czech:"Poskytuje [resource]"
 		Russian:"Обеспечивает [resource]"
 		Ukrainian:"Забезпечити [resource]"
+		German:"Stellt [resource] zur Verfügung"
 	}
 
 	"Replaces [improvement]":{
@@ -1024,6 +1039,7 @@
 		Czech:"Nahrazuje [improvement]"
 		Russian:"Заменяет [improvement]"
 		Ukrainian:"Замінити [improvement]"
+		German:"Ersetzt [improvement]"
 	}
 
 	"Pick now!": { //sample needed
@@ -1035,6 +1051,7 @@
                 Russian:"Выбрать сейчас!"
 		Czech:"Zvolte teď!"
 		Ukrainian:"Вибрати зараз!"
+		German:"Wähle jetzt!"
 }
 
 	"Build [building]":{ // eg Build Granary
@@ -1107,6 +1124,7 @@
 		Czech:"Anektovat město"
 		Russian:"Захватить город"
 		Ukrainian:"Анексоване місто"
+		German:"Stadt annektieren"
 }
 
 	"Specialist Buildings":{ // !!!!! DUPLICATE KEY !!!!!
@@ -1130,7 +1148,7 @@
 		Russian:"Распределение специалистов"
 		French:"Affectation Spécialiste"
 		Romanian:"Alocarea specialiștilor"
-		German:"Spezialistzuordnung"
+		German:"Zuordnung von SpezialistInnen"
 		Dutch:"Specialistische toewijzing"
 		Spanish:"Asignación de especialistas"
 		Simplified_Chinese:"专业人员分配"
@@ -1150,6 +1168,7 @@
 		Russian:"Специалисты"
 		Czech:"Specialisté"
 		Ukrainian:"Спеціалісти"
+		German:"SpezialistInnen"
 }
 
 	"Food eaten":{
@@ -1161,6 +1180,7 @@
 		Russian:"Потребление еды"
 		Czech:"Spotřeba jídla"
 		Ukrainian:"Їжі з’їдено"
+		German:"Nahrung verbraucht"
 }
 
 	"Growth bonus":{
@@ -1172,6 +1192,7 @@
 		Russian:"Бонус к росту"
 		Czech:"Spotřeba jídla"
 		Ukrainian:"Бонус до зростання"
+		German:"Wachstumsbonus"
 }
 
 	"Unassigned population":{ // as in "Unassigned population: 2/13
@@ -1227,7 +1248,7 @@
 		Russian:"Население прибавится через [turnsToPopulation] ходов"
 		French:"[turnsToPopulation] tours à un nouveau résident"
 		Romanian:"[turnsToPopulation] rundă până un nou rezident"
-		German:"Neuer Einwohner in [turnsToPopulation] Runden"
+		German:"Neue(r) Einwohner(in) in [turnsToPopulation] Runden" // gender sensitive
 		Dutch:"Een nieuwe inwoner in [turnsToPopulation] rondes"
 		Spanish:"[turnsToPopulation] rondas hasta un nuevo residente"
 		Simplified_Chinese:"此城市将在[turnsToPopulation]轮后有1个新市民",
@@ -1245,6 +1266,7 @@
 		Traditional_Chinese:"食物轉化為產能"
 		Ukrainian:"Їжа перетворюється на виробництво"
 		Russian:"Обмен еды на производство"
+		German:"Nahrung in Produktion verwandeln"
 }
 
 	"[turnsToStarvation] turns to lose population":{
@@ -1289,6 +1311,7 @@
 		Russian:"Сопротивление на [numberOfTurns] ходов",
 		Czech:"Občanské nepokoje ještě [numberOfTurns] tah(y/ů)"
 		Ukrainian:"Опір на [numberOfTurns] ходів"
+		German:"Im Widerstand für weitere [numberOfTurns] Runden"
 }
 
 	"Sell for [sellAmount] gold":{ // when selling a building
@@ -1296,7 +1319,7 @@
 		Russian:"Продать за [sellAmount] золота"
 		French:"Vendre pour [sellAmount] or"
 		Romanian:"Vindem [sellAmount] de aur"
-		German:"Verkaufen Sie für [sellAmount] Gold"
+		German:"Verkaufen für [sellAmount] Gold"
 		Dutch:"Verkopen voor [sellAmount] goud"
 		Spanish:"Vender por [sellAmount] oro"
 		Simplified_Chinese:"卖掉获得[sellAmount]金钱"
@@ -1311,7 +1334,7 @@
 		Russian:"Вы действительно хотите продать [building]?"
 		French:"Voulez-vous vraiment vendre [building]?"
 		Romanian:"Chiar vrei să vinzi [building]?"
-		German:"Wollen Sie wirklich [building] verkaufen?"
+		German:"[building] wirklich verkaufen?"
 		Dutch:"Wil je echt [building] verkopen?"
 		Spanish:"¿Realmente quieres vender [building]?"
 		Simplified_Chinese:"您真的想卖掉[building]吗？"
@@ -1331,7 +1354,7 @@
 	    	Russian:"Очки [greatPerson]",
 		Czech:"[greatPerson] - body"
 		Ukrainian:"[greatPerson] очків"
-		Ukrainian:"[greatPerson] очків"
+		German:"Punkte für [greatPerson]"
 }
 
 	"Great person points":{ // e.g ?
@@ -1343,6 +1366,7 @@
 		Russian:"Очки великих людей"
 		Czech:"Body Velké osobnosti"
 		Ukrainian:"Очки великих людей"
+		German:"Punkte für Große Persönlichkeit"
 }
 
 	"Current points":{
@@ -1354,6 +1378,7 @@
 		Russian:"Очков сейчас"
 		Czech:"Získané body"
 		Ukrainian:"Поточні очки"
+		German:"Aktuelle Punkte"
 }
 
 	"Points per turn":{
@@ -1365,6 +1390,7 @@
 		Russian:"Очки за ход"
 		Czech:"Bodů za tah"
 		Ukrainian:"Очки за хід"
+		German:"Punkte pro Runde"
 }
 
 	"Convert production to gold at a rate of 4 to 1":{
@@ -1374,6 +1400,7 @@
 		Czech:"Konvertovat produkci na zlato v poměru 4 ku 1"
 		Russian:"Обмен производства на золото 4 к 1"
 		Ukrainian:"Перетворити виробництво на золото з курсом 4 до 1"
+		German:"Verwandel Produktion zu Gold (4:1)"
 }
 
 	"Convert production to science at a rate of 4 to 1":{
@@ -1383,6 +1410,7 @@
 		Czech:"Konvertovat produkci na výzkum v poměru 4 ku 1"
 		Russian:"Обмен производства на науку 4 к 1"
 		Ukrainian:"Перетворити виробництво на науку з курсом 4 до 1"
+		German:"Verwandel Produktion zu Wissenschaft (4:1)"
 }
 
 	"The city will not produce anything.":{
@@ -1392,6 +1420,7 @@
 		Czech:"Město nebude nic vyrábět"
 		Russian:"Город не будет производить ничего"
 		Ukrainian:"Місто не буде нічого виробляти"
+		German:"Die Stadt produziert nichts."
 }
 
 ////// Tech picker
@@ -1516,6 +1545,7 @@
                 Russian:"Национальное чудо"
 		Czech:"Národní Div"
 		Ukrainian:"Національне диво"
+		German:"Nationales Wunder"
 }
 
 	"National Wonders":{
@@ -1525,6 +1555,7 @@
 		Russian:"Национальные чудеса"
 		Czech:"Národní Divy"
 		Ukrainian:"Національні дива"
+		German:"Nationale Wunder"
 }
 
 	"Wonders enabled":{
@@ -1548,7 +1579,7 @@
 		Russian:"Новые улучшения клеток"
 		French:"Améliorations apportées aux cases"
 		Romanian:"Îmbunătățiri celule active"
-		German:"Freigschaltete Feldverbesserungen"
+		German:"Freigeschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
 		Spanish:"Mejoras de casilla habilitadas"
 		Simplified_Chinese:"解锁地块设施"
@@ -1585,7 +1616,7 @@
 		Simplified_Chinese:"新组建单位的初始经验值"
 		Traditional_Chinese:"新訓練單位的初始經驗值"
 		Portuguese:"Experiencia para novas unidades"
-		German:"XP für neue Einheiten"
+		German:"EP für neue Einheiten"
 		Japanese:"新しいユニット用のXP"
 		Czech:"XP pro nové jednotky"
 		Ukrainian:"Досвіду для нових підрозділів"
@@ -1664,6 +1695,7 @@
 		Czech:"Obsazené!"
 		Russian:"Оккупирован!" // not sure too
 		Ukrainian:"Окуповано!"
+		German:"Besetzt!"
 }
 
 	"Attack":{
@@ -1688,9 +1720,11 @@
 		Czech:"Bombardovat"
 		Russian:"Бомбардировать"
 		Ukrainian:"Обстрілювати"
+		German:"Bombardieren"
 }
 
 	"NUKE":{
+		German:"Atombombe"
 }
 
 	"Captured!":{// Shown in the battle table when attacking a civilian unit
@@ -1715,6 +1749,7 @@
 		Czech:"obrana v boji na dálku"
 		Russian:"Защита против дальнего боя"
 		Ukrainian:"захист проти дальнобійників"
+		German:"Verteidigung gegen Fernkampf"
 }
 
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
@@ -1739,6 +1774,7 @@
 		Czech:"Útočný bonus"
 		Russian:"Бонус атакующего"
 		Ukrainian:"Бонус нападника"
+		German:"Angriffsbonus"
 }
 
 	"Landing":{
@@ -1748,6 +1784,7 @@
 		Czech:"Přistání"
 		Russian:"Высадка"
 		Ukrainian:"Висадка"
+		German:"Anlanden"
 }
 
 	"Flanking":{
@@ -1757,6 +1794,7 @@
 		Czech:"Doprovod"
 		Russian:"Атака с фланга"
 		Ukrainian:"Атака з флангу"
+		German:"Flankenangriff"
 }
 
 	"vs [unitType]":{
@@ -1766,6 +1804,7 @@
 		Czech:"proti [unitType]"
 		Russian:"против [unitType]"
 		Ukrainian:"проти [unitType]"
+		German:"gegen [unitType]"
 }
 
 	"Terrain":{
@@ -1775,6 +1814,7 @@
 		Czech:"Terén"
 		Russian:"Местность"
 		Ukrainian:"Місцевість"
+		German:"Gelände"
 }
 
 ///////// Unit uniques
@@ -1853,6 +1893,7 @@
 		Russian:"Граждане настолько счастливы при вашей власти, что ваша империя вступает в золотой век!"
 
 		Ukrainian:"Ваші громадяни були задоволені вашим правлінням так довго, що імперія вступає в Золотий вік!"
+		German:"Deine Bevölkerung ist so zufrieden mit deiner Herrschaft, dass dein Imperium in ein Goldenes Zeitalter eintritt!"
 }
 
 ////// Policy picker screen
@@ -1882,7 +1923,7 @@
 		Simplified_Chinese:"[policyBranch]分支解锁！",
 		Traditional_Chinese:"[policyBranch]分支解鎖！",
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
-		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet",
+		German:"Grundsatzzweig [policyBranch] wurde freigeschaltet",
 		Czech:"Zpřístupněna větev sociální politiky: [policyBranch]"
 		Ukrainian:"Галузь політики [policyBranch] розблоковано"
 }
@@ -1968,6 +2009,7 @@
 		Traditional_Chinese:"併吞的城市"
 		Ukrainian:"Окуповане місто"
 		Russian:"Базовое счастье"
+		German:"Besetzte Städte"
 	}
 
 	"Buildings":{
@@ -2002,7 +2044,7 @@
 		Italian:"Edifici specialisti"
 		Romanian:"Clădiri specializate"
 		Spanish:"Edificios Ocupables"
-		German:"Gebäude der Spezialisten"
+		German:"Gebäude der SpezialistInnen"
 		French:"Batiments spéciaux" //not sure
 		Simplified_Chinese:"专业建筑"
 		Traditional_Chinese:"專業建築"
@@ -2019,6 +2061,7 @@
 		Czech:"Základ"
 		Russian:"Базовые значения"
 		Ukrainian:"Початкове значення"
+		German:"Grundwerte"
 }
 
 	"Bonuses":{
@@ -2028,6 +2071,7 @@
 		Traditional_Chinese:"相關加成"
 		Ukrainian:"Бонуси"
 		Russian:"Бонусы"
+		German:"Boni"
 }
 
 
@@ -2038,6 +2082,7 @@
 		Czech:"Celkem"
 		Russian:"Итоговые"
 		Ukrainian:"Остаточні"
+		German:"Endwert"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
@@ -2077,6 +2122,7 @@
 		Russian:"Города-государства"
 		Czech:"Městské státy"
 		Ukrainian:"Місто-держава"
+		German:"Stadtstaat"
 }
 
 	"Luxury resources":{
@@ -2088,7 +2134,7 @@
 		Simplified_Chinese:"奢侈资源"
 		Traditional_Chinese:"奢侈資源"
 		Portuguese:"Recursos luxuosos"
-		German:"Luxusressource"
+		German:"Luxusartikel"
 		Czech:"Luxusní zdroje"
 		Ukrainian:"Ресурси розкоші"
 }
@@ -2226,6 +2272,7 @@
 		Traditional_Chinese:"行動"
 		Ukrainian:"Дія"
 		Russian:"Действие"
+		German:"Aktion"
 }
 
 	"Defeated":{
@@ -2249,6 +2296,7 @@
 		Czech:"Políčka"
 		Russian:"Клетки"
 		Ukrainian:"Клітини"
+		German:"Felder"
 }
 
 ////// Victory Screen
@@ -2291,7 +2339,7 @@
 
 	"Complete all the spaceship parts\n to win!":{
 		Italian:"Completa tutte le parti\n  dell'astronave per vincere!"
-		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
+		German:"Um zu gewinnen vervollständige\n alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Постройте все части космического корабля\n чтобы победить!"
 		Simplified_Chinese:"完成建造太空飞船\n胜利！",
@@ -2303,7 +2351,7 @@
 
 	"Complete 4 policy branches\n to win!":{
 		Italian:"Completa quattro rami\n  politici per vincere!"
-		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
+		German:"Um zu gewinnen vervollständige\n 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Завершите 4 ветви общественных институтов\n чтобы победить!"
 		Simplified_Chinese:"完成4个社会政策分支\n胜利！",
@@ -2315,7 +2363,7 @@
 
 	"Destroy all enemies\n to win!":{
 		Italian:"Distruggi tutti gli avversari \n per vincere!"
-		German:"Um zu gewinnen besiegen Sie alle Gegner!"
+		German:"Um zu gewinnen besiege alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
 		Russian:"Уничтожьте всех врагов\n чтобы победить!"
 		Simplified_Chinese:"消灭所有敌人\n胜利!",
@@ -2327,7 +2375,7 @@
 
 	"You have won a scientific victory!":{
 		Italian:"Hai ottenuto una Vittoria Scientifica!"
-		German:"Sie haben den Wissenschaftssieg errungen!"
+		German:"Du hast den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique!"
 		Russian:"Вы одержали научную победу!"
 		Simplified_Chinese:"恭喜！您赢得了科技胜利!",
@@ -2339,7 +2387,7 @@
 
 	"You have won a cultural victory!":{
 		Italian:"Hai ottenuto una Vittoria Culturale!"
-		German:"Sie haben den Kultursieg errungen!"
+		German:"Du hast den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle!"
 		Russian:"Вы одержали культурную победу!"
 		Simplified_Chinese:"恭喜！您赢得了文化胜利！",
@@ -2351,7 +2399,7 @@
 
 	"You have won a domination victory!":{
 		Italian:"Hai ottenuto una Vittoria per Dominazione!"
-		German:"Sie haben den Dominanzsieg errungen!"
+		German:"Du hast den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
 		Russian:"Вы победили, завоевав всех!"
 		Simplified_Chinese:"恭喜！您赢得了征服胜利！",
@@ -2437,6 +2485,7 @@
 		Russian:"Наш статус"
 		Czech:"Naše vyhlídky"
 		Ukrainian:"Наш стан"
+		German:"Unser Status"
 }
 
 	"Global status":{
@@ -2447,6 +2496,7 @@
 		Russian:"Глобальный статус"
 		Czech:"Globální situace"
 		Ukrainian:"Глобальний стан"
+		German:"Globaler Status"
 }
 
 	"Spaceship parts remaining":{
@@ -2457,6 +2507,7 @@
 		Russian:"Осталось частей КК"
 		Czech:"Chybějící části Vesmírné lodi"
 		Ukrainian:"Залишилось частин космічного корабля"
+		German:"Übrige Raumschiffteile"
 }
 
 	"Branches completed":{
@@ -2467,6 +2518,7 @@
 		Russian:"Ветвей завершено"
 		Czech:"Kompletní větve"
 		Ukrainian:"Галузей завершено"
+		German:"Vollständige Zweige"
 }
 
 	"Undefeated civs":{
@@ -2477,6 +2529,7 @@
 		Russian:"Непобеждённые цивилизации"
 		Czech:"Neporažené civilizace"
 		Ukrainian:"Непереможені цивілазації"
+		German:"Unbesiegte Zivilisationen"
 }
 
 
@@ -2490,6 +2543,7 @@
 		Russian:"Что вы хотите сделать с этим городом?"
 		Czech:"Co si přejeme s městem udělat?"
 		Ukrainian:"Що ви хочете зробити з цим містом?"
+		German:"Was möchste du mit dieser Stadt machen?"
 }
 
 	"Annex":{
@@ -2500,6 +2554,7 @@
 		Russian:"Аннексировать"
 		Czech:"Anektovat"
 		Ukrainian:"Анексувати"
+		German:"Annektieren"
 }
 
 	"Annexed cities become part of your regular empire.":{
@@ -2508,6 +2563,7 @@
 		Simplified_Chinese:"“吞并城市”意味着该城市将成为您的帝国直辖的一部分。",
 		Traditional_Chinese:"“併吞城市”意味著該城市將成為您的帝國的一部分。",
 		Ukrainian:"Анексовані міста стануть частиною вашою імперією."
+		German:"Annektierte Städte werden Teil deines Imperiums"
 }
 
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
@@ -2516,6 +2572,7 @@
 		Simplified_Chinese:"该城市人口产生的不满将是正常值的2倍，建造“法庭”可以使该值降低到正常值。"
 		Traditional_Chinese:"該城市人口產生的不滿將是一般城市的2倍，建造“法院”可以使其降低到正常值。"
 		Ukrainian:"Їх громадяни породжують 2x нещастя, якщо ви не побудуєте будинок суду."
+		German:"Deren Bevölkerung generieren 2x Unzufriedenheit solange bis du ein Gerichtsgebäude gebaut hast."
 }
 
 	"Puppet":{
