@@ -146,6 +146,10 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                     if (preferredVictoryType == VictoryType.Scientific) return 1.5f
                     else return 1.3f
                 }
+                if (wonder.name == "Manhattan Project") {
+                    if (preferredVictoryType == VictoryType.Domination) return 2f
+                    else return 1.3f
+                }
                 if (wonder.isStatRelated(Stat.Happiness)) return 1.2f
                 if (wonder.isStatRelated(Stat.Production)) return 1.1f
                 return 1f

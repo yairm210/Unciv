@@ -697,7 +697,7 @@
 		preferredVictoryType:"Domination",
 		
 		startIntroPart1: "Che la benedizione di Dio, che è il più grande di tutti, scenda su di te, Askia, sovrano del popolo Songhai! Per molti anni il tuo regno rimase vassallo della potente nazione dell'Africa occidentale, il Mali, finché alla metà del XIV secolo, il re Sunni Ali Ber riuscì a conquistare l'indipendenza, impadronendosi di vasti territori e respingendo i numerosi nemici che intendevano distruggerlo. Alla fine, la conquista delle ricche città di Timbuctu e Djenné conferirono all'impero Songhai il potere economico per sopravvivere per circa 100 anni, fino alla sua distruzione dovuta alla tecnologia del moschetto, più avanzata di quella della lancia."
-		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
+		startIntroPart2: "Re Askia, il tuo popolo ti chiede di condurlo alla gloria, di renderlo ricco e potente, di mantenerlo fornito di ogni arma necessaria per distruggere qualsiasi nemico. Riuscirai a salvarlo dalla distruzione, o Re? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Sei un abominio per la terra e il cielo, il capo di selvaggi ignoranti! Distruggerti sarà un vero piacere!"
 		attacked:"Quanta follia! Hai condannato il tuo popolo al rogo della distruzione!"
@@ -762,6 +762,162 @@
 		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
 		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+	},
+	{   // REQUIRES RIVERS
+		name:"Aztecs",
+		translatedName:"Azteca",
+		leaderName:"Montezuma I",
+		adjective:["azteco"],
+		startBias:["Jungle"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Welcome, O divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
+		startIntroPart2: "O great king Montezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Morte, morte, morte!)"
+		attacked:"Eccellente! Che il sangue scorra a fiumi!"
+		defeated:"Mostro! Chi sei tu per osare distruggere la mia grandezza?"
+		introduction:"Alt! Cosa vedo di fronte alla mia augusta presenza? Un altro cuore palpitante per il fuoco del sacrificio?."
+		
+		neutralHello:"Cosa ti porta qui?"
+		neutralLetsHearIt:["Vai avanti.","Procedi.","Ti ascolto..."]
+		neutralNo:["Assolutamente no!","No!","Non lo accetto!"]
+		neutralYes:["Se è questo che vuoi.","Sì, sta bene.","D'accordo!"]
+
+		hateHello:"Cosa vuoi?"
+		hateLetsHearIt:["Che c'è?","Hai da dire qualcosa?","Sputa il rospo."]
+		hateNo:["Che follia è questa?","Va' alla malora!","Preferisco impiccarmi con le mie stesse interiora!"]
+		hateYes:["E va bene!","Mi costringi ad accettare.","Mi hai convinto."]
+		
+		afterPeace:"Che tu sia maledetto! Sacrificherò diecimila cittadini per espirare questa umiliazione!"
+		tradeRequest:"Accetta questi accordi, o soffri le conseguenze."
+		
+		outerColor:[255,51,51],
+		innerColor:[153,255,255],
+		uniqueName:"Sacrificial Captives"
+		unique:"Ottieni Cultura per ogni unità nemica uccisa.",
+		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
+			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
+			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
+			"Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec",
+			"Itzapalapa","Ayotzinco","Iztapam"]
+	},
+	{
+		/////NEEDS NATURAL WONDERS
+		name:"Spanish",
+		translatedName:"Spagna",
+		leaderName:"Isabella",
+		adjective:["spagnolo"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Blessed Isabella, servant of God, holy queen of Castille and Leòn! Your people greet and welcome you. You are the ruler of Spain, a beautiful and ancient country at the crossroads of the world between Europe and Africa, one shor on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish are a multicultural people with roots in the Muslim and Christian worlds. A seafaring race, Spanish explorers found and conquered much of the New World, and, for many centuries, its gold and silver brought Spain unrivalled wealth and power, making the Spanish court the  envy of the world."
+		startIntroPart2: "O fair and virtuous Isabella! Will you rebuld the Spanish empire and show the world again the greatness of your people? Will your take up the mantle of the holy monarchy, and vanquish your foes under heaven's watchful eyes? Your adoring subjects await your command! Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"Forse Dio ti perdonerà... ma io no. Preparati a combattere."
+		attacked:"Lacché ripugnante del demonio! Pagherai carola tua insolenza!"
+		defeated:"Se la mia sconfitta è l'indubbio volere di Dio, ebbene lo accetto."
+		introduction:"Dio benedice coloro che si meritano il suo amore. Io sono Isabella, regina di Spagna."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Procedi","Sono tutta orecchi.","Sì?"]
+		neutralNo:["Mi rifiuto.","Dio me ne scampi.","Impossibile."]
+		neutralYes:["Molto bene.","Eccellente.","Accetto, con la benedizione di Dio."]
+
+		hateHello:"Ebbene?"
+		hateLetsHearIt:["Va' avanti","Cosa proponi?","Continua."]
+		hateNo:["Non lo accetto.","Certo che no.","Sei fuori di testa?"]
+		hateYes:["D'accordo.","Va bene.","Mi sento obbligata ad accettare."]
+		
+		afterPeace:"Possa Dio benedirti per la tua clemenza verso il nemico sconfitto."
+		tradeRequest:"Mi auguro che questo affare sia di tuo gradimento."
+				
+		outerColor:[102,0,0],
+		innerColor:[255,102,102],
+		uniqueName:"Sette Città d'Oro"
+		unique:"Bonus in Oro per la scoperta di una Meraviglia Naturale (maggiorato se la scopri per primo), le cui caselle fruttano doppia Cultura, Felicità e resa generale.",
+		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
+			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
+			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
+			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
+	},
+	{
+		name:"Incan",
+		translatedName:"Inca",
+		leaderName:"Pachacuti",
+		adjective:["inca"],
+		startBias:["Hill"],
+		preferredVictoryType:"Cultural",
+		
+		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
+		startIntroPart2: "Oh King Pachacuti, truly are you called 'Earth Shaker'! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Resistere è inutile! Non puoi sperare di resistere di fronte al potente impero inca. Se non ti arrendi immediatamente, allora preparati alla guerra!"
+		attacked:"TU dichiari guerra a ME?!? Non puoi, sono IO che dichiaro guerra a TE!"
+		defeated:"Hai oscurato il sole...! Sono stato un sovrano diligente e misericordioso. Vedi di essere altrettanto diligente e misericordioso."
+		introduction:"Ti trovi di fronte a Pachacuti Inca Yupanqui. Accetto i tuoi saluti e i servigi che puoi offrire agli Inca.."
+		
+		neutralHello:"Come stai?"
+		neutralLetsHearIt:["Vai avanti.","Cosa proponi?","Parla pure."]
+		neutralNo:["Non se ne parla.","No!","Mi rifiuto."]
+		neutralYes:["Molto bene.","Sì, certo","A me va a genio."]
+
+		hateHello:"Cosa vuoi, adesso?"
+		hateLetsHearIt:["Parla!","Cosa proponi?","Avanti."]
+		hateNo:["Ciò è impossibile!","Non siamo d'accordo!","Scusami?"]
+		hateYes:["Sta bene.","A me sta bene.","Benissimo..."]
+		
+		afterPeace:"Viracocha è disgustato di questa guerra, ed è contento della nostra stretta di pace."
+		tradeRequest:"Il popolo inca ti offre questo giusto contratto."
+				
+		outerColor:[255,255,51],
+		innerColor:[0,204,102],
+		uniqueName:"Grande strada delle Ande"
+		unique:"Le unità ignorano i costi di movimento sulle Colline. I miglioramenti hanno i costi azzerati sulle Colline, e dimezzati altrove.",
+		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos",
+			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
+			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
+			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
+	}
+	{
+		//NEEDS SNOW AND ICE
+		name:"Denmark",
+		translatedName:"Danimarca",
+		leaderName:"Harald Bluetooth",
+		adjective:["danese"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Honor and glory be yours, Harald Bluetooth Gormsson, mighty heir of King Gorm of the Old and Thryra Dannebod. Not only were you victorious on the battlefield against the armies of Norway, you also completed massive construction project across the land - numerous Ring Fortresses to protect the populace from invasion and internal strife. You successfully drove off waves of German settlers in 983 AD and sheltered your kingdom from unwanted foreign influence."
+		startIntroPart2: "Stalwart Viking, the time for greatness is upon you once more. You are called to rise up and lead your people to renewed power and trumph! Will you make the world shudder once more at the very thought of your great armies of the Northsmen? Will you let the Viking battle cry ring out across the crashing waved? Will you build a civilization to stand the test of time?"
+		
+		declaringWar:"A essere sinceri, sono stanco delle chiacchere. Risolviamo la questione in battaglia, da veri uomini. Forse gli skald canteranno del tuo valore... o del mio!"
+		attacked:"Ahahah! Mostri qualche abilità da vero vichingo! Ma non basterà per salvarti!"
+		defeated:"Loki deve averti aiutato, perché nessun uomo comune poteva sconfiggermi... Sta bene! Mi unirò agli einherjar nel banchetto del Valhalla, mentre tu ti riposi sui tuoi allori."
+		introduction:"Harad Bluetooth ti da il benvenuto nelle sue terre, un vichingo come mai si è mai visto in tutti i mari e tutte le terre! Che ti prende, hai paura?"
+		
+		neutralHello:"Buonsalve."
+		neutralLetsHearIt:["Sentiamo.","Va' avanti.","Sto ascoltando"]
+		neutralNo:["No.","Non oggi, temo.","Devo rifiutare."]
+		neutralYes:["Very well.","Of course, my friend!","That's a deal!"]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Ebbene?.","E...?","Avanti."]
+		hateNo:["Non essere sciocco!","Questo è inaccettabile."]
+		hateYes:["Mi sa che devo accettare.","Oh, va bene."]
+		
+		afterPeace:"Per il martello di Thor, oggi ti sei dimostrato un degno avversario. Ti porgo i miei complimenti!"
+		tradeRequest:"Accetta questo affare! Persino un vagabondo ubriacone lo accetterebbe!"
+				
+		outerColor:[51,25,0],
+		innerColor:[255,255,102],
+		uniqueName:"Furia vichinga"
+		unique:"Le unità pagano solo 1 punto movimento per imbarcarsi o sbarcare, e ottengono +1 punto movimento se imbarcate. Le unità ravvicinate possono saccheggiare senza costi di movimento.",
+		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
+			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
+			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
+			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
+			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
 	*/
 
@@ -1128,6 +1284,36 @@
 		outerColor:[0, 0, 0],
 		innerColor:[96,96,96],
 		cities:["Manila"]
+	},
+	{
+		name:"Lhasa",
+		translatedName:"Lhasa",
+		adjective:["tibetano"],
+		cityStateType:"Cultured",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Forse adesso troveremo la pace nella morte..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[204,102,0],
+		cities:["Lhasa"]
+	},
+	{
+		name:"Vancouver",
+		translatedName:"Vancouver",
+		adjective:["canadese"],
+		cityStateType:"Maritime",
+
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"E dunque, seppur con riluttanza, il Canada andrà in guerra.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Non rimpiango di aver difeso il mio paese fino all'ultimo respiro, anche se è stato inutile."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,255,128],
+		cities:["Vancouver"]
 	},
 	
 	//Barbarian

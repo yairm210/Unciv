@@ -360,6 +360,12 @@
 		requiredTech:"Civil Service"
 	},
 	{
+		name:"Manhattan Project",
+		isNationalWonder:true,
+		uniques:["Enables nuclear weapon"],
+		requiredTech:"Nuclear Fission"
+	},
+	{
 		name:"Chichen Itza",
 		culture:1,
 		greatPersonPoints:{production:1},

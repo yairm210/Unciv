@@ -1,5 +1,6 @@
 package com.unciv.app.desktop;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,6 +30,8 @@ class DesktopLauncher {
 		}
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal);
+		config.title="Unciv";
 		new LwjglApplication(new UnCivGame("Desktop"), config);
 	}
 }

@@ -7,6 +7,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
@@ -40,7 +41,10 @@ class Battle(val gameInfo:GameInfo) {
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
-        if(defender.getUnitType().isCivilian() && attacker.isMelee()){
+        if (attacker.getUnitType().isMissileUnit()) {
+            nuclearBlast(attacker, defender)
+        }
+        else if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
         }
         else if (attacker.isRanged()) {
@@ -95,6 +99,15 @@ class Battle(val gameInfo:GameInfo) {
         if (attacker is MapUnitCombatant && attacker.unit.action != null
                 && attacker.unit.action!!.startsWith("moveTo"))
             attacker.unit.action = null
+
+        if (attacker is MapUnitCombatant) {
+            if (attacker.getUnitType().isMissileUnit()) {
+                attacker.unit.destroy()
+            } else if (attacker.unit.action != null
+                    && attacker.unit.action!!.startsWith("moveTo")) {
+                attacker.unit.action = null
+            }
+        }
     }
 
     private fun postBattleNotifications(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
@@ -280,6 +293,30 @@ class Battle(val gameInfo:GameInfo) {
             capturedUnit.assignOwner(attacker.getCivInfo())
         }
         capturedUnit.updateVisibleTiles()
+    }
+
+    private fun nuclearBlast(attacker: ICombatant, defender: ICombatant) {
+        for (tile in defender.getTile().getTilesInDistance(2)) {
+            if (tile.isCityCenter()) { //duantao: To Do
+                val city = tile.getCity()!!
+                city.health = 1
+                if (city.population.population <= 5) {
+                    city.destroyCity()
+                } else {
+                    city.population.population -= 5
+                    city.population.unassignExtraPopulation()
+                    continue
+                }
+            }
+
+            if (tile.militaryUnit != null) tile.militaryUnit!!.destroy()
+            if (tile.civilianUnit != null) tile.civilianUnit!!.destroy()
+            tile.improvement = null
+            tile.improvementInProgress = null
+            tile.turnsToImprovement = 0
+            tile.roadStatus = RoadStatus.None
+            if (tile.isLand) tile.terrainFeature = "Fallout"
+        }
     }
 
     private fun tryInterceptAirAttack(attacker:MapUnitCombatant, defender: ICombatant) {
