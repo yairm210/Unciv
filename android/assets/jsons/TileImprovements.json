@@ -105,12 +105,18 @@
 		techRequired:"Bronze Working"
 	},
 	{
+		name:"Remove Fallout",
+		turnsToBuild:8,
+		terrainsCanBeBuiltOn:["Fallout"],
+		techRequired:"Agriculture"
+	},
+	{
 		name:"Remove Marsh",
 		turnsToBuild:6,
 		terrainsCanBeBuiltOn:["Marsh"],
 		techRequired:"Bronze Working"
 	},
-	
+
 	// These are unique and have unique in-game checks related to them
 	{
 		name:"Remove Road",
