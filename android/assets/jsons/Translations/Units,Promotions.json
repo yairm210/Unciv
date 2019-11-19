@@ -1292,6 +1292,7 @@
 	}
 
 	"Requires Manhattan Project":{
+		Italian:"Richiede Progetto Manhattan"
 },
 
 	"6 tiles in every direction always visible":{
@@ -1473,12 +1474,10 @@
 		Czech:"Bojová helikoptéra"
 	}
 
-	/*
 	"Atomic Bomb":{
 		Italian:"Bomba atomica"
 		Czech:"Atomová bomba"
 	}
-	*/
 
 ////// Information era - not even putting here, too far off
 
