@@ -161,6 +161,7 @@
 }
 
 	"Fallout":{
+		Italian:"Scorie Radioattive"
 }
 
 	"Oasis":{
@@ -1044,6 +1045,7 @@
 }
 
 	"Remove Fallout":{
+		Italian:"Rimuovi Scoria Radioattiva"
 },
 
 	"Ancient ruins":{
