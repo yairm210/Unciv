@@ -93,7 +93,6 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         close()
         val multiplayerPopup = PopupTable(screen)
 
-        multiplayerPopup.addGoodSizedLabel("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!").row()
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
         multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
 
