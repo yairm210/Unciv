@@ -98,7 +98,7 @@ Building: `gradlew desktop:dist`
 Running: `./gradlew desktop:run`
 Building: `./gradlew desktop:dist`
 
-If the terminal returns Permission denied or Command not found on Mac/Linux, run chmod +x ./gradlew before running ./gradlew. *This is a one-time procedure.*
+If the terminal returns Permission denied or Command not found on Mac/Linux, run `chmod +x ./gradlew` before running `./gradlew`. *This is a one-time procedure.*
 
 Gradle may take up to several minutes to download files. Be patient.
 After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar

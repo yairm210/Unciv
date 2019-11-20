@@ -457,8 +457,11 @@
 		Polish:"Akademia Narodowa"
 		Czech:"Národní Akademie"
 }
+
 	"Manhattan Project":{
 		Italian:"Progetto Manhattan"
+		Simplified_Chinese:"曼哈顿计划"
+		Traditional_Chinese:"曼哈頓計畫"
 }
 
 	"Chichen Itza":{
@@ -501,6 +504,8 @@
 
 	"Enables nuclear weapon":{
 		Italian:"Consente l'utilizzo delle armi nucleari"
+		Simplified_Chinese:"允许建造核武器"
+		Traditional_Chinese:"允許建造核武器"
 }
 
 	"Lighthouse":{

@@ -28,6 +28,7 @@ class Tutorials{
     fun displayTutorials(name: String, stage: Stage) {
         if (!UnCivGame.Current.settings.showTutorials) return
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
+        if(tutorialTexts.any { it.name==name }) return // currently showing
 
         var texts: ArrayList<String>
         try {
