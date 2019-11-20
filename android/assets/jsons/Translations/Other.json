@@ -1684,7 +1684,7 @@
 	"Bombard":{
 		Italian:"Bombarda"
 		Simplified_Chinese:"轰击"
-		Traditional_Chinese:"轟炸"
+		Traditional_Chinese:"轟擊"
 		Czech:"Bombardovat"
 		Russian:"Бомбардировать"
 		Ukrainian:"Обстрілювати"
@@ -1692,6 +1692,8 @@
 
 	"NUKE":{
 		Italian:"NUCLEARIZZA!"
+		Simplified_Chinese:"核武器攻击"
+		Traditional_Chinese:"核武器攻擊"
 }
 
 	"Captured!":{// Shown in the battle table when attacking a civilian unit

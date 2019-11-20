@@ -44,7 +44,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
     init {
         setDefaultCloseAction()
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
-        scrollPane.style = skin.get(ScrollPane.ScrollPaneStyle::class.java) // So we can see scrollbars
         scrollPane.setOverscroll(false,false)
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 

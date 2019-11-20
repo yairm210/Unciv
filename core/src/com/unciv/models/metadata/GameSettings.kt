@@ -20,7 +20,8 @@ class GameSettings {
     var autoBuildingRoads: Boolean = true
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
-    var showPixelImprovements: Boolean = false
+    var showPixelImprovements: Boolean = true
+    var nuclearWeaponEnabled = false
 
     var userId = ""
 
