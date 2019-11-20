@@ -1292,6 +1292,7 @@
 	}
 
 	"Requires Manhattan Project":{
+		Italian:"Richiede Progetto Manhattan"
 		Simplified_Chinese:"需要完成曼哈顿计划"
 		Traditional_Chinese:"需要完成曼哈頓計畫"
 }
@@ -1475,12 +1476,10 @@
 		Czech:"Bojová helikoptéra"
 	}
 
-	/*
 	"Atomic Bomb":{
 		Italian:"Bomba atomica"
 		Czech:"Atomová bomba"
 	}
-	*/
 
 ////// Information era - not even putting here, too far off
 
