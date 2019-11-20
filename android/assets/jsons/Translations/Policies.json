@@ -1223,8 +1223,70 @@
 		Portuguese:"+1 ouro de todos os edifícios de ciência"
 		German:"+1 Gold von allen Wissenschaftsgebäuden"
 		French:"Les batiments scientifiques rapportent +1 or"
-		Czech:"+1 zlato ze všech vědeckých budov"
+    Czech:"+1 zlato ze všech vědeckých budov"
+	}
+
+	
+////// Order branch
+
+/*
+	"Order":{
+		Italian:"Ordine"
+	}
+
+	"+1 Happiness per City":{
+		Italian:"+Felicità per Città"
+	}
+    
+	"Nationalism":{
+		Italian:"Nazionalismo"
+	}
+
+	"25% Attack bonus when fighting in friendly territory":{
+		Italian:"+25 Forza in territorio amico"
+	}
+
+	"United Front":{
+		Italian:"Fronte unito"
+	}
+
+	"Militaristic City-States grant units twice as often when you are at war with a common foe":{
+		Italian:"Le Città Stato militaristiche ti danno unità a doppia velocità quando siete in guerra con un nemico in comune"
+	}
+
+	"Planned economy":{
+		Italian:"Economia pianificata"
+	}
+
+	"Factories increase a cities Science output by 25%":{
+		Italian:"+25% Scienza dalle industrie"
+	}
+
+	"Socialism":{
+		Italian:"Socialismo"
+	}
+
+	"Gold maintenance costs of Buildings reduced by 15%":{
+		Italian:"-15% mantenimenti in Oro dagli edifici"
+	}
+
+	"Communism":{
+		Italian:"Comunismo"
+	}
+
+	"+2 Production per City and +10% Production when constructing buildings":{
+		Italian:"+2 Produzione dalle Città e +10% Produzione quando costruisci un edificio"
+	}
+
+	"Order Complete":{
+		Italian:"Ordine Completo"
+	}
+
+	"+1 Food, Production, Science, Gold and Culture per city":{
+		Italian:"+1 Cibo, Produzione, Scienza, Oro e Cultura dalle Città"
+	}
 }
+*/
 
 ////// Freedom branch
 
