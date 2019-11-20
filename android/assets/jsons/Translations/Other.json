@@ -1239,7 +1239,7 @@
 }
 
 	"Food converts to production":{
-		Italian:"Converte il Cibo in Produzione"
+		Italian:"Cibo convertito in Produzione"
 		Czech:"Jídlo směnit za produkci"
 		Simplified_Chinese:"食物转化为产能"
 		Traditional_Chinese:"食物轉化為產能"
@@ -1691,6 +1691,7 @@
 }
 
 	"NUKE":{
+		Italian:"NUCLEARIZZA!"
 		Simplified_Chinese:"核武器攻击"
 		Traditional_Chinese:"核武器攻擊"
 }
