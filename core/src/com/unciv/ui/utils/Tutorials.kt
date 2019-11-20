@@ -48,11 +48,11 @@ class Tutorials{
         val tutorials: LinkedHashMap<String, Array<Array<String>>> =
                 GameBasics.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
         val tutorialMap = HashMap<String, ArrayList<String>>()
-        for (tut in tutorials){
+        for (tutorial in tutorials){
             val list = ArrayList<String>()
-            for(paragraph in tut.value)
+            for(paragraph in tutorial.value)
                 list += paragraph.joinToString("\n")
-            tutorialMap[tut.key] = list
+            tutorialMap[tutorial.key] = list
         }
         return tutorialMap
     }

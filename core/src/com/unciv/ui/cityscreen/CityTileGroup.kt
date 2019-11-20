@@ -101,7 +101,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             center(this@CityTileGroup)
             x += 20 // right
         }
-        miscLayerGroup.addActor(this)
+        miscLayerGroup.addActor(icons.populationIcon)
     }
 
 }
