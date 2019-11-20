@@ -1293,7 +1293,9 @@
 
 	"Requires Manhattan Project":{
 		Italian:"Richiede Progetto Manhattan"
-},
+		Simplified_Chinese:"需要完成曼哈顿计划"
+		Traditional_Chinese:"需要完成曼哈頓計畫"
+}
 
 	"6 tiles in every direction always visible":{
 		Italian:"6 caselle in ogni direzione sempre visibili"
@@ -1508,6 +1510,8 @@
 	"Nuclear Missile":{
 		Italian:"Missile nucleare"
 		Czech:"Jaderná raketa"
+		Simplified_Chinese:"核导弹"
+		Traditional_Chinese:"核導彈"
 	}
 
 ////// Great units

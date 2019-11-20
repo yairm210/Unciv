@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
@@ -10,6 +11,7 @@ import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.ceil
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -44,7 +46,19 @@ class TechManager {
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
-        techCost *= 1 + (civInfo.cities.size -1 ) * 0.02f // each city increases tech cost by 2%, as per https://civilization.fandom.com/wiki/Science_(Civ5)
+        val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
+        val undefeatedCivs = UnCivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
+        // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
+        techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        val worldSizeModifier = when(civInfo.gameInfo.gameParameters.mapRadius) {
+            20 -> floatArrayOf(1.1f, 0.05f) // Medium Size
+            30 -> floatArrayOf(1.2f, 0.03f) // Large Size
+            40 -> floatArrayOf(1.3f, 0.02f) // Huge Size
+            else -> floatArrayOf(1f, 0.05f) // Tiny and Small Size
+        }
+        techCost *= worldSizeModifier[0]
+        techCost *= 1 + (civInfo.cities.size -1) * worldSizeModifier[1]
         return techCost.toInt()
     }
 
@@ -55,19 +69,17 @@ class TechManager {
     }
 
     fun currentTechnologyName(): String? {
-        if (techsToResearch.isEmpty()) return null
-        else return techsToResearch[0]
+        return if (techsToResearch.isEmpty()) null else techsToResearch[0]
     }
 
     private fun researchOfTech(TechName: String?): Int {
-        if (techsInProgress.containsKey(TechName)) return techsInProgress[TechName]!!
-        else return 0
+        return if (techsInProgress.containsKey(TechName)) techsInProgress[TechName]!! else 0
     }
 
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String): Int {
-        return Math.ceil( remainingScienceToTech(techName).toDouble()
+        return ceil( remainingScienceToTech(techName).toDouble()
                 / civInfo.statsForNextTurn.science).toInt()
     }
 
