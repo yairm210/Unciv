@@ -68,6 +68,7 @@
 		//same in German
 		Czech:"Tradice"
 		Ukrainian:"Традиція"
+		German:"Tradition"
 }
 
 	"+3 culture in capital and increased rate of border expansion":{
@@ -106,7 +107,7 @@
 		Simplified_Chinese:"建造奇观时产能积累速率+15%，城市中每10市民+1快乐"
         Traditional_Chinese:"建造奇觀時產能累積速率+15%，城市中每10市民+1快樂"
 		Portuguese:"+15 de produção ao construir maravilhas, +1 felicidade a cada 10 em uma cidade"
-		German:"+15% Produktion beim Errichten von Wundern; +1 Zufriedenheit für jeden 10. Einwohner in einer Stadt"
+		German:"+15% Produktion beim Errichten von Wundern; +1 Zufriedenheit für jede(n) 10. Einwohner(in) in einer Stadt" // gender sensitive
 		French:"+15% production lors de la construction de merveilles, +1 de bonheur pour chaque tranche de 10 citoyens dans chaques villes"
 		Czech:"+15% produkce při stavbě Divu, +1 spokojenost za každých 10 obyvatel ve městě"
 }
@@ -211,7 +212,7 @@
 		Simplified_Chinese:"首都每2个市民+1金钱，-1不满"
         Traditional_Chinese:"首都每2個市民+1金錢，-1不滿"
 		Portuguese:"+1 ouro e -1 de infelicidade para cada 2 habitantes na capital"
-		German:"+1 Gold und -1 Unzufriedenheit für jeden 2. Einwohner in der Hauptstadt"
+		German:"+1 Gold und -1 Unzufriedenheit für jede(n) 2. Einwohner(in) in der Hauptstadt" // gender sensitive
 		French:"Or +1 et mécontentement -1 tous les 2 citoyens dans la capitale"
 		Czech:"+1 zlato a -1 nespokojenost za každé 2 obyvatele v hlavním městě"
 }
@@ -252,7 +253,7 @@
 		Simplified_Chinese:"自主政策"
         Traditional_Chinese:"自主政策"
 		Portuguese:"Liberdade"
-		German:"Unabhängigkeit"
+		German:"Unabhängigkeit" // may be "Freiheit" as well...depends on the context
 		French:"Liberté"
 		Czech:"Volnost"
 }
@@ -291,7 +292,7 @@
 		Simplified_Chinese:"首都组建移民速度+50%，首都附近获得1个移民"
         Traditional_Chinese:"首都訓練移民速度+50%，首都附近獲得1個移民"
 		Portuguese:"Treinamento em de colonos +50% mais rapido na capital, receba um novo colono próximo a capital"
-		German:"Ausbildung von Siedlern in der Hauptstadt ist um 50% erhöht; ein kostenloser Siedler erscheint in der Hauptstadt."
+		German:"Ausbildung von SiedlerInnen in der Hauptstadt ist um 50% erhöht; ein(e) kostenlose(r) Siedler(in) erscheint in der Hauptstadt."
 		French:"La vitesse de formation des colons augmente de 50% dans la capital capitale et un colon gratuit apparaît à proximité"
 		Czech:"Vycvičení osadníka zrychleno o 50% v hlavním městě, zdarma obdržíte osadníka v blízkosti hlavního města"
 }
@@ -317,7 +318,7 @@
 		Simplified_Chinese:"地块设施建造速度+25%，首都附近获得1个工人"
         Traditional_Chinese:"地區設施建造速度+25%，首都附近獲得1個工人"
 		Portuguese:"+25% tava de construção de trabalhadores, receber trabalhador perto da capital"
-		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei Arbeitern; ein kostenloser Arbeiter erscheint in der Hauptstadt"
+		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei ArbeiterInnenn; ein(e) kostenlose(r) Arbeiter(in) erscheint in der Hauptstadt"
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
 		Czech:"Rychlost vylepšení na políčkách vzroste o 25%, zdarma obdržíte dělníka v blízkosti hlavního města"
 }
@@ -395,7 +396,7 @@
 		Simplified_Chinese:"每座与首都相连的城市+1快乐, 来自于市民的不满-5%"
         Traditional_Chinese:"每座與首都相連的城市+1快樂, 來自市民的不滿-5%"
 		Portuguese:"+1 felicade por cada cidade conectada a capital (estradas),-5% infelicidade de habitantes"
-		German:"+1 Zufriedenheit für jede mit der Hauptstadt verbundenen Stadt; -5% Unzufriedenheit von Einwohnern"
+		German:"+1 Zufriedenheit für jede mit der Hauptstadt verbundenen Stadt; -5% Unzufriedenheit von EinwohnerInnen"
 		French:"Ville nationale reliée à la capitale : bonheur +1, et mécontentement -5% grâce aux citoyens des villes non occupées"
 		Czech:"+1 spokojenost za každé město propojené s hlavním městem, -5% nespokojenosti za obyvatelstvo"
 }
@@ -449,7 +450,7 @@
         Traditional_Chinese:"所有軍事單位對蠻族的戰鬥力+25%，殺死蠻族單位時可獲得文化獎勵"
 		Portuguese:"+25% Força ao lutar contra Barbáros"
 		Russian:"+25% к силе атаки против варваров"
-		German:"+25% Bonus gegen Barbaren"
+		German:"+25% Bonus gegen Barbaren; du bekommst Kulturpunkte für das Töten von barbarischen Einheiten"
 		French:"bonus de combat de 25% contre les Barbares"
 		Czech:"+25% bonus proti barbarům, za každého zabitého barbara obdržíte kulturní body"
 }
@@ -527,7 +528,7 @@
         Traditional_Chinese:"軍事單位透過戰鬥獲得的經驗額外+50%"
 		Portuguese:"+50% experiencia em batalha para as unidades militares"
 		Russian:"Юниты получают на 50% больше опыта от сражений"
-		German:"Militäreinheiten erhalten 50% mehr Erfahrung (XP) durch Kämpfe"
+		German:"Militäreinheiten erhalten 50% mehr Erfahrung (EP) durch Kämpfe"
 		French:"Unités militaires : EXP gagnée en combat +50%"
 		Czech:"Vojenské jednotky získávají o 50% více zkušenosti z boje"
 }
@@ -553,7 +554,7 @@
         Traditional_Chinese:"每座有駐軍的城市+1快樂和+2文化"
 		Portuguese:"+1 felicidade e +2 cultara por cidade com guarda"
 		Russian:"Каждый город с гарнизоном увеличивает счастье на 1 и культуру на 2"
-		German:"Jede besatzte Stadt erhöht die Zufriedenheit um 1 und Kultur um 2"
+		German:"Jede besetzte Stadt erhöht die Zufriedenheit um 1 und die Kultur um 2"
 		French:"Dans chaque ville possédant une garnison, +1 Bonheur et +2 Culture"
 		Czech:"Každé město vojenskou posádku zvyšuje spokojenost o 1 a kulturu o 2 "
 }
@@ -566,7 +567,7 @@
         Traditional_Chinese:"職業軍隊"
 		Portuguese:"Exército Profissional"
 		Russian:"Профессиональная армия"
-		German:"Professionelle Armee"
+		German:"Berufsarmee"
 		French:"Armée de métier"
 		Czech:"Profesionální armáda"
 }
@@ -672,7 +673,7 @@
 		Simplified_Chinese:"富余快乐的50%转化为文化"
         Traditional_Chinese:"快樂的50%額外轉化為文化"
 		Portuguese:"50% da felicidade em excesso sera adicionada para cultura para políticas"
-		German:"50% der überschüssigen Zufriedenheit wird zu Kultur für Sozialegrundsätze umgewandelt"
+		German:"50% der überschüssigen Zufriedenheit wird zu Kultur für Grundsätze umgewandelt"
 		French:"50% du bonheur excédentaire est ajouté en Culture"
 		Czech:"50% z nadbytečné spokojenosti je je přidáno na sociální politiku"
 }
@@ -959,7 +960,7 @@
 		Simplified_Chinese:"大商业家的诞生速度+25%，每座铸币厂、市场、银行和证券交易所+1科研"
         Traditional_Chinese:"大商業家的誕生速度+25%，每座鑄幣廠、市場、銀行和證券交易所+1科研"
 		Portuguese:"Grander mercadores são obtidos 25% mais rápido, +1 ciência de cada de Casa da Moeda, banco e bolsa de valores"
-		German:"Große Händler erscheinen 25% schneller; +1 Wissenschaft von jeder Prägerei, Bank, Markt und Börse."
+		German:"Große HändlerInnen erscheinen 25% schneller; +1 Wissenschaft von jeder Prägeanstalt, Bank, Markt und Börse."
 		French:"Apparition des marchands illustres 25% plus rapide, +1 science pour chaque Hôtel de la monnaie, Marché, Banque et Douane"
 		Czech:"Velký obchodník se rodí o 25% rychleji, +1 Výzkum za každou Mincovnu, Tržiště, Banku a Burzu."
 }
@@ -1037,7 +1038,7 @@
 		Simplified_Chinese:"每个专业人员+1金钱"
         Traditional_Chinese:"每個專業人員+1金錢"
 		Portuguese:"+1 ouro por cada especialista"
-		German:"+1 Gold für jeden Spezialisten"
+		German:"+1 Gold für jede(n) Spezialistin"
 		French:"+1 or pour chaque spécialiste"
 		Czech:"+1 zlato za každého specialistu"
 }
@@ -1091,7 +1092,7 @@
 		Simplified_Chinese:"每个专业人员+2科研"
         Traditional_Chinese:"每個專業人員+2科研"
 		Portuguese:"+2 ciência de cada especialista"
-		German:"+2 Wissenschaft durch jeden Spezialisten"
+		German:"+2 Wissenschaft durch jede(n) Spezialistin"
 		French:"Spécialiste : science +2."
 		Czech:"+2 výzkum za každého specialistu"
 }
@@ -1363,7 +1364,7 @@
 		Simplified_Chinese:"每5人口+1产能"
         Traditional_Chinese:"每5人口+1產能"
 		Portuguese:"+1 produção por cada 5 habitantes"
-		German:"+1 Produktion für jeden 5. Einwohner"
+		German:"+1 Produktion für jede(n) 5. Einwohner(in)"
 		French:"+1 production par tranches de 5 habitants"
 		Czech:"+1 produkce za každých 5 obyvatel"
 }
@@ -1389,7 +1390,7 @@
 		Simplified_Chinese:"专业人员消耗的食物减半"
         Traditional_Chinese:"專業人員消耗的食物減半"
 		Portuguese:"-50% gasto de comida por especialistas"
-		German:"-50% Nahrungsverbrauch durch Spezialisten"
+		German:"-50% Nahrungsverbrauch durch SpezialistInnen"
 		French:"-50% consommation de nourriture des spécialistes"
 		Czech:"-50% spotřeby jídla specialisty"
 }
@@ -1415,7 +1416,7 @@
 		Simplified_Chinese:"每2个市民+1文化"
         Traditional_Chinese:"每2個市民+1文化"
 		Portuguese:"+1 cultura para cada 2 habitantes"
-		German:"+1 Kultur für jeden 2. Einwohner"
+		German:"+1 Kultur für jede(n) 2. Einwohner(in)"
 		French:"+1 culture tous les 2 citoyens"
 		Czech:"+1 kulturní bod za každé 2 obyvatele"
 }
@@ -1441,7 +1442,7 @@
 		Simplified_Chinese:"城市人口中专业人员产生的不满减半"
         Traditional_Chinese:"城市人口中專業人員產生的不滿減半"
 		Portuguese:"Especialistas produzem metade da infelicidade normal"
-		German:"Spezialisten produzieren 50% weniger Unzufriedenheit"
+		German:"SpezialistInnen produzieren 50% weniger Unzufriedenheit"
 		French:"Les spécialistes produisent moitié moins de mécontentement"
 		Czech:"Specialisté produkují polovinu běžné nespokojenosti"
 }
@@ -1495,7 +1496,7 @@
         Traditional_Chinese:"單位維護費-33%"
 		Portuguese:"-33% Manutenção de unidades"
 		Russian:"-33% затрат на содержание юнитов"
-		German:"-33% Einheiten Unterhaltskosten"
+		German:"-33% Unterhaltskosten für Einheiten"
 		French:"-33% de coût de maintenance des unités"
 		Czech:"-33% nákladů na údržbu jednotek"
 }
@@ -1625,7 +1626,7 @@
         Traditional_Chinese:"訓練軍事單位時產能累積速率+15%，新的軍事單位初始經驗值為15點"
 		Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
 		Russian:"+15% К производству военных юнитов, Военные юниты создаются с 15 опыта"
-		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (XP)"
+		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (EP)"
 		French:"+15% production lors de la construction d'unités militaires, les nouvelles unités apparaissent avec +15 EXP"
 		Czech:"+15% produkce při výcviku nových vojenských jednotek. Ty dokamžitě získají 15 zkušenosti"
 }
@@ -1637,6 +1638,7 @@
 		Simplified_Chinese:"完整的独裁政策"
         Traditional_Chinese:"完整的獨裁政策"
 		Czech:"Kompletní Autokracie"
+		German:"Autokratie vollständig"
 }
 
 	"+1 happiness from each Walls, Castle and Arsenal":{
@@ -1646,6 +1648,7 @@
 		Simplified_Chinese:"每座城墙、城堡和兵工厂+1快乐"
         Traditional_Chinese:"每座城牆、城堡和兵工廠+1快樂"
 		Czech:"+1 spokojenost za každou Hradbu, Hrad a Zbrojnici"
+		German:"+1 Zufriedenheit für jede Mauer, jedes Schloss und jedes Arsenal"
 }
 
 }
