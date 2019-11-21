@@ -186,6 +186,8 @@ open class TileInfo {
             if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
             if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
                 stats.science += 1f
+            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
+                stats.gold += 1f
             if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
             if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")

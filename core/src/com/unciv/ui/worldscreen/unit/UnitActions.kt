@@ -232,12 +232,18 @@ class UnitActions {
         }
 
         if (unit.name == "Great Merchant" && !unit.isEmbarked()) {
-            actionList += UnitAction("Conduct Trade Mission", unit.currentMovement >0
+            val canConductTradeMission = tile.owningCity?.civInfo?.isCityState()== true
+                    && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo)== false
+                    && unit.currentMovement >0
+            actionList += UnitAction("Conduct Trade Mission", canConductTradeMission
             ) {
                 // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                val goldGained = 350 + 50 * unit.civInfo.getEra().ordinal
-                unit.civInfo.gold += goldGained
-                unit.civInfo.addNotification("Your trade mission has earned you [$goldGained] gold!",null, Color.GOLD)
+                var goldGained = (350 + 50 * unit.civInfo.getEra().ordinal) * unit.civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+                if (unit.civInfo.policies.isAdopted("Commerce Complete"))
+                    goldGained *= 2
+                unit.civInfo.gold += goldGained.toInt()
+                tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += 30
+                unit.civInfo.addNotification("You get [${goldGained.toInt()}] gold and 30 Influence with [${tile.owningCity!!.civInfo}] from trade mission!",null, Color.GOLD)
                 unit.destroy()
             }.sound("chimes")
         }

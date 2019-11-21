@@ -1029,17 +1029,9 @@
 		Czech:"Kompletní Kupectví"
 }
 
-	"+1 gold from each specialist":{
-		Italian:"+1 Oro per ogni specialista"
-		Russian:"+1 золота от каждого специалиста"
-		Romanian:"+1 aur de la fiecare specialist"
-		Spanish:"+1 oro por cada especialista"
-		Simplified_Chinese:"每个专业人员+1金钱"
-        Traditional_Chinese:"每個專業人員+1金錢"
-		Portuguese:"+1 ouro por cada especialista"
-		German:"+1 Gold für jeden Spezialisten"
-		French:"+1 or pour chaque spécialiste"
-		Czech:"+1 zlato za každého specialistu"
+	"+1 gold from every trading post, double gold from Great Merchant trade missions":{
+		Simplified_Chinese:"每处贸易站+1金钱，大商业家拓展贸易获得的金钱加倍"
+        Traditional_Chinese:"每處貿易站+1金錢，大商業家拓展貿易獲得的金錢加倍"
 }
 
 //////Rationalism branch
@@ -1141,7 +1133,7 @@
 		Romanian:"+1 știință de la fiecare punct comercial, +17% știință de la universități"
 		Spanish:"+1 ciencia por cada puesto comercial, +17% ciencia de las universidades"
 		Simplified_Chinese:"每处贸易站+1科研，大学+17%科研产出"
-        Traditional_Chinese:"每個貿易站+1科研，大學+17%科研產出"
+        Traditional_Chinese:"每處貿易站+1科研，大學+17%科研產出"
 		Portuguese:"+1 ciência por cada posto mercantil, +17% ciência de todas as universidades"
 		German:"+1 Wissenschaft durch jeden Handelsposten; +17% Wissenschaft von Universitäten"
 		French:"Comptoirs commerciaux : science +1 et science +17% grâce aux universités",
@@ -1621,8 +1613,8 @@
 		Spanish:"+15% a la produccion cuando se esta construyendo unidades militares, las unidades militares comienzan con 15 de PX"
 		Italian:"+15% Produzione per le unità militari, e +15 esperienza per le nuove unità militari"
 		Romanian:"+15% producție când se construiesc unități militare, iar noile unități militare au 15 experiență din start"
-		Simplified_Chinese:"组建军事单位时产能积累速率+15%，新的军事单位初始有15点经验值"
-        Traditional_Chinese:"訓練軍事單位時產能累積速率+15%，新的軍事單位初始經驗值為15點"
+		Simplified_Chinese:"组建军事单位时产能积累速率+15%，新的军事单位初始经验值为15"
+        Traditional_Chinese:"訓練軍事單位時產能累積速率+15%，新的軍事單位初始經驗值為15"
 		Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
 		Russian:"+15% К производству военных юнитов, Военные юниты создаются с 15 опыта"
 		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (XP)"

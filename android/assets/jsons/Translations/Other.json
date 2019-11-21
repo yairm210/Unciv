@@ -1807,8 +1807,8 @@
 		Italian:"Conduci missione commerciale"
 		Romanian:"Dirijează misiunea comercială"
 		Spanish:"Tomar mision De Comercio"
-		Simplified_Chinese:"开展贸易"
-		Traditional_Chinese:"發展貿易"
+		Simplified_Chinese:"拓展贸易"
+		Traditional_Chinese:"拓展貿易"
 		German:"Handelsmission durchführen"
 		French:"Faire une mission commerciale"
 		Portuguese:"Realizar uma missão comercial"
@@ -1818,18 +1818,9 @@
 }
 
 	// for unit action button
-	"Your trade mission has earned you [goldGained] gold!":{
-		Italian:"La tua missione commerciale ti ha fruttato [goldGained] Oro!"
-		Romanian:"Misuiunea comercială ți-a adus [goldGained] aur!"
-		Spanish:"¡La mision de comercio ha generado [goldGained] de oro!"
-		Simplified_Chinese:"您开展贸易赚了[goldGained]金钱"
-		Traditional_Chinese:"您發展貿易賺了[goldGained]金錢"
-		Portuguese:"Sua missão comercial deu-lhe [goldGained] ouro!"
-		German:"Die Handelsmission hat [goldGained] Gold eingebracht!"
-		French:"Votre mission commerciale vous a rapporté [goldGained] ors"
-		Russian:"Ваша торговая сделка принесла вам [goldGained] золота!",
-		Czech:"Obchodní mise vynesla [goldGained] zlata!"
-		Ukrainian:"Ваша угода принесла вам [goldGained] золота"
+	"You get [amount] gold and 30 Influence with [otherCiv] from trade mission!":{
+		Simplified_Chinese:"您拓展贸易获得了[amount]金钱，对[otherCiv]的影响力+30"
+		Traditional_Chinese:"您拓展貿易獲得了[amount]金錢，對[otherCiv]的影響力+30"
 }
 
 	"Hurry Wonder":{
