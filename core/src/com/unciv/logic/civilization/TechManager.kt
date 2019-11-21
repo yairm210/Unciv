@@ -12,6 +12,7 @@ import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
+import kotlin.math.max
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -30,6 +31,7 @@ class TechManager {
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
     private var techsInProgress = HashMap<String, Int>()
+    var overflowScience = 0
 
     //region state-changing functions
     fun clone(): TechManager {
@@ -79,8 +81,7 @@ class TechManager {
     fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
 
     fun turnsToTech(techName: String): Int {
-        return ceil( remainingScienceToTech(techName).toDouble()
-                / civInfo.statsForNextTurn.science).toInt()
+        return max(1, ceil( remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt())
     }
 
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
@@ -118,10 +119,19 @@ class TechManager {
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
+        if (overflowScience != 0){ // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
+            val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
+            val undefeatedCivs = UnCivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
+            techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f)* overflowScience).toInt()
+        }
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
 
         // We finished it!
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        overflowScience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
+        if(overflowScience > max(scienceForNewTurn * 5, GameBasics.Technologies[currentTechnology]!!.cost))
+            overflowScience = max(scienceForNewTurn * 5, GameBasics.Technologies[currentTechnology]!!.cost)
         addTechnology(currentTechnology)
     }
 
