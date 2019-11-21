@@ -1,4 +1,4 @@
-# UnCiv - Civ V for Android (+Desktop)
+# Unciv - Civ V for Android (+Desktop)
 
 ![](https://lh3.googleusercontent.com/l8fuQ2DnNjoD9pFnHLsli1xt8OClfr6O9GSBJJ9w7IIb2VHOyxqKZ9lNZXtMqOabCfyI=w1920-h867-rw)
 
