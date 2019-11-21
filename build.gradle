@@ -2,7 +2,6 @@ buildscript {
 
     ext.kotlinVersion = '1.3.50'
 
-
     repositories {
         // Chinese mirrors for quicker loading for chinese devs
         maven{ url 'https://maven.aliyun.com/repository/jcenter'}
@@ -14,6 +13,7 @@ buildscript {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
+
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -49,6 +49,7 @@ allprojects {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven{ url 'https://jitpack.io' } // for java-discord-rpc
     }
 }
 
@@ -63,9 +64,10 @@ project(":desktop") {
         implementation "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
 
         implementation "com.badlogicgames.gdx:gdx-tools:$gdxVersion"  // This is for the TexturePacker class
-        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    }
+        implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion" // This iss so the JAR works with Kotlin
 
+        implementation 'com.github.MinnDevelopment:java-discord-rpc:v2.0.1'
+    }
 
 }
 

@@ -34,6 +34,7 @@ class UnCivGame(val version: String) : Game() {
 
     var music : Music? =null
     val musicLocation = "music/thatched-villagers.mp3"
+    var isInitialized=false
 
     override fun create() {
         Current = this
@@ -58,6 +59,7 @@ class UnCivGame(val version: String) : Game() {
         else setScreen(LanguagePickerScreen())
 
         thread { startMusic() }
+        isInitialized=true
     }
 
     fun startMusic(){
