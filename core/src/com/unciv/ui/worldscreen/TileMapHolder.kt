@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
@@ -55,6 +56,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             tileGroup.cityButtonLayerGroup.onClick("") {
                 onTileClicked(tileGroup.tileInfo)
             }
+            tileGroup.onClick { onTileClicked(tileGroup.tileInfo) }
         }
 
         actor = allTiles
@@ -113,12 +115,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 }
                 return null
             }
-
-            override fun tap(event: InputEvent, x: Float, y: Float, count: Int, button: Int) {
-                val tileGroup = toTileGroup(Vector2(event.stageX, event.stageY))
-                if (tileGroup != null) onTileClicked(tileGroup.tileInfo)
-            }
-
 
             override fun longPress(actor: Actor, x: Float, y: Float): Boolean {
                 if (!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
@@ -259,6 +255,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if (selectedUnit != null) {
             addOverlayOnTileGroup(tileInfo, UnitContextMenu(this, selectedUnit, tileInfo))
+            // don't activate the regular tile click after a long-press,
+            // that makes the long-press basically worthless
+            (tileGroups[tileInfo]!!.listeners.first { it is ClickListener }!! as ClickListener).cancel()
             return true
         }
 
