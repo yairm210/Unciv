@@ -41,6 +41,12 @@ internal object DesktopLauncher {
 
         val game = UnCivGame("Desktop")
 
+//        tryActivateDiscord(game) // Deactivated until we can figure out how to make it work from the .jar
+
+        LwjglApplication(game, config)
+    }
+
+    private fun tryActivateDiscord(game: UnCivGame) {
         try {
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
@@ -48,7 +54,7 @@ internal object DesktopLauncher {
             Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
 
             thread {
-                while(true){
+                while (true) {
                     updateRpc(game)
                     Thread.sleep(1000)
                 }
@@ -56,8 +62,6 @@ internal object DesktopLauncher {
         } catch (ex: Exception) {
             print("Could not initialize Discord")
         }
-
-        LwjglApplication(game, config)
     }
 
     fun updateRpc(game: UnCivGame) {
