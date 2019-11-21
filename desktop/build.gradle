@@ -5,6 +5,7 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.unciv.app.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assets")
+project.ext.discordDir = new File("discord_rpc")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -29,6 +30,8 @@ task dist(type: Jar) {
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
     from {configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
     from files(project.assetsDir)
+    // This is for the .dll and .so files to ake the Discord RPC work on all desktops
+    from files(project.discordDir)
     archiveFileName  = "${appName}.jar"
  
     manifest {

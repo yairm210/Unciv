@@ -16,34 +16,35 @@ import kotlin.concurrent.thread
 internal object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
-
-        if (File("../Images").exists()) { // So we don't run this from within a fat JAR
-            val settings = TexturePacker.Settings()
-            // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
-            // don't support non-power-of-two texture sizes - kudos @yuroller!
-            // https://github.com/yairm210/UnCiv/issues/1340
-            settings.maxWidth = 2048
-            settings.maxHeight = 2048
-            settings.combineSubdirectories = true
-            settings.pot = true
-            settings.fast = true
-
-            // This is so they don't look all pixelated
-            settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
-            settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-            TexturePacker.process(settings, "../Images", ".", "game")
-        }
+        if (File("../Images").exists()) // So we don't run this from within a fat JAR
+            packImages()
 
         val config = LwjglApplicationConfiguration()
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
 
-
         val game = UnCivGame("Desktop")
 
-//        tryActivateDiscord(game) // Deactivated until we can figure out how to make it work from the .jar
+        tryActivateDiscord(game)
 
         LwjglApplication(game, config)
+    }
+
+    private fun packImages() {
+        val settings = TexturePacker.Settings()
+        // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
+        // don't support non-power-of-two texture sizes - kudos @yuroller!
+        // https://github.com/yairm210/UnCiv/issues/1340
+        settings.maxWidth = 2048
+        settings.maxHeight = 2048
+        settings.combineSubdirectories = true
+        settings.pot = true
+        settings.fast = true
+
+        // This is so they don't look all pixelated
+        settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
+        settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
+        TexturePacker.process(settings, "../Images", ".", "game")
     }
 
     private fun tryActivateDiscord(game: UnCivGame) {
