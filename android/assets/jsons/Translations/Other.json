@@ -1860,8 +1860,8 @@
 
 	// for unit action button
 	"You get [amount] gold and 30 Influence with [otherCiv] from trade mission!":{
-		Simplified_Chinese:"您拓展贸易获得了[amount]金钱，对[otherCiv]的影响力+30"
-		Traditional_Chinese:"您拓展貿易獲得了[amount]金錢，對[otherCiv]的影響力+30"
+		Simplified_Chinese:"您与[otherCiv]拓展贸易获得了[amount]金钱和30影响力！"
+		Traditional_Chinese:"您與[otherCiv]拓展貿易獲得了[amount]金錢和30影響力！"
 }
 
 	"Hurry Wonder":{
