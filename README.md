@@ -1,6 +1,6 @@
-# UnCiv - Civ V for Android (+Desktop)
+# Unciv - Civ V for Android (+Desktop)
 
-![](https://lh3.googleusercontent.com/UKRJog9ZI6w93hYLf_VXIKP5gRU9jP8IW3Ka9FhbFasdMjiFTA-ktmGzCMD-HFMsZw=w1920-h867-rw)
+![](https://lh3.googleusercontent.com/l8fuQ2DnNjoD9pFnHLsli1xt8OClfr6O9GSBJJ9w7IIb2VHOyxqKZ9lNZXtMqOabCfyI=w1920-h867-rw)
 
 
 [![Google Play](https://img.shields.io/badge/Google-Play-black.svg)](https://play.google.com/store/apps/details?id=com.unciv.app)
