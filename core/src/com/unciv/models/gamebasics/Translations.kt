@@ -1,7 +1,7 @@
 package com.unciv.models.gamebasics
 
 import com.badlogic.gdx.utils.JsonReader
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import java.util.*
 
 class TranslationEntry(val entry:String) : HashMap<String, String>(){
@@ -58,7 +58,7 @@ class Translations : HashMap<String, TranslationEntry>(){
             if(regexResult==null) return unique.tr()
             else{
                 var separatorCharacter = " "
-                if (UnCivGame.Current.settings.language=="Simplified_Chinese")separatorCharacter = ""
+                if (UncivGame.Current.settings.language=="Simplified_Chinese")separatorCharacter = ""
                 val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
                 val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
                 return translatedUnique
@@ -94,7 +94,7 @@ fun String.tr(): String {
                 .firstOrNull { translationStringWithSquareBracketsOnly == it.entryWithShortenedSquareBrackets }
 
         if(translationEntry==null ||
-                !translationEntry.containsKey(UnCivGame.Current.settings.language)){
+                !translationEntry.containsKey(UncivGame.Current.settings.language)){
             // Translation placeholder doesn't exist for this language, default to English
             return this.replace(eitherSquareBraceRegex,"")
         }
@@ -104,7 +104,7 @@ fun String.tr(): String {
         if(termsInMessage.size!=termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
-        var languageSpecificPlaceholder = translationEntry[UnCivGame.Current.settings.language]!!
+        var languageSpecificPlaceholder = translationEntry[UncivGame.Current.settings.language]!!
         for(i in termsInMessage.indices){
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
         }
@@ -115,6 +115,6 @@ fun String.tr(): String {
         return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
 
-    val translation = GameBasics.Translations.get(this, UnCivGame.Current.settings.language) // single word
+    val translation = GameBasics.Translations.get(this, UncivGame.Current.settings.language) // single word
     return translation
 }

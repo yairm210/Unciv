@@ -2,7 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -45,7 +45,7 @@ class UnitAutomation{
             return SpecificUnitAutomation().automateGreatPerson(unit)
         }
 
-        val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+        val unitActions = UnitActions().getUnitActions(unit,UncivGame.Current.worldScreen)
         var unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
         if(unit.civInfo.isBarbarian() &&
@@ -156,7 +156,7 @@ class UnitAutomation{
         if (unit.getTile()!=tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+        UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
                 .first { it.name == "Pillage" }.action()
         return true
     }

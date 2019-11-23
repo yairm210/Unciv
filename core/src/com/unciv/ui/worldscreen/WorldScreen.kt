@@ -9,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -163,7 +163,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         bottomUnitTable.update()
         bottomTileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
         bottomTileInfoTable.x=stage.width-bottomTileInfoTable.width
-        bottomTileInfoTable.y=if(UnCivGame.Current.settings.showMinimap)minimapWrapper.height else 0f
+        bottomTileInfoTable.y=if(UncivGame.Current.settings.showMinimap)minimapWrapper.height else 0f
         battleTable.update()
 
         minimapWrapper.update(viewingCiv)
@@ -202,11 +202,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun displayTutorialsOnUpdate() {
-        if (UnCivGame.Current.settings.hasCrashedRecently) {
+        if (UncivGame.Current.settings.hasCrashedRecently) {
             displayTutorials("_GameCrashed")
-            UnCivGame.Current.settings.tutorialsShown.remove("_GameCrashed")
-            UnCivGame.Current.settings.hasCrashedRecently = false
-            UnCivGame.Current.settings.save()
+            UncivGame.Current.settings.tutorialsShown.remove("_GameCrashed")
+            UncivGame.Current.settings.hasCrashedRecently = false
+            UncivGame.Current.settings.save()
         }
 
         if (bottomUnitTable.selectedUnit != null) displayTutorials("Unit_Selected")
@@ -214,10 +214,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             displayTutorials("_City_Founded")
             displayTutorials("First_Steps")
         }
-        if (UnCivGame.Current.settings.tutorialsShown.contains("Cities")) displayTutorials("Next_Turn")
+        if (UncivGame.Current.settings.tutorialsShown.contains("Cities")) displayTutorials("Next_Turn")
 
 
-        if (!UnCivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
+        if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
             for (enemyCity in viewingCiv.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() }.flatMap { it.cities }) {
                 if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
@@ -242,7 +242,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         .any()) {
             displayTutorials("_OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
-            btn.onClick { UnCivGame.Current.setScreen(DiplomacyScreen(viewingCiv)) }
+            btn.onClick { UncivGame.Current.setScreen(DiplomacyScreen(viewingCiv)) }
             btn.label.setFontSize(30)
             btn.labelCell.pad(10f)
             diplomacyButtonWrapper.add(btn)
@@ -370,7 +370,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    UnCivGame.Current.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
+                    UncivGame.Current.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
                 else {
                     createNewWorldScreen()
                 }
@@ -429,7 +429,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
-        val shownTutorials = UnCivGame.Current.settings.tutorialsShown
+        val shownTutorials = UncivGame.Current.settings.tutorialsShown
         displayTutorials("Slow_Start")
         if("_BarbarianEncountered" !in shownTutorials
                 && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } })
@@ -438,7 +438,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(viewingCiv.getHappiness() < 5) displayTutorials("Happiness")
         if(viewingCiv.getHappiness() < 0) displayTutorials("Unhappiness")
         if(viewingCiv.goldenAges.isGoldenAge()) displayTutorials("Golden_Age")
-        if(gameInfo.turns >= 50 && UnCivGame.Current.settings.checkForDueUnits) displayTutorials("Idle_Units")
+        if(gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits) displayTutorials("Idle_Units")
         if(gameInfo.turns >= 100) displayTutorials("Contact_Me")
         val resources = viewingCiv.getCivResources()
         if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("Luxury_Resource")

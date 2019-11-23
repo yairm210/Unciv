@@ -2,7 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -18,8 +18,8 @@ class PlayerReadyScreen(currentPlayerCiv: CivilizationInfo) : CameraStageBaseScr
         table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),24))
 
         table.onClick {
-            UnCivGame.Current.worldScreen = WorldScreen(currentPlayerCiv)
-            UnCivGame.Current.setWorldScreen()
+            UncivGame.Current.worldScreen = WorldScreen(currentPlayerCiv)
+            UncivGame.Current.setWorldScreen()
         }
         table.setFillParent(true)
         stage.addActor(table)

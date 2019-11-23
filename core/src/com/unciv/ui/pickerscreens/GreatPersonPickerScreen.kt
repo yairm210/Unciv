@@ -1,7 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -35,10 +35,10 @@ class GreatPersonPickerScreen : PickerScreen() {
         }
 
         rightSideButton.onClick("choir") {
-            val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+            val currentPlayerCiv = UncivGame.Current.gameInfo.getCurrentPlayerCivilization()
             currentPlayerCiv.placeUnitNearTile(currentPlayerCiv.cities[0].location, theChosenOne!!.name)
             currentPlayerCiv.greatPeople.freeGreatPeople--
-            UnCivGame.Current.setWorldScreen()
+            UncivGame.Current.setWorldScreen()
         }
 
     }

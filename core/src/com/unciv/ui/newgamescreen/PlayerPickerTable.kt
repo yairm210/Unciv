@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -80,7 +80,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
             playerIdTable.row()
 
-            val currentUserId = UnCivGame.Current.settings.userId
+            val currentUserId = UncivGame.Current.settings.userId
             val setCurrentUserButton = TextButton("Set current user".tr(), CameraStageBaseScreen.skin)
             setCurrentUserButton.onClick {
                 playerIdTextfield.text = currentUserId

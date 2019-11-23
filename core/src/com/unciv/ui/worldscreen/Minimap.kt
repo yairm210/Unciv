@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
@@ -75,7 +75,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
     fun update(cloneCivilization: CivilizationInfo) {
         for(tileInfo in tileMapHolder.tileMap.values) {
             val hex = tileImages[tileInfo]!!
-            if (!(UnCivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)))
+            if (!(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)))
                 hex.color = Color.DARK_GRAY
             else if (tileInfo.isCityCenter() && !tileInfo.isWater)
                 hex.color = tileInfo.getOwner()!!.nation.getInnerColor()
@@ -112,7 +112,7 @@ class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
 
     fun getToggleIcons():Table{
         val toggleIconTable=Table()
-        val settings = UnCivGame.Current.settings
+        val settings = UncivGame.Current.settings
 
         val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
         populationImage.circle.color = Color.BLACK
@@ -138,7 +138,7 @@ class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
     }
 
     fun update(civInfo:CivilizationInfo){
-        isVisible = UnCivGame.Current.settings.showMinimap
+        isVisible = UncivGame.Current.settings.showMinimap
         minimap.update(civInfo)
     }
 }

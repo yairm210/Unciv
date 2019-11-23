@@ -1,6 +1,6 @@
 package com.unciv.ui.tilegroups
 
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -26,16 +26,16 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
 
         icons.removePopulationIcon()
         val tileIsViewable = isViewable(viewingCiv)
-        if (tileIsViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
+        if (tileIsViewable && tileInfo.isWorked() && UncivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo.isPlayerCivilization())
             icons.addPopulationIcon()
 
         val currentPlayerCiv = worldScreen.viewingCiv
-        if (UnCivGame.Current.viewEntireMapForDebug
+        if (UncivGame.Current.viewEntireMapForDebug
                 || currentPlayerCiv.exploredTiles.contains(tileInfo.position))
-            updateCityButton(city, tileIsViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
+            updateCityButton(city, tileIsViewable || UncivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
 
-        super.update(viewingCiv, UnCivGame.Current.settings.showResourcesAndImprovements)
+        super.update(viewingCiv, UncivGame.Current.settings.showResourcesAndImprovements)
     }
 
 

@@ -11,12 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.tr
 
 open class CameraStageBaseScreen : Screen {
 
-    var game: UnCivGame = UnCivGame.Current
+    var game: UncivGame = UncivGame.Current
     var stage: Stage
     var tutorials = Tutorials()
     var hasPopupOpen = false

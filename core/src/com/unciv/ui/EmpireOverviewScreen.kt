@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -19,15 +19,15 @@ import kotlin.math.roundToInt
 
 class EmpireOverviewScreen : CameraStageBaseScreen(){
 
-    val currentPlayerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+    val currentPlayerCivInfo = UncivGame.Current.gameInfo.getCurrentPlayerCivilization()
 
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         val topTable = Table().apply { defaults().pad(10f) }
         val centerTable=Table().apply {  defaults().pad(20f) }
 
         val closeButton = TextButton("Close".tr(), skin)
-        closeButton.onClick { UnCivGame.Current.setWorldScreen() }
+        closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
@@ -245,8 +245,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         for (city in currentPlayerCivInfo.cities.sortedBy { it.name }) {
             val button = Button(Label(city.name, skin), skin)
             button.onClick {
-                UnCivGame.Current.setWorldScreen()
-                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(city.ccenterTile.position)
+                UncivGame.Current.setWorldScreen()
+                UncivGame.Current.worldScreen.tileMapHolder.setCenterPosition(city.ccenterTile.position)
             }
             cityInfoTableDetails.add(button)
             cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
@@ -308,8 +308,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             val baseUnit = unit.baseUnit()
             val button = TextButton(unit.name.tr(), skin)
             button.onClick {
-                UnCivGame.Current.setWorldScreen()
-                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
+                UncivGame.Current.setWorldScreen()
+                UncivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
             }
             table.add(button).left()
             val mapUnitAction = unit.mapUnitAction
@@ -414,7 +414,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
-            } else if (currentPlayer==civ || UnCivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
+            } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
                 backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()

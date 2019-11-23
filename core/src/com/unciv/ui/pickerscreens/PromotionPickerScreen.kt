@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Translations
@@ -27,7 +27,7 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
     }
 
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         setDefaultCloseAction()
 
 

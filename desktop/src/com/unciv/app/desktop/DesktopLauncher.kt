@@ -8,7 +8,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.tr
 import java.io.File
 import kotlin.concurrent.thread
@@ -23,7 +23,7 @@ internal object DesktopLauncher {
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
 
-        val game = UnCivGame("Desktop")
+        val game = UncivGame("Desktop")
 
         tryActivateDiscord(game)
 
@@ -47,7 +47,7 @@ internal object DesktopLauncher {
         TexturePacker.process(settings, "../Images", ".", "game")
     }
 
-    private fun tryActivateDiscord(game: UnCivGame) {
+    private fun tryActivateDiscord(game: UncivGame) {
         try {
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
@@ -65,7 +65,7 @@ internal object DesktopLauncher {
         }
     }
 
-    fun updateRpc(game: UnCivGame) {
+    fun updateRpc(game: UncivGame) {
         if(!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()

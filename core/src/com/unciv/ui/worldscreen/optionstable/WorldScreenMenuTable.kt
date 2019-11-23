@@ -2,7 +2,7 @@ package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
@@ -34,41 +34,41 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 tile.turnsToImprovement=0
                 tile.roadStatus=RoadStatus.None
             }
-            UnCivGame.Current.setScreen(MapEditorScreen(tileMapClone))
+            UncivGame.Current.setScreen(MapEditorScreen(tileMapClone))
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Civilopedia".tr()){
-            UnCivGame.Current.setScreen(CivilopediaScreen())
+            UncivGame.Current.setScreen(CivilopediaScreen())
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Load game".tr()){
-            UnCivGame.Current.setScreen(LoadGameScreen())
+            UncivGame.Current.setScreen(LoadGameScreen())
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Save game".tr()) {
-            UnCivGame.Current.setScreen(SaveGameScreen())
+            UncivGame.Current.setScreen(SaveGameScreen())
             remove()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Start new game".tr()){ UnCivGame.Current.setScreen(NewGameScreen()) }.size(width,height)
+        addSquareButton("Start new game".tr()){ UncivGame.Current.setScreen(NewGameScreen()) }.size(width,height)
         addSeparator()
 
 
         addSquareButton("Multiplayer".tr()) { openMultiplayerPopup() }.size(width,height)
         addSeparator()
 
-        addSquareButton("Victory status".tr()) { UnCivGame.Current.setScreen(VictoryScreen()) }.size(width,height)
+        addSquareButton("Victory status".tr()) { UncivGame.Current.setScreen(VictoryScreen()) }.size(width,height)
         addSeparator()
 
         addSquareButton("Options".tr()){
-            UnCivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsTable(worldScreen))
+            UncivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsTable(worldScreen))
             remove()
         }.size(width,height)
         addSeparator()
@@ -96,7 +96,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
         multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
 
-        multiplayerPopup.addButton("Copy User ID"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
+        multiplayerPopup.addButton("Copy User ID"){ Gdx.app.clipboard.contents = UncivGame.Current.settings.userId }.row()
 
         multiplayerPopup.addGoodSizedLabel("Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.").row()
 
@@ -119,7 +119,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             }
             try {
                 val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
-                UnCivGame.Current.loadGame(game)
+                UncivGame.Current.loadGame(game)
             } catch (ex: Exception) {
                 badGameIdLabel.setText("Could not download game!".tr())
                 badGameIdLabel.isVisible = true

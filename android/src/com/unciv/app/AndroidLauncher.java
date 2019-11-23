@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.unciv.UnCivGame;
+import com.unciv.UncivGame;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override
@@ -15,6 +15,6 @@ public class AndroidLauncher extends AndroidApplication {
 
 		config.useImmersiveMode=true;
 
-		initialize(new UnCivGame(version), config);
+		initialize(new UncivGame(version), config);
 	}
 }

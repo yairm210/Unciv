@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Json
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -55,8 +55,8 @@ class SaveGameScreen : PickerScreen() {
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onClick {
-            GameSaver().saveGame(UnCivGame.Current.gameInfo, textField.text)
-            UnCivGame.Current.setWorldScreen()
+            GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
+            UncivGame.Current.setWorldScreen()
         }
         rightSideButton.enable()
     }

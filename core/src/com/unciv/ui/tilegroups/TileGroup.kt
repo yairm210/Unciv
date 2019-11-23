@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
@@ -72,7 +72,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon)
 
 
-    var showEntireMap = UnCivGame.Current.viewEntireMapForDebug
+    var showEntireMap = UncivGame.Current.viewEntireMapForDebug
     var forMapEditorIcon = false
 
     class RoadImage {
@@ -140,7 +140,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
                 return listOf(tileSetStrings.cityTile)
         }
-        val shouldShowImprovement = tileInfo.improvement!=null && UnCivGame.Current.settings.showPixelImprovements
+        val shouldShowImprovement = tileInfo.improvement!=null && UncivGame.Current.settings.showPixelImprovements
         val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain)
         if (tileInfo.terrainFeature != null) {
             val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
@@ -419,7 +419,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             val unitType = militaryUnit.type
             val specificUnitIconLocation = tileSetStrings.unitsLocation + militaryUnit.name
             newImageLocation = when {
-                !UnCivGame.Current.settings.showPixelUnits -> ""
+                !UncivGame.Current.settings.showPixelUnits -> ""
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
 
                 militaryUnit.baseUnit.replaces!=null &&
@@ -457,7 +457,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (tileInfo.civilianUnit != null && tileIsViewable) {
             val specificUnitIconLocation = tileSetStrings.unitsLocation + tileInfo.civilianUnit!!.name
             newImageLocation = when {
-                !UnCivGame.Current.settings.showPixelUnits -> ""
+                !UncivGame.Current.settings.showPixelUnits -> ""
                 ImageGetter.imageExists(specificUnitIconLocation) -> specificUnitIconLocation
                 else -> ""
             }

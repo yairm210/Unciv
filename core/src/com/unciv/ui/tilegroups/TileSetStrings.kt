@@ -1,11 +1,11 @@
 package com.unciv.ui.tilegroups
 
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 
 class TileSetStrings {
     // this is so that when we have 100s of TileGroups, they won't all individually come up with all these strings themselves,
     // it gets pretty memory-intensive (10s of MBs which is a lot for lower-end phones)
-    val tileSetLocation = "TileSets/"+ UnCivGame.Current.settings.tileSet +"/"
+    val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
 
     val hexagon = tileSetLocation+"Hexagon"
     val crosshatchHexagon = tileSetLocation+"CrosshatchHexagon"

@@ -3,7 +3,7 @@
 package de.tomgrill.gdxtesting.examples
 
 import com.badlogic.gdx.Gdx
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.mapeditor.MapEditorScreen
 import de.tomgrill.gdxtesting.GdxTestRunner
@@ -28,7 +28,7 @@ class BasicTests {
 
     @Test
     fun canOpenMapEditorScreen() {
-        UnCivGame.Current.setScreen(MapEditorScreen(UnCivGame.Current.gameInfo.tileMap))
+        UncivGame.Current.setScreen(MapEditorScreen(UncivGame.Current.gameInfo.tileMap))
         assertTrue("This test will only pass when we can open the map editor screen",
                 GameBasics.Buildings.size > 0)
     }

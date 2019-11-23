@@ -2,7 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
@@ -72,7 +72,7 @@ class UnitActions {
         if(!unit.type.isCivilian() && unit.promotions.canBePromoted()) {
             // promotion does not consume movement points, so we can do it always
             actionList += UnitAction("Promote", true) {
-                UnCivGame.Current.setScreen(PromotionPickerScreen(unit))
+                UncivGame.Current.setScreen(PromotionPickerScreen(unit))
             }.sound("promote")
         }
 

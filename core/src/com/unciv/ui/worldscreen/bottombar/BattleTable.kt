@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
 import com.unciv.models.gamebasics.tr
@@ -56,7 +56,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if(defender==null ||
                 defender.getCivInfo()==worldScreen.viewingCiv
-                || !(UnCivGame.Current.viewEntireMapForDebug
+                || !(UncivGame.Current.viewEntireMapForDebug
                         || attacker.getCivInfo().exploredTiles.contains(selectedTile.position))) {
             hide()
             return

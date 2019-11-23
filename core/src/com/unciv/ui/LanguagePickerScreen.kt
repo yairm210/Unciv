@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -81,10 +81,10 @@ class LanguagePickerScreen: PickerScreen(){
     }
 
     fun pickLanguage(){
-        UnCivGame.Current.settings.language = chosenLanguage
-        UnCivGame.Current.settings.save()
+        UncivGame.Current.settings.language = chosenLanguage
+        UncivGame.Current.settings.save()
         resetFonts()
-        UnCivGame.Current.startNewGame()
+        UncivGame.Current.startNewGame()
         dispose()
     }
 }

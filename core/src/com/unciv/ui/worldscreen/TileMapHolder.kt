@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -179,7 +179,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 else selectedUnit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
 
             Gdx.app.postRunnable {
-                if(UnCivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
+                if(UncivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
                     // single turn instant move
                     selectedUnit.movement.headTowards(tileInfo)
                     worldScreen.bottomUnitTable.selectedUnit = selectedUnit // keep moved unit selected
@@ -331,14 +331,14 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (tile: TileInfo in tilesInMoveRange)
             if (unit.movement.canMoveTo(tile))
                 tileGroups[tile]!!.showCircle(Color.WHITE,
-                        if (UnCivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
+                        if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
 
 
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
         else {
             val tiles = UnitAutomation().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
-            tiles.filter { (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+            tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         }
 
         for (attackableTile in attackableTiles) {
@@ -360,7 +360,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
         val attackableTiles: List<TileInfo> = UnitAutomation().getBombardTargets(city)
-                    .filter { (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+                    .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
             tileGroups[attackableTile]!!.showCrosshair()

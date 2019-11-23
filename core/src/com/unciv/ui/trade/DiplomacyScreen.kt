@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
@@ -28,10 +28,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
     val leftSideTable = Table().apply { defaults().pad(10f) }
     val rightSideTable = Table()
 
-    fun isNotPlayersTurn() = !UnCivGame.Current.worldScreen.isPlayersTurn
+    fun isNotPlayersTurn() = !UncivGame.Current.worldScreen.isPlayersTurn
 
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
@@ -42,7 +42,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
 
         val closeButton = TextButton("Close".tr(), skin)
-        closeButton.onClick { UnCivGame.Current.setWorldScreen() }
+        closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.label.setFontSize(24)
         closeButton.labelCell.pad(10f)
         closeButton.pack()
@@ -53,7 +53,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     private fun updateLeftSideTable() {
         leftSideTable.clear()
-        for (civ in UnCivGame.Current.gameInfo.civilizations
+        for (civ in UncivGame.Current.gameInfo.civilizations
                 .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() }) {
             if (!viewingCiv.knows(civ)) continue
 

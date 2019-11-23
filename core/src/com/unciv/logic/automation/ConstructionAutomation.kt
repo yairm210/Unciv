@@ -2,7 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.civilization.CityAction
@@ -45,7 +45,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     fun chooseNextConstruction() {
-        if (!UnCivGame.Current.settings.autoAssignCityProduction
+        if (!UncivGame.Current.settings.autoAssignCityProduction
                 && civInfo.playerType== PlayerType.Human && !cityInfo.isPuppet)
             return
         if (cityConstructions.getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
