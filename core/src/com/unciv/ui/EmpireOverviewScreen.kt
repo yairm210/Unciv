@@ -13,6 +13,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
+import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
@@ -245,8 +246,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         for (city in currentPlayerCivInfo.cities.sortedBy { it.name }) {
             val button = Button(Label(city.name, skin), skin)
             button.onClick {
-                UncivGame.Current.setWorldScreen()
-                UncivGame.Current.worldScreen.tileMapHolder.setCenterPosition(city.ccenterTile.position)
+                UncivGame.Current.setScreen(CityScreen(city))
             }
             cityInfoTableDetails.add(button)
             cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
