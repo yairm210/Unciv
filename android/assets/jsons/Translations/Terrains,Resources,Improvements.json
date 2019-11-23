@@ -104,7 +104,7 @@
 		Spanish:"Montañas"
 		Simplified_Chinese:"山脉",
 		Traditional_Chinese:"山脈",
-		German:"Berge"
+		German:"Berge" // singular or plural needed?
 		French:"Montagne"
 		Russian:"Горы"
 		Portuguese:"Montanha"
@@ -164,6 +164,7 @@
 		Italian:"Scorie Radioattive"
 		Simplified_Chinese:"核辐射"
 		Traditional_Chinese:"核輻射"
+		German:"Verseucht"
 }
 
 	"Oasis":{
@@ -596,6 +597,7 @@
                 Korean:"상아"
 		Czech:"Slonovina"
 		Ukrainian:"Слонова кістка"
+		German:"Elfenbein"
 }
 
 	"Silk":{
@@ -747,7 +749,7 @@
 		Russian:"Крабы"
 		French:"Crabe"
 		Romanian:"Crabi"
-		German:"Crabs"
+		German:"Krabben"
 		Dutch:"Krabben"
 		Spanish:"Cangrejos"
 		Simplified_Chinese:"螃蟹",
@@ -972,6 +974,7 @@
                 Korean:"도로 제거"
 		Czech:"Odstranit cestu"
 		Ukrainian:"Видалити дорогу"
+		German:"Entferne Straße"
 }
 
 	"Railroad":{
@@ -999,6 +1002,7 @@
                 Korean:"철도 제거"
 		Czech:"Odstranit železnici"
 		Ukrainian:"Прибрати колію"
+		German:"Entferne Schienen"
 }
 
 	"Remove Forest":{
@@ -1050,6 +1054,7 @@
 		Italian:"Rimuovi Scoria Radioattiva"
 		Simplified_Chinese:"消除核辐射"
 		Traditional_Chinese:"消除核輻射"
+		German:"Entferne Verseuchung"
 }
 
 	"Ancient ruins":{
@@ -1159,6 +1164,7 @@
 		Czech:"Moai (kamenná socha)"
 		Simplified_Chinese:"摩艾石像群",
 		Traditional_Chinese:"摩艾石像群"
+		German:"Moai"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
@@ -1168,6 +1174,7 @@
 		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
 		Ukrainian:"+1 додаткова Культура за кожну сусідню Moai"
 		Traditional_Chinese:"每個相鄰的摩艾石像群額外+1文化"
+		German:"+1 zusätzliche Kultur für jedes anliegende Moai"
 }
 
 	"Can only be built on Coastal tiles":{
@@ -1177,6 +1184,7 @@
 		Simplified_Chinese:"只能建造在沿海地块"
 		Ukrainian:"Можна побудувати лише на прибрежній плитці"
 		Traditional_Chinese:"只能在沿海地塊建造"
+		German:"Kann nur auf Küstenfeldern gebaut werden"
 }
 
 
@@ -1188,6 +1196,7 @@
                 Korean:"야만인 야영지"
 		Czech:"Barbarský tábor"
 		Ukrainian:"Табір варварів"
+		German:"Barbarenlager"
 	}
 
 }
