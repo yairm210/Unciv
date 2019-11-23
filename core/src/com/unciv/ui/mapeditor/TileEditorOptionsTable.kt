@@ -181,7 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             val tileInfo = TileInfo()
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
-                    terrain.occursOn == null -> terrain.occursOn!!.first()
+                    terrain.occursOn != null -> terrain.occursOn.first()
                     else -> "Grassland"
                 }
                 tileInfo.terrainFeature = terrain.name

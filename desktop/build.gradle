@@ -24,7 +24,7 @@ task debug(dependsOn: classes, type: JavaExec) {
     debug = true
 }
 
-task dist(type: Jar) {
+task dist(dependsOn: classes, type: Jar) {
     from files(sourceSets.main.output.resourcesDir)
     from files(sourceSets.main.output.classesDirs)
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
@@ -39,7 +39,20 @@ task dist(type: Jar) {
     }
 }
 
-dist.dependsOn classes
+//task packrWindows(){
+//    PackrConfig config = new PackrConfig();
+//    config.platform = PackrConfig.Platform.Windows32;
+//    config.jdk = "/User/badlogic/Downloads/openjdk-for-mac.zip";
+//    config.executable = "myapp";
+//    config.classpath = Arrays.asList("myjar.jar");
+//    config.removePlatformLibs = config.classpath;
+//    config.mainClass = "com.my.app.MainClass";
+//    config.vmArgs = Arrays.asList("Xmx1G");
+//    config.minimizeJre = "soft";
+//    config.outDir = new File("out-mac");
+//
+//    new Packr().pack(config);
+//}
 
 eclipse {
     project {
@@ -58,8 +71,8 @@ task afterEclipseImport(description: "Post processing after project generation",
     printer.print(classpath)
   }
 }
-
-dependencies {
-    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-    implementation project(path: ':core')
-}
+//
+//dependencies {
+//    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+//    implementation project(path: ':core')
+//}
