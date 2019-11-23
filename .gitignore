@@ -136,3 +136,4 @@ android/assets/maps/
 android/release/android.aab.sig
 android/release/android-release.aab
 tests/build/
+desktop/packr/

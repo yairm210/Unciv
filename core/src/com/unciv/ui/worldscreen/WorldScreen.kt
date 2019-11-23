@@ -188,7 +188,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(!isSomethingOpen && isPlayersTurn) {
             when {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
-                viewingCiv.policies.freePolicies > 0 -> game.setScreen(PolicyPickerScreen(this))
+                viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy() -> game.setScreen(PolicyPickerScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen())
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)

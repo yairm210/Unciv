@@ -1,9 +1,0 @@
-{
-  "classPath": [
-    "myjar.jar"
-  ],
-  "mainClass": "com.my.app.MainClass",
-  "vmArgs": [
-    "-Xmx1G"
-  ]
-}
