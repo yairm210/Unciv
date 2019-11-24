@@ -2,7 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -68,7 +68,7 @@ class WorkerAutomation(val unit: MapUnit) {
 
     private fun tryConnectingCities(unit: MapUnit):Boolean { // returns whether we actually did anything
         //Player can choose not to auto-build roads & railroads.
-        if (unit.civInfo.isPlayerCivilization() && !UnCivGame.Current.settings.autoBuildingRoads)
+        if (unit.civInfo.isPlayerCivilization() && !UncivGame.Current.settings.autoBuildingRoads)
             return false
 
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()

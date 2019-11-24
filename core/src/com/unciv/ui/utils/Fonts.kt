@@ -2,7 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import core.java.nativefont.NativeFont
 import core.java.nativefont.NativeFontPaint
@@ -47,7 +47,7 @@ class Fonts {
     }
 
    fun getFont(size: Int): BitmapFont {
-       val language = UnCivGame.Current.settings.language
+       val language = UncivGame.Current.settings.language
        val fontForLanguage ="Nativefont"
        val isUniqueFont = language.contains("Chinese") || language == "Korean"
        val keyForFont = if(!isUniqueFont) "$fontForLanguage $size" else "$fontForLanguage $size $language"

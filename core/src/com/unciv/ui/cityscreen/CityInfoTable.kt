@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.Building
@@ -84,7 +84,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                             }, cityScreen)
                     }
                     if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold
-                            || !UnCivGame.Current.worldScreen.isPlayersTurn)
+                            || !UncivGame.Current.worldScreen.isPlayersTurn)
                         sellBuildingButton.disable()
                 }
                 wonderDetailsTable.addSeparator()
@@ -235,7 +235,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
-                if(!UnCivGame.Current.worldScreen.isPlayersTurn) unassignButton.disable()
+                if(!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.disable()
                 specialistPickerTable.add(unassignButton)
             } else specialistPickerTable.add()
 
@@ -253,7 +253,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
-                if (cityInfo.population.getFreePopulation() == 0 || !UnCivGame.Current.worldScreen.isPlayersTurn)
+                if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen.isPlayersTurn)
                     assignButton.disable()
                 specialistPickerTable.add(assignButton)
             } else specialistPickerTable.add()

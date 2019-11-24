@@ -3,7 +3,7 @@ package com.unciv.ui.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.UnitGroup
@@ -60,7 +60,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == UnCivGame.Current.worldScreen.viewingCiv)
+            if (!unit.isIdle() && unit.civInfo == UncivGame.Current.worldScreen.viewingCiv)
                 newImage.unitBaseImage.color.a = 0.5f
         }
         return newImage
@@ -106,7 +106,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
             val shouldDisplayResource =
                     if (tileGroup.showEntireMap) tileGroup.tileInfo.resource != null
                     else showResourcesAndImprovements
-                            && tileGroup.tileInfo.hasViewableResource(UnCivGame.Current.worldScreen.viewingCiv)
+                            && tileGroup.tileInfo.hasViewableResource(UncivGame.Current.worldScreen.viewingCiv)
             tileGroup.resourceImage!!.isVisible = shouldDisplayResource
         }
     }

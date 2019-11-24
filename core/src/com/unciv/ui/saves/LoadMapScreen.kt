@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.tr
@@ -21,7 +21,7 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
     init {
         rightSideButton.setText("Load map".tr())
         rightSideButton.onClick {
-            UnCivGame.Current.setScreen(MapEditorScreen(chosenMap))
+            UncivGame.Current.setScreen(MapEditorScreen(chosenMap))
             dispose()
         }
 
@@ -46,7 +46,7 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
                 val loadedMap = MapSaver().mapFromJson(decoded)
-                UnCivGame.Current.setScreen(MapEditorScreen(loadedMap))
+                UncivGame.Current.setScreen(MapEditorScreen(loadedMap))
             }
             catch (ex:Exception){
                 couldNotLoadMapLabel.isVisible=true
@@ -58,7 +58,7 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
         deleteMapButton.onClick {
             YesNoPopupTable("Are you sure you want to delete this map?", {
                 MapSaver().deleteMap(chosenMap)
-                UnCivGame.Current.setScreen(LoadMapScreen(previousMap))
+                UncivGame.Current.setScreen(LoadMapScreen(previousMap))
             }, this)
         }
         deleteMapButton.disable()
@@ -66,6 +66,6 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
         rightSideTable.add(deleteMapButton).row()
 
         topTable.add(rightSideTable)
-        closeButton.onClick { UnCivGame.Current.setScreen(MapEditorScreen(previousMap)) }
+        closeButton.onClick { UncivGame.Current.setScreen(MapEditorScreen(previousMap)) }
     }
 }

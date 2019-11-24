@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
@@ -51,9 +51,9 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
             buyTileButton.onClick("coin") {
                 city.expansion.buyTile(selectedTile)
-                UnCivGame.Current.setScreen(CityScreen(city))
+                UncivGame.Current.setScreen(CityScreen(city))
             }
-            if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UnCivGame.Current.worldScreen.isPlayersTurn)
+            if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UncivGame.Current.worldScreen.isPlayersTurn)
                 buyTileButton.disable()
 
             innerTable.add(buyTileButton)
@@ -62,7 +62,7 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
             acquireTileButton.onClick {
                 city.expansion.takeOwnership(selectedTile)
-                UnCivGame.Current.setScreen(CityScreen(city))
+                UncivGame.Current.setScreen(CityScreen(city))
             }
             innerTable.add(acquireTileButton)
         }

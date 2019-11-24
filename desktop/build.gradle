@@ -1,3 +1,6 @@
+import com.badlogicgames.packr.Packr
+import com.badlogicgames.packr.PackrConfig
+
 apply plugin: "kotlin"
 
 sourceCompatibility = 1.6
@@ -24,7 +27,7 @@ task debug(dependsOn: classes, type: JavaExec) {
     debug = true
 }
 
-task dist(type: Jar) {
+task dist(dependsOn: classes, type: Jar) {
     from files(sourceSets.main.output.resourcesDir)
     from files(sourceSets.main.output.classesDirs)
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
@@ -39,7 +42,22 @@ task dist(type: Jar) {
     }
 }
 
-dist.dependsOn classes
+task packrWindows(dependsOn: dist){
+    def jarFile = "desktop/build/libs/${appName}.jar".toString()
+    PackrConfig config = new PackrConfig()
+    config.platform = PackrConfig.Platform.Windows64
+    config.jdk = "https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+    config.executable = "Unciv"
+    config.classpath = Arrays.asList(jarFile)
+    config.removePlatformLibs = config.classpath
+    config.mainClass = project.ext.mainClassName
+    config.vmArgs = Arrays.asList("Xmx1G")
+    config.minimizeJre = "soft"
+    config.outDir = new File("desktop/packr")
+
+    if (new File(jarFile).exists())
+        new Packr().pack(config)
+}
 
 eclipse {
     project {
@@ -57,9 +75,4 @@ task afterEclipseImport(description: "Post processing after project generation",
     printer.setPreserveWhitespace(true)
     printer.print(classpath)
   }
-}
-
-dependencies {
-    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-    implementation project(path: ':core')
 }

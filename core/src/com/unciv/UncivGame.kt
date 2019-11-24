@@ -18,7 +18,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
-class UnCivGame(val version: String) : Game() {
+class UncivGame(val version: String) : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
     /**
@@ -125,6 +125,6 @@ class UnCivGame(val version: String) : Game() {
     }
 
     companion object {
-        lateinit var Current: UnCivGame
+        lateinit var Current: UncivGame
     }
 }

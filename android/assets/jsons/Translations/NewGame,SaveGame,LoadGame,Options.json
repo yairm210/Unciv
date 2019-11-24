@@ -1070,6 +1070,7 @@
 }
 
 	"Downloading...": {
+		Italian:"Download in corso..."
 		Czech:"Probíhá stahování..."
 		Simplified_Chinese:"下载中..."
 		Traditional_Chinese:"下載中..."
@@ -1077,6 +1078,7 @@
 }
 
 	"Could not download music!": {
+		Italian:"Impossibile scaricare musica!"
 		Czech:"Nepodařilo se stáhnout hudbu!"
 		Simplified_Chinese:"无法下载音乐！"
 		Traditional_Chinese:"無法下載音樂！"

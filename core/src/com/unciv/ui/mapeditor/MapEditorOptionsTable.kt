@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
@@ -45,7 +45,7 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
         val saveMapButton = TextButton("Save map".tr(), skin)
         saveMapButton.onClick {
             MapSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
-            UnCivGame.Current.setWorldScreen()
+            UncivGame.Current.setWorldScreen()
         }
         add(saveMapButton).row()
 
@@ -59,7 +59,7 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
 
         val loadMapButton = TextButton("Load map".tr(), skin)
         loadMapButton.onClick {
-            UnCivGame.Current.setScreen(LoadMapScreen(mapEditorScreen.tileMap))
+            UncivGame.Current.setScreen(LoadMapScreen(mapEditorScreen.tileMap))
         }
         add(loadMapButton).row()
 
@@ -93,7 +93,7 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
         add(downloadMapButton).row()
 
         val exitMapEditorButton = TextButton("Exit map editor".tr(), skin)
-        exitMapEditorButton.onClick { UnCivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
+        exitMapEditorButton.onClick { UncivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
 
         val closeOptionsButton = TextButton("Close".tr(), skin)
@@ -118,7 +118,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
                         val decodedMapJson = Gzip.unzip(mapJsonGzipped)
                         val mapObject = MapSaver().mapFromJson(decodedMapJson)
                         MapSaver().saveMap(downloadableMap.name, mapObject)
-                        UnCivGame.Current.setScreen(MapEditorScreen(mapObject))
+                        UncivGame.Current.setScreen(MapEditorScreen(mapObject))
                     }
                     catch(ex:Exception){
                         val couldNotDownloadMapPopup = PopupTable(screen)

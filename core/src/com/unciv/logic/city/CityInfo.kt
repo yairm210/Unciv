@@ -3,7 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
@@ -326,7 +326,7 @@ class CityInfo {
 
         isPuppet=false
         cityStats.update()
-        UnCivGame.Current.worldScreen.shouldUpdate=true
+        UncivGame.Current.worldScreen.shouldUpdate=true
     }
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
@@ -392,7 +392,7 @@ class CityInfo {
         if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
         isPuppet = false
         cityStats.update()
-        UnCivGame.Current.worldScreen.shouldUpdate=true
+        UncivGame.Current.worldScreen.shouldUpdate=true
     }
 
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: CivilizationInfo) {

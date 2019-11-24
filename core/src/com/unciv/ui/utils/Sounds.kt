@@ -2,7 +2,7 @@ package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.audio.Sound
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 
 object Sounds{
     val soundMap = HashMap<String, Sound>()
@@ -15,6 +15,6 @@ object Sounds{
 
 
     fun play(name:String){
-        get(name).play(UnCivGame.Current.settings.soundEffectsVolume)
+        get(name).play(UncivGame.Current.settings.soundEffectsVolume)
     }
 }

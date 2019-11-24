@@ -1,7 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
@@ -51,7 +51,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     }
 
     protected fun pick(rightButtonText: String) {
-        if(UnCivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
+        if(UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
 }

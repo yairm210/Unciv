@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -39,7 +39,7 @@ class LoadGameScreen : PickerScreen() {
 
         rightSideButton.onClick {
             try {
-                UnCivGame.Current.loadGame(selectedSave)
+                UncivGame.Current.loadGame(selectedSave)
             }
             catch (ex:Exception){
                 val cantLoadGamePopup = PopupTable(this)
@@ -64,7 +64,7 @@ class LoadGameScreen : PickerScreen() {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
                 val loadedGame = GameSaver().gameInfoFromString(decoded)
-                UnCivGame.Current.loadGame(loadedGame)
+                UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 errorLabel.setText("Could not load game from clipboard!".tr())
                 ex.printStackTrace()
@@ -75,7 +75,7 @@ class LoadGameScreen : PickerScreen() {
 
         deleteSaveButton.onClick {
             GameSaver().deleteSave(selectedSave)
-            UnCivGame.Current.setScreen(LoadGameScreen())
+            UncivGame.Current.setScreen(LoadGameScreen())
         }
         deleteSaveButton.disable()
         rightSideTable.add(deleteSaveButton).row()

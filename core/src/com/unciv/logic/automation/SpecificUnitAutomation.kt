@@ -1,6 +1,6 @@
 package com.unciv.logic.automation
 
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -27,7 +27,7 @@ class SpecificUnitAutomation{
         if (closestReachableResource != null) {
             unit.movement.headTowards(closestReachableResource)
             if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
-                val createImprovementAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                val createImprovementAction = UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
                         .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
                 if (createImprovementAction != null)
                     return createImprovementAction.action() // unit is already gone, can't "Explore"
@@ -133,11 +133,11 @@ class SpecificUnitAutomation{
             throw Exception("City within distance")
 
         if (unit.getTile() == bestCityLocation)
-            UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).first { it.name == "Found city" }.action()
+            UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action()
         else {
             unit.movement.headTowards(bestCityLocation)
             if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
-                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).first { it.name == "Found city" }.action()
+                UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action()
         }
     }
 
@@ -171,7 +171,7 @@ class SpecificUnitAutomation{
 
             unit.movement.headTowards(chosenTile)
             if(unit.currentTile==chosenTile && unit.currentMovement>0)
-                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
                         .first { it.name.startsWith("Create") }.action()
             return
         }

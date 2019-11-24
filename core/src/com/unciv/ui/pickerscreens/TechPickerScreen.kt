@@ -4,9 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
@@ -43,7 +42,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
 
     init {
         setDefaultCloseAction()
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false,false)
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 

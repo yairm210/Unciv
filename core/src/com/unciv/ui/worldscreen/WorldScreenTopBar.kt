@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -49,7 +49,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         val overviewButton = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
         overviewButton.labelCell.pad(10f)
         overviewButton.pack()
-        overviewButton.onClick { UnCivGame.Current.setScreen(EmpireOverviewScreen()) }
+        overviewButton.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen()) }
         overviewButton.center(this)
         overviewButton.x = screen.stage.width-overviewButton.width-10
         addActor(overviewButton)

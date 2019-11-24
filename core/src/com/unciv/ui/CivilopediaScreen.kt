@@ -3,7 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
@@ -46,7 +46,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
     }
 
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         val buttonTable = Table()
         buttonTable.pad(15f)
         val entryTable = Table()
@@ -67,7 +67,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
 
 
-        val language = UnCivGame.Current.settings.language.replace(" ","_")
+        val language = UncivGame.Current.settings.language.replace(" ","_")
         val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())"BasicHelp/BasicHelp_$language"
         else "BasicHelp/BasicHelp"
 
@@ -94,7 +94,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
                 .filter { !it.startsWith("_") }
                 .map { CivilopediaEntry(it.replace("_"," "),
-                        Tutorials().getTutorials(it, UnCivGame.Current.settings.language)
+                        Tutorials().getTutorials(it, UncivGame.Current.settings.language)
                                 .joinToString("\n\n")) }
 
         for (category in categoryToEntries.keys) {

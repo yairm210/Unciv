@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -21,7 +21,7 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
-    val tileSetLocation = "TileSets/"+ UnCivGame.Current.settings.tileSet +"/"
+    val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
 
     var clearTerrainFeature=false
     var selectedTerrain : Terrain?=null
@@ -181,7 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             val tileInfo = TileInfo()
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
-                    terrain.occursOn == null -> terrain.occursOn!!.first()
+                    terrain.occursOn != null -> terrain.occursOn.first()
                     else -> "Grassland"
                 }
                 tileInfo.terrainFeature = terrain.name

@@ -5,11 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
 
 
 class LanguageTable(val language:String,skin: Skin):Table(skin){
@@ -55,8 +57,8 @@ class LanguagePickerScreen: PickerScreen(){
                 "Please note that translations are a " +
                     "community-based work in progress and are INCOMPLETE! \n" +
                     "The percentage shown is how much of the language is translated in-game.\n" +
-                    "If you want to help translating the game " +
-                    "into your language, send me an email to yairm210@hotmail.com!",skin)).pad(10f).row()
+                    "If you want to help translating the game into your language, \n"+
+                    "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
         languageTables.addAll(GameBasics.Translations.getLanguages().map { LanguageTable(it,skin) }
                 .sortedByDescending { it.percentComplete } )
@@ -79,10 +81,10 @@ class LanguagePickerScreen: PickerScreen(){
     }
 
     fun pickLanguage(){
-        UnCivGame.Current.settings.language = chosenLanguage
-        UnCivGame.Current.settings.save()
+        UncivGame.Current.settings.language = chosenLanguage
+        UncivGame.Current.settings.save()
         resetFonts()
-        UnCivGame.Current.startNewGame()
+        UncivGame.Current.startNewGame()
         dispose()
     }
 }

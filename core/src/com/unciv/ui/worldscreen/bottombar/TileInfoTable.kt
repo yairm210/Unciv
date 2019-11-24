@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -20,7 +20,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(CameraStageBas
         clearChildren()
         val civInfo = worldScreen.viewingCiv
 
-        if (UnCivGame.Current.viewEntireMapForDebug || civInfo.exploredTiles.contains(tile.position)) {
+        if (UncivGame.Current.viewEntireMapForDebug || civInfo.exploredTiles.contains(tile.position)) {
             add(getStatsTable(tile))
             add(tile.toString().toLabel()).colspan(2).pad(10f)
         }

@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -272,15 +272,15 @@ open class TileInfo {
 
     override fun toString(): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
-        val isViewableToPlayer = UnCivGame.Current.viewEntireMapForDebug
-                || UnCivGame.Current.gameInfo.getCurrentPlayerCivilization().viewableTiles.contains(this)
+        val isViewableToPlayer = UncivGame.Current.viewEntireMapForDebug
+                || UncivGame.Current.gameInfo.getCurrentPlayerCivilization().viewableTiles.contains(this)
 
         if (isCityCenter()) {
             val city = getCity()!!
             var cityString = city.name
             if(isViewableToPlayer) cityString += " ("+city.health+")"
             lineList += cityString
-            if(UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
+            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()

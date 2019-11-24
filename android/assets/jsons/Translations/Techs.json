@@ -226,7 +226,7 @@
 		Russian:"Каменная кладка"
 		French:"Maçonnerie"
 		Romanian:"Zidărie"
-		German:"Maurerei"
+		German:"Mauerarbeiten"
 		Dutch:"Metselkunst"
 		Spanish:"Albañilería"
 		Simplified_Chinese:"石工术"
@@ -248,7 +248,7 @@
 		Russian:"Обработка бронзы"
 		French:"Travail du bronze"
 		Romanian:"Prelucrarea bronzului"
-		German:"Bronze Bearbeitung"
+		German:"Bronzebearbeitung"
 		Dutch:"Brons Bewerking"
 		Spanish:"Trabajo del bronce"
 		Simplified_Chinese:"青铜器"
@@ -382,7 +382,7 @@
 		Russian:"Деньги"
 		French:"Monnaie"
 		Romanian:"Monedă"
-		German:"Geld"
+		German:"Währung"
 		Dutch:"Geld"
 		Spanish:"Moneda"
 		Simplified_Chinese:"货币制度"
@@ -426,7 +426,7 @@
 		Russian:"Обработка железа"
 		French:"Travail du fer"
 		Romanian:"Prelucrarea fierului"
-		German:"Eisen Bearbeitung"
+		German:"Eisenbearbeitung"
 		Dutch:"Ijzer Bewerking"
 		Spanish:"Trabajo del hierro"
 		Simplified_Chinese:"铁器"
@@ -472,7 +472,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"Госслужба"
 		French:"Administration" //official translate, but not very accurate
 		Romanian:"Servicii civile"
-		German:"Zivildienst"
+		German:"Öffentlicher Dienst"
 		Dutch:"Overheidsdienst"
 		Spanish:"Servicio civil"
 		Simplified_Chinese:"文官制度"
@@ -496,6 +496,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		French:"Permet l'accord des frontières ouvertes"
 		Russian:"Открывает Договор об открытых границах"
 		Czech:"Lze uzavřít Dohodu o otevřených hranicích"
+		German:"Ermöglicht Vereinbarung 'offene Grenzen'"
 }
 
 	"Guilds":{
@@ -657,7 +658,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"Машиностроение"
 		French:"Mécanique"
 		Romanian:"Instalații mecanice"
-		German:"Maschienenbau"
+		German:"Maschinenbau"
 		Dutch:"Machinebouw"
 		Spanish:"Mecánica"
 		Simplified_Chinese:"机械"
@@ -813,7 +814,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"Архитектура"
 		French:"Architecture"
 		Romanian:"Arhitectură"
-		German:"Die Architektur"
+		German:"Architektur"
 		Dutch:"Architectuur"
 		Spanish:"Arquitectura"
 		Simplified_Chinese:"建筑设计学"
@@ -973,7 +974,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Estriado"
 		Simplified_Chinese:"膛线"
         Traditional_Chinese:"膛線"
-		German:"Gewehrkugeldrall"
+		German:"Gewehrkugeldrall" // not sure if this is correct translated?!
 		// Portuguese translation not sure
 		Czech:"Puška"
 }
@@ -1347,6 +1348,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"雷达"
         Traditional_Chinese:"雷達"
 		Czech:"Radar"
+		German:"Radar"
 }
 
 	"'Vision is the art of seeing things invisible.' - Jonathan Swift":{
@@ -1407,6 +1409,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"机动战术"
         Traditional_Chinese:"機動戰術"
 		Czech:"Mobilní taktika"
+		German:"Mobile Taktiken"
 }
 
 	"'All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.' - Sun Tzu":{
@@ -1533,6 +1536,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"激光"
         Traditional_Chinese:"雷射"
 		Czech:"Lasery"
+		German:"Laser"
 }
 
 	"'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12":{
@@ -1726,7 +1730,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Italian:"Permette alle unità di imbarcarsi nelle caselle oceaniche"
 		Romanian:"Permite unităților îmbarcate să meargă în celulele ocean"
 		Spanish:"Habilita a las unidades embarcadas a entrar en oceanós"
-		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
+		German:"Erlaubt es, eingebooteten Einheiten Ozeanfelder zu überqueren"
 		French:"Permet aux unités embarqués de traverser les cases d'océan"
 		Russian:"Позволяет наземным единицам выходить в океан"
 		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"

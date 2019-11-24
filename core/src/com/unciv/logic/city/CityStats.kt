@@ -1,7 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
@@ -381,7 +381,7 @@ class CityStats {
         newStatPercentBonusList["National ability"]=getStatPercentBonusesFromNationUnique()
         newStatPercentBonusList["Puppet City"]=getStatPercentBonusesFromPuppetCity()
 
-        if(UnCivGame.Current.superchargedForDebug) {
+        if(UncivGame.Current.superchargedForDebug) {
             val stats = Stats()
             for(stat in Stat.values()) stats.add(stat,10000f)
             newStatPercentBonusList["Supercharged"] = stats

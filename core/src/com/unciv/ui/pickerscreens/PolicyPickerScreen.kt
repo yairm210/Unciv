@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
@@ -28,7 +28,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             rightSideButton.setText("Adopt free policy".tr())
             closeButton.disable()
         }
-        else onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick("policy") {
             viewingCiv.policies.adopt(pickedPolicy!!)
@@ -40,7 +40,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             }
             else game.setScreen(PolicyPickerScreen(worldScreen))  // update policies
         }
-        if(!UnCivGame.Current.worldScreen.isPlayersTurn)
+        if(!UncivGame.Current.worldScreen.isPlayersTurn)
             rightSideButton.disable()
         if (!switchfromWorldScreen){
             rightSideButton.apply {

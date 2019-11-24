@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
@@ -111,7 +111,7 @@ class CivilizationInfo {
     }
 
     fun getTranslatedNation(): Nation {
-        val language = UnCivGame.Current.settings.language.replace(" ","_")
+        val language = UncivGame.Current.settings.language.replace(" ","_")
         if(!Gdx.files.internal("jsons/Nations/Nations_$language.json").exists()) return nation
         val translatedNation = GameBasics.getFromJson(Array<Nation>::class.java, "Nations/Nations_$language")
                 .firstOrNull { it.name==civName}
@@ -209,7 +209,7 @@ class CivilizationInfo {
 
     fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
-    fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
+    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
 
     fun getNextDueUnit(): MapUnit? {
         val dueUnits = getDueUnits()

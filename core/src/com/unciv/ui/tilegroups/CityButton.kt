@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
@@ -55,12 +55,12 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         add(airUnitTable).row()
     }
 
-    private fun belongsToViewingCiv() = city.civInfo == UnCivGame.Current.worldScreen.viewingCiv
+    private fun belongsToViewingCiv() = city.civInfo == UncivGame.Current.worldScreen.viewingCiv
 
     private fun setButtonActions() {
 
         val unitTable = tileGroup.worldScreen.bottomUnitTable
-        if (UnCivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
+        if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
 
             // So you can click anywhere on the button to go to the city
             touchable = Touchable.childrenOnly
@@ -70,7 +70,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             // second tap on the button will go to the city screen
             onClick {
                 if (isButtonMoved) {
-                    UnCivGame.Current.setScreen(CityScreen(city))
+                    UncivGame.Current.setScreen(CityScreen(city))
                 } else {
                     moveButtonDown()
                     if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
@@ -129,7 +129,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
 
-        if (UnCivGame.Current.viewEntireMapForDebug || belongsToViewingCiv())
+        if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f).padLeft(10f)
         else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)

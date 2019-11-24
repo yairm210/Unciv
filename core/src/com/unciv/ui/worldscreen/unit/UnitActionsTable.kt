@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -70,7 +70,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val fontColor = if(unitAction.currentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         actionButton.pack()
-        actionButton.onClick(unitAction.sound) { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }
+        actionButton.onClick(unitAction.sound) { unitAction.action(); UncivGame.Current.worldScreen.shouldUpdate=true }
         if (!unitAction.canAct) actionButton.disable()
         return actionButton
     }

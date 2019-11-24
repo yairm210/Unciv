@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import java.util.*
@@ -26,13 +26,13 @@ class Tutorials{
 
 
     fun displayTutorials(name: String, stage: Stage) {
-        if (!UnCivGame.Current.settings.showTutorials) return
-        if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
+        if (!UncivGame.Current.settings.showTutorials) return
+        if (UncivGame.Current.settings.tutorialsShown.contains(name)) return
         if(tutorialTexts.any { it.name==name }) return // currently showing
 
         var texts: ArrayList<String>
         try {
-            texts = getTutorials(name, UnCivGame.Current.settings.language)
+            texts = getTutorials(name, UncivGame.Current.settings.language)
         } catch (ex: Exception) {
             texts = ArrayList<String>().apply { add("Could not find matching tutorial!") }
         }
@@ -80,9 +80,9 @@ class Tutorials{
 
         button.onClick {
             tutorialTable.remove()
-            if(!UnCivGame.Current.settings.tutorialsShown.contains(currentTutorial.name)) {
-                UnCivGame.Current.settings.tutorialsShown.add(currentTutorial.name)
-                UnCivGame.Current.settings.save()
+            if(!UncivGame.Current.settings.tutorialsShown.contains(currentTutorial.name)) {
+                UncivGame.Current.settings.tutorialsShown.add(currentTutorial.name)
+                UncivGame.Current.settings.save()
             }
             if (!tutorialTexts.isEmpty())
                 displayTutorial(stage)

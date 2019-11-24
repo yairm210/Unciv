@@ -50,7 +50,15 @@ class PolicyManager {
         return true
     }
 
-    fun canAdoptPolicy(): Boolean = freePolicies > 0 || storedCulture >= getCultureNeededForNextPolicy()
+    fun canAdoptPolicy(): Boolean {
+        if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
+            return false
+
+        val hasAdoptablePolicies = GameBasics.PolicyBranches.values
+                .flatMap { it.policies.union(listOf(it)) }
+                .any { civInfo.policies.isAdoptable(it) }
+        return hasAdoptablePolicies
+    }
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
 

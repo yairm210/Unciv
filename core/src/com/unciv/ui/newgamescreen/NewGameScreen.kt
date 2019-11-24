@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -22,7 +22,7 @@ import kotlin.concurrent.thread
 
 class NewGameScreen: PickerScreen(){
 
-    val newGameParameters= UnCivGame.Current.gameInfo.gameParameters
+    val newGameParameters= UncivGame.Current.gameInfo.gameParameters
 
     init {
         setDefaultCloseAction()

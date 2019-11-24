@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
@@ -20,7 +20,7 @@ import com.unciv.ui.utils.toLabel
 
 class VictoryScreen : PickerScreen() {
 
-    val playerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+    val playerCivInfo = UncivGame.Current.gameInfo.getCurrentPlayerCivilization()
     val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
     val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
     val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
@@ -88,13 +88,13 @@ class VictoryScreen : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            UnCivGame.Current.setScreen(NewGameScreen())
+            UncivGame.Current.setScreen(NewGameScreen())
         }
 
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
             playerCivInfo.gameInfo.oneMoreTurnMode = true
-            UnCivGame.Current.setWorldScreen()
+            UncivGame.Current.setWorldScreen()
         }
     }
 
@@ -206,7 +206,7 @@ class VictoryScreen : PickerScreen() {
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
             civToBranchesHaveCompleted.touchable= Touchable.enabled
             civToBranchesHaveCompleted.onClick {
-                game.setScreen(PolicyPickerScreen(UnCivGame.Current.worldScreen,entry.civ, false))
+                game.setScreen(PolicyPickerScreen(UncivGame.Current.worldScreen,entry.civ, false))
                 dispose()
             }
         }

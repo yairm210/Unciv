@@ -1,6 +1,6 @@
 package com.unciv.models.gamebasics.tech
 
-import com.unciv.UnCivGame
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
@@ -32,7 +32,7 @@ class Technology {
             lineList += impimpString.tr()
         }
 
-        val viewingCiv = UnCivGame.Current.worldScreen.viewingCiv
+        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
         val enabledUnits = getEnabledUnits(viewingCiv)
         if (enabledUnits.isNotEmpty()) {
             lineList += "{Units enabled}: "
@@ -74,7 +74,7 @@ class Technology {
         val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
         enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
 
-        if (!UnCivGame.Current.settings.nuclearWeaponEnabled)
+        if (!UncivGame.Current.settings.nuclearWeaponEnabled)
             enabledBuildings=enabledBuildings.filterNot { it.name=="Manhattan Project" }
 
         return enabledBuildings
@@ -88,7 +88,7 @@ class Technology {
         val replacedUnits = enabledUnits.mapNotNull { it.replaces }
         enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
 
-        if (!UnCivGame.Current.settings.nuclearWeaponEnabled)
+        if (!UncivGame.Current.settings.nuclearWeaponEnabled)
             enabledUnits=enabledUnits.filterNot { it.uniques.contains("Requires Manhattan Project") }
 
 
