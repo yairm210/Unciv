@@ -49,7 +49,8 @@ for(platform in PackrConfig.Platform.values()) {
         def jarFile = "desktop/build/libs/${appName}.jar".toString()
         PackrConfig config = new PackrConfig()
         config.platform = platform
-        config.jdk = "https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+        config.jdk = System.env.'JAVA_HOME'
+//        config.jdk = "https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
 //        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
         config.executable = "Unciv"
         config.classpath = Arrays.asList(jarFile)
