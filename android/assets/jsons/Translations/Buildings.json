@@ -116,6 +116,7 @@
 
 	"Temple of Artemis":{
 		Italian:"Tempio di Artemide"
+		German:"Artemis-Tempel"
 		Czech:"Chrám Artemis"
 		Polish:"Świątynia Artemidy"
 		Ukrainian:"Храм Артеміди"
@@ -130,6 +131,7 @@
 
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
+		German:"+10% Wachtum in allen Städten"
 		Czech:"10% Růst populace ve všech městech"
 		Polish:"10% Wzrostu populacji we wszystkich miastach"
 		Ukrainian:"Населення усіх міст +10%"
@@ -501,6 +503,7 @@
 		Simplified_Chinese:"曼哈顿计划"
 		Traditional_Chinese:"曼哈頓計畫"
 		Ukrainian:"Мангеттенський проєкт"
+		German:"Manhattan-Projekt"
 }
 
 	"Chichen Itza":{
@@ -549,6 +552,7 @@
 		Simplified_Chinese:"允许建造核武器"
 		Traditional_Chinese:"允許建造核武器"
 		Ukrainian:"Доступна ядерна зброя"
+		German:"Erlaubt Kernwaffen"
 }
 
 	"Lighthouse":{
@@ -745,16 +749,18 @@
 		Simplified_Chinese:"宙斯神像"
 		Traditional_Chinese:"宙斯神像"
 		Polish:"Posąg Zeusa Olimpijskiego" //common polish name
+		German:"Zeus-Statue"
 		Czech:"Socha Zeuse"
 		Ukrainian:"Статуя Зевса"
 }
 
-	"+15% Combat Strenght when attacking Cities":{
+	"+15% Combat Strength when attacking Cities":{
 		Italian:"+15% Forza quando attacchi le Città"
 		French:"+15% force lors d'attaque de villes"
 		Simplified_Chinese:"在攻击城市时所有单位+15%战斗力"
 		Traditional_Chinese:"在攻擊城市時所有單位+15%戰鬥力"
 		Polish:"+15% siły bojowej do ataku na miasta"
+		German:"+15% Angriffsstärke gegenüber Städten"
 		Czech:"+15% k bojové síle při útoku na město"
 		Ukrainian:"При нападі на міста сила атаки +15%"
 }
@@ -773,6 +779,7 @@
 		Simplified_Chinese:"摩索拉斯陵墓"
 		Traditional_Chinese:"摩索拉斯陵墓"
 		Polish:"Mauzoleum w Halikarnasie"
+		German:"Mausoleum von Halikarnassos"
 		Czech:"Mauzoleum v Halikarnassu"
 		Ukrainian:"Мавзолей"
 }
@@ -783,6 +790,7 @@
 		Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
 		Traditional_Chinese:"所在城市開發的每處大理石或花崗岩資源額外+2金钱"
 		Polish:"+2 do złota z każdego złoża marmuru i kamienia"
+		German:"+2 Gold von jeder Marmor- und Steinquelle"
 		Czech:"+2 zlata za každý zdroj Mramoru a Kamene"
 		Ukrainian:"З кожного джерела мармуру і каміння +2 золота"
 }
@@ -792,6 +800,7 @@
 		Czech:"Získáme 100 Zlata za každé použití Velké Osobnosti"
 		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka"
 		Ukrainian:"Отримати 100 золота за використання видатної особи"
+		German:"Erhalte 100 Gold durch das Benutzen einer großen Persönlichkeit"
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
@@ -806,6 +815,7 @@
 		Czech:"Petra"
 		Polish:"Petra"
 		Ukrainian:"Петра"
+		German:"Petra"
 }
 
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
@@ -813,6 +823,7 @@
 		Czech:"+1 Jídlo a +1 Produkce za každé obděláváné políčkou pouště ve měste (kromě Údolní nivy)"
 		Polish:"+1 żywności i produkcji ze wszystkich pustynnych pól w mieście"
 		Ukrainian:"Усі робочі пустельні клітинки в місті (крім затоплених рівнин) дають їжі +1 і виробництва +1"
+		German:"+1 Nahrung und +1 Produktion von allen bewirtschafteten Wüstenfeldern in der Stadt (außer Flussauen)"
 }
 
 	"+6 Culture when discovering Archeology":{
@@ -820,6 +831,7 @@
 		Czech:"+6 Kulturních bodů při objevení Archeologie"
 		Polish:"+6 do kultury za wynalezienie Archeologii"
 		Ukrainian:"При відкритті археології культура +6"
+		German:"+6 Kultur bei Entdeckung der Archäologie"
 }
 
 	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
@@ -1265,6 +1277,7 @@
 		Simplified_Chinese:"经院"
 		Traditional_Chinese:"經院"
 		Ukrainian:"Ват"
+		German:"Wat"
 }
 
 	"Oxford University":{
