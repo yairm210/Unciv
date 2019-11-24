@@ -61,16 +61,13 @@ for(platform in PackrConfig.Platform.values()) {
         config.cacheJre=file("packrCache")
 
         doLast {
-            delete(config.outDir)
+            if(config.outDir.exists()) delete(config.outDir)
             new Packr().pack(config)
         }
 
         task "zip${platformName}"(type: Zip) {
             def deployFolder = file("../deploy")
             archiveFileName = "${appName}-${platformName}.zip"
-            doFirst{
-                delete(deployFolder.path+"/"+archiveFileName)
-            }
             from config.outDir
             destinationDirectory = deployFolder
         }
@@ -81,9 +78,9 @@ for(platform in PackrConfig.Platform.values()) {
 
 task packr(){
 //    finalizedBy "packrWindows64"
-    doFirst{
-        delete(file("packrCache"))
-    }
+//    doFirst{
+//        delete(file("packrCache"))
+//    }
     for(platform in PackrConfig.Platform.values())
         finalizedBy "packr${platform.toString()}"
 }
