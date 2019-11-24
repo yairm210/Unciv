@@ -1659,9 +1659,9 @@
 		Czech:"Velký Obchodník"
 	}
 
-	"Can undertake a trade mission with City-State, giving a large sum of gold and 30 Influence":{
-		Simplified_Chinese:"可以拓展与城邦的贸易，获得大笔金钱和30影响力",
-		Traditional_Chinese:"可以拓展與城邦的貿易，獲得大筆金錢和30影響力",
+	"Can undertake a trade mission with City-State, giving a large sum of gold and [influenceAmount] Influence":{
+		Simplified_Chinese:"可以拓展与城邦的贸易，获得大笔金钱和[influenceAmount]影响力",
+		Traditional_Chinese:"可以拓展與城邦的貿易，獲得大筆金錢和[influenceAmount]影響力",
 	}
 
 	"Can build improvement: Customs house":{
