@@ -2410,6 +2410,7 @@
 		Traditional_Chinese:"您依靠文化的強大力量取得了勝利。您的文明的偉大創作——富麗堂皇的建築和鬼斧神工的藝術品震驚了世界！這些沁入心扉的美麗給疲乏的心帶來溫暖，給悲傷的人帶來歡樂，詩人為您讚嘆，樂者為您歌頌！"
 		Czech:"Dosáhli jsme vítězství díky úžasné dokonalé kulturnosti. Velikost naší říše - velkolepost vybudovaných památek a preciznost našich umělců ohromila svět! Básníci nás budou velebit, dokud vše krásné bude přinášet potěšení unavenému srdci."
 		Ukrainian:""
+		German:"Du hast den Sieg durch die unglaubliche Kraft deiner Kultur errungen. Die Größe deiner Zivilisation - die Pracht ihrer Denkmäler und die Macht ihrer Künstler - haben die Welt verblüfft! Dichter werden dich ehren, solange Schönheit einem müden Herzen Freude bereitet."
 		
 }
 
@@ -2419,6 +2420,7 @@
 		Traditional_Chinese:"世界因戰爭而動盪不安。許多偉大而強盛的文明衰落了，但您倖存了下來——並取得了勝利！世界將永遠記住您的光輝與榮耀！"
 		Czech:"Celý svět byl zachvácen válkou. Velké a slavné civilizace byly zničeny, ale naše říše dokázala jako jediná přežít a zvítězit. Svět nikdy nezapomene na tento fenomenální triumf!"
 		Ukrainian:""
+		German:"Die Welt wurde vom Krieg erschüttert. Mögen große und mächtige Zivilisationen gefallen sein, aber du hast überlebt - und bist siegreich geworden! Die Welt wird sich lange an deinen glorreichen Triumph erinnern!"
 }
 
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
@@ -2427,6 +2429,7 @@
 		Traditional_Chinese:"您通過掌握先進的科技取得了勝利!您已經征服了大自然的神秘，帶領人民踏上了通往美麗新世界的航程！只要星星在夜空中燃燒，您的勝利就會被永遠銘記！"
 		Czech:"Zvítězili jsme ve hře díky enormnímu úsilý a mistrovství našich vědců. Poodhalili jste tajemství přírody a dovedli naše obyvatele na cestu poznání k novým světům. Na tento úspěch se bude vzpomínat dokud budou svítit hvězdy na nebi!"
 		Ukrainian:""
+		German:"Du hast den Sieg durch die Beherrschung der Wissenschaft errungen! Du hast die Geheimnisse der Natur erobert und dein Volk auf eine Reise in eine schöne neue Welt geführt! Dein Triumph wird in Erinnerung bleiben, solange die Sterne am Nachthimmel brennen!"
 }
 
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
@@ -2435,6 +2438,7 @@
 		Traditional_Chinese:"您被打敗了。雖然您的文明曾經被許多敵人所征服，但是您的人民永不放棄，因為他們知道總有一天您會回來的！屆時，您的文明將會成為天空中最耀眼的恆星！"
 		Czech:"Byli jsme poraženi. Naše civilizace byla převálcována schopnostmi nepřátel. Naši lidé ovšem nezoufají, protože ví, že jednou se jejich vůdce vrátí. A dovede je k vytouženému vítězství!"
 		Ukrainian:"Ви зазнали поразки. Вашу цивілізацію переповнили численні вороги. Але твій народ не впадає у відчай, бо вони знають, що одного дня ти повернешся — і поведеш їх до перемоги!"
+		German:"Du wurdest besiegt. Deine Zivilisation wurde von ihren vielen Feinden überwältigt. Aber dein Volk verzweifelt nicht, denn es weiß, dass du eines Tages zurückkehren wirst - und es zum Sieg führen werdet!"
 }
 
 	"One more turn...!":{

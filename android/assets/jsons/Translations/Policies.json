@@ -789,71 +789,85 @@
 	"Patronage":{
 		Italian:"Mecenatismo"
 		Czech:"Patronát"
+		German:"Schirmherrschaft"
 }
 
 	"Influence with City-States degrades 25% slower than normal.":{
 		Italian:"L'Influenza con le Città-Stato cala il 25% più lentamente rispetto al normale."
 		Czech:"Vliv Městských států oslabuje o 25% pomaleji než obvykle."
+		German:"Einfluss mit Stadtstaaten sinkt 25% langsamer als normal."
 }
 
 	"Philantropy":{ //unlocked when adopting Patronage
 		Italian:"Filantropia"
 		Czech:"Filantropie"
+		German:"Philantropie"
 }
 
 	"Gifting Gold to a City-State generates 25% more Influence":{
 		Italian:"Donare Oro a una Città-Stato genera il 25% di Influenza in più."
 		Czech:"Darování zlata městským státům generuje o 25% více vlivu než obvykle"
+		German:"Goldspenden an einen Stadtstaaten erzeugt 25% mehr Einfluss"
 }
 
 	"Aesthetics":{ //unlocked when adopting Patronage
 		Italian:"Estetica"
 		Czech:"Estetika"
+		German:"Ästhetik"
 }
 
 	"Resting point for Influence level with all City-States is increased by 20.":{
 		Italian:"Il punto neutro di livello d'Influenza per tutte le Città-Stato è portato a +20."
 		Czech:"Zbývající body vlivu v Městských státech jsou zvýšeny o 20%."
+		German:"Startwert für Einfluss ist in allen Stadtstaaten um 20 erhöht."
 }
 
 	"Scholasticism":{ //Needs Philantropy
 		Italian:"Scolasticismo"
 		Czech:"Scholastika"
+		German:"Schulbildung"
 }
 
 	"All Allied City-States provide a Science bonus equal to 25% of what they produce for themselves.":{
 		Italian:"Le Città-Stato tue alleate ti donano un bonus scientifico del 25% rispetto a quello che producono da sole."
 		Czech:"Všechny městské státy, se kterými máme alianci, poskytují Výzkumný bonus ve výši 25% z jejich celkového výzkumu."
+		German:"Alle verbündeten Stadtstaaten geben einen Wissenschaftsbonus von 25% ihrer eigenen Produktion."
 }
 
 	"Cultural Diplomacy":{ //Needs Scholasticism
 		Italian:"Diplomazia culturale"
 		Czech:"Kulturní diplomacie"
+		German:"Kulturdiplomatie"
 }
 
 	"Happiness from gifted Luxuries increased by 50%.":{
 		Italian:"+50% Felicità dalle Risorse di Lusso date dalle città che ti sono Amiche o Alleate."
 		Czech:"Spokojenost z darovaných Luxusních zdrojů se zvyšuje o 50%."
+		German:"Zufriedenheit von geschenkten Luxusgütern um 50% erhöht."
 }
 
 	"Educated Elite":{ //Needs Scholasticism and Aesthetics
 		Italian:"Elite culturale"
 		Czech:"Intelektuální elita"
+		German:"Gebildete Elite"
 }
 
 	"Allied City-States will occasionally gift you Great People.":{
 		Italian:"Le Città-Stato Alleate ti doneranno occasionalmente dei Grandi Personaggi."
 		Czech:"Všechny městské státy, se kterými máme alianci vám občas darují Velkou osobnost."
+		German:"Verbündete Stadtstaaten beschenken gelegentliche große Persönlichkeiten."
 }
 
 	"Patronage Complete":{
 		Italian:"Mecenatismo completo"
 		Czech:"Kompletní Patronát"
+		German:"Schirmherrschaft vollständig"
 }
 
 	"Influence with City-States degrades 25% slower than normal.":{
 		Italian:"L'Influenza con le Città-Stato cala il 33% più lentamente rispetto al normale."
 		Czech:"Vliv v městských státech se snižuje o 25% pomaleji než je obvyklé."
+		German:"Einfluss mit Stadtstaaten sinkt 25% langsamer als normal."
 }
 
 */
@@ -1225,58 +1239,72 @@
 /*
 	"Order":{
 		Italian:"Ordine"
+		German:"Ordnung"
 	}
 
 	"+1 Happiness per City":{
 		Italian:"+Felicità per Città"
+		German:"+1 Zufriedenheit pro Stadt"
 	}
     
 	"Nationalism":{
 		Italian:"Nazionalismo"
+		German:"Nationalismus"
 	}
 
 	"25% Attack bonus when fighting in friendly territory":{
 		Italian:"+25 Forza in territorio amico"
+		German:"25% Angriffsbonus bei Kämpfen in freundlichem Gebiet"
 	}
 
 	"United Front":{
 		Italian:"Fronte unito"
+		German:"Geeinte Front"
 	}
 
 	"Militaristic City-States grant units twice as often when you are at war with a common foe":{
 		Italian:"Le Città Stato militaristiche ti danno unità a doppia velocità quando siete in guerra con un nemico in comune"
+		German:"Militärische Stadtstaaten gewähren Einheiten doppelt so oft, wenn man mit einem gemeinsamen Gegner im Krieg ist."
 	}
 
 	"Planned economy":{
 		Italian:"Economia pianificata"
+		German:"Planwirtschaft"
 	}
 
 	"Factories increase a cities Science output by 25%":{
 		Italian:"+25% Scienza dalle industrie"
+		German:"+25% Wissenschaft durch Fabriken"
 	}
 
 	"Socialism":{
 		Italian:"Socialismo"
+		German:"Sozialismus"
 	}
 
 	"Gold maintenance costs of Buildings reduced by 15%":{
 		Italian:"-15% mantenimenti in Oro dagli edifici"
+		German:"-15% Wartungskosten von Gebäuden"
 	}
 
 	"Communism":{
 		Italian:"Comunismo"
+		German:"Kommunismus"
 	}
 
 	"+2 Production per City and +10% Production when constructing buildings":{
 		Italian:"+2 Produzione dalle Città e +10% Produzione quando costruisci un edificio"
+		German:"+2 Produktion pro Stadt und +10% Produktion beim Bau von Gebäuden"
 	}
 
 	"Order Complete":{
 		Italian:"Ordine Completo"
+		German:"Ordnung vollständig"
 	}
 
 	"+1 Food, Production, Science, Gold and Culture per city":{
 		Italian:"+1 Cibo, Produzione, Scienza, Oro e Cultura dalle Città"
+		German:"+1 Nahrung, Produktion, Wissenschaft, Gold und Kultur pro Stadt"
 	}
 }
 */

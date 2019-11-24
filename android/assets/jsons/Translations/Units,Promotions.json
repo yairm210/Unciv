@@ -1530,21 +1530,25 @@
 		Simplified_Chinese:"末日机甲"
 		Traditional_Chinese:"末日機甲"
 		Czech:"Obrovský smrtící robot"
+		German:"Riesiger Todesroboter"
 	}
 
 	"Stealth Bomber":{
 		Italian:"Bombardiere stealth"
 		Czech:"Neviditelný bombardér"
+		German:"Tarnkappen-Bomber"
 	}
 
 	"Jet Fighter":{
 		Italian:"Caccia Jet"
 		Czech:"Proudová stíhačka"
+		German:"Düsenjäger"
 	}
 
 	"Guided Missile":{
 		Italian:"Missile guidato"
 		Czech:"Naváděná střela"
+		German:"Lenkrakete"
 	}
 */
 	"Nuclear Missile":{
