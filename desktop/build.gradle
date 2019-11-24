@@ -42,22 +42,53 @@ task dist(dependsOn: classes, type: Jar) {
     }
 }
 
-task packrWindows(dependsOn: dist){
-    def jarFile = "desktop/build/libs/${appName}.jar".toString()
-    PackrConfig config = new PackrConfig()
-    config.platform = PackrConfig.Platform.Windows64
-    config.jdk = "https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
-    config.executable = "Unciv"
-    config.classpath = Arrays.asList(jarFile)
-    config.removePlatformLibs = config.classpath
-    config.mainClass = project.ext.mainClassName
-    config.vmArgs = Arrays.asList("Xmx1G")
-    config.minimizeJre = "soft"
-    config.outDir = new File("desktop/packr")
+for(platform in PackrConfig.Platform.values()) {
+    def platformName = platform.toString()
+    task "packr${platformName}"(dependsOn: dist) {
 
-    if (new File(jarFile).exists())
-        new Packr().pack(config)
+        def jarFile = "desktop/build/libs/${appName}.jar".toString()
+        PackrConfig config = new PackrConfig()
+        config.platform = platform
+//            config.jdk = "https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+        config.executable = "Unciv"
+        config.classpath = Arrays.asList(jarFile)
+        config.removePlatformLibs = config.classpath
+        config.mainClass = project.ext.mainClassName
+        config.vmArgs = Arrays.asList("Xmx1G")
+        config.minimizeJre = "hard"
+        config.outDir = file("packr")
+        config.cacheJre=file("packrCache")
+
+        doLast {
+            delete(config.outDir)
+            new Packr().pack(config)
+        }
+
+        task "zip${platformName}"(type: Zip) {
+            def deployFolder = file("../deploy")
+            archiveFileName = "${appName}-${platformName}.zip"
+            doFirst{
+                delete(deployFolder.path+"/"+archiveFileName)
+            }
+            from config.outDir
+            destinationDirectory = deployFolder
+        }
+
+        finalizedBy "zip${platformName}"
+    }
 }
+
+task packr(){
+//    finalizedBy "packrWindows64"
+    doFirst{
+        delete(file("packrCache"))
+    }
+    for(platform in PackrConfig.Platform.values())
+        finalizedBy "packr${platform.toString()}"
+}
+
+
 
 eclipse {
     project {
