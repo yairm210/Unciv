@@ -1176,6 +1176,7 @@
 		Traditional_Chinese:"尼布甲尼薩二世"
 		Russian:"Навуходоносор II",
 		Czech:"Nebukadnesar II."
+		German:"Nebukadnezar II"
 }
 
 	"Greece":{
@@ -1198,6 +1199,7 @@
 		Traditional_Chinese:"亞歷山大"
 		Russian:"Александр"
 		Czech:"Alexandr Veliký"
+		// same in German
 },
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
@@ -1228,6 +1230,7 @@
 		Traditional_Chinese:"武則天"
 		Russian:"У Цзэтянь",
 		Czech:"Wu Ce-tchien"
+		// same in German
 },
 
 	"Great general provides double combat bonus, and spawns 50% faster":{
@@ -1336,6 +1339,7 @@
 		Traditional_Chinese:"拿破崙"
 		Russian:"Наполеон",
 		Czech:"Napoleon Bonaparte"
+		// same in German
 }
 
 	"+2 Culture per turn from cities before discovering Steam Power":{
@@ -1444,6 +1448,7 @@
 		Traditional_Chinese:"哈倫·拉希德"
 		Russian:"Гарун-аль-Рашид",
 		Czech:"Hárún ar-Rašíd"
+		// same in German
 }
 
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
@@ -1477,6 +1482,7 @@
 		Traditional_Chinese:"喬治·華盛頓"
 		Russian:"Джордж Вашингтон",
 		Czech:"George Washington"
+		// same in German
 }
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
@@ -1512,6 +1518,7 @@
 		Traditional_Chinese:"織田信長"
 		Russian:"Ода Нобунага",
 		Czech:"Nobunaga Oda"
+		// same in German
 }
 
 	"Units fight as though they were at full strength even when damaged":{
@@ -1575,6 +1582,7 @@
 		Traditional_Chinese:"甘地"
 		Russian:"Махатма Ганди",
 		Czech:"Mahátma Gándhí"
+		German:"Mahatma Gandhi"
 }
 
 	"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.":{
@@ -1606,6 +1614,7 @@
 		Traditional_Chinese:"蘇萊曼一世"
 		Russian:"Сулейман I",
 		Czech:"Sulejman I."
+		German:"Suleiman der Prächtige"
 }
 
 	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
@@ -1636,6 +1645,7 @@
 		Traditional_Chinese:"李祹"
 		Russian:"Седжон",
 		Czech:"Sedžong Veliký"
+		German:"Sejong"
 }
 
 	"+2 Science for all specialists and Great Person tile improvements":{
@@ -1696,6 +1706,7 @@
 		Traditional_Chinese:"大流士一世"
 		Czech:"Dareios I."
 		Russian:"Дарий I"
+		German:"Dareios I"
 }
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
@@ -1771,6 +1782,7 @@
 		French:"Aztèques"
 		Portuguese:"Astecas"
 		Czech:"Aztékové"
+		German:"Azteken"
 }
 
 	"Gain Culture for the empire from each enemy unit killed.":{
@@ -1778,6 +1790,7 @@
 		Portuguese:"Ganhe cultura para seu império por cada inimigo morto"
 		French:"Gagne de la Culture à chaque unité ennemie détruite."
 		Czech:"Získají kulturní bod pro říši za každou zabitou nepřátelskou jednotku."
+		German:"Erhalte Kultur für das Reich für jeden besiegten Feind"
 }
 
 	"Denmark":{
@@ -1785,12 +1798,14 @@
 		French:"Danemark"
 		Portuguese:"Dinamarca"
 		Czech:"Dánsko"
+		German:"Dänemark"
 }
 
 	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
 		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
 		Portuguese:"Unidades embarcadas tem um movimento a mais e usam apenas 1 ponto de movimento para se mover de terra a mar. Unidades corpo-a-corpo não gastam pontos de movimento para pilhar"
 		French:"Les unités embarquées ont +1 de mouvement et ne perde qu'un point de mouvement en débarquant. Le pillage ne coûte pas de point de déplacement pour les unités de mélée"
+		German:"Eingeschiffte Einheiten haben +1 Bewegung und bezahlen nur 1 Bewegungspunkt, um vom Meer zum Land zu wechseln. Nahkampf Einheiten bezahlen keine Bewegungspunkte für eine Plünderung"
 }
 
 	"Inca":{
@@ -1798,11 +1813,13 @@
 		French:"Incas"
 		Portuguese:"Inca"
 		Czech:"Inkové"
+		German:"Inka"
 }
 
 	"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills, half cost elsewhere.":{
 		Italian:"Le unità si muovono senza costi di terreno sulle Colline. I miglioramenti sulle Colline sono azzerati, e sono dimezzati altrove."
 		Czech:"Jednotky ignorují obtížný terén v horách. Žádná pravidelná platba za vylepšení v horách, na ostatních polích stojí polovinu."
+		German:"Einheiten ignorieren Geländekosten, wenn sie ein Feld mit Hügeln betreten. Keine Wartungskosten für Hügelverbesserungen, sonst halbe Kosten."
 }
 
 	"Mongolia":{
@@ -1810,6 +1827,7 @@
 		French:"Mongolie"
 		Portuguese:"Mongolia"
 		Czech:"Mongolové"
+		German:"Mongolei"
 }
 
 	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
@@ -1817,6 +1835,7 @@
 		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
 		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
 		Czech:"+30% bojové síly při boji s jednotkami městského státu, nebo útoku na městský stát. +1 Pohyb pro všechny jízdní jednotky."
+		German:"+30% Angriffsstärke bei Attacken auf Stadtstaaten oder dessen Einheiten. +1 Bewegung für alle berittenen Einheiten."
 }
 
 	"Songhai":{
@@ -1824,6 +1843,7 @@
 		French:"Songhaï"
 		Portuguese:"Songhai" //not sure but will do
 		Czech:"Songhajská říše"
+		// same in German
 }
 
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
@@ -1831,16 +1851,19 @@
 		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
 		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
 		Czech:"Získává trojnásobek zlata z Barbarských táborů a drancování měst. Jednotky při naloďování se můžou bránit."
+		German:"Erhalte dreimal soviel Gold von Barbaren-Camps und plündern von Städten. Eingeschiffte Einheiten können sich selbst verteidigen."
 }
 
 	"Spain":{
 		Italian:"Spagna"
 		Czech:"Španělsko"
+		German:"Spanien"
 }
 
-	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders are doubled.":{
+	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yields from Natural Wonders are doubled.":{
 		Italian:"Ottieni Oro bonus quando scopri una Meraviglia Naturale (aumenta se la scopri per primo). Doppia Cultura, Felicità e resa generale dalle Meraviglie Naturali."
 		Czech:"Bonus Zlata za objevení přírodních divů (pokud jste první), Kulturní body, Spokojenost a výnosy z polí s přírodními divy jsou zdvojnásobené."
+		German:"Gold Bonus für die Entdeckung von natürlichen Wundern (Bonus erhöht, falls erster Entdecker). Kultur, Zufriedenheit und Felderträge von natürlichen Wundern werden verdoppelt."
 }
 
 
