@@ -24,7 +24,7 @@ cache:
 
 script:
 - "./gradlew test"
-- if [ -n "$TRAVIS_TAG" ]; then "./gradlew desktop:packr"; fi
+- if [ -n "$TRAVIS_TAG" ]; then ./gradlew desktop:packr; fi
     
 deploy:
   provider: releases
