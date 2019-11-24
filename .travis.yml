@@ -40,6 +40,6 @@ deploy:
     - deploy/Unciv-Windows64.zip
     - deploy/Unciv-MacOS.zip
   on:
-    repo: yairm210/UnCiv
+    repo: yairm210/Unciv
     tags: true
 
