@@ -90,7 +90,11 @@ Maybe, once we've finished with all of Civ V. But considering how long it took t
 
 ## Is there a desktop version?
 
-If you have Java 8, there are JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
+There are standalone zip files for each operating system in [Releases](https://github.com/yairm210/UnCiv/releases) which contain everything needed for Unciv to run
+
+If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
+
+Be aware that the game will generate files inside the for where the Jar is located!
 
 If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
 
