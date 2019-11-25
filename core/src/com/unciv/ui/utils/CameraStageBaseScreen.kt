@@ -50,7 +50,7 @@ open class CameraStageBaseScreen : Screen {
     override fun dispose() {}
 
     fun displayTutorials(name: String) {
-        tutorials.displayTutorials(name,stage)
+        tutorials.displayTutorials(name,this)
     }
 
 

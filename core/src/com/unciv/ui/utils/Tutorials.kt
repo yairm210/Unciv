@@ -1,16 +1,12 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -25,7 +21,7 @@ class Tutorials{
     var isTutorialShowing = false
 
 
-    fun displayTutorials(name: String, stage: Stage) {
+    fun displayTutorials(name: String, screen:CameraStageBaseScreen) {
         if (!UncivGame.Current.settings.showTutorials) return
         if (UncivGame.Current.settings.tutorialsShown.contains(name)) return
         if(tutorialTexts.any { it.name==name }) return // currently showing
@@ -37,7 +33,7 @@ class Tutorials{
             texts = ArrayList<String>().apply { add("Could not find matching tutorial!") }
         }
         tutorialTexts.add(Tutorial(name, texts))
-        if (!isTutorialShowing) displayTutorial(stage)
+        if (!isTutorialShowing) displayTutorial(screen)
     }
 
     fun getTutorialsOfLanguage(language: String): HashMap<String, ArrayList<String>> {
@@ -63,16 +59,15 @@ class Tutorials{
         return getTutorialsOfLanguage("English")[name]!!
     }
 
-    private fun displayTutorial(stage: Stage) {
+    private fun displayTutorial(screen:CameraStageBaseScreen) {
         isTutorialShowing = true
-        val tutorialTable = Table().pad(10f)
-        tutorialTable.background = ImageGetter.getBackground(Color(0x101050cf))
+        val tutorialTable = PopupTable(screen)
         val currentTutorial = tutorialTexts[0]
-        val label = Label(currentTutorial.texts[0], CameraStageBaseScreen.skin)
-        label.setAlignment(Align.center)
+
         if(Gdx.files.internal("ExtraImages/"+currentTutorial.name).exists())
-            tutorialTable.add(Table().apply { add(ImageGetter.getExternalImage(currentTutorial.name)) }).row()
-        tutorialTable.add(label).pad(10f).row()
+            tutorialTable.add(ImageGetter.getExternalImage(currentTutorial.name)).row()
+
+        tutorialTable.addGoodSizedLabel(currentTutorial.texts[0]).row()
         val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)
 
         currentTutorial.texts.removeAt(0)
@@ -84,14 +79,12 @@ class Tutorials{
                 UncivGame.Current.settings.tutorialsShown.add(currentTutorial.name)
                 UncivGame.Current.settings.save()
             }
-            if (!tutorialTexts.isEmpty())
-                displayTutorial(stage)
+            if (tutorialTexts.isNotEmpty())
+                displayTutorial(screen)
             else
                 isTutorialShowing = false
         }
         tutorialTable.add(button).pad(10f)
-        tutorialTable.pack()
-        tutorialTable.center(stage)
-        stage.addActor(tutorialTable)
+        tutorialTable.open()
     }
 }
