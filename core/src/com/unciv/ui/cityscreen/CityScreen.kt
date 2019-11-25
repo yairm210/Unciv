@@ -205,7 +205,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
                 .filter { city.civInfo.exploredTiles.contains(it.position) }
-                .map { CityTileGroup(cityInfo, it, tileSetStrings) }
+                .map { CityTileGroup(cityInfo, it, tileSetStrings).apply { unitLayerGroup.isVisible = false } }
 
         for (tileGroup in cityTileGroups) {
             val tileInfo = tileGroup.tileInfo

@@ -239,7 +239,6 @@ class CityStats {
         if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
         else stats.add(stat, 2f) // science and gold specialists
 
-        if (policies.contains("Commerce Complete")) stats.gold += 1
         if (policies.contains("Secularism")) stats.science += 2
         if (cityInfo.civInfo.containsBuildingUnique("+1 Production from specialists"))
             stats.production += 1
