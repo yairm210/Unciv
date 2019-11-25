@@ -20,6 +20,7 @@ internal object DesktopLauncher {
             packImages()
 
         val config = LwjglApplicationConfiguration()
+        config.useGL30 = true
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
 

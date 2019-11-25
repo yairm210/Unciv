@@ -27,7 +27,7 @@ task debug(dependsOn: classes, type: JavaExec) {
     debug = true
 }
 
-task dist(dependsOn: classes, type: Jar) {
+task dist(dependsOn: classes, type: Jar) { // Compiles the jar file
     from files(sourceSets.main.output.resourcesDir)
     from files(sourceSets.main.output.classesDirs)
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
@@ -42,22 +42,46 @@ task dist(dependsOn: classes, type: Jar) {
     }
 }
 
-task packrWindows(dependsOn: dist){
-    def jarFile = "desktop/build/libs/${appName}.jar".toString()
-    PackrConfig config = new PackrConfig()
-    config.platform = PackrConfig.Platform.Windows64
-    config.jdk = "https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
-    config.executable = "Unciv"
-    config.classpath = Arrays.asList(jarFile)
-    config.removePlatformLibs = config.classpath
-    config.mainClass = project.ext.mainClassName
-    config.vmArgs = Arrays.asList("Xmx1G")
-    config.minimizeJre = "soft"
-    config.outDir = new File("desktop/packr")
+for(platform in PackrConfig.Platform.values()) {
+    def platformName = platform.toString()
+    task "packr${platformName}"(dependsOn: dist) {
 
-    if (new File(jarFile).exists())
-        new Packr().pack(config)
+        def jarFile = "desktop/build/libs/${appName}.jar".toString()
+        PackrConfig config = new PackrConfig()
+        config.platform = platform
+        config.jdk = System.env.'JAVA_HOME' // For Travis
+//        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+        config.executable = "Unciv"
+        config.classpath = Arrays.asList(jarFile)
+        config.removePlatformLibs = config.classpath
+        config.mainClass = project.ext.mainClassName
+        config.vmArgs = Arrays.asList("Xmx1G")
+        config.minimizeJre = "hard"
+        config.outDir = file("packr")
+        config.cacheJre=file("packrCache")
+
+        doLast {
+            if(config.outDir.exists()) delete(config.outDir)
+            new Packr().pack(config)
+        }
+
+        task "zip${platformName}"(type: Zip) {
+            def deployFolder = file("../deploy")
+            archiveFileName = "${appName}-${platformName}.zip"
+            from config.outDir
+            destinationDirectory = deployFolder
+        }
+
+        finalizedBy "zip${platformName}"
+    }
 }
+
+task packr(){
+    for(platform in PackrConfig.Platform.values())
+        finalizedBy "packr${platform.toString()}"
+}
+
+
 
 eclipse {
     project {
