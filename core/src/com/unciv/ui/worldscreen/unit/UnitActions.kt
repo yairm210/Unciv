@@ -59,7 +59,7 @@ class UnitActions {
             )
         }
 
-        if(unit.type == UnitType.Scout){
+        if(!unit.type.isAirUnit()){
             if(unit.action != Constants.unitActionExplore)
                 actionList += UnitAction("Explore",true) {
                     UnitAutomation().automatedExplore(unit)
