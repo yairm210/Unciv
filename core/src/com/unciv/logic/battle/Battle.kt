@@ -41,7 +41,7 @@ class Battle(val gameInfo:GameInfo) {
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
-        if (attacker.getUnitType().isMissileUnit()) {
+        if (attacker.getUnitType()==UnitType.Missile) {
             nuclearBlast(attacker, defender)
         }
         else if(defender.getUnitType().isCivilian() && attacker.isMelee()){
@@ -101,7 +101,7 @@ class Battle(val gameInfo:GameInfo) {
             attacker.unit.action = null
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.getUnitType().isMissileUnit()) {
+            if (attacker.getUnitType()==UnitType.Missile) {
                 attacker.unit.destroy()
             } else if (attacker.unit.action != null
                     && attacker.unit.action!!.startsWith("moveTo")) {
