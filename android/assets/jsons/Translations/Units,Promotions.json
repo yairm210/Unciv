@@ -939,8 +939,8 @@
 		Italian:"Cura [amountHealed] PF quando uccide un'unità nemica"
 		French:"Soigne [amountHealed] dégâts si il tue une unité"
 		Russian:"Восстаналивает [amountHealed] здоровья при уничтожении юнита"
-		Simplified_Chinese:"消灭敌方单位后回复[amountHealed]点生命值",
-		Traditional_Chinese:"消滅敵方單位後回復[amountHealed]點生命值",
+		Simplified_Chinese:"消灭敌方单位后回复[amountHealed]生命值",
+		Traditional_Chinese:"消滅敵方單位後回復[amountHealed]生命值",
 		Czech:"Léčí [amountHealed] zranění pokud zabije jednotku"
 		German:"Heilt [amountHealed] Schaden beim Töten einer Einheit"
 	}
@@ -1663,17 +1663,9 @@
 		Czech:"Velký Obchodník"
 	}
 
-	"Can undertake a trade mission, giving a large sum of gold":{
-		Spanish:"Puede tomar una mision de comercio, generando una gran suma de Oro"
-		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
-		French:"Peut entreprendre une mission commerciale qui donne une large somme en or"
-		Romanian:"Poate iniția o misiune comercială, oferind o sumă considerabilă de aur"
-		Simplified_Chinese:"可以开展贸易获得大笔金钱",
-		Traditional_Chinese:"可以開展貿易獲得大筆金錢",
-		Portuguese:"Pode entrar em uma missão comercial, dando grande quantidades de ouro"
-		German:"Kann eine Handelsmission durchführen, die viel Gold einbringt"
-		Russian:"Может провести торговую сделку, получив много золота"
-		Czech:"Může být vyslán na obchodní misi, která přinese velké množství zlata"
+	"Can undertake a trade mission with City-State, giving a large sum of gold and [influenceAmount] Influence":{
+		Simplified_Chinese:"可以拓展与城邦的贸易，获得大笔金钱和[influenceAmount]影响力",
+		Traditional_Chinese:"可以拓展與城邦的貿易，獲得大筆金錢和[influenceAmount]影響力",
 	}
 
 	"Can build improvement: Customs house":{
