@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.Promotion
+import com.unciv.models.gamebasics.unit.UnitType
 
 class UnitPromotions{
     @Transient lateinit var unit:MapUnit
@@ -13,7 +14,10 @@ class UnitPromotions{
     var numberOfPromotions = 0
 
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
-    fun canBePromoted() = XP >= xpForNextPromotion()
+    fun canBePromoted(): Boolean {
+        if(unit.type==UnitType.Missile) return false
+        return XP >= xpForNextPromotion()
+    }
 
     fun addPromotion(promotionName: String, isFree: Boolean = false){
         if (!isFree) {

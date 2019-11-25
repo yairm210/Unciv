@@ -152,9 +152,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         row().pad(5f)
         val attackText : String = when {
-            attacker is MapUnitCombatant && attacker.getUnitType().isMissileUnit() -> "NUKE"
-            attacker is MapUnitCombatant -> "Attack"
-            else -> "Bombard"
+            attacker is CityCombatant -> "Bombard"
+            attacker.getUnitType()==UnitType.Missile -> "NUKE"
+            else -> "Attack"
         }
         val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
 
