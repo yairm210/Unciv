@@ -1,0 +1,153 @@
+{
+  "reduce": [
+    {
+      "archive": "jre/lib/rt.jar",
+      "paths": [
+        "com/sun/corba",
+        "com/sun/jmx",
+        "com/sun/jndi",
+        "com/sun/media",
+        "com/sun/naming",
+        "com/sun/org",
+        "com/sun/rowset",
+        "com/sun/script",
+        "com/sun/xml",
+        "sun/applet",
+        "sun/corba",
+        "sun/management"
+      ]
+    },
+    {
+      "archive": "jre/lib/charsets.jar",
+      "paths": [
+      ]
+    },
+    {
+      "archive": "jre/lib/jsse.jar",
+      "paths": [
+      ]
+    },
+    {
+      "archive": "jre/lib/resources.jar",
+      "paths": [
+      ]
+    }
+  ],
+  "remove": [
+    {
+      "platform": "*",
+      "paths": [
+        "jre/lib/rhino.jar",
+		
+		
+		
+        "jre/lib/ext",
+        "jre/bin/rmid",
+        "jre/bin/rmiregistry",
+        "jre/bin/tnameserv",
+        "jre/bin/keytool",
+        "jre/bin/policytool",
+        "jre/bin/orbd",
+        "jre/bin/servertool",
+        "jre/bin/javaws",
+        "jre/lib/javaws.jar",
+        "jre/lib/jfr.jar",
+        "jre/lib/oblique-fonts",
+        "jre/lib/desktop",
+        "jre/plugin",
+		
+
+        "jre/THIRDPARTYLICENSEREADME-JAVAFX.txt",
+        "jre/lib/ant-javafx.jar",
+        "jre/lib/javafx.properties",
+        "jre/lib/jfxswt.jar",
+		
+		
+        "jre/lib/fonts"
+      ]
+    },
+    {
+      "platform": "linux",
+      "paths": [
+        "jre/lib/amd64/libawt.so",
+        "jre/lib/amd64/libawt_xawt.so",
+        "jre/lib/amd64/libjawt.so",
+        "jre/lib/amd64/libhprof.so",
+        "jre/lib/amd64/libdt_socket.so",
+        "jre/lib/amd64/libsplashscreen.so",
+        "jre/lib/amd64/libunpack.so",
+        "jre/lib/amd64/liblcms.so",
+        "jre/lib/amd64/libnpt.so",
+        "jre/lib/amd64/libmlib_image.so",
+        "jre/lib/amd64/libjsig.so",
+        "jre/lib/amd64/libinstrument.so",
+        "jre/lib/amd64/libjaas_unix.so",
+        "jre/lib/amd64/libj2pcsc.so",
+        "jre/lib/amd64/libsaproc.so",
+        "jre/lib/amd64/libsunec.so",
+        "jre/lib/amd64/libj2pkcs11.so",
+        "jre/lib/amd64/libjsdt.so",
+        "jre/lib/amd64/libjdwp.so",
+        "jre/lib/amd64/libjava_crw_demo.so",
+        "jre/lib/amd64/libfreetype.so",
+        "jre/lib/amd64/libmanagement.so",
+        "jre/lib/amd64/libsctp.so",
+        "jre/lib/amd64/libj2gss.so",
+        "jre/lib/amd64/libjpeg.so",
+        "jre/lib/amd64/libfreetype.so.6",
+        "jre/lib/amd64/libjsoundalsa.so",
+        "jre/lib/amd64/libjsound.so",
+        "jre/lib/amd64/libattach.so",
+        "jre/lib/amd64/libawt_headless.so",
+        "jre/lib/amd64/libfontmanager.so"
+      ]
+    },
+    {
+      "platform": "windows",
+      "paths": [
+        "jre/bin/*.exe",
+        "jre/bin/client",
+        "jre/bin/awt.dll",
+		
+		
+        "jre/bin/jfr.dll",
+
+        "jre/bin/java.exe",
+        "jre/bin/javaw.exe",
+        "jre/bin/javacpl.exe",
+        "jre/bin/jucheck.exe",
+        "jre/bin/dtplugin",
+        "jre/bin/jabswitch.exe",
+        "jre/bin/java_crw_demo.dll",
+        "jre/bin/JavaAccessBridge-32.dll",
+        "jre/bin/JavaAccessBridge.dll",
+        "jre/bin/JAWTAccessBridge-32.dll",
+        "jre/bin/JAWTAccessBridge.dll",
+        "jre/bin/WindowsAccessBridge-32.dll",
+        "jre/bin/WindowsAccessBridge.dll",
+        "jre/bin/wsdetect.dll",
+        "jre/bin/plugin2",
+        "jre/bin/deploy.dll",
+        "jre/bin/javacpl.cpl",
+        "jre/lib/deploy.jar",
+        "jre/lib/plugin.jar",
+        "jre/lib/deploy",
+
+        "jre/bin/decora-sse.dll",
+        "jre/bin/fxplugins.dll",
+        "jre/bin/glass.dll",
+        "jre/bin/glib-lite.dll",
+        "jre/bin/gstreamer-lite.dll",
+        "jre/bin/javafx-font.dll",
+        "jre/bin/javafx_font_t2k.dll",
+        "jre/bin/javafx-iio.dll",
+        "jre/bin/jfxmedia.dll",
+        "jre/bin/jfxwebkit.dll",
+        "jre/bin/prism_common.dll",
+        "jre/bin/prism-d3d.dll",
+        "jre/bin/prism_es2.dll",
+        "jre/bin/prism_sw.dll"
+      ]
+    }
+  ]
+}

@@ -49,14 +49,20 @@ for(platform in PackrConfig.Platform.values()) {
         def jarFile = "desktop/build/libs/${appName}.jar".toString()
         PackrConfig config = new PackrConfig()
         config.platform = platform
-        config.jdk = System.env.'JAVA_HOME' // For Travis
-//        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+//        config.jdk = System.env.'JAVA_HOME' // For Travis
+        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
         config.executable = "Unciv"
         config.classpath = Arrays.asList(jarFile)
         config.removePlatformLibs = config.classpath
         config.mainClass = project.ext.mainClassName
         config.vmArgs = Arrays.asList("Xmx1G")
-        config.minimizeJre = "hard"
+        // configuration comprised from 3 sources:
+        // https://github.com/libgdx/packr/blob/master/src/main/resources/minimize/hard
+        // https://github.com/libgdx/packr/blob/master/src/main/resources/minimize/oraclejre8
+        // And Mindustry,
+        // and added a few touches of my own.
+        // Down from ~80MB to ~50MB!
+        config.minimizeJre = "desktop/packrConfig.json"
         config.outDir = file("packr")
         config.cacheJre=file("packrCache")
 
