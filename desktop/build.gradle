@@ -56,13 +56,8 @@ for(platform in PackrConfig.Platform.values()) {
         config.removePlatformLibs = config.classpath
         config.mainClass = project.ext.mainClassName
         config.vmArgs = Arrays.asList("Xmx1G")
-        // configuration comprised from 3 sources:
-        // https://github.com/libgdx/packr/blob/master/src/main/resources/minimize/hard
-        // https://github.com/libgdx/packr/blob/master/src/main/resources/minimize/oraclejre8
-        // And Mindustry,
-        // and added a few touches of my own.
-        // Down from ~80MB to ~50MB!
-        config.minimizeJre = "desktop/packrConfig.json"
+//        config.minimizeJre = "desktop/packrConfig.json"
+        config.minimizeJre = "soft"
         config.outDir = file("packr")
         config.cacheJre=file("packrCache")
 
