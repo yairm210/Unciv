@@ -103,6 +103,7 @@
 }
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
+		French:"Le temps émiette les choses ; tout vieillit et s'oublie sous la puissance du temps' - Aristote"
 		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
 		Russian:"'Все вещи подвергаются воздействию со стороны времени... ибо время само по себе скорее причина уничтожения.' - Аристотель" //from Civ5
 		Simplified_Chinese:"“时间能粉碎一切；所有事物终将在时流中衰老并被遗忘。”——亚里士多德"
@@ -116,6 +117,7 @@
 
 	"Temple of Artemis":{
 		Italian:"Tempio di Artemide"
+		French:"Temple d'Artémis"
 		German:"Artemis-Tempel"
 		Czech:"Chrám Artemis"
 		Polish:"Świątynia Artemidy"
@@ -123,6 +125,7 @@
 	}
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
+		French:"'Ce n'est pas tant pour sa beauté que la forêt s'impose dans le cœur des hommes, mais pour ce quelque chose de subtil, cette qualité de l'air, cette émanation des vieux arbres, qui change et renouvelle à merveille un esprit las.' - Robert Louis Stevenson"
 		Italian:"'Non è tanto con la sua bellezza che la foresta tocca il cuore degli uomini, ma con un'indefinibile sottigliezza, una certa qualità dell'aria, con l'emanazione degli antichi alberi, che così meravigliosamente muta e rinnova uno spirito fiaccato.' - Robert Louis Stevenson"
 		Czech:"'Není to ani tak pro svou krásu, že les působí na lidská srdce, jako na to jemné cosi, ta kvalitu vzduchu, energie vyzařující ze starých stromů, které tak úžasně mění a osvěžuje unaveného ducha.' - Robert Louis Stevenson"
 		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
@@ -131,6 +134,7 @@
 
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
+		French:"+10% de croissance dans toutes les villes"
 		German:"+10% Wachtum in allen Städten"
 		Czech:"10% Růst populace ve všech městech"
 		Polish:"10% Wzrostu populacji we wszystkich miastach"
@@ -208,6 +212,7 @@
 
 	"Free Technology":{
 		Italian:"Dona una tecnologia gratuita"
+		French:"Technologie gratuite"
 		Simplified_Chinese:"获得1项免费科技"
 		Traditional_Chinese:"獲得1項免費科技"
 		Russian:"Бесплатная технология"
@@ -221,6 +226,7 @@
 		Italian:"'Le biblioteche sono come una cappella in cui sono conservate e protette tutte le reliquie dei santi antichi, colme di vera virtù, e tutto ciò che è privo di illusione e inganno' - Sir Francis Bacon"
 		Simplified_Chinese:"“图书馆就像是供奉古代圣哲全部遗物的圣坛，充满了真正的美德，保护着一切非谬误无伪装的事物在其中安眠。”——弗朗西斯·培根爵士"
 		Traditional_Chinese:"“圖書館就像是供奉古代聖哲全部遺物的聖壇，充滿了真正的美德，保護著一切非謬誤無偽裝的事物在其中安眠。”——弗朗西斯·培根爵士"
+		French:"'Les bibliothèques sont comme le sanctuaire où sont conservées et reposées toutes les reliques des saints anciens, pleines de vraies vertus, et tout cela sans illusion ni imposture.' - Sir Francis Bacon"
 		Czech:"'Knihovny jsou svatyně, ve kterých jsou zachovány a uloženy všechny relikvie starověkých světců, plné skutečné ctnosti, to vše bez klamů nebo podvodů.' - Sir Francis Bacon"
 		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
 		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
@@ -286,6 +292,7 @@
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
 		Italian:"'Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
+		French:"Que les douleurs de la mort qui viennent sur toi n'entrent pas dans mon corps. Je suis le dieu Tem, et je suis la partie la plus importante du ciel, et la puissance qui me protège est celle qui est avec tous les dieux pour toujours.  - Le Livre des Morts, traduit par Sir Ernest Alfred Wallis Budge"
 		Simplified_Chinese:"“哦，别让你所受的死亡痛苦进入我的身体。我是创世神泰姆，我处在天界的最高层，神力护佑着我和所有其他神灵直到永远。”——“死者之书”译文，欧内斯特·阿尔弗雷德·沃利斯·巴吉爵士（英国考古学家）"
 		Traditional_Chinese:"“哦，別讓你所受的死亡痛苦進入我的身體。我是創世神泰姆，我處在天界的最高層，神力護佑著我和所有其他神靈直到永遠。”——“死者之書”譯文，歐內斯特·阿爾弗雷德·沃利斯·巴吉爵士（英國考古學家）"
 		Polish:"'Niech ból śmierci, którego zaznasz, wejdzie w me ciało. Jam jest bóg Tem, najznamienitsza część nieba, a chroni mnie moc, która na zawsze jest wśród wszystkich bogów.'– Księga Umarłych, przetłumaczona przez Sir Ernesta Alfreda Wallisa Budge'a"
