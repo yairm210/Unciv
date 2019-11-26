@@ -49,7 +49,15 @@ for(platform in PackrConfig.Platform.values()) {
         def jarFile = "desktop/build/libs/${appName}.jar".toString()
         PackrConfig config = new PackrConfig()
         config.platform = platform
-        config.jdk = System.env.'JAVA_HOME' // For Travis
+
+        // For Travis
+        if(platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
+            config.jdk = System.env.'JAVA_HOME' // take the jdk straight from the building linux computer
+
+        if(platform == PackrConfig.Platform.Windows32 || platform == PackrConfig.Platform.Windows64)
+            config.jdk = "jdk-windows.zip" // see how we download and name this in travis yml
+
+        // for my computer
 //        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
         config.executable = "Unciv"
         config.classpath = Arrays.asList(jarFile)
