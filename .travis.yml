@@ -1,6 +1,7 @@
 language: android
 dist: trusty # For oracleJDK fail errors, as per advice from https://travis-ci.community/t/error-installing-oraclejdk8-expected-feature-release-number-in-range-of-9-to-14-but-got-8/3766/6
 
+
 jdk:
   - oraclejdk8
 
@@ -24,7 +25,13 @@ cache:
 
 script:
 - "./gradlew test"
-- if [ -n "$TRAVIS_TAG" ]; then ./gradlew desktop:packr; fi
+- if [ -n "$TRAVIS_TAG" ]; then
+    curl https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip -o jdk-windows.zip;
+    ./gradlew desktop:packrLinux32;
+    ./gradlew desktop:packrLinux64;
+    ./gradlew desktop:packrWindows32;
+    ./gradlew desktop:packrWindows64;
+  fi
     
 deploy:
   provider: releases
@@ -38,7 +45,6 @@ deploy:
     - deploy/Unciv-Linux64.zip
     - deploy/Unciv-Windows32.zip
     - deploy/Unciv-Windows64.zip
-    - deploy/Unciv-MacOS.zip
   on:
     repo: yairm210/Unciv
     tags: true
