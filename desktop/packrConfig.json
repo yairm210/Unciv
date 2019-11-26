@@ -63,7 +63,8 @@
         "jre/lib/jfxswt.jar",
 		
 		
-        "jre/lib/fonts"
+        "jre/lib/fonts",
+        "jre/lib/amd64/libjfxwebkit.so"
       ]
     },
     {
