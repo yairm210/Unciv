@@ -5,7 +5,7 @@
 	"Civilian":{
 		Italian:"unità civile" //Unità civile
 		Russian:"Мирный"
-		French:"Civile"
+		French:"Civil"
 		Romanian:"Civil"
 		German:"ZivilistIn"
 		Dutch:"Burger"
@@ -23,6 +23,7 @@
 		Russian:"наземные юниты"
 		Czech:"Pozemní jednotky"
 		German:"Landeinheit"
+		French:"unités terrestres"
 	}
 
 	"water units":{
@@ -32,6 +33,7 @@
 		Russian:"морские юниты"
 		Czech:"Námořní jednotky"
 		German:"Wassereinheit"
+		French:"unités maritimes"
 	}
 
 	"air units":{
@@ -41,6 +43,7 @@
 		Russian:"воздушные юниты"
 		Czech:"Vzdušné jednotky"
 		German:"Lufteinheit"
+		French:"unités aériennes"
 	}
 
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
@@ -52,6 +55,7 @@
 		Russian:"Мирный, морской"
 		Czech:"Vodní civilista"
 		German:"Wasserbewohner(in)"
+		French:"Civil Marin"
 	}
 
 	"Melee":{
@@ -265,6 +269,7 @@
 		Traditional_Chinese:"蠻族勇士",
 		Czech:"Surovec"
 		German:"Rohling"
+		French:"Sauvage"
 	}
 
 
@@ -288,6 +293,7 @@
 		Simplified_Chinese:"毛利勇士",
 		Traditional_Chinese:"毛利勇士"
 		German:"Maoi KriegerIn"
+		French:"Guerrier Maori"
 	}
 
 	"Archer":{
@@ -376,6 +382,7 @@
 	"Galley":{
 		Italian:"Galea"
 		Czech:"Galéra"
+		French:"Galère"
 	}//The Galley is the Barbarian starter naval military unit, and it's weaker than Trireme
 	*/
 
@@ -477,6 +484,7 @@
 		Traditional_Chinese:"波斯長生軍",
 		Czech:"Nesmrtelný"
 		German:"Persische(r) Unsterbliche(r)"
+		French:"Immortel"
 	}
 
 	"+10 HP when healing":{
@@ -485,6 +493,7 @@
 		Traditional_Chinese:"回復時額外回復10HP",
 		Czech:"+10% zdraví při léčení"
 		German:"+10 Lebenspunkte beim Heilen"
+		French:"+10 PV en cas de soins"
 	}
 
 ////// Classical Era Units
@@ -560,6 +569,7 @@
 		Traditional_Chinese:"莫霍克戰士",
 		Czech:"Válečník Mohawků"
 		German:"Mohawk KriegerIn"
+		French:"Guerrier Mohawk"
 	}
 
 	"+33% combat bonus in Forest/Jungle":{
@@ -568,6 +578,7 @@
 		Traditional_Chinese:"位於森林/叢林時戰鬥力+33%",
 		Czech:"+33% bojový bonus v lese a džungli"
 		German:"+33% Kampfbonus im Wald/Dschungel"
+		French:"+33% de bonus au combat en Forêt/Jungle"
 	}
 
 	"Legion":{
@@ -744,6 +755,7 @@
 		Traditional_Chinese:"架火戰車", // not sure
 		Russian:"Хвачха",
 		Czech:"Hwach'a"
+		French:"Hwacha"		 
 	}
 
 	"Limited Visibility":{
@@ -827,6 +839,7 @@
 		Simplified_Chinese:"纳黎萱战象"
 		Traditional_Chinese:"納黎萱戰象"
 		German:"Naresuans Elefant"
+		French:"Elephant de Naresuan"		 
 	}
 
 	"Samurai":{
@@ -872,6 +885,7 @@
 		Russian:"Кобуксон"
 		Czech:"Želví loď"
 		German:"Schildkrötenboot"
+		French:"Bateau Tortue"
 	}
 
 	"+1 Visibility Range":{
@@ -1328,6 +1342,7 @@
 		Simplified_Chinese:"需要完成曼哈顿计划"
 		Traditional_Chinese:"需要完成曼哈頓計畫"
 		German:"Benötigt Manhattan Projekt"
+		French:"Necessite le projet Manhattan"
 }
 
 	"6 tiles in every direction always visible":{
@@ -1337,6 +1352,7 @@
 		Russian:"Всегда видимы 6 клеток вокруг"
 		Czech:"6 políček ve všech směrech je vždy viditelných"
 		German:"6 Felder in jede Richtung sichtbar"
+		French:"6 tuiles dans chaque direction sont toujours visibles"
 	}
 
 	"Great War Bomber":{
@@ -1501,6 +1517,7 @@
 		Russian:"Истребитель Зеро"
 		Czech:"Zero"
 		German:"Zero"
+		French:"Zéro"
 	}
 
 	"Helicopter Gunship":{
@@ -1519,6 +1536,7 @@
 		Italian:"Bomba atomica"
 		Czech:"Atomová bomba"
 		German:"Atombombe"
+		French:"Bombardier Atomique"
 	}
 
 ////// Information era - not even putting here, too far off
@@ -1537,18 +1555,21 @@
 		Italian:"Bombardiere stealth"
 		Czech:"Neviditelný bombardér"
 		German:"Tarnkappen-Bomber"
+		French:"Bombardier Furtif"
 	}
 
 	"Jet Fighter":{
 		Italian:"Caccia Jet"
 		Czech:"Proudová stíhačka"
 		German:"Düsenjäger"
+		French:"Jet"
 	}
 
 	"Guided Missile":{
 		Italian:"Missile guidato"
 		Czech:"Naváděná střela"
 		German:"Lenkrakete"
+		French:"Missile Guidé"
 	}
 */
 	"Nuclear Missile":{
@@ -1557,6 +1578,7 @@
 		Simplified_Chinese:"核导弹"
 		Traditional_Chinese:"核導彈"
 		German:"Nuklearrakete"
+		French:"Missile Nucléaire"
 	}
 
 ////// Great units
@@ -1579,7 +1601,7 @@
 		Italian:"Non costruibile"
 		Simplified_Chinese:"不可组建单位",
 		Traditional_Chinese:"不可建立單位",
-		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct
+		French:"Inconstructible"
 		Russian:"Невозможно построить"
 		Czech:"Nelze vybudovat"
 		German:"nicht baubar"
@@ -1666,6 +1688,7 @@
 	"Can undertake a trade mission with City-State, giving a large sum of gold and [influenceAmount] Influence":{
 		Simplified_Chinese:"可以拓展与城邦的贸易，获得大笔金钱和[influenceAmount]影响力",
 		Traditional_Chinese:"可以拓展與城邦的貿易，獲得大筆金錢和[influenceAmount]影響力",
+		French:"Peut entreprendre une mission commerciale avec une cité-état, apportant une grande quantité d'or et [influenceAmount] d'influence"
 	}
 
 	"Can build improvement: Customs house":{
@@ -1829,7 +1852,7 @@
 		Italian:"unità su terreno aperto"
 		Simplified_Chinese:"位于开阔地形的单位",
 		Traditional_Chinese:"位於開闊地形的單位",
-		French:"Unités en terrain ouvert"
+		French:"Unités en terrain découvert"
 		Russian:"юниты на открытой местности"
 		Czech:"jednotky v otevřeném terénu"
 		German:"Einheiten im offenen Gelände"
@@ -2001,7 +2024,7 @@
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
 		German:"+25% Verteidigung gegen Fernangriffe"
-		French:"+25% défence contre les attaques à distance"
+		French:"+25% en défense contre les attaques à distance"
 		Russian:"+25% защиты от дальних атак"
 		Simplified_Chinese:"遭受远程攻击时+25%防御力",
 		Traditional_Chinese:"遭受遠程攻擊時+25%防禦力",
@@ -2030,7 +2053,7 @@
 
 	"wounded units":{
 		Italian:"unità ferite"
-		French:"unités blessés"
+		French:"unités blessées"
 		Simplified_Chinese:"受伤单位",
 		Traditional_Chinese:"受傷單位",
 		Russian:"раненые юниты"
@@ -2101,7 +2124,7 @@
 
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
-		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
+		French:"Les attaques à distances peuvent être effectuées à travers des obstacles"
 		Russian:"Дальнобойные атаки могут выполняться над препятствиями"
 		Simplified_Chinese:"越过障碍进行远程攻击",
 		Traditional_Chinese:"越過障礙進行遠程攻擊",
@@ -2598,6 +2621,7 @@
 		Russian:"Бонус при перехвате [amount]%",
 		Czech:"Bonus při zachytávání útoků [amount]%"
 		German:"[amount]% Bonus beim Abfangen"
+		French:"Bonus en interception de [amount]%"
 	}
 
 	"Ambush I":{//Should be Air Ambush I
@@ -2607,6 +2631,7 @@
 		Russian:"Засада I"
 		Czech:"Přepadení I"
 		German:"Lufthinterhalt I"
+		French:"Embuscade I"
 	}
 
 	"Ambush II":{//Should be Air Ambush II
@@ -2616,6 +2641,7 @@
 		Russian:"Засада II",
 		Czech:"Přepadení II"
 		German:"Lufthinterhalt II"
+		French:"Embuscade II"
 	}
 
 	"Haka War Dance":{
@@ -2624,6 +2650,7 @@
 		Simplified_Chinese:"哈卡战舞",
 		Traditional_Chinese:"哈卡戰舞"
 		German:"Haka Kriegstanz"
+		French:"Haka - Danse de guerre"
 	}
 
 	"-10% combat strength for adjacent enemy units":{
@@ -2632,6 +2659,7 @@
 		Simplified_Chinese:"相邻的敌方单位-10%战斗力"
 		Traditional_Chinese:"相鄰的敵方單位-10%戰鬥力"
 		German:"-10% Kampfstärke für angrenzende feindliche Einheiten"
+		French:"-10% de force de combats pour toutes les unités ennemies adjacentes"
 	}
 
 }
