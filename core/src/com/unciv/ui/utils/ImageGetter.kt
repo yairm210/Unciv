@@ -11,9 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
+import core.java.nativefont.NativeFont
+import core.java.nativefont.NativeFontPaint
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -45,6 +48,44 @@ object ImageGetter {
         atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
         setTextureRegionDrawables()
+        if (UncivGame.Current.settings.replaceImageWithEmoji) {
+            textureRegionDrawables["StatIcons/Culture"]= getfontDrawable("🎵")
+            textureRegionDrawables["StatIcons/Food"]= getfontDrawable("🍏")
+            textureRegionDrawables["StatIcons/Gold"]= getfontDrawable("💰")
+            textureRegionDrawables["StatIcons/Happiness"]= getfontDrawable("😊")
+            textureRegionDrawables["StatIcons/Malcontent"]= getfontDrawable("😡")
+            textureRegionDrawables["StatIcons/Population"]= getfontDrawable("👨")
+            textureRegionDrawables["StatIcons/Production"]= getfontDrawable("🛠️")
+            textureRegionDrawables["StatIcons/Science"]= getfontDrawable("💡")
+            textureRegionDrawables["StatIcons/Strength"]= getfontDrawable("🛡️")
+            textureRegionDrawables["StatIcons/Movement"]= getfontDrawable("👣")
+            textureRegionDrawables["StatIcons/RangedStrength"]= getfontDrawable("🏹️")
+            textureRegionDrawables["StatIcons/Range"]= getfontDrawable("🎯")
+            textureRegionDrawables["ResourceIcons/Bananas"]= getfontDrawable("🍌")
+            textureRegionDrawables["ResourceIcons/Cattle"]= getfontDrawable("🐮")
+            textureRegionDrawables["ResourceIcons/Deer"]= getfontDrawable("🦌")
+            textureRegionDrawables["ResourceIcons/Fish"]= getfontDrawable("🐠")
+            textureRegionDrawables["ResourceIcons/Sheep"]= getfontDrawable("🐑")
+            textureRegionDrawables["ResourceIcons/Wheat"]= getfontDrawable("🌾")
+            textureRegionDrawables["ResourceIcons/Gems"]= getfontDrawable("💎")
+            textureRegionDrawables["ResourceIcons/Wine"]= getfontDrawable("🍷")
+            textureRegionDrawables["ResourceIcons/Whales"]= getfontDrawable("🐋")
+            textureRegionDrawables["TileSets/Default/OasisOverlay"]= getfontDrawable("🌵")
+            textureRegionDrawables["TileSets/Default/ForestOverlay"]= getfontDrawable("🌲")
+            textureRegionDrawables["TileSets/Default/JungleOverlay"]= getfontDrawable("🌳")
+            textureRegionDrawables["TileSets/Default/MountainOverlay"]= getfontDrawable("🏔️️")
+            textureRegionDrawables["OtherIcons/Fire"]= getfontDrawable("🔥")
+            textureRegionDrawables["OtherIcons/Sleep"]= getfontDrawable("💤")
+            textureRegionDrawables["OtherIcons/DisbandUnit"]= getfontDrawable("☠️")// MacOS can't show
+            textureRegionDrawables["OtherIcons/Star"]= getfontDrawable("⭐️️")// MacOS can't show
+            textureRegionDrawables["OtherIcons/Aircraft"]= getfontDrawable("✈️️️")// MacOS can't show
+            textureRegionDrawables["OtherIcons/Stop"]= getfontDrawable("⛔️️️️")// MacOS can't show
+        }
+    }
+
+    fun getfontDrawable(string: String, size: Int= 100): TextureRegionDrawable {
+        val fontPixmap = NativeFont.getListener().getFontPixmap(string, NativeFontPaint(size))
+        return TextureRegionDrawable(TextureRegion(Texture(fontPixmap)))
     }
 
     fun getWhiteDot() =  getImage(whiteDotLocation)

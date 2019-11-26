@@ -92,36 +92,36 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getTableBackground(city.civInfo.nation.getOuterColor())
-
+        val iconcolor = city.civInfo.nation.getOuterColor()
+        iconTable.background = ImageGetter.getTableBackground(Color(iconcolor.r, iconcolor.g, iconcolor.b, 0.5f))
         if (city.resistanceCounter > 0) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
-            iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(resistanceImage).size(20f).padLeft(5f)
         }
 
         if (city.isPuppet) {
             val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
             puppetImage.color = secondaryColor
-            iconTable.add(puppetImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(puppetImage).size(20f).padLeft(5f)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
-            iconTable.add(fireImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(fireImage).size(20f).padLeft(5f)
         }
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getNationIcon("CityState")
                         .apply { color = secondaryColor }
-                iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
+                iconTable.add(cityStateImage).size(20f).padLeft(10f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
-                iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
+                iconTable.add(starImage).size(20f).padLeft(10f)
             }
         } else if (belongsToViewingCiv() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             connectionImage.color = secondaryColor
-            iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(connectionImage).size(20f).padLeft(5f)
         }
 
         val cityButtonText = city.population.population.toString() + " | " + city.name
@@ -132,9 +132,9 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f).padLeft(10f)
         else if (city.civInfo.isMajorCiv()) {
-            val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
+            val nationIcon = ImageGetter.getNationIndicator(city.civInfo.nation, 30f)
             nationIcon.color = secondaryColor
-            iconTable.add(nationIcon).size(20f).padRight(10f)
+            iconTable.add(nationIcon).padRight(10f)
         }
         return iconTable
     }

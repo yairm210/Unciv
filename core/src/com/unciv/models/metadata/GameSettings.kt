@@ -21,6 +21,7 @@ class GameSettings {
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
+    var replaceImageWithEmoji: Boolean = false
     var nuclearWeaponEnabled = false
 
     var userId = ""

@@ -104,6 +104,13 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
+        innerTable.add("Replace image with emoji".toLabel())
+        innerTable.addButton(if (settings.replaceImageWithEmoji) "Yes".tr() else "No".tr()) {
+            settings.replaceImageWithEmoji = !settings.replaceImageWithEmoji
+            UncivGame.Current.resume()
+            update()
+        }
+
         innerTable.add("Enable nuclear weapons".toLabel())
         innerTable.addButton(if (settings.nuclearWeaponEnabled) "Yes".tr() else "No".tr()) {
             settings.nuclearWeaponEnabled = !settings.nuclearWeaponEnabled
