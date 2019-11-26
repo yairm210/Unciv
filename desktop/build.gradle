@@ -67,7 +67,7 @@ for(platform in PackrConfig.Platform.values()) {
 //        config.minimizeJre = "desktop/packrConfig.json"
         config.minimizeJre = "soft"
         config.outDir = file("packr")
-        config.cacheJre=file("packrCache")
+//        config.cacheJre=file("packrCache")
 
         doLast {
             if(config.outDir.exists()) delete(config.outDir)
