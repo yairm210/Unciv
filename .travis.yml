@@ -34,6 +34,7 @@ script:
     ./gradlew desktop:packrWindows64;
     ./gradlew desktop:packrLinux32;
     ./gradlew desktop:packrLinux64;
+    ./gradlew desktop:zipLinuxFilesForJar;
   fi
     
 deploy:
@@ -48,6 +49,7 @@ deploy:
     - deploy/Unciv-Linux64.zip
     - deploy/Unciv-Windows32.zip
     - deploy/Unciv-Windows64.zip
+    - deploy/linuxFilesForJar.zip
   on:
     repo: yairm210/Unciv
     tags: true

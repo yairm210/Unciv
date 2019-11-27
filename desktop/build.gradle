@@ -9,6 +9,7 @@ sourceSets.main.java.srcDirs = [ "src/" ]
 project.ext.mainClassName = "com.unciv.app.desktop.DesktopLauncher"
 project.ext.assetsDir = file("../android/assets")
 project.ext.discordDir = file("discord_rpc")
+def deployFolder = file("../deploy")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -77,7 +78,6 @@ for(platform in PackrConfig.Platform.values()) {
         }
 
         task "zip${platformName}"(type: Zip) {
-            def deployFolder = file("../deploy")
             archiveFileName = "${appName}-${platformName}.zip"
             from config.outDir
             destinationDirectory = deployFolder
@@ -85,6 +85,12 @@ for(platform in PackrConfig.Platform.values()) {
 
         finalizedBy "zip${platformName}"
     }
+}
+
+task zipLinuxFilesForJar(type: Zip) {
+    archiveFileName = "linuxFilesForJar.zip"
+    from file("linuxFilesForJar")
+    destinationDirectory = deployFolder
 }
 
 task packr(){
