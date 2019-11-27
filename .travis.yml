@@ -25,8 +25,10 @@ cache:
 
 script:
 - "./gradlew test"
+
+    #curl https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip -o jdk-windows.zip
+    
 - if [ -n "$TRAVIS_TAG" ]; then
-    #curl https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip -o jdk-windows.zip;
     wget  -O jdk-windows.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip;
     ./gradlew desktop:packrWindows32;
     ./gradlew desktop:packrWindows64;
