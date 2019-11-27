@@ -10,7 +10,6 @@
         android:allowBackup="true"
         android:icon="@drawable/uncivicon2"
         android:label="@string/app_name"
-        android:isGame="true"
         android:theme="@style/GdxTheme" >
         <activity
             android:name="com.unciv.app.AndroidLauncher"
