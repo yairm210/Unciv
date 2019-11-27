@@ -44,7 +44,9 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         offers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, civInfo.gold))
         offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, 30, civInfo.statsForNextTurn.gold.toInt()))
-        if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
+
+        if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
+                && !civInfo.isCityState() && !otherCivilization.isCityState()) {
             for (city in civInfo.cities.filterNot { it.isCapital() })
                 offers.add(TradeOffer(city.name, TradeType.City, 0))
         }
