@@ -1686,6 +1686,7 @@
 	}
 
 	"Can undertake a trade mission with City-State, giving a large sum of gold and [influenceAmount] Influence":{
+		Italian:"Può intraprendere una missione commerciale con una Città-Stato, ricavando una gran quantità d'oro e [influenceAmount] Influenza"
 		Simplified_Chinese:"可以拓展与城邦的贸易，获得大笔金钱和[influenceAmount]影响力",
 		Traditional_Chinese:"可以拓展與城邦的貿易，獲得大筆金錢和[influenceAmount]影響力",
 		French:"Peut entreprendre une mission commerciale avec une cité-état, apportant une grande quantité d'or et [influenceAmount] d'influence"
