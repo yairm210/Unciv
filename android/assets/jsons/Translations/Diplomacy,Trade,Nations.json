@@ -1865,6 +1865,28 @@
 		Polish:"Zasoby Pożywienia i Kultura od Przyjaznych Miast-Państw są ziwiększone o 50%"
 }
 
+	"Songhai":{
+		Italian:"Songhai"
+		French:"Songhaï"
+		Portuguese:"Songhai" //not sure but will do
+		Czech:"Songhajská říše"
+		// same in German
+		Polish:"Songhaj"
+}
+
+	"Askia":{
+		Italian:"Askia"
+}
+
+	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
+		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
+		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
+		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
+		Czech:"Získává trojnásobek zlata z Barbarských táborů a drancování měst. Jednotky při naloďování se můžou bránit."
+		German:"Erhalte dreimal soviel Gold von Barbaren-Camps und plündern von Städten. Eingeschiffte Einheiten können sich selbst verteidigen."
+		Polish:"Odtrymaj potrojone Złoto od Barbażyńskich obozowisk i plądrowanych Miast. Zaokrętowane jednostki mogą same się bronić"
+}
+
 	/*
 	"Aztecs":{
 		Italian:"Azteca"
@@ -1933,24 +1955,6 @@
 		Czech:"+30% bojové síly při boji s jednotkami městského státu, nebo útoku na městský stát. +1 Pohyb pro všechny jízdní jednotky."
 		German:"+30% Angriffsstärke bei Attacken auf Stadtstaaten oder dessen Einheiten. +1 Bewegung für alle berittenen Einheiten."
 		Polish:"+30% do Siły w walce kiedy walczysz z jednostkami Miasta-Państwa albo podczas ataku na Miasto-Państwo. +1 do Poruszania się dla wszystkich Osiodłanych Jednostek."
-}
-
-	"Songhai":{
-		Italian:"Songhai"
-		French:"Songhaï"
-		Portuguese:"Songhai" //not sure but will do
-		Czech:"Songhajská říše"
-		// same in German
-		Polish:"Songhaj"
-}
-
-	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
-		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
-		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
-		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
-		Czech:"Získává trojnásobek zlata z Barbarských táborů a drancování měst. Jednotky při naloďování se můžou bránit."
-		German:"Erhalte dreimal soviel Gold von Barbaren-Camps und plündern von Städten. Eingeschiffte Einheiten können sich selbst verteidigen."
-		Polish:"Odtrymaj potrojone Złoto od Barbażyńskich obozowisk i plądrowanych Miast. Zaokrętowane jednostki mogą same się bronić"
 }
 
 	"Spain":{
