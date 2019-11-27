@@ -757,7 +757,7 @@
 }
 
 	"Piety Complete":{
-		Italian:"Pietà Completa"
+		Italian:"Devozione Completa"
 		Russian:"Набожность Завершена"
 		Romanian:"Credință realizată"
 		Spanish:"Piedad Completa"
@@ -1011,7 +1011,7 @@
 		Romanian:"Protecționism"
 		Spanish:"Proteccionismo"
 		Simplified_Chinese:"贸易保护"
-        Traditional_Chinese:"貿易保護"
+        	Traditional_Chinese:"貿易保護"
 		Portuguese:"Protecionismo"
 		German:"Protektionismus"
 		French:"Protectionnisme",
@@ -1024,7 +1024,7 @@
 		Romanian:"+1 fericire din fiecare resursă de lux"
 		Spanish:"+1 felicidad por cada recurso de lujo"
 		Simplified_Chinese:"每种奢侈资源额外+1快乐"
-        Traditional_Chinese:"每種奢侈資源額外+1快樂"
+        	Traditional_Chinese:"每種奢侈資源額外+1快樂"
 		Portuguese:"+1 Felicidade por cade recurso de luxo"
 		German:"+1 Zufriedenheit für jede Luxusresource"
 		French:"+1 Bonheur pour chaque ressource de luxe"
@@ -1037,7 +1037,7 @@
 		Romanian:"Comerț realizat"
 		Spanish:"Comercio Completo"
 		Simplified_Chinese:"完整的商业政策"
-        Traditional_Chinese:"完整的商業政策"
+        	Traditional_Chinese:"完整的商業政策"
 		Portuguese:"Comércio Completo"
 		German:"Kommerz vollständig"
 		French:"Commerce complet"
@@ -1045,8 +1045,9 @@
 }
 
 	"+1 gold from every trading post, double gold from Great Merchant trade missions":{
+		Italian:"+1 Oro per ogni stazione commerciale, e oro raddoppiato dalle missioni commerciali dei Grandi Mercanti"
 		Simplified_Chinese:"每处贸易站+1金钱，大商业家拓展贸易获得的金钱加倍"
-        Traditional_Chinese:"每處貿易站+1金錢，大商業家拓展貿易獲得的金錢加倍"
+        	Traditional_Chinese:"每處貿易站+1金錢，大商業家拓展貿易獲得的金錢加倍"
 }
 
 //////Rationalism branch
@@ -1057,7 +1058,7 @@
 		Romanian:"Raționalism"
 		Spanish:"Racionalismo"
 		Simplified_Chinese:"理性政策"
-        Traditional_Chinese:"理性政策"
+        	Traditional_Chinese:"理性政策"
 		Portuguese:"Racionalismo"
 		German:"Rationalismus"
 		French:"Rationalisme",
@@ -1468,7 +1469,7 @@
 }
 
 	"Freedom Complete":{
-		Italian:"Autonomia Completa"
+		Italian:"Uguaglianza Completa"
 		Russian:"Свобода завершена"
 		Romanian:"Libertate realizată"
 		Spanish:"Libertad Completa"
