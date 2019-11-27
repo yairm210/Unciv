@@ -1860,6 +1860,7 @@
 
 	// for unit action button
 	"Your trade mission to [civName] has earned you [goldAmount] gold and [influenceAmount] influence!":{
+		Italian:"La tua missione commerciale con [civName] ti ha fruttato [goldAmount] Oro e [influenceAmount] Influenza!"
 		Simplified_Chinese:"您与[civName]拓展贸易获得[goldAmount]金钱和[influenceAmount]影响力！"
 		Traditional_Chinese:"您與[civName]拓展貿易獲得[goldAmount]金錢和[influenceAmount]影響力！"
 }
@@ -1886,7 +1887,6 @@
 		Traditional_Chinese:"人民為您英明領導下取得的豐功偉業歡欣鼓舞，您的帝國進入了黃金時代！",
 		Czech:"Naši občané jsou spokojeni s vaší vládou po dlouhou dobu díky čemuž říše vstoupila do Zlatého věku!"
 		Russian:"Граждане настолько счастливы при вашей власти, что ваша империя вступает в золотой век!"
-
 		Ukrainian:"Ваші громадяни були задоволені вашим правлінням так довго, що імперія вступає в Золотий вік!"
 		German:"Deine Bevölkerung ist so zufrieden mit deiner Herrschaft, dass dein Imperium in ein Goldenes Zeitalter eintritt!"
 }
