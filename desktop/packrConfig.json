@@ -37,7 +37,7 @@
     {
       "platform": "*",
       "paths": [
-        "jre/lib/rhino.jar"
+        "jre/lib/rhino.jar",
 		"jre/lib/amd64/libjfxwebkit.so"
       ]
     },
