@@ -105,13 +105,12 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
-        if (Gdx.app.type == Application.ApplicationType.Android
-                && Gdx.app.version > 7) {
+        if (Gdx.app.type == Application.ApplicationType.Android && Gdx.app.version >= 8) {
             innerTable.add("Replace image with emoji".toLabel())
             innerTable.addButton(if (settings.replaceImageWithEmoji) "Yes".tr() else "No".tr()) {
                 settings.replaceImageWithEmoji = !settings.replaceImageWithEmoji
                 UncivGame.Current.resume()
-                update()
+                update() 
             }
         }
 
