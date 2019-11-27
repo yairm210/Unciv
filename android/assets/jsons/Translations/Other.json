@@ -32,6 +32,7 @@
 		Japanese:"ワーキング..."
 		Czech:"Počítám..."
 		Ukrainian:"Обробка…"
+                Malay:"Bekerja..."
 }
 
 	"Waiting for other players...":{ // Displayed when next turn is being...turned
@@ -42,6 +43,7 @@
 		Czech:"Čekáme na ostatní hráče..."
 		Ukrainian:"Очікування інших гравців…"
 		German:"Warte auf andere SpielerInnen..."
+                Malay:"Menunggu pemain yang lain"
 }
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -58,6 +60,7 @@
 		Japanese:"に"
 		Czech:"za"
 		Ukrainian:"через"
+                Malay:"dalam"
 }
 
 /////// Turn
@@ -77,6 +80,7 @@
 		Thai:"เริ่มเกมใหม่"
 		Czech:"Další tah"
 		Ukrainian:"Наступний хід"
+                Malay:"Pusingan Seterusnya"
 }
 
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -93,6 +97,7 @@
 		Spanish:"Turno"
 		Czech:"Tah"
 		Ukrainian:"Хід"
+                Malay:"Pusingan"
 }
 
 
@@ -146,6 +151,7 @@
 		Czech:"Vyberme politiku"
 		Ukrainian:"Вибрати політику"
 		German:"Wähle einen Grundsatz"
+                Malay:"Pilih polisi"
 }
 
 /////// Unit
@@ -164,6 +170,7 @@
 		Japanese:"移動"
 		Czech:"Pohyb"
 		Ukrainian:"Рух"
+                Malay:"Pergerakkan"
 }
 
 	"Strength":{
@@ -180,6 +187,7 @@
 		Japanese:"強さ"
 		Czech:"Síla"
 		Ukrainian:"Сила"
+                Malay:"Kekuatan"
 }
 
 	"Ranged strength":{
@@ -222,6 +230,7 @@
     		Russian:"Радиус"
     		Ukrainian:"Дальність"
 		German:"Reichweite"
+                Malay:"Jarak"
 	}
 
 /////// Unit actions
@@ -240,6 +249,7 @@
 		Japanese:"移動ユニット"
 		Czech:"Pohnout jednotkou"
 		Ukrainian:"Перемістити підрозділ"
+                Malay:"Gerakkan unit"
 }
 
 	"Stop movement":{
@@ -256,6 +266,7 @@
 		Japanese:"動きを止める"
 		Czech:"Zastavit pohyb"
 		Ukrainian:"Скасувати переміщення"
+                Malay:"Berhenti bergerak"
 }
 
 	"Construct improvement":{
@@ -315,6 +326,7 @@
 		Traditional_Chinese:"建造道路",
 		Czech:"Postavit cestu"
 		Ukrainian:"Побудувати дорогу"
+                Malay:"Bina jalan"
 }
 
 	"Fortify":{
@@ -347,6 +359,7 @@
 		Japanese:"要塞"
 		Czech:"Opevnění"
 		Ukrainian:"Фортифікація"
+                Malay:"Kubu"
 }
 
 	"Sleep":{
@@ -363,6 +376,7 @@
 		Spanish:"Dormir"
 		Czech:"Spánek"
 		Ukrainian:"Спати"
+                Malay:"Tidur"
 }
 
 	"Moving": { //sample would be appreciated
@@ -374,6 +388,7 @@
 		Russian:"В движении"
 		Czech:"Pohyb "
 		Ukrainian:"У русі"
+                Malay:"Bergerak"
 }
 
 	"Set up":{ // For siege units
@@ -421,6 +436,7 @@
 		Japanese:"見つかった市"
 		Czech:"Založit město"
 		Ukrainian:"Заснувати місто"
+                Malay:"Jumpa bandar"
 }
 
 	"Promote":{
@@ -437,6 +453,7 @@
 		Japanese:"促進する"
 		Czech:"Povýšit"
 		Ukrainian:"Підвищити"
+                Malay:"Naik Pangkat"
 }
 
 	"Health":{
@@ -453,6 +470,7 @@
 		Japanese:"健康"
 		Czech:"Zdraví"
 		Ukrainian:"Здоров’я"
+                Malay:"Kesihatan"
 }
 
 	"Disband unit":{
@@ -485,6 +503,7 @@
 		Dutch:"Onderzoeken"
 		Czech:"Prozkoumat"
 		Ukrainian:"Розвідувати"
+                Malay:"Jelajah"
 }
 
 	"Stop exploration":{
@@ -497,6 +516,7 @@
 		Czech:"Konec průzkumu"
 		Ukrainian:"Зупинити розвідку"
 		German:"Erkundung stoppen"
+                Malay:"Berhenti jelajah"
 }
 
 	"Pillage":{
@@ -582,6 +602,7 @@
 		Japanese:"はい"
 		Czech:"Ano"
 		Ukrainian:"Так"
+                Malay:"Ya"
 }
 	"No":{
 		Italian:"No"
@@ -597,6 +618,7 @@
 		Japanese:"いいえ"
 		Czech:"Ne"
 		Ukrainian:"Ні"
+                Malay:"Tidak"
 }
 
 	"Acquire":{
@@ -626,6 +648,7 @@
 		Japanese:"ゴールド"
 		Czech:"Zlato"
 		Ukrainian:"Золото"
+                Malay:"Emas"
 }
 
 	"Science":{
@@ -642,6 +665,7 @@
 		Japanese:"科学"
 		Czech:"Výzkum"
 		Ukrainian:"Наука"
+                Malay:"Sains"
 }
 
 	"Happiness":{
@@ -658,6 +682,7 @@
 		Japanese:"幸福"
 		Czech:"Spokojenost"
 		Ukrainian:"Щастя"
+                Malay:"Kegembiraan"
 }
 
 	"Production":{
@@ -674,6 +699,7 @@
 		Japanese:"製造"
 		Czech:"Produkce"
 		Ukrainian:"Виробництво"
+                Malay:"Penghasilan"
 }
 
 	"Culture":{
@@ -690,6 +716,7 @@
 		Japanese:"文化"
 		Czech:"Kultura"
 		Ukrainian:"Культура"
+                Malay:"Budaya"
 }
 
 	"Food":{
@@ -706,6 +733,7 @@
 		Japanese:"フード"
 		Czech:"Jídlo"
 		Ukrainian:"Їжа"
+                Malay:"Makanan"
 }
 
 	"GOLDEN AGE":{
@@ -743,6 +771,7 @@
 		Russian:"[year] до н.э."
 		Ukrainian:"до н.е."
 		German:"[year] v. Chr."
+                Malay:"[year] sebelum Masihi"
 	}
 
 	"[year] AD":{ // Anno Domini
@@ -753,6 +782,7 @@
 		Russian:"[year] н.э."
 		Ukrainian:"після н.е."
 		German:"[year] n. Chr."
+                Malay:"[year] selepas Masihi"
 	}
 
 /////// Menu table
@@ -770,6 +800,7 @@
 		Japanese:"シビロペディア",
 		Czech:"Civilopedie"
 		Ukrainian:"Цивілопедія"
+                Malay:"Civilopedia"
 }
 
 	"Start new game":{
@@ -786,6 +817,7 @@
 		Japanese:"新しいゲームを始める"
 		Czech:"Začít novou hru"
 		Ukrainian:"Розпочати нову гру"
+                Malay:"Mulakan permainan baru"
 }
 
 	"Save game":{
@@ -802,6 +834,7 @@
 		Japanese:"ゲームを保存する"
 		Czech:"Uložit hru"
 		Ukrainian:"Зберегти гру"
+                Malay:"Simpan Permainan"
 }
 
 	"Load game":{
@@ -818,6 +851,7 @@
 		Japanese:"ゲームをロード"
 		Czech:"Načíst hru"
 		Ukrainian:"Завантажити гру"
+                Malay:"Muat turn permainan"
 }
 
 
@@ -835,6 +869,7 @@
 		Japanese:"勝利の地位"
 		Czech:"Cesta k vítězství"
 		Ukrainian:"Статус перемоги"
+                Malay:"Status kemenangan"
 }
 
 	"Social policies":{
@@ -851,6 +886,7 @@
 		Japanese:"社会政策"
 		Czech:"Sociální politika"
 		Ukrainian:"Соціальні політики"
+                
 }
 
 	"Community":{
@@ -861,6 +897,7 @@
 		Czech:"Komunita"
 		Ukrainian:"Громада"
 		German:"Gemeinschaft"
+                Malay:"Komuniti"
 }
 
 
@@ -878,6 +915,7 @@
 		Japanese:"閉じる"
 		Czech:"Zavřít"
 		Ukrainian:"Закрити"
+                Malay:"Tutup"
 }
 
 /////// City screen
@@ -960,6 +998,7 @@
 		Japanese:"購入"
 		Czech:"Koupit"
 		Ukrainian:"Купити"
+                Malay:"Beli"
 }
 
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
@@ -1181,6 +1220,7 @@
 		Czech:"Spotřeba jídla"
 		Ukrainian:"Їжі з’їдено"
 		German:"Nahrung verbraucht"
+                Malay:"Makanan dimakan"
 }
 
 	"Growth bonus":{
@@ -1193,6 +1233,7 @@
 		Czech:"Spotřeba jídla"
 		Ukrainian:"Бонус до зростання"
 		German:"Wachstumsbonus"
+                Malay:"Bonus pertumbuhan"
 }
 
 	"Unassigned population":{ // as in "Unassigned population: 2/13
@@ -1392,6 +1433,7 @@
 		Czech:"Bodů za tah"
 		Ukrainian:"Очки за хід"
 		German:"Punkte pro Runde"
+                Malay:"Mata setiap pusingan"
 }
 
 	"Convert production to gold at a rate of 4 to 1":{
@@ -1440,6 +1482,7 @@
 		Japanese:"技術を選ぶ"
 		Czech:"Vybrat technologii"
 		Ukrainian:"Вибрати технологію"
+                Malay:"Pilih teknologi"
 }
 
 	"Pick a free tech":{
@@ -1456,6 +1499,7 @@
 		Japanese:"無料の技術を選ぶ"
 		Czech:"Vybrat technologii zdarma"
 		Ukrainian:"Вибрати безкоштовную технологію"
+                Malay:"Pilih teknologi percuma"
 }
 
 	"Research [technology]":{ // eg "Research Pottery"
@@ -1672,6 +1716,7 @@
 		Portuguese:"Força da cidade"
 		Czech:"Síla města"
 		Ukrainian:"Сила міста"
+                Malay:"Kekuatan bandar"
 }
 
 	"City health":{
@@ -1712,6 +1757,7 @@
 		Portuguese:"Ataque"
 		Czech:"Útok"
 		Ukrainian:"Атака"
+                Malay:"Serang"
 }
 
 	"Bombard":{
@@ -1722,6 +1768,7 @@
 		Russian:"Бомбардировать"
 		Ukrainian:"Обстрілювати"
 		German:"Bombardieren"
+                Malay:"Mengebom"
 }
 
 	"NUKE":{
@@ -1729,6 +1776,7 @@
 		Simplified_Chinese:"核武器攻击"
 		Traditional_Chinese:"核武器攻擊"
 		German:"Atombombe"
+                Malay:"Serangan Atom"
 }
 
 	"Captured!":{// Shown in the battle table when attacking a civilian unit
@@ -1744,6 +1792,7 @@
 		Portuguese:"Capturado(a)!"
 		Czech:"Zajat(a/o)!"
 		Ukrainian:"Захоплено!"
+                Malay:"Ditangkap"
 }
 
 	"defence vs ranged":{
@@ -1819,6 +1868,7 @@
 		Russian:"Местность"
 		Ukrainian:"Місцевість"
 		German:"Gelände"
+                Malay:"Bentuk Mukabumi"
 }
 
 ///////// Unit uniques
@@ -1953,6 +2003,7 @@
 		German:"Gesamt"
 		Czech:"Celkem"
 		Ukrainian:"Усього"
+                Malay:"Jumlah"
 }
 
 	"Stats":{
@@ -1967,6 +2018,7 @@
 		German:"Statistiken"
 		Czech:"Statistiky"
 		Ukrainian:"Статистика"
+                Malay:"Statistik"
 }
 
 	"Policies":{
@@ -1981,6 +2033,7 @@
 		German:"Grundsätze"
 		Czech:"Politiky"
 		Ukrainian:"Політика"
+                Malay:"Polisi"
 }
 
 	"Base happiness":{
@@ -2005,6 +2058,7 @@
 		Ukrainian:"Окуповане місто"
 		Russian:"Базовое счастье"
 		German:"Besetzte Städte"
+                Malay:"Bandar ditawan"
 	}
 
 	"Buildings":{
@@ -2019,6 +2073,7 @@
 		German:"Gebäude"
 		Czech:"Budovy"
 		Ukrainian:"Будівлі"
+                Malay:"Bangunan"
 }
 
 	"Wonders":{
@@ -2067,6 +2122,7 @@
 		Ukrainian:"Бонуси"
 		Russian:"Бонусы"
 		German:"Boni"
+                Malay:"Bonus"
 }
 
 
@@ -2078,6 +2134,7 @@
 		Russian:"Итоговые"
 		Ukrainian:"Остаточні"
 		German:"Endwert"
+                Malay:"Terahkir"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
@@ -2093,6 +2150,7 @@
 		Portuguese:"Outros"
 		Czech:"Ostatní"
 		Ukrainian:"Інше"
+                Malay:"Lain-Lain"
 }
 
 	"Population":{
@@ -2107,6 +2165,7 @@
 		German:"Bevölkerung"
 		Czech:"Populace"
 		Ukrainian:"Населення"
+                Malay:"Populasi"
 }
 
 	"City States":{	//I think that it's already elsewhere
@@ -2160,6 +2219,7 @@
 		German:"Handelsrouten"
 		Czech:"Obchodní cesty"
 		Ukrainian:"Торгові шляхи"
+                Malay:Jalan Perdagangan"
 }
 
 	"Maintenance":{
@@ -2216,6 +2276,7 @@
 		German:"Handel"
 		Czech:"Obchodní dohody"
 		Ukrainian:"Торги"
+                Malay:"Dagangan"
 }
 
 	"Units":{
@@ -2230,6 +2291,7 @@
 		German:"Einheiten"
 		Czech:"Jednotky"
 		Ukrainian:"Пыдроздыли"
+                Malay:"Unit"
 }
 
 	"Name":{
@@ -2244,6 +2306,7 @@
 		German:"Name"
 		Czech:"Jméno"
 		Ukrainian:"Ім’я"
+                Malay:"Nama"
 }
 
 	"Closest city":{
@@ -2258,6 +2321,7 @@
 		German:"Nächstgelegene Stadt"
 		Czech:"Nejbližší město"
 		Ukrainian:"Найближче місто"
+                Malay:"Bandar terdekat"
 }
 
 	"Action":{ // Overview -> Units - Action (Header)
@@ -2497,6 +2561,7 @@
 		Czech:"Globální situace"
 		Ukrainian:"Глобальний стан"
 		German:"Globaler Status"
+                Malay:"Status global"
 }
 
 	"Spaceship parts remaining":{
@@ -2900,6 +2965,7 @@
 		Czech:"Může být vybudován(a/o) v/na "
 		Ukrainian:"Може бути побудований на"
 		German:"Kann gebaut werden auf"
+                Malay:"Boleh dibina atas"
 }
 
 	"Defence bonus":{
@@ -2947,6 +3013,7 @@
 		Czech:" za "
 		Ukrainian:"за"
 		German:" für "
+                Malay:"untuk"
 }
 
 
@@ -2960,6 +3027,7 @@
 		Czech:"Chybějící překlady:"
 		Ukrainian:"Відсутній переклади"
 		German:"Fehlende Übersetzung"
+                Malay:"Tiada terjemahan"
 }
 
 	"Version":{
@@ -2972,6 +3040,7 @@
 		Czech:"Verze"
 		Ukrainian:"Версія"
 		German:"Version"
+                Malay:"Versi"
 }
 
 	"Resolution":{ // screen resolution meant?
@@ -2984,6 +3053,7 @@
 		Czech:"Rozlišení"
 		Ukrainian:"Роздільність"
 		German:"Auflösung"
+                Malay:"Resolusi"
 }
 
 	"Tileset":{
@@ -3008,6 +3078,7 @@
 		Czech:"Editor mapy"
 		Ukrainian:"Редактор мап"
 		German:"Karteneditor"
+                Malay:"Penyunting peta"
 }
 
 	"Language":{
@@ -3020,6 +3091,7 @@
 		Czech:"Jazyk"
 		Ukrainian:"Мова"
 		German:"Sprache"
+                Malay:"Bahasa"
 }
 
 	// Map editor
@@ -3063,6 +3135,7 @@
 		Ukrainian:"Зберегти мапу"
 		Russian:"Сохранить карту"
 		German:"Karte speichern"
+                Malay:"Simpan peta"
 }
 
 	"Load map":{
@@ -3083,6 +3156,7 @@
 		Ukrainian:"Завантажити мапу"
 		Russian:"Скачать карту"
 		German:"Karte herunterladen"
+                Malay:"Muat turun peta"
 }
 
 	"Exit map editor":{
@@ -3093,6 +3167,7 @@
 		Ukrainian:"Вийти з редактора мап"
 		Russian:"Выйти из редактора карт"
 		German:"Karteneditor verlassen"
+                Malay:"Keluar dari penyunting peta"
 }
 
 	"[nation] starting location":{
