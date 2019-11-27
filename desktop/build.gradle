@@ -7,8 +7,8 @@ sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 project.ext.mainClassName = "com.unciv.app.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../android/assets")
-project.ext.discordDir = new File("discord_rpc")
+project.ext.assetsDir = file("../android/assets")
+project.ext.discordDir = file("discord_rpc")
 
 task run(dependsOn: classes, type: JavaExec) {
     main = project.mainClassName
@@ -51,23 +51,25 @@ for(platform in PackrConfig.Platform.values()) {
         config.platform = platform
 
         // For Travis
-        if(platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
-            config.jdk = System.env.'JAVA_HOME' // take the jdk straight from the building linux computer
+        if(true) { // change to false for local build
+            if (platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
+                config.jdk = System.env.'JAVA_HOME'
+            // take the jdk straight from the building linux computer
 
-        if(platform == PackrConfig.Platform.Windows32 || platform == PackrConfig.Platform.Windows64)
-            config.jdk = "jdk-windows.zip" // see how we download and name this in travis yml
-
-        // for my computer
-//        config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+            if (platform == PackrConfig.Platform.Windows32 || platform == PackrConfig.Platform.Windows64)
+                config.jdk = "jdk-windows.zip" // see how we download and name this in travis yml
+        }
+        else {
+            // for my computer
+            config.jdk = "C:/Users/LENOVO/Downloads/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip"
+        }
         config.executable = "Unciv"
         config.classpath = Arrays.asList(jarFile)
         config.removePlatformLibs = config.classpath
         config.mainClass = project.ext.mainClassName
         config.vmArgs = Arrays.asList("Xmx1G")
-//        config.minimizeJre = "desktop/packrConfig.json"
-        config.minimizeJre = "soft"
+        config.minimizeJre = "desktop/packrConfig.json"
         config.outDir = file("packr")
-//        config.cacheJre=file("packrCache")
 
         doLast {
             if(config.outDir.exists()) delete(config.outDir)
