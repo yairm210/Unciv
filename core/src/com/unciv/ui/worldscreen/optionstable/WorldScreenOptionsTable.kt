@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.optionstable
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -104,11 +105,14 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
-        innerTable.add("Replace image with emoji".toLabel())
-        innerTable.addButton(if (settings.replaceImageWithEmoji) "Yes".tr() else "No".tr()) {
-            settings.replaceImageWithEmoji = !settings.replaceImageWithEmoji
-            UncivGame.Current.resume()
-            update()
+        if (Gdx.app.type == Application.ApplicationType.Android
+                && Gdx.app.version > 7) {
+            innerTable.add("Replace image with emoji".toLabel())
+            innerTable.addButton(if (settings.replaceImageWithEmoji) "Yes".tr() else "No".tr()) {
+                settings.replaceImageWithEmoji = !settings.replaceImageWithEmoji
+                UncivGame.Current.resume()
+                update()
+            }
         }
 
         innerTable.add("Enable nuclear weapons".toLabel())
