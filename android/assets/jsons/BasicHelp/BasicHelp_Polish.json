@@ -1,0 +1,46 @@
+[
+	{
+		name:"Miasto",
+		description: "Twoje Miasta są Twoim imperium. Każde Miasto ma określoną liczbę Populacji i swoje pola, na których może pracować w zależności od Populacji.\nPole w samym centrum to miasto które zawsze będzie pracowało, bez względu na Populację.\nŻeby zbudować nowe miasto należy najpierw utworzyć Osadnika.\nKażde miasto w Twoim imperium zabiera 3 punkty Zadowolenia z Twojego imperium, a każda Populacja po 1 punkcie więc zwróć uwagę na to uwagę podczas gry!"
+	},
+	{
+		name:"Pole",
+		description: "Pola to obszar na którym Populacja może pracować.\nKażde pole ma bazowy teren taki jak Łąka, Tundra etc, jak również dodatkową nakładkę terenu jak np. Wzgórza, Las etc.\nW zależności od terenu, pola mogą trzymać zasoby danego pola.\nKażde pole może zostać raz ulepszone w dowolnym momencie."
+	},
+	{
+		name:"Populacja",
+		description: "Reprezentuje liczbę ludności w Twoim mieście, która może pracować w polu miasta.\nPopulacja rośnie gdy jest nadmiar Żywności, i maleje kiedy jest deficyt.\nKażda Populacja konsumuje 2 Żywności na turę.\nKiedy nowa Populacja zostanie dodana, automatycznie zaczyna pracować w polu produkującym najwięcej Żwyności.\nMożesz manualnie przypisać Populację do pola poprzez kliknięcie na ikonę Populacji na polu - przed przypisaniem Populacji do innego pola musisz najpierw ją z pola usunąć!"
+	},
+	{
+		name:"Podstawowe Zasoby",
+		description: "W grze jest 6 podstawowych zasobów: Żywność, Produkcja, Złoto, Nauka, Zadowolenie i Kultura.\rProdukcja i Żywność obliczane są dla każdego miasta oddzielnie, podczas gdy pozostałe dzielą się na całe imperium.\rPodstawowe zasoby produkowane są przez aktywne miasta i przez budynki."
+	},
+	{
+		name:"Żywność",
+		description: "Podstawowy zasób. Każde miasto może przechowywać nadwyżkę Żywności.\nKiedy nadmiar Żywności osiągnie określony limit zależny od populacji, zostaje on odjęty a miasto uzyska kolejną populację.\nJeżeli poziom Żywności bedzie się miał na wyczerpaniu, miasto straci populacje."
+	},
+	{
+		name:"Produkcja",
+		description: "Podstawowy zasób. Produkcja jest potrzebna do budowy budowli i produkcji jednostek w mieście.\r\nNieużywana populacja generuje 1 punkt Produkcji."
+	},
+	{
+		name:"Nauka",
+		description: "Podstawowy zasób. Reprezentuje poziom rozwoju naukowego Twojego imperium.\nKażda Technologia wymaga określonej ilości Nauki, która rośnie wraz z rozwojem technologicznym.\nPopulacja produkuje 1 punkt Nauki."
+	},
+	{
+		name:"Złoto",
+		description: "Podstawowy zasób. Reprezentuje zamożność Twojego imperium.\nWiększość budowli posiada swój koszt utrzymania, który określany jest jako Złoto na turę.\nPodczas każdej tury w której masz deficyt Złota, tracisz punkty Nauki akekwatnie do twojego długu, który na dłuższą metę może całkowicie zatrzymać rozówj Nauki!\nMiasta połączone ze stolicą poprzez drogi będą generować przychody za każdy szlak handlowy, więc staraj się łączyć wielkie miasta z Twoją stolicą!"
+	},
+	{
+		name:"Zadowolenie",
+		description: "Podstawowy zasób.\nKażde miasto obniża zadowolenie Twojego imperium o 3 i populacje o 1.\nMożesz zwiększyć zadowolenie budowlami lub Luksusowymi zasobami.\nKiedy zadowolenie jest niskie, pozyskiwana żywność na turę jest zmniejszona do 1/4, spowolniając tym samym rozwój miasta.\nKiedy osiągniesz wysoki poziom Zadowolenia, Twoje imperium wejdzie w Złoty Wiek!"
+	},
+	{
+		name:"Jednostki i walka",
+		description:"Możesz przemieszczać jednostki po mapie pomiędzy ikonami reprezentującymi cywili i siły militarne.\nUtrzymanie każdej jednostki kosztuje 1 Złoto na turę. Każda jednostka zaczyna ze 100 punktami życia które mogą ulec zmniejszeniu w wyniku walki.\nJednostki militarne mogą atakować inne jednostki i miasta powodując tym samym straty adekwatne do ich siły. \nOblężenie i jednostki strzeleckie mogą atakować z dystansu, podczas gdy inne jednostki mogą przeprowadzać atak tylko z sąsiednich pól.\nZranione jednostki zaczną się leczyć co turę jeżeli nie będą aktywne."
+	},
+	{
+		name:"Przejmowanie miast",
+		description: "Miasta mogą zostać podbite poprzez doprowadzienia wytrzymałości danego Miasta do 1 i wprowadzenia do niego jednostki do walki w zwarciu. Z racji że miasto regeneruje się co turę, najlepiej jest zaatakować jednostkami z dystansu, podczas gdy jednostki do walki w zwarciu osłaniają łuczników do póki miasto nie upadnie"
+	}
+]

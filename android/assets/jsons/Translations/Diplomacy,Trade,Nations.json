@@ -782,7 +782,7 @@
 		Traditional_Chinese:"影響力≥60且高於其他文明以成為友邦同盟"
 		Czech:"Získejte vliv 60 a více pro dosažení aliance."
 		German:"Erreiche den höchsten Einfluss über 60 für Allianzen"
-		Polish:"Osiągnij wpływ powyżej 60 dla sojuszu."
+		Polish:"Osiągnij wpływ powyżej 60 dla sojuszu." //checking context ingame - will delete after confirming
 }
 
 	"Ally: ":{
@@ -943,7 +943,7 @@
 		Portuguese:"Isto é aceitavel"
 		German:"Das ist akzeptabel."
 		Czech:"To se zdá přijatelné."
-		Polish:"To jest akceptowalne."
+		Polish:"To jest akceptowalne." //checking context ingame - will delete after confirming
 }
 
 	"Accept":{
@@ -1084,7 +1084,7 @@
 		Russian:"Представиться [nation]",
 		Czech:"Představení národa [nation]"
 		German:"Vorstellung der Nation [nation]"
-		Polish:"Przedstawienie narodu [nation]"
+		Polish:"Przedstawienie narodu [nation]" //checking context ingame - will delete after confirming
 }
 
 	"Declare war on [nation]":{
@@ -1148,7 +1148,7 @@
 		Russian:"[resourceName] не требуется",
 		Czech:"[resourceName] není potřeba"
 		German:"[resourceName] wird nicht benötigt"
-		Polish:"[resourceName] nie jest wymagane/ny"
+		Polish:"[resourceName] nie jest wymagane/ny" //checking context ingame - will delete after confirming
 }
 
 	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
@@ -1518,7 +1518,7 @@
 		Russian:"+1 Золото от каждого торгового маршрута, количество ресурса Нефть удваивается"
 		Czech:"+1 Zlata za každou obchodní cestu, zdroje Ropy poskytují dvojnásobné množství"
 		German:"+1 Gold von jedem Handelsweg, Ölvorkommen bieten doppelte Menge"
-		Polish:"+1 Złota za każdy Szlak Handlowy, Ropa zapewnia podwojoną ilość"
+		Polish:"+1 Złota za każdy Szlak Handlowy, zasoby Ropy zapewnia podwojoną ilość"
 }
 
 	"America":{
@@ -1557,7 +1557,7 @@
 		Portuguese:"Todas as unidades militares terrestres ganham +1 alcançe devisão e 50% de desconto na compra de terrenos" //i don't remember my translations being this bad? who was the monster?
 		Russian:"Все наземные военные юниты имеют +1 обзор, скидка 50% при покупке клетки"
 		Czech:"Všechny pozemní vojenské jednotky získají +1 viditelnost, 50% sleva na nákup nového území města"
-		Polish:"Wszystkie naziemne jednostki wojskowe otrzymują +1 do wzroku, 50% zniżki kiedy kupujesz teren"
+		Polish:"Wszystkie naziemne jednostki wojskowe otrzymują +1 do wzroku, 50% zniżki podczas zakupu pola"
 }
 
 	"Japan":{
@@ -1731,7 +1731,7 @@
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 		Czech:"+2 Výzkum pro všechny specialisty a Velké osobnosti při vylepšení polí města."
 		German:"+2 Wissenschaft für alle SpezialistInnen und Große Persönlichkeit Feldverbesserungen"
-		Polish:"+2 do Nauki dla wszystkich specjalistów i polepszenie pola Wielkiej Osoby"
+		Polish:"+2 Nauki dla wszystkich specjalistów i polepszenie pola Wielkiej Osoby"
 }
 
 
@@ -1765,7 +1765,7 @@
 		Czech:"Všechny jednotky se pohybují lesem a džunglí, jako by na nich byla postavená cesta. Tyto pole zároveň slouží pro propojení měst před vynalezením technologie 'Kolo'."
 		Russian:"Все юниты двигаются по клеткам с джунглями и лесами как если бы на них были дороги. С помощью таких клеток можно установить соединение между городами после исследования Колеса."
 		German:"Alle Einheiten bewegen sich durch alliierte Wald und Dschungel Felder als hätten sie Straßen. Diese Felder können genutzt werden, um bei der Erforschung des Rades Stadtverbindungen herzustellen."
-		Polish:"Wszystkie jednostki przemieszczające się przez teren Lasu i Dżungli na przyjaznych terenach tak, jak na drogach. Te pola mogą być użyte do zakłądania Łączników Miast po odkryciu Koła."
+		Polish:"Wszystkie jednostki przemieszczają się przez teren Lasu i Dżungli na przyjaznych terenach tak, jak na drogach. Te pola mogą być użyte do zakładania Łączników Miast po odkryciu Koła."
 }
 
 
@@ -1833,7 +1833,7 @@
 		Traditional_Chinese:"單位初始時就擁有船運能力，可進入海濱和海洋地區，單位處於船運狀態時+1視野。摩艾石像群周圍2格內單位+10%戰鬥力"
 		Russian:"Сразу может погружаться на корабль, а также плавать по побережьям и океанам. +1 к обзору при погружении на корабль. +10% к силе если находинтся в радиусе 2х клеток от Моаи."
 		German:"Kann sich sofort einschiffen und über Küsten und Ozeane bewegen. +1 Sicht beim Einschiffen. +10% Kampfstärkebonus, wenn innerhalb von 2 Feldern eines Moai."
-		Polish:"Możesz zaokrętować i ruszyć na Wybrzeża natychmiast. +1 do Wzroku po zaokrętowaniu. +10% Walecznej Siły w obrębie 2 pól od Moai."
+		Polish:"Możesz zaokrętować i ruszyć na Wybrzeża natychmiast. +1 do Wzroku po zaokrętowaniu. +10% Siły w walce w obrębie 2 pól od Moai."
 }
 
 	"Siam":{
@@ -1932,7 +1932,7 @@
 		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
 		Czech:"+30% bojové síly při boji s jednotkami městského státu, nebo útoku na městský stát. +1 Pohyb pro všechny jízdní jednotky."
 		German:"+30% Angriffsstärke bei Attacken auf Stadtstaaten oder dessen Einheiten. +1 Bewegung für alle berittenen Einheiten."
-		Polish:"+30% do Walecznej Siły kiedy walczysz z jednostkami Miasta-Państwa albo podczas ataku na Miasto-Państwo. +1 do Poruszania się dla wszystkich Osiodłanych Jednostek."
+		Polish:"+30% do Siły w walce kiedy walczysz z jednostkami Miasta-Państwa albo podczas ataku na Miasto-Państwo. +1 do Poruszania się dla wszystkich Osiodłanych Jednostek."
 }
 
 	"Songhai":{
@@ -1964,7 +1964,7 @@
 		Italian:"Ottieni Oro bonus quando scopri una Meraviglia Naturale (aumenta se la scopri per primo). Doppia Cultura, Felicità e resa generale dalle Meraviglie Naturali."
 		Czech:"Bonus Zlata za objevení přírodních divů (pokud jste první), Kulturní body, Spokojenost a výnosy z polí s přírodními divy jsou zdvojnásobené."
 		German:"Gold Bonus für die Entdeckung von natürlichen Wundern (Bonus erhöht, falls erster Entdecker). Kultur, Zufriedenheit und Felderträge von natürlichen Wundern werden verdoppelt."
-		Polish:"Bonus w Złocie za odkrycie Cudu Natury (bonus zwiększa się jeżeli odkryłeś go pierwszy). Kultura, Radość i wydajność płytek z Cudu Natury są podwojone"
+		Polish:"Bonus w Złocie za odkrycie Cudu Natury (bonus zwiększa się jeżeli odkryłeś go pierwszy). Kultura, Zadowolenie i wydajność pól z Cudu Natury są podwojone"
 }
 
 
