@@ -6,6 +6,8 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.unciv.UncivGame;
 
+// If we convert this to Kotlin, the the Gradle build won't work. =(
+// Stuck with Java for now
 public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {

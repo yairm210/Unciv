@@ -21,7 +21,7 @@ android {
         applicationId "com.unciv.app"
         minSdkVersion 14
         targetSdkVersion 29
-        versionCode 331
+        versionCode 332
         versionName "3.3.2"
     }
 
