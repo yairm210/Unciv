@@ -162,7 +162,9 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addEraSelectBox() {
         add("{Starting Era}:".tr())
-        val eraSelectBox = TranslatedSelectBox(TechEra.values().map { it.name+" era" }, newGameParameters.startingEra.name, CameraStageBaseScreen.skin)
+        // The eras enum values are "Medieval" etc. but are shown to the player as "Medieval era".tr()
+        // because in other languages "Medieval era" is one word
+        val eraSelectBox = TranslatedSelectBox(TechEra.values().map { it.name+" era" }, newGameParameters.startingEra.name+" era", CameraStageBaseScreen.skin)
         eraSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.startingEra = TechEra.valueOf(eraSelectBox.selected.value.replace(" era",""))
