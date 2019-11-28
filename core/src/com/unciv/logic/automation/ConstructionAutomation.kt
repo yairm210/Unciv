@@ -58,6 +58,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addDefenceBuildingChoice()
         addUnitTrainingBuildingChoice()
         addCultureBuildingChoice()
+        addSpaceshipPartChoice()
 
         if(!cityInfo.isPuppet) {
             addWondersChoice()
@@ -133,6 +134,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 modifier=0.8f
             if (preferredVictoryType == VictoryType.Cultural) modifier = 1.6f
             addChoice(relativeCostEffectiveness, cultureBuilding.name, modifier)
+        }
+    }
+
+    private fun addSpaceshipPartChoice() {
+        val spaceshipPart = buildableNotWonders.firstOrNull { it.uniques.contains("Spaceship part") }
+        if (spaceshipPart != null) {
+            var modifier = 1.5f
+            if(cityInfo.cityStats.currentCityStats.culture==0f) // It won't grow if we don't help it
+                modifier=0.8f
+            if (preferredVictoryType == VictoryType.Scientific) modifier = 2f
+            addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
         }
     }
 
