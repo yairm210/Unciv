@@ -12,7 +12,6 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
@@ -228,11 +227,6 @@ class VictoryScreen : PickerScreen() {
         for (entry in civsToPartsRemaining) {
             val civToPartsBeRemaining=(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo))
             scientificVictoryColumn.add(civToPartsBeRemaining).row()
-            civToPartsBeRemaining.touchable= Touchable.enabled
-            civToPartsBeRemaining.onClick {
-                game.setScreen(TechPickerScreen(entry.civ, false))
-                dispose()
-            }
         }
         return scientificVictoryColumn
     }

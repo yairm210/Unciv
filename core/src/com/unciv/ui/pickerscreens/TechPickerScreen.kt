@@ -15,7 +15,7 @@ import com.unciv.ui.utils.*
 import java.util.*
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldScreen: Boolean = true, centerOnTech: Technology? = null) : PickerScreen() {
+class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
@@ -61,32 +61,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         }
 
         // Create tech table (row by row)
-        for (i in 0..9) {
-            topTable.row().pad(5f).padRight(40f)
-
-            for (j in techMatrix.indices) {
-                val tech = techMatrix[j][i]
-                if (tech == null)
-                    topTable.add() // empty cell
-
-                else {
-                    val techButton = TechButton(tech.name, civTech,false)
-
-                    techNameToButton[tech.name] = techButton
-                    techButton.onClick { selectTechnology(tech, false, switchfromWorldScreen) }
-                    topTable.add(techButton)
-                }
-            }
-        }
+        createTechTable(techMatrix)
 
         setButtonsInfo()
-        if (!switchfromWorldScreen){
-            rightSideButton.apply {
-                disable()
-                setText("Tech Tree Of [${civInfo.civName}]".tr())
-            }
-        }
-        else rightSideButton.setText("Pick a tech".tr())
+        rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick("paper") {
             if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
             else civTech.techsToResearch = tempTechsToResearch
@@ -105,10 +83,30 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
-                selectTechnology(tech, true, switchfromWorldScreen)
+                selectTechnology(tech, true)
             else centerOnTechnology(tech)
         }
 
+    }
+
+    private fun createTechTable(techMatrix: Array<Array<Technology?>>) {
+        for (i in 0..9) {
+            topTable.row().pad(5f).padRight(40f)
+
+            for (j in techMatrix.indices) {
+                val tech = techMatrix[j][i]
+                if (tech == null)
+                    topTable.add() // empty cell
+
+                else {
+                    val techButton = TechButton(tech.name, civTech, false)
+
+                    techNameToButton[tech.name] = techButton
+                    techButton.onClick { selectTechnology(tech, false) }
+                    topTable.add(techButton)
+                }
+            }
+        }
     }
 
     private fun setButtonsInfo() {
