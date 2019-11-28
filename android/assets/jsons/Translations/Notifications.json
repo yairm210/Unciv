@@ -40,21 +40,20 @@
 		Polish:"Twoje imperium weszło w Złoty Wiek!"
 	}
 
-	"revealed near":{ // As in "Coal revealed near London"
-		Italian:"scoperto vicino a"
-		Russian:"обнаружен вблизи "
-		French:"est dévoilé près de"
-		Romanian:"dezvăluit lângă"
-		German:"gefunden in der Nähe von"
-		Dutch:"Ontdekt: in de buurt van"
-		Spanish:"descubierto cerca de"
-		Simplified_Chinese:"被发现在",
-		Traditional_Chinese:"被發現在",
-		Portuguese:"revelado perto de"
-		Japanese:"付近で明らかに",
-		Czech:" objeven(a) poblíž"
-		Ukrainian:"виявлено біля"
-		Polish:"odkryte nieopodal"
+	"[resourceName] revealed near [cityName]":{ // As in "Coal revealed near London"
+		Italian:"[resourceName] scoperto vicino a [cityName]",
+		Russian:"[resourceName] обнаружен вблизи [cityName]",
+		French:"[resourceName] est dévoilé près de [cityName]",
+		Romanian:"[resourceName] dezvăluit lângă [cityName]",
+		German:"[resourceName] gefunden in der Nähe von [cityName]",
+		Dutch:"[resourceName] Ontdekt: in de buurt van [cityName]",
+		Spanish:"[resourceName] descubierto cerca de [cityName]",
+		Simplified_Chinese:"[resourceName] 被发现在 [cityName]",
+		Traditional_Chinese:"[resourceName] 被發現在 [cityName]",
+		Portuguese:"[resourceName] revelado perto de [cityName]",
+		Czech:"[resourceName] objeven(a) poblíž [cityName]",
+		Ukrainian:"[resourceName] виявлено біля [cityName]",
+		Polish:"[resourceName] odkryte nieopodal [cityName]"
 	}
 
 	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""

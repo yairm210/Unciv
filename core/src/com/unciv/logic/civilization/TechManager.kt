@@ -166,17 +166,15 @@ class TechManager {
                     .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE) }
         }
 
-        val revealedResource = GameBasics.TileResources.values.firstOrNull { techName == it.revealedBy }
-
-        if (revealedResource != null) {
+        for(revealedResource in GameBasics.TileResources.values.filter{ techName == it.revealedBy }){
             for (tileInfo in civInfo.gameInfo.tileMap.values
                     .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
                 val closestCityTile = tileInfo.getTilesInDistance(4)
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
-                    civInfo.addNotification("{" + revealedResource.name + "} {revealed near} "
-                            + closestCityTile.getCity()!!.name, tileInfo.position, Color.BLUE) // todo change to [] notation
+                    val text = "[${revealedResource.name}] revealed near [${closestCityTile.getCity()!!.name}]"
+                    civInfo.addNotification(text, tileInfo.position, Color.BLUE)
                     break
                 }
             }
