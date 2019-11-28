@@ -56,20 +56,19 @@
 		Polish:"[resourceName] odkryte nieopodal [cityName]"
 	}
 
-	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""
-		Italian:"È nato un [greatPerson]!"
-		Russian:"[greatPerson] родился!"
-		French:"Un [greatPerson] est né!"
-		Romanian:"S-a născut un [greatPerson]!"
-		Spanish:"¡Un [greatPerson] ha nacido!"
-		Simplified_Chinese:"一个[greatPerson]已经出现！"
-		Traditional_Chinese:"一個[greatPerson]已經出現!"
-		Portuguese:"Um [greatPerson] nasceu!"
-		German:"Ein [greatPerson] wurde geboren!"
-		Japanese:"[greatPerson]が誕生しました！",
-		Czech:"Narodil se [greatPerson]"
-		Ukrainian:"Народився [greatPerson]!"
-		Polish:"[greatPerson] urodził/a się!"
+	"A [greatPerson] has been born in [cityName]!":{
+		Italian:"[cityName] - È nato un [greatPerson]!",
+		Russian:"[cityName] - [greatPerson] родился!",
+		French:"[cityName] - Un [greatPerson] est né!",
+		Romanian:"[cityName] - S-a născut un [greatPerson]!",
+		Spanish:"¡[cityName] - Un [greatPerson] ha nacido!",
+		Simplified_Chinese:"[cityName] - 一个[greatPerson]已经出现！",
+		Traditional_Chinese:"[cityName] - 一個[greatPerson]已經出現!",
+		Portuguese:"[cityName] - Um [greatPerson] nasceu!",
+		German:"[cityName] - Ein [greatPerson] wurde geboren!",
+		Czech:"[cityName] - Narodil se [greatPerson]",
+		Ukrainian:"[cityName] - Народився [greatPerson]!",
+		Polish:"[cityName] - [greatPerson] urodził/a się!"
 	}
 
 	"We have encountered [civName]!":{
