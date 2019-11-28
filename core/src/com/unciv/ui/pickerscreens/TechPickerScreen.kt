@@ -40,28 +40,14 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         isFreeTechPick = freeTechPick
     }
 
+
     init {
         setDefaultCloseAction()
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false,false)
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
-        val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
-        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
-
-        for (technology in GameBasics.Technologies.values) {
-            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
-        }
-
-        val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
-        for (i in 0..7) {
-            val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
-            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.BLUE)).fill().colspan(j)
-            else topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
-        }
-
-        // Create tech table (row by row)
-        createTechTable(techMatrix)
+        createTechTable()
 
         setButtonsInfo()
         rightSideButton.setText("Pick a tech".tr())
@@ -89,7 +75,21 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     }
 
-    private fun createTechTable(techMatrix: Array<Array<Technology?>>) {
+    private fun createTechTable() {
+        val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
+        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
+
+        for (technology in GameBasics.Technologies.values) {
+            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
+        }
+
+        val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
+        for (i in 0..7) {
+            val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
+            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.BLUE)).fill().colspan(j)
+            else topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
+        }
+
         for (i in 0..9) {
             topTable.row().pad(5f).padRight(40f)
 
