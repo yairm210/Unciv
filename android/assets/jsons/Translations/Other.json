@@ -42,6 +42,7 @@
 		Czech:"Čekáme na ostatní hráče..."
 		Ukrainian:"Очікування інших гравців…"
 		German:"Warte auf andere SpielerInnen..."
+		French:"En attente des autres joueurs..."
 }
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -222,6 +223,7 @@
     		Russian:"Радиус"
     		Ukrainian:"Дальність"
 		German:"Reichweite"
+		French:"Portée"
 	}
 
 /////// Unit actions
@@ -732,6 +734,7 @@
 		Ukrainian:"Золотий вік"
 		Russian:"Золотой век"
 		German:"Goldenes Zeitalter"
+		French:"Age d'or"
 }
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
@@ -743,6 +746,7 @@
 		Russian:"[year] до н.э."
 		Ukrainian:"до н.е."
 		German:"[year] v. Chr."
+		French:"[year] avant J.C."
 	}
 
 	"[year] AD":{ // Anno Domini
@@ -753,6 +757,7 @@
 		Russian:"[year] н.э."
 		Ukrainian:"після н.е."
 		German:"[year] n. Chr."
+		French:"[year] après J.C"
 	}
 
 /////// Menu table
@@ -861,6 +866,7 @@
 		Czech:"Komunita"
 		Ukrainian:"Громада"
 		German:"Gemeinschaft"
+		French:"Communauté"
 }
 
 
@@ -1030,6 +1036,7 @@
 		Russian:"Обеспечивает [resource]"
 		Ukrainian:"Забезпечити [resource]"
 		German:"Stellt [resource] zur Verfügung"
+		French:"Fournit [resource]"
 	}
 
 	"Replaces [improvement]":{
@@ -1040,6 +1047,7 @@
 		Russian:"Заменяет [improvement]"
 		Ukrainian:"Замінити [improvement]"
 		German:"Ersetzt [improvement]"
+		French:"Remplace [improvement]"
 	}
 
 	"Pick now!": { //sample needed
@@ -1125,6 +1133,7 @@
 		Russian:"Захватить город"
 		Ukrainian:"Анексоване місто"
 		German:"Stadt annektieren"
+		French:"Cité annexée"
 }
 
 	"Specialist Buildings":{ // !!!!! DUPLICATE KEY !!!!!
@@ -1267,6 +1276,7 @@
 		Ukrainian:"Їжа перетворюється на виробництво"
 		Russian:"Обмен еды на производство"
 		German:"Nahrung in Produktion verwandeln"
+		French:"Nourriture convertie en production"
 }
 
 	"[turnsToStarvation] turns to lose population":{
@@ -1412,6 +1422,7 @@
 		Russian:"Обмен производства на науку 4 к 1"
 		Ukrainian:"Перетворити виробництво на науку з курсом 4 до 1"
 		German:"Verwandel Produktion zu Wissenschaft (4:1)"
+		French:"Convertie la production en science au taux de 4 pour 1"
 }
 
 	"The city will not produce anything.":{
@@ -1422,6 +1433,7 @@
 		Russian:"Город не будет производить ничего"
 		Ukrainian:"Місто не буде нічого виробляти"
 		German:"Die Stadt produziert nichts."
+		French:"La cité ne produira plus rien"
 }
 
 ////// Tech picker
@@ -1557,6 +1569,7 @@
 		Czech:"Národní Divy"
 		Ukrainian:"Національні дива"
 		German:"Nationale Wunder"
+		French:"Merveilles Nationales"
 }
 
 	"Wonders enabled":{
@@ -1697,6 +1710,7 @@
 		Russian:"Оккупирован!" // not sure too
 		Ukrainian:"Окуповано!"
 		German:"Besetzt!"
+		French:"Défendue !" //not sure
 }
 
 	"Attack":{
@@ -1722,6 +1736,7 @@
 		Russian:"Бомбардировать"
 		Ukrainian:"Обстрілювати"
 		German:"Bombardieren"
+		French:"Bombarder"
 }
 
 	"NUKE":{
@@ -1754,6 +1769,7 @@
 		Russian:"Защита против дальнего боя"
 		Ukrainian:"захист проти дальнобійників"
 		German:"Verteidigung gegen Fernkampf"
+		French:"défense contre les attaques à distance"
 }
 
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
@@ -1779,6 +1795,7 @@
 		Russian:"Бонус атакующего"
 		Ukrainian:"Бонус нападника"
 		German:"Angriffsbonus"
+		French:"Bonus d'attaque"
 }
 
 	"Landing":{
@@ -1789,6 +1806,7 @@
 		Russian:"Высадка"
 		Ukrainian:"Висадка"
 		German:"Anlanden"
+		French:"Atterrissage"//not sure
 }
 
 	"Flanking":{
@@ -1799,6 +1817,7 @@
 		Russian:"Атака с фланга"
 		Ukrainian:"Атака з флангу"
 		German:"Flankenangriff"
+		French:"Attaque de flanc"
 }
 
 	"vs [unitType]":{
@@ -1809,6 +1828,7 @@
 		Russian:"против [unitType]"
 		Ukrainian:"проти [unitType]"
 		German:"gegen [unitType]"
+		French:"vs [unitType]"
 }
 
 	"Terrain":{
@@ -1819,6 +1839,7 @@
 		Russian:"Местность"
 		Ukrainian:"Місцевість"
 		German:"Gelände"
+		French:"Terrain"
 }
 
 ///////// Unit uniques
@@ -1863,6 +1884,7 @@
 		Italian:"La tua missione commerciale con [civName] ti ha fruttato [goldAmount] Oro e [influenceAmount] Influenza!"
 		Simplified_Chinese:"您与[civName]拓展贸易获得[goldAmount]金钱和[influenceAmount]影响力！"
 		Traditional_Chinese:"您與[civName]拓展貿易獲得[goldAmount]金錢和[influenceAmount]影響力！"
+		French:"Votre mission commerciale vers [civName] vous a rapporté [goldAmount] Or et [influenceAmount] Influence!"
 }
 
 	"Hurry Wonder":{
@@ -1887,6 +1909,7 @@
 		Traditional_Chinese:"人民為您英明領導下取得的豐功偉業歡欣鼓舞，您的帝國進入了黃金時代！",
 		Czech:"Naši občané jsou spokojeni s vaší vládou po dlouhou dobu díky čemuž říše vstoupila do Zlatého věku!"
 		Russian:"Граждане настолько счастливы при вашей власти, что ваша империя вступает в золотой век!"
+		French:"Vos citoyens sont satisfaits de votre gouvernance depuis si longtemps que votre empire débute un Age d'Or !"
 		Ukrainian:"Ваші громадяни були задоволені вашим правлінням так довго, що імперія вступає в Золотий вік!"
 		German:"Deine Bevölkerung ist so zufrieden mit deiner Herrschaft, dass dein Imperium in ein Goldenes Zeitalter eintritt!"
 }
@@ -2005,6 +2028,7 @@
 		Ukrainian:"Окуповане місто"
 		Russian:"Базовое счастье"
 		German:"Besetzte Städte"
+		French:"Cité Occupée"
 	}
 
 	"Buildings":{
@@ -2057,6 +2081,7 @@
 		Russian:"Базовые значения"
 		Ukrainian:"Початкове значення"
 		German:"Grundwerte"
+		French:"valeurs initiales"
 }
 
 	"Bonuses":{
@@ -2067,6 +2092,7 @@
 		Ukrainian:"Бонуси"
 		Russian:"Бонусы"
 		German:"Boni"
+		French:"Bonus"
 }
 
 
@@ -2078,6 +2104,7 @@
 		Russian:"Итоговые"
 		Ukrainian:"Остаточні"
 		German:"Endwert"
+		French:"valeurs finales"
 }
 
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
@@ -2268,6 +2295,7 @@
 		Ukrainian:"Дія"
 		Russian:"Действие"
 		German:"Aktion"
+		French:"Action"
 }
 
 	"Defeated":{
@@ -2292,6 +2320,7 @@
 		Russian:"Клетки"
 		Ukrainian:"Клітини"
 		German:"Felder"
+		French:"Tuiles"
 }
 
 ////// Victory Screen
@@ -2411,7 +2440,7 @@
 		Czech:"Dosáhli jsme vítězství díky úžasné dokonalé kulturnosti. Velikost naší říše - velkolepost vybudovaných památek a preciznost našich umělců ohromila svět! Básníci nás budou velebit, dokud vše krásné bude přinášet potěšení unavenému srdci."
 		Ukrainian:""
 		German:"Du hast den Sieg durch die unglaubliche Kraft deiner Kultur errungen. Die Größe deiner Zivilisation - die Pracht ihrer Denkmäler und die Macht ihrer Künstler - haben die Welt verblüfft! Dichter werden dich ehren, solange Schönheit einem müden Herzen Freude bereitet."
-		
+		French:"Vous êtes victorieux grâce au pouvoir impressionnant de votre Culture. La grandeur de votre civilisation - la beauté de ses monuments et le talent de ses artistes - ont étonnés le monde ! Les poètes vous loueront tant que la beauté apportera de la joie à un coeur fatigué"
 }
 
 	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
@@ -2421,6 +2450,7 @@
 		Czech:"Celý svět byl zachvácen válkou. Velké a slavné civilizace byly zničeny, ale naše říše dokázala jako jediná přežít a zvítězit. Svět nikdy nezapomene na tento fenomenální triumf!"
 		Ukrainian:""
 		German:"Die Welt wurde vom Krieg erschüttert. Mögen große und mächtige Zivilisationen gefallen sein, aber du hast überlebt - und bist siegreich geworden! Die Welt wird sich lange an deinen glorreichen Triumph erinnern!"
+		French:"Le monde a été boulversé par la guerre. De grandes et puissantes civilisations sont tombées mais vous avez survécu - et ressorti victorieux ! Le monde se rappelera longtemps de votre glorieux triomphe !"
 }
 
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
@@ -2430,6 +2460,7 @@
 		Czech:"Zvítězili jsme ve hře díky enormnímu úsilý a mistrovství našich vědců. Poodhalili jste tajemství přírody a dovedli naše obyvatele na cestu poznání k novým světům. Na tento úspěch se bude vzpomínat dokud budou svítit hvězdy na nebi!"
 		Ukrainian:""
 		German:"Du hast den Sieg durch die Beherrschung der Wissenschaft errungen! Du hast die Geheimnisse der Natur erobert und dein Volk auf eine Reise in eine schöne neue Welt geführt! Dein Triumph wird in Erinnerung bleiben, solange die Sterne am Nachthimmel brennen!"
+		French:"Vous êtes victorieux grâce à votre maîtrise de la Science ! Vous avez compris les mystères de la nature et conduit votre peuple vers un nouveau monde ! On se rappelera de votre triomphe aussi longtemps que les étoiles brillent dans la nuit !"
 }
 
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
@@ -2439,6 +2470,7 @@
 		Czech:"Byli jsme poraženi. Naše civilizace byla převálcována schopnostmi nepřátel. Naši lidé ovšem nezoufají, protože ví, že jednou se jejich vůdce vrátí. A dovede je k vytouženému vítězství!"
 		Ukrainian:"Ви зазнали поразки. Вашу цивілізацію переповнили численні вороги. Але твій народ не впадає у відчай, бо вони знають, що одного дня ти повернешся — і поведеш їх до перемоги!"
 		German:"Du wurdest besiegt. Deine Zivilisation wurde von ihren vielen Feinden überwältigt. Aber dein Volk verzweifelt nicht, denn es weiß, dass du eines Tages zurückkehren wirst - und es zum Sieg führen werdet!"
+		French:"Vous êtes vaincu. Votre civilisation a été submergée par de nombreux ennemis. Mais votre peuple n'est pas desespéré car ils savent que, un jour, vous reviendrez - et les conduirez à la victoire !"
 }
 
 	"One more turn...!":{
@@ -2564,6 +2596,7 @@
 		Traditional_Chinese:"“併吞城市”意味著該城市將成為您的帝國的一部分。",
 		Ukrainian:"Анексовані міста стануть частиною вашою імперією."
 		German:"Annektierte Städte werden Teil deines Imperiums"
+		French:"Les cités annexées sont intégrées à votre empire"
 }
 
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
@@ -2573,6 +2606,7 @@
 		Traditional_Chinese:"該城市人口產生的不滿將是一般城市的2倍，建造“法院”可以使其降低到正常值。"
 		Ukrainian:"Їх громадяни породжують 2x нещастя, якщо ви не побудуєте будинок суду."
 		German:"Deren Bevölkerung generieren 2x Unzufriedenheit solange bis du ein Gerichtsgebäude gebaut hast."
+		French:"x2 au mécontentement de leurs citoyens tant que vous n'aurez pas construit un tribunal" 
 }
 
 	"Puppet":{
@@ -2582,6 +2616,7 @@
 		Czech:"Loutková vláda"
 		Ukrainian:"Маріонетка"
 		German:"Marionette"
+		French:"Fantoche"
 }
 
 	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
@@ -2591,6 +2626,7 @@
 		Traditional_Chinese:"“傀儡城市”不會額外增加您研發科技和推行社會政策時的花費，但其人口產生的不滿是一般城市的1.5倍。",
 		Ukrainian:"Маріонеткові міста не збільшують ваші витрати на техніку чи політику, але їхні жителі створюють у 1.5 рази регулярне нещастя."
 		German:"Marionettenstädte erhöhen nicht die Kosten für Technologie oder Grundsätze. Ihre EinwohnerInnen generieren 1,5 mal so viel Unzufriedenheit wie normal."
+		French:"Les cités fantoches n'augmentent pas vos coûts en technologies ou culture mais x1,5 au mécontentement de leurs citoyens."
 }
 
 	"You have no control over the the production of puppeted cities.":{
@@ -2600,6 +2636,7 @@
 		Traditional_Chinese:"您無法控制傀儡城市的產能。"
 		Ukrainian:"Ви не маєте контролю над виробництвом маріонеткових міст."
 		German:"Du hast keine Kontrolle über die Produktion von Marionettenstädten."
+		French:"Vous ne contrôlez pas la production des cités fantoches."
 }
 
 	"Puppeted cities also generate 25% less Gold and Science.":{
@@ -2609,6 +2646,7 @@
 		Traditional_Chinese:"傀儡城市的金錢和科研產出-25%。"
 		Ukrainian:"маріонеткові міста також генерують на 25% менше золота та науки."
 		German:"Marionettenstädte generieren 25% weniger Gold und Wissenschaft."
+		French:"Les cités fantoches produisent -25% en Or et Science."
 }
 
 	"A puppeted city can be annexed at any time.":{
@@ -2618,6 +2656,7 @@
 		Simplified_Chinese:"可以在任何时候选择吞并已傀儡城市。"
 		Ukrainian:"Маріонеткові міста можуть бути анексованими будь-коли"
 		German:"Eine Marionettenstadt kann jederzeit annektiert werden."
+		French:"Une cité fantoche peut être annexée à n'importe quel moment."
 }
 
 	"Liberate":{
@@ -2627,6 +2666,7 @@
 		Czech:"Osvabodit"
 		Ukrainian:"Визволити"
 		German:"Befreien"
+		French:"Libérer"
 }
 
 	"Liberating a city returns it to its original owner, giving you a massive relationship boost with them!":{
@@ -2636,11 +2676,12 @@
 		Traditional_Chinese:"“解放城市”會將該城市歸還給初始擁有者，這樣做會極大增進兩者的關係！"
 		Ukrainian:"Визволення міста повертає його своєму первісному власнику, надаючи вам масовий приріст відносин з ними!"
 		German:"Befreite Städte gehen wieder in den Besitz der vorherigen besitzenden Person über. Eure Beziehung wird sich dadurch massiv verbessern!"
+		French:"Libérer une cité la renvoie à son propriétaire initial, vous donnant un bonus massif dans la relation que vous entretenez avec lui !"
 }
 
 	"Raze":{
 		Italian:"Radi al suolo"
-		French:"Razer"
+		French:"Raser"
 		Simplified_Chinese:"摧毁"
 		Traditional_Chinese:"摧毀"
 		Russian:"Разорить"
@@ -2656,6 +2697,7 @@
 		Simplified_Chinese:"“摧毁城市”意味着吞并该城市，同时开始将该城市夷为平地。"
 		Traditional_Chinese:"“摧毀城市”意味著併吞該城市，同時開始將該城市夷為平地。"
 		German:"Niederreißen annektiert die Stadt zunächst und macht sie dem Erdboden gleich."
+		French:"Raser une ville l'annexe puis la rase jusqu'au sol."//not sure
 }
 
 	"The population will gradually dwindle until the city is destroyed.":{
@@ -2665,6 +2707,7 @@
 		Traditional_Chinese:"城市人口將會持續減少直到該城市被完全摧毀。"
 		Ukrainian:"Населення поступово зменшиться, поки місто не буде зруйновано."
 		German:"Die Bevölkerung wird allmählich schrumpfen, bis die Stadt zerstört ist."
+		French:"La population de la ville diminuera progressivement jusqu'à sa destruction."
 }
 
 	"Destroy":{
@@ -2673,6 +2716,7 @@
 		Traditional_Chinese:"摧毀"
 		Czech:"Zničit"
 		German:"Zerstören"
+		French:"Détruire"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
@@ -2681,6 +2725,7 @@
 		Traditional_Chinese:"摧毀一座城市會將城市夷為平地。"
 		Czech:"Zničení města okamžitě srovná město se zemí."
 		German:"Die Zerstörung der Stadt macht sie sofort dem Erdboden gleich."
+		French:"Détruire la ville, la rase instantanément jusqu'au sol."
 }
 
 
@@ -2790,13 +2835,14 @@
     		Ukrainian:"Навчальні посібники"
 		Russian:"Советы"
 		German:"Tutorials"
+		French:"Didacticiels"
 }
 
 	"Cost":{
 		Italian:"Costo"
 		Simplified_Chinese:"花费"
 		Traditional_Chinese:"花費"
-		French:"Côte"
+		French:"Coût"
 		Portuguese:"Custo"
 		Russian:"Стоимость"
 		Czech:"Cena"
@@ -3033,6 +3079,7 @@
 		Czech:"Terén & Zdroje"
 		Ukrainian:"Місцевість і ресурси"
 		German:"Gelände & Ressourcen"
+		French:"Terrains & Ressources"
 }
 
 	"Improvements":{
@@ -3043,6 +3090,7 @@
 		Czech:"Vylepšení"
 		Ukrainian:"Удосконалення"
 		German:"Verbesserungen"
+		French:"Améliorations"
 }
 
 	"Clear current map":{
@@ -3053,6 +3101,7 @@
 		Ukrainian:"Очистити поточну мапу"
 		Russian:"Очистить карту"
 		German:"Lösche aktuelle Karte"
+		French:"Efface la carte actuelle"
 }
 
 	"Save map":{
@@ -3063,6 +3112,7 @@
 		Ukrainian:"Зберегти мапу"
 		Russian:"Сохранить карту"
 		German:"Karte speichern"
+		French:"Sauvegarder la carte"
 }
 
 	"Load map":{
@@ -3073,6 +3123,7 @@
 		Ukrainian:"Завантажити мапу"
 		Russian:"Загрузить карту"
 		German:"Karte laden"
+		French:"Charger une carte"
 }
 
 	"Download map":{
@@ -3083,6 +3134,7 @@
 		Ukrainian:"Завантажити мапу"
 		Russian:"Скачать карту"
 		German:"Karte herunterladen"
+		French:"Télécharger une carte"
 }
 
 	"Exit map editor":{
@@ -3093,6 +3145,7 @@
 		Ukrainian:"Вийти з редактора мап"
 		Russian:"Выйти из редактора карт"
 		German:"Karteneditor verlassen"
+		French:"Quitter l'éditeur de cartes"
 }
 
 	"[nation] starting location":{
@@ -3103,6 +3156,7 @@
 		Czech:"[nation] startovací pozice"
 		Ukrainian:"Початкове місцезнаходження [nation]"
 		German:"Startposition von [nation] "
+		French:"[nation] position de départ"
 }
 
 	"Clear terrain features":{
@@ -3112,6 +3166,7 @@
 		Czech:"Smazat vlastnosti terénu"
 		Ukrainian:"Очистити особливості місцевості"
 		German:"Lösche Geländemerkmale"
+		French:"Effacer les caractéristiques des terrains"
 }
 
 	"Clear improvements":{
@@ -3122,6 +3177,7 @@
 		Czech:"Smazat vylepšení"
 		Ukrainian:"Видалити вдосконалення"
 		German:"Lösche Verbesserungen"
+		French:"Effacer les améliorations"
 }
 
 	"Clear resource":{
@@ -3132,6 +3188,7 @@
 		Czech:"Smazat zdroje"
 		Ukrainian:"Видалити ресурс"
 		German:"Lösche Ressource"
+		French:"Effacer les ressources"
 }
 
 }
