@@ -1,12 +1,14 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.GL30
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
@@ -31,7 +33,7 @@ open class CameraStageBaseScreen : Screen {
 
     override fun render(delta: Float) {
         Gdx.gl.glClearColor(0f, 0f, 0.2f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT)
 
         stage.act()
         stage.draw()
@@ -73,7 +75,7 @@ open class CameraStageBaseScreen : Screen {
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(45).apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
-        internal var batch: Batch = SpriteBatch()
+        internal var batch: Batch = if(Gdx.app.type == Application.ApplicationType.Android) SpriteBatch() else SpriteBatch(1000, createDefaultShader())
     }
 
     fun onBackButtonClicked(action:()->Unit){
@@ -90,6 +92,41 @@ open class CameraStageBaseScreen : Screen {
 
 }
 
+fun createDefaultShader(): ShaderProgram? {
+    val vertexShader = ("#version 330 core\n"
+            + "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+            + "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+            + "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+            + "uniform mat4 u_projTrans;\n" //
+            + "out vec4 v_color;\n" //
+            + "out vec2 v_texCoords;\n" //
+            + "\n" //
+            + "void main()\n" //
+            + "{\n" //
+            + "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+            + "   v_color.a = v_color.a * (255.0/254.0);\n" //
+            + "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+            + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+            + "}\n")
+    val fragmentShader = ("#version 330 core\n"
+            + "#ifdef GL_ES\n" //
+            + "#define LOWP lowp\n" //
+            + "precision mediump float;\n" //
+            + "#else\n" //
+            + "#define LOWP \n" //
+            + "#endif\n" //
+            + "in LOWP vec4 v_color;\n" //
+            + "in vec2 v_texCoords;\n" //
+            + "out vec4 fragColor;\n" //
+            + "uniform sampler2D u_texture;\n" //
+            + "void main()\n" //
+            + "{\n" //
+            + "  fragColor = v_color * texture(u_texture, v_texCoords);\n" //
+            + "}")
+    val shader = ShaderProgram(vertexShader, fragmentShader)
+    require(shader.isCompiled) { "Error compiling shader: " + shader.log }
+    return shader
+}
 
 fun Button.disable(){
     touchable= Touchable.disabled
@@ -157,8 +194,7 @@ fun Table.addSeparator(): Cell<Image> {
 
 fun Table.addSeparatorVertical(): Cell<Image> {
     val image = ImageGetter.getWhiteDot()
-    val cell = add(image).width(2f).fillY()
-    return cell
+    return add(image).width(2f).fillY()
 }
 
 /**

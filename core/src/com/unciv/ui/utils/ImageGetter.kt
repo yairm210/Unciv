@@ -242,16 +242,16 @@ object ImageGetter {
     }
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
-        var techIconColor = Color.WHITE
-        when (GameBasics.Technologies[techName]!!.era().name) {
-            "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
-            "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
-            "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)
-            "Renaissance" -> techIconColor = colorFromRGB(104, 58, 183)
-            "Industrial" -> techIconColor = colorFromRGB(63, 81, 182)
-            "Modern" -> techIconColor = colorFromRGB(33, 150, 243)
-            "Information" -> techIconColor = colorFromRGB(0, 150, 136)
-            "Future" -> techIconColor = colorFromRGB(76,176,81)
+        val techIconColor = when(GameBasics.Technologies[techName]!!.era().name) {
+            "Ancient" -> colorFromRGB(255, 87, 35)
+            "Classical" -> colorFromRGB(233, 31, 99)
+            "Medieval" -> colorFromRGB(157, 39, 176)
+            "Renaissance" -> colorFromRGB(104, 58, 183)
+            "Industrial" -> colorFromRGB(63, 81, 182)
+            "Modern" -> colorFromRGB(33, 150, 243)
+            "Information" -> colorFromRGB(0, 150, 136)
+            "Future" -> colorFromRGB(76,176,81)
+            else -> Color.WHITE
         }
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK,0.6f) }
                 .surroundWithCircle(circleSize)

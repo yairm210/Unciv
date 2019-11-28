@@ -23,6 +23,7 @@ internal object DesktopLauncher {
         config.useGL30 = true
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
+        config.useHDPI = true
 
         val game = UncivGame("Desktop")
 
