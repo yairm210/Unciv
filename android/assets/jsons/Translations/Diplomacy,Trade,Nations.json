@@ -14,6 +14,7 @@
 		German:"Diplomatie"
                 Polish:"Dyplomacja"
 		Czech:"Diplomacie"
+                Malay:"Diplomasi"
 }
 
 	"War":{
@@ -28,6 +29,7 @@
 		German:"Krieg"
                 Polish:"Wojna"
 		Czech:"Válka"
+                Malay:"Perang"
 }
 
 	"Peace":{
@@ -42,6 +44,7 @@
 		German:"Frieden"
                 Polish:"Pokój"
 		Czech:"Mír"
+                Malay:"Aman"
 }
 
 	"Declare war":{
@@ -56,6 +59,7 @@
 		German:"Krieg erklären"
                 Polish:"Wypowiedz wojnę"
 		Czech:"Vyhlásit válku"
+                Malay:"Isytiharkan perang"
 }
 
 	"Declare war on [civName]?":{ //Don't translate in diplomacy view
@@ -68,6 +72,7 @@
 		Russian:"Объявить войну [civName]?",
 		Czech:"Vyhlásit válku civilizaci [civName]?"
 		German:"[civName] den Krieg erklären?"
+                Malay:"Isytiharkan perang keatas [civName]?"
 }
 
 	"[civName] has declared war on us!":{
@@ -82,6 +87,7 @@
 		German:"[civName] hat uns den Krieg erklärt!"
                 Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!"
 		Czech:"Civilizace [civName] nám vyhlásila válku!"
+                Malay:"[civName] telah mengisytiharkan perang pada kita"
 }
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -122,6 +128,7 @@
 		Russian:"Предложить мир"
 		Czech:"Mírové jednání"
 		German:"Frieden verhandeln"
+                Malay:"Berunding keamanan"
 }
 
 	"Very well.":{
@@ -134,6 +141,7 @@
 		Russian:"Очень хорошо."
 		Czech:"Jak je libo"
 		German:"Nun gut"
+                Malay:"Baiklah."
 }
 
 	"Farewell.":{
@@ -146,6 +154,7 @@
 		Russian:"До встречи."
 		Czech:"Sbohem"
 		German:"Auf Wiedersehen"
+                Malay:"Selamat tinggal."
 }
 
 	"Sounds good!":{
@@ -157,6 +166,7 @@
 		Russian:"Звучит неплохо!"
 		Czech:"To zní dobře"
 		German:"Sehr gut"
+                Malay:"Bagus juga!"
 }
 
 	"Not this time.":{ // declining trade text
@@ -169,6 +179,7 @@
 		Russian:"Не в этот раз."
 		Czech:"Z toho nic nebude"
 		German:"Vielleicht ein anderes Mal"
+                Malay:"Bukan sekarang"
 }
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
@@ -181,6 +192,7 @@
 		Russian:"Превосходно!"
 		Czech:"Skvěle!"
 		German:"Hervorragend!"
+                Malay:"Bagus!"
 }
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
@@ -193,6 +205,7 @@
 		Russian:"Как насчёт другого..."
 		Czech:"Co třeba zkusit něco jiného..."
 		German:"Wie wäre es mit etwas anderem..."
+                Malay:"Mungkin benda lain"
 }
 
 	"A pleasure to meet you.":{
@@ -205,6 +218,7 @@
 		Russian:"Рады видеть вас."
 		Czech:"Rádi vás poznáváme"
 		German:"Eine Freude, Sie getroffen zu haben."
+                Malay:"Selamat berkenalan"
 }
 
 	"Our relationship: ":{
@@ -217,6 +231,7 @@
 		Russian:"Наши отношения: "
 		Czech:"Náš vzájemný vztah: "
 		German:"Unsere Beziehung: "
+                Malay:"Hubungan kita"
 }
 
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
@@ -242,6 +257,7 @@
 		Russian:"Объявить о дружбе на [numberOfTurns] ходов",
 		Czech:"Deklarace přátelství ([numberOfTurns] kol)"
 		German:"Freundschaft erklären ([numberOfTurns] Runden)"
+                Malay:"Isytihar Persahabatan ([numberOfTurns] pusingan)"
 }
 
 	"May our nations forever remain united!":{
@@ -254,6 +270,7 @@
 		Russian:"Да будут наши державы навеки едины!"
 		Czech:"Nechť naše národy zůstanou navždy spojené"
 		German:"Mögen unsere Nationen auf immer in Freundschaft vereint sein!"
+                Malay:"Harap negara ini kekal bersatu selamanya"
 }
 
 	"Indeed!":{
@@ -266,6 +283,7 @@
 		Russian:"Разумеется!"
 		Czech:"Vskutku!"
 		German:"Auf jeden Fall!"
+                Malay:"Sesungguhnya"
 }
 
 	// Denunceation flavour texts
@@ -278,6 +296,7 @@
 		Russian:"Осуждение на [numberOfTurns] ходов",
 		Czech:"Odsoudit ([numberOfTurns] kol)"
 		German:"Denunziere ([numberOfTurns] Runden)"
+                Malay:"Kecam ([numberOfTurns] pusingan)"
 }
 
 	"We will remember this.":{
@@ -289,6 +308,7 @@
 		Russian:"Мы это запомним"
 		Czech:"To vám nikdy nezapomeneme!"
 		German:"Das werden wir nie vergessen!"
+                Malay:"Kami akan ingat perkara ini"
 }
 
 
@@ -304,6 +324,7 @@
 		Russian:"Непростительно враждебные"
   		Czech:"Nenávist"
 		German:"Todfeind"
+                Malay:"Tidak dapat dimaafkan"
 }
 
   	"Enemy":{
@@ -316,6 +337,7 @@
 		Russian:"Враждебные"
   		Czech:"Nepřátelství"
 		German:"Feind"
+                Malay:"Musuh"
 }
 
   	"Competitor":{
@@ -328,6 +350,7 @@
 		Russian:"Соперничающие"
   		Czech:"Negativní"
 		German:"Konkurrent"
+                Malay:"Persaingan"
 }
 
   	"Neutral":{
@@ -340,6 +363,8 @@
 		Russian:"Нейтральные"
   		Czech:"Neutrální"
 		German:"Neutral"
+                Malay:"Neutral"
+                 
 }
 
   	"Favorable":{
@@ -352,6 +377,7 @@
 		Russian:"Приемлемые"
   		Czech:"Pozitivní"
 		German:"Beliebt"
+                Malay:"Disukai"
 }
 
   	"Friend":{
@@ -364,6 +390,7 @@
 		Russian:"Дружеские"
  	 	Czech:"Přátelství"
 		German:"Freund"
+                Malay:"Kawan"
 }
 
   	"Ally":{
@@ -376,6 +403,7 @@
 		Russian:"Союзнические"
   		Czech:"Aliance"
 		German:"Alliiert"
+                Malay:"Pakatan"
 }
 
 	// City States
@@ -459,6 +487,7 @@
 		Russian:"Вы объявляли нам войну!"
 		Czech:"Vyhlásili jste nám válku!"
 		German:"Sie haben uns den Krieg erklärt!"
+                Malay:"Kamu isytihar perang pada saya"
 }
 
 	"Your warmongering ways are unacceptable to us.":{
@@ -483,6 +512,7 @@
 		Russian:"Вы захватывали наши города!"
 		Czech:"Obsadili jste naše města!"
 		German:"Sie haben unsere Städte erobert!"
+                Malay:"Kamu tawan bandar kami"
 }
 
 	"Years of peace have strengthened our relations.":{
@@ -495,6 +525,7 @@
 		Russian:"Годы мира укрепили наши отношения"
 		Czech:"Roky míru posílily naše vzájemné vztahy."
 		German:"Die Jahre des Friedens haben unsere Beziehung gestärkt."
+                Malay:"Keamanan bertahun-tahun telah menguatkan hubungan kita."
 }
 
 	"Our mutual military struggle brings us closer together.":{
@@ -578,6 +609,7 @@
 		Russian:"Вы публично осудили нас!"
 		Czech:"Veřejně jste nás odsoudili!"
 		German:"Ihr habt uns öffentlich angeprangert!"
+                Malay:"Kamu telah mengutuk kami secara awam!"
 }
 
 	"You have denounced our allies":{
@@ -589,6 +621,7 @@
 		Russian:"Вы осудили наших союзников!"
 		Czech:"Osdoudili jsme naše spojence"
 		German:"Ihr habt unsere Alliierten öffentlich angeprangert!"
+                Malay:"Kamu telah kutuk pakatan kamu"
 }
 
 	"You have denounced our enemies":{
@@ -600,6 +633,7 @@
 		Russian:"Вы осудили наших врагов"
 		Czech:"Odsoudili jsme naše nepřátele"
 		German:"Ihr habt unsere Feinde öffentlich angeprangert!"
+                Malay:"Kamu telah kutuk musuh kamu"
 }
 
 	// Demands
@@ -612,6 +646,7 @@
 		Russian:"Требования"
 		Czech:"Požadavky:"
 		German:"Forderungen"
+                Malay:"Permintaan"
 }
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
@@ -622,6 +657,7 @@
 		Russian:"Пожалуйста, не закладывайте новых городов рядом с нами."
 		Czech:"Prosím nezakládejte města poblíž našeho území."
 		German:"Bitte keine neuen Städte in unserer Nähe bauen."
+                Malay:"Tolong jangan menetap berdekatan bandar kami"
 }
 	"Very well, we shall look for new lands to settle.":{
 		Italian:"Ti porgiamo le nostre scuse."
@@ -808,6 +844,7 @@
 		German:"Handel"
 		Czech:"Obchod"
 		Polish:"Wymiana"
+                Malay:"Dagang"
 }
 
 	"Offer trade":{
@@ -822,6 +859,7 @@
 		German:"Handel anbieten"
 		Czech:"Učinit nabídku"
 		Polish:"Zaproponuj wymianę"
+                Malay:"Tawar dagang"
 }
 
 	"Retract offer":{
@@ -832,6 +870,7 @@
 		Czech:"Zrušit nabídku"
 		German:"Angebot zurückziehen"
 		Polish:"Wycofaj ofertę"
+                Malay:"Tarik balik tawaran"
 }
 
 	"What do you have in mind?":{
@@ -930,6 +969,7 @@
 		German:"Lieber nicht."
 		Czech:"Myslím, že to neklapne."
 		Polish:"Myślę że nie."
+                Malay:"Saya rasa tidak"
 }
 
 	"That is acceptable.":{
@@ -958,6 +998,7 @@
 		German:"Annehmen"
 		Czech:"Souhlasíme"
 		Polish:"Zatwierdź"
+                Malay:"Mahu"
 }
 
 	"Keep going":{
@@ -970,6 +1011,7 @@
 		Czech:"Pokračujte"
 		German:"Weitermachen"
 		Polish:"Kontynuuj"
+                Malay:"Teruskan"
 }
 
 	"There's nothing on the table":{
@@ -1022,6 +1064,7 @@
 		Czech:"Otevřené hranice"
 		German:"Offene Grenzen"
 		Polish:"Otwórz granice"
+                Malay:"Buka Sempadan"
 }
 
 	"Gold per turn":{
@@ -1036,6 +1079,7 @@
 		German:"Gold pro Runde"
 		Czech:"Zlato za kolo"
 		Polish:"Złoto na turę"
+                Malay:"Emas setiap pusingan"
 }
 
 	"Cities":{
@@ -1051,6 +1095,7 @@
 		Russian:"Города"
 		Czech:"Města"
 		Polish:"Miasta"
+                Malay:"Bandar"
 }
 
 	"Technologies":{
@@ -1063,6 +1108,7 @@
 		Russian:"Технологии"
 		Czech:"Technologie"
 		Polish:"Technologie"
+                Malay:"Teknologi"
 }
 
 	"Declarations of war":{
@@ -1187,6 +1233,7 @@
 		German:"Babylonien"
 		Czech:"Babylonie"
 		Polish:"Babilon"
+                Malay:"Babylon"
 }
 
 	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
@@ -1226,6 +1273,7 @@
 		German:"Griechenland"
 		Czech:"Řecko"
 		Polish:"Grecja"
+                Malay:"Yunani"
 }
 
 	"Alexander":{
@@ -1237,6 +1285,7 @@
 		Czech:"Alexandr Veliký"
 		// same in German
 		Polish:"Aleksander Wielki"
+                Malay:"Alexander"
 },
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
@@ -1261,6 +1310,7 @@
 		German:"China"
 		Czech:"Čína"
 		Polish:"Chiny"
+                Malay:"Cina"
 }
 
 	"Wu Zetian":{
@@ -1300,6 +1350,7 @@
 		German:"Ägypten"
 		Czech:"Egypt"
 		Polish:"Egipt"
+                Malay:"Mesir"
 }
 
 	"Ramesses II":{
@@ -1339,6 +1390,7 @@
 		German:"England"
 		Czech:"Anglie"
 		Polish:"Anglia"
+                Malay:"England"
 }
 
 	"Elizabeth":{
@@ -1378,6 +1430,7 @@
 		German:"Frankreich"
 		Czech:"Francie"
 		Polish:"Francja"
+                Malay:"Perancis"
 }
 
 	"Napoleon":{
@@ -1417,6 +1470,7 @@
 		Russian:"Россия"
 		Czech:"Rusko"
 		Polish:"Rosja"
+                Malay:"Rusia"
 }
 
 	"Catherine":{
@@ -1456,6 +1510,7 @@
 		Russian:"Рим"
 		Czech:"Řím"
 		Polish:"Rzym"
+                Malay:"Rom"
 }
 
 	"Augustus Caesar":{
@@ -1496,6 +1551,7 @@
 		Dutch:"Saudi"
 		Czech:"Arábie"
 		Polish:"Arabia"
+                Malay:"Arab"
 }
 
 	"Harun al-Rashid":{
@@ -1533,6 +1589,7 @@
 		Russian:"Америка"
 		Czech:"Amerika"
 		Polish:"Ameryka"
+                Malay:"Amerika"
 }
 
 	"George Washington":{
@@ -1572,6 +1629,7 @@
 		Russian:"Япония"
 		Czech:"Japonsko"
 		Polish:"Japonia"
+                Malay:"Jepun"
 }
 
 	"Oda Nobunaga":{
@@ -1609,6 +1667,7 @@
 		Czech:"Německo"
 		German:"Deutschland"
 		Polish:"Niemcy"
+                Malay:"Jerman"
 }
 
 	"Otto von Bismark":{
@@ -1642,6 +1701,7 @@
 		Czech:"Indie"
 		German:"Indien"
 		Polish:"Indie"
+                Malay:"India"
 }
 
 	"Gandhi":{
@@ -1677,6 +1737,7 @@
 		Czech:"Osmanská říše"
 		German:"Die Osmanen"
 		Polish:"Imperium Osmańskie"
+                Malay:"Uthmaniyyah"
 }
 
 	"Suleiman I":{
@@ -1712,6 +1773,7 @@
 		Czech:"Korea"
 		German:"Korea"
 		Polish:"Korea"
+                Malay:"Korea"
 }
 
 	"Sejong":{
@@ -1779,6 +1841,7 @@
 		Czech:"Persie"
 		German:"Persien"
 		Polish:"Persja"
+                Malay:"Parsi"
 }
 
 	"Darius I":{
@@ -1844,6 +1907,7 @@
 		Simplified_Chinese:"暹罗"
 		Traditional_Chinese:"暹羅"
 		Polish:"Siam"
+                Malay:"Siam"
 }
 
 	"Ramkhamhaeng":{
@@ -1913,6 +1977,7 @@
 		Czech:"Dánsko"
 		German:"Dänemark"
 		Polish:"Dania"
+                Malay:"Denmark"
 }
 
 	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
@@ -1946,6 +2011,7 @@
 		Czech:"Mongolové"
 		German:"Mongolei"
 		Polish:"Mongolia"
+                Malay:"Mongolia"
 }
 
 	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
@@ -1962,6 +2028,7 @@
 		Czech:"Španělsko"
 		German:"Spanien"
 		Polish:"Hiszpania"
+                Malay:"Sepanyol"
 }
 
 	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yields from Natural Wonders are doubled.":{
