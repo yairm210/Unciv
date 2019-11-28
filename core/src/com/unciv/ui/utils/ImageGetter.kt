@@ -79,7 +79,7 @@ object ImageGetter {
             textureRegionDrawables["OtherIcons/DisbandUnit"]= getfontDrawable("☠️")// MacOS can't show
             textureRegionDrawables["OtherIcons/Star"]= getfontDrawable("⭐️️")// MacOS can't show
             textureRegionDrawables["OtherIcons/Aircraft"]= getfontDrawable("✈️️️")// MacOS can't show
-            textureRegionDrawables["OtherIcons/Stop"]= getfontDrawable("⛔️️️️")// MacOS can't show
+            textureRegionDrawables["OtherIcons/Stop"]= getfontDrawable("🚫️️️️")// MacOS can't show
         }
     }
 
