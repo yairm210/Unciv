@@ -20,6 +20,7 @@
 		Japanese:"[technologyName]の研究が完了しました！",
 		Czech:"Výzkum technologie [technologyName] byl dokončen"
 		Ukrainian:"[technologyName]: досліджено!"
+		Polish:"Badania nad technologią [technologyName] zostały ukończone!"
 	}
 
 	"You have entered a golden age!":{
@@ -36,6 +37,7 @@
 		Japanese:"あなたは黄金時代を迎えました！",
 		Czech:"Započal Zlatý věk civilizace!"
 		Ukrainian:"Почався золотий вік!"
+		Polish:"Twoje imperium weszło w Złoty Wiek!"
 	}
 
 	"revealed near":{ // As in "Coal revealed near London"
@@ -52,6 +54,7 @@
 		Japanese:"付近で明らかに",
 		Czech:" objeven(a) poblíž"
 		Ukrainian:"виявлено біля"
+		Polish:"odkryte nieopodal"
 	}
 
 	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""
@@ -67,6 +70,7 @@
 		Japanese:"[greatPerson]が誕生しました！",
 		Czech:"Narodil se [greatPerson]"
 		Ukrainian:"Народився [greatPerson]!"
+		Polish:"[greatPerson] urodził/a się!"
 	}
 
 	"We have encountered [civName]!":{
@@ -82,6 +86,7 @@
 		Japanese:"[civName]に遭遇しました。",
 		Czech:"Setkali jsme se s [civName]"
 		Ukrainian:"Виявлена цивілізація: [civName]"
+		Polish:"Natknąłeś się na cywilizację [civName]!"
 	}
 
 	"Cannot provide unit upkeep for [unitName] - unit has been disbanded!":{
@@ -97,6 +102,7 @@
 		Japanese:"[unitName]のアップキープを提供できません - ユニットは解散されました！",
 		Czech:"Žold pro jednotku [unitName] nebyl zaplacen - jednotka byla rozpuštěna."
 		Ukrainian:"Неможливо забезпечити [unitName] - підрозділ ліквідовано!"
+		Polish:"Nie można dłużej utrzymać jednostki [unitName] - jednostka został rozwiązana!"
 	}
 
 	/////////////////	City
@@ -115,6 +121,7 @@
 		Japanese:"[cityName]が成長しました！",
 		Czech:"Město [cityName] se rozrostlo!"
 		Ukrainian:"Зросло місто [cityName]!"
+		Polish:"[cityName] powiększyło się!"
 	}
 
 	"[cityName] has been founded!":{
@@ -131,6 +138,7 @@
 		Japanese:"[cityName]が設立されました！",
 		Czech:"Město [cityName] bylo založeno!"
 		Ukrainian:"Засновано місто [cityName]!"
+		Polish:"[cityName] zostało utworzone!"
 	}
 
 	"[cityName] is starving!":{
@@ -147,6 +155,7 @@
 		Japanese:"[cityName]は飢えています！",
 		Czech:"Ve městě [cityName] začal hladomor"
 		Ukrainian:"Голодує місто [cityName]!"
+		Polish:"[cityName] głoduje!"
 	}
 
 	"[construction] has been built in [cityName]":{
@@ -163,6 +172,7 @@
 		Japanese:"[construction]は[cityName]に建てられました",
 		Czech:"[construction] - stavba dokončena ve městě [cityName]"
 		Ukrainian:"Споруда [construction] збудована в місті [cityName]"
+		Polish:"Prace nad [construction] w mieście [cityName] zostały zakończone"
 	}
 
 	"[wonder] has been built in a faraway land":{
@@ -174,6 +184,7 @@
 		Czech:"Div světa [wonder] byl vybudován ve vzdálené zemi"
 		Ukrainian:"[wonder] збудовано за тридевʼять земель"
 		German:"[wonder] wurde in einem fernen Land gebaut"
+		Polish:"[wonder] został zbudowany na dalekich ziemiach"
 	}
 
 	"Work has started on [construction]":{
@@ -190,6 +201,7 @@
 		Japanese:"[construction]の作業が開始されました",
 		Czech:"Začali jsme stavět - [construction]"
 		Ukrainian:"[construction]: почато будівництво"
+		Polish:"Rozpoczęto prace nad budową [construction]"
 	}
 
 	"[cityName] cannot continue work on [construction]":{
@@ -201,6 +213,7 @@
 		Czech:"Město [cityName] nemůže pokračovat ve stavbě budovy [construction]"
 		Ukrainian:"[construction]: неможливо продовжити будувати в місті [cityName]"
 		German:"[cityName] kann nicht weiter an [construction] arbeiten"
+		Polish:"Miasto [cityName] nie może dalej pracować nad [construction]"
 	}
 
 
@@ -218,6 +231,7 @@
 		Japanese:"[cityname]は国境を拡大しました！",
 		Czech:"Město [cityname] rozšířilo své hranice!"
 		Ukrainian:"Місто [cityname] розширило межі!"
+		Polish:"Granice miasta [cityname] poszerzyły się!"
 	}
 
 	/////////////	war, fight, ennemy
@@ -236,6 +250,7 @@
 		Japanese:"[cityName]は地面に倒れました！",
 		Czech:"Město [cityName] bylo srovnáno se zemí!"
 		Ukrainian:"Місто [cityName] зруйновано вщент!"
+		Polish:"Miasto [cityName] zostało zrównane z ziemią!"
 	}
 
 	"We have conquered the city of [cityname]!":{
@@ -252,6 +267,7 @@
 		Japanese:"[cityname]の街を征服しました！",
 		Czech:"Dobyli jsme město [cityname]!"
 		Ukrainian:"Загарбано місто [cityname]!"
+		Polish:"Napotkaliśmy miasto [cityname]!"
 	}
 
 	"An enemy [unit] has attacked [cityname]":{
@@ -268,6 +284,7 @@
 		Japanese:"敵[unit]が[cityname]を攻撃しました",
 		Czech:"Npřátelská jednotka [unit] zaútočila na město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] атакував наше місто [cityname]"
+		Polish:"Wrogie jednostki [unit] ruszyły na [cityname]"
 	}
 
 	"An enemy [unit] has attacked our [ourUnit]":{
@@ -284,6 +301,7 @@
 		Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました",
 		Czech:"Nepřátelská jednotka [unit] zaútočila na naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] атакував наш підрозділ [ourUnit]"
+		Polish:"Wrogie jednostki [unit] zaatakowały nasze oddziały [ourUnit]"
 	}
 
 	"Enemy city [cityName] has attacked our [ourUnit]":{
@@ -295,6 +313,7 @@
 		Czech:"Nepřátelské město [cityName] zaútočilo na naši jednotku [ourUnit]"
 		Ukrainian:"Вороже місто [cityName] атакувало наш підрозділ [ourUnit]"
 		German:"Feindliche Stadt [cityName] hat unsere Einheit [ourUnit] angegriffen"
+		Polish:"Wrogie miasto [cityName] zaatakowało nasze jednostki [ourUnit]"
 	}
 
 	"An enemy [unit] has captured [cityname]":{
@@ -311,6 +330,7 @@
 		Japanese:"敵[unit]が[cityname]を占領しました",
 		Czech:"Nepřátelská jednotka [unit] dobyla město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] захопив наше місто [cityname]"
+		Polish:"Wrogie jednostki [unit] przejeły miasto [cityname]"
 	}
 
 	"An enemy [unit] has captured our [ourUnit]":{
@@ -327,6 +347,7 @@
 		Japanese:"敵[unit]が私たちの[ourUnit]を捕獲しました",
 		Czech:"Nepřátelské jednotka [unit] zajala naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] захопив наш підрозділ [ourUnit]"
+		Polish:"Wrogie jednostki [unit] przejeły nasze jednostki [ourUnit]"
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
@@ -343,6 +364,7 @@
 		Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました",
 		Czech:"Nepřátelská jednotka [unit] zničila naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] знищив наш підрозділ [ourUnit]"
+		Polish:"Wrogie jednostki [unit] pokonały nasze jednostki [ourUnit]"
 	}
 
 	"An enemy [RangedUnit] has destroyed the defence of [cityname]":{// When Ranged Unit's attack reduces the City's health to 1.
@@ -353,6 +375,7 @@
 		Ukrainian:"Ворожий підрозділ [RangedUnit] знищив оборону нашого міста [cityname]"
 		Russian:"Вражеский [RangedUnit] прорвал оборону города [cityname]"
 		German:"Die feindliche Einheit [RangedUnit] hat die Verteidigung der Stadt [cityname] zerstört"
+		Polish:"Wrogie jednostki dystansowe [RangedUnits] zniszczyły obronę miasta [cityname]"
 	}
 
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
@@ -364,6 +387,7 @@
 		Czech:"Nepřátelské město [cityName] zničilo naši jednotku [ourUnit]"
 		Ukrainian:"Вороже місто [cityName] знищило наш підрозділ [ourUnit]"
 		German:"Die feindliche Stadt [cityName] hat unsere Einheit [ourUnit] zerstört"
+		Polish:"Wrogie miasto [cityName] pokonało nasze jednostki [ourUnit]"
 	}
 
 	"An enemy [unit] was destroyed while attacking [cityname]":{
@@ -380,6 +404,7 @@
 		Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された",
 		Czech:"Nepřátelská jednotka [unit] byla zničena při útoku na město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] знищено при атаці нашого міста [cityname]"
+		Polish:"Miasto [cityname] odparło atak wrogich jednostek [unit]"
 	}
 
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
@@ -396,6 +421,7 @@
 		Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された",
 		Czech:"Nepřátelská jednotka [unit] byla zničena, když napadla naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] знищено при атаці нашого підрозділу [ourUnit]"
+		Polish:"Nasze jednostki [ourUnit] odparły atak wrogich jednostek [unit]"
 	}
 
 	"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
@@ -407,6 +433,7 @@
 		Czech:"Naše jednotka [attackerName] byla zničena po zachycení jednotkou [interceptorName]"
 		Ukrainian:"Наш підрозділ [attackerName] знищено при перехопленні ворожим підрозділом [interceptorName]"
 		German:"Unser [attackerName] wurde durch einen abfangenden [interceptorName] zerstört."
+		Polish:"Nasz [attackerName] został przechwycony przez [interceptorName]"
 	}
 
 	"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
@@ -418,6 +445,7 @@
 		Czech:"Naše jednotka [interceptorName] zachytila a zničila nepřátelskou jednotku [attackerName]"
 		Ukrainian:"Наш підрозділ [interceptorName] перехопив і знищив ворожий підрозділ [attackerName]"
 		German:"Unser(e) [interceptorName] hat eine(n) feindliche(n) [attackerName] abgefangen und zerstört." // Gender sensitive
+		Polish:"Nasza jednostka przechwytująca [interceptor] przechwyciła i zniszczyła przeciwnika [attackerName]" //checking for context - will remove soon [MFOX]
 	}
 
 	"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
@@ -429,6 +457,7 @@
 		Czech:"Naše jednotka [$attackerName] byla zachycena a ocitla se pod útokem jednotky [$interceptorName]"
 		Ukrainian:"Наш підрозділ [$attackerName] атаковано ворожим перехоплювачем [$interceptorName]"
 		German:"Unser(e) [$attackerName] wurde von einem abfangenden [$interceptorName] angegriffen."
+		Polish:"Nasz [$attackerName] został zaatakowany przez [$interceptorName]" //checking for context - will remove soon [MFOX]
 	}
 
 	"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
@@ -440,6 +469,7 @@
 		Czech:"Naše jednotka [$interceptorName] zachytila a zaútočila na nepřátelskou jednotku [$attackerName]"
 		Ukrainian:"Наш підрозділ [$interceptorName] перехопив і атакував ворожий підрозділ [$attackerName]"
 		German:"Unser(e) [$interceptorName] hat einen feindlichen [$attackerName] abgefangen und angegriffen."
+		Polish:"Nasza jednostka przechwytująca [$interceptorName] przechwyciła i zaatakowała [$attackerName]"
 	}
 
 	"An enemy [unit] was spotted near our territory":{
@@ -456,6 +486,7 @@
 		Japanese:"私たちの領土の近くに敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena poblíž našeho území"
 		Ukrainian:"Ворожий підрозділ [unit] помічено біля нашої території"
+		Polish:"Wroga jednostka [unit] została zauważona blisko naszego terytorium"
 	}
 
 	"An enemy [unit] was spotted in our territory":{
@@ -472,6 +503,7 @@
 		Japanese:"私たちの領土に敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena na našem území"
 		Ukrainian:"Ворожий підрозділ [unit] помічено на нашій території"
+		Polish:"Wroga jednostka [unit] została zauważona na naszym terytorium"
 	}
 
 	"[amount] enemy units were spotted near our territory": {
@@ -483,6 +515,7 @@
 		Russian:"[amount] вражеских юнитов было замечено у нашей территории",
 		Czech:"[amount] napřátelských jednotek bylo spatřeno poblíž našeho území"
 		Ukrainian:"Біля нашої території помічено ворожих підрозділів: [amount]"
+		Polish:"[amount] wrogich jednostek zostało zauważonych blisko naszego terytorium"
 	}
 
 	"[amount] enemy units were spotted in our territory": {
@@ -494,6 +527,7 @@
 		Russian:"[amount] вражеских юнитов было замечено на нашей территории",
 		Czech:"[amount] nepřátelských jednotek bylo spatřeno na našem území"
 		Ukrainian:"На нашій території помічено ворожих підрозділів: [amount]"
+		Polish:"[amount] wrogich jednostek zostało zauważonych na naszym terytorium"
 	}
 
 	"The civilization of [civName] has been destroyed!":{
@@ -510,6 +544,7 @@
 		Japanese:"[civName]の文明は破壊されました！",
 		Czech:"Civilizace [civName] byla zničena!"
 		Ukrainian:"[civName]: цивілізація знищена!"
+		Polish:"Cywilizacja [civName] została zniszczona!"
 	}
 
 	"The City-State of [name] has been destroyed!":{
@@ -521,6 +556,7 @@
 		Czech:"Městský stát [name] byl zničen!"
 		Ukrainian:"[name]: місто-держава знищена!"
 		German:"Der Stadtstaat von [name] wurde zerstört!"
+		Polish:"Miasto-Państwo [name] zostało zniszczone!"
 	}
 
 	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
@@ -532,6 +568,7 @@
 		Czech:"Zneškodnili jsme barbarský tábor a získali [goldAmount] zlata"
 		Ukrainian:"Ми захопили табір варварів і отримали золота: [goldAmount]"
 		German:"Wir haben ein barbarisches Lager erobert und [goldAmount] Gold gefunden!"
+		Polish:"Przejeliśmy obóz barbażyńców i znaleźliśmy [goldAmount] złota!"
 	}
 
 	"A barbarian [unitType] has joined us!":{
@@ -543,6 +580,7 @@
 		Czech:"Barbarská jednotka [unitType] se připojila k nám!"
 		Ukrainian:"Варварський підрозділ [unitType] приєднався до нас!"
 		German:"Eine barbarische Einheit [unitType] hat sich uns angeschlossen!"
+		Polish:"Barbażyńska jednostka [unitType] przyłączyła się do nas!"
 	}
 
 	/////////////////	ruins
@@ -561,6 +599,7 @@
 		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]",
 		Czech:"V troskách jsme našli přeživší - populace se připojila k městu [cityName]"
 		Ukrainian:"В руїнах знайдено вцілілих — вони приєдналися до населення міста [cityName]"
+		Polish:"Znaleźliśmy w ruinach ocalałych - dodano obywateli do [cityName]"
 	}
 	"We have discovered the lost technology of [techName] in the ruins!":{
 		Italian:"Abbiamo scoperto i segreti della tecnologia perduta [techName]!"
@@ -576,6 +615,7 @@
 		Portuguese:"Nós descobrimos a tecnologia perdida de [techName] nas ruínas!",
 		Czech:"V troskách jsme objevili ztracenou technologii [techName]"
 		Ukrainian:"В руїнах знайдено загублену технологію [techName]!"
+		Polish:"Odkryliśmy w ruinach zaginioną technologię [techName]!"
 	}
 
 	"A [unitName] has joined us!":{
@@ -592,6 +632,7 @@
 		Portuguese:"Um [unitName] se juntou a nós!" //Gender sensitive
 		Czech:"Jednotka [unitName] se přidala na naši stranu!"
 		Ukrainian:"До нас приєднався підрозділ [unitName]!"
+		Polish:"[unitName] włączyła się w nasze szeregi!"
 	}
 
 	"An ancient tribe trains our [unitName] in their ways of combat!":{
@@ -608,6 +649,7 @@
 		Portuguese:"Uma antiga tribo treina nosso [unitName] em suas formas de combate!",
 		Czech:"Starodávný kmen cvičí naši jednotku [unitName] v jejich bojových uměních!"
 		Ukrainian:"Давнє племʼя навчило їхнього способу битви наш підрозділ [unitName]!"
+		Polish:"Starożytne plemie nauczyło nasze [unitName] ich sztuk walki!"
 	}
 
 	"We have found a stash of [amount] gold in the ruins!":{
@@ -624,6 +666,7 @@
 		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!",
 		Czech:"Skrýš, která obsahovala [amount] zlata byla objevena v ruinách!"
 		Ukrainian:"В руїнах знайдено скарб золота кількістю [amount]!"
+		Polish:"Znaleźliśmy w ruinach [amount] złota!"
 	}
 
 	"[unit] finished exploring.": {
@@ -635,6 +678,7 @@
 		Traditional_Chinese:"[unit]已完成探索"
 		Czech:"Jednotka [unit] dokončila průzkum."
 		Ukrainian:"Підрозділ [unit] закінчив обстеження."
+		Polish:"Jednostka [unit] zakończyła eksplorację."
 	}
 
 	"[unit] has no work to do.": {
@@ -646,6 +690,7 @@
 		Traditional_Chinese:"[unit]處於閒置狀態"
 		Czech:"Jednotka [unit] nemá nic dalšího na práci."
 		Ukrainian:"Підрозділ [unit] без роботи."
+		Polish:"Jednostka [unit] jest bez zajęcia."
 	}
 
 	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
@@ -657,6 +702,7 @@
 		Czech:"Ztratili jsme přátelství s městským státem [name]."
 		Ukrainian:"Втрачається контроль над містом-державою [name]."
 		German:"Die Freundschaft mit [name] wird brüchig."
+		Polish:"Tracisz kontrolę nad [name]."
 	}
 
 	"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
@@ -668,6 +714,7 @@
 		Czech:"Naše říše a městský stát [name] už nejsme nadále přátelé!"
 		Ukrainian:"Припинилася дружба з містом-державою [name]!"
 		German:"Du und [name] seid nicht mehr befreundet!"
+		Polish:"Ty i [name] przestaliście być przyjaciółmi!"
 	}
 
 	"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
@@ -679,6 +726,7 @@
 		Czech:"Naše aliance s městským státem [name] slábne."
 		Ukrainian:"Захитався альянс з містом-державою [name]"
 		German:"Die Allianz mit [name] wird brüchig."
+		Polish:"Twój sojusz z [name] osłabł."
 	}
 
 	"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
@@ -690,6 +738,7 @@
 		Czech:"Naše říše a městský stát [name] už není v alianci!"
 		Ukrainian:"Розірвано альянс з містом-державою [name]"
 		German:"Du und [name] seid nicht mehr alliiert!"
+		Polish:"Ty i [name] przestaliście być sojusznikami!"
 	}
 
 	"[civName] gave us a [unitName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
@@ -701,6 +750,7 @@
 		Czech:"Civilizace [civName] nám darovala jednotku [unitName] poblíž města [cityName]"
 		Ukrainian:"Цивілізація [civName] дарує підрозділ [unitName] біля міста [cityName]"
 		German:"[civName] hat uns in der Nähe von [cityName] eine Einheit [unitName] als Geschenk überreicht!"
+		Polish:"Cywilizacja [civName] przekazała nam jednostki [unitName] jako dar niedaleko [cityName]!"
 	}
 
 	"[civName] has denounced us!":{
@@ -711,6 +761,7 @@
 		Czech:"Civilizace [civName] nás odsoudila!"
 		Ukrainian:"Цивілізація [civName] образила нас!"
 		German:"[civName] hat uns angeprangert."
+		Polish:"Cywilizacja [civName] wyrzekła się nas!"
 	}
 
 	"[cityName] has been connected to your capital!":{
@@ -721,6 +772,7 @@
 		Ukrainian:"Місто [cityName] зʼєднано з нашею столицею!"
 		Russian:"От города [cityName] был проложен путь к столице!"
 		German:"[cityName] ist nun an die Hauptstadt angebunden!"
+		Polish:"Miasto [cityName] zostało przyłączone do Twojej stolicy!"
 	}
 
 	"[cityName] has been disconnected from your capital!":{
@@ -729,6 +781,7 @@
 		Simplified_Chinese:"[cityName]与您的首都的连接已经中断！"
 		Traditional_Chinese:"[cityName]與您的首都的連接已經中斷！"
 		German:"Die Verbindung von [cityName] zur Hauptstadt ist unterbrochen!"
+		Polish:"Miasto [cityName] zostało odłączone od Twojej stolicy!"
 	}
 
 	// Trade
@@ -740,6 +793,7 @@
 		Czech:"Civilizace [civName] přijala naši obchodní nabídku"
 		Ukrainian:"Цивілізація [civName] підтримала угоду"
 		German:"[civName] hat deine Handelsanfrage akzeptiert"
+		Polish:"Cywilizacja [civName] przyjeła Twoją propozycję handlu"
 	}
 
 	"[civName] has denied your trade request":{
@@ -750,6 +804,7 @@
 		Czech:"Civilizace [civName] zamítla naši obchodní nabídku"
 		Ukrainian:"Цивілізація [civName] відкинула угоду"
 		German:"[civName] hat deine Handelsanfrage abgelehnt"
+		Polish:"Cywilizacja [civName] odrzuciła Twoją propozycję handlu"
 	}
 
 
@@ -763,6 +818,7 @@
 		Czech:"[tradeOffer] od civilizace [otherCivName] je u konce."
 		Ukrainian:"Договір [tradeOffer] з [otherCivName] закінчено"
 		German:"[tradeOffer] von [otherCivName] ist beendet"
+		Polish:"Termin [tradeOffer] od [otherCivName] upłynął"
 	}
 
 	"[tradeOffer] to [otherCivName] has ended":{
@@ -771,6 +827,7 @@
 		Traditional_Chinese:"與[otherCivName]的[tradeOffer]協議已經結束"
 		Czech:"[tradeOffer] s civilizací [otherCivName] je u konce."
 		German:"[tradeOffer] für [otherCivName] ist beendet"
+		Polish:"Termin [tradeOffer] dla [otherCivName] upłynął"
 	}
 
 
@@ -784,6 +841,7 @@
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] je u konce"
 		Ukrainian:"Закінчилася одна з наших угод з [nation]"
 		German:"Einer unserer Handel mit [nation] ist beendet"
+		Polish:"Jedna z naszych wymian handlowych z [nation] została zakończona"
 	}
 
  	"One of our trades with [nation] has been cut short": {
@@ -795,6 +853,7 @@
 		Czech:"Jedna z našich obchodních spoluprací s národem [nation] se blíží ke konci"
 		Ukrainian:"Достроково закінчилася одна з наших угод з [nation]"
 		German:"Einer unserer Handel mit [nation] wurde verkürzt"
+		Polish:"Jedna z naszych wymian handlowych z [nation] została przerwana"
 	}
 
  	"[nation] agreed to stop settling cities near us!": {
@@ -805,6 +864,7 @@
 		Czech:"Národ [nation] souhlasí, že nebude budovat své města poblíž našich hranic!"
 		Ukrainian:"[nation]: згода не будувати міста поруч з нами!"
 		German:"[nation] ist damit einverstanden, keine Städte mehr in unserer Nähe zu gründen!"
+		Polish:"Nacja [nation] zaprzestała zakładać nowe miasta w pobliżu nas!"
 	}
 
  	"[nation] refused to stop settling cities near us!": {
@@ -815,6 +875,7 @@
 		Czech:"Národ [nation] vypověděl dohodu o nebudování měst poblíž našich hranic!"
 		Ukrainian:"[nation]: відмова не будувати міста поруч з нами!"
 		German:"[nation] hat sich geweigert, keine Städte mehr in unserer Nähe zu gründen!"
+		Polish:"Nacja [nation] nadal będzie zakładać nowe miasta w pobliżu nas!"
 	}
 
 	"We have allied with [nation].": {
@@ -823,6 +884,7 @@
 		Traditional_Chinese:"我們已和[nation]締結同盟"
 		Czech:"Uzavřeli jsme alianci s civilizací [nation]."
 		German:"Wir sind mit [nation] alliiert."
+		Polish:"Jesteśmy sojusznikami z [nation]."
 	}
 
 	"We have lost alliance with [nation].": {
@@ -831,5 +893,6 @@
 		Traditional_Chinese:"我們和[nation]不再是同盟關係"
 		Czech:"Ztratili jsme alianci s civilizací [nation]."
 		German:"Wir haben die Alianz mit [nation] verloren."
+		Polish:"Nie jesteśmy już w sojuszu z [nation]."
 	}
 }
