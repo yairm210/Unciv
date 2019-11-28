@@ -11,6 +11,7 @@ import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -95,24 +96,24 @@ class TechManager {
     //endregion
 
     fun getRequiredTechsToDestination(destinationTech: Technology): List<String> {
-        val prerequisites = Stack<String>()
-        val checkPrerequisites = ArrayDeque<String>()
-        checkPrerequisites.add(destinationTech.name)
+        val prerequisites = Stack<Technology>()
+
+        val checkPrerequisites = ArrayDeque<Technology>()
+        checkPrerequisites.add(destinationTech)
 
         while (!checkPrerequisites.isEmpty()) {
-            val techNameToCheck = checkPrerequisites.pop()
+            val techToCheck = checkPrerequisites.pop()!!
             // future tech can have been researched even when we're researching it,
-            // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have annything to research. Yeah.
-            if (techNameToCheck!=Constants.futureTech &&
-                    (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck)) )
+            // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
+            if (techToCheck.name!=Constants.futureTech &&
+                    (isResearched(techToCheck.name) || prerequisites.contains(techToCheck)) )
                 continue //no need to add or check prerequisites
-            val techToCheck = GameBasics.Technologies[techNameToCheck]
-            for (str in techToCheck!!.prerequisites)
-                if (!checkPrerequisites.contains(str)) checkPrerequisites.add(str)
-            prerequisites.add(techNameToCheck)
+            for (prerequisite in techToCheck.prerequisites)
+                checkPrerequisites.add(GameBasics.Technologies[prerequisite]!!)
+            prerequisites.add(techToCheck)
         }
 
-        return prerequisites.reversed()
+        return prerequisites.sortedBy { it.column!!.columnNumber }.map { it.name }
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
