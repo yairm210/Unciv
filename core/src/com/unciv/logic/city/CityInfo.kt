@@ -287,8 +287,6 @@ class CityInfo {
             if (population.population <= 0) { // there are strange cases where we geet to -1
                 civInfo.addNotification("[$name] has been razed to the ground!", location, Color.RED)
                 destroyCity()
-                if (isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
-                    civInfo.cities.first().cityConstructions.addBuilding("Palace")
             } else {//if not razed yet:
                 if (population.foodStored >= population.getFoodToNextPopulation()) {//if surplus in the granary...
                     population.foodStored = population.getFoodToNextPopulation() - 1//...reduce below the new growth treshold
@@ -315,6 +313,9 @@ class CityInfo {
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getTiles().forEach { expansion.relinquishOwnership(it) }
         getCenterTile().improvement="City ruins"
+
+        if (isCapital() && civInfo.cities.isNotEmpty()) // Move the capital if destroyed (by a nuke or by razing)
+            civInfo.cities.first().cityConstructions.addBuilding("Palace")
     }
 
     fun annexCity() {
