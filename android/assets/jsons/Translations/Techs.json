@@ -13,6 +13,7 @@
 		Portuguese:"Agricultura"
 		German:"Landwirtschaft"
 		Czech:"Zemědělství"
+                Malay:"Pertanian"
 }
 
 	"'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster":{
@@ -35,6 +36,7 @@
         Traditional_Chinese:"製陶"
 		Portuguese:"Cerâmica"
 		Czech:"Hrnčířství"
+                Malay:"Tembikar"
 }
 
 	"'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9":{
@@ -57,6 +59,7 @@
         Traditional_Chinese:"家畜馴養"
 		Portuguese:"Pecuária"
 		Czech:"Chov zvířat"
+                Malay:"Penternakan Haiwan"
 }
 
 	"'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4":{
@@ -79,6 +82,7 @@
         Traditional_Chinese:"弓箭"
 		Portuguese:"Arquearia"
 		Czech:"Lukostřelba"
+                Malay:"Memanah"
 }
 
 	"'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop":{
@@ -101,6 +105,7 @@
         Traditional_Chinese:"採礦"
 		Portuguese:"Mineração"
 		Czech:"Hornictví"
+                Malay:"Perlombongan"
 }
 
 	"'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty":{
@@ -123,6 +128,7 @@
         Traditional_Chinese:"帆船"
 		Portuguese:"Navegação"
 		Czech:"Plachtění"
+                Malay:"Berlayar"
 }
 
 	"'He who commands the sea has command of everything.' - Themistocles":{
@@ -145,6 +151,7 @@
         Traditional_Chinese:"曆法"
 		Portuguese:"Calendário"
 		Czech:"Kalendář"
+                Malay:"Kalendar"
 }
 
 	"'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12":{
@@ -167,6 +174,7 @@
         Traditional_Chinese:"文字"
 		Portuguese:"Literatura"
 		Czech:"Písemnictví"
+                Malay:"Penulisan"
 }
 
 	"'He who destroys a good book kills reason itself.' - John Milton":{
@@ -189,6 +197,7 @@
         Traditional_Chinese:"補獵"
 		Portuguese:"Caça"
 		Czech:"Lov do pastí"
+                Malay:"Perangkap"
 }
 
 	"'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome":{
@@ -211,6 +220,7 @@
         Traditional_Chinese:"輪子"
 		Portuguese:"A roda"
 		Czech:"Kolo"
+                Malay:"Tayar"
 }
 
 	"'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb":{
@@ -233,6 +243,7 @@
         Traditional_Chinese:"石工術"
 		Portuguese:"Alvenaria"
 		Czech:"Zdivo"
+                Malay:"Pertukangan Batu"
 }
 
 	"'How happy are those whose walls already rise!' - Virgil":{
@@ -255,6 +266,7 @@
         Traditional_Chinese:"青銅器"
 		Portuguese:"Trabalha com Bronze"
 		Czech:"Zpracování bronzu"
+                Malay:"Pekerja Gangsa"
 }
 
 	"'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer":{
@@ -279,6 +291,7 @@
         Traditional_Chinese:"光學"
 		Portuguese:"Óptica"
 		Czech:"Optika"
+                Malay:"Optik"
 }
 
 	"'He made an instrument to know if the moon shine at full or no.' - Samuel Butler":{
@@ -301,6 +314,7 @@
         Traditional_Chinese:"騎術"
 		Portuguese:"Montaria"
 		Czech:"Jízda na koni"
+                Malay:"Tunggang Kuda"
 }
 
 	"'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)":{
@@ -323,6 +337,7 @@
         Traditional_Chinese:"數學"
 		Portuguese:"Matemáticas"
 		Czech:"Matematika"
+                Malay:"Matematik"
 }
 
 	"'Mathematics is the gate and key to the sciences.' - Roger Bacon":{
@@ -345,6 +360,7 @@
         Traditional_Chinese:"建築構造學"
 		Portuguese:"Construção"
 		Czech:"Konstrukce"
+                Malay:"Pembinaan"
 }
 
 	"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfulyl executed.' - Johann Wolfgang von Goethe":{
@@ -367,6 +383,7 @@
         Traditional_Chinese:"哲學"
 		Portuguese:"Filosofia"
 		Czech:"Filozofie"
+                Malay:"Falsafah"
 }
 
 	"'There is only one good, knowledge, and one evil, ignorance.' - Socrates":{
@@ -375,7 +392,7 @@
         Traditional_Chinese:"“世上只有一種善，那就是知識，也只有一種惡，那就是無知。”——蘇格拉底"
 		Czech:"'Existuje jen jedno dobro a to je vědění. Existuje jen jedno zlo a to je nevědomost.' - Sókratés"
 		Russian:"'Есть лишь один бог - знание, и лишь один порок - невежество.' - Сократ"
-}
+} 
 
 	"Currency":{
 		Italian:"Valuta"
@@ -389,6 +406,7 @@
         Traditional_Chinese:"貨幣制度"
 		Portuguese:"Moeda"
 		Czech:"Platidlo"
+                Malay:"Mata Wang"
 }
 
 	"'Better is bread with a happy heart than wealth with vexation.' - Amenemope":{
@@ -411,6 +429,7 @@
         Traditional_Chinese:"工程學"
 		Portuguese:"Engenharia"
 		Czech:"Inženýrství"
+                Malay:"Kejuruteraan"
 }
 
 	"'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci":{
@@ -433,6 +452,7 @@
         Traditional_Chinese:"鐵器"
 		Portuguese:"Trabalho com ferro"
 		Czech:"Zpracování železa"
+                Malay:"Pekerja Besi"
 }
 
 	"'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats":{
@@ -457,6 +477,7 @@
         Traditional_Chinese:"神學"
 		Portuguese:"Teologia"
 		Czech:"Teologie"
+                Malay:"Keagamaan"
 }
 
 	"'Three things are necessary for the salvarion of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas":{
@@ -479,6 +500,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
 		Czech:"Státní služba"
+                Malay:"Perkhidmatan Awam"               
 }
 
 	"'The only thing that saves us from the bureaucracy is it inefficiency' - Eugene McCarthy":{
@@ -511,6 +533,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Guildas"
 		German:"Gilden"
 		Czech:"Cechy"
+                Malay:"Persatuan"
 }
 
 	"'The merchants and the traders have come; their profits are pre-ordained...' - Sri Guru Granth Sahib":{
@@ -533,6 +556,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"物理學"
 		Portuguese:"Física"
 		Czech:"Fyzika"
+                Malay:"Fizik"
 }
 
 	"'Measure what is measurable, and make measurable what is not so.' - Galileo Galilei":{
@@ -555,6 +579,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"金屬鑄造"
 		Portuguese:"Fundição"
 		Czech:"Lití kovů"
+                Malay:"Acuan Besi"
 }
 
 	"'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib":{
@@ -577,6 +602,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Aço"
 		German:"Stahl"
 		Czech:"Ocel"
+                Malay:"Keluli"
 }
 
 	"'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man":{
@@ -599,6 +625,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"羅盤"
 		Portuguese:"Bússola"
 		Czech:"Kompas"
+                Malay:"Kompas"
 }
 
 	"'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes":{
@@ -621,6 +648,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"教育學"
 		Portuguese:"Educação"
 		Czech:"Školství"
+                Malay:"Pelajaran"
 }
 
 	"'Education is the best provision for old age.' - Aristotle":{
@@ -643,6 +671,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"騎士制度"
 		Portuguese:"Cavalheirismo"
 		Czech:"Rytířství"
+                Malay:"Kesatriaan"
 }
 
 	"'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory":{
@@ -665,6 +694,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"機械"
 		Portuguese:"Maquinária"
 		Czech:"Stroje"
+                Malay:"Mesin"
 }
 
 	"'The press is the best instrument for enlightening the mind of man, and improving him as a rational, moral and social being.' - Thomas Jefferson":{
@@ -689,6 +719,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"天文學"
 		Portuguese:"Astronomia"
 		Czech:"Astronomie"
+                Malay:"Astronomi"
 }
 
 	"'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer":{
@@ -711,6 +742,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"聲學"
 		Portuguese:"Acústica"
 		Czech:"Akustika"
+                Malay:"Akustik"
 }
 
 	"'Their rising all at once was as the sound of thunder heard remote' - Milton":{
@@ -733,6 +765,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"銀行業"
 		Portuguese:"Sistema bancário"
 		Czech:"Bankovnictví"
+                Malay:"Perbankan"
 }
 
 	"'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau":{
@@ -755,6 +788,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"印刷機"
 		Portuguese:"Impressora"
 		Czech:"Tiskařský lis"
+                Malay:"Media Cetak"
 }
 
 	"'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times":{
@@ -777,6 +811,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Pólvora"
 		German:"Schießpulver"
 		Czech:"Střelný prach"
+                Malay:"Sumbu"
 }
 
 	"'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel":{
@@ -799,6 +834,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"航海術"
 		Portuguese:"Navegação"
 		Czech:"Navigace"
+                Malay:"Navigasi"
 }
 
 	"'The winds and the waves are always on the side of the ablest navigators.' - Edward Gibbon":{
@@ -821,6 +857,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"建築設計學"
 		Portuguese:"Arquitetura"
 		Czech:"Architektura"
+                Malay:"Seni Bina"
 }
 
 	"'Architecture begins where engineering ends.' - Walter Gropius":{
@@ -843,6 +880,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"經濟學"
 		Portuguese:"Economia"
 		Czech:"Ekonomika"
+                Malay:"Ekonomi"
 }
 
 	"'Compound interest is the most powerful force in the universe.' - Albert Einstein":{
@@ -865,6 +903,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Metalurgia"
 		German:"Metallhüttenkunde"
 		Czech:"Hutnictví"
+                Malay:"Kaji Logam"
 }
 
 	"'There never was a good knife made of bad steel.' - Benjamin Franklin":{
@@ -887,6 +926,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"化學"
 		Portuguese:"Química"
 		Czech:"Chemie"
+                Malay:"Kimia"
 }
 
 	"'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge":{
@@ -911,6 +951,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"科學理論"
 		Portuguese:"Teoria científica"
 		Czech:"Vědecká teorie"
+                Malay:"Teori Saintifik"
 }
 
 	"'Every great advance in science has issued from a new audacity of imagination.' - John Dewey":{
@@ -933,6 +974,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"考古學"
 		Portuguese:"Arqueologia"
 		Czech:"Archeologie"
+                Malay:"Arkeologi"
 }
 
 	"'Those who cannot remember the past are condemned to repeat it.' - George Santayana":{
@@ -955,6 +997,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Industrialização"
 		German:"Industrialisierung"
 		Czech:"Industrializace"
+                Malay:"Perindustrian"
 }
 
 	"'Industrialization based on machinery, already referred to as a characteristic of our age, is but one aspect of the revolution that is being wrought by technology.' - Emily Greene Balch":{
@@ -977,6 +1020,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		German:"Gewehrkugeldrall" // not sure if this is correct translated?!
 		// Portuguese translation not sure
 		Czech:"Puška"
+                Malay:"Senapang"
 }
 
 	"'It is well that war is so terrible, or we should grow too fond of it.' - Robert E. Lee":{
@@ -999,6 +1043,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Ciência militar"
 		German:"Militärwissenschaft"
 		Czech:"Vojenská věda"
+                Malay:"Sains Tentera"
 }
 
 	"'Wars may be fought with weapons, but they are won by men. It is the spirit of the men who follow and of the man who leads that gains the victory.' - George S. Patton":{
@@ -1021,6 +1066,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"肥料"
 		Portuguese:"Fertilizante"
 		Czech:"Hnojivo"
+                Malay:"Pembajaan"
 }
 
 	"'The nation that destroys its soil destroys itself.' - Franklin Delano Roosevelt":{
@@ -1043,6 +1089,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"生物學"
 		Portuguese:"Biologia"
 		Czech:"Biologie"
+                Malay:"Biologi"
 }
 
 	"'If the brain were so simple we could understand it, we would be so simple we couldn't.' - Lyall Watson":{
@@ -1065,6 +1112,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"電學"
 		Portuguese:"Eletricidade"
 		Czech:"Elektrika"
+                Malay:"Eletrik"
 }
 
 	"'Is it a fact - or have I dreamt it - that, by means of electricity, the world of matter has become a great nerve, vibrating thousands of miles in a breathless point of time?' - Nathaniel Hawthorne":{
@@ -1087,6 +1135,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"蒸汽機"
 		Portuguese:"Energia a vapor"
 		Czech:"Parní stroj"
+                Malay:"Kuasa Wap"
 }
 
 	"'The nations of the West hope that by means of steam communication all the world will become as one family.' - Townsend Harris":{
@@ -1109,6 +1158,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Dinamite"
 		German:"Dynamit"
 		Czech:"Dynamit"
+                Malay:"Dinamit"
 }
 	"'As soon as men decide that all means are permitted to fight an evil, then their good becomes indistinguishable from the evil that they set out to destroy.' - Christopher Dawson":{
 		Italian:"'Non appena si decide che per combattere il male tutti i mezzi sono leciti, il bene diventa indistinguibile dal male che si vuole distruggere.' - Christopher Dawson"
@@ -1133,6 +1183,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"制冷"
 		Portuguese:"Refrigeração"
 		Czech:"Chlazení"
+                Malay:"Penyejukan"
 }
 
 	"'And homeless near a thousand homes I stood, and near a thousand tables pined and wanted food.' - William Wordsworth":{
@@ -1154,6 +1205,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		French:"Pièces de rechange"
 		Russian:"Стандартизация"  //official
 		Czech:"Vyměnitelné díly"
+                Malay:"Barang Ganti"
 }
 
 	"'Nothing is particularly hard if you divide it into small jobs.' - Henry Ford":{
@@ -1177,6 +1229,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"無線電"
 		Portuguese:"Rádio"
 		Czech:"Rádio"
+                Malay:"Radio"
 }
 
 	"'The whole country was tied together by radio. We all experienced the same heroes and comedians and singers. They were giants.' - Woody Allen":{
@@ -1199,6 +1252,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"內燃機"
 		Portuguese:"Combustão"
 		Czech:"Spalování"
+                Malay:"Pembakaran"
 }
 
 	"'Any man who can drive safely while kissing a pretty girl is simply not giving the kiss the attention it deserves.' - Albert Einstein":{
@@ -1221,6 +1275,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"塑膠"
 		Portuguese:"Plásticos"
 		Czech:"Plasty"
+                Malay:"Plastik"
 }
 
 	"'Ben, I want to say one word to you, just one word: plastics.' - Buck Henry and Calder Willingham, The Graduate":{
@@ -1243,6 +1298,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"電子學"
 		Portuguese:"Eletronicos"
 		Czech:"Elektronika"
+                Malay:"Elektronik"
 }
 
 	"'There's a basic principle about consumer electronics: it gets more powerful all the time and it gets cheaper all the time.' - Trip Hawkins":{
@@ -1264,6 +1320,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"弹道学"
         Traditional_Chinese:"彈道學"
 		Czech:"Balistika"
+                Malay:"Balistik"
 }
 
 	"'Men, like bullets, go farthest when they are smoothest.' - Jean Paul":{
@@ -1286,6 +1343,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"大眾傳媒"
 		Portuguese:"Mídia de massa"
 		Czech:"Hromadné sdělovací prostředky"
+                Malay:"Media Massa"
 }
 
 	"Flight":{
@@ -1300,6 +1358,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"航空"
 		Portuguese:"Vôo"
 		Czech:"Létání"
+                Malay:"Penerbangan"
 }
 
 	"'Aeronautics was neither an industry nor a science. It was a miracle.' - Igor Sikorsky":{
@@ -1332,6 +1391,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"製藥學"
 		Portuguese:"Farmacêuticas"
 		Czech:"Léčiva"
+                Malay:"Ilmu Ubat"
 }
 
 	"'In nothing do men more nearly approach the gods than in giving health to men.' - Cicero":{
@@ -1349,6 +1409,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"雷達"
 		Czech:"Radar"
 		German:"Radar"
+                Malay:"Radar"
 }
 
 	"'Vision is the art of seeing things invisible.' - Jonathan Swift":{
@@ -1371,6 +1432,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"原子理論"
 		Portuguese:"Teoria atômica"
 		Czech:"Atomová teorie"
+                Malay:"Teori Atom"
 }
 
 	"'The unleashed power of the atom has changed everything save our modes of thinking, and we thus drift toward unparalleled catastrophes.' - Albert Einstein":{
@@ -1393,6 +1455,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"電腦"
 		Portuguese:"Computadores"
 		Czech:"Počítače"
+                Malay:"Komputer"
 }
 
 	"'Computers are like Old Testament gods: lots of rules and no mercy.' - Joseph Campbell":{
@@ -1410,6 +1473,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"機動戰術"
 		Czech:"Mobilní taktika"
 		German:"Mobile Taktiken"
+                Malay:"Taktik Mudah Alih"
 }
 
 	"'All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.' - Sun Tzu":{
@@ -1429,6 +1493,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"协同作战"
         Traditional_Chinese:"協同作戰"
 		Czech:"Kombinované zbraně"
+                Malay:"Senjata Bersama"
 }
 
 	"'The root of the evil is not the construction of new, more dreadful weapons. It is the spirit of conquest.' - Ludwig von Mises":{
@@ -1451,6 +1516,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"核分裂"
 		Portuguese:"Fusão núclear"
 		Czech:"Jaderné štěpení"
+                Malay:"Pembelahan Nuklear"
 }
 
 	"'I am become Death, the destroyer of worlds.' - J. Robert Oppenheimer":{
@@ -1473,6 +1539,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"生態學"
 		Portuguese:"Ecologia"
 		Czech:"Ekologie"
+                Malay:"Ekologi"
 }
 
 	"'Only within the moment of time represented by the present century has one species, man, acquired significant power to alter the nature of his world.' - Rachel Carson":{
@@ -1495,6 +1562,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"火箭"
 		Portuguese:"Balística"
 		Czech:"Raketová technika"
+                Malay:"Ilmu Roket"
 }
 
 	"'A good rule for rocket experimenters to follow is this: always assume that it will explode.' - Astronautics Magazine, 1937":{
@@ -1519,6 +1587,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"機器人學"
 		Portuguese:"Robótica"
 		Czech:"Robotika"
+                Malay:"Robotik"
 }
 
 	"'1. A robot may not injure a human being or, through inaction, allow a human being to come to harm. 2. A robot must obey any orders given to it by human beings, except when such orders would conflict with the First Law. 3. A robot must protect its own existence as long as such protection does not conflict with the First or Second Law.' - Isaac Asimov":{
@@ -1537,6 +1606,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"雷射"
 		Czech:"Lasery"
 		German:"Laser"
+                Malay:"Laser"
 }
 
 	"'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12":{
@@ -1559,6 +1629,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"奈米技術"
 		Portuguese:"Nano-tecnologia"
 		Czech:"Nanotechnologie"
+                Malay:"Teknologi Nano"
 }
 
 	"'The impact of nanotechnology is expected to exceed the impact that the electronics revolution has had on our lives.' - Richard Schwartz":{
@@ -1581,6 +1652,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"人造衛星"
 		Portuguese:"Satélites"
 		Czech:"Satelity"
+                Malay:"Satelit"
 }
 
 	"'Now, somehow, in some new way, the sky seemed almost alien.' - Lyndon B. Johnson":{
@@ -1603,6 +1675,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"粒子物理"
 		Portuguese:"Física de particulas"
 		Czech:"Částicová fyzika"
+                Malay:"Fizik Partikel"
 }
 
 	"'Every particle of matter is attracted by or gravitates to every other particle of matter with a force inversely proportional to the squares of their distances.' - Isaac Newton":{
@@ -1625,6 +1698,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"未來科技"
 		Portuguese:"Tecnologia futurista" //means futuristic technology (not sure but i'll say that's right anyway)
 		Czech:"Budoucí technologie"
+                Malay:"Teknologi Masa Depan"
 }
 
 	"'I think we agree, the past is over.' - George W. Bush":{
@@ -1769,6 +1843,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era anciâ"
 		German:"Altertum"
 		Czech:"Starověká éra"
+                Malay:"Era Purba"
 }
 
 	"Classical era":{
@@ -1783,6 +1858,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era clássica"
 		German:"Klassik"
 		Czech:"Klasická starověká éra"
+                Malau:"Era Klasik"
 }
 
 	"Medieval era":{
@@ -1797,6 +1873,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era medieval"
 		German:"Mittelalter"
 		Czech:"Středověká éra"
+                Malay:"Era Pertengahan"
 }
 
 	"Renaissance era":{
@@ -1811,6 +1888,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era da Renascença"
 		German:"Renaissance"
 		Czech:"Renesanční éra"
+                Malay:"Era Pembaharuan"
 }
 
 	"Industrial era":{
@@ -1825,6 +1903,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era industrial"
 		German:"Industrielle Revolution"
 		Czech:"Industriální éra"
+                Malay:"Era Industri"
 }
 
 	"Modern era":{
@@ -1839,6 +1918,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era moderna"
 		German:"Moderne"
 		Czech:"Moderní éra"
+                Malay:"Era Moden"
 }
 
 	"Information era":{
@@ -1853,6 +1933,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era informação"
 		German:"Informationszeitalter"
 		Czech:"Informační éra"
+                Malay:"Era Informasi"
 }
 
 	"Future era":{
@@ -1867,6 +1948,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Portuguese:"Era futurista" //Futurista means futuristic if you want it replaced just put futura (same as spanish) in its place.
 		German:"Ära der Zukunft"
 		Czech:"Budoucí éra"
+                Malay:"Era Masa Hadapan"
 }
 
 }
