@@ -170,7 +170,8 @@ class MapUnit {
         if (name == Constants.worker && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
-        if (action==Constants.unitActionSleep || action == Constants.unitActionAutomation) return false
+        if (action==Constants.unitActionExplore || action==Constants.unitActionSleep
+                || action == Constants.unitActionAutomation) return false
         return true
     }
 
