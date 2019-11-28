@@ -62,6 +62,8 @@ open class CameraStageBaseScreen : Screen {
         }
 
         fun resetFonts(){
+            val startTime = System.currentTimeMillis()
+
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(45).apply { data.setScale(20/45f) }
             skin.get(Label.LabelStyle::class.java).apply {
@@ -72,6 +74,10 @@ open class CameraStageBaseScreen : Screen {
             skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(45).apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
+
+
+            val resetFontsTime = System.currentTimeMillis() - startTime
+            println("Resetting fonts - "+resetFontsTime+"ms")
         }
         internal var batch: Batch = SpriteBatch()
     }

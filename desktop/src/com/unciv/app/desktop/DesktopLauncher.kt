@@ -32,6 +32,8 @@ internal object DesktopLauncher {
     }
 
     private fun packImages() {
+        val startTime = System.currentTimeMillis()
+
         val settings = TexturePacker.Settings()
         // Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
         // don't support non-power-of-two texture sizes - kudos @yuroller!
@@ -46,6 +48,9 @@ internal object DesktopLauncher {
         settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
         TexturePacker.process(settings, "../Images", ".", "game")
+
+        val texturePackingTime = System.currentTimeMillis() - startTime
+        println("Packing textures - "+texturePackingTime+"ms")
     }
 
     private fun tryActivateDiscord(game: UncivGame) {

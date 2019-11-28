@@ -39,7 +39,6 @@ class UncivGame(val version: String) : Game() {
     override fun create() {
         Current = this
 
-
         if(Gdx.app.type!= Application.ApplicationType.Desktop)
             viewEntireMapForDebug=false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
