@@ -57,7 +57,7 @@
 	}
 
 	"A [greatPerson] has been born in [cityName]!":{
-		Italian:"[cityName] - È nato un [greatPerson]!",
+		Italian:"È nato un [greatPerson] a [cityName]!",
 		Russian:"[cityName] - [greatPerson] родился!",
 		French:"[cityName] - Un [greatPerson] est né!",
 		Romanian:"[cityName] - S-a născut un [greatPerson]!",
