@@ -16,7 +16,7 @@ public class AndroidLauncher extends AndroidApplication {
 		String version = BuildConfig.VERSION_NAME;
 
 		config.useImmersiveMode=true;
-		config.useGL30 = true;
+		//config.useGL30 = true;
 
 		initialize(new UncivGame(version), config);
 	}
