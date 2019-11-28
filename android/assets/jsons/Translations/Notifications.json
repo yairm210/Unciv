@@ -20,6 +20,7 @@
 		Japanese:"[technologyName]の研究が完了しました！",
 		Czech:"Výzkum technologie [technologyName] byl dokončen"
 		Ukrainian:"[technologyName]: досліджено!"
+                Malay:"Penyelidikan [technologyName] telah selesai!"
 	}
 
 	"You have entered a golden age!":{
@@ -36,6 +37,7 @@
 		Japanese:"あなたは黄金時代を迎えました！",
 		Czech:"Započal Zlatý věk civilizace!"
 		Ukrainian:"Почався золотий вік!"
+                Malay:"Anda telah memasuki era keemasan!"
 	}
 
 	"revealed near":{ // As in "Coal revealed near London"
@@ -52,6 +54,7 @@
 		Japanese:"付近で明らかに",
 		Czech:" objeven(a) poblíž"
 		Ukrainian:"виявлено біля"
+                Malay:"didedahkan berhampiran"
 	}
 
 	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""
@@ -67,6 +70,7 @@
 		Japanese:"[greatPerson]が誕生しました！",
 		Czech:"Narodil se [greatPerson]"
 		Ukrainian:"Народився [greatPerson]!"
+                Malay:"[greatPerson] telah dilahirkan!"
 	}
 
 	"We have encountered [civName]!":{
@@ -82,6 +86,7 @@
 		Japanese:"[civName]に遭遇しました。",
 		Czech:"Setkali jsme se s [civName]"
 		Ukrainian:"Виявлена цивілізація: [civName]"
+                Malay:"Kita temui [civName]!"
 	}
 
 	"Cannot provide unit upkeep for [unitName] - unit has been disbanded!":{
@@ -97,6 +102,7 @@
 		Japanese:"[unitName]のアップキープを提供できません - ユニットは解散されました！",
 		Czech:"Žold pro jednotku [unitName] nebyl zaplacen - jednotka byla rozpuštěna."
 		Ukrainian:"Неможливо забезпечити [unitName] - підрозділ ліквідовано!"
+                Malay:"Tidak boleh jalankan penyelenggaraan unit untuk [unitName] - unit telah dibubarkan!"
 	}
 
 	/////////////////	City
@@ -115,6 +121,7 @@
 		Japanese:"[cityName]が成長しました！",
 		Czech:"Město [cityName] se rozrostlo!"
 		Ukrainian:"Зросло місто [cityName]!"
+                Malay:"[cityName] telah berkembang!"
 	}
 
 	"[cityName] has been founded!":{
@@ -131,6 +138,7 @@
 		Japanese:"[cityName]が設立されました！",
 		Czech:"Město [cityName] bylo založeno!"
 		Ukrainian:"Засновано місто [cityName]!"
+                Malay:"[cityName] telah ditubuhkan!"
 	}
 
 	"[cityName] is starving!":{
@@ -147,6 +155,7 @@
 		Japanese:"[cityName]は飢えています！",
 		Czech:"Ve městě [cityName] začal hladomor"
 		Ukrainian:"Голодує місто [cityName]!"
+                Malay:"[cityName] sedang kelaparan"
 	}
 
 	"[construction] has been built in [cityName]":{
@@ -163,6 +172,7 @@
 		Japanese:"[construction]は[cityName]に建てられました",
 		Czech:"[construction] - stavba dokončena ve městě [cityName]"
 		Ukrainian:"Споруда [construction] збудована в місті [cityName]"
+                Malay:"[construction] telah dibina di [cityName]"
 	}
 
 	"[wonder] has been built in a faraway land":{
@@ -190,6 +200,7 @@
 		Japanese:"[construction]の作業が開始されました",
 		Czech:"Začali jsme stavět - [construction]"
 		Ukrainian:"[construction]: почато будівництво"
+                Malay:"Kerja-kerja pembinaan telah bermula keatas [construction]"
 	}
 
 	"[cityName] cannot continue work on [construction]":{
@@ -201,6 +212,7 @@
 		Czech:"Město [cityName] nemůže pokračovat ve stavbě budovy [construction]"
 		Ukrainian:"[construction]: неможливо продовжити будувати в місті [cityName]"
 		German:"[cityName] kann nicht weiter an [construction] arbeiten"
+                Malay:"[cityName] tidak boleh sambung kerja-kerja pembinaan keatas [construction]"
 	}
 
 
@@ -218,6 +230,7 @@
 		Japanese:"[cityname]は国境を拡大しました！",
 		Czech:"Město [cityname] rozšířilo své hranice!"
 		Ukrainian:"Місто [cityname] розширило межі!"
+                Malay:"[cityname] telah mengembangkan sempadannya!"
 	}
 
 	/////////////	war, fight, ennemy
@@ -236,6 +249,7 @@
 		Japanese:"[cityName]は地面に倒れました！",
 		Czech:"Město [cityName] bylo srovnáno se zemí!"
 		Ukrainian:"Місто [cityName] зруйновано вщент!"
+                Malay:"[cityName] telah dibakar sampai ke tanah!"
 	}
 
 	"We have conquered the city of [cityname]!":{
@@ -252,6 +266,7 @@
 		Japanese:"[cityname]の街を征服しました！",
 		Czech:"Dobyli jsme město [cityname]!"
 		Ukrainian:"Загарбано місто [cityname]!"
+                Malay:"Kami telah tawan kota [cityname]!"
 	}
 
 	"An enemy [unit] has attacked [cityname]":{
@@ -268,6 +283,7 @@
 		Japanese:"敵[unit]が[cityname]を攻撃しました",
 		Czech:"Npřátelská jednotka [unit] zaútočila na město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] атакував наше місто [cityname]"
+                Malay:"Seorang [unit] musuh telah menyerang [cityname]"
 	}
 
 	"An enemy [unit] has attacked our [ourUnit]":{
@@ -284,6 +300,7 @@
 		Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました",
 		Czech:"Nepřátelská jednotka [unit] zaútočila na naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] атакував наш підрозділ [ourUnit]"
+                Malay:"Seorang [unit] musuh telah menyerang [ourUnit] kita"
 	}
 
 	"Enemy city [cityName] has attacked our [ourUnit]":{
@@ -295,6 +312,7 @@
 		Czech:"Nepřátelské město [cityName] zaútočilo na naši jednotku [ourUnit]"
 		Ukrainian:"Вороже місто [cityName] атакувало наш підрозділ [ourUnit]"
 		German:"Feindliche Stadt [cityName] hat unsere Einheit [ourUnit] angegriffen"
+                Malay:"[ourUnit] kita telah diserang bandar musuh [cityName]"
 	}
 
 	"An enemy [unit] has captured [cityname]":{
@@ -311,6 +329,7 @@
 		Japanese:"敵[unit]が[cityname]を占領しました",
 		Czech:"Nepřátelská jednotka [unit] dobyla město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] захопив наше місто [cityname]"
+                Malay:"Seorang [unit] musuh telah menawan [cityname]"
 	}
 
 	"An enemy [unit] has captured our [ourUnit]":{
@@ -327,6 +346,7 @@
 		Japanese:"敵[unit]が私たちの[ourUnit]を捕獲しました",
 		Czech:"Nepřátelské jednotka [unit] zajala naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] захопив наш підрозділ [ourUnit]"
+                Malay:"Seorang [unit] musuh telah menangkap [ourUnit] kita"
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
@@ -343,6 +363,7 @@
 		Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました",
 		Czech:"Nepřátelská jednotka [unit] zničila naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] знищив наш підрозділ [ourUnit]"
+                Malay:"Seorang [unit] musuh telah menghapuskan [ourUnit] kita"
 	}
 
 	"An enemy [RangedUnit] has destroyed the defence of [cityname]":{// When Ranged Unit's attack reduces the City's health to 1.
@@ -364,6 +385,7 @@
 		Czech:"Nepřátelské město [cityName] zničilo naši jednotku [ourUnit]"
 		Ukrainian:"Вороже місто [cityName] знищило наш підрозділ [ourUnit]"
 		German:"Die feindliche Stadt [cityName] hat unsere Einheit [ourUnit] zerstört"
+                Malay:"[ourUnit] kita telah memusnahkan bandar musuh [cityName]"
 	}
 
 	"An enemy [unit] was destroyed while attacking [cityname]":{
@@ -380,6 +402,7 @@
 		Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された",
 		Czech:"Nepřátelská jednotka [unit] byla zničena při útoku na město [cityname]"
 		Ukrainian:"Ворожий підрозділ [unit] знищено при атаці нашого міста [cityname]"
+                Malay:"Seorang [unit] musuh telah dihapuskan ketika menyerang [cityname]"
 	}
 
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
@@ -396,6 +419,7 @@
 		Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された",
 		Czech:"Nepřátelská jednotka [unit] byla zničena, když napadla naši jednotku [ourUnit]"
 		Ukrainian:"Ворожий підрозділ [unit] знищено при атаці нашого підрозділу [ourUnit]"
+                Malay:"Seorang [unit] musuh telah dihapuskan ketika menyerang [ourUnit] kita"
 	}
 
 	"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
@@ -456,6 +480,7 @@
 		Japanese:"私たちの領土の近くに敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena poblíž našeho území"
 		Ukrainian:"Ворожий підрозділ [unit] помічено біля нашої території"
+                Malay:"Seorang [unit] musuh ditemui berdekatan kawasan kita"
 	}
 
 	"An enemy [unit] was spotted in our territory":{
@@ -472,6 +497,7 @@
 		Japanese:"私たちの領土に敵[unit]が発見されました",
 		Czech:"Nepřátelská jednotka [unit] byla spatřena na našem území"
 		Ukrainian:"Ворожий підрозділ [unit] помічено на нашій території"
+                Malay:"Seorang [unit] musuh ditemui didalam kawasan kita"
 	}
 
 	"[amount] enemy units were spotted near our territory": {
@@ -483,6 +509,7 @@
 		Russian:"[amount] вражеских юнитов было замечено у нашей территории",
 		Czech:"[amount] napřátelských jednotek bylo spatřeno poblíž našeho území"
 		Ukrainian:"Біля нашої території помічено ворожих підрозділів: [amount]"
+                Malay:"[amount] orang musuh ditemui berdekatan kawasan kita"
 	}
 
 	"[amount] enemy units were spotted in our territory": {
@@ -494,6 +521,7 @@
 		Russian:"[amount] вражеских юнитов было замечено на нашей территории",
 		Czech:"[amount] nepřátelských jednotek bylo spatřeno na našem území"
 		Ukrainian:"На нашій території помічено ворожих підрозділів: [amount]"
+                Malay:"[amount] orang musuh ditemui didalam kawasan kita"
 	}
 
 	"The civilization of [civName] has been destroyed!":{
@@ -510,6 +538,7 @@
 		Japanese:"[civName]の文明は破壊されました！",
 		Czech:"Civilizace [civName] byla zničena!"
 		Ukrainian:"[civName]: цивілізація знищена!"
+                Malay:"Peradaban [civName] telah jatuh!"
 	}
 
 	"The City-State of [name] has been destroyed!":{
@@ -592,6 +621,7 @@
 		Portuguese:"Um [unitName] se juntou a nós!" //Gender sensitive
 		Czech:"Jednotka [unitName] se přidala na naši stranu!"
 		Ukrainian:"До нас приєднався підрозділ [unitName]!"
+                Malay:"Seorang [unitName] telah menyertai kita!"
 	}
 
 	"An ancient tribe trains our [unitName] in their ways of combat!":{
@@ -635,6 +665,7 @@
 		Traditional_Chinese:"[unit]已完成探索"
 		Czech:"Jednotka [unit] dokončila průzkum."
 		Ukrainian:"Підрозділ [unit] закінчив обстеження."
+                Malay:"[unit] habis meneroka."
 	}
 
 	"[unit] has no work to do.": {
@@ -646,6 +677,7 @@
 		Traditional_Chinese:"[unit]處於閒置狀態"
 		Czech:"Jednotka [unit] nemá nic dalšího na práci."
 		Ukrainian:"Підрозділ [unit] без роботи."
+                Malay:"[unit] tidak ada kerja untuk dibuat."
 	}
 
 	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
@@ -701,6 +733,7 @@
 		Czech:"Civilizace [civName] nám darovala jednotku [unitName] poblíž města [cityName]"
 		Ukrainian:"Цивілізація [civName] дарує підрозділ [unitName] біля міста [cityName]"
 		German:"[civName] hat uns in der Nähe von [cityName] eine Einheit [unitName] als Geschenk überreicht!"
+                Malay:"[civName] telah menghadiahkan seorang [unitName] dekat [cityName] sebagai hadiah!"
 	}
 
 	"[civName] has denounced us!":{
@@ -711,6 +744,7 @@
 		Czech:"Civilizace [civName] nás odsoudila!"
 		Ukrainian:"Цивілізація [civName] образила нас!"
 		German:"[civName] hat uns angeprangert."
+                Malay:"[civName] telah mengutuk kita!"
 	}
 
 	"[cityName] has been connected to your capital!":{
@@ -740,6 +774,7 @@
 		Czech:"Civilizace [civName] přijala naši obchodní nabídku"
 		Ukrainian:"Цивілізація [civName] підтримала угоду"
 		German:"[civName] hat deine Handelsanfrage akzeptiert"
+                Malay:"[civName] telah menerima permintaan perdagangan"
 	}
 
 	"[civName] has denied your trade request":{
@@ -750,6 +785,7 @@
 		Czech:"Civilizace [civName] zamítla naši obchodní nabídku"
 		Ukrainian:"Цивілізація [civName] відкинула угоду"
 		German:"[civName] hat deine Handelsanfrage abgelehnt"
+                Malay:"[civName] telah menolak permintaan perdagangan"
 	}
 
 
@@ -823,6 +859,7 @@
 		Traditional_Chinese:"我們已和[nation]締結同盟"
 		Czech:"Uzavřeli jsme alianci s civilizací [nation]."
 		German:"Wir sind mit [nation] alliiert."
+                Malay:"Kita telah berpakat dengan [nation]."
 	}
 
 	"We have lost alliance with [nation].": {
