@@ -76,10 +76,9 @@ object ImageGetter {
             textureRegionDrawables["TileSets/Default/MountainOverlay"]= getfontDrawable("🏔️️")
             textureRegionDrawables["OtherIcons/Fire"]= getfontDrawable("🔥")
             textureRegionDrawables["OtherIcons/Sleep"]= getfontDrawable("💤")
-            textureRegionDrawables["OtherIcons/DisbandUnit"]= getfontDrawable("☠️")// MacOS can't show
-            textureRegionDrawables["OtherIcons/Star"]= getfontDrawable("⭐️️")// MacOS can't show
-            textureRegionDrawables["OtherIcons/Aircraft"]= getfontDrawable("✈️️️")// MacOS can't show
-            textureRegionDrawables["OtherIcons/Stop"]= getfontDrawable("🚫️️️️")// MacOS can't show
+            textureRegionDrawables["OtherIcons/DisbandUnit"]= getfontDrawable("☠️")
+            textureRegionDrawables["OtherIcons/Star"]= getfontDrawable("⭐️️")
+            textureRegionDrawables["OtherIcons/Stop"]= getfontDrawable("🚫️️️️")
         }
     }
 
