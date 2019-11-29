@@ -13,7 +13,7 @@
 		Simplified_Chinese:"草原"
 		Traditional_Chinese:"草原"
 		Portuguese:"pastagem"
-                Korean:"초원"
+		Korean:"초원"
 		Czech:"Pastviny"
 		Ukrainian:"Пасовища"
 }
@@ -535,7 +535,7 @@
 		Simplified_Chinese:"染料",
 		Traditional_Chinese:"染料",
 		Portuguese:"Tintas"
-                Korean:"염료"
+		Korean:"염료"
 		Czech:"Barvivo"
 		Ukrainian:"Барвники"
 }
@@ -1165,6 +1165,7 @@
 		Simplified_Chinese:"摩艾石像群",
 		Traditional_Chinese:"摩艾石像群"
 		German:"Moai"
+		French:"Moai"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
@@ -1175,6 +1176,7 @@
 		Ukrainian:"+1 додаткова Культура за кожну сусідню Moai"
 		Traditional_Chinese:"每個相鄰的摩艾石像群額外+1文化"
 		German:"+1 zusätzliche Kultur für jedes anliegende Moai"
+		French:"+1 en culture pour chaque Moai adjacent"
 }
 
 	"Can only be built on Coastal tiles":{
@@ -1185,6 +1187,7 @@
 		Ukrainian:"Можна побудувати лише на прибрежній плитці"
 		Traditional_Chinese:"只能在沿海地塊建造"
 		German:"Kann nur auf Küstenfeldern gebaut werden"
+		French:"constructible uniquement sur des tuiles cotières"
 }
 
 
@@ -1197,6 +1200,7 @@
 		Czech:"Barbarský tábor"
 		Ukrainian:"Табір варварів"
 		German:"Barbarenlager"
+		French:"Campement barbare"
 	}
 
 }

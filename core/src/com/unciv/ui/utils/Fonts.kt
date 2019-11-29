@@ -17,6 +17,8 @@ class Fonts {
     fun getCharactersForFont(language:String=""): String {
         if (characterSetCache.containsKey(language)) return characterSetCache[language]!!
 
+        val startTime = System.currentTimeMillis()
+
         val defaultText = "AÀÁBCČĆDĐEÈÉFGHIÌÍÏJKLMNOÒÓÖPQRSŠTUÙÚÜVWXYZŽaäàâăbcčćçdđeéèfghiìîjklmnoòöpqrsșštțuùüvwxyzž" +
                 "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" + // Russian
                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +  // Greek
@@ -43,6 +45,10 @@ class Fonts {
         }
         val characterSetString = charSet.joinToString("")
         characterSetCache[language]=characterSetString
+
+        val totalTime = System.currentTimeMillis() - startTime
+        println("Loading characters for font - "+totalTime+"ms")
+
         return characterSetString
     }
 
@@ -55,7 +61,11 @@ class Fonts {
 
        val font=NativeFont(NativeFontPaint(size))
        val charsForFont = getCharactersForFont(if(isUniqueFont) language else "")
+
+
        font.appendText(charsForFont)
+
+
        fontCache[keyForFont] = font
        return font
    }

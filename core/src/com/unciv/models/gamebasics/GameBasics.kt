@@ -38,6 +38,8 @@ object GameBasics {
     }
 
     init {
+
+        val gameBasicsStartTime = System.currentTimeMillis()
         val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
         for (techColumn in techColumns) {
             for (tech in techColumn.techs) {
@@ -77,11 +79,14 @@ object GameBasics {
 
         Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
 
+        val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
+        println("Loading game basics - "+gameBasicsLoadTime+"ms")
 
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
         // which means we need to list everything manually =/
 
+        val translationStart = System.currentTimeMillis()
         val translationFileNames = listOf("Buildings","Diplomacy,Trade,Nations",
                 "NewGame,SaveGame,LoadGame,Options", "Notifications","Other","Policies","Techs",
                 "Terrains,Resources,Improvements","Units,Promotions")
@@ -92,6 +97,8 @@ object GameBasics {
                 Translations.add(file.readString(Charsets.UTF_8.name()))
             }
         }
+        val translationFilesTime = System.currentTimeMillis() - translationStart
+        println("Loading translation files - "+translationFilesTime+"ms")
     }
 }
 

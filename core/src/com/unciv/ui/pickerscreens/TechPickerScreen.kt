@@ -15,7 +15,7 @@ import com.unciv.ui.utils.*
 import java.util.*
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldScreen: Boolean = true, centerOnTech: Technology? = null) : PickerScreen() {
+class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
@@ -40,53 +40,17 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         isFreeTechPick = freeTechPick
     }
 
+
     init {
         setDefaultCloseAction()
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         scrollPane.setOverscroll(false,false)
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
-        val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
-        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
-
-        for (technology in GameBasics.Technologies.values) {
-            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
-        }
-
-        val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
-        for (i in 0..7) {
-            val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
-            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.BLUE)).fill().colspan(j)
-            else topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
-        }
-
-        // Create tech table (row by row)
-        for (i in 0..9) {
-            topTable.row().pad(5f).padRight(40f)
-
-            for (j in techMatrix.indices) {
-                val tech = techMatrix[j][i]
-                if (tech == null)
-                    topTable.add() // empty cell
-
-                else {
-                    val techButton = TechButton(tech.name, civTech,false)
-
-                    techNameToButton[tech.name] = techButton
-                    techButton.onClick { selectTechnology(tech, false, switchfromWorldScreen) }
-                    topTable.add(techButton)
-                }
-            }
-        }
+        createTechTable()
 
         setButtonsInfo()
-        if (!switchfromWorldScreen){
-            rightSideButton.apply {
-                disable()
-                setText("Tech Tree Of [${civInfo.civName}]".tr())
-            }
-        }
-        else rightSideButton.setText("Pick a tech".tr())
+        rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick("paper") {
             if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
             else civTech.techsToResearch = tempTechsToResearch
@@ -105,10 +69,44 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
-                selectTechnology(tech, true, switchfromWorldScreen)
+                selectTechnology(tech, true)
             else centerOnTechnology(tech)
         }
 
+    }
+
+    private fun createTechTable() {
+        val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
+        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
+
+        for (technology in GameBasics.Technologies.values) {
+            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
+        }
+
+        val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
+        for (i in 0..7) {
+            val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
+            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.BLUE)).fill().colspan(j)
+            else topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
+        }
+
+        for (i in 0..9) {
+            topTable.row().pad(5f).padRight(40f)
+
+            for (j in techMatrix.indices) {
+                val tech = techMatrix[j][i]
+                if (tech == null)
+                    topTable.add() // empty cell
+
+                else {
+                    val techButton = TechButton(tech.name, civTech, false)
+
+                    techNameToButton[tech.name] = techButton
+                    techButton.onClick { selectTechnology(tech, false) }
+                    topTable.add(techButton)
+                }
+            }
+        }
     }
 
     private fun setButtonsInfo() {
