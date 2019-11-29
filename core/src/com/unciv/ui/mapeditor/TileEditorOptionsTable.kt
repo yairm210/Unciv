@@ -307,10 +307,47 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 if (improvement.name == "Road") tileInfo.roadStatus = RoadStatus.Road
                 else if (improvement.name == "Railroad") tileInfo.roadStatus = RoadStatus.Railroad
                 else tileInfo.improvement = improvement.name
+
+                if(improvement.name.startsWith("StartingLocation"))
+                    for(tileGroup in mapEditorScreen.mapHolder.tileGroups){
+                        val tile = tileGroup.tileInfo
+                        if(tile.improvement==improvement.name && tile!=tileInfo)
+                            tile.improvement=null
+                        tile.setTransients()
+                        tileGroup.update()
+                    }
             }
             toggleBottomLeftRiver -> tileInfo.hasBottomLeftRiver = !tileInfo.hasBottomLeftRiver
             toggleBottomRiver -> tileInfo.hasBottomRiver = !tileInfo.hasBottomRiver
             toggleBottomRightRiver -> tileInfo.hasBottomRightRiver = !tileInfo.hasBottomRightRiver
+        }
+
+        normalizeTile(tileInfo)
+        tileInfo.setTransients()
+    }
+
+    fun normalizeTile(tileInfo: TileInfo){
+        if(tileInfo.terrainFeature!=null){
+            val terrainFeature = tileInfo.getTerrainFeature()!!
+            if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
+                tileInfo.terrainFeature=null
+        }
+        if(tileInfo.resource!=null){
+            val resource = tileInfo.getTileResource()
+            if(resource.terrainsCanBeFoundOn.none { it==tileInfo.baseTerrain || it==tileInfo.terrainFeature })
+                tileInfo.resource=null
+        }
+        if(tileInfo.improvement!=null){
+            if(tileInfo.improvement!!.startsWith("StartingLocation")){
+                if(tileInfo.isWater || tileInfo.getBaseTerrain().impassable)
+                    tileInfo.improvement=null
+            }
+            else {
+                val improvement = tileInfo.getTileImprovement()!!
+                if (improvement.terrainsCanBeBuiltOn.isNotEmpty() // for "everywhere" improvements like city ruins, encampments, ancient ruins
+                        && improvement.terrainsCanBeBuiltOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
+                    tileInfo.improvement = null
+            }
         }
     }
 
