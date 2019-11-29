@@ -114,7 +114,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             }
         }
 
-        innerTable.add("Enable nuclear weapons".toLabel())
+        innerTable.add("Enables nuclear weapon".toLabel())
         innerTable.addButton(if (settings.nuclearWeaponEnabled) "Yes".tr() else "No".tr()) {
             settings.nuclearWeaponEnabled = !settings.nuclearWeaponEnabled
             update()

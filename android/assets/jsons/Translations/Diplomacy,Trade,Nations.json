@@ -1936,10 +1936,14 @@
 		Czech:"Songhajská říše"
 		// same in German
 		Polish:"Songhaj"
+		Simplified_Chinese:"桑海"
+		Traditional_Chinese:"桑海"
 }
 
 	"Askia":{
 		Italian:"Askia"
+		Simplified_Chinese:"阿斯基亚"
+		Traditional_Chinese:"阿斯基亞"
 }
 
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
@@ -1949,6 +1953,8 @@
 		Czech:"Získává trojnásobek zlata z Barbarských táborů a drancování měst. Jednotky při naloďování se můžou bránit."
 		German:"Erhalte dreimal soviel Gold von Barbaren-Camps und plündern von Städten. Eingeschiffte Einheiten können sich selbst verteidigen."
 		Polish:"Odtrymaj potrojone Złoto od Barbażyńskich obozowisk i plądrowanych Miast. Zaokrętowane jednostki mogą same się bronić"
+		Simplified_Chinese:"摧毁蛮族营地及劫掠城市时获得三倍金钱，船运状态的单位拥有攻击能力"
+		Traditional_Chinese:"摧毀蠻族營地及劫掠城市時獲得三倍金錢，船運狀態的單位擁有攻擊能力"
 }
 
 	/*
