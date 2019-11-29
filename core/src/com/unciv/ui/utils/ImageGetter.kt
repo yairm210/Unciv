@@ -84,7 +84,7 @@ object ImageGetter {
     }
 
     fun getfontDrawable(string: String, size: Int= 100): TextureRegionDrawable {
-        val fontPixmap = NativeFont.getListener().getFontPixmap(string, NativeFontPaint(size))
+        val fontPixmap = NativeFont.listener!!.getFontPixmap(string, NativeFontPaint(size))
         return TextureRegionDrawable(TextureRegion(Texture(fontPixmap)))
     }
 
