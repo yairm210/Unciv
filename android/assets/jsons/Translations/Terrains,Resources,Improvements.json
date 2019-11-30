@@ -12,7 +12,7 @@
 		Spanish:"Pradera"
 		Simplified_Chinese:"草原"
 		Traditional_Chinese:"草原"
-		Portuguese:"pastagem"
+		Portuguese:"Pastagem"
 		Korean:"초원"
 		Czech:"Pastviny"
 		Ukrainian:"Пасовища"
@@ -28,7 +28,7 @@
 		Spanish:"Llanura"
 		Simplified_Chinese:"平原",
 		Traditional_Chinese:"平原",
-		Portuguese:"Planíce"
+		Portuguese:"Planícies"
                 Korean:"평원"
 		Czech:"Pláně"
 		Ukrainian:"Рівнини"
@@ -92,7 +92,7 @@
 		Spanish:"Colinas"
 		Simplified_Chinese:"丘陵",
 		Traditional_Chinese:"丘陵",
-		Portuguese:"Morro"
+		Portuguese:"Colinas" // I think it is better this way for a 'fantasy' style 
                 Korean:"언덕"
 		Czech:"Kopce"
 		Ukrainian:"Пагорби"
@@ -107,7 +107,7 @@
 		German:"Berge" // singular or plural needed?
 		French:"Montagne"
 		Russian:"Горы"
-		Portuguese:"Montanha"
+		Portuguese:"Montanhas"
                 Korean:"산"
 		Czech:"Hory"
 		Ukrainian:"Гори"
@@ -165,6 +165,7 @@
 		Simplified_Chinese:"核辐射"
 		Traditional_Chinese:"核輻射"
 		German:"Verseucht"
+		Portuguese:"Abrigo" // Could be this in portuguese? Makes a bit of sense
 }
 
 	"Oasis":{
@@ -180,6 +181,7 @@
                 Korean:"오아시스"
 		Czech:"Oáza"
 		Ukrainian:"Оазис"
+		Portuguese:"Oásis"
 }
 
 	"Snow":{
@@ -208,7 +210,7 @@
 		Spanish:"Costa"
 		Simplified_Chinese:"海滨",
 		Traditional_Chinese:"海濱",
-		Portuguese:"Costa"
+		Portuguese:"Litoral" // I think this way is a better meaning.
                 Korean:"연안"
 		Czech:"Pobřeží"
 		Ukrainian:"Узбережжя"
@@ -240,7 +242,7 @@
 		Spanish:"Terreno inundable"
 		Simplified_Chinese:"冲积平原",
 		Traditional_Chinese:"沖積平原",
-		Portuguese:"Terras inundáveis"
+		Portuguese:"Planícies alagadas" // Has water in it. Makes more sense than 'anundáveis'
                 Korean:"범람원"
 		Czech:"Údolní niva"
 		Ukrainian:"Заплави"
@@ -252,7 +254,7 @@
 		Spanish:"Inpasable"
 		Simplified_Chinese:"不能通行",
 		Traditional_Chinese:"不能通行",
-		Portuguese:"Impassevel"
+		Portuguese:"Inacessível" // fixed
 		German:"Unpassierbar"
 		French:"Impraticable"
 		Russian:"Непроходимый"
@@ -305,7 +307,7 @@
 		Spanish:"Ciervos"
 		Simplified_Chinese:"野鹿",
 		Traditional_Chinese:"野鹿",
-		Portuguese:"Veados"
+		Portuguese:"Cervos" // this way is more friendly.
                 Korean:"사슴"
 		Czech:"Jelen"
 		Ukrainian:"Олені"
@@ -385,7 +387,7 @@
 		Spanish:"Bisonte"
 		Simplified_Chinese:"野牛",
 		Traditional_Chinese:"野牛",
-		Portuguese:"Bisontes"
+		Portuguese:"Bisões"
 		Japanese:"バイソン"
                 Korean:"들소"
 		Czech:"Bizon"
@@ -550,7 +552,7 @@
 		Spanish:"Gemas"
 		Simplified_Chinese:"宝石",
 		Traditional_Chinese:"寶石",
-   		Portuguese:"Joias"
+   		Portuguese:"Jóias"
                 Korean:"보석"
 		Czech:"Drahokamy"
 		Ukrainian:"Коштовні камені"
@@ -598,6 +600,7 @@
 		Czech:"Slonovina"
 		Ukrainian:"Слонова кістка"
 		German:"Elfenbein"
+		Portuguese:"Marfim"
 }
 
 	"Silk":{
@@ -626,7 +629,7 @@
 		Spanish:"Especias"
 		Simplified_Chinese:"香料",
 		Traditional_Chinese:"香料",
-		Portuguese:"Especiarias"
+		Portuguese:"Temperos"
                 Korean:"향신료"
 		Czech:"Koření"
 		Ukrainian:"Спеції"
@@ -658,7 +661,7 @@
 		Spanish:"Azúcar"
 		Simplified_Chinese:"蔗糖",
 		Traditional_Chinese:"蔗糖",
-		Portuguese:"Açucar"
+		Portuguese:"Açúcar"
                 Korean:"설탕"
 		Czech:"Cukr"
 		Ukrainian:"Цукор"
@@ -975,6 +978,7 @@
 		Czech:"Odstranit cestu"
 		Ukrainian:"Видалити дорогу"
 		German:"Entferne Straße"
+		Portuguese:"Remover estrada"
 }
 
 	"Railroad":{
@@ -987,7 +991,7 @@
 		Spanish:"Línea de ferrocarril"
 		Simplified_Chinese:"铁路",
 		Traditional_Chinese:"鐵路",
-		Portuguese:"Estrada de ferro"
+		Portuguese:"Ferrovia"
                 Korean:"철도"
 		Czech:"Železnice"
 		Ukrainian:"Колія"
@@ -1003,6 +1007,7 @@
 		Czech:"Odstranit železnici"
 		Ukrainian:"Прибрати колію"
 		German:"Entferne Schienen"
+		Portuguese:"Remover ferrovia"
 }
 
 	"Remove Forest":{
@@ -1055,6 +1060,7 @@
 		Simplified_Chinese:"消除核辐射"
 		Traditional_Chinese:"消除核輻射"
 		German:"Entferne Verseuchung"
+		Portuguese:"Derrubar abrigo"
 }
 
 	"Ancient ruins":{
@@ -1082,7 +1088,7 @@
 		German:"Stadtruinen"
 		French:"Ruines"
 		Russian:"Руины города"
-		Portuguese:"Ruínas da Cidade"
+		Portuguese:"Ruínas da cidade"
 		Dutch:"Ruïnes van de stad"
                 Korean:"도시의 폐허"
 		Czech:"Zřiceniny města"
@@ -1118,7 +1124,7 @@
 		Spanish:"Edificio emblemático"
 		Simplified_Chinese:"风景地标",
 		Traditional_Chinese:"風景地標",
-		Portuguese:"Edificio emblemático"
+		Portuguese:"Monumento" // Seems more accurate than 'Edifício emblemático'
                 Korean:"랜드마크",
 		Czech:"Dominanta"
 		Ukrainian:"Визначна пам’ятка"
@@ -1166,6 +1172,7 @@
 		Traditional_Chinese:"摩艾石像群"
 		German:"Moai"
 		French:"Moai"
+		Portuguese:"Moai"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
@@ -1177,6 +1184,7 @@
 		Traditional_Chinese:"每個相鄰的摩艾石像群額外+1文化"
 		German:"+1 zusätzliche Kultur für jedes anliegende Moai"
 		French:"+1 en culture pour chaque Moai adjacent"
+		Portuguese:"+1 de Cultura adicional para cada Moai adjacente"
 }
 
 	"Can only be built on Coastal tiles":{
@@ -1188,6 +1196,7 @@
 		Traditional_Chinese:"只能在沿海地塊建造"
 		German:"Kann nur auf Küstenfeldern gebaut werden"
 		French:"constructible uniquement sur des tuiles cotières"
+		Portuguese:"Pode ser construído apenas em hexágonos Litorâneos"
 }
 
 
@@ -1201,6 +1210,7 @@
 		Ukrainian:"Табір варварів"
 		German:"Barbarenlager"
 		French:"Campement barbare"
+		Portuguese:"Acampamento bárbaro"
 	}
 
 }
