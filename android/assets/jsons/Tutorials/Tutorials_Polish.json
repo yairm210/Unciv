@@ -9,7 +9,6 @@
 			"Gry cywilizacyjne mogą być złożone, więc poprowadzę Cię krok po kroku.",
 			"Twoim pierwszym zadaniem jest założenie stolicy.",
 			"To jest dosyć istotne zadanie gdyż Twoja stolica będzie przynosiła dużo korzyści jeżeli będzie leżała w dobrym miejscu.",
-			"Many game bonuses apply only to your capital city and it will probably be the center of your empire.",
 			"Wiele bonusów będzie nadawanych właśnie Twojej stolicy, a poza tym to stolica będzie prawdopodobnie w centrum Twojego imperium."
 		],
 		[
@@ -27,6 +26,9 @@
 			"Jeżeli natomiast jesteś w pilnej potrzebie danego zasobu i nie masz czasu wtedy to może być jedyne wyjście - ",
 			"   może tak się zdarzyć, a może nie, ale zazwyczaj będziesz miał o wiele za dużo czasu na takie taktyki."
 		],
+        [
+            "UWAGA! Polskie tłumaczenie jest w trakcie powstawania, więc za ewentualne błędy i braki w tłumaczeniu z góry przepraszam."
+        ],
 
 	],
 
@@ -37,21 +39,22 @@
 			"Miasta to podstawa Twojego wielkiego imperium które przynoszą korzyści dla całego imperium takie jak złoto czy nauka",
 			"  które są wyświetlone na górnym pasku.",
 			"Możesz kliknąć na nazwę miasta by zobaczyć jego ekran i przypisać ludność,",
-			"  rozpocząć produkcję i zobaczyć informacje o mnieście."
+			"  rozpocząć produkcję i zobaczyć informacje o mieście."
 		],
 	]
 
 	First_Steps : [
 		[
-			"Once you have your first city up and running you’ll be able to start production of a new unit",
-			"  and you’ll be able to begin your research.",
-			"I’m not going to delve too deeply into the research element of the game yet – that will be handled later in the guide –",
-			"  so let’s just talk about production."
+            "Miasto po założeniu stanie się miejscem gdzie będziesz mógł tworzyć nowe jednostki",
+            "  jak również będzie miejscem odpowiedzialnym za badania."
+            "Na ten moment nie będę się zbytnio zagłębiał w temat badań, przynajmniej na razie - małymi kroczkami do celu - "
+			"  teraz zajmiemy się kwestią produkcji."
 		],
 		[
-			"The first thing coming out of your city should be either a Scout or Warrior.",
-			"I generally prefer the Warrior because it can be used for defense and because it can be upgraded",
+            "Pierwszą najistotniejszą rzeczą na start jest wytrenowanie Wojownika lub Zwiadowcy.",
+            "Przewagą wojownika jest to, że dobrze sprawdza się jako obrońca na wczesnym etapie gry a poza tym może być ulepszony",
 			"  to the Swordsman unit later in the game for a relatively modest sum of gold.",
+            "  do Miecznik",
 			"Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.",
 			"Scouts don’t suffer a movement penalty in this terrain."
 			"If you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.",
