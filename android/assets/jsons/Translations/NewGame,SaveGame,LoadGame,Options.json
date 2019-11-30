@@ -81,6 +81,7 @@
 		Czech:"Počet městských států"
 		Ukrainian:"Міст-держав"
 		German:"Anzahl Stadtstaaten"
+		Portuguese:"Número de cidades-estado"
 }
 
 	"One City Challenge":{
@@ -90,6 +91,7 @@
 		Traditional_Chinese:"單城市挑戰"
 		Czech:"Výzva - Jen jedno město"
 		German:"Herausforderung eine Stadt"
+		Portuguese:"Desafio - Apenas Uma Cidade"
 	}
 
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
@@ -103,6 +105,7 @@
 		Czech:"Bez barbarů"
 		Ukrainian:"Без варварів"
 		German:"Keine Barbaren"
+		Portuguese:"Sem bárbaros"
 }
 
 	"No ancient ruins": {
@@ -112,6 +115,7 @@
 		Traditional_Chinese:"無遠古遺跡"
 		Czech:"Bez starobylých ruin"
 		German:"Keine alten Ruinen"
+		Portuguese:"Sem ruínas antigas"
 	}
 
 	"Victory conditions": {
@@ -125,6 +129,7 @@
 		Polish:"Warunki zwycięstwa"
 		Ukrainian:"Умови перемоги"
 		German:"Siegbedingungen"
+		Portuguese:"Condições de vitória"
 }
 
 	"Scientific": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -138,6 +143,7 @@
 		Czech:"Vědecká"
 		Ukrainian:"Наукова"
 		German:"Wissenschaftlich"
+		Portuguese:"Científica"
 }
 
 	"Domination": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -151,6 +157,7 @@
 		Polish:"Dominacja"
 		Ukrainian:"Загарбання"
 		German:"Vorherrschaft"
+		Portuguese:"Dominação"
 }
 
 	"Cultural": {//it can be showed correct as usual in chinese, so I'm not translate it.
@@ -164,6 +171,7 @@
 		Polish:"Kulturowe"
 		Ukrainian:"Культурна"
 		German:"Kulturell"
+		Portuguese:"Cultural"
 }
 
 	"HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!": {
@@ -175,6 +183,7 @@
 		Polish:"TRYB EKSPERYMENTALNY - NA WŁASNĄ ODPOWIEDZIALNOŚĆ!"
 		Russian:"В РАЗРАБОТКЕ - ВЫ ПРЕДУПРЕЖДЕНЫ!"
 		German:"WARNUNG: HOCHGRADIG EXPERIMENTELL!"
+		Portuguese:"ESTÁ EM DESENVOLVIMENTO - VOCÊ FOI AVISADO!"
 }
 
 	"Online Multiplayer": {
@@ -431,7 +440,7 @@
 		Spanish:"Deidad"
 		Simplified_Chinese:"天神",
 		Traditional_Chinese:"天神",
-		Portuguese:"Semi-Deus"
+		Portuguese:"Divindade"
 		German:"Gottheit"
 		Polish:"Bóg"
                 Korean:"신"
@@ -450,6 +459,7 @@
 		Polish:"Komputer"
 		Ukrainian:"ШІ"
 		German:"KI"
+		Portuguese:"Computador"
 }
 
 	"Remove":{
@@ -462,6 +472,7 @@
 		Polish:"Usuń"
 		Russian:"Удалить"
 		German:"Entfernen"
+		Portuguese:"Deletar"
 }
 
 	"Random":{
@@ -474,6 +485,7 @@
 		Polish:"Losowo"
 		Russian:"Случайно"
 		German:"Zufall"
+		Portuguese:"Aleatório"
 }
 
 	"Human":{
@@ -486,6 +498,7 @@
 		Polish:"Gracz"
 		Ukrainian:"Людина"
 		German:"Mensch"
+		Portuguese:"Humano"
 }
 
 	"Hotseat":{
@@ -498,6 +511,7 @@
 		Czech:"Na tomto zařízení"
 		Ukrainian:"Почергово"
 		German:"Hotseat"
+		Portuguese:"Host"
 }
 
 	"User ID":{
@@ -510,6 +524,7 @@
 		Czech:"Uživatelské ID"
 		Ukrainian:"Ідентифікатор гравця"
 		German:"SpielerIn-ID"
+		Portuguese:"ID do Usuário"
 }
 
 	"Click to copy":{
@@ -522,6 +537,7 @@
 		Czech:"Klikni pro kopírování"
 		Ukrainian:"Натисніть для копіювання"
 		German:"Anklicken zum kopieren"
+		Portuguese:"Toque para copiar"
 }
 
 	"Username":{
@@ -534,6 +550,7 @@
 		Czech:"Uživatelské jméno"
 		Ukrainian:"Імʼя гравця"
 		German:"SpielerInname"
+		Portuguese:"Nome de usuário"
 }
 
 	"Multiplayer":{
@@ -546,6 +563,7 @@
 		Czech:"Více hráčů"
 		Ukrainian:"Багатокористувацька"
 		German:"Multiplayer"
+		Portuguese:"Multijogador"
 }
 
 	"Could not download game!":{
@@ -558,6 +576,7 @@
 		Traditional_Chinese:"無法下載遊戲資料！",
 		Ukrainian:"Неможливо завантажити гру!"
 		German:"Konnte das Spiel nicht runterladen!"
+		Portuguese:"Não foi possível baixar a partida!"
 }
 
 	"Could not upload game!":{
@@ -570,6 +589,7 @@
 		Traditional_Chinese:"無法上傳遊戲資料！",
 		Ukrainian:"Неможливо надіслати гру!"
 		German:"Konnte das Spiel nicht hochladen!"
+		Portuguese:"Não foi possível carregar a partida!"
 }
 
 	"Join Game":{
@@ -582,6 +602,7 @@
 		Czech:"Připojit se ke hře"
 		Ukrainian:"Приєднатися до гри"
 		German:"Spiel betreten"
+		Portuguese:"Entrar na partida"
 }
 
 	"Invalid game ID!":{
@@ -594,6 +615,7 @@
 		Czech:"Chybné ID hry"
 		Ukrainian:"Недопустимий ідентифікатор гри"
 		German:"Ungültige Spiel-ID!"
+		Portuguese:"ID de partida inválida"
 }
 
 	"Copy User ID":{
@@ -606,6 +628,7 @@
 		Czech:"Kopírovat uživatelské ID"
 		Ukrainian:"Копіювати ідентифікатор гравця"
 		German:"SpielerIn-ID kopieren"
+		Portuguese:"Copiar ID de usuário"
 }
 
 	"Copy Game ID":{
@@ -618,6 +641,7 @@
 		Czech:"Kopírovat ID hry"
 		Ukrainian:"Копіювати ідентифікатор гри"
 		German:"Spiel-ID kopieren"
+		Portuguese:"Copiar ID de jogo"
 }
 
 	"Set current user":{
@@ -630,6 +654,7 @@
 		Ukrainian:"Обрати поточного гравця"
 		Russian:"выбрать текущего игрока"
 		German:"AktuelleN SpielerIn setzen"
+		Portuguese:"Definir usuário atual"
 }
 
 	"Player ID from clipboard":{
@@ -642,6 +667,7 @@
 		Ukrainian:"Ідентифікатор гравця з буфера обміну"
 		Russian:"Player ID из буфера обмена"
 		German:"SpielerIn-ID aus Zwischenablage"
+		Portuguese:"ID de jogador da prancheta"
 }
 
 	/// tutorials for multiplayer
@@ -655,6 +681,7 @@
 		Traditional_Chinese:"建立多人遊戲時，請先選擇“開始新遊戲”選單的“線上多人遊戲”，並將參與遊戲的玩家ID填入對應扮演的文明的“Player ID”文字框。"
 		Russian:"Чтобы создать многопользовательскую игру поставьте флажок 'Online мультиплеер' на экране создания новой игры и для каждого игрока(человека) введите Player ID."
 		German:"Um ein Multiplayer Spiel zu erstellen, wähle den Schalter 'Multiplayer' beim Erstellen eines neuen Spiels. Für jeden menschlichen Mitspieler fügen dessen SpielerIn-ID hinzu."
+		Portuguese:"Para criar um jogo multijogador, verifique a opção 'multiplayer' na tela de Nova Partida, e para cada jogador, coloque o ID de usuário."
 }
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
@@ -667,6 +694,7 @@
 		Traditional_Chinese:"直接點擊“設定為目前玩家”就可自動填入自己的玩家ID。其他玩家則需在打開遊戲後點擊“複製玩家ID”按鈕將ID複製到剪貼簿，然後透過網路傳送給您，你可以在“開始新遊戲”界面將接收到的ID填入他們想扮演的文明的“Player ID”文字框內讓他們加入遊戲。"
 		Russian:"Вы можете указать собственный Player ID, а другие игроки могут скопировать их идентификаторы и отправить вам для добавления их к игре."
 		German:"Du kannst dort deine SpielerIn-ID zuweisen und andere SpielerInnen können die eigene ID kopieren und dir schicken, damit du sie zum Spiel hinzuholen kannst."
+		Portuguese:"Você pode pôr seu próprio ID de usuário lá fácilmente, e outros jogadores podem copiar os IDs de usuário aqui e mandar para você, assim você pode colocá-los na partida."
 }
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
@@ -679,6 +707,7 @@
 		Traditional_Chinese:"當你建立了多人遊戲後，進入本界面並按下“複製遊戲ID”按鈕將遊戲ID複製到剪貼簿並透過網路分享給其他玩家。"
 		Russian:"Когда вы создадитье новую игру скопируйте отсюда ID игры и перешлите остальным игрокам."
 		German:"Sobald du das Spiel erstellt hast, komm hierher zurück, um die Spiel-ID zu kopieren um sie an andere SpielerInnen verschicken zu können."
+		Portuguese:"Após você criar sua partida, volte nessa tela novamente para copiar seu ID de partida e enviar para os outros jogadores."
 }
 
 	"Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button":{
@@ -691,6 +720,7 @@
 		Traditional_Chinese:"其他玩家可以將接收到的遊戲ID複製到剪貼簿，並按下“加入遊戲”按鈕加入遊戲"
 		Russian:"Игроки смогут присоединиться скопировав ID игры в буфер обмена и нажав на кнопку «Подключиться»."
 		German:"SpielerInnen können dein Spiel betreten, indem sie die Spiel-ID in die Zwischenablage kopieren und auf 'Spiel betreten' klicken."
+		Portuguese:"Jogadores podem entrar no jogo ao copiar o ID de partida na prancheta, e tocando no botão de Nova Partida"
 }
 
 
@@ -707,6 +737,7 @@
 		Czech:"Rychlost hry"
 		Ukrainian:"Швидкість гри"
 		German:"Spielgeschwindigkeit"
+		Portuguese:"Velocidade da partida"
 }
 
 	"Quick":{
@@ -719,6 +750,7 @@
 		Czech:"Rychlá"
 		Ukrainian:"Швидка"
 		German:"Schnell"
+		Portuguese:"Rápida"
 }
 
 	"Standard":{
@@ -731,6 +763,7 @@
 		Czech:"Normální"
 		Ukrainian:"Нормальна"
 		German:"Standard"
+		Portuguese:"Normal"
 }
 
 	"Epic":{
@@ -743,6 +776,7 @@
 		Czech:"Dlouhá"
 		Ukrainian:"Епічна"
 		German:"Episch"
+		Portuguese:"Épica"
 }
 
 	"Marathon":{
@@ -755,6 +789,7 @@
 		Czech:"Maratónská"
 		Ukrainian:"Марафон"
 		German:"Marathon"
+		Portuguese:"Maratona"
 }
 
 
@@ -769,6 +804,7 @@
 		Ukrainian:"Початкова епоха"
 		Russian:"Начальная эпоха"
 		German:"Startzeitalter"
+		Portuguese:"Era inicial"
 }
 
 ////
@@ -783,6 +819,7 @@
 		Ukrainian:"Схоже, що неможливо створити мапу з обраними параметрами!"
 		German:"Mit den von dir angegebenen Parametern kann keine Karte erzeugt werden!"
 		Polish:"Wygląda na to że nie jesteśmy w stanie stworzyć mapy z podanymi przez Ciebie parametrami!"
+		Portuguese:"Parece que não podemos criar um mapa com as configurações que você pediu!"
 }
 
 	"Maybe you put too many players into too small a map?":{
@@ -795,6 +832,7 @@
 		Ukrainian:"Можливо забагато гравців на замаленьку мапу?"
 		German:"Vielleicht hast du zu viele SpielerInnen in eine zu kleine Karte gepackt?"
 		Polish:"Może dodałeś za dużo graczy na małej mapie?"
+		Portuguese:"Talvez você colocou muitos jogadores num mapa muito pequeno?"
 }
 
 	"No human players selected!":{
@@ -807,6 +845,7 @@
 		Russian:"Не выбраны игроки(люди)"
 		German:"Keine menschlichen SpielerInnen ausgewählt!"
 		Polish:"Nie wybrano żadnego ludzkiego gracza!"
+		Portuguese:"Sem jogadores humanos selecionados!"
 }
 
 
@@ -839,6 +878,7 @@
 		Russian:"Показать автосохранения"
 		German:"Zeige automatisch gespeicherte Spiele an"
 		Polish:"Pokaż autozapisy"
+		Portuguese:"Mostrar autosaves"
 }
 
 	"Saved game name":{
@@ -851,7 +891,7 @@
 		Spanish:"Nombre de partida guardada"
 		Simplified_Chinese:"游戏存档名称",
 		Traditional_Chinese:"遊戲存檔名稱",
-		Portuguese:"Nome do jogo salvo"
+		Portuguese:"Nome da partida salva"
                 Korean:"저장된 게임 이름"
 		Czech:"Uložit hru jako"
 		Ukrainian:"Назва збереженої гри"
@@ -863,7 +903,7 @@
 		French:"Copier dans le presse-papier"
 		Simplified_Chinese:"复制当前游戏数据到剪贴板",
 		Traditional_Chinese:"複製目前遊戲資料到剪貼簿",
-		Portuguese:"Copiar" //means copy but it is correct because you can actually paste it as text
+		Portuguese:"Copiar para área de transferência" //means copy but it is correct because you can actually paste it as text
 		Russian:"Скопировать в буфер"
                 Korean:"클립보드에 복사"
 		Czech:"Zkopírovat do schránky"
@@ -882,6 +922,7 @@
 		Russian:"Копировать сохранённую игру в буфер обмена"
 		German:"Gespeichertes Spiel in die Zwischenablage kopieren"
 		Polish:"Skopiuj zapisaną grę do schowka"
+		Portuguese:"Copiar partida salva para área de transferência"
 }
 
 	"Could not load game":{
@@ -928,7 +969,7 @@
 		Spanish:"Borrar partida"
 		Simplified_Chinese:"删除存档",
 		Traditional_Chinese:"刪除存檔",
-		Portuguese:"Apagar jogo salvo"
+		Portuguese:"Apagar partida salva"
                 Korean:"저장 삭제"
 		Czech:"Smazat uloženou hru"
 		Ukrainian:"Видалити збережене"
@@ -964,6 +1005,7 @@
 		Ukrainian:"Завантажити мапу"
 		German:"Lade Karte"
 		Polish:"Wczytaj mapę"
+		Portuguese:"Abrir mapa"
 }
 
 	"Are you sure you want to delete this map?":{
@@ -976,6 +1018,7 @@
 		Ukrainian:"Ви впевнені, що бажаєте видалити цю мапу?"
 		German:"Karte wirklich löschen?"
 		Polish:"Czy na pewno chcesz usunąc tą mapę?"
+		Portuguese:"Tem certeza que quer deletar esse mapa?"
 }
 
 	"Upload map":{
@@ -988,6 +1031,7 @@
 		Ukrainian:"Вивантажити мапу"
 		German:"Karte hochladen"
 		Polish:"Prześlij mapę"
+		Portuguese:"Carregar mapa"
 }
 
 	"Could not upload map!":{
@@ -1000,6 +1044,7 @@
 		Ukrainian:"Неможливо вивантажити мапу!"
 		German:"Kann Karte nicht hochladen!"
 		Polish:"Nie udało się przesłać mapy"
+		Portuguese:"Não foi possível carregar mapa!"
 }
 
 	"Map uploaded successfully!":{
@@ -1011,6 +1056,7 @@
 		Russian:"Карта успешно загружена!"
 		German:"Karte hochladen war erfolgreich!"
 		Polish:"Mapa została przesłana pomyślnie"
+		Portuguese:"Mapa carregado com sucesso!"
 },
 
 
@@ -1044,7 +1090,7 @@
 		Spanish:"Opciones de pantalla"
 		Simplified_Chinese:"显示选项",
 		Traditional_Chinese:"顯示選項",
-		Portuguese:"Opções de Vídeo"
+		Portuguese:"Opções de tela"
 		Japanese:"表示オプション"
                 Korean:"해상도 설정"
 		Czech:"Zobrazit možnosti"
@@ -1077,6 +1123,7 @@
 		Ukrainian:"Гучність звуків"
 		German:"Lautstärke Soundeffekte"
 		Polish:"Poziom głośności efektów"
+		Portuguese:"Volume dos efeitos sonoros"
 }
 
 	"Music volume":{
@@ -1086,6 +1133,7 @@
 		Czech:"Hlasitost hudby"
 		German:"Lautstärke Musik"
 		Polish:"Poziom głośności muzyki"
+		Portuguese:"Volume da música"
 }
 
 	"Download music":{
@@ -1095,6 +1143,7 @@
 		Czech:"Stáhnout hudbu"
 		German:"Musik herunterladen"
 		Polish:"Pobierz muzykę"
+		Portuguese:"Baixar música"
 }
 
 	"Downloading...": {
@@ -1104,6 +1153,7 @@
 		Traditional_Chinese:"下載中..."
 		German:"Lade herunter..."
 		Polish:"Pobieranie..."
+		Portuguese:"Transferência em andamento..."
 }
 
 	"Could not download music!": {
@@ -1113,6 +1163,7 @@
 		Traditional_Chinese:"無法下載音樂！"
 		German:"Kann Musik nicht herunterladen!"
 		Polish:"Nie udało się pobrać muzyki!"
+		Portuguese:"Não foi possível baixar!"
 }
 
 	"Show":{
@@ -1160,6 +1211,7 @@
 		Russian:"Показать обрабатываемые клетки"
 		German:"Zeige bewirtschaftete Felder an"
 		Polish:"Pokaż pracujące pola"
+		Portuguese:"Mostrar hexágonos ativos"
 }
 
 	"Show resources and improvements":{
@@ -1171,13 +1223,14 @@
 		Russian:"Показать ресурсы и улучшения"
 		German:"Zeige Ressourcen und Verbesserungen an"
 		Polish:"Pokaż zasoby i ulepszenia"
+		Portuguese:"Mostrar recursos e melhorias"
 }
 
 	"Check for idle units":{
 		Italian:"Controlla unità inutilizzate"
 		Simplified_Chinese:"回合结束前查看闲置单位"
 		Traditional_Chinese:"回合結束前查看閒置單位",
-		Portuguese:"Cheque por unidades sem ordens"
+		Portuguese:"Checar unidades inativas"
 		German: "Untätige Einheiten anzeigen bei Rundenende"
 		French:"Vérifier les unités inactives"
 		Russian:"Найти незанятые юниты"
@@ -1198,6 +1251,7 @@
 		Czech:"Pohyb jednotek na jeden klik"
 		Ukrainian:"Переміщення підрозділів одним натиском"
 		Polish:"Przemieść jednostki jednym dotykiem"
+		Portuguese:"Mover unidades com apenas um toque"
 }
 
 	"Show tutorials":{
@@ -1210,6 +1264,7 @@
 		Ukrainian:"Показати навчання"
 		German:"Zeige Tutorials"
 		Polish:"Pokaż przewodnik"
+		Portuguese:"Mostrar tutoriais"
 }
 
 	"Auto-assign city production":{
@@ -1222,6 +1277,7 @@
 		Ukrainian:"Автомачне виробництво у містах"
 		German:"Automatische Zuordnung der Stadtproduktion"
 		Polish:"Automatycznie przypisz produkcję miastu"
+		Portuguese:"Atribuir automaticamente produção da cidade"
 }
 
 	"Auto-build roads":{
@@ -1234,6 +1290,7 @@
 		Russian:"Автоматическое строительство дорог"
 		German:"Automatischer Straßenbau"
 		Polish:"Automatycznie buduj drogi"
+		Portuguese:"Construir automaticamente estradas"
 }
 
 	"Show minimap":{
@@ -1246,6 +1303,7 @@
 		Ukrainian:"Показати мінімапу"
 		German:"Zeige die Mini-Map"
 		Polish:"Pokaż minimapę"
+		Portuguese:"Mostrar minimapa"
 }
 
 	"Show pixel units":{ // not sure of the context....examples?
@@ -1257,6 +1315,7 @@
 		Russian:"Показать текстуру юнитов"
 		German:"Zeige Pixel Einheiten"
 		Polish:"Pokaż jednostki jako pixele"
+		Portuguese:"Mostrar unidades de pixel"
 }
 
 	"Show pixel improvements":{ // not sure of the context....examples?
@@ -1268,6 +1327,7 @@
 		Russian:"Показать текстуру улучшений"
 		German:"Zeige Pixel Verbesserungen"
 		Polish:"Pokaż ulepszenia jako pixele"
+		Portuguese:"Mostrar melhorias de pixels"
 }
 
 	"Fontset":{
@@ -1280,6 +1340,7 @@
 		Ukrainian:"Шрифт"
 		German:"Schriftart"
 		Polish:"Zestaw czcionek"
+		Portuguese:"Tipo da fonte"
 }
 
 }
