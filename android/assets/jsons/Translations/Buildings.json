@@ -14,6 +14,7 @@
 		Polish:"Pałac"
 		Czech:"Palác"
 		Ukrainian:"Палац"
+                Malay:"Istana"
 }
 
 	"Indicates the capital city":{
@@ -43,6 +44,7 @@
 		Polish:"Pomnik"
 		Czech:"Pomník"
 		Ukrainian:"Монумент"
+                Malay:"Tugu"
 }
 
 	"Granary":{
@@ -100,6 +102,7 @@
 		Czech:"Stonehenge"
 		German:"Stonehenge"
 		Ukrainian:"Стоунхендж"
+                Malay:"Stonehenge"
 }
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
@@ -122,6 +125,7 @@
 		Czech:"Chrám Artemis"
 		Polish:"Świątynia Artemidy"
 		Ukrainian:"Храм Артеміди"
+                Malay:"Kuil Artemis"
 	}
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
@@ -139,6 +143,8 @@
 		Czech:"10% Růst populace ve všech městech"
 		Polish:"10% Wzrostu populacji we wszystkich miastach"
 		Ukrainian:"Населення усіх міст +10%"
+                Malay:"+10% pertumbuhan di semua bandar"
+
 	}
 
 	"+15% Production towards Ranged Units":{
@@ -163,6 +169,7 @@
 		Polish:"Biblioteka"
 		Czech:"Knihovna"
 		Ukrainian:"Бібліотека"
+                Malay:"Perpustakaan"
 }
 
 	"+1 Science Per 2 Population":{
@@ -179,6 +186,7 @@
 		Polish:"+1 do nauki na 2 obywateli"
 		Czech:"+1 Výzkum za každé 2 členy Populace"
 		Ukrainian:"За кожні 2 населення наука +1"
+                Malay:"Setiap 2 populasi +1 Sains"
 }
 
 	"Paper Maker":{
@@ -193,6 +201,7 @@
 		Russian:"Бумажная мануфактура"
 		Czech:"Papírny"
 		Ukrainian:"Папірня"
+                Malay:"Pembuat kertas"
 }
 
 	"The Great Library":{
@@ -220,6 +229,7 @@
 		Polish:"Darmowa technologia"
 		German:"Kostenlose Technologie"
 		Ukrainian:"Технологія безкоштово"
+                Malay:"Teknologi Percuma"
 }
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
@@ -246,6 +256,7 @@
 		Polish:"Cyrk"
 		Czech:"Cirkus"
 		Ukrainian:"Цирк"
+                Malay:"Sarkus"
 }
 
 	"Walls":{
@@ -261,6 +272,7 @@
 		Polish:"Mury"
 		Czech:"Hradby"
 		Ukrainian:"Мури"
+                Malay:"Dinding"
 }
 
 	"Walls of Babylon":{
@@ -273,6 +285,7 @@
 		Czech:"Babylonské hradby"
 		German:"Babylons Mauern"
 		Ukrainian:"Мури Вавілону"
+                Malay:"Dinding Babylon"
 }
 
 	"The Pyramids":{
@@ -315,6 +328,7 @@
 		Polish:"Prędkość pracy robotnika zwiększona o 25%"
 		Czech:"Rychlost dělníka se zvýšila o 25% "
 		Ukrainian:"Швидкість будівництва +25%"
+                Malay:"Pekerja buruh meningkat 25%"
 }
 
 	"Provides 2 free workers":{
@@ -331,6 +345,7 @@
 		Polish:"Dostarcza 2-óch darmowych robotników"
 		Czech:"Poskytuje 2 dělníky zdarma"
 		Ukrainian:"Безоплатно надає 2 робітників"
+                Malay:"bagi 2 pekerja secara percuma"
 }
 
 	"Barracks":{
@@ -423,6 +438,7 @@
 		Polish:"Świątynia"
 		Czech:"Chrám"
 		Ukrainian:"Храм"
+                Malay:"Kuil"
 }
 
 	"Burial Tomb":{
@@ -437,6 +453,7 @@
 		Russian:"Гробница"
 		Czech:"Hrobka"
 		Ukrainian:"Гробниця"
+                Malay:Tempat Persemadian"
 }
 
 	/*
@@ -446,6 +463,7 @@
 		Polish:"Wielki Meczet w Dżennie" //from civipedia
 		Czech:"Velká mešita v Djenné"
 		Ukrainian:"Могила Аскіа"
+                Malay:Masjid Piramid Lumpur"
 }
 	*/
 
@@ -503,6 +521,7 @@
 		Polish:"Akademia Narodowa"
 		Czech:"Národní Akademie"
 		Ukrainian:"Державна академія"
+                Malay:"Kolej Kebangsaan"
 }
 
 	"Manhattan Project":{
@@ -512,6 +531,7 @@
 		Ukrainian:"Мангеттенський проєкт"
 		German:"Manhattan-Projekt"
 		Polish:"Projekt Manhattan"
+                Malay:"Projek Manhattan"
 }
 
 	"Chichen Itza":{
@@ -577,6 +597,7 @@
 		Russian:"Маяк"
 		Czech:"Maják"
 		Ukrainian:"Маяк"
+                Malay:"Rumah Api"
 }
 
 	"Can only be built in coastal cities":{
@@ -656,6 +677,7 @@
 		Czech:"Soud"
 		German:"Gerichtsgebäude"
 		Ukrainian:"Суд"
+                Malay:"Makamah"
 }
 
 	"Remove extra unhappiness from annexed cities":{
@@ -695,6 +717,7 @@
 		Polish:"Stajnia"
 		Czech:"Stáje"
 		Ukrainian:"Стайня"
+                Malay:"Stabil"
 }
 
 	"+15% Production when building Mounted Units in this city":{
@@ -737,6 +760,7 @@
 		Polish:"Wiszące Ogrody"
 		Czech:"Visuté zahrady Semiramidiny"
 		Ukrainian:"Висячі Сади Семіраміди"
+                Malay:"Taman Tergantung"
 }
 
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
@@ -802,6 +826,7 @@
 		German:"+2 Gold von jeder Marmor- und Steinquelle"
 		Czech:"+2 zlata za každý zdroj Mramoru a Kamene"
 		Ukrainian:"З кожного джерела мармуру і каміння +2 золота"
+                Malay:"+2 Emas daripada setiap sumber batu dan mamar"
 }
 
 	"Gain 100 Gold when you use a Great Person.":{
@@ -864,6 +889,7 @@
 		Polish:"Koloseum"
 		Czech:"Koloseum"
 		Ukrainian:"Колізей"
+                Malay:"Kolosseum"
 }
 
 	"Terracotta Army":{
@@ -902,6 +928,7 @@
 		Polish:"Targowisko"
 		Czech:"Tržiště"
 		Ukrainian:"Ринок"
+                Malay:"Pasar"
 }
 
 	"Bazaar":{ // Arabian unique - transliterate?
@@ -916,6 +943,7 @@
 		Polish:"Bazar"
 		Czech:"Bazar Chán al-Chalílí"
 		Ukrainian:"Базар"
+                Malay:"Bazar"
 }
 
 	"Provides 1 extra copy of each improved luxury resource near this City":{
@@ -1261,6 +1289,7 @@
 		Polish:"Uniwersytet"
 		Czech:"Univerzita"
 		Ukrainian:"Університет"
+                Malay:"Universiti"
 }
 
 	"+2 Science from each worked Jungle tile":{
@@ -1302,6 +1331,7 @@
 		Polish:"Uniwersytet Oksfordzki"
 		Czech:"Oxfordská Universita"
 		Ukrainian:"Оксфордський університет"
+                Malay:"Universiti Oxford"
 }
 
 	"Castle":{
@@ -1317,6 +1347,7 @@
 		Polish:"Zamek"
 		Czech:"Hrad"
 		Ukrainian:"Замок"
+                Malay:"Istana"
 }
 
 	"Mughal Fort":{	//Indian unique
@@ -1504,6 +1535,7 @@
 		Polish:"Opera"
 		Czech:"Operní dům"
 		Ukrainian:"Оперний театр"
+                Malay:"Rumah Opera"
 }
 
 	"Sistine Chapel":{
@@ -1559,6 +1591,7 @@
 		Polish:"Bank"
 		Czech:"Banka"
 		Ukrainian:"Банк"
+                Malay:"Bank"
 }
 
 	"Hanse":{	//German unique
@@ -1709,6 +1742,7 @@
 		Czech:"Vybrat: "
 		Polish:"Otrzymaj"
 		Ukrainian:"Отримати:"
+                Malay:"Dapat"
 }
 
 	"Himeji Castle":{
@@ -1827,6 +1861,7 @@
 		//same in German
 		Czech:"Muzeum"
 		Ukrainian:"Музей"
+                Malay:"Muzium"
 }
 
 	"Hermitage":{
@@ -1898,6 +1933,7 @@
 		Russian:"Морской порт"
 		Czech:"Námořní přístav"
 		Ukrainian:"Морський порт"
+                Malay:"Pelabuhan"
 }
 
 	"+1 production and gold from all sea resources worked by the city":{
@@ -1943,6 +1979,7 @@
 		Polish:"Szkoła powszechna"
 		Czech:"Veřejná škola"
 		Ukrainian:"Публічна школа"
+                Malay:"Sekolah Kerajaan"
 }
 
 	"Hospital":{
@@ -1958,6 +1995,7 @@
 		Polish:"Szpital"
 		Czech:"Nemocnice"
 		Ukrainian:"Шпиталь"
+                Malay:"Hospital"
 }
 
 	"25% of food is carried over after a new citizen is born":{
@@ -1989,6 +2027,7 @@
 		Polish:"Fabryka"
 		Czech:"Továrna"
 		Ukrainian:"Фабрика"
+                Malay:"Kilang"
 }
 
 	"Stock Exchange":{
@@ -2004,6 +2043,7 @@
 		Polish:"Giełda"
 		Czech:"Burza"
 		Ukrainian:"Біржа"
+                Malay:"Bursa Saham"
 }
 
     	"Big Ben":{
@@ -2016,6 +2056,7 @@
 		Czech:"Big Ben"
 		German:"Big Ben"
 		Ukrainian:"Біг-Бен"
+                Malay:"Big Ben"
 }
 
 	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
@@ -2092,6 +2133,7 @@
 		Polish:"Kreml"
 		Czech:"Kreml"
 		Ukrainian:"Кремль"
+                Malay:"Kremlin"
 }
 
 	"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed":{
@@ -2162,6 +2204,7 @@
 		Polish:"Akademia wojskowa"
 		Czech:"Vojenská akademie"
 		Ukrainian:"Військова академія"
+                Malay:"Akedemi Tentera"
 	}
 	
 	"Brandenburg Gate":{
@@ -2206,6 +2249,7 @@
 		Polish:"Wieża transmisyjna"
 		Czech:"Vysílací věž"
 		Ukrainian:"Радіовежа"
+                Malay:"Menara Pencawang"
 }
 
 	"Eiffel Tower":{
@@ -2221,6 +2265,7 @@
 		Polish:"Wieża Eiffla"
 		Czech:"Eiffelova věž"
 		Ukrainian:"Ейфелева вежа"
+                Malay:"Menara Eiffel"
 }
 
 	"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran":{
@@ -2259,6 +2304,7 @@
 		Russian:"Статуя Свободы"
 		Czech:"Socha Svobody"
 		Ukrainian:"Статуя Свободи"
+                Malay:"Patung Liberty"
 }
 
 	"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus":{
@@ -2311,6 +2357,7 @@
 		Polish:"Ośrodek badawczy"
 		Czech:"Výzkumná laboratoř"
 		Ukrainian:"Дослідницька лабораторія"
+                Malay:"Makmal Penyelidik"
 }
 
 	"Hydro Plant":{
@@ -2341,6 +2388,7 @@
 		Polish:"Stadion"
 		Czech:"Stadión"
 		Ukrainian:"Стадіон"
+                Malay:"Stadium"
 }
 
 	"Solar Plant":{
@@ -2400,6 +2448,7 @@
 		Russian:"Сиднейский Оперный театр"
 		Czech:"Opera v Sydney"
 		Ukrainian:"Сіднейський оперний театр"
+                Malay:"Rumah Sydney Opera"
 }
 
 	"'Those who lose dreaming are lost.'  - Australian Aboriginal saying":{
@@ -2423,6 +2472,7 @@
 		Polish:"Wieża CN"
 		Czech:"CN Tower"
 		Ukrainian:"Сі-Ен-Тавер"
+                Malay:"Menara CN"
 }
 	*/
 
@@ -2436,6 +2486,7 @@
 		Russian:"+1 к населению в каждом городе"
 		Czech:"+1 Populace v každém městě"
 		Ukrainian:"У кожному місті населення +1"
+                Malay:"+1 populasi di setiap bandar"
 }
 
 	"+1 happiness in each city":{
@@ -2448,6 +2499,7 @@
 		Russian:"+1 Счастье в каждом городе"
 		Czech:"+1 Spokojenost v každém městě"
 		Ukrainian:"У кожному місті щастя +1"
+                Malay:"+1 kegembiraan di setiap bandar"
 }
 
 	"Pentagon":{
@@ -2460,6 +2512,7 @@
 		Russian:"Пентагон"
 		Czech:"Pentagon"
 		Ukrainian:"Пентагон"
+                Malay:"Pentagon"
 }
 
 	"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower":{
@@ -2499,6 +2552,7 @@
 		Polish:"Program Apollo"
 		Czech:"Program Apollo"
 		Ukrainian:"Програма Аполлон"
+                Malay:"Program Apollo"
 }
 
 	"Enables construction of Spaceship parts":{
@@ -2530,6 +2584,7 @@
 		Polish:"Elektrownia atomowa"
 		Czech:"Jaderná elektrárna"
 		Ukrainian:"Ядерна електростанція"
+                Malay:"Penjana Nuklear"
 }
 
 	"Spaceship Factory":{
