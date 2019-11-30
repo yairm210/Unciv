@@ -111,23 +111,44 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         nationTable.add(player.chosenCiv.toLabel()).pad(20f)
         nationTable.touchable = Touchable.enabled
         nationTable.onClick {
-            val nationsPopup = PopupTable(newGameScreen)
-            val nationListTable = Table()
-            for (nation in GameBasics.Nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
-                if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
-                    continue
-
-                nationListTable.add(NationTable(nation, halfWidth) {
-                    player.chosenCiv = nation.name
-                    nationsPopup.close()
-                    update()
-                }).pad(10f).width(halfWidth).row()
-            }
-            nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
-            nationsPopup.open()
-            update()
+            popupNationPicker(player)
         }
         return nationTable
+    }
+
+    private fun popupNationPicker(player: Player) {
+        val nationsPopup = PopupTable(newGameScreen)
+        val nationListTable = Table()
+
+        val randomPlayerTable = Table()
+        randomPlayerTable.background = ImageGetter.getBackground(Color.BLACK)
+
+        randomPlayerTable.add("?".toLabel(Color.BLACK, 30)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(50f)).pad(10f)
+        randomPlayerTable.add("Random".toLabel())
+        randomPlayerTable.touchable = Touchable.enabled
+        randomPlayerTable.onClick {
+            player.chosenCiv = "Random"
+            nationsPopup.close()
+            update()
+        }
+        nationListTable.add(randomPlayerTable).pad(10f).width(halfWidth).row()
+
+
+        for (nation in GameBasics.Nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
+            if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
+                continue
+
+            nationListTable.add(NationTable(nation, halfWidth).onClick {
+                player.chosenCiv = nation.name
+                nationsPopup.close()
+                update()
+            }).pad(10f).width(halfWidth).row()
+        }
+        nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
+        nationsPopup.open()
+        update()
     }
 }
 

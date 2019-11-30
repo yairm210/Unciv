@@ -9,10 +9,9 @@ import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
-class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
+class NationTable(val nation: Nation, width:Float)
     : Table(CameraStageBaseScreen.skin) {
     private val innerTable = Table()
 
@@ -27,7 +26,6 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
         innerTable.add(titleTable).row()
 
         innerTable.add(getUniqueLabel(nation).apply { setWrap(true) }).width(width)
-        onClick { onClick() }
         touchable = Touchable.enabled
         add(innerTable)
     }
