@@ -264,7 +264,7 @@
 		Spanish:"Trabajo del bronce"
 		Simplified_Chinese:"青铜器"
         Traditional_Chinese:"青銅器"
-		Portuguese:"Trabalha com Bronze"
+		Portuguese:"Trabalho com bronze"
 		Czech:"Zpracování bronzu"
                 Malay:"Pekerja Gangsa"
 }
@@ -335,7 +335,7 @@
 		Spanish:"Matemáticas"
 		Simplified_Chinese:"数学"
         Traditional_Chinese:"數學"
-		Portuguese:"Matemáticas"
+		Portuguese:"Matemática"
 		Czech:"Matematika"
                 Malay:"Matematik"
 }
@@ -498,7 +498,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Servicio civil"
 		Simplified_Chinese:"文官制度"
         Traditional_Chinese:"文官制度"
-		Portuguese:"Serviço cívil"
+		Portuguese:"Serviço civil"
 		Czech:"Státní služba"
                 Malay:"Perkhidmatan Awam"               
 }
@@ -519,6 +519,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"Открывает Договор об открытых границах"
 		Czech:"Lze uzavřít Dohodu o otevřených hranicích"
 		German:"Ermöglicht Vereinbarung 'offene Grenzen'"
+		Portuguese:"Permite acordos de Fronteiras Abertas"
 }
 
 	"Guilds":{
@@ -530,7 +531,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Gremios"
 		Simplified_Chinese:"行会"
         Traditional_Chinese:"行會"
-		Portuguese:"Guildas"
+		Portuguese:"Corporações"
 		German:"Gilden"
 		Czech:"Cechy"
                 Malay:"Persatuan"
@@ -669,7 +670,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Caballería"
 		Simplified_Chinese:"骑士制度"
         Traditional_Chinese:"騎士制度"
-		Portuguese:"Cavalheirismo"
+		Portuguese:"Cavalaria"
 		Czech:"Rytířství"
                 Malay:"Kesatriaan"
 }
@@ -1016,11 +1017,11 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Dutch:"Gedraaide loop"
 		Spanish:"Estriado"
 		Simplified_Chinese:"膛线"
-        Traditional_Chinese:"膛線"
+        	Traditional_Chinese:"膛線"
 		German:"Gewehrkugeldrall" // not sure if this is correct translated?!
-		// Portuguese translation not sure
 		Czech:"Puška"
                 Malay:"Senapang"
+		Portuguese:"Armamento" // maybe, the translation in portuguese is a bit sneaky for this one.
 }
 
 	"'It is well that war is so terrible, or we should grow too fond of it.' - Robert E. Lee":{
@@ -1281,7 +1282,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 	"'Ben, I want to say one word to you, just one word: plastics.' - Buck Henry and Calder Willingham, The Graduate":{
 		Italian:"'Ben, voglio solo dirti una parola... una sola: plastica.' - Buck Henry e Calder Willingham, Il Laureato"
 		Simplified_Chinese:"“本，我只想对你说一个词，就一个词：塑料。”——巴克·亨利/卡尔德·威灵汉姆，《毕业生》"
-        Traditional_Chinese:"“班，我只想對你說一個詞，就一個詞：塑膠。”——巴克·亨利/卡爾德·威靈漢姆，《畢業生》"
+        	Traditional_Chinese:"“班，我只想對你說一個詞，就一個詞：塑膠。”——巴克·亨利/卡爾德·威靈漢姆，《畢業生》"
 		Czech:"'Bene, chci ti říct jedno slovo, jediné slovo: plasty.' - Buck Henry a Calder Willingham, Absolvent"
 		Russian:"'Все на свете из пластмассы, и вокруг пластмассовая жизнь.' - группа 'Сплин'" //Another text
 }
@@ -1295,8 +1296,8 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Dutch:"Elektronica"
 		Spanish:"Electrónica"
 		Simplified_Chinese:"电子学"
-        Traditional_Chinese:"電子學"
-		Portuguese:"Eletronicos"
+        	Traditional_Chinese:"電子學"
+		Portuguese:"Eletrônica"
 		Czech:"Elektronika"
                 Malay:"Elektronik"
 }
@@ -1372,7 +1373,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 	"'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson":{//"Railroad" Technology quotes, it has been translated somewhere.
 		Italian: "'L'introduzione sui carri a ruote di un agente potente come il vapore apporterà un grande cambiamento alla condizione dell'uomo.' - Thomas Jefferson"
 		Simplified_Chinese:"“引入蒸汽这样一个强大的助手来驱动车轮进行运输，将极大地改变人类的境地。”——托马斯·杰斐逊"
-        Traditional_Chinese:"“引入蒸氣這樣一個強大的助手來驅動車輪進行運輸，將極大地改變人類的處境。”——湯碼士·杰佛遜"
+        	Traditional_Chinese:"“引入蒸氣這樣一個強大的助手來驅動車輪進行運輸，將極大地改變人類的處境。”——湯碼士·杰佛遜"
 		Czech:"'Zavedení něčeho tak mocného jako je pára do vozu na kolech, bude velkou změnou pro člověka.' - Thomas Jefferson"
 		Russian:"'Применение к колесному транспорту столь мощной движущей силы, как пар, радикально изменит положение человечества.' - Томас Джефферсон"
 }
@@ -1388,7 +1389,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Dutch:"Farmaceutica"
 		Spanish:"Farmacéutica"
 		Simplified_Chinese:"制药学"
-        Traditional_Chinese:"製藥學"
+        	Traditional_Chinese:"製藥學"
 		Portuguese:"Farmacêuticas"
 		Czech:"Léčiva"
                 Malay:"Ilmu Ubat"
@@ -1397,7 +1398,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 	"'In nothing do men more nearly approach the gods than in giving health to men.' - Cicero":{
 		Italian:"'Gli uomini non si avvicinano mai tanto agli dèi come quando danno la salute ad altri uomini.' - Cicerone"
 		Simplified_Chinese:"“没有什么比给予他人健康更使人接近诸神。”——西塞罗"
-        Traditional_Chinese:"“沒有什麼比給予他人健康更使人接近諸神。”——希塞羅"
+        	Traditional_Chinese:"“沒有什麼比給予他人健康更使人接近諸神。”——希塞羅"
 		Czech:"'V ničem se lidé k božstvům blíží více, než když dávají lidem zdraví.' - Cicero"
 		Russian:"'Люди более всего приближаются к богам именно тогда, когда даруют людям спасение.' - Марк Туллий Цицерон"
 }
@@ -1406,16 +1407,17 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Italian:"Radar"
 		Russian:"Радар"
 		Simplified_Chinese:"雷达"
-        Traditional_Chinese:"雷達"
+        	Traditional_Chinese:"雷達"
 		Czech:"Radar"
 		German:"Radar"
                 Malay:"Radar"
+		Portuguese:"Radar"
 }
 
 	"'Vision is the art of seeing things invisible.' - Jonathan Swift":{
 		Italian:"'La visione è l'arte di vedere le cose invisibili' - Jonathan Swift"
 		Simplified_Chinese:"“洞察力是看到不可见事物的艺术。”——乔纳森·斯威夫特（英国作家）"
-        Traditional_Chinese:"“洞察力是看到不可見事物的藝術。”——喬納森·斯威夫特（英國作家）"
+        	Traditional_Chinese:"“洞察力是看到不可見事物的藝術。”——喬納森·斯威夫特（英國作家）"
 		Czech:"'Vize je umění, vidět věci neviditelné' - Jonathan Swift"
 		Russian:"'Дальновидность - искусство узреть незримое' - Джонатан Свифт"
 }
@@ -1474,6 +1476,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"Mobilní taktika"
 		German:"Mobile Taktiken"
                 Malay:"Taktik Mudah Alih"
+		Portuguese:"Tática móvel"
 }
 
 	"'All men can see these tactics whereby I conquer, but what none can see is the strategy out of which victory is evolved.' - Sun Tzu":{
@@ -1494,6 +1497,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
         Traditional_Chinese:"協同作戰"
 		Czech:"Kombinované zbraně"
                 Malay:"Senjata Bersama"
+		Portuguese:"Conjunto armamentista"
 }
 
 	"'The root of the evil is not the construction of new, more dreadful weapons. It is the spirit of conquest.' - Ludwig von Mises":{
@@ -1514,7 +1518,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Fisión nuclear"
 		Simplified_Chinese:"核裂变"
         Traditional_Chinese:"核分裂"
-		Portuguese:"Fusão núclear"
+		Portuguese:"Fissão núclear"
 		Czech:"Jaderné štěpení"
                 Malay:"Pembelahan Nuklear"
 }
@@ -1560,7 +1564,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Cohetería"
 		Simplified_Chinese:"火箭"
         Traditional_Chinese:"火箭"
-		Portuguese:"Balística"
+		Portuguese:"Ciência do foguete"
 		Czech:"Raketová technika"
                 Malay:"Ilmu Roket"
 }
@@ -1607,6 +1611,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"Lasery"
 		German:"Laser"
                 Malay:"Laser"
+		Portuguese:"Lasers"
 }
 
 	"'The night is far spent, the day is at hand: let us therefore cast off the works of darkness, and let us put on the armor of light.' - The Holy Bible: Romans, 13:12":{
@@ -1627,7 +1632,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Nanotecnología"
 		Simplified_Chinese:"纳米技术"
         Traditional_Chinese:"奈米技術"
-		Portuguese:"Nano-tecnologia"
+		Portuguese:"Nanotecnologia"
 		Czech:"Nanotechnologie"
                 Malay:"Teknologi Nano"
 }
@@ -1696,7 +1701,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Tecnología del futuro"
 		Simplified_Chinese:"未来科技"
         Traditional_Chinese:"未來科技"
-		Portuguese:"Tecnologia futurista" //means futuristic technology (not sure but i'll say that's right anyway)
+		Portuguese:"Tecnologia avançada" //means futuristic technology (not sure but i'll say that's right anyway) //tried
 		Czech:"Budoucí technologie"
                 Malay:"Teknologi Masa Depan"
 }
@@ -1730,6 +1735,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Simplified_Chinese:"一项可以重复研究的科技，每次研究完成时都会增加你的积分"
 		Traditional_Chinese:"一項可以重複研究的科技，每次研究完成時都會增加你的積分"
 		Czech:"Opakované vyzkoumání technologie pokaždé zvýší vaše skóre."
+		Portuguese:"Uma tecnologia cíclica que irá aumentar sua pontuação cada vez que é desenvolvida."
 }
 	*/
 
@@ -1742,7 +1748,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"+10% de ciencia y producción en todas las ciudades"
 		Simplified_Chinese:"所有城市+10%的科研和产能产出"
         Traditional_Chinese:"所有城市+10%的科研和產能輸出"
-		Portuguese:"+10% de produção de ciência em todas as cidades"
+		Portuguese:"+10% de ciência e produção em todas as cidades"
 		German:"+10% Wissenschaft und Produktion in allen Städten"
 		French:"+10% science et production dans toutes les villes"
 		Czech:"+10% Výzkum a Produkce ve všech městech"
@@ -1809,7 +1815,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"Позволяет наземным единицам выходить в океан"
 		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
         Traditional_Chinese:"擁有船運能力的單位能夠進入海洋"
-		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
+		Portuguese:"Permite que unidades embarcadas entrem em hexágonos oceânicos"
 		Czech:"Umožňuje naloděným jednotkám vyplout na oceán"
 }
 
@@ -1840,7 +1846,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Edad antigua"
 		Simplified_Chinese:"远古时代"
         Traditional_Chinese:"遠古時代"
-		Portuguese:"Era anciâ"
+		Portuguese:"Antiguidade"
 		German:"Altertum"
 		Czech:"Starověká éra"
                 Malay:"Era Purba"
@@ -1855,7 +1861,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Edad clásica"
 		Simplified_Chinese:"古典时代"
         Traditional_Chinese:"古典時代"
-		Portuguese:"Era clássica"
+		Portuguese:"Antiguidade Clássica"
 		German:"Klassik"
 		Czech:"Klasická starověká éra"
                 Malau:"Era Klasik"
@@ -1870,7 +1876,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Edad medieval"
 		Simplified_Chinese:"中古时代"
         Traditional_Chinese:"中古時代"
-		Portuguese:"Era medieval"
+		Portuguese:"Idade Média"
 		German:"Mittelalter"
 		Czech:"Středověká éra"
                 Malay:"Era Pertengahan"
@@ -1885,7 +1891,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Renacimiento"
 		Simplified_Chinese:"启蒙时代"
         Traditional_Chinese:"啟蒙時代"
-		Portuguese:"Era da Renascença"
+		Portuguese:"Renascimento"
 		German:"Renaissance"
 		Czech:"Renesanční éra"
                 Malay:"Era Pembaharuan"
@@ -1900,7 +1906,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Era industrial"
 		Simplified_Chinese:"工业时代"
         Traditional_Chinese:"工業時代"
-		Portuguese:"Era industrial"
+		Portuguese:"Revolução Industrial"
 		German:"Industrielle Revolution"
 		Czech:"Industriální éra"
                 Malay:"Era Industri"
@@ -1915,7 +1921,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Edad moderna"
 		Simplified_Chinese:"电气时代"
         Traditional_Chinese:"電氣時代"
-		Portuguese:"Era moderna"
+		Portuguese:"Idade Moderna"
 		German:"Moderne"
 		Czech:"Moderní éra"
                 Malay:"Era Moden"
@@ -1930,7 +1936,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Spanish:"Era de la información"
 		Simplified_Chinese:"信息时代"
         Traditional_Chinese:"資訊時代"
-		Portuguese:"Era informação"
+		Portuguese:"Era da Informação"
 		German:"Informationszeitalter"
 		Czech:"Informační éra"
                 Malay:"Era Informasi"
@@ -1942,7 +1948,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		French:"Ère du futur"
 		Romanian:"Era viitorului"
 		Dutch:"Toekomst"
-		Spanish:"Era futura"
+		Spanish:"Era do Futuro"
 		Simplified_Chinese:"未来时代"
 		Traditional_Chinese:"未來時代"
 		Portuguese:"Era futurista" //Futurista means futuristic if you want it replaced just put futura (same as spanish) in its place.
