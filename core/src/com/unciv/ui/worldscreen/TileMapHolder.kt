@@ -263,6 +263,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
 
         tileGroups[selectedTile]?.showCircle(Color.WHITE)
+        zoom(scaleX) // zoom to current scale, to set the size of the city buttons after "next turn"
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
