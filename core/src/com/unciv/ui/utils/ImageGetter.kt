@@ -74,6 +74,7 @@ object ImageGetter {
             textureRegionDrawables["TileSets/Default/ForestOverlay"]= getfontDrawable("🌲")
             textureRegionDrawables["TileSets/Default/JungleOverlay"]= getfontDrawable("🌳")
             textureRegionDrawables["TileSets/Default/MountainOverlay"]= getfontDrawable("🏔️️")
+            textureRegionDrawables["TileSets/Default/FalloutOverlay"]= getfontDrawable("☣️️")
             textureRegionDrawables["OtherIcons/Fire"]= getfontDrawable("🔥")
             textureRegionDrawables["OtherIcons/Sleep"]= getfontDrawable("💤")
             textureRegionDrawables["OtherIcons/DisbandUnit"]= getfontDrawable("☠️")
