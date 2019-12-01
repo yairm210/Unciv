@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
@@ -99,36 +98,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 }
                 val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
                 zoom(scale)
-            }
-
-
-            // Memory profiling reveals that creating an GestureDetector inside the ActorGestureListener
-            // for every tile is VERY memory-intensive.
-            // Instead, we now create a single GestureListener, and in it check which tileGroup was hit.
-
-            fun toTileGroup(stageCoordinatesVector: Vector2): WorldTileGroup? {
-                for (tileGroup in tileGroups.values) {
-                    val point = stageCoordinatesVector.cpy()
-                    tileGroup.stageToLocalCoordinates(point)
-                    val hit = tileGroup.hit(point.x, point.y, false)
-                    if (hit != null) return tileGroup
-                }
-                return null
-            }
-
-            override fun longPress(actor: Actor, x: Float, y: Float): Boolean {
-                if (!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
-                // otherwise it activates,
-                // since it's been a long time since the touchdown and no touchup has activates
-                if (isPanning || isFlinging) return false
-                // x and y are in local coordinates, so convert to stage coordinates
-                // (we're basically undoing what the ActorGestureListener did)
-                val coords = Vector2(x, y)
-                actor.localToStageCoordinates(coords)
-                val tileGroup = toTileGroup(coords)
-                if (tileGroup != null)
-                    return onTileLongClicked(tileGroup.tileInfo)
-                return false
             }
 
         })
@@ -243,26 +212,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         return moveHereButton
     }
 
-
-
-    fun onTileLongClicked(tileInfo: TileInfo): Boolean {
-
-        unitActionOverlay?.remove()
-        selectedTile = tileInfo
-        val selectedUnit = worldScreen.bottomUnitTable.selectedUnit
-        worldScreen.bottomUnitTable.tileSelected(tileInfo)
-        worldScreen.shouldUpdate = true
-
-        if (selectedUnit != null) {
-            addOverlayOnTileGroup(tileInfo, UnitContextMenu(this, selectedUnit, tileInfo))
-            // don't activate the regular tile click after a long-press,
-            // that makes the long-press basically worthless
-            (tileGroups[tileInfo]!!.listeners.first { it is ClickListener }!! as ClickListener).cancel()
-            return true
-        }
-
-        return false
-    }
 
     private fun addOverlayOnTileGroup(tileInfo: TileInfo, actor: Actor) {
 
