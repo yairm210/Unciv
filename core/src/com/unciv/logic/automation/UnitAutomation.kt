@@ -210,23 +210,26 @@ class UnitAutomation{
         // Silly floats, basically
 
         val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
-        val tilesToAttackFrom = unitDistanceToTiles.asSequence()
-                .filter {
-                    val movementPointsToExpendAfterMovement = if(unitMustBeSetUp) 1 else 0
-                    val movementPointsToExpendHere = if(unitMustBeSetUp && unit.action != Constants.unitActionSetUp) 1 else 0
-                    val movementPointsToExpendBeforeAttack = if(it.key==unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                    unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1 } // still got leftover movement points after all that, to attack (0.1 is because of Float nensense, see MapUnit.moveToTile(...)
-                .map { it.key }
-                .filter { unit.movement.canMoveTo(it) || it==unit.getTile() }
+        val tilesToAttackFrom = if (unit.type.isAirUnit()) sequenceOf(unit.currentTile)
+        else
+            unitDistanceToTiles.asSequence()
+                    .filter {
+                        val movementPointsToExpendAfterMovement = if (unitMustBeSetUp) 1 else 0
+                        val movementPointsToExpendHere = if (unitMustBeSetUp && unit.action != Constants.unitActionSetUp) 1 else 0
+                        val movementPointsToExpendBeforeAttack = if (it.key == unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                        unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1
+                    } // still got leftover movement points after all that, to attack (0.1 is because of Float nonsense, see MapUnit.moveToTile(...)
+                    .map { it.key }
+                    .filter { unit.movement.canMoveTo(it) || it == unit.getTile() }
 
-        for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
+        for (reachableTile in tilesToAttackFrom) {  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
                     if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.type.isAirUnit())
                         reachableTile.getTilesInDistance(rangeOfAttack)
                     else reachableTile.getViewableTiles(rangeOfAttack, unit.type.isWaterUnit())
 
             attackableTiles += tilesInAttackRange.asSequence().filter { it in tilesWithEnemies }
-                    .map { AttackableTile(reachableTile,it) }
+                    .map { AttackableTile(reachableTile, it) }
         }
         return attackableTiles
     }
