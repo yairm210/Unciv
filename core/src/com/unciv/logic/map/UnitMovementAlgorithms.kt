@@ -44,12 +44,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
         if(unitMovement==0f) return PathsToTilesWithinTurn()
+
         val distanceToTiles = PathsToTilesWithinTurn()
         val unitTile = unit.getTile().tileMap[origin]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile,0f)
         var tilesToCheck = listOf(unitTile)
 
-        while (!tilesToCheck.isEmpty()) {
+        while (tilesToCheck.isNotEmpty()) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
