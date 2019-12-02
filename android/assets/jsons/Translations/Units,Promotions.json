@@ -1641,7 +1641,7 @@
 		French:"Panzer"
 		Czech:"Panzer"
         Polish:"Panzer"
-		Portuguese:"Tanque-Panzer' // to differ from 'Tanque'
+		Portuguese:"Tanque-Panzer" // to differ from 'Tanque'
 	}
 
 	"Bomber":{
