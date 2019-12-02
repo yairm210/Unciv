@@ -326,6 +326,7 @@ class CityInfo {
         }
 
         isPuppet=false
+        cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         cityStats.update()
         UncivGame.Current.worldScreen.shouldUpdate=true
     }
