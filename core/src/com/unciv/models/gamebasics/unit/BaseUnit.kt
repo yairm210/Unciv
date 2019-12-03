@@ -119,10 +119,10 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
-        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
-        if(civRejectionReason!="") return civRejectionReason
         if(unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can't build water units by the coast"
+        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
+        if(civRejectionReason!="") return civRejectionReason
         return ""
     }
 
