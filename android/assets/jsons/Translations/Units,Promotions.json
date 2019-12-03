@@ -15,6 +15,7 @@
 		Portuguese:"Cidadão"
 		Czech:"Civilista"
         Polish:"Cywil"
+		Ukrainian:"Цивільний"
 	}
 
 	"land units":{
@@ -27,6 +28,7 @@
 		French:"unités terrestres"
         Polish:"jednostki naziemne"
 	Portuguese: "Unidades terrestres"
+		Ukrainian:"наземні підрозділи"
 	}
 
 	"water units":{
@@ -39,6 +41,7 @@
 		French:"unités maritimes"
         Polish:"jednostki wodne"
 		Portuguese:"Unidades marinhas"
+		Ukrainian:"водні підрозділи"
 	}
 
 	"air units":{
@@ -51,6 +54,7 @@
 		French:"unités aériennes"
         Polish:"jednostki powietrzne"
 		Portuguese:"Unidades aéreas"
+		Ukrainian:"повітряні підрозділи"
 	}
 
 	"WaterCivilian":{ // In the file "Units.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
@@ -65,6 +69,7 @@
 		French:"Civil Marin"
         Polish:"Cywilna Jednostka Morska"
 		Portuguese:"Cidadão marítimo"
+		Ukrainian:"Водний цивільний"
 	}
 
 	"Melee":{
@@ -80,6 +85,7 @@
 		Portuguese:"Corpo a corpo"
 		Czech:"Boj zblízka"
         Polish:"Walka wręcz"
+		Ukrainian:"Ближній бій"
 	}
 
 	"WaterMelee":{
@@ -93,6 +99,7 @@
 		German:"Wassernahkampf"
         Polish:"Wodna walka w zwarciu"
 		Portuguese:"Corpo a corpo marítimo"
+		Ukrainian:"Водний ближній бій"
 	}
 
 	"Ranged":{
@@ -108,6 +115,7 @@
 		Portuguese:"Ataque a distância"
 		Czech:"Boj na dálku"
         Polish:"Walka dystansowa"
+		Ukrainian:"Дальній бій"
 	}
 
 	"WaterRanged":{
@@ -121,6 +129,7 @@
 		German:"Wasserfernkampf"
         Polish:"Wodna walka dystansowa"
 		Portuguese:"Ataque a distância marítima"
+		Ukrainian:"Водний дальній бій"
 	}
 
 	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
@@ -134,6 +143,7 @@
 		German:"Wasser-U-Boot"
         Polish:"Łódź podwodna"
 		Portuguese:"Submarino"
+		Ukrainian:"Підводний"
 	}
 
 	"Siege":{
@@ -149,6 +159,7 @@
 		Portuguese:"Cerco"
 		Czech:"Obléhací"
         Polish:"Oblężenie"
+		Ukrainian:"Облоговий"
 	}
 
 	"Mounted":{
@@ -164,6 +175,7 @@
 		Portuguese:"Montado(a)"
 		Czech:"Jízdní"
         Polish:"Jeździec"
+		 Ukrainian:"Кіннота"
 	}
 
 	"Scout":{
@@ -179,6 +191,7 @@
 		Portuguese:"Explorador"
 		Czech:"Zvěd"
         Polish:"Zwiadowca"
+		Ukrainian:"Розвідка"
 	}
 
 	"Armor":{
@@ -191,6 +204,7 @@
 		German:"Rüstung"
         Polish:"Pancerz"
 		Portuguese:"Blindado"
+		Ukrainian:"Бронетехніка"
 	}
 
 	"City":{
@@ -206,6 +220,7 @@
 		Portuguese:"Cidade"
 		Czech:"Město"
         Polish:"Miasto"
+		Ukrainian:"Місто"
 	}
 
 	// - - - - NOTE: Unit uniques are to be put next to the first unit that has this unique! - - -
@@ -227,6 +242,7 @@
 		Portuguese:"Estabelecer uma nova cidade" // sounds better this way
 		Czech:"Založit nové město"
         Polish:"Zakłada nowe miasto"  //checking for context ingame
+		Ukrainian:"Заснувати нове місто"
 	}
 
 	"Worker":{
@@ -241,6 +257,7 @@
 		German:"ArbeiterIn"
 		Czech:"Dělník"
         Polish:"Robotnik"
+		Ukrainian:"Робітник"
 	}
 
 
@@ -257,6 +274,7 @@
 		Portuguese:"Pode construir melhorias em terrenos"
 		Czech:"Na políčku lze vybudovat vylepšení"
         Polish:"Może budować ulepszenia na polach"
+		Ukrainian:"Може вдосконалювати клітинки"
 	}
 
 	"Scout":{
@@ -271,6 +289,7 @@
 		German:"KundschafterIn",
 		Czech:"Zvěd"
         Polish:"Zwiadowca"
+		Ukrainian:"Розвідник"
 	}
 
 
@@ -287,6 +306,7 @@
 		Portuguese:"Ignora custo de movimento em terrenos" // sounds better?
 		Czech:"Pohyb v obtížném terénu bez penalizace"
         Polish:"Ignoruje trudności terenu"
+		Ukrainian:"Переміщення поверхнею без обмежень"
 	}
 
 
@@ -300,6 +320,7 @@
 		French:"Sauvage"
         Polish:"Brutal"
 		Portuguese:"Bruto" // maybe 'Selvagem' sounds good aswell.
+		Ukrainian:"Кремез"
 	}
 
 
@@ -315,6 +336,7 @@
 		German:"KriegerIn"
 		Czech:"Válečník"
         Polish:"Wojownik"
+		Ukrainian:"Воїн"
 	}
 
 
@@ -327,6 +349,7 @@
 		French:"Guerrier Maori"
         Polish:"Wojownik Maori"
 		Portuguese:"Guerreiro Maori"
+		Ukrainian:"Воїн маорі"
 	}
 
 	"Archer":{
@@ -341,6 +364,7 @@
 		German:"Bogenschütze",
 		Czech:"Lučištník"
         Polish:"Łucznik"
+		Ukrainian:"Лучник"
 	}
 
 	"Bowman":{
@@ -359,6 +383,7 @@
 		German:"Kampfbogenschütze" //from original game
 		Czech:"Lepší lučištník" //
         Polish:"Łucznik"
+		Ukrainian:"Стрілець"
 	}
 
 	"Work Boats":{
@@ -373,6 +398,7 @@
 		German:"Arbeitsboote"
 		Czech:"Pracovní člun"
         Polish:"Łodzie robotnicze"
+		Ukrainian:"Робочий човен"
 	}
 
 	"Cannot enter ocean tiles until Astronomy":{
@@ -387,6 +413,7 @@
 		Russian:"Для выхода в океан нужно открыть Астрономию"
 		Czech:"Nelze vplout na oceán před objevem Astronomie"
         Polish:"Nie może wejść na pole oceanu do momentu odblokowania Astronomi"
+		Ukrainian:"Не може заходити до океанських клітинок до відкриття астрономії"
 	}
 
 	"May create improvements on water resources":{
@@ -401,6 +428,7 @@
 		Russian:"Может создать улучшения на водных ресурсах"
 		Czech:"Může vybudovat vylepšení na voních políčkách"
         Polish:"Może budować ulepszenia na wodnych zasobach"
+		Ukrainian:"Може вдосконалювати водні ресурси"
 	}
 
 	"Trireme":{
@@ -415,6 +443,7 @@
 		//same in German
 		Czech:"Triréma"
         Polish:"Tryrema"
+		Ukrainian:"Трієра"
 	}
 
 	/*
@@ -423,6 +452,7 @@
 		Czech:"Galéra"
 		French:"Galère"
         Polish:"Galera"
+		Ukrainian:"Галера"
 	}//The Galley is the Barbarian starter naval military unit, and it's weaker than Trireme
 	*/
 
@@ -438,6 +468,7 @@
 		Russian:"Не может выйти в океан"
 		Czech:"Nelze vyplout na oceán"
         Polish:"Nie może wejsć na pola oceanu"
+		Ukrainian:"Не може заходити до океанських клітинок"
 	}
 
 	"Chariot Archer":{
@@ -452,6 +483,7 @@
 		German:"Streitwagen-Bogenschütze",
 		Czech:"Lučištník ve válečném vozu"
         Polish:"Łuczik na rydwanie"
+		Ukrainian:"Лучник на колісниці"
 	}
 
 	"No defensive terrain bonus":{
@@ -467,6 +499,7 @@
 		Portuguese:"Nenhum bonus de defesa do terreno"
 		Czech:"Žádný terénní obranný bonus"
         Polish:"Brak bonusów do obrony wynikających z terenu"
+		Ukrainian:"Місцевість не захищає"
 	}
 
 	"Rough terrain penalty":{
@@ -482,6 +515,7 @@
 		Portuguese:"Penalidade de terreno díficil"
 		Czech:"Penalizace v obtížném terénu"
         Polish:"Utrudnienia wynikające z terenu"
+		Ukrainian:"Пересічена місцевість важкопрохідна"
 	}
 
 
@@ -497,6 +531,7 @@
 		Czech:"Válečný vůz"
         Polish:"Rydwan wojenny"
 		Portuguese:"Carruagem de guerra"
+		Ukrainian:"Бойова колісниця"
 	}
 
 	"Spearman":{
@@ -511,6 +546,7 @@
 		German:"SpeerkriegerIn"
 		Czech:"Kopiník"
         Polish:"Włócznik"
+		Ukrainian:"Списник"
 	}
 
 	"Hoplite":{ // Greek unique
@@ -525,6 +561,7 @@
 		Czech:"Hoplita"
         Polish:"Hoplita"
 		Portuguese:"Hoplita" // It can be lancer with a shield aswell: 'Lanceiro com escudo/Lanceiro defensivo'
+		Ukrainian:"Гопліти"
 	}
 
 	"Persian Immortal":{ // Persian unique
@@ -536,6 +573,7 @@
 		French:"Immortel"
         Polish:"Perski Nieśmiertelny"
 		Portuguese:"Imortal Persa"
+		Ukrainian:"Безсмертні"
 	}
 
 	"+10 HP when healing":{
@@ -547,6 +585,7 @@
 		French:"+10 PV en cas de soins"
         Polish:"+10 punktów zdrowia podczas leczenia"
 		Portuguese:"+10 Vida enquanto cura" // 'Vida' can be replaced with 'HP' or 'PV'
+		Ukrainian:"При зціленні здоров’я +10"
 	}
 
 ////// Classical Era Units
@@ -563,6 +602,7 @@
 		Czech:"Kompozitní lučištník"
         Polish:"Łucznik kompozytowy"
 		Portuguese:"Arqueiro Composto" // 'Arqueiro com arco robusto' may sound good too.
+		Ukrainian:"Складний лук"
 	}
 
 	"Catapult":{
@@ -577,6 +617,7 @@
 		German:"Katapult"
 		Czech:"Katapult"
         Polish:"Katapulta"
+		Ukrainian:"Катапульта"
 	}
 
 	"Must set up to ranged attack":{
@@ -592,6 +633,7 @@
 		Portuguese:"Precisa de preparação para atacar a distância"
 		Czech:"Lze použít pouze na boj na dálku"
         Polish:"Musi być przygotowany/a na atak dystansowy"
+		Ukrainian:"Для дальніх атак треба розгорнути"
 	}
 
 	"Ballista":{
@@ -606,6 +648,7 @@
 		Russian:"Баллиста"
 		Czech:"Balista"
         Polish:"Balista"
+		Ukrainian:"Баліста"
 	}
 
 	"Swordsman":{
@@ -620,6 +663,7 @@
 		German:"SchwertkämpferIn"
 		Czech:"Šermíř"
         Polish:"Fechtmistrz"
+		Ukrainian:"Мечник"
 	}
 
 	"Mohawk Warrior":{
@@ -631,6 +675,7 @@
 		French:"Guerrier Mohawk"
         Polish:"Wojownik Mohawk"
 		Portuguese:"Guerreiro Mohawk"
+		Ukrainian:"Воїн-могавк"
 	}
 
 	"+33% combat bonus in Forest/Jungle":{
@@ -642,6 +687,7 @@
 		French:"+33% de bonus au combat en Forêt/Jungle"
         Polish:"+33% bonusu do walki w Lesie/Dżungli"
 		Portuguese:"+33% de bônus de combate na Floresta/Selva"
+		Ukrainian:"У лісі/хащах атака +33%"
 	}
 
 	"Legion":{
@@ -656,6 +702,7 @@
 		Czech:"Legie"
         Polish:"Legion"
 		Portuguese:"Legião"
+		Ukrainian:"Легіон"
 	}
 
 	"Can construct roads":{
@@ -668,6 +715,7 @@
 		German:"Kann Straßen bauen"
         Polish:"Może budować drogi"
 		Portuguese:"Pode construir estradas"
+		Ukrainian:"Може будувати дороги"
 	}
 
 	"Construct road":{ // for unit action button
@@ -680,6 +728,7 @@
 		German:"Baue Straße"
         Polish:"Zbuduj drogę"
 		Portuguese:"Construir estrada"
+		Ukrainian:"Будувати дорогу"
 	}
 
 	"Horseman":{
@@ -694,6 +743,7 @@
 		German:"ReiterIn"
 		Czech:"Jízda"
         Polish:"Jeździeć"
+		Ukrainian:"Вершник"
 	}
 
 	"Can move after attacking":{
@@ -709,6 +759,7 @@
 		Portuguese:"Pode se mover após atacar"
 		Czech:"Může se pohybovat po útoku"
         Polish:"Może się poruszać po ataku"
+		Ukrainian:"Може рухатись після атаки"
 	}
 
 	"Companion Cavalry":{
@@ -723,6 +774,7 @@
 		German:"Begleitkavallerie"
 		Czech:"Makedonská jízda"
         Polish:"Kawaleria Towarzysząca"
+		Ukrainian:"Гетайри"
 	}
 
 	"War Elephant":{//Indian unique unit
@@ -735,6 +787,7 @@
 		German:"Kriegselefant"
         Polish:"Słoń bojowy"
 		Portuguese:"Elefante de guerra"
+		Ukrainian:"Бойовий слон"
 	}
 
 ////// Medieval units
@@ -751,7 +804,7 @@
 		Russian:"Галера"
 		Czech:"Galléra"
         Polish:"Galeas"
-        
+        	Ukrainian:"Галеас"
 	}
 
 	"Crossbowman":{
@@ -766,6 +819,7 @@
 		German:"Armbrustschütze"
 		Czech:"Kušník"
         Polish:"Kusznik"
+		Ukrainian:"Арбалет"
 	}
 
 	"Longbowman":{
@@ -780,6 +834,7 @@
 		Russian:"Лучник (длинный лук)"
 		Czech:"Střelec s dlouhým lukem"
         Polish:"Łucznik z długim łukiem"
+		Ukrainian:"Довгий лук"
 	}
 
 	"Chu-Ko-Nu":{
@@ -794,6 +849,7 @@
 		Czech:"Chu-Ko-Nu"
         Polish:"Chu-Ko-Nu"
 		Portuguese:"Chu-Ko-Nu"
+		Ukrainian:"Чо-ко-ну"
 	} // Chinese unique, can transliterate
 
 	"Logistics":{
@@ -806,6 +862,7 @@
 		Czech:"Logistika"
         Polish:"Logistyka"
 		Portuguese:"Logística"
+		Ukrainian:"Лігістика"
 	}
 
 	"1 additional attack per turn":{
@@ -818,6 +875,7 @@
 		German:"1 zusätzlicher Angriff pro Runde"
         Polish:"1 dodatkowy atak na turę"
 		Portuguese:"1 ataque adicional por turno"
+		Ukrainian:"1 додаткова атака за хід"
 	}
 
 	"Trebuchet":{
@@ -832,6 +890,7 @@
 		German:"Trebuchet"
 		Czech:"Trebuchet"
         Polish:"Trebuszet"
+		Ukrainian:"Требушет"
 	}
 
 	"Hwach'a":{
@@ -843,6 +902,7 @@
 		French:"Hwacha"	
         Polish:"Hwach'a"
 		Portuguese:"Hwach'a"
+		Ukrainian:"Хвача"
 	}
 
 	"Limited Visibility":{
@@ -858,6 +918,7 @@
 		Portuguese:"Visibilidade limitada"
 		Czech:"Omezená viditelnost"
         Polish:"Ograniczona widoczność"
+		Ukrainian:"Обмежений огляд"
 	}
 
 	"Longswordsman":{
@@ -872,6 +933,7 @@
 		German:"LangschwertkämpferIn",
 		Czech:"Šermíř s dlouhým mečem"
         Polish:"Fechtmistrz z długim mieczem"
+		Ukrainian:"Довгий меч"
 	}
 
 	"Pikeman":{
@@ -886,6 +948,7 @@
 		German:"PikenierIn",
 		Czech:"Pikenýr"
         Polish:"Wojownik z piką"
+		Ukrainian:"Пікінер"
 	}
 
 	"Landsknecht":{
@@ -898,6 +961,7 @@
 		German:"Landsknecht"
         Polish:"Landsknecht"
 		Portuguese:"Landsknecht"
+		Ukrainian:"Ландскнехт"
 	}
 
 	"Knight":{
@@ -912,6 +976,7 @@
 		German:"RitterIn"
 		Czech:"Rytíř"
         Polish:"Rycerz"
+		Ukrainian:"Лицар"
 	}
 
 	"Camel Archer":{
@@ -926,6 +991,7 @@
 		Czech:"Lučištník na velbloudu"
         Polish:"Łucznik na wielbłądzie"
 		Portuguese:"Arqueiro de camelo"
+		Ukrainian:"Лучник на верблюді"
 	}
 	
 	"Naresuan's Elephant":{
@@ -937,6 +1003,7 @@
 		French:"Elephant de Naresuan"	
         Polish:"Słoń Naresuan"
 		Portuguese:"Elefante de Naresuan"
+		Ukrainian:"Слон Наресуана"
 	}
 
 	"Samurai":{
@@ -949,6 +1016,7 @@
 		German:"Samurai"
         Polish:"Samuraj"
 		Portuguese:"Samurai"
+		Ukrainian:"Самурай"
 	}
 
 	"Combat very likely to create Great Generals":{
@@ -961,6 +1029,7 @@
 		German:"Der Kampf wird sehr wahrscheinlich große Generäle schaffen."
         Polish:"Walka może wyłonić Wielkich Generałów"
 		Portuguese:"Combate muito provável de criar Grandes Generais"
+		Ukrainian:"Висока вірогідність отримати у битві видатного генерала"
 	}
 
 ////// Renaissance units
@@ -977,6 +1046,7 @@
 		German:"Karavelle"
 		Czech:"Karavela"
         Polish:"Karawela"
+		Ukrainian:"Каравела"
 	}
 
 	"Turtle Ship":{
@@ -990,6 +1060,7 @@
 		French:"Bateau Tortue"
         Polish:"Geobukseon"
 		Portuguese:"Navio Tartaruga"
+		Ukrainian:"Кобуксон"
 	}
 
 	"+1 Visibility Range":{
@@ -1004,6 +1075,7 @@
 		Russian:"+1 Диапазон видимости"
 		Czech:"+1 větší viditelnost"
         Polish:"+1 do pola widzenia"
+		Ukrainian:"Дальність огляду +1"
 	}
 
 	"Cannon":{
@@ -1018,6 +1090,7 @@
 		German:"Kanone"
 		Czech:"Dělo"
         Polish:"Armata"
+		Ukrainian:"Гармата"
 	}
 
 	"Musketman":{
@@ -1032,6 +1105,7 @@
 		German:"Musketschütze"
 		Czech:"Střelec s mušketou"
         Polish:"Strzelec z muszkietem"
+		Ukrainian:"Мушкетник"
 	}
 
 	"Musketeer":{ //french unique
@@ -1046,6 +1120,7 @@
 		German:"Musketier",
 		Czech:"Mušketýr"
         Polish:"Muszkieter"
+		Ukrainian:"Мушкетер"
 	}
 
 	"Janissary":{ // Ottoman unique
@@ -1057,6 +1132,7 @@
 		Czech:"Janičář"
         Polish:"Janczar"
 		Portuguese:"Janisário"
+		Ukrainian:"Яничари"
 	}
 
 	"Heals [amountHealed] damage if it kills a unit":{
@@ -1069,6 +1145,7 @@
 		German:"Heilt [amountHealed] Schaden beim Töten einer Einheit"
         Polish:"Leczy [amountHealed] obrażeń po zabiciu jednostki"
 		Portuguese:"Cura [amountHealed] de dano se destruir uma unidade"
+		Ukrainian:"Відновлення [amountHealed] пошкоджень при знищенні підрозділу"
 	}
 
 	"Minuteman":{ // american unique
@@ -1083,6 +1160,7 @@
 		Czech:"Minutemen"
         Polish:"Minuteman"
 		Portuguese:"Mílicia" // Can't seem to find other meaning
+		Ukrainian:"Ополченець"
 	}
 
 	"Frigate":{
@@ -1097,6 +1175,7 @@
 		German:"Fregatte"
 		Czech:"Fregata"
         Polish:"Fregata"
+		Ukrainian:"Фрегат"
 	}
 
 	"Ship of the Line":{ // English unique
@@ -1111,6 +1190,7 @@
 		Czech:"Řádová loď"
         Polish:"Okręt liniowy"
 		Portuguese:"Navio de linha" // literal
+		Ukrainian:"Лінкор"
 	}
 
 	"Lancer":{
@@ -1125,6 +1205,7 @@
 		German:"LanzerIn",
 		Czech:"Kopiník na koni"
         Polish:"Lansjer"
+		Ukrainian:"Улан"
 	}
 
 	"Sipahi":{
@@ -1136,6 +1217,7 @@
 		Czech:"Sipahi"
         Polish:"Spahisi"
 		Portuguese:"Sipahi" // Ottoman cavalry corps
+		Ukrainian:"Сипахи"
 	}
 
 	"No movement cost to pillage":{
@@ -1148,6 +1230,7 @@
 		German:"Keine Bewegungskosten beim Plündern"
         Polish:"Plądrowanie nie zabiera ruchu"
 		Portuguese:"Sem custo de movimento para saquear" // 'saquear' could be 'roubar' or 'pilhar' too.
+		Ukrainian:"Для мародерства не витрачаються очки руху"
 	}
 
 
@@ -1165,6 +1248,7 @@
 		Czech:"Gatlingův kulomet"
         Polish:"Kartaczownica Gatlinga"
 		Portuguese:"Metralhadora"
+		Ukrainian:"Кулемет Гатлінга"
 	}
 
 	"Rifleman":{
@@ -1179,6 +1263,7 @@
 		German:"Gewehrschütze",
 		Czech:"Střelec s puškou"
         Polish:"Strzelec"
+		Ukrainian:"Карабінер"
 	}
 
 	"Cavalry":{
@@ -1193,6 +1278,7 @@
 		German:"Kavallerie",
 		Czech:"Kavalérie"
         Polish:"Kawaleria"
+		Ukrainian:"Кавалерія"
 	}
 
 	"Cossack":{
@@ -1207,6 +1293,7 @@
 		Czech:"Kozák"
         Polish:"Kozak"
 		Portuguese:"Cossaco"
+		Ukrainian:"Казак"
 	}
 
 	"Artillery":{
@@ -1221,6 +1308,7 @@
 		German:"Artillerie",
 		Czech:"Dělostřelectvo"
         Polish:"Artyleria"
+		Ukrainian:"Артилерія"
 	}
 
 	"Indirect Fire":{
@@ -1233,6 +1321,7 @@
 		Czech:"Nepřímá slřelba"
         Polish:"Ogień pośredni"
 		Portuguese:"Fogo indireto" // 'fogo' in this context means gunpowder shot I think
+		Ukrainian:"Стрільба з закритих позицій"
 	}
 
 	"Ironclad":{
@@ -1248,6 +1337,7 @@
 		Czech:"Obrněná loď"
         Polish:"Pancernik"
 		Portuguese:"Navio revestido de ferro" // literal, also 'Navio' could be hidden. 'Inquebrantável' or 'Inquebrável' could replace too.
+		Ukrainian:"Панцерник"
 	}
 
 
@@ -1263,6 +1353,7 @@
 		Russian:"Двойное движение на побережье"
 		Czech:"Dvojnásobný pohyb na pobřeží"
         Polish:"Podwojony ruch na wybrzeżu"
+		Ukrainian:"Подвійний рух на узбережжі"
 	}
 
 ////// Modern units
@@ -1279,6 +1370,7 @@
 		Czech:"Tanketka"
         Polish:"Statek lądowy"
 		Portuguese:"Navio terrestre"
+		Ukrainian:"Танкетка"
 	}
 
 	"Great War Infantry":{
@@ -1293,6 +1385,7 @@
 		Czech:"Velká válečná pěchota"
         Polish:"Piechota Wielkiej Wojny"
 		Portuguese:"Infantaria da Grande Guerra"
+		Ukrainian:"Піхота першої світової"
 	}
 
 	"Foreign Legion":{ // French Unique
@@ -1307,6 +1400,7 @@
 		Czech:"Cizinecká legie"
         Polish:"Legia Cudzoziemska"
 		Portuguese:"Legião Estrangeira"
+		Ukrainian:"Іноземний легіон"
 	}
 
 	"+20% bonus outside friendly territory":{
@@ -1319,6 +1413,7 @@
 		German:"+20% Bonus außerhalb befreundeten Gebiets"
         Polish:"+20% do walki poza przyjaznym terytorium"
 		Portuguese:"+20% de bônus fora do território amigável" // 'amigável' can be replaced with 'amigo' or 'favorável'
+		Ukrainian:"За межами дружньої території атаки +20%"
 	}
 
 	"Foreign Land":{ // for battle table combat percentage
@@ -1331,6 +1426,7 @@
 		German:"Fremdes Land"
         Polish:"Obcy kraj"
 		Portuguese:"Terra estrangeira"
+		Ukrainian:"Ворожа територія"
 	}
 
 	"Destroyer":{
@@ -1345,6 +1441,7 @@
 		Czech:"Torpédoborec"
         Polish:"Niszczyciel"
 		Portuguese:"Destruidor"
+		Ukrainian:"Есмінець"
 	}
 
 	"Can attack submarines":{
@@ -1357,6 +1454,7 @@
 		German:"Kann U-Boote angreifen"
         Polish:"Może atakować łodzie podwodne"
 		Portuguese:"Pode atacar submarinos"
+		Ukrainian:"Може атакувати субмарини"
 	}
 
 	"Machine Gun":{
@@ -1371,6 +1469,7 @@
 		Czech:"Kulometčík"
         Polish:"Karabin Maszynowy"
 		Portuguese:"Metralhadora robusta" // the 'robusta' is to differ from Gatling Gun
+		Ukrainian:"Кулемет"
 	}
 
 	"Anti-Aircraft Gun":{
@@ -1385,6 +1484,7 @@
 		Czech:"Protiletadlová zbraň"
         Polish:"Działo przeciwlotnicze"
 		Portuguese:"Arma anti-aérea" // 'anti-aérea' can be replaced with 'anti-aviões' or 'anti-aeronaves'
+		Ukrainian:"Зенітна гармата"
 	}
 
 	"Infantry":{
@@ -1399,6 +1499,7 @@
 		Czech:"Pěchota"
         Polish:"Piechota"
 		Portuguese:"Infantaria"
+		Ukrainian:"Піхота"
 	}
 
 	"Battleship":{
@@ -1413,6 +1514,7 @@
 		Czech:"Bitevní loď"
         Polish:"Okręt wojenny"
 		Portuguese:"Navio de batalha"
+		Ukrainian:"Дредноут"
 	}
 
 
@@ -1428,6 +1530,7 @@
 		Czech:"Ponorka"
         Polish:"Łódź podwodna"
 		Portuguese:"Submarino"
+		Ukrainian:"Субмарина"
 	}
 
 	"Bonus as Attacker [amount]%":{
@@ -1440,6 +1543,7 @@
 		German:"Bonus für Angriff [amount]%"
         Polish:"Bonus jako atakujący [amount]%"
 		Portuguese:"[amount]% de bônus como atacante"
+		Ukrainian:"Якщо атакує, сила атаки +[amount]%"
 	}
 
 	"Invisible to others":{
@@ -1452,6 +1556,7 @@
 		German:"Unsichtbar für andere"
         Polish:"Niewidoczny dla innych"
 		Portuguese:"Invisível para outros"
+		Ukrainian:"Інші не бачать"
 	}
 
 	"Can only attack water":{
@@ -1464,6 +1569,7 @@
 		German:"Kann nur auf Wasser angreifen"
         Polish:"Może atakować tylko na wodzie"
 		Portuguese:"Pode atacar somente aquático" // it's a bit ugly, but functional
+		Ukrainian:"Може атакувати тільки на воді"
 	}
 
 	"Carrier":{ // aircrat carrier
@@ -1478,6 +1584,7 @@
 		Czech:"Letadlová loď"
         Polish:"Lotniskowiec"
 		Portuguese:"Porta-aviões"
+		Ukrainian:"Авіаносець"
 	}
 
 
@@ -1493,6 +1600,7 @@
 		Czech:"Trojplošník"
         Polish:"Samolot trójpłaszczycnowy"
 		Portuguese:"Aeronave triplano" // do not know if it's correct
+		Ukrainian:"Триплан"
 	}
 
 	"[percent]% chance to intercept air attacks":{
@@ -1505,6 +1613,8 @@
 		German:"[percent]% Chance, Luftangriffe abzufangen"
         Polish:"[percent]% szans na przechwycenie ataku w powietrzu"
 		Portuguese:"[percent]% de chance de interceptar ataques aéreos"
+		Ukrainian:"Можливе перехоплення повітряних атак [percent]%"
+		
 	}
 
 	"Requires Manhattan Project":{ // really necessary? Seems hardcoded, there is already a translation for "Requires" 
@@ -1515,7 +1625,8 @@
 		French:"Necessite le projet Manhattan"
         Polish:"Wymaga projektu Manhattan"
 		Portuguese:"Necessita de Projeto Manhattan"
-}
+		Ukrainian:"Необхідний Мангеттенський проєкт"
+	}
 
 	"6 tiles in every direction always visible":{
 		Italian:"6 caselle in ogni direzione sempre visibili"
@@ -1527,6 +1638,7 @@
 		French:"6 tuiles dans chaque direction sont toujours visibles"
         Polish:"6 pól w każdą stronę jest zawsze widoczne"
 		Portuguese:"6 hexágonos em toda direção sempre visível" // can correct if it's necessary
+		Ukrainian:"Завжди видно 6 клітинок у всіх напрямках"
 	}
 
 	"Great War Bomber":{
@@ -1541,6 +1653,7 @@
 		Czech:"Velký válečný bombardér"
         Polish:"Bombowiec Wielkiej Wojny"
 		Portuguese:"Bombardeiro da Grande Guerra"
+		Ukrainian:"Бомбардувальник Першої світової"
 	}
 
 ////// Atomic units (not in game yet but will be, not super important but why not)
@@ -1557,6 +1670,7 @@
 		Czech:"Raketové dělostřelectvo"
         Polish:"Artyleria rakietowa"
 		Portuguese:"Artilharia de foguetes"
+		Ukrainian:"Ракетна артилерія"
 	}
 
 	"Anti-Tank Gun":{
@@ -1571,6 +1685,7 @@
 		Czech:"Protitanková zbraň"
         Polish:"Działo przeciwpancerne"
 		Portuguese:"Arma anti-tanque"
+		Ukrainian:"Протитанкова гармата"
 	}
 
 
@@ -1586,6 +1701,7 @@
 		Czech:"Námořní pěchota"
         Polish:"Marynarka"
 		Portuguese:"Náutico" //not sure if it's correct
+		Ukrainian:"Морська піхота"
 	}
 
 	"Mobile SAM":{
@@ -1600,6 +1716,7 @@
 		Czech:"Mobilní SAM"
         Polish:"Mobilny SAM"
 		Portuguese:"Veículo LM" //not sure what it is, 'LM' stands for 'Lançador de mísseis' in portuguese
+		Ukrainian:"Мобільна зенітна ракета"
 	}
 
 	"Paratrooper":{
@@ -1614,6 +1731,7 @@
 		Czech:"Výsadkář"
         Polish:"Spadochroniarz"
 		Portuguese:"Forças Especiais" // or 'Paraquedista';'Soldado paraquedista'
+		Ukrainian:"Десантник"
 	}
 
 	"Tank":{
@@ -1628,6 +1746,7 @@
 		Czech:"Tank"
         Polish:"Czołg"
 		Portuguese:"Tanque"
+		Ukrainian:"Танк"
 	}
 
 	"Panzer":{ // german unique
@@ -1642,6 +1761,7 @@
 		Czech:"Panzer"
         Polish:"Panzer"
 		Portuguese:"Tanque-Panzer" // to differ from 'Tanque'
+		Ukrainian:"Броньовик"
 	}
 
 	"Bomber":{
@@ -1656,6 +1776,7 @@
 		German:"Bomber"
         Polish:"Bombowiec"
 		Portuguese:"Bombardeiro"
+		Ukrainian:"Бомбардувальник"
 	}
 
 	"Mechanized Infantry":{
@@ -1668,6 +1789,7 @@
 		German:"Mechanische Infanterie"
         Polish:"Piechota zmechanizowana"
 		Portuguese:"Infantaria mecanizada"
+		Ukrainian:"Механізована піхота"
 	}
 
 	"Modern Armor":{
@@ -1680,6 +1802,7 @@
 		German:"Moderne Panzerung"
         Polish:"Nowoczesny pancerz"
 		Portuguese:"Panzer moderno" // reference from Panzer. Can be changed to 'Tanque ultra-blindado"
+		Ukrainian:"Сучасний танк"
 	}
 
 	"B17":{ // american unique
@@ -1694,6 +1817,7 @@
 		German:"B-17"
         Polish:"B-17"
 		Portuguese:"B17"
+		Ukrainian:"Бі-17"
 	}
 
 	"Fighter":{
@@ -1708,6 +1832,7 @@
 		Czech:"Stíhač"
         Polish:"Myśliwiec"
 		Portuguese:"Avião de combate"
+		Ukrainian:"Винищувач"
 	}
 
 	"Zero":{//Japanese unique
@@ -1720,6 +1845,7 @@
 		French:"Zéro"
         Polish:"Zero"
 		Portuguese:"Zero"
+		Ukrainian:"Зеро"
 	}
 
 	"Helicopter Gunship":{
@@ -1734,6 +1860,7 @@
 		Czech:"Bojová helikoptéra"
         Polish:"Helikopter bojowy"
 		Portuguese:"Helicóptero de guerra"
+		Ukrainian:"Бойовий гелікоптер"
 	}
 
 	"Atomic Bomb":{
@@ -1742,6 +1869,7 @@
 		German:"Atombombe"
 		French:"Bombardier Atomique"
         Polish:"Bomba atomowa"
+		Ukrainian:"Ядерна бомба"
 	}
 
 ////// Information era - not even putting here, too far off
@@ -1756,6 +1884,7 @@
 		German:"Riesiger Todesroboter"
         Polish:"Gigantyczny robot zagłady"
 		Portuguese:"Robô Gigante Mortal" //not accurate
+		Ukrainian:"Бойовий робот"
 	}
 
 	"Stealth Bomber":{
@@ -1765,6 +1894,7 @@
 		French:"Bombardier Furtif"
         Polish:"Niewidzialny bąbowiec"
 		Portuguese:"Bombardeiro furtivo"
+		Ukrainian:"Винищувач-невидимка"
 	}
 
 	"Jet Fighter":{
@@ -1774,6 +1904,7 @@
 		French:"Jet"
         Polish:"Myśliwiec odrzutowy"
 		Portuguese:"Jato de combate" // 'Jato' means 'Avião de caça'
+		Ukrainian:"Реактивний винищувач"
 	}
 
 	"Guided Missile":{
@@ -1783,6 +1914,7 @@
 		French:"Missile Guidé"
         Polish:"Rakieta prowadzona"
 		Portuguese:"Míssil teleguiado"
+		Ukrainian:"Керована ракета"
 	}
 */
 	"Nuclear Missile":{
@@ -1794,6 +1926,7 @@
 		French:"Missile Nucléaire"
         Polish:"Pocisk nuklearny"
 		Portuguese:"Míssil nuclear"
+		Ukrainian:"Ядерна ракета"
 	}
 
 ////// Great units
@@ -1810,6 +1943,7 @@
 		German:"Große(r) Künstler(in)" //gender sensitive
 		Czech:"Velký Umělec"
         Polish:"Wielki Artysta"
+		Ukrainian:"Видатний митець"
 	}
 
 
@@ -1823,6 +1957,7 @@
 		German:"nicht baubar"
         Polish:"Niemożliwy do zbudowania"
 		Portuguese:"Não construível" // not accurate
+		Ukrainian:"Неможливо створити"
 	}
 
 	"Can start an 8-turn golden age":{
@@ -1837,6 +1972,7 @@
 		Russian:"Может начать золотой век на 8 ходов"
 		Czech:"Může odstartovat Zlatý věk na 8 tahů"
         Polish:"Może rozpocząć 8-mio turowy Złoty Wiek"
+		Ukrainian:"Може почати золотий вік на 8 ходів"
 	}
 
 	"Can build improvement: Landmark":{
@@ -1851,6 +1987,7 @@
 		German:"Kann Verbesserung errichten: Sehenswürdigkeit",
 		Czech:"Může vybudovat: Dominanta"
         Polish:"Może zbudować ulepszenie: Punkt orientacyjny"
+		Ukrainian:"Може будувати вдосконалення: Визначна пам’ятка"
 	}
 
 	"Great Scientist":{
@@ -1865,6 +2002,7 @@
 		German:"Große(r) Wissenschaftler(in)" // gender sensitive
 		Czech:"Velký Vědec"
         Polish:"Wielki Naukowiec"
+		Ukrainian:"Видатний науковець"
 	}
 
 	"Can discover a technology":{
@@ -1879,6 +2017,7 @@
 		Russian:"Может открыть технологию"
 		Czech:"Může vyzkoumat technologii"
         Polish:"Może odkryć technologię"
+		Ukrainian:"Може відкрити технологію"
 	}
 
 	"Can build improvement: Academy":{
@@ -1893,6 +2032,7 @@
 		Russian:"Можно построить улучшение: Академия"
 		Czech:"Může vybudovat vylepšení: Akademie"
         Polish:"Może zbudować ulepszenie: Akademia"
+		Ukrainian:"Може будувати вдосконалення: Академія"
 	}
 
 	"Great Merchant":{
@@ -1907,6 +2047,7 @@
 		German:"Große(r) Händler(in)"
 		Czech:"Velký Obchodník"
         Polish:"Wielki Kupiec"
+		Ukrainian:"Видатний торговець"
 	}
 
 	"Can undertake a trade mission with City-State, giving a large sum of gold and [influenceAmount] Influence":{
@@ -1916,6 +2057,7 @@
 		French:"Peut entreprendre une mission commerciale avec une cité-état, apportant une grande quantité d'or et [influenceAmount] d'influence"
         Polish:"Może podjąć misję handlową z Miastem-Państwem, dającą dużą sumę złota i [influenceAmount] wpływu"
 		Portuguese:"Pode assumir uma missão de troca com Cidade-Estado, obtendo uma grande quantia de ouro e [influenceAmount] de Influência"
+		Ukrainian:"Може здійснити торгівлю і отримати багато золота"
 	}
 
 	"Can build improvement: Customs house":{
@@ -1930,6 +2072,7 @@
 		German:"Kann Verbesserung errichten: Zollhaus",
 		Czech:"Může vybudovat vylepšení: Celnice"
         Polish:"Może zbudować ulepszenie: Urząd celny"
+		Ukrainian:"Може будувати вдосконалення: Митниця"
 	}
 
 	"Great Engineer":{
@@ -1944,6 +2087,7 @@
 		German:"Große(r) Ingenieur(in)"
 		Czech:"Velký Inženýr"
         Polish:"Wielki Inżynier"
+		Ukrainian:"Видатний інженер"
 	}
 
 	"Can speed up construction of a wonder":{
@@ -1958,6 +2102,7 @@
 		Russian:"Может ускорить строительство чуда света"
 		Czech:"Může zrychlit budování Divu"
         Polish:"Może przyspieszyć budowę cudu"
+		Ukrainian:"Може прискорити будівництво дива світу"
 	}
 
 	"Can build improvement: Manufactory":{
@@ -1972,6 +2117,7 @@
 		Spanish:"Se puede construir mejora: Manufactura"
 		Czech:"Může vybudovat vylepšení: Manufaktura"
         Polish:"Może zbudować ulepszenie: Manufaktura"
+		Ukrainian:"Може будувати вдосконалення: Мануфактура"
 	}
 
 	"Great General":{
@@ -1986,6 +2132,7 @@
 		Czech:"Velký Generál"
         Polish:"Wielki Generał"
 		Portuguese:"Grande General"
+		Ukrainian:"Видатний генерал"
 	}
 
 	"Bonus for units in 2 tile radius 15%" :{
@@ -1998,6 +2145,7 @@
 		German:"15% Bonus für Einheiten im Umfeld von 2 Feldern"
         Polish:"+15% do walki dla jednostek w zasięgu 2 pól"
 		Portuguese:"15% de bônus para unidades com raio de 2 hexágonos"
+		Ukrainian:"Підрозділи в радіусі 2 клітинок отримують силу атаки +15%"
 	}
 
 	////// Unit Promotions
@@ -2012,6 +2160,7 @@
 		German:"Wähle eine Beförderung"
         Polish:"Awansuj jednostkę"
 		Portuguese:"Pegue uma promoção"
+		Ukrainian:"Обрати поліпшення"
 	}
 
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
@@ -2026,6 +2175,7 @@
 		French:" OU "
 		Czech:" NEBO "
         Polish:" LUB "
+		Ukrainian:" АБО "
 	}
 
 	"Bonus vs [unitType]":{
@@ -2041,6 +2191,7 @@
 		Portuguese:"Bônus contra [unitType]",
 		Czech:"Výhoda proti [unitType]"
         Polish:"Bonus przeciwko [unitType]"
+		Ukrainian:"Перевага проти типу: [unitType]"
 	}
 
 	"Penalty vs [unitType]":{
@@ -2056,6 +2207,7 @@
 		Portuguese:"Penalidade contra [unitType]",
 		Czech:"Nevýhoda proti [unitType]"
         Polish:"Słaboś przeciwko [unitType]"
+		Ukrainian:"Поступається підрозділам типу: [unitType]"
 	}
 
 	"Accuracy I":{
@@ -2068,6 +2220,7 @@
 		Czech:"Preciznost I"
         Polish:"Celność I"
 		Portuguese:"Precisão I"
+		Ukrainian:"Точність I"
 	}
 
 	"Accuracy II":{
@@ -2080,6 +2233,7 @@
 		Czech:"Preciznost II"
         Polish:"Celność II"
 		Portuguese:"Precisão II"
+		Ukrainian:"Точність II"
 	}
 
 	"Accuracy III":{
@@ -2092,6 +2246,7 @@
 		Czech:"Preciznost III"
         Polish:"Celność III"
 		Portuguese:"Precisão III"
+		Ukrainian:"Точність III"
 	}
 
 	"units in open terrain":{
@@ -2104,6 +2259,7 @@
 		German:"Einheiten im offenen Gelände"
         Polish:"jednostek na otwartej przestrzeni"
 		Portuguese:"unidades em terreno aberto"
+		Ukrainian:"підрозділи на відкритій території"
 	}
 
 	"units in rough terrain":{
@@ -2118,6 +2274,7 @@
 		Russian:"юниты на пересеченной местности"
 		Czech:"jednotky v obtížném terénu"
         Polish:"jednostek na trudnym terenie"
+		Ukrainian:"підрозділи на пересіченій території"
 	}
 
 	"Barrage I":{
@@ -2130,6 +2287,7 @@
 		Czech:"Maskování I"
         Polish:"Zapora I"
 		Portuguese:"Barragem I"
+		Ukrainian:"Завада I"
 	}
 
 	"Barrage II":{
@@ -2142,6 +2300,7 @@
 		Czech:"Maskování II"
         Polish:"Zapora II"
 		Portuguese:"Barragem II"
+		Ukrainian:"Завада II"
 	}
 
 	"Barrage III":{
@@ -2154,6 +2313,7 @@
 		Czech:"Maskování III"
         Polish:"Zapora III"
 		Portuguese:"Barragem III"
+		Ukrainian:"Завада III"
 	}
 
 	"Shock I":{
@@ -2166,6 +2326,7 @@
 		Czech:"Šok I"
         Polish:"Szok I"
 		Portuguese:"Choque I"
+		Ukrainian:"Навала I"
 	}
 
 	"Shock II":{
@@ -2178,6 +2339,7 @@
 		Czech:"Šok II"
         Polish:"Szok II"
 		Portuguese:"Choque II"
+		Ukrainian:"Навала II"
 	}
 
 	"Shock III":{
@@ -2190,6 +2352,7 @@
 		Czech:"Šok III"
         Polish:"Szok III"
 		Portuguese:"Choque III"
+		Ukrainian:"Навала III"
 	}
 
 	"Drill I":{
@@ -2202,6 +2365,7 @@
 		Czech:"Dril I"
         Polish:"Musztra I"
 		Portuguese:"Perfuração I"
+		Ukrainian:"Вишкіл I"
 	}
 
 	"Drill II":{
@@ -2214,6 +2378,7 @@
 		Czech:"Dril II"
         Polish:"Musztra II"
 		Portuguese:"Perfuração II"
+		Ukrainian:"Вишкіл II"
 	}
 
 	"Drill III":{
@@ -2226,6 +2391,7 @@
 		Czech:"Dril III"
         Polish:"Musztra III"
 		Portuguese:"Perfuração III"
+		Ukrainian:"Вишкіл III"
 	}
 
 	"Scouting I":{
@@ -2238,6 +2404,7 @@
 		Czech:"Průzkum I"
         Polish:"Zwiad I"
 		Portuguese:"Exploração I"
+		Ukrainian:"Розвідка I"
 	}
 
 	"Scouting II":{
@@ -2250,6 +2417,7 @@
 		Czech:"Průzkum II"
         Polish:"Zwiad II"
 		Portuguese:"Exploração II"
+		Ukrainian:"Розвідка II"
 	}
 
 	"Scouting III":{
@@ -2262,6 +2430,7 @@
 		Czech:"Průzkum III"
         Polish:"Zwiad III"
 		Portuguese:"Exploração III"
+		Ukrainian:"Розвідка III"
 	}
 
 	"+1 Movement":{
@@ -2274,6 +2443,7 @@
 		Czech:"+1 Pohyb"
         Polish:"+1 Poruszanie się"
 		Portuguese:"+1 Movimento"
+		Ukrainian:"Рух +1"
 	}
 
 	"Cover I":{
@@ -2286,6 +2456,7 @@
 		Czech:"Krytí I"
         Polish:"Obrona I"
 		Portuguese:"Cobertura I"
+		Ukrainian:"Схов I"
 	}
 
 	"Cover II":{
@@ -2298,6 +2469,7 @@
 		Czech:"Krytí II"
         Polish:"Obrona II"
 		Portuguese:"Cobertura II"
+		Ukrainian:"Схов II"
 	}
 
 	"+25% Defence against ranged attacks":{
@@ -2310,6 +2482,7 @@
 		Czech:"+25% obrany proti útokům na dálku"
         Polish:"+25% do Obrony przeciwko jednostkom do walki w dystansie"
 		Portuguese:"+25% de defesa contra ataques à distância"
+		Ukrainian:"Захист від дальніх атак +25%"
 	}
 
 	"March":{
@@ -2322,6 +2495,7 @@
 		Czech:"Pochod"
         Polish:"Marsz"
 		Portuguese:"Marcha"
+		Ukrainian:"Похід"
 	}
 
 	"Charge":{
@@ -2334,6 +2508,7 @@
 		Czech:"Nabíjení"
         Polish:"Szarża"
 		Portuguese:"Carga"
+		Ukrainian:"Приступ"
 	}
 
 	"wounded units":{
@@ -2346,6 +2521,7 @@
 		German:"verwundete Einheiten"
         Polish:"zranione jednostki"
 		Portuguese:"unidades feridas"
+		Ukrainian:"пошкоджені підрозділи"
 	}
 
 	"Mobility":{
@@ -2358,6 +2534,7 @@
 		Czech:"Pohyblivost"
         Polish:"Mobilność"
 		Portuguese:"Mobilidade"
+		Ukrainian:"Мобільність"
 	}
 
 	"Siege":{
@@ -2370,6 +2547,7 @@
 		Czech:"obléhání"
         Polish:"Oblężenie"
 		Portuguese:"Cerco"
+		Ukrainian:"Облога"
 	}
 
 	"Volley":{
@@ -2382,6 +2560,7 @@
 		Czech:"Zteč"
         Polish:"Salwa"
 		Portuguese:"Salva"
+		Ukrainian:"Залп"
 	}
 
 	"Sentry":{
@@ -2394,6 +2573,7 @@
 		Czech:"Stráž"
         Polish:"Strażnik"
 		Portuguese:"Sentinela"
+		Ukrainian:"Чати"
 	}
 
 	"Extended Range":{
@@ -2406,6 +2586,7 @@
 		Czech:"Dostřel"
         Polish:"Daleki zasięg"
 		Portuguese:"Alcance estendido"
+		Ukrainian:"Збільшена дальність"
 	}
 
 	"+1 Range":{
@@ -2418,6 +2599,7 @@
 		Czech:"+1 Dostřel"
         Polish:"+1 do Zasięgu"
 		Portuguese:"+1 Alcance"
+		Ukrainian:"Дальність +1"
 	}
 
 	"Ranged attacks may be performed over obstacles":{
@@ -2430,6 +2612,7 @@
 		German:"Fernangriffe können über Hindernisse erfolgen"
         Polish:"Atak dystansowy może zostać przeprowadzony nad przeszkodą"
 		Portuguese:"Ataques à distância podem ser executados sobre obstáculos"
+		Ukrainian:"Можливий дальній бій понад перешкоди"
 	}
 
 	"Formation I":{
@@ -2442,6 +2625,7 @@
 		Czech:"Formace I"
         Polish:"Formacja I"
 		Portuguese:"Formação I"
+		Ukrainian:"Стрій I"
 	}
 
 	"Formation II":{
@@ -2454,6 +2638,7 @@
 		Czech:"Formace II"
         Polish:"Formacja II"
 		Portuguese:"Formação I"
+		Ukrainian:"Стрій II"
 	}
 
 	"Blitz":{
@@ -2466,6 +2651,7 @@
 		Czech:"Přepadení"
         Polish:"Szturm"
 		Portuguese:"Blitz"
+		Ukrainian:"Набіг"
 	}
 
 	"Bombardment I":{
@@ -2478,6 +2664,7 @@
 		Czech:"Bombardování I"
         Polish:"Bombardowanie I"
 		Portuguese:"Bombardeamento I"
+		Ukrainian:"Бомбардування I"
 	}
 
 	"Bombardment II":{
@@ -2490,6 +2677,7 @@
 		Czech:"Bombardování II"
         Polish:"Bombardowanie II"
 		Portuguese:"Bombardeamento II"
+		Ukrainian:"Бомбардування II"
 	}
 
 	"Bombardment III":{
@@ -2502,6 +2690,7 @@
 		Czech:"Bombardování III"
         Polish:"Bombardowanie III"
 		Portuguese:"Bombardeamento III"
+		Ukrainian:"Бомбардування III"
 	}
 
 	"Boarding Party I":{
@@ -2514,6 +2703,7 @@
 		Czech:"Obsazení I"
         Polish:"Abordaż I"
 		Portuguese:"Festa de Enquadro I" // not sure, maybe it's incorrect
+		Ukrainian:"Абордаж I"
 	}
 
 	"Boarding Party II":{
@@ -2526,6 +2716,7 @@
 		Czech:"Obsazení II"
         Polish:"Abordaż II"
 		Portuguese:"Festa de Enquadro II"
+		Ukrainian:"Абордаж II"
 	}
 
 	"Boarding Party III":{
@@ -2538,6 +2729,7 @@
 		Czech:"Coastal Raider III"
         Polish:"Abordaż III"
 		Portuguese:"Festa de Enquadro III"
+		Ukrainian:"Абордаж III"
 	}
 
 	"Coastal Raider I":{
@@ -2550,6 +2742,7 @@
 		Czech:"Pobřežní jezdec I"
         Polish:"Przybrzeżny najeźdźca I"
 		Portuguese:"Assalto Litorâneo I"
+		Ukrainian:"Канонерка I"
 	}
 
 
@@ -2563,6 +2756,7 @@
 		Czech:"Pobřežní jezdec II"
         Polish:"Przybrzeżny najeźdźca II"
 		Portuguese:"Assalto Litorâneo II"
+		Ukrainian:"Канонерка II"
 	}
 
 	"Coastal Raider III":{
@@ -2575,6 +2769,7 @@
 		Czech:"Pobřežní jezdec III"
         Polish:"Przybrzeżny najeźdźca III"
 		Portuguese:"Assalto Litorâneo III"
+		Ukrainian:"Канонерка III"
 	}
 
 	"Targeting I":{
@@ -2587,6 +2782,7 @@
 		Czech:"Míření I"
         Polish:"Wybieranie celu I"
 		Portuguese:"Alvejamento I"
+		Ukrainian:"Ціль I"
 	}
 
 	"Targeting II":{
@@ -2599,6 +2795,7 @@
 		Czech:"Míření II"
         Polish:"Wybieranie celu II"
 		Portuguese:"Alvejamento II"
+		Ukrainian:"Ціль II"
 	}
 
 	"Targeting III":{
@@ -2611,6 +2808,7 @@
 		Czech:"Míření III"
         Polish:"Wybieranie celu III"
 		Portuguese:"Alvejamento III"
+		Ukrainian:"Ціль III"
 	}
 
 	"Wolfpack I":{
@@ -2623,6 +2821,7 @@
 		Czech:"Hromadný útok I"
         Polish:"Wataha I"
 		Portuguese:"Alcateia I"
+		Ukrainian:"Вовча зграя I"
 	}
 
 	"Wolfpack II":{
@@ -2635,6 +2834,7 @@
 		Czech:"Hromadný útok II"
         Polish:"Wataha II"
 		Portuguese:"Alcateia II"
+		Ukrainian:"Вовча зграя II"
 	}
 
 	"Wolfpack III":{
@@ -2647,6 +2847,7 @@
 		Czech:"Hromadný útok III"
         Polish:"Wataha III"
 		Portuguese:"Alcateia III"
+		Ukrainian:"Вовча зграя III"
 	}
 
 	"Woodsman":{
@@ -2659,6 +2860,7 @@
 		German:"Waldarbeitskräfte"
         Polish:"Leśniczy"
 		Portuguese:"Lenhador"
+		Ukrainian:"Лісовик"
 	}
 
 	"Double movement rate through Forest and Jungle":{
@@ -2671,6 +2873,7 @@
 		German:"Doppelte Bewegungsrate durch Wald und Dschungel"
         Polish:"Podwojona prędkość przemieszczania się przez Las i Dżunglę"
 		Portuguese:"Taxa de movimento dobrado através de Floresta e Selva"
+		Ukrainian:"Подвійне переміщення лісом і хащами"
 	}
 
 	"Heal Instantly":{
@@ -2683,6 +2886,7 @@
 		German:"Sofortige Heilung"
         Polish:"Natychmiastowe leczenie"
 		Portuguese:"Cura Instantânea"
+		Ukrainian:"Миттєве лікування"
 	}
 
 	"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion":{
@@ -2695,6 +2899,7 @@
 		German:"Heile diese Einheit um 50 LP; Wenn Sie dies tun, wird diese Gelegenheit genutzt, um eine Promotion zu wählen." // not sure about the 2nd half
         Polish:"Ulecz jednostkę o 50 punktów zdrowia; Ta akcja spowoduje utracenie możliwości do wybrania awansu"
 		Portuguese:"Cure essa unidade por 50 de Vida; Fazendo isto irá consumir sua oportunidade de escolher uma Promoção"
+		Ukrainian:"Підрозділ отримає здоровʼя +50. Втрачається можливість поліпшення"
 	}
 
 	"Medic I":{
@@ -2707,6 +2912,7 @@
 		German:"Rettungskräfte I"
         Polish:"Sanitariusz I"
 		Portuguese:"Médico I"
+		Ukrainian:"Медик I"
 	}
 
     "Medic II":{
@@ -2719,6 +2925,7 @@
 		German:"Rettungskräfte II"
         Polish:"Sanitariusz II"
 	    Portuguese:"Médico II"
+		Ukrainian:"Медик II"
 	}
 
 	"This unit and all others in adjacent tiles heal 5 additional HP per turn":{
@@ -2731,6 +2938,7 @@
 		German:"Diese Einheit und alle anderen in anliegenden Feldern werden zusätzlich 5 LP pro Runde geheilt"
         Polish:"Ta i wszystkie jednostki znajdujące się na polach przyległych leczą się o 5 punktów zdrowia na turę"
 		Portuguese:"Essa unidade e todas as outras em hexágonos adjacentes recuperarão 5 de Vida adicional por turno"
+		Ukrainian:"Підрозділ і сусіди отримують кожен хід здоровʼя +5"
 	}
 
 	"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.":{
@@ -2743,6 +2951,7 @@
 		German:"Diese Einheit und alle anderen in anliegenden Feldern werden zusätzlich 5 LP geheilt. Diese Einheit heilt zusätzlich 5 LP außerhalb von befreundeten Gelände."
         Polish:"Ta i wszystkie jednostki znajdujące się na polach przyległych leczą się o 5 punktów zdrowia na turę. Ta jednostka leczy się dodatkowo o 5 punktów poza przyjaznym terytorium"
 		Portuguese:"Essa unidade e todas as outras em hexágonos adjacentes recuperarão 5 de Vida adicional. Essa unidade recupera 5 de Vida adicional fora do terreno amigável"
+		Ukrainian:"Підрозділ і сусіди отримують кожен хід здоровʼя +5. Підрозділ  і сусіди отримують отримують додатково здоровʼя +5 поза дружньою територією."
 	}
 
 	"Targeting I (air)":{//Should be Air Targeting I
@@ -2755,6 +2964,7 @@
 		German:"Luftzielerfassung I"
         Polish:"Wybieranie celu I (lotnictwo)"
 		Portuguese:"Alvejamento Aéreo I"
+		Ukrainian:"Повітряна ціль I"
 	}
 
 	"Targeting II (air)":{//Should be Air Targeting II
@@ -2767,6 +2977,7 @@
 		German:"Luftzielerfassung II"
         Polish:"Wybieranie celu II (lotnictwo)"
 		Portuguese:"Alvejamento Aéreo II"
+		Ukrainian:"Повітряна ціль II"
 	}
 
 	"Targeting III (air)":{
@@ -2779,6 +2990,7 @@
 		German:"Luftzielerfassung III"
         Polish:"Wybieranie celu III (lotnictwo)"
 		Portuguese:"Alvejamento Aéreo III"
+		Ukrainian:"Повітряна ціль III"
 	}
 
 	"Air Repair":{
@@ -2791,6 +3003,7 @@
 		German:"Reparatur in der Luft"
         Polish:"Naprawa powietrzna"
 		Portuguese:"Reparação Aérea"
+		Ukrainian:"Повітряний ремонт"
 	}
 
 	"Unit will heal every turn, even if it performs an action":{
@@ -2803,6 +3016,7 @@
 		German:"Einheit heilt jede Runde, selbst wenn sie eine Aktion durchführt"
         Polish:"Jednostka leczy się co ture, nawet po wykonaniu akcji"
 		Portuguese:"Esta unidade irá curar a cada turno, mesmo se executar uma ação"
+		Ukrainian:"Підрозділ оздоровлюється кожен хід, навіть якщо діє"
 	}
 
 	"Operational Range":{
@@ -2815,6 +3029,7 @@
 		German:"Betriebsbereich"
         Polish:"Zasięg operacyjny"
 		Portuguese:"Alcance Operacional"
+		Ukrainian:"Дальність дії"
 	}
 
 	"+2 Range":{
@@ -2827,6 +3042,7 @@
 		German:"+2 Reichweite"
         Polish:"+2 do Zasięgu"
 		Portuguese:"+2 de Alcance"
+		Ukrainian:"Дальність +2"
 	}
 
 	"Sortie":{
@@ -2839,6 +3055,7 @@
 		German:"Sortie" // not sure what this is?
         Polish:"Operacja"
 		Portuguese:"Excursão" // I think it doesn't mean like 'passeio' but rather 'Operação'
+		Ukrainian:"Виліт"
 	}
 
 	"1 extra Interception may be made per turn":{
@@ -2851,6 +3068,7 @@
 		German:"1 mal extra Abfangen pro Runde möglich"
         Polish:"1 dodatkowe Przechwycenie może być wykonane na turę"
 		Portuguese:"+1 de Interceptação extra pode ser feita por turno"
+		Ukrainian:"За хід +1 перехоплення"
 	}
 
 	"Bonus when performing air sweep [bonusAmount]%":{
@@ -2862,6 +3080,7 @@
 		Czech:"Bonus při provádění leteckého čištění [bonusAmount]%"
 		German:"[bonusAmount]% Bonus bei Bewegung in der Luft" // not sure about the correct transl. for "air sweep"
 		Portuguese:"[bonusAmount]% de bônus enquanto executa varredura áerea" // not sure about air sweep
+		Ukrainian:"Чисте повітря отримує силу +[bonusAmount]%"
 	}
 
     "Dogfighting I":{
@@ -2874,6 +3093,7 @@
 		German:"Luftkampf I"
         Polish:"Walka w powietrzu I"
 	    	Portuguese:"Combate Áereo I" // not sure about Dogfighting
+		Ukrainian:"Повітряний бій I"
 	}
 
 	"Dogfighting II":{
@@ -2886,6 +3106,7 @@
 		German:"Luftkampf II"
         Polish:"Walka w powietrzu II"
 		Portuguese:"Combate Áereo II"
+		Ukrainian:"Повітряний бій II"
 	}
 
 	"Dogfighting III":{
@@ -2898,6 +3119,7 @@
 		German:"Luftkampf III"
         Polish:"Walka w powietrzu III"
 		Portuguese:"Combate Áereo III"
+		Ukrainian:"Повітряний бій III"
 	}
 
 	"Bonus when intercepting [bonusAmount]%":{
@@ -2909,6 +3131,7 @@
 		Czech:"Bonus při zachycení útoku [bonusAmount]%"
 		German:"[bonusAmount]% Bonus beim Abfangen" 
 		Portuguese:"[bonusAmount]% de bônus ao interceptar"
+		Ukrainian:"При перехопленні отримує силу +[bonusAmount]%"
 	}
 
 	"Interception I":{
@@ -2921,6 +3144,7 @@
 		German:"Abfangen I"
         Polish:"Przechwytywanie I"
 		Portuguese:"Interceptação I"
+		Ukrainian:"Перехоплення I"
 	}
 
 	"Interception II":{
@@ -2933,6 +3157,7 @@
 		German:"Abfangen II"
         Polish:"Przechwytywanie II"
 		Portuguese:"Interceptação II"
+		Ukrainian:"Перехоплення II"
 	}
 
 	"Interception III":{
@@ -2945,6 +3170,7 @@
 		German:"Abfangen III"
         Polish:"Przechwytywanie III"
 		Portuguese:"Interceptação III"
+		Ukrainian:"Перехоплення III"
 	}
 
 	"Siege I":{//Air
@@ -2957,6 +3183,7 @@
 		German:"Belagerung I"
         Polish:"Oblężenie I"
 		Portuguese:"Cerco Aéreo I" //not sure
+		Ukrainian:"Наліт I"
 	}
 
 	"Siege II":{
@@ -2969,6 +3196,7 @@
 		German:"Belagerung II"
         Polish:"Oblężenie II"
 		Portuguese:"Cerco Aéreo II"
+		Ukrainian:"Наліт II"
 	}
 
 	"Siege III":{
@@ -2981,6 +3209,7 @@
 		German:"Belagerung III"
         Polish:"Oblężenie III"
 		Portuguese:"Cerco Aéreo III"
+		Ukrainian:"Наліт III"
 	}
 
 	"Evasion":{
@@ -2993,6 +3222,7 @@
 		German:"Ausweichen"
         Polish:"Unik"
 		Portuguese:"Evasão"
+		Ukrainian:"Ухилення"
 	}
 
 	"Reduces damage taken from interception by 50%":{
@@ -3005,6 +3235,7 @@
 		German:"Reduziert den empfangenden Schaden durch Abfangen um 50%"
         Polish:"Redukuje obrażenia otrzymane podczas przechwytywania o 50%"
 		Portuguese:"Reduz o dano recebido de interceptações por 50%"
+		Ukrainian:"Пошкодження від перехоплення -50%"
 	}
 
 	"Bonus when intercepting [amount]%":{
@@ -3017,6 +3248,7 @@
 		French:"Bonus en interception de [amount]%"
         Polish:"Bonus podczas przechwytywania o [amount]%"
 		Portuguese:"[amount]% de bônus ao interceptar"
+		Ukrainian:"При перехопленні отримує силу +[amount]%"
 	}
 
 	"Ambush I":{//Should be Air Ambush I
@@ -3029,6 +3261,7 @@
 		French:"Embuscade I"
         Polish:"Zasadzka I (lotnictwo)"
 		Portuguese:"Emboscada Aérea I"
+		Ukrainian:"Повітряна засідка I"
 	}
 
 	"Ambush II":{//Should be Air Ambush II
@@ -3041,6 +3274,7 @@
 		French:"Embuscade II"
         Polish:"Zasadzka II (lotnictwo)"
 		Portuguese:"Emboscada Aérea II"
+		Ukrainian:"Повітряна засідка II"
 	}
 
 	"Haka War Dance":{
@@ -3052,6 +3286,7 @@
 		French:"Haka - Danse de guerre"
         Polish:"Haka - taniec wojenny"
 		Portuguese:"Dança de Guerra Haka"
+		Ukrainian:"Бойовий танець Гака"
 	}
 
 	"-10% combat strength for adjacent enemy units":{
@@ -3063,6 +3298,7 @@
 		French:"-10% de force de combats pour toutes les unités ennemies adjacentes"
         Polish:"-10% walecznej siły dla jednostek przeciwnika leżących na przyległych polach"
 		Portuguese:"-10% de força de combate para cada unidade inimiga adjacente"
+		Ukrainian:"Сусідні ворожі підрозділи отримують силу атаки -10%"
 	}
 
 }
