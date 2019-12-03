@@ -321,12 +321,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         while(tilesToCheck.isNotEmpty()) {
             val newTilesToCheck = ArrayList<TileInfo>()
-            for(tileToCheck in tilesToCheck){
-                val reachableTiles = tileToCheck.getTilesInDistance(unit.getRange())
+            for(currentTileToCheck in tilesToCheck){
+                val reachableTiles = currentTileToCheck.getTilesInDistance(unit.getRange())
                         .filter { unit.movement.canMoveTo(it) }
-                for(reachableTile in reachableTiles){
-                    if(tilesReached.containsKey(reachableTile)) continue
-                    tilesReached[reachableTile]=tileToCheck
+                for(reachableTile in reachableTiles) {
+                    if (tilesReached.containsKey(reachableTile)) continue
+                    tilesReached[reachableTile] = currentTileToCheck
                     newTilesToCheck.add(reachableTile)
                 }
             }
@@ -345,6 +345,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             path.reverse()
             pathsToCities[city] = path
         }
+
+        pathsToCities.remove(startingTile)
         return pathsToCities
     }
 }
