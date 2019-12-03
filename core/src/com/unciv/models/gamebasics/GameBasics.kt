@@ -26,7 +26,7 @@ object GameBasics {
     val Translations = Translations()
 
     fun <T> getFromJson(tClass: Class<T>, name: String): T {
-        val jsonText = Gdx.files.internal("jsons/$name.json").readString()
+        val jsonText = Gdx.files.internal("jsons/$name.json").readString(Charsets.UTF_8.name())
         return Json().apply { ignoreUnknownFields = true }.fromJson(tClass, jsonText)
     }
 

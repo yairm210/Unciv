@@ -63,30 +63,13 @@ class GameInfo {
         var thisPlayer = previousHumanPlayer // not calling is currentPlayer because that's alreay taken and I can't think of a better name
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
+
         fun switchTurn(){
             thisPlayer.endTurn()
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0 && !gameParameters.noBarbarians) {
-                    val encampments = tileMap.values.filter { it.improvement==Constants.barbarianEncampment }
-
-                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size) {
-                        val newEncampmentTile = placeBarbarianEncampment(encampments)
-                        if (newEncampmentTile != null)
-                            placeBarbarianUnit(newEncampmentTile)
-                    }
-
-                    val totalBarbariansAllowedOnMap = encampments.size*3
-                    var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().size
-
-                    for (tile in tileMap.values.filter { it.improvement == Constants.barbarianEncampment }) {
-                        if(extraBarbarians<=0) break
-                        extraBarbarians--
-                        placeBarbarianUnit(tile)
-                    }
-                }
-
+                if (turns % 10 == 0 && !gameParameters.noBarbarians) placeBarbarians()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -95,7 +78,7 @@ class GameInfo {
         switchTurn()
 
         while(thisPlayer.playerType==PlayerType.AI){
-            NextTurnAutomation().automateCivMoves(thisPlayer)
+            if(!thisPlayer.isDefeated()) NextTurnAutomation().automateCivMoves(thisPlayer)
             switchTurn()
         }
 
@@ -103,6 +86,10 @@ class GameInfo {
         currentPlayerCiv = getCivilization(currentPlayer)
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
+        notifyOfCloseEnemyUnits(thisPlayer)
+    }
+
+    private fun notifyOfCloseEnemyUnits(thisPlayer: CivilizationInfo) {
         val viewableInvisibleTiles = thisPlayer.viewableInvisibleUnitsTiles.map { it.position }
         val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
                 .filter {
@@ -113,15 +100,13 @@ class GameInfo {
                 }
 
         // enemy units ON our territory
-        addEnemyUnitNotification(
-                thisPlayer,
-                enemyUnitsCloseToTerritory.filter { it.getOwner()==thisPlayer },
+        addEnemyUnitNotification(thisPlayer,
+                enemyUnitsCloseToTerritory.filter { it.getOwner() == thisPlayer },
                 "in"
         )
         // enemy units NEAR our territory
-        addEnemyUnitNotification(
-                thisPlayer,
-                enemyUnitsCloseToTerritory.filter { it.getOwner()!=thisPlayer },
+        addEnemyUnitNotification(thisPlayer,
+                enemyUnitsCloseToTerritory.filter { it.getOwner() != thisPlayer },
                 "near"
         )
     }
@@ -137,6 +122,26 @@ class GameInfo {
         else {
             val positions = tiles.map { it.position }
             thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
+        }
+    }
+
+
+    fun placeBarbarians() {
+        val encampments = tileMap.values.filter { it.improvement == Constants.barbarianEncampment }
+
+        if (encampments.size < civilizations.filter { it.isMajorCiv() }.size) {
+            val newEncampmentTile = placeBarbarianEncampment(encampments)
+            if (newEncampmentTile != null)
+                placeBarbarianUnit(newEncampmentTile)
+        }
+
+        val totalBarbariansAllowedOnMap = encampments.size * 3
+        var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().size
+
+        for (tile in tileMap.values.filter { it.improvement == Constants.barbarianEncampment }) {
+            if (extraBarbarians <= 0) break
+            extraBarbarians--
+            placeBarbarianUnit(tile)
         }
     }
 
