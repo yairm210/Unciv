@@ -48,6 +48,7 @@ enum class DiplomaticModifiers{
 
     YearsOfPeace,
     SharedEnemy,
+    LiberatedCity,
     DeclarationOfFriendship,
     DeclaredFriendshipWithOurAllies,
     DenouncedOurEnemies,
@@ -283,6 +284,7 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs, 1 / 4f)
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs, 1 / 8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
+        revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
 
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
@@ -327,7 +329,7 @@ class DiplomacyManager() {
 
         for(thirdCiv in civInfo.getKnownCivs()){
             if(thirdCiv.isAtWarWith(otherCiv))
-                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,5f)
+                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.SharedEnemy,5f)
             else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
         }
 

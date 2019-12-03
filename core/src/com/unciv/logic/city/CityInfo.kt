@@ -420,7 +420,7 @@ class CityInfo {
         val otherCivsRespecForLiberating = (respecForLiberatingOurCity / 10).roundToInt().toFloat()
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != oldOwningCiv }) {
             thirdPartyCiv.getDiplomacyManager(conqueringCiv)
-                    .addModifier(DiplomaticModifiers.WarMongerer, otherCivsRespecForLiberating) // Cool, keep at at! =D
+                    .addModifier(DiplomaticModifiers.LiberatedCity, otherCivsRespecForLiberating) // Cool, keep at at! =D
         }
     }
 

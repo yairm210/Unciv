@@ -260,6 +260,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             var text = when (valueOf(modifier.key)) {
                 DeclaredWarOnUs -> "You declared war on us!"
                 WarMongerer -> "Your warmongering ways are unacceptable to us."
+                LiberatedCity -> "We applaud your liberation of conquered cities!"
                 CapturedOurCities -> "You have captured our cities!"
                 YearsOfPeace -> "Years of peace have strengthened our relations."
                 SharedEnemy -> "Our mutual military struggle brings us closer together."
