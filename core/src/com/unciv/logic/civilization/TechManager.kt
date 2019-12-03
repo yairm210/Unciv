@@ -14,6 +14,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.min
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -28,6 +29,7 @@ class TechManager {
     @Transient var movementSpeedOnRoadsImproved=false
 
     var freeTechs = 0
+    var recently8turnsScience = IntArray(8){0}
     var techsResearched = HashSet<String>()
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
@@ -41,6 +43,8 @@ class TechManager {
         toReturn.freeTechs=freeTechs
         toReturn.techsInProgress.putAll(techsInProgress)
         toReturn.techsToResearch.addAll(techsToResearch)
+        toReturn.recently8turnsScience=recently8turnsScience.clone()
+        toReturn.overflowScience=overflowScience
         return toReturn
     }
 
@@ -116,7 +120,43 @@ class TechManager {
         return prerequisites.sortedBy { it.column!!.columnNumber }.map { it.name }
     }
 
+    fun greatscientistgetScience(): Int {
+        // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
+        return (recently8turnsScience.sum() * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+    }
+
+    fun recently8turnsScience() {
+        // Science greatscientist gets does not include Science from Polocies, Trade routes and City States.
+        var allcitiesScience = 0f
+        civInfo.cities.forEach{
+            val m= it.cityStats.baseStatList.values.map { it.science }.sum()
+            val n= it.cityStats.statPercentBonusList.filter { it.key!="Policies" }.values.map { it.science }.sum()
+            allcitiesScience += m*(1+n/100)
+        }
+        recently8turnsScience[civInfo.gameInfo.turns%8] = allcitiesScience.toInt()
+    }
+
+    fun hurryResearch() {
+        val currentTechnology = currentTechnologyName()
+        if (currentTechnology == null) return
+        techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + greatscientistgetScience()
+        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
+            return
+
+        // We finished it!
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        var overflowscience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
+        overflowScience += overflowScience(overflowscience)
+        addTechnology(currentTechnology)
+    }
+
+    fun overflowScience(overflowscience: Int): Int {
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5, GameBasics.Technologies[currentTechnologyName()]!!.cost))
+    }
+
     fun nextTurn(scienceForNewTurn: Int) {
+        recently8turnsScience()
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
@@ -124,15 +164,14 @@ class TechManager {
             val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
             val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
             techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f)* overflowScience).toInt()
+            overflowScience = 0
         }
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
 
         // We finished it!
-        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        overflowScience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
-        if(overflowScience > max(scienceForNewTurn * 5, GameBasics.Technologies[currentTechnology]!!.cost))
-            overflowScience = max(scienceForNewTurn * 5, GameBasics.Technologies[currentTechnology]!!.cost)
+        val overflowscience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
+        overflowScience = overflowScience(overflowscience)
         addTechnology(currentTechnology)
     }
 

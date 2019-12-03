@@ -2007,19 +2007,9 @@
 		Ukrainian:"Видатний науковець"
 	}
 
-	"Can discover a technology":{
-		Spanish:"Puede descubrir una tecnologia"
-		Italian:"Può scoprire una tecnologia"
-		French:"Peut découvrir une technologie"
-		Romanian:"Poate descoperi o tehnologie"
-		Simplified_Chinese:"可以发现1项科技",
-		Traditional_Chinese:"可以發現1項科技",
-		Portuguese:"Pode descobrir uma tecnologia"
-		German:"Kann eine Technologie entdecken"
-		Russian:"Может открыть технологию"
-		Czech:"Může vyzkoumat technologii"
-        Polish:"Może odkryć technologię"
-		Ukrainian:"Може відкрити технологію"
+	"Can gain a large sum of science immediately to hurry technology research":{
+		Simplified_Chinese:"可以立即获得大量科研以加速科技研究",
+		Traditional_Chinese:"可以立即獲得大量科研以加速科技研究",
 	}
 
 	"Can build improvement: Academy":{

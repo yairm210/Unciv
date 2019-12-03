@@ -1849,18 +1849,9 @@
 
 	// for unit action button
 
-	"Discover Technology":{
-		Romanian:"Descoperă tehnologie"
-		Spanish:"Descubrir Tecnologia"
-		Simplified_Chinese:"发现科技"
-		Traditional_Chinese:"發現科技"
-		Italian:"Scopri tecnologia"
-		German:"Entdecke Technologie"
-		Portuguese:"Descobrir uma tecnologia" //do you mean discover "a" tecnology?
-		Russian:"Откройте для себя технологию"
- 		French:"Découvrir une technologie"
-		Czech:"Objevit technologii"
-		Ukrainian:"Відкрийте для себе технологію"
+	"Hurry Research":{
+		Simplified_Chinese:"加速科技研究"
+		Traditional_Chinese:"加速科技研究"
 }
 
 	// for unit action button

@@ -11,10 +11,8 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
@@ -197,11 +195,11 @@ class UnitActions {
 
 
         if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
-            actionList += UnitAction("Discover Technology", unit.currentMovement >0
+            actionList += UnitAction("Hurry Research", unit.civInfo.tech.currentTechnologyName() != null
+                    && unit.currentMovement >0
             ) {
-                unit.civInfo.tech.freeTechs += 1
+                unit.civInfo.tech.hurryResearch()
                 unit.destroy()
-                worldScreen.game.setScreen(TechPickerScreen(true, unit.civInfo))
             }.sound("chimes")
         }
 
