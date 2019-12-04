@@ -12,7 +12,7 @@
 		Traditional_Chinese:"讀取剪貼簿的遊戲存檔",
 		Portuguese:"Carregar dados copiados"
 		Japanese:"コピーしたデータを読み込む"
-                Korean:"복사 된 데이터 불러옴"
+                Korean:"복사 된 데이터 불러오기"
 		Czech:"Načíst zkopírované data"
 		Polish:"Wczytaj skopiowane dane"
 		Ukrainian:"Завантажити копію даних"
@@ -1341,7 +1341,7 @@
 		German:"Zeige Pixel Verbesserungen"
 		Polish:"Pokaż ulepszenia jako pixele"
 		Portuguese:"Mostrar melhorias de pixels"
-		Korean:"픽셀 향상"
+		Korean:"픽셀 효과 향상"
 }
 
 	"Fontset":{
