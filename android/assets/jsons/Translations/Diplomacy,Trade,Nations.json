@@ -15,6 +15,7 @@
                 Polish:"Dyplomacja"
 		Czech:"Diplomacie"
                 Malay:"Diplomasi"
+		Korean:"외교"
 }
 
 	"War":{
@@ -30,6 +31,7 @@
                 Polish:"Wojna"
 		Czech:"Válka"
                 Malay:"Perang"
+		Korean:"전쟁"
 }
 
 	"Peace":{
@@ -45,6 +47,7 @@
                 Polish:"Pokój"
 		Czech:"Mír"
                 Malay:"Aman"
+		Korean:"평화"
 }
 
 	"Declare war":{
@@ -60,6 +63,7 @@
                 Polish:"Wypowiedz wojnę"
 		Czech:"Vyhlásit válku"
                 Malay:"Isytiharkan perang"
+		Korean:"전쟁 선포"
 }
 
 	"Declare war on [civName]?":{ //Don't translate in diplomacy view
@@ -73,6 +77,7 @@
 		Czech:"Vyhlásit válku civilizaci [civName]?"
 		German:"[civName] den Krieg erklären?"
                 Malay:"Isytiharkan perang keatas [civName]?"
+		Korean:"[civName]에 전쟁을 선포할까요?"
 }
 
 	"[civName] has declared war on us!":{
@@ -88,6 +93,7 @@
                 Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!"
 		Czech:"Civilizace [civName] nám vyhlásila válku!"
                 Malay:"[civName] telah mengisytiharkan perang pada kita"
+		Korean:"[civName]이(가) 우리에게 전쟁을 선포했습니다!"
 }
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -102,6 +108,7 @@
 		Romanian:"[leaderName] de [nation]"
                 Polish:"[leaderName], władca cywilizacji [nation]"
 		Czech:"[leaderName], [nation]"
+		Korean:"[nation]의 [leaderName]"
 }
 
 	"You'll pay for this!":{
@@ -116,6 +123,7 @@
 		Traditional_Chinese:"你會為此付出代價的！"
                 Polish:"Zapłacisz za swą zuchwałość!"
 		Czech:"Za tohle zaplatite!"
+		Korean:"반드시 대가를 치르게 될거요!"
 }
 
 	"Negotiate Peace":{
@@ -129,6 +137,7 @@
 		Czech:"Mírové jednání"
 		German:"Frieden verhandeln"
                 Malay:"Berunding keamanan"
+		Korean:"평화 협상"
 }
 
 	"Very well.":{
@@ -142,6 +151,7 @@
 		Czech:"Jak je libo"
 		German:"Nun gut"
                 Malay:"Baiklah."
+		Korean:"아주 좋군."
 }
 
 	"Farewell.":{
@@ -155,6 +165,7 @@
 		Czech:"Sbohem"
 		German:"Auf Wiedersehen"
                 Malay:"Selamat tinggal."
+		Korean:"안녕히 계십시오."
 }
 
 	"Sounds good!":{
@@ -167,6 +178,7 @@
 		Czech:"To zní dobře"
 		German:"Sehr gut"
                 Malay:"Bagus juga!"
+		Korean:"좋습니다."
 }
 
 	"Not this time.":{ // declining trade text
@@ -180,6 +192,7 @@
 		Czech:"Z toho nic nebude"
 		German:"Vielleicht ein anderes Mal"
                 Malay:"Bukan sekarang"
+		Korean:"이건 무리입니다."
 }
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
@@ -193,6 +206,7 @@
 		Czech:"Skvěle!"
 		German:"Hervorragend!"
                 Malay:"Bagus!"
+		Korean:"훌륭하군요!"
 }
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
@@ -206,6 +220,7 @@
 		Czech:"Co třeba zkusit něco jiného..."
 		German:"Wie wäre es mit etwas anderem..."
                 Malay:"Mungkin benda lain"
+		Korean:"이런 건 어떠신지요..."
 }
 
 	"A pleasure to meet you.":{
@@ -219,6 +234,7 @@
 		Czech:"Rádi vás poznáváme"
 		German:"Eine Freude, Sie getroffen zu haben."
                 Malay:"Selamat berkenalan"
+		Korean:"만나게 되어 영광입니다."
 }
 
 	"Our relationship: ":{
@@ -232,6 +248,7 @@
 		Czech:"Náš vzájemný vztah: "
 		German:"Unsere Beziehung: "
                 Malay:"Hubungan kita"
+		Korean:"현재 관계 : "
 }
 
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
@@ -244,6 +261,7 @@
 		Russian:"Мы обнаружили город-государство [name]!",
 		Czech:"Poprvé jsme se setkali s městským státem [name]"
 		German:"Wir haben den Stadtstaat von [name] entdeckt!"
+		Korean:"도시 국가 [name]와(과) 만났습니다!"
 }
 
 	// Friendship declaration flavor texts
@@ -258,6 +276,7 @@
 		Czech:"Deklarace přátelství ([numberOfTurns] kol)"
 		German:"Freundschaft erklären ([numberOfTurns] Runden)"
                 Malay:"Isytihar Persahabatan ([numberOfTurns] pusingan)"
+		Korean:"우호 관계 선언 ([numberOfTurns] 턴 동안)"
 }
 
 	"May our nations forever remain united!":{
@@ -271,6 +290,7 @@
 		Czech:"Nechť naše národy zůstanou navždy spojené"
 		German:"Mögen unsere Nationen auf immer in Freundschaft vereint sein!"
                 Malay:"Harap negara ini kekal bersatu selamanya"
+		Korean:"우리 두 국가가 언제나 힘을 합쳐 나가길!"
 }
 
 	"Indeed!":{
@@ -284,6 +304,7 @@
 		Czech:"Vskutku!"
 		German:"Auf jeden Fall!"
                 Malay:"Sesungguhnya"
+		Korean:"좋소!"
 }
 
 	// Denunceation flavour texts
@@ -297,6 +318,7 @@
 		Czech:"Odsoudit ([numberOfTurns] kol)"
 		German:"Denunziere ([numberOfTurns] Runden)"
                 Malay:"Kecam ([numberOfTurns] pusingan)"
+		Korean:"비난 ([numberOfTurns] 턴 동안)"
 }
 
 	"We will remember this.":{
@@ -309,6 +331,7 @@
 		Czech:"To vám nikdy nezapomeneme!"
 		German:"Das werden wir nie vergessen!"
                 Malay:"Kami akan ingat perkara ini"
+		Korean:"우리는 이 일을 기억할 것입니다."
 }
 
 
@@ -325,6 +348,7 @@
   		Czech:"Nenávist"
 		German:"Todfeind"
                 Malay:"Tidak dapat dimaafkan"
+		Korean:"용서 못함"
 }
 
   	"Enemy":{
@@ -338,6 +362,7 @@
   		Czech:"Nepřátelství"
 		German:"Feind"
                 Malay:"Musuh"
+		Korean:"적대적"
 }
 
   	"Competitor":{
@@ -351,6 +376,7 @@
   		Czech:"Negativní"
 		German:"Konkurrent"
                 Malay:"Persaingan"
+		Korean:"경쟁자"
 }
 
   	"Neutral":{
@@ -365,6 +391,7 @@
 		German:"Neutral"
                 Malay:"Neutral"
                  
+		Korean:"중립적"
 }
 
   	"Favorable":{
@@ -378,6 +405,7 @@
   		Czech:"Pozitivní"
 		German:"Beliebt"
                 Malay:"Disukai"
+		Korean:"좋아함"
 }
 
   	"Friend":{
@@ -391,6 +419,7 @@
  	 	Czech:"Přátelství"
 		German:"Freund"
                 Malay:"Kawan"
+		Korean:"우호적"
 }
 
   	"Ally":{
@@ -404,6 +433,7 @@
   		Czech:"Aliance"
 		German:"Alliiert"
                 Malay:"Pakatan"
+		Korean:"동맹"
 }
 
 	// City States
@@ -417,6 +447,7 @@
 		Russian:"Даёт [amountOfCulture] культуры при 30 Влияния",
 		Czech:"Poskytují [amountOfCulture] bodů Kultury při Vlivu [30] "
 		German:"Bietet [amountOfCulture] Kultur für 30 Einflusspunkte"
+		Korean:"영향력이 [30]일 때부터 문화 [amountOfCulture]을(를) 제공합니다."
 }
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
@@ -428,6 +459,7 @@
 		Russian:"Даёт 3 Еды в столице и 1 Еда в остальных городах при 30 Влияния"
 		Czech:"Poskytuje 3 jídla v hlavním městě a 1 jídlo ve všech ostatních městech při Vlivu 30"
 		German:"Bietet 3 Nahrung in der Hauptstadt und 1 Nahrung in anderen Städten für 30 Einflusspunkte"
+		Korean:"영향력이 30일 때부터 수도에 식량 +3, 수도가 아닌 도시에 식량 +1을 제공합니다."
 }
 
 	"Provides 3 happiness at 30 Influence":{
@@ -439,6 +471,7 @@
 		Russian:"Даёт 3 Счастья при 30 Влияния"
 		Czech:"Poskytuje 3 body Spokojenosti při Vlivu 30"
 		German:"Bietet 3 Zufriedenheit für 30 Einflusspunkte"
+		Korean:"영향력이 30일 때부터 행복 +3을 제공합니다."
 },
 
 	"Provides land units every 20 turns at 30 Influence":{
@@ -450,6 +483,7 @@
 		Russian:"Даёт сухопутные юниты каждые 20 ходов при 30 Влияния"
 		Czech:"Poskytuje pozemní jednotky každých 20 kol při Vlivu 30"
 		German:"Bietet eine Landeinheit alle 20 Runden für 30 Einflusspunkte"
+		Korean:"영향력이 30일 때부터 20턴마다 지상 유닛을 제공합니다."
 },
 
 	"Gift [giftAmount] gold (+[influenceAmount] influence)":{
@@ -460,6 +494,7 @@
 		Czech:"Darujme [giftAmount] Zlata (+ [influenceAmount] Vlivu)"
 		Russian:"Подарить [giftAmount] золота (+[influenceAmount] Влияния)"
 		German:"Geschenk [giftAmount] Gold (+[influenceAmount] Einfluss) "
+		Korean:"금 [giftAmount] 선물 (영향력 +[influenceAmount])"
 }
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
@@ -471,6 +506,7 @@
 		Russian:"Отношения изменятся в следующие [turnsToRelationshipChange] ходов",
 		Czech:"Mezinárodní vztahy se změní během příštích/ho [turnsToRelationshipChange] kol(a)"
 		German:"Die Beziehung verändert sich in [turnsToRelationshipChange] Runden"
+		Korean:"[turnsToRelationshipChange] 턴 후 관계도가 변경됩니다."
 }
 
 
@@ -488,6 +524,7 @@
 		Czech:"Vyhlásili jste nám válku!"
 		German:"Sie haben uns den Krieg erklärt!"
                 Malay:"Kamu isytihar perang pada saya"
+		Korean:"우리는 지금 전쟁 중일 텐데! 무엇을 말하려고 오셨소?"
 }
 
 	"Your warmongering ways are unacceptable to us.":{
@@ -500,11 +537,8 @@
 		Russian:"Ваша воинственность для нас неприемлема."
 		Czech:"Vaše chování je pro nás nepřijatelné."
 		German:"Ihr kriegerisches Verhalten ist für uns inakzeptabel."
-	},
-
-	"We applaud your liberation of conquered cities!": {
-
-	},
+		Korean:"당신이 하는 전쟁광적 행동은 절대 용납할 수 없습니다."
+}
 
 	"You have captured our cities!":{
 		Italian:"Hai preso una delle nostre città!"
@@ -517,6 +551,7 @@
 		Czech:"Obsadili jste naše města!"
 		German:"Sie haben unsere Städte erobert!"
                 Malay:"Kamu tawan bandar kami"
+		Korean:"감히 우리의 도시까지 점령하다니!"
 }
 
 	"Years of peace have strengthened our relations.":{
@@ -530,6 +565,7 @@
 		Czech:"Roky míru posílily naše vzájemné vztahy."
 		German:"Die Jahre des Friedens haben unsere Beziehung gestärkt."
                 Malay:"Keamanan bertahun-tahun telah menguatkan hubungan kita."
+		Korean:"오래전부터 지속된 평화가 더 강한 관계를 만드는군요."
 }
 
 	"Our mutual military struggle brings us closer together.":{
@@ -542,6 +578,7 @@
 		Russian:"Наши совместные боевые действия сблизили нас"
 		Czech:"Naše společné vélečné tažení nás sblížíli"
 		German:"Unser gemeinsamer militärischer Kampf bringt uns näher zusammen."
+		Korean:"공동의 적에 맞선다는 사실이 우리의 관계를 더 강하게 하고 있습니다."
 }
 
 	"We have signed a public declaration of friendship":{
@@ -554,6 +591,7 @@
 		Russian:"Мы подписали публичную декларацию дружбы"
 		Czech:"Podepsali jsme veřejnou deklaraci přátelství"
 		German:"Wir haben eine öffentliche Freundschaftserklärung unterzeichnet."
+		Korean:"오셨군요. 이렇게 우호 관계를 선언해주는 벗을 만나기란 어렵지요."
 }
 
 	"You have declared friendship with our enemies!":{
@@ -566,6 +604,7 @@
 		Russian:"Вы дружите с нашими врагами!"
 		Czech:"Deklarovali jste přátelství s našimi nepřáteli!"
 		German:"Du hast Freundschaft mit unseren Feinden erklärt!"
+		Korean:"우리의 적과 우호 관계를 선언하지 않았소!"
 }
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
@@ -577,6 +616,7 @@
 		Russian:"Вы дружите с нашими союзниками"
 		Czech:"Deklarovali jste přátelství s našimi spojenci"
 		German:"Du hast die Freundschaft mit unseren Alliierten erklärt!"
+		Korean:"우리의 동맹과 우호 관계를 선언해 주셔서 감사합니다."
 }
 
 	"Our open borders have brought us closer together.":{
@@ -589,6 +629,7 @@
 		Russian:"Наши открытые границы сблизили нас"
 		Czech:"Dohoda o otevřených hranicích nás sblížila."
 		German:"Unsere offenen Grenzen haben uns einander näher gebracht."
+		Korean:"국경을 열어 놓음으로써, 서로 가까워지는 기분이 드는군요."
 }
 
 
@@ -602,6 +643,7 @@
 		Russian:"Ваше так называемое дружелюбие ничего не значит."
 		Czech:"Naše takzvané 'přátelství' pro vás nic neznamená."
 		German:"Ihre so genannte 'Freundschaft' ist nichts wert."
+		Korean:"지금까지의 '우정'은 모두 거짓이었군요."
 }
 
 	"You have publicly denounced us!":{
@@ -614,6 +656,7 @@
 		Czech:"Veřejně jste nás odsoudili!"
 		German:"Ihr habt uns öffentlich angeprangert!"
                 Malay:"Kamu telah mengutuk kami secara awam!"
+		Korean:"당신은 우리를 공개적으로 비난했소!"
 }
 
 	"You have denounced our allies":{
@@ -626,6 +669,7 @@
 		Czech:"Osdoudili jsme naše spojence"
 		German:"Ihr habt unsere Alliierten öffentlich angeprangert!"
                 Malay:"Kamu telah kutuk pakatan kamu"
+		Korean:"당신은 우리의 동맹을 공개적으로 비난했소!"
 }
 
 	"You have denounced our enemies":{
@@ -638,6 +682,7 @@
 		Czech:"Odsoudili jsme naše nepřátele"
 		German:"Ihr habt unsere Feinde öffentlich angeprangert!"
                 Malay:"Kamu telah kutuk musuh kamu"
+		Korean:"우리의 적을 공개적으로 비난하셨더군요. 우리도 같은 생각이랍니다."
 }
 
 	// Demands
@@ -651,6 +696,7 @@
 		Czech:"Požadavky:"
 		German:"Forderungen"
                 Malay:"Permintaan"
+		Korean:"요구"
 }
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
@@ -662,6 +708,7 @@
 		Czech:"Prosím nezakládejte města poblíž našeho území."
 		German:"Bitte keine neuen Städte in unserer Nähe bauen."
                 Malay:"Tolong jangan menetap berdekatan bandar kami"
+		Korean:"우리 근처에 새 도시를 짓지 마시오."
 }
 	"Very well, we shall look for new lands to settle.":{
 		Italian:"Ti porgiamo le nostre scuse."
@@ -672,6 +719,7 @@
 		Russian:"Хорошо, мы найдем другие земли для поселений"
 		Czech:"Nu dobrá, podíváme se po nových místech k zakládání měst."
 		German:"Einverstanden, wir werden nach anderem Bauland Ausschau halten."
+		Korean:"알겠습니다. 정착할 새로운 땅을 찾아 보도록 하지요."
 }
 	"We shall do as we please.":{
 		Italian:"Colonizzeremo la terra che ci pare e piace."
@@ -682,6 +730,7 @@
 		Russian:"Мы поступим, как сочтем нужным"
 		Czech:"Uděláme si to po svém."
 		German:"Wir machen was wir wollen"
+		Korean:"우리가 원하는 데 살고자 하는 것이 잘못입니까?"
 }
 
 	"You betrayed your promise to not settle cities near us":{
@@ -693,6 +742,7 @@
 		Russian:"Вы нарушили ваше обещание не закладывать города рядом с нами"
 		Czech:"Porušili jste svůj slib nezakládat města u našich hranic"
 		German:"Ihr habt euer Versprechen gebrochen, nicht in unserer Nähe neue Städte zu gründen"
+		Korean:"당신은 우리 근처에 도시를 세우지 않겠다는 약속을 배신했소."
 }
 
 	"You fulfilled your promise to stop settling cities near us!":{
@@ -704,6 +754,7 @@
 		Russian:"Вы выполнили ваше обещание не закладывать города рядом с нами"
 		Czech:"Dodrželi jste svůj slib nezakládat města poblíž našich hranic."
 		German:"Ihr habt euer Versprechen gehalten, nicht in unserer Nähe neue Städte zu gründen"
+		Korean:"우리 근처에 도시를 세우지 않겠다는 약속을 지켰군요."
 }
 
 	"You refused to stop settling cities near us":{
@@ -715,6 +766,7 @@
 		Russian:"Вы отказались не закладывать города рядом с нами"
 		Czech:"Odmítli jste žádost o nezakládání měst poblíž našich hranic"
 		German:"Ihr habt euch geweigert, nicht in unserer Nähe neue Städte zu gründen"
+		Korean:"당신은 우리 근처에 도시를 세우지 말라는 제안을 거절했소."
 }
 
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
@@ -726,6 +778,7 @@
 		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
 		Czech:"Odhalili jsme nové město poblíž našich hranic navzdory vašim slibům. To bude mít... patřičné následky."
 		German:"Wir haben eure neue Stadt an unserer Grenze bemerkt - entgegen eures Versprechens. Das wird Folgen haben."
+		Korean:"우리 근처에 새 도시를 세우지 않겠다고 했는데, 이번에 새로운 도시를 세우셨군요. 그렇게 나오시겠다는 겁니까?"
 }
 
 	"Your arrogant demands are in bad taste":{
@@ -737,6 +790,7 @@
 		Russian:"Ваши высокомерные требования раздражают"
 		Czech:"Vaše arogantní požadavky jsou dalším důkazem vaší zkaženosti"
 		German:"Ihre arroganten Forderungen sind geschmacklos."
+		Korean:"이치에 맞지 않는 요구를 하고 있군요."
 }
 
 
@@ -752,6 +806,7 @@
 		Russian:"Культурный"
 		Czech:"Kulturní"
 		German:"Kultiviert"
+		Korean:"문화적"
 }
 
 	"Maritime":{
@@ -763,6 +818,7 @@
 		Russian:"Морской"
 		Czech:"Nomořní"
 		German:"Maritim"
+		Korean:"해양적"
 }
 
 	"Mercantile":{
@@ -774,6 +830,7 @@
 		Russian:"Торговый"
 		Czech:"Obchodní"
 		German:"Finanztechnisch"
+		Korean:"상업적"
 }
 
 	"Militaristic":{
@@ -785,6 +842,7 @@
 		Russian:"Воинственный"
 		Czech:"Militaristický"
 		German:"Militärisch"
+		Korean:"군사적"
 }
 
 	"Type: ":{
@@ -795,6 +853,7 @@
 		Russian:"Тип: "
 		Czech:"Typ:"
 		German:"Typ: "
+		Korean:"성향 : "
 }
 
 	"Influence: ":{
@@ -805,6 +864,7 @@
 		Russian:"Влияние: "
 		Czech:"Vliv: "
 		German:"Einfluss: "
+		Korean:"영향력 : "
 }
 
 	"Reach 30 for friendship.":{
@@ -814,6 +874,7 @@
 		Czech:"Získejte vliv 30 a více pro dosažení přátelství."
 		German:"Erreiche 30 für Freundschaft."
 		Polish:"Zdobądź 30 dla przyjaźni."
+		Korean:"우호 관계가 되고 싶다면 30 이상의 영향력을 보유하십시오."
 }
 
 	"Reach highest influence above 60 for alliance.":{
@@ -823,6 +884,7 @@
 		Czech:"Získejte vliv 60 a více pro dosažení aliance."
 		German:"Erreiche den höchsten Einfluss über 60 für Allianzen"
 		Polish:"Osiągnij wpływ powyżej 60 dla sojuszu." //checking context ingame - will delete after confirming
+		Korean:"동맹 상태가 되려면 60 이상이면서 가장 높은 영향력을 보유하십시오."
 }
 
 	"Ally: ":{
@@ -832,6 +894,7 @@
 		Czech:"Aliance: "
 		German:"Alliierte"
 		Polish:"Sojusznik: "
+		Korean:"동맹 : "
 }
 
 ////// Trade
@@ -849,6 +912,7 @@
 		Czech:"Obchod"
 		Polish:"Wymiana"
                 Malay:"Dagang"
+		Korean:"거래"
 }
 
 	"Offer trade":{
@@ -864,6 +928,7 @@
 		Czech:"Učinit nabídku"
 		Polish:"Zaproponuj wymianę"
                 Malay:"Tawar dagang"
+		Korean:"거래 제안"
 }
 
 	"Retract offer":{
@@ -875,6 +940,7 @@
 		German:"Angebot zurückziehen"
 		Polish:"Wycofaj ofertę"
                 Malay:"Tarik balik tawaran"
+		Korean:"제안 취소"
 }
 
 	"What do you have in mind?":{
@@ -889,6 +955,7 @@
 		German:"Was schwebt Ihnen vor?"
 		Czech:"Co máte na mysli?"
 		Polish:"Co masz na myśli?"
+		Korean:"어떻게 생각하십니까?"
 }
 
 	"Our items":{
@@ -903,6 +970,7 @@
 		German:"Unsere Gegenstände"
 		Czech:"Naše obchodní artikly"
 		Polish:"Nasze przedmioty"
+		Korean:"우리의 물품"
 }
 
 	"Our trade offer":{
@@ -917,6 +985,7 @@
 		German:"Unser Handelsangebot"
 		Czech:"My nabízíme k obchodování"
 		Polish:"Nasza oferta wymiany"
+		Korean:"우리의 거래 제안"
 }
 
 	"[otherCiv]'s trade offer":{
@@ -931,6 +1000,7 @@
 		German:"[otherCiv]s Handelsangebot",
 		Czech:"[otherCiv] nabízí k obchodování"
 		Polish:"Oferta wymiany od [otherCiv]"
+		Korean:"[otherCiv]의 거래 제안"
 }
 
 	"[otherCiv]'s items":{
@@ -945,6 +1015,7 @@
 		German:"[otherCiv]s Gegenstände",
 		Czech:"[otherCiv] obchodní artikly"
 		Polish:"Przedmioty od [otherCiv]"
+		Korean:"[otherCiv]의 물품"
 }
 
 	"Pleasure doing business with you!":{
@@ -959,6 +1030,7 @@
 		German:"Angenehm, mit Ihnen Geschäfte zu machen!"
 		Czech:"Bylo nám potěšení s vámi obchodovat!"
 		Polish:"Miło jest robić z tobą interesy!"
+		Korean:"당신과의 거래는 언제나 환영입니다."
 }
 
 	"I think not.":{
@@ -974,6 +1046,7 @@
 		Czech:"Myslím, že to neklapne."
 		Polish:"Myślę że nie."
                 Malay:"Saya rasa tidak"
+		Korean:"그건 안 됩니다."
 }
 
 	"That is acceptable.":{
@@ -988,6 +1061,7 @@
 		German:"Das ist akzeptabel."
 		Czech:"To se zdá přijatelné."
 		Polish:"To jest akceptowalne." //checking context ingame - will delete after confirming
+		Korean:"이 정도면 적당하군요."
 }
 
 	"Accept":{
@@ -1003,6 +1077,7 @@
 		Czech:"Souhlasíme"
 		Polish:"Zatwierdź"
                 Malay:"Mahu"
+		Korean:"수락"
 }
 
 	"Keep going":{
@@ -1016,6 +1091,7 @@
 		German:"Weitermachen"
 		Polish:"Kontynuuj"
                 Malay:"Teruskan"
+		Korean:"계속"
 }
 
 	"There's nothing on the table":{
@@ -1030,6 +1106,7 @@
 		German:"Der Verhandlungstisch ist leer"
 		Czech:"Nemáme se o čem bavit"
 		Polish:"Na stole nie ma nic"
+		Korean:"거래할 물품이 없지 않소?"
 }
 
 	"Peace Treaty":{//Corrected
@@ -1044,6 +1121,7 @@
 		German:"Friedensabkommen"
 		Czech:"Mírová smlouva"
 		Polish:"Traktat pokojowy"
+		Korean:"평화 조약"
 }
 
 	"Agreements":{
@@ -1056,6 +1134,7 @@
 		Czech:"Obchodní dohody"
 		German:"Vereinbarungen"
 		Polish:"Umowa"
+		Korean:"협정"
 }
 
 	"Open Borders":{
@@ -1069,6 +1148,7 @@
 		German:"Offene Grenzen"
 		Polish:"Otwórz granice"
                 Malay:"Buka Sempadan"
+		Korean:"국경 개방"
 }
 
 	"Gold per turn":{
@@ -1084,6 +1164,7 @@
 		Czech:"Zlato za kolo"
 		Polish:"Złoto na turę"
                 Malay:"Emas setiap pusingan"
+		Korean:"턴 당 금"
 }
 
 	"Cities":{
@@ -1100,6 +1181,7 @@
 		Czech:"Města"
 		Polish:"Miasta"
                 Malay:"Bandar"
+		Korean:"도시"
 }
 
 	"Technologies":{
@@ -1113,6 +1195,7 @@
 		Czech:"Technologie"
 		Polish:"Technologie"
                 Malay:"Teknologi"
+		Korean:"기술"
 }
 
 	"Declarations of war":{
@@ -1125,6 +1208,7 @@
 		Czech:"Vyhlášení války"
 		German:"Kriegserklärungen"
 		Polish:"Deklaracja wojny"
+		Korean:"전쟁 선포"
 }
 
 	"Introduction to [nation]":{
@@ -1135,6 +1219,7 @@
 		Czech:"Představení národa [nation]"
 		German:"Vorstellung der Nation [nation]"
 		Polish:"Przedstawienie narodu [nation]" //checking context ingame - will delete after confirming
+		Korean:"[nation]에 대한 소개"
 }
 
 	"Declare war on [nation]":{
@@ -1145,6 +1230,7 @@
 		Russian:"Объявить войну: [nation]"
 		German:"[nation] den Krieg erklären"
 		Polish:"Wypowiedz wojnę z [nation]"
+		Korean:"[nation]에 전쟁 선포"
 }
 
 	"Luxury resources":{
@@ -1157,6 +1243,7 @@
 		Czech:"Luxusní zdroje"
 		German:"Luxusgüter"
 		Polish:"Zasoby luksusowe"
+		Korean:"사치 자원"
 }
 
 	"Strategic resources":{
@@ -1169,6 +1256,7 @@
 		Czech:"Strategiské zdroje"
 		German:"Strategische Ressourcen"
 		Polish:"Zasoby strategiczne"
+		Korean:"전략 자원"
 }
 
 
@@ -1187,6 +1275,7 @@
 		Russian:"заменяет"
 		Czech:"nahrazuje"
 		Polish:"zastępuje"
+		Korean:"대체되는 것 : "
 }
 
 	"[resourceName] not required":{
@@ -1199,6 +1288,7 @@
 		Czech:"[resourceName] není potřeba"
 		German:"[resourceName] wird nicht benötigt"
 		Polish:"[resourceName] nie jest wymagane/ny" //checking context ingame - will delete after confirming
+		Korean:"[resourceName] 자원이 필요 없음"
 }
 
 	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
@@ -1209,6 +1299,7 @@
 		Czech:"Ztráta schopnosti"
 		German:"Verlorene Eigenschaft"
 		Polish:"Utracona zdolność"
+		Korean:"없어진 특성"
 }
 
 	"National ability":{ // the unique ability that each nation has
@@ -1223,6 +1314,7 @@
 		Traditional_Chinese:"民族特性"
 		Czech:"Národní schopnost"
 		Polish:"Zdolność narodowa"
+		Korean:"문명 특성"
 }
 
 	"Babylon":{
@@ -1238,6 +1330,7 @@
 		Czech:"Babylonie"
 		Polish:"Babilon"
                 Malay:"Babylon"
+		Korean:"바빌론"
 }
 
 	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
@@ -1252,6 +1345,7 @@
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 		Czech:"Obdržíte Velkého Vědce při objevení technologie 'Písemnictví', získejte Velkého Vědce o 50% rychleji"
 		Polish:"Otrzymaj Wielkiego Naukowca po odkryciu Pisma, Zdobądź Wielkiego Naukowca 50% szybciej"
+		Korean:"문자를 연구한 후 위대한 과학자 하나를 무료로 얻습니다. 위대한 과학자의 출현 속도 + 50%"
 }
 
 	"Nebuchadnezzar II":{//Babylonian Leader
@@ -1263,6 +1357,7 @@
 		Czech:"Nebukadnesar II."
 		German:"Nebukadnezar II"
 		Polish:"Nabuchodonozor II"
+		Korean:"네부카드네자르 2세"
 }
 
 	"Greece":{
@@ -1278,6 +1373,7 @@
 		Czech:"Řecko"
 		Polish:"Grecja"
                 Malay:"Yunani"
+		Korean:"그리스"
 }
 
 	"Alexander":{
@@ -1290,6 +1386,7 @@
 		// same in German
 		Polish:"Aleksander Wielki"
                 Malay:"Alexander"
+		Korean:"알렉산더"
 },
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
@@ -1300,6 +1397,7 @@
 		Czech:"Vliv Městských států degraduje o polovinu a přibívá dvojnásobnou rychlostí."
 		German:"Der Einfluss des Stadtstaats reduziert sich nur halb so schnell und erholt sich doppelt so schnell"
 		Polish:"Wpływ Miasta-Państwa obniża się o połowę i odnawia dwukrotnie szybciej niż normalnie"
+		Korean:"도시국가에 대한 영향력 감소량이 절반이 되고, 영향력 회복량은 두 배가 됩니다."
 },
 
 	"China":{
@@ -1315,6 +1413,7 @@
 		Czech:"Čína"
 		Polish:"Chiny"
                 Malay:"Cina"
+		Korean:"중국"
 }
 
 	"Wu Zetian":{
@@ -1325,6 +1424,7 @@
 		Czech:"Wu Ce-tchien"
 		// same in German
 		Polish:"Wu Zetian"
+		Korean:"측천무후"
 },
 
 	"Great general provides double combat bonus, and spawns 50% faster":{
@@ -1340,6 +1440,7 @@
 		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее" // Russian x2. As it should be?
 		Czech:"Velký Generál poskytne dvojnásobný bojový bonus a rodí se o 50% rychleji"
 		Polish:"Wielki generał zapewnia podwójną premię do walki i tworzy się 50% szybciej"
+		Korean:"위대한 장군으로 인한 전투력 보너스가 두 배가 됩니다. 위대한 장군 출현율 +50%"
 }
 
 	"Egypt":{
@@ -1355,6 +1456,7 @@
 		Czech:"Egypt"
 		Polish:"Egipt"
                 Malay:"Mesir"
+		Korean:"이집트"
 }
 
 	"Ramesses II":{
@@ -1366,6 +1468,7 @@
 		Czech:"Ramesse II"
 		German:"Ramses II"
 		Polish:"Ramzes II"
+		Korean:"람세스 2세"
 }
 
 	"+20% production towards Wonder construction":{
@@ -1380,6 +1483,7 @@
 		Traditional_Chinese:"建造奇觀時產能累積速率+20%"
 		Czech:"+20% produkce při stavbě Divu světa"
 		Polish:"+20% do produkcji budowy Cudu"
+		Korean:"불가사의를 건설할 때 생산력 +20%"
 }
 
 	"England":{
@@ -1395,6 +1499,7 @@
 		Czech:"Anglie"
 		Polish:"Anglia"
                 Malay:"England"
+		Korean:"영국"
 }
 
 	"Elizabeth":{
@@ -1406,6 +1511,7 @@
 		Czech:"Alžběta I."
 		German:"Elisabeth"
 		Polish:"Elżbieta"
+		Korean:"엘리자베스 1세"
 }
 
 	"+2 movement for all naval units":{
@@ -1420,6 +1526,7 @@
 		Russian:"+2 движение для всех военно-морских подразделений"
 		Czech:"+2 pohyb pro všechny námořní jednotky"
 		Polish:"+2 do Przemieszczenia się dla wszystkich jednostek morskich"
+		Korean:"모든 해상 유닛의 행동력 +2"
 }
 
 	"France":{
@@ -1435,6 +1542,7 @@
 		Czech:"Francie"
 		Polish:"Francja"
                 Malay:"Perancis"
+		Korean:"프랑스"
 }
 
 	"Napoleon":{
@@ -1446,6 +1554,7 @@
 		Czech:"Napoleon Bonaparte"
 		// same in German
 		Polish:"Napoleon"
+		Korean:"나폴레옹"
 }
 
 	"+2 Culture per turn from cities before discovering Steam Power":{
@@ -1460,6 +1569,7 @@
 		Traditional_Chinese:"在發明蒸汽機之前，每座城市的文化+2"
 		Czech:"+2 body kultury ze všech měst před objevením technologie 'Parní stroj'"
 		Polish:"+2 Kultury na turę od miast przed odkryciem Energi Parowej"
+		Korean:"증기력을 연구하기 전까지, 모든 도시에서 턴 당 문화 +2"
 }
 
 	"Russia":{
@@ -1475,6 +1585,7 @@
 		Czech:"Rusko"
 		Polish:"Rosja"
                 Malay:"Rusia"
+		Korean:"러시아"
 }
 
 	"Catherine":{
@@ -1486,6 +1597,7 @@
 		Czech:"Kateřina II. Veliká"
 		German:"Katharina"
 		Polish:"Katarzyna"
+		Korean:"예카테리나 2세"
 }
 
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
@@ -1500,6 +1612,7 @@
 		Russian:"Стратегические ресурсы дают +1 к производству, а количество ресуров Лошади, Железо и Уран удваивается"
 		Czech:"Strategické zdroje poskytují +1 produkci. Zdroje Koní, Železné rudy a Uranu jsou dvojnásobné"
 		Polish:"Surowce Strategiczne zapewniają +1 do Produkcji, a Konie, Żelazo i Uran zapewniają podwojoną ilość"
+		Korean:"말, 철, 그리고 우라늄 자원이 두 배가 됩니다. 전략 자원의 생산력 +1"
 }
 
 	"Rome":{
@@ -1515,6 +1628,7 @@
 		Czech:"Řím"
 		Polish:"Rzym"
                 Malay:"Rom"
+		Korean:"로마"
 }
 
 	"Augustus Caesar":{
@@ -1526,6 +1640,7 @@
 		Czech:"Gaius Iulius Caesar"
 		German:"Julius Cäsar"
 		Polish:"Gajusz Juliusz Cezar"
+		Korean:"아우구스투스 카이사르"
 }
 
 	"+25% Production towards any buildings that already exist in the Capital":{
@@ -1540,6 +1655,7 @@
 		Traditional_Chinese:"在其他城市建造首都已建有的建築時產能累積速率+25%"
 		Czech:"+25% produkce při stavbě všech budov, které už jsou postavené v hlavním městě"
 		Polish:"+25% do Produkcji budowli które już istenieją w Stolicy"
+		Korean:"수도에 지어진 건물을 지을 때 생산력 +25%"
 }
 
 	"Arabia":{
@@ -1556,6 +1672,7 @@
 		Czech:"Arábie"
 		Polish:"Arabia"
                 Malay:"Arab"
+		Korean:"아라비아"
 }
 
 	"Harun al-Rashid":{
@@ -1567,6 +1684,7 @@
 		Czech:"Hárún ar-Rašíd"
 		// same in German
 		Polish:"Harun ar-Raszid"
+		Korean:"하룬 알 라시드"
 }
 
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
@@ -1579,6 +1697,7 @@
 		Czech:"+1 Zlata za každou obchodní cestu, zdroje Ropy poskytují dvojnásobné množství"
 		German:"+1 Gold von jedem Handelsweg, Ölvorkommen bieten doppelte Menge"
 		Polish:"+1 Złota za każdy Szlak Handlowy, zasoby Ropy zapewnia podwojoną ilość"
+		Korean:"석유 자원이 두 배가 됩니다. 교역로마다 금 +1"
 }
 
 	"America":{
@@ -1594,6 +1713,7 @@
 		Czech:"Amerika"
 		Polish:"Ameryka"
                 Malay:"Amerika"
+		Korean:"미국"
 }
 
 	"George Washington":{
@@ -1605,6 +1725,7 @@
 		Czech:"George Washington"
 		// same in German
 		Polish:"George Washington"
+		Korean:"조지 워싱턴"
 }
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
@@ -1619,6 +1740,7 @@
 		Russian:"Все наземные военные юниты имеют +1 обзор, скидка 50% при покупке клетки"
 		Czech:"Všechny pozemní vojenské jednotky získají +1 viditelnost, 50% sleva na nákup nového území města"
 		Polish:"Wszystkie naziemne jednostki wojskowe otrzymują +1 do wzroku, 50% zniżki podczas zakupu pola"
+		Korean:"모든 지상군 유닛의 시야 +1. 타일을 금으로 구매할 때 가격 -50%"
 }
 
 	"Japan":{
@@ -1634,6 +1756,7 @@
 		Czech:"Japonsko"
 		Polish:"Japonia"
                 Malay:"Jepun"
+		Korean:"일본"
 }
 
 	"Oda Nobunaga":{
@@ -1645,6 +1768,7 @@
 		Czech:"Nobunaga Oda"
 		// same in German
 		Polish:"Oda Nobunaga"
+		Korean:"오다 노부나가"
 }
 
 	"Units fight as though they were at full strength even when damaged":{
@@ -1659,6 +1783,7 @@
 		Russian:"Юниты сражаются в полную силу, даже будучи ранеными"
 		Czech:"Jednotky bojují pořád v plné síle, i když jsou zraněné"
 		Polish:"Jednostki walczą z pełną sił, nawet kiedy są zranione"
+		Korean:"유닛이 피해를 입어도 전투력이 그대로 유지됩니다."
 }
 
 	"Germany":{
@@ -1672,6 +1797,7 @@
 		German:"Deutschland"
 		Polish:"Niemcy"
                 Malay:"Jerman"
+		Korean:"독일"
 }
 
 	"Otto von Bismark":{
@@ -1682,6 +1808,7 @@
 		Russian:"Отто фон Бисмарк",
 		Czech:"Otto von Bismarck"
 		Polish:"Otto von Bismarck"
+		Korean:"오토 폰 비스마르크"
 }
 
 	"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.":{
@@ -1693,6 +1820,7 @@
 		Czech:"67% šance získat 25 Zlata a naverbovat Barbarskou jednotku z dobytého tábora, -25% žoldu pro všechny jednotky"
 		German:"67% Chance, 25 Gold zu verdienen und eine barbarische Einheit aus dem eroberten Lager zu rekrutieren, -25% Instandhaltung von Landeinheiten."
 		Polish:"67% szans na zdobycie 25 Złota i zrekrutowanie Barbażyńskiej jednostki z podbitego obozowiska, -25% do utrzymania jednostek lądowych."
+		Korean:"야만인 주둔지를 점령할 때 67% 확률로 금 25와 야만인 유닛을 획득합니다. 지낭 유닛 유지비 -25%"
 }
 
 	"India":{
@@ -1706,6 +1834,7 @@
 		German:"Indien"
 		Polish:"Indie"
                 Malay:"India"
+		Korean:"인도"
 }
 
 	"Gandhi":{
@@ -1717,6 +1846,7 @@
 		Czech:"Mahátma Gándhí"
 		German:"Mahatma Gandhi"
 		Polish:"Mahatma Gandhi"
+		Korean:"간디"
 }
 
 	"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.":{
@@ -1729,6 +1859,7 @@
 		Czech:"Nespokojenost za počet měst je dvojnásobné, nespokojenost za počet obyvatel měst je poloviční."
 		German:"Unzufriedenheit von Städten verdoppelt, Unzufriedenheit der Bevölkerung halbiert."
 		Polish:"Niezadowolenie mieszkańców Miast podwoiło się, Niezadowolenie mieszkańców Miast zmalało o połowę."
+		Korean:"도시 수로 인한 불행이 두 배가 되는 대신, 시민 수로 인한 불행이 반으로 감소합니다."
 }
 
 	"The Ottomans":{
@@ -1742,6 +1873,7 @@
 		German:"Die Osmanen"
 		Polish:"Imperium Osmańskie"
                 Malay:"Uthmaniyyah"
+		Korean:"오스만"
 }
 
 	"Suleiman I":{
@@ -1753,6 +1885,7 @@
 		Czech:"Sulejman I."
 		German:"Suleiman der Prächtige"
 		Polish:"Sulejman I"
+		Korean:"술레이만"
 }
 
 	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
@@ -1765,6 +1898,7 @@
 		Czech:"Platí pouze 1/3 žoldu námořním jednotkám. Námořní jednotky při boji zblízka mají 33% šanci na zajmutí poražené námořní jednotky."
 		German:"Bezahle nur 1/3 der üblichen Kosten für Instandhaltung der marinen Einheiten. Marine Nahkampfeinheiten haben eine 1/3 Chance, eine besiegte Marineeinheit zu fangen."
 		Polish:"Zapłać trzecią część zwykłego kosztu za utrzymanie jednostki morskiej. Morskie jednostki do walki w zwarciu mają 1/3 szansy na przejęcie pokonanych jednostek morskich."
+		Korean:"해상 유닛 유지비가 1/3이 됩니다. 해상 근접 유닛이 적 해상 유닛을 처치했을 때, 1/3 확률로 그 유닛을 포획합니다."
 }
 
 	"Korea":{
@@ -1778,6 +1912,7 @@
 		German:"Korea"
 		Polish:"Korea"
                 Malay:"Korea"
+		Korean:"한국"
 }
 
 	"Sejong":{
@@ -1788,6 +1923,7 @@
 		Czech:"Sedžong Veliký"
 		German:"Sejong"
 		Polish:"Sejong"
+		Korean:"세종대왕"
 }
 
 	"+2 Science for all specialists and Great Person tile improvements":{
@@ -1798,6 +1934,7 @@
 		Czech:"+2 Výzkum pro všechny specialisty a Velké osobnosti při vylepšení polí města."
 		German:"+2 Wissenschaft für alle SpezialistInnen und Große Persönlichkeit Feldverbesserungen"
 		Polish:"+2 Nauki dla wszystkich specjalistów i polepszenie pola Wielkiej Osoby"
+		Korean:"전문가와 위인 타일 시설 하나당 과학 +2"
 }
 
 
@@ -1811,6 +1948,7 @@
 		Russian:"Ирокезы."
 		German:"Irokesen"
 		Polish:"Irokezi"
+		Korean:"이로쿼이"
 }
 
 	"Hiawatha":{
@@ -1820,6 +1958,7 @@
 		Russian:"Хайавата",
 		Czech:"Hiawatha"
 		Polish:"Hiawatha"
+		Korean:"하이어워사"
 }
 
 	"All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.":{
@@ -1832,6 +1971,7 @@
 		Russian:"Все юниты двигаются по клеткам с джунглями и лесами как если бы на них были дороги. С помощью таких клеток можно установить соединение между городами после исследования Колеса."
 		German:"Alle Einheiten bewegen sich durch alliierte Wald und Dschungel Felder als hätten sie Straßen. Diese Felder können genutzt werden, um bei der Erforschung des Rades Stadtverbindungen herzustellen."
 		Polish:"Wszystkie jednostki przemieszczają się przez teren Lasu i Dżungli na przyjaznych terenach tak, jak na drogach. Te pola mogą być użyte do zakładania Łączników Miast po odkryciu Koła."
+		Korean:"유닛들이 아군 영토의 숲이나 정글 타일을 도로처럼 사용합니다. 바퀴를 연구한 뒤, 이러한 타일들로 도시를 연결할 수 있습니다."
 }
 
 
@@ -1846,6 +1986,7 @@
 		German:"Persien"
 		Polish:"Persja"
                 Malay:"Parsi"
+		Korean:"페르시아"
 }
 
 	"Darius I":{
@@ -1856,6 +1997,7 @@
 		Russian:"Дарий I"
 		German:"Dareios I"
 		Polish:"Dariusz I"
+		Korean:"다리우스 1세"
 }
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
@@ -1868,6 +2010,7 @@
 		Russian:"Золотой век длится на 50% дольше. Во время Золотого века юниты получают +1 к движению и +10% к силе."
 		German:"Das Goldene Zeitalter hält 50% länger an. Währenddessen erhalten Einheiten +1 Bewegung und +10% Stärke"
 		Polish:"Złoty Wiek utrzymuje się 50% dłużej. Podczas Złotego Wieku jednostki otrzymują +1 do Przemieszczania się i +10% Siły"
+		Korean:"황금기 동안, 유닛들의 행동력 +1, 체력 +10%. 황금기의 지속 시간 +50%."
 }
 
 	"Polynesia":{
@@ -1880,6 +2023,7 @@
 		Russian:"Полинезия"
 		German:"Polynesien"
 		Polish:"Polinezja"
+		Korean:"폴리네시아"
 }
 
 	"Kamehameha I":{
@@ -1889,6 +2033,7 @@
 		Traditional_Chinese:"卡美哈梅哈一世"
 		Russian:"Камеамеа I"
 		Polish:"Kamehameha I"
+		Korean:"카메하메하 1세"
 }
 
 	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.":{
@@ -1901,6 +2046,7 @@
 		Russian:"Сразу может погружаться на корабль, а также плавать по побережьям и океанам. +1 к обзору при погружении на корабль. +10% к силе если находинтся в радиусе 2х клеток от Моаи."
 		German:"Kann sich sofort einschiffen und über Küsten und Ozeane bewegen. +1 Sicht beim Einschiffen. +10% Kampfstärkebonus, wenn innerhalb von 2 Feldern eines Moai."
 		Polish:"Możesz zaokrętować i ruszyć na Wybrzeża natychmiast. +1 do Wzroku po zaokrętowaniu. +10% Siły w walce w obrębie 2 pól od Moai."
+		Korean:"연구하지 않고도 승선과 대양 항해를 할 수 있습니다. 승선한 유닛의 시야 +1. 모아이와 2타일 이내에서 전투 시 전투력 +10%"
 }
 
 	"Siam":{
@@ -1912,6 +2058,7 @@
 		Traditional_Chinese:"暹羅"
 		Polish:"Siam"
                 Malay:"Siam"
+		Korean:"시암"
 }
 
 	"Ramkhamhaeng":{
@@ -1920,6 +2067,7 @@
 		Simplified_Chinese:"兰甘亨"
 		Traditional_Chinese:"蘭甘亨"
 		Polish:"Ramkhamhaeng"
+		Korean:"람캄행"
 }
 
 	"Food and Culture from Friendly City-States are increased by 50%":{
@@ -1931,6 +2079,7 @@
 		Traditional_Chinese:"友好城邦提供的食物和文化增加50%"
 		German:"Nahrung und Kultur aus freundlichen Stadtstaaten werden um 50% erhöht."
 		Polish:"Zasoby Pożywienia i Kultura od Przyjaznych Miast-Państw są ziwiększone o 50%"
+		Korean:"우호적인 도시 국가에게서 제공받는 음식과 문화 +50%"
 }
 
 	"Songhai":{
@@ -1942,12 +2091,14 @@
 		Polish:"Songhaj"
 		Simplified_Chinese:"桑海"
 		Traditional_Chinese:"桑海"
+		Korean:"송가이"
 }
 
 	"Askia":{
 		Italian:"Askia"
 		Simplified_Chinese:"阿斯基亚"
 		Traditional_Chinese:"阿斯基亞"
+		Korean:"아스키아"
 }
 
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
@@ -1959,6 +2110,7 @@
 		Polish:"Odtrymaj potrojone Złoto od Barbażyńskich obozowisk i plądrowanych Miast. Zaokrętowane jednostki mogą same się bronić"
 		Simplified_Chinese:"摧毁蛮族营地及劫掠城市时获得三倍金钱，船运状态的单位拥有攻击能力"
 		Traditional_Chinese:"摧毀蠻族營地及劫掠城市時獲得三倍金錢，船運狀態的單位擁有攻擊能力"
+		Korean:"야만인 주둔지나 도시 약탈에서 얻는 금이 세 배가 됩니다. 승선한 유닛들이 스스로를 방어할 수 있습니다."
 }
 
 	/*
@@ -1969,6 +2121,7 @@
 		Czech:"Aztékové"
 		German:"Azteken"
 		Polish:"Aztecy"
+		Korean:"아즈텍"
 }
 
 	"Gain Culture for the empire from each enemy unit killed.":{
@@ -1978,6 +2131,7 @@
 		Czech:"Získají kulturní bod pro říši za každou zabitou nepřátelskou jednotku."
 		German:"Erhalte Kultur für das Reich für jeden besiegten Feind"
 		Polish:"Zdobądź punkty Kultury za każdą pokonaną jednostkę przeciwnika"
+		Korean:"적 유닛ㅇ르 죽일 때마다 문화를 얻습니다."
 }
 
 	"Denmark":{
@@ -1988,6 +2142,7 @@
 		German:"Dänemark"
 		Polish:"Dania"
                 Malay:"Denmark"
+		Korean:"덴마크"
 }
 
 	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
@@ -1996,6 +2151,7 @@
 		French:"Les unités embarquées ont +1 de mouvement et ne perde qu'un point de mouvement en débarquant. Le pillage ne coûte pas de point de déplacement pour les unités de mélée"
 		German:"Eingeschiffte Einheiten haben +1 Bewegung und bezahlen nur 1 Bewegungspunkt, um vom Meer zum Land zu wechseln. Nahkampf Einheiten bezahlen keine Bewegungspunkte für eine Plünderung"
 		Polish:"Zaokrętowane Jednostki otrzymują +1 do Poruszania się i używają tylko 1-go punktu ruchu podczas przemieszczania się z morza na ląd. Jednostki do Walki w Zwarciu nie używają punktu ruchu do plądrowania"
+		Korean:"승선한 유닛들의 행동력 +1. 상륙에 필요한 행동력이 1로 줄어듭니다. 근접 유닛이 약탈을 할 때 행동력을 소모하지 않습니다."
 }
 
 	"Inca":{
@@ -2005,6 +2161,7 @@
 		Czech:"Inkové"
 		German:"Inka"
 		Polish:"Inka"
+		Korean:"잉카"
 }
 
 	"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills, half cost elsewhere.":{
@@ -2012,6 +2169,7 @@
 		Czech:"Jednotky ignorují obtížný terén v horách. Žádná pravidelná platba za vylepšení v horách, na ostatních polích stojí polovinu."
 		German:"Einheiten ignorieren Geländekosten, wenn sie ein Feld mit Hügeln betreten. Keine Wartungskosten für Hügelverbesserungen, sonst halbe Kosten."
 		Polish:"Jednostki ignorują dodatkowy koszt za niedogodności terenu podczas przemieszczania się na dowolne pole Wzgórz. Brak kosztów utrzymania za ulepszenia we Wzgórzach, połowa kosztów wszędzie indziej."
+		Korean:"언덕이 포함된 모든 지형을 이동할 때 소모되는 행동력이 1로 줄어듭니다. 언덕 위의 시설은 유지비가 들지 않고, 다른 지형의 시설은 유지비가 절반이 됩니다."
 }
 
 	"Mongolia":{
@@ -2022,6 +2180,7 @@
 		German:"Mongolei"
 		Polish:"Mongolia"
                 Malay:"Mongolia"
+		Korean:"몽골"
 }
 
 	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
@@ -2031,6 +2190,7 @@
 		Czech:"+30% bojové síly při boji s jednotkami městského státu, nebo útoku na městský stát. +1 Pohyb pro všechny jízdní jednotky."
 		German:"+30% Angriffsstärke bei Attacken auf Stadtstaaten oder dessen Einheiten. +1 Bewegung für alle berittenen Einheiten."
 		Polish:"+30% do Siły w walce kiedy walczysz z jednostkami Miasta-Państwa albo podczas ataku na Miasto-Państwo. +1 do Poruszania się dla wszystkich Osiodłanych Jednostek."
+		Korean:"도시국가 또는 도시국가의 유닛을 공격할 때 전투력 +30%. 모든 기병 유닛의 행동력 +1."
 }
 
 	"Spain":{
@@ -2039,6 +2199,7 @@
 		German:"Spanien"
 		Polish:"Hiszpania"
                 Malay:"Sepanyol"
+		Korean:"스페인"
 }
 
 	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yields from Natural Wonders are doubled.":{
@@ -2046,6 +2207,7 @@
 		Czech:"Bonus Zlata za objevení přírodních divů (pokud jste první), Kulturní body, Spokojenost a výnosy z polí s přírodními divy jsou zdvojnásobené."
 		German:"Gold Bonus für die Entdeckung von natürlichen Wundern (Bonus erhöht, falls erster Entdecker). Kultur, Zufriedenheit und Felderträge von natürlichen Wundern werden verdoppelt."
 		Polish:"Bonus w Złocie za odkrycie Cudu Natury (bonus zwiększa się jeżeli odkryłeś go pierwszy). Kultura, Zadowolenie i wydajność pól z Cudu Natury są podwojone"
+		Korean:"자연 경관을 발견했을 때 더 많은 금을 받습니다.(최초로 발견할 경우에는 추가 금을 더 받습니다.) 자연경관에서의 타일 생산량이 두 배가 됩니다."
 }
 
 
@@ -2063,6 +2225,7 @@
 		Russian:"Уникальные юниты"
 		Czech:"Unikátní dovednosti"
 		Polish:"Unikalne jednostki"
+		Korean:"고유 유닛"
 }
 
 	"Promotions":{
@@ -2077,6 +2240,7 @@
 		Russian:"Повышения"
 		Czech:"Povýšení"
 		Polish:"Awanse"
+		Korean:"승급"
 }
 
 	"Barbarians":{
@@ -2091,6 +2255,7 @@
 		Russian:"Варвары"
 		Czech:"Barbaři"
 		Polish:"Barbażyńcy"
+		Korean:"야만인"
 }
 
 }
