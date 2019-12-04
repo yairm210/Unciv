@@ -14,7 +14,7 @@
 		Polish:"Pałac"
 		Czech:"Palác"
 		Ukrainian:"Палац"
-        Malay:"Istana"
+		Malay:"Istana"
 		Korean:"궁전"
 }
 
@@ -46,7 +46,7 @@
 		Polish:"Pomnik"
 		Czech:"Pomník"
 		Ukrainian:"Монумент"
-        Malay:"Tugu"
+		Malay:"Tugu"
 		Korean:"기념비"
 }
 
@@ -71,7 +71,7 @@
 		Russian:"Каменные мастерские"
 		French:"Ouvrages de maçonnerie"
 		Romanian:"Carieră de piatră"
-		Spanish:"Cantería"
+		Spanish:"Cantera"
 		Simplified_Chinese:"石工坊"
 		Traditional_Chinese:"石工坊"
 		Portuguese:"Obras de pedras"
@@ -93,6 +93,7 @@
 		German:"Darf nicht auf dem Flachland sein."
 		Ukrainian:"Не може бути на рівнинах"
 		Korean:"평지에 건설 "
+		Spanish:"No debe de ubicarse en llanura"
 }
 
 	"Stonehenge":{
@@ -108,7 +109,7 @@
 		Czech:"Stonehenge"
 		German:"Stonehenge"
 		Ukrainian:"Стоунхендж"
-        Malay:"Stonehenge"
+		Malay:"Stonehenge"
 		Korean:"스톤헨지"
 }
 
@@ -122,6 +123,7 @@
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
 		Ukrainian:"'Час знищує речі; усе старіє і забувається під тиском часу' - Арістотель"
 		Korean:"'사물은 시간과 함께 스러진다. 시간의 힘 아래 만물이 늙어가고 잊혀진다.' - 아리스토텔레스" 
+		Spanish:"'El tiempo desmorona las cosas, todo emvejece y se olvida bajo el poder del tiempo' - Aristóteles"
 }
 
 	/*
@@ -133,8 +135,9 @@
 		Czech:"Chrám Artemis"
 		Polish:"Świątynia Artemidy"
 		Ukrainian:"Храм Артеміди"
-        Malay:"Kuil Artemis"
+        	Malay:"Kuil Artemis"
 		Korean:"아르테미스 사원"
+		Spanish:"Templo de Artemisa"
 	}
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
@@ -144,26 +147,30 @@
 		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
 		Ukrainian:"'Не тільки краса лісу зворушує людські серця, а щось невловиме, його повітря, енергія старих дерев, що так чудово змінює і відновлює стомлений дух' - Роберт Луїс Стівенсон"
 		Korean:"'인간이 숲을 동경하는 이유는 그저 숲이 아름다워서가 아니라 오래된 숲의 고목에서 뿜어져 나오는 공기에 존재하는 미묘한 무엇인가가 사람의 지친 영혼에 활기를 불어넣어 주고 회복시켜 주기 때문이다.'-로버트 루이스 스티븐슨"
+		Spanish:"'No es tanto por su belleza que el bosque reclama el corazón de los hombres, sino por ese sentimiento sutil, esa calidad del aire, la emanación de los viejos árboles, que tan maravillosamente cambian y renueva un espíriyu cansado.' - Robert Louis Stevenson"
 	}
 
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
+		
 		French:"+10% de croissance dans toutes les villes"
 		German:"+10% Wachtum in allen Städten"
 		Czech:"10% Růst populace ve všech městech"
 		Polish:"10% Wzrostu populacji we wszystkich miastach"
 		Ukrainian:"Населення усіх міст +10%"
-        Malay:"+10% pertumbuhan di semua bandar"
+		Malay:"+10% pertumbuhan di semua bandar"
 		Korean:"모든 도시의 식량 생산량 +10%"
-
+		Spanish:"+10% de crecimiento en todas las Ciudades"
 	}
 
 	"+15% Production towards Ranged Units":{
 		Italian:"+15% Produzione per le unità a distanza"
+		
 		Czech:"15% Produkce jednotek pro boj na dálku"
 		Polish:+15% Wzrostu produkcji jednostek walczących w dystansie"
 		Ukrainian:"Виробництво для далекобійних підрозділів +15%"
 		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
+		Spanish:"+15% de producción para unidades a distancia"
 	}
 
 	*/
@@ -192,21 +199,21 @@
 		Romanian:"+1 știință la 2 persoane"
 		German:"+1 Wissenschaft pro 2 Einwohner"
 		Dutch:"+1 Wetenschap per 2 Populatie"
-		Spanish:"+1 Ciencia cada 2 habitantes"
+		Spanish:"+1 Ciencia por cada 2 habitantes"
 		Simplified_Chinese:"每2人口+1科研"
 		Traditional_Chinese:"每2人口+1科研"
 		Portuguese:"+1 Ciência a cada 2 habitantes"
 		Polish:"+1 do nauki na 2 obywateli"
 		Czech:"+1 Výzkum za každé 2 členy Populace"
 		Ukrainian:"За кожні 2 населення наука +1"
-        Malay:"Setiap 2 populasi +1 Sains"
+		Malay:"Setiap 2 populasi +1 Sains"
 		Korean:"도시의 시민 2명당 과학 1 증가"
 }
 
 	"Paper Maker":{
 		Italian:"Cartiera"
 		Romanian:"Fabricant de hârtie"
-		Spanish:"Papelera"
+		Spanish:"Fabricante de papel"
 		Simplified_Chinese:"造纸坊"
 		Traditional_Chinese:"造紙坊"
 		German:"Papiermacher"
@@ -216,7 +223,7 @@
 		Czech:"Papírny"
 		Ukrainian:"Папірня"
                 Malay:"Pembuat kertas"
-				Korean:"종이 공방"
+		Korean:"종이 공방"
 }
 
 	"The Great Library":{
@@ -246,7 +253,8 @@
 		German:"Kostenlose Technologie"
 		Ukrainian:"Технологія безкоштово"
                 Malay:"Teknologi Percuma"
-				Korean:"기술 하나를 무료로 획득"
+		Korean:"기술 하나를 무료로 획득"
+		Spanish:"Tecnologia gratis"
 }
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
@@ -259,6 +267,7 @@
 		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
 		Ukrainian:"'Бібліотеки це святилища, де лежать і зберігаються мощі давніх святих, повні справжніх чеснот, і все, що не має обману і вигадок.' - Сер Френсіс Бекон"
 		Korean:"'도서관은, 진정한 미덕으로 가득한 고대 현인의 모든 유물이, 그리고 현혹과 기만이 없는 모든 것이 보존되어 안식하는 신전이다.' - 프랜시스 베이컨 경"
+		Spanish:"'Las bibliotecas son como los antiguos santurios donde descansan las reliquias de los santos, llenos de gran virtud, y donde todo sin engaños y mentiras se preservan y descansan' - Sir Francis Bacon"
 }
 
 	"Circus":{
@@ -307,6 +316,7 @@
 		Ukrainian:"Мури Вавілону"
                 Malay:"Dinding Babylon"
 				Korean:"바빌론 성벽"
+		Spanish:"Murallas de Babilonia"
 }
 
 	"The Pyramids":{
@@ -335,6 +345,7 @@
 		Russian:"'А вы даруйте мне, когда я есмь там, погребальные тризны, и воскурение ладана, и мази для умащения, и все чистые и прекрасные вещи, в которых обитает бог...' -  - из египетской 'Книги мертвых'" //civ 5 official
 		Ukrainian:"'О, нехай болі смерті, які приходять від тебе, не увійдуть в моє тіло. Я бог Тем, і я передова частина неба, і сила, яка захищає мене, - це те, що є з усіма богами назавжди.' - Книга мертвих, перекладена сером Ернестом Альфредом Воллісом Буджем"
 		Korean:"'오, 그대에게 찾아온 죽음의 고통이 나의 육체에 들지 않기를. 나는 템 신으로서, 하늘 꼭대기에 거하며, 영원히 모든 신과 함께 하는 힘이 나를 보호할지니.' - 사자의 서, E.A. 월리스 버지 경 역"
+		Spanish:"'No dejes que el dolor de la muerte que cae sobre todo entre en mi cuerpo. Yo soy el dios Tem, yo soy el mas poderoso en el cielo, el poder que me protege es el mismo que se ha encontrado entre los dioses desde el inicio de los tiempos' - El libro de la Muerte, traducido por Sir Ernest Alfred Wallis Budge"
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -430,6 +441,7 @@
 		German:"Koloss"
 		Ukrainian:"Колос Родоський"
 		Korean:"로도스의 거상"
+		Spanish:"Coloso"
 }
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -441,6 +453,7 @@
 		Russian:"'По миру тесному шагает колосс, а мы, ничтожные людишки, у исполинских ног его снуем и для себя могил бесславных ищем.' - Уильям Шекспир, 'Юлий Цезарь'"
 		Ukrainian:"'Так, мій друже. Він мов Колос, піднявсь над бідним світом, А ми, маленькі, ходим під тяжкими Його ногами й виглядаєм місця, Де б у ганебній опочіть могилі.' - Вільям Шекспір. Юлій Цезар"
 		Korean:"'그는 그 좁은 세상에 거신상처럼 우뚝 서 있고, 우리 하찮은 자들은 그 거대한 다리 사이를 지나다니며 부끄러운 무덤자리를 봐두려고 주변을 힐끔거리지.'-윌리엄 셰익스피어, 줄리어스 시저 1막 2장"
+		Spanish:"Por qué, él se acerca entre el estrecho mundo como un coloso, mientras nosotros los minusculos hombres nos desplazamos y miramos bajo sus inmensos pies, mientras viajamos para encontrar nuestro deshonroso final.' - William Shakespeare, Julio Cesar"
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -454,6 +467,7 @@
 		German:"+1 für bewirtschaftete Wasserfelder der Stadt"
 		Ukrainian:"Одна робоча клітинка у цьому місті дає золота +1"
 		Korean:"물 타일에 시민을 배치했을 때 얻는 금 +1"
+		Spanish:"+1 de oro por bloque de agua trabajado en la ciudad"
 }
 
 	"Temple":{
@@ -497,6 +511,7 @@
 		Czech:"Velká mešita v Djenné"
 		Ukrainian:"Могила Аскіа"
                 Malay:Masjid Piramid Lumpur"
+		Spanish:"Mesquita de barro"
 				Korean:"진흙 피라미드 모스크"
 }
 	*/
@@ -526,6 +541,7 @@
 		Russian:"'Он спросил, есть ли кто-нибудь на свете мудрее меня, и Пифия ему ответила, что никого нет мудрее... потому что я коли уж не знаю, то и не думаю, что знаю' - Сократ в «Апологии Сократа» Платона" //civ 5 official. Sounds bad
 		Ukrainian:"'Давній оракул сказав, що я наймудріший з греків. Бо я єдиний, хто знає, що нічого не знає.' - Сократ"
 		Korean:"'고대 오라클은 내가 그리스에서 가장 현명하다 하였다. 그것은, 모든 그리스인 중 나만이, 내가 아무것도 모른다는 사실을 알기 때문이다.' - 소크라테스"
+		Spanish:"El Antiguo Oráculo me dijo que yo era el mas sabio de todo los Griegos. Eso es gracias a que estoy solo, de todos los griegos,Yo se que no se nada.' - Socrates"
 }
 
 	"Free Social Policy":{
@@ -570,6 +586,7 @@
 		German:"Manhattan-Projekt"
 		Polish:"Projekt Manhattan"
                 Malay:"Projek Manhattan"
+		Spanish:"Proyecto Manhattan"
 				Korean:"맨해튼 프로젝트"
 				
 }
@@ -599,6 +616,7 @@
 		Russian:"'Катун установлен в Чичен-Итце. Здесь будет поселение Итца. Кетцаль придет, зеленая птица придет. Ах Кантеналь придет. Вот слово Бога. Народ Итца придет.' - из книг Чилам Балам"
 		Ukrainian:"'Катун почався в Чічен-Іці. Поселення Іца розміщене тут. Кетцаль прийде, зелений птах прийде. А-Кантенал прийде. Це слово Бога. Іца прийде.' - Чилам-Балам"
 		Korean:"'치첸 이사에 카툰이 서리라. 이트사가 그곳에 정착하리라. 케살이 오리라, 푸른 새가 오리라. 아 칸테날이 오리라. 이는 신의 말씀이라. 이트사가 오리라.' - 칠람 발람의 서"
+		Spanish:"'El Katun se asento en Chichen Itza. El asentamiento de Itza debera de ubicarse aqui. El quetzal debera venir, el ave verde debera volver. Ah Kantenal vendrá. Esta es la palabra de Dios. El Itza pronto vendrá.' - El libro de Chilam Balam"
 }
 
 	"Golden Age length increases +50%":{
@@ -626,6 +644,7 @@
 		German:"Erlaubt Kernwaffen"
 		Polish:"Umożliwia broń nuklearną"
 		Korean:"원자폭탄과 핵미사일 생산 가능"
+		Spanish:"Activar Armas Atomicas"
 }
 
 	"Lighthouse":{
@@ -658,6 +677,7 @@
 		Czech:"Lze budovat pouze ve městech na pobřeží"
 		Ukrainian:"Можна збудувати тільки в набережних містах"
 		Korean:"도시가 해안에 인접해 있어야 함."
+		Spanish:"Solo puede ser contruido en ciudades costeras"
 }
 
 	"+1 food from Ocean and Coast tiles":{
@@ -672,6 +692,7 @@
 		Czech:"+1 Jídlo z oceánu a pobřežních polí"
 		Ukrainian:"З океанських і берегових клітинок їжа +1"
 		Korean:"연안과 대양 타일에 식량 +1"
+		Spanish:"+1 de comida por los bloques de oceano y costa"
 }
 
 	"The Great Lighthouse":{
@@ -699,10 +720,11 @@
 		Russian:"'Отправляющиеся на кораблях в море, производящие дела на больших водах, видят дела Господа и чудеса Его в пучине...' - Bible, Псалом 106:23-24" // yes, 106. Just another numbering for us. 
 		Ukrainian:"'Ті, хто по морю пливе кораблями, хто чинить зайняття своє на великій воді; вони бачили чини Господні та чуда Його в глибині!' - Біблія, Псалом 107:23-34"
 		Korean:"'배들을 바다에 띄우며 큰 물에서 일을 하는 자는 여호와께서 행하신 일들과 그의 기이한 일들을 깊은 바다에서 보나니.' - 성경, 시편 107:23-24"
+		Spanish:"'Aquellos que decienden al mar en naves, y hacen negocios en las inmensas aguas; ellos han visto la obrea de Dios, y sus maravillas en las profundidades.' - La Biblia, Salmos 107:23-24"
 }
 
 	"All military naval units receive +1 movement and +1 sight":{
-		Spanish:"Todas las unidades militares navales reciben +1de movimiento y +1 de vision"
+		Spanish:"Todas las unidades militares navales reciben +1 de movimiento y +1 en vision"
 		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
 		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
 		Romanian:"Toate unitățile militare navale primesc +1 deplasare și +1 raza vizuală"
@@ -728,6 +750,7 @@
 		German:"Gerichtsgebäude"
 		Ukrainian:"Суд"
                 Malay:"Makamah"
+		Spanish:"Juzgado"
 				Korean:"법원"
 }
 
@@ -742,6 +765,7 @@
 		Russian:"Убрирает дополнительное недовольство из захваченных городов" 
 		Ukrainian:"Видаляє надмірне нещастя з анексованих міст"
 		Korean:"점령 후 합병한 도시에서 발생하는 추가 불행 제거"
+		Spanish:"Eliminar la infelicidad extra de las ciudades anexadas"
 }
 
 	"Can only be built in annexed cities":{
@@ -754,6 +778,7 @@
 		Russian:"Строительство возможно только в захваченных городах"
 		Ukrainian:"Можна збудувати тільки в анексованих містах"
 		Korean:"점령한 도시에만 건설 가능"
+		Spanish:"Solo puede ser contruido en las ciudades anexadas"
 
 }
 
@@ -785,6 +810,7 @@
 		Czech:"+15% produkce při výstavbě jízdních jednotek v tomto městě"
 		Ukrainian:"Для будівництва вершників у цьому місті виробництво +15%"
 		Korean:"기마 유닛을 생산할 때 생산력 +15%"
+		Spanish:"+15 de produción en unidades a caballo en esta ciudad"
 }
 
 	"Circus Maximus":{
@@ -820,7 +846,7 @@
 				Korean:"공중 정원"
 }
 
-	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
+	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.' - F. Frankfort Moore":{
 		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
 		Simplified_Chinese:"“我相信如果有凡人能听到神谕，那一定是在天气凉爽时的花园之中。”——弗兰克·法兰克福·摩尔（英国作家）"
 		Traditional_Chinese:"“我相信如果有凡人能聽到神諭，那一定是在天氣涼爽時的花園之中。”——弗蘭克·法蘭克福·摩爾（英國作家）"
@@ -830,6 +856,7 @@
 		Russian:"'Если бы смертному когда-либо прозвучал голос Бога, это случилось бы в саду на закате дня.' - Ф. Франкфорт Мур"
 		Ukrainian:"'Гадаю, якщо смертний почує слово Бога, це буде в садку надвечір.' - Френк Франкфурт Мур"
 		Korean:"'만에 하나 인간이 신의 말씀을 듣게 된다면, 그것은 서늘한 아침 정원에서일 것이다.' - F. 프랭크포트 무어"
+		Spanish:"'Creo que si alguna vez un mortal escucha la voz de Dios el estara en una jardin bajo el cobijo del día.' - F. Frankfort Moore"
 }
 
 	/*
@@ -844,6 +871,7 @@
 		Czech:"Socha Zeuse"
 		Ukrainian:"Статуя Зевса"
 		Korean:"제우스 상"
+		Spanish:"Estatua de Zeus"
 }
 
 	"+15% Combat Strength when attacking Cities":{
@@ -856,6 +884,7 @@
 		Czech:"+15% k bojové síle při útoku na město"
 		Ukrainian:"При нападі на міста сила атаки +15%"
 		Korean:"도시 공격 시 유닛의 전투력 +15%"
+		Spanish:"+15% de fuerza de combate cuando se attacan ciudades"
 }
 
 	"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad":{
@@ -864,6 +893,7 @@
 		Czech:"'Promluvil, syn Kronosů, přikývl hlavou, temným obočím a nesmrtelně pomazané vlasy velkého boha se mu z jeho božské hlavy vyvalily a celý Olymp se otřásl.' - Ilias"
 		Ukrainian:"'Мовив Кротон, чорногустими здвигнувши бровами. І з голови владаревої кучерів пасма нетлінні Впали на плечі безсмертні, й великий Олімп похитнувся.' - Гомер. Іліада"
 		Korean:"'눈썹이 짙은 크로노스의 아들이 고개를 끄덕이며 대답하자 이 위대한 신의 머릿결이 흩날리며 올림푸스 전체가 진동했다.' - 호메로스, 일리아드"
+		Spanish:"'El hablo, el hijo de Kronos, y asinitio con su cabeza y sus oscuras cejas, y el cabello de el inmortal dios que brotaba de su cabeza fue unjido, y todo el Olimpo  se sacudio' - La iliada"
 }
 
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
@@ -877,6 +907,7 @@
 		Czech:"Mauzoleum v Halikarnassu"
 		Ukrainian:"Мавзолей"
 		Korean:"할리카르나소스의 영묘"
+		Spanish:"Mausoleo de Halicarnaso"		
 }
 
 	"+2 Gold from every source of Marble and Stone":{
@@ -889,6 +920,7 @@
 		Czech:"+2 zlata za každý zdroj Mramoru a Kamene"
 		Ukrainian:"З кожного джерела мармуру і каміння +2 золота"
                 Malay:"+2 Emas daripada setiap sumber batu dan mamar"
+		Spanish:"+2 de oro por cada fuente de Marmol y Piedra"
 				Korean:"개발한 대리석 또는 석재 산지에서 금 +2"
 }
 
@@ -899,6 +931,7 @@
 		Ukrainian:"Отримати 100 золота за використання видатної особи"
 		German:"Erhalte 100 Gold durch das Benutzen einer großen Persönlichkeit"
 		Korean:"위인이 소모될 때마다 금을 100 획득"
+		Spanish:"Gana 100 de oro cuando uses a la Gran Persona
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
@@ -907,6 +940,7 @@
 		Czech:"'Celá Země je hrobkou hrdinských mužů a jejich příběh není vytesán do kamene, ale zůstává všude bez viditelného symbolu vpleteného do života jiných lidí.' - Periklés"
 		Ukrainian:"'Уся Земля це могила героїв і їхні історії не тільки викарбувані на надгробках, а непомітно присутні всюди, вплетені в життя інших людей.' - Перикл"
 		Korean:"'영웅의 발자취는 석상과 비석에서만 찾을 수 있는 것이 아니다. 그들의 이야기는 이 세상 모든 사람의 삶에 녹아 있다.' - 페리클레스"
+		Spanish:"'Toda la tierra es la tumba de los heroicos hombres y sus magnificas historias, que no solo se encuentran gravadas en piedra o sobre arcilla ademas en cualquie lugar sin signos visibles de el paso de el hombre y su vida.' - Peracles"
 }
 
 	"Petra":{
@@ -916,6 +950,7 @@
 		Ukrainian:"Петра"
 		German:"Petra"
 		Korean:"페트라"
+		Spanish:"Petra"
 }
 
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
@@ -925,6 +960,7 @@
 		Ukrainian:"Усі робочі пустельні клітинки в місті (крім затоплених рівнин) дають їжі +1 і виробництва +1"
 		German:"+1 Nahrung und +1 Produktion von allen bewirtschafteten Wüstenfeldern in der Stadt (außer Flussauen)"
 		Korean:"도시에서 작업하는 사막 타일(범람원 제외) 하나당 식량 +1, 생산력 +1"
+		Spanish:"+1 de comida y de produccion a todos los bloques de desierto trabajado sobre la ciudad (excepto a los campos de comida)
 }
 
 	"+6 Culture when discovering Archeology":{
@@ -934,6 +970,7 @@
 		Ukrainian:"При відкритті археології культура +6"
 		German:"+6 Kultur bei Entdeckung der Archäologie"
 		Korean:"고고학 연구 시 문화 +6"
+		Spanish:"+6 de cultura cuando decubres piesas arquelogicas"
 }
 
 	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
@@ -942,6 +979,7 @@
 		Czech:"'... kdo vypije vodu, kterou mu dám, řekl Lord, bude mít v sobě pramen věčného života. Nechť mě přivedou na svatou horu. Přes poušť a přes hory do kaňonu půlměsíce ...' - Indiana Jones"
 		Ukrainian:"'...хто пʼє воду, яку я дав, сказав Бог, отримає джерело всередині, повне вічного життя. Нехай вони принесуть мене на вашу святу гору. Через пустелю і гори до Долини Півмісяця...' - Індіана Джонс"
 		Korean:"'...내가 주는 물을 마시는 자는 불로장생할 것이니 사람들이 나를 네가 있는 성스러운 산으로 인도하도록 할 지어다. 사막을 가로지르고 산을 넘으면 초승달 계곡이 나오는데...' - 인디아나 존스"
+		Spanish:"'...aquel que tome de el agua que yo le doy, dice el Señor, tendra una primavera froreciendo dentro de gracias a la vida eterna. Dejate guiar a la montaña sagrada en el lugar que habita. Atravez de el desierto y sobre las montañas hasta el cañon de la luna creciente...' - Indiana Jones"
 }
 	*/
 
@@ -973,6 +1011,7 @@
 		German:"Terrakotta Armee"
 		Ukrainian:"Терракотова армія"
 		Korean:"병마용"
+		Spanish:"Soldados de Terracota"
 }
 
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
@@ -985,6 +1024,7 @@
 		Russian:"'Если будешь смотреть на солдат, как на детей, сможешь отправиться с ними в самое глубокое ущелье; если будешь смотреть на солдат, как на любимых сыновей, сможешь идти с ними хоть на смерть.' - Сунь Цзы"
 		Ukrainian:"'Стався до воїнів як до дітей, і вони підуть за тобою у найглибші долини; стався до воїнів як до улюблених синів, і вони будуть готові померти разом з тобою.' - Мистецтво війни. Су Цзи"
 		Korean:"'병사를 자식처럼 부르면 어디든 따를 것이다. 병사를 사랑하는 자식 대하듯 하면 목숨을 바쳐 충성할 것이다.' - 손자"
+		Spanish:"'Trata a tos soldados como a tus hijos y ellos te seguiran hasta los valles mas profundos; cuida de ellos como tus queridos hijos y ellos se mantendran en pie incluso si caen el la muerte.' - Sun Tzu"
 }
 
 	"Market":{
@@ -1092,6 +1132,7 @@
 		Russian:"'Зодчество было главной летописью человечества... каждая общедоступная идея, как и каждый религиозный закон, имела свой памятник.' - Виктор Гюго" //civ 5 official
 		Ukrainian:"'Архітектура записала найвидатніші ідеї людства. Не тільки кожен релігійний символ, але кожна людська думка має власну сторінки у цій величезній книзі.' - Віктор Ґюґо"
 		Korean:"'건축은 항상 인류의 뛰어난 발상을 기록으로 남겼다. 종교적 상징하나하나가, 그뿐 아니라 인간의 생각 하나하나가 그 방대한 책의 한 페이지를 차지하고 있다.' - 빅토르 위고"
+		Spanish:"'La aquitectura a grabado grandes ideas en la historia humana. No solo en los simbolos religiosos tambien en cada pensamiento humano en el vasto libro de nuestra historia' - Victor Hugo"
 }
 
 	"Hagia Sophia":{
@@ -1111,7 +1152,7 @@
 		
 }
 
-	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis":{
+	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificiis":{
 		Italian:"'Perché si erge così alta da toccare il cielo, e come fluttuando sugli altri edifici guarda dall'alto in basso il resto della città, abbellendola, perché fa parte di essa, ma gloriandosi della propria bellezza.' - Procopio, De Aedificis (Sugli edifici)"
 		Simplified_Chinese:"“它高耸入云，从城市中矗立而起，俯视周遭；它是城中之物，但有超俗之美。”——《论建筑》，普罗科匹厄斯（拜占庭学者）"
 		Traditional_Chinese:"“它高聳入雲，從城市中矗立而起，俯視周遭；它是城中之物，但有超俗之美。”——《論建築》，普羅科匹厄斯（拜占庭學者）"
