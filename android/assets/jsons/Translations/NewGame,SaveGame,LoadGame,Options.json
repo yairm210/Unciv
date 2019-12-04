@@ -777,7 +777,7 @@
 		Traditional_Chinese:"史詩",
 		Russian:"Эпическая"
                 Polish:"Szybka"
-		Korean:"느림"
+		Korean:"서사시"
 		Czech:"Dlouhá"
 		Ukrainian:"Епічна"
 		German:"Episch"
@@ -1246,7 +1246,7 @@
 		German: "Untätige Einheiten anzeigen bei Rundenende"
 		French:"Vérifier les unités inactives"
 		Russian:"Найти незанятые юниты"
-		Korean:"턴 종료 전에 행동하지 않은 유닛 보기"
+		Korean:"턴이 끝나기 전에 미행동 유닛 보기"
 		Czech:"Kontrolovat zahálející jednotky"
 		Ukrainian:"Перевіряти неробочі підрозділи"
 		Polish:"Sprawdź jednostki czekające na rozkazy"
@@ -1259,7 +1259,7 @@
 		Russian:"Перемещать юниты одним касанием"
 		Simplified_Chinese:"点击目标地块立即移动",
 		Traditional_Chinese:"點擊目標地區立即移動",
-                Korean:"한 번 눌러서 유닛 이동"
+                Korean:"한 번의 탭으로 유닛 이동"
 		Czech:"Pohyb jednotek na jeden klik"
 		Ukrainian:"Переміщення підрозділів одним натиском"
 		Polish:"Przemieść jednostki jednym dotykiem"
