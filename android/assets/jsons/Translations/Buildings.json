@@ -14,7 +14,8 @@
 		Polish:"Pałac"
 		Czech:"Palác"
 		Ukrainian:"Палац"
-                Malay:"Istana"
+        Malay:"Istana"
+		Korean:"궁전"
 }
 
 	"Indicates the capital city":{
@@ -29,6 +30,7 @@
 		Russian:"Показывает столицу"
 		Czech:"Označuje hlavní město"
 		Ukrainian:"Позначає столицю"
+		Korean:"수도를 나타내는 건물"
 }
 
 	"Monument":{
@@ -44,7 +46,8 @@
 		Polish:"Pomnik"
 		Czech:"Pomník"
 		Ukrainian:"Монумент"
-                Malay:"Tugu"
+        Malay:"Tugu"
+		Korean:"기념비"
 }
 
 	"Granary":{
@@ -60,6 +63,7 @@
 		Polish:"Spichlerz"
 		Czech:"Sýpka"
 		Ukrainian:"Житниця"
+		Korean:"곡창"
 }
 
 	"Stone Works":{
@@ -75,6 +79,7 @@
 		Polish:"Kamieniarz"
 		Czech:"Kamenictví"
 		Ukrainian:"Каменярня"
+		Korean:"석재 공장"
 }
 
 	"Must not be on plains":{
@@ -87,6 +92,7 @@
 		Czech:"Nesmí být na pláních."
 		German:"Darf nicht auf dem Flachland sein."
 		Ukrainian:"Не може бути на рівнинах"
+		Korean:"평지에 건설 "
 }
 
 	"Stonehenge":{
@@ -102,7 +108,8 @@
 		Czech:"Stonehenge"
 		German:"Stonehenge"
 		Ukrainian:"Стоунхендж"
-                Malay:"Stonehenge"
+        Malay:"Stonehenge"
+		Korean:"스톤헨지"
 }
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
@@ -114,6 +121,7 @@
 		Czech:"'Čas věci rozdírá. Vše stárne pod mocí Času a je zapomenuto, jak Čas mine.' - Aristoteles"
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
 		Ukrainian:"'Час знищує речі; усе старіє і забувається під тиском часу' - Арістотель"
+		Korean:"'사물은 시간과 함께 스러진다. 시간의 힘 아래 만물이 늙어가고 잊혀진다.' - 아리스토텔레스" 
 }
 
 	/*
@@ -125,7 +133,8 @@
 		Czech:"Chrám Artemis"
 		Polish:"Świątynia Artemidy"
 		Ukrainian:"Храм Артеміди"
-                Malay:"Kuil Artemis"
+        Malay:"Kuil Artemis"
+		Korean:"아르테미스 사원"
 	}
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
@@ -134,6 +143,7 @@
 		Czech:"'Není to ani tak pro svou krásu, že les působí na lidská srdce, jako na to jemné cosi, ta kvalitu vzduchu, energie vyzařující ze starých stromů, které tak úžasně mění a osvěžuje unaveného ducha.' - Robert Louis Stevenson"
 		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
 		Ukrainian:"'Не тільки краса лісу зворушує людські серця, а щось невловиме, його повітря, енергія старих дерев, що так чудово змінює і відновлює стомлений дух' - Роберт Луїс Стівенсон"
+		Korean:"'인간이 숲을 동경하는 이유는 그저 숲이 아름다워서가 아니라 오래된 숲의 고목에서 뿜어져 나오는 공기에 존재하는 미묘한 무엇인가가 사람의 지친 영혼에 활기를 불어넣어 주고 회복시켜 주기 때문이다.'-로버트 루이스 스티븐슨"
 	}
 
 	"+10% Growth in all Cities":{
@@ -143,7 +153,8 @@
 		Czech:"10% Růst populace ve všech městech"
 		Polish:"10% Wzrostu populacji we wszystkich miastach"
 		Ukrainian:"Населення усіх міст +10%"
-                Malay:"+10% pertumbuhan di semua bandar"
+        Malay:"+10% pertumbuhan di semua bandar"
+		Korean:"모든 도시의 식량 생산량 +10%"
 
 	}
 
@@ -152,6 +163,7 @@
 		Czech:"15% Produkce jednotek pro boj na dálku"
 		Polish:+15% Wzrostu produkcji jednostek walczących w dystansie"
 		Ukrainian:"Виробництво для далекобійних підрозділів +15%"
+		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
 	}
 
 	*/
@@ -169,7 +181,8 @@
 		Polish:"Biblioteka"
 		Czech:"Knihovna"
 		Ukrainian:"Бібліотека"
-                Malay:"Perpustakaan"
+        Malay:"Perpustakaan"
+		Korean:"도서관"
 }
 
 	"+1 Science Per 2 Population":{
@@ -186,7 +199,8 @@
 		Polish:"+1 do nauki na 2 obywateli"
 		Czech:"+1 Výzkum za každé 2 členy Populace"
 		Ukrainian:"За кожні 2 населення наука +1"
-                Malay:"Setiap 2 populasi +1 Sains"
+        Malay:"Setiap 2 populasi +1 Sains"
+		Korean:"도시의 시민 2명당 과학 1 증가"
 }
 
 	"Paper Maker":{
@@ -202,6 +216,7 @@
 		Czech:"Papírny"
 		Ukrainian:"Папірня"
                 Malay:"Pembuat kertas"
+				Korean:"종이 공방"
 }
 
 	"The Great Library":{
@@ -217,6 +232,7 @@
 		Polish:"Wielka Biblioteka"
 		Czech:"Alexandrijská knihovna"
 		Ukrainian:"Александрійська бібліотека"
+		Korean:"알렉산드리아 도서관"
 }
 
 	"Free Technology":{
@@ -230,6 +246,7 @@
 		German:"Kostenlose Technologie"
 		Ukrainian:"Технологія безкоштово"
                 Malay:"Teknologi Percuma"
+				Korean:"기술 하나를 무료로 획득"
 }
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
@@ -241,6 +258,7 @@
 		Polish:"'Biblioteki to świątynie, w których przechowuje się i pielęgnuje wszystkie relikwie starożytnych świętych, pełne prawdziwej cnoty, a przy tym pozbawione złudzeń i kłamstw.' - Sir Francis Bacon"
 		Russian:"'Библиотеки - это раки, где покойно хранятся останки великих святых, полных добродетели и лишенных притворства.' - Сэр Френсис Бэкон"
 		Ukrainian:"'Бібліотеки це святилища, де лежать і зберігаються мощі давніх святих, повні справжніх чеснот, і все, що не має обману і вигадок.' - Сер Френсіс Бекон"
+		Korean:"'도서관은, 진정한 미덕으로 가득한 고대 현인의 모든 유물이, 그리고 현혹과 기만이 없는 모든 것이 보존되어 안식하는 신전이다.' - 프랜시스 베이컨 경"
 }
 
 	"Circus":{
@@ -257,6 +275,7 @@
 		Czech:"Cirkus"
 		Ukrainian:"Цирк"
                 Malay:"Sarkus"
+				Korean:"서커스"
 }
 
 	"Walls":{
@@ -273,6 +292,7 @@
 		Czech:"Hradby"
 		Ukrainian:"Мури"
                 Malay:"Dinding"
+				Korean:"성벽"
 }
 
 	"Walls of Babylon":{
@@ -286,6 +306,7 @@
 		German:"Babylons Mauern"
 		Ukrainian:"Мури Вавілону"
                 Malay:"Dinding Babylon"
+				Korean:"바빌론 성벽"
 }
 
 	"The Pyramids":{
@@ -301,6 +322,7 @@
 		Polish:"Piramidy"
 		Czech:"Pyramidy"
 		Ukrainian:"Піраміди"
+		Korean:"피라미드"
 }
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
@@ -312,6 +334,7 @@
 		Czech:"'Ó, ať bolesti smrti vstoupí do mého těla. Já jsem Bůh Tem a jsem především části oblohy, moc která mě chrání je ta, jenž je navždy se všemi bohy.' - Kniha mrtvých, přeložil sir Ernest Alfred Wallis Budge"
 		Russian:"'А вы даруйте мне, когда я есмь там, погребальные тризны, и воскурение ладана, и мази для умащения, и все чистые и прекрасные вещи, в которых обитает бог...' -  - из египетской 'Книги мертвых'" //civ 5 official
 		Ukrainian:"'О, нехай болі смерті, які приходять від тебе, не увійдуть в моє тіло. Я бог Тем, і я передова частина неба, і сила, яка захищає мене, - це те, що є з усіма богами назавжди.' - Книга мертвих, перекладена сером Ернестом Альфредом Воллісом Буджем"
+		Korean:"'오, 그대에게 찾아온 죽음의 고통이 나의 육체에 들지 않기를. 나는 템 신으로서, 하늘 꼭대기에 거하며, 영원히 모든 신과 함께 하는 힘이 나를 보호할지니.' - 사자의 서, E.A. 월리스 버지 경 역"
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -329,6 +352,7 @@
 		Czech:"Rychlost dělníka se zvýšila o 25% "
 		Ukrainian:"Швидкість будівництва +25%"
                 Malay:"Pekerja buruh meningkat 25%"
+				Korean:"타일의 시설 건설 속도 + 25%"
 }
 
 	"Provides 2 free workers":{
@@ -346,6 +370,7 @@
 		Czech:"Poskytuje 2 dělníky zdarma"
 		Ukrainian:"Безоплатно надає 2 робітників"
                 Malay:"bagi 2 pekerja secara percuma"
+				Korean:"일꾼 두 명이 도시 근처에 무료로 출현"
 }
 
 	"Barracks":{
@@ -361,6 +386,7 @@
 		Polish:"Koszary"
 		Czech:"Kasárny"
 		Ukrainian:"Казарми"
+		Korean:"병영"
 }
 
 	"Krepost":{ // russian uique, transliterate this probably, this is a russian word
@@ -375,6 +401,7 @@
 		Polish:"Twierdza"
 		Czech:"Krepost"
 		Ukrainian:"Крєпость"
+		Korean:"크리아포스츠"
 }
 
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
@@ -389,6 +416,7 @@
 		Russian:"-25% к необходимому количеству Культура и Золото для получения клеток вокруг данного города"
 		Czech:"Zlato a kulturní body na nákup nového území ve městě se snížily o 25%"
 		Ukrainian:"У цьому місті вартість освоєння нових клітинок у культурі і золоті -25%"
+		Korean:"새로운 타일을 획득하기 위한 문화와 타일 구매 비용 -25%"
 }
 
 	"Colossus":{
@@ -401,6 +429,7 @@
 		Czech:"Rhodský kolos"
 		German:"Koloss"
 		Ukrainian:"Колос Родоський"
+		Korean:"로도스의 거상"
 }
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -411,6 +440,7 @@
 		Czech:"'Proč člověk, řídil úzký svět jako kolos, a my drobní muži kráčíme pod jeho obrovskýma nohama, abychom spočinuli v nečestných hrobech.' - William Shakespeare, Julius Caesar"
 		Russian:"'По миру тесному шагает колосс, а мы, ничтожные людишки, у исполинских ног его снуем и для себя могил бесславных ищем.' - Уильям Шекспир, 'Юлий Цезарь'"
 		Ukrainian:"'Так, мій друже. Він мов Колос, піднявсь над бідним світом, А ми, маленькі, ходим під тяжкими Його ногами й виглядаєм місця, Де б у ганебній опочіть могилі.' - Вільям Шекспір. Юлій Цезар"
+		Korean:"'그는 그 좁은 세상에 거신상처럼 우뚝 서 있고, 우리 하찮은 자들은 그 거대한 다리 사이를 지나다니며 부끄러운 무덤자리를 봐두려고 주변을 힐끔거리지.'-윌리엄 셰익스피어, 줄리어스 시저 1막 2장"
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -423,6 +453,7 @@
 		Czech:"+1 zlata za každé pole s vodou v tomto městě"
 		German:"+1 für bewirtschaftete Wasserfelder der Stadt"
 		Ukrainian:"Одна робоча клітинка у цьому місті дає золота +1"
+		Korean:"물 타일에 시민을 배치했을 때 얻는 금 +1"
 }
 
 	"Temple":{
@@ -439,6 +470,7 @@
 		Czech:"Chrám"
 		Ukrainian:"Храм"
                 Malay:"Kuil"
+				Korean:"사원"
 }
 
 	"Burial Tomb":{
@@ -453,7 +485,8 @@
 		Russian:"Гробница"
 		Czech:"Hrobka"
 		Ukrainian:"Гробниця"
-                Malay:Tempat Persemadian"
+                Malay:"Tempat Persemadian"
+				Korean:"왕릉"
 }
 
 	/*
@@ -464,6 +497,7 @@
 		Czech:"Velká mešita v Djenné"
 		Ukrainian:"Могила Аскіа"
                 Malay:Masjid Piramid Lumpur"
+				Korean:"진흙 피라미드 모스크"
 }
 	*/
 
@@ -480,6 +514,7 @@
 		Polish:"Wyrocznia"
 		Czech:"Věštírna"
 		Ukrainian:"Оракул"
+		Korean:"오라클"
 }
 
 	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
@@ -490,6 +525,7 @@
 		Czech:"'Starověké Orakulum řeklo, že jsem nejmoudřejší ze všech Řeků. Je to proto, že já sám ze všech Řeků vím, že nic nevím' - Sókratés"
 		Russian:"'Он спросил, есть ли кто-нибудь на свете мудрее меня, и Пифия ему ответила, что никого нет мудрее... потому что я коли уж не знаю, то и не думаю, что знаю' - Сократ в «Апологии Сократа» Платона" //civ 5 official. Sounds bad
 		Ukrainian:"'Давній оракул сказав, що я наймудріший з греків. Бо я єдиний, хто знає, що нічого не знає.' - Сократ"
+		Korean:"'고대 오라클은 내가 그리스에서 가장 현명하다 하였다. 그것은, 모든 그리스인 중 나만이, 내가 아무것도 모른다는 사실을 알기 때문이다.' - 소크라테스"
 }
 
 	"Free Social Policy":{
@@ -506,6 +542,7 @@
 		Polish:"Darmowy ustrój społeczny"
 		Czech:"Sociální politika zdarma"
 		Ukrainian:"Соціальна політика безкоштовно"
+		Korean:"사회 정책 1가지 무료로 획득"
 }
 
 	"National College":{
@@ -522,6 +559,7 @@
 		Czech:"Národní Akademie"
 		Ukrainian:"Державна академія"
                 Malay:"Kolej Kebangsaan"
+				Korean:"국립대학"
 }
 
 	"Manhattan Project":{
@@ -532,6 +570,8 @@
 		German:"Manhattan-Projekt"
 		Polish:"Projekt Manhattan"
                 Malay:"Projek Manhattan"
+				Korean:"맨해튼 프로젝트"
+				
 }
 
 	"Chichen Itza":{
@@ -547,6 +587,7 @@
 		Polish:"Chichen Itza"
 		Czech:"Chichén Itzá"
 		Ukrainian:"Чічен-Іца"
+		Korean:"치첸 이트사"
 }
 
 	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
@@ -557,6 +598,7 @@
 		Czech:"'Katun je zřízen v Chichén Itza. Tam musí probíhat vypořádání Itzy. Quetzal musí přijít, zelený pták musí přiletět. Ah Kantenal musí přijít. Je to Boží slovo. Itza musí přijde.' - Knihy Chilama Baláma"
 		Russian:"'Катун установлен в Чичен-Итце. Здесь будет поселение Итца. Кетцаль придет, зеленая птица придет. Ах Кантеналь придет. Вот слово Бога. Народ Итца придет.' - из книг Чилам Балам"
 		Ukrainian:"'Катун почався в Чічен-Іці. Поселення Іца розміщене тут. Кетцаль прийде, зелений птах прийде. А-Кантенал прийде. Це слово Бога. Іца прийде.' - Чилам-Балам"
+		Korean:"'치첸 이사에 카툰이 서리라. 이트사가 그곳에 정착하리라. 케살이 오리라, 푸른 새가 오리라. 아 칸테날이 오리라. 이는 신의 말씀이라. 이트사가 오리라.' - 칠람 발람의 서"
 }
 
 	"Golden Age length increases +50%":{
@@ -573,6 +615,7 @@
 		Polish:"Czas trwania Złotego Wieku zwiększony o 50%"
 		Czech:"Délka Zlatého věku se prodloužila o 50%"
 		Ukrainian:"Тривалість золотого віку +50%"
+		Korean:"황금기 지속 시간 + 50%"
 }
 
 	"Enables nuclear weapon":{
@@ -582,6 +625,7 @@
 		Ukrainian:"Доступна ядерна зброя"
 		German:"Erlaubt Kernwaffen"
 		Polish:"Umożliwia broń nuklearną"
+		Korean:"원자폭탄과 핵미사일 생산 가능"
 }
 
 	"Lighthouse":{
@@ -598,6 +642,7 @@
 		Czech:"Maják"
 		Ukrainian:"Маяк"
                 Malay:"Rumah Api"
+				Korean:"등대"
 }
 
 	"Can only be built in coastal cities":{
@@ -612,6 +657,7 @@
 		Russian:"Может быть построен только в прибрежных городах"
 		Czech:"Lze budovat pouze ve městech na pobřeží"
 		Ukrainian:"Можна збудувати тільки в набережних містах"
+		Korean:"도시가 해안에 인접해 있어야 함."
 }
 
 	"+1 food from Ocean and Coast tiles":{
@@ -625,6 +671,7 @@
 		Russian:"+1 Еда от клеток около берега и в океане"
 		Czech:"+1 Jídlo z oceánu a pobřežních polí"
 		Ukrainian:"З океанських і берегових клітинок їжа +1"
+		Korean:"연안과 대양 타일에 식량 +1"
 }
 
 	"The Great Lighthouse":{
@@ -640,6 +687,7 @@
 		Russian:"Фаросский маяк"
 		Czech:"Maják na ostrově Faru"
 		Ukrainian:"Александрійський маяк"
+		Korean:"알렉산드리아 등대"
 }
 
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
@@ -650,6 +698,7 @@
 		Czech:"'Ti, kteří se vydávají na lodích na moře, kdo konají dílo na nesmírných vodách, spatřili Hospodinovy skutky, jeho divy na hlubině.' - Bible, Žalm 107: 23-24"
 		Russian:"'Отправляющиеся на кораблях в море, производящие дела на больших водах, видят дела Господа и чудеса Его в пучине...' - Bible, Псалом 106:23-24" // yes, 106. Just another numbering for us. 
 		Ukrainian:"'Ті, хто по морю пливе кораблями, хто чинить зайняття своє на великій воді; вони бачили чини Господні та чуда Його в глибині!' - Біблія, Псалом 107:23-34"
+		Korean:"'배들을 바다에 띄우며 큰 물에서 일을 하는 자는 여호와께서 행하신 일들과 그의 기이한 일들을 깊은 바다에서 보나니.' - 성경, 시편 107:23-24"
 }
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -665,6 +714,7 @@
 		Russian:"Все военно-морские юниты получают +1 к движению и обзору"
 		Czech:"Všechny vojenské námořní jednotky získají +1 pohyb a +1 větší rozhled"
 		Ukrainian:"Усі військові морські підрозділи отримують рух +1 і огляд +1"
+		Korean:"모든 해양 군사 유닛의 행동력 +1, 시야 +1"
 }
 
 	"Courthouse":{
@@ -678,6 +728,7 @@
 		German:"Gerichtsgebäude"
 		Ukrainian:"Суд"
                 Malay:"Makamah"
+				Korean:"법원"
 }
 
 	"Remove extra unhappiness from annexed cities":{
@@ -690,6 +741,7 @@
 		German:"Entferne zusätzliche Unzufriedenheit von annektierten Städten"
 		Russian:"Убрирает дополнительное недовольство из захваченных городов" 
 		Ukrainian:"Видаляє надмірне нещастя з анексованих міст"
+		Korean:"점령 후 합병한 도시에서 발생하는 추가 불행 제거"
 }
 
 	"Can only be built in annexed cities":{
@@ -701,6 +753,7 @@
 		German:"Kann nur in annektierten Städten gebaut werden."
 		Russian:"Строительство возможно только в захваченных городах"
 		Ukrainian:"Можна збудувати тільки в анексованих містах"
+		Korean:"점령한 도시에만 건설 가능"
 
 }
 
@@ -718,6 +771,7 @@
 		Czech:"Stáje"
 		Ukrainian:"Стайня"
                 Malay:"Stabil"
+				Korean:"마구간"
 }
 
 	"+15% Production when building Mounted Units in this city":{
@@ -730,6 +784,7 @@
 		Russian:"+15% Производство при постройке конных юнитов в данном городе"
 		Czech:"+15% produkce při výstavbě jízdních jednotek v tomto městě"
 		Ukrainian:"Для будівництва вершників у цьому місті виробництво +15%"
+		Korean:"기마 유닛을 생산할 때 생산력 +15%"
 }
 
 	"Circus Maximus":{
@@ -745,6 +800,7 @@
 		Polish:"Cyrk maksymalny"
 		Czech:"Circus Maximus"
 		Ukrainian:"Великий цирк"
+		Korean:"원형 경기장"
 }
 
 	"Hanging Gardens":{
@@ -761,6 +817,7 @@
 		Czech:"Visuté zahrady Semiramidiny"
 		Ukrainian:"Висячі Сади Семіраміди"
                 Malay:"Taman Tergantung"
+				Korean:"공중 정원"
 }
 
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
@@ -772,6 +829,7 @@
 		Czech:"'Myslím, že kdyby někdy smrtelník slyšel Boží slovo, bylo by to v zahradě za chladného dne.' - F. Frankfort Moore"
 		Russian:"'Если бы смертному когда-либо прозвучал голос Бога, это случилось бы в саду на закате дня.' - Ф. Франкфорт Мур"
 		Ukrainian:"'Гадаю, якщо смертний почує слово Бога, це буде в садку надвечір.' - Френк Франкфурт Мур"
+		Korean:"'만에 하나 인간이 신의 말씀을 듣게 된다면, 그것은 서늘한 아침 정원에서일 것이다.' - F. 프랭크포트 무어"
 }
 
 	/*
@@ -785,6 +843,7 @@
 		German:"Zeus-Statue"
 		Czech:"Socha Zeuse"
 		Ukrainian:"Статуя Зевса"
+		Korean:"제우스 상"
 }
 
 	"+15% Combat Strength when attacking Cities":{
@@ -796,6 +855,7 @@
 		German:"+15% Angriffsstärke gegenüber Städten"
 		Czech:"+15% k bojové síle při útoku na město"
 		Ukrainian:"При нападі на міста сила атаки +15%"
+		Korean:"도시 공격 시 유닛의 전투력 +15%"
 }
 
 	"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad":{
@@ -803,6 +863,7 @@
 		Polish:"'Syn Kronosa przemówił i skinął głową z ciemnymi brwiami i na wieki namaszczone włosy wielkiego boga spłynęły z boskiej głowy, a cały Olimp zatrząsł się w posadach.' - Iliada"
 		Czech:"'Promluvil, syn Kronosů, přikývl hlavou, temným obočím a nesmrtelně pomazané vlasy velkého boha se mu z jeho božské hlavy vyvalily a celý Olymp se otřásl.' - Ilias"
 		Ukrainian:"'Мовив Кротон, чорногустими здвигнувши бровами. І з голови владаревої кучерів пасма нетлінні Впали на плечі безсмертні, й великий Олімп похитнувся.' - Гомер. Іліада"
+		Korean:"'눈썹이 짙은 크로노스의 아들이 고개를 끄덕이며 대답하자 이 위대한 신의 머릿결이 흩날리며 올림푸스 전체가 진동했다.' - 호메로스, 일리아드"
 }
 
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
@@ -815,6 +876,7 @@
 		German:"Mausoleum von Halikarnassos"
 		Czech:"Mauzoleum v Halikarnassu"
 		Ukrainian:"Мавзолей"
+		Korean:"할리카르나소스의 영묘"
 }
 
 	"+2 Gold from every source of Marble and Stone":{
@@ -827,6 +889,7 @@
 		Czech:"+2 zlata za každý zdroj Mramoru a Kamene"
 		Ukrainian:"З кожного джерела мармуру і каміння +2 золота"
                 Malay:"+2 Emas daripada setiap sumber batu dan mamar"
+				Korean:"개발한 대리석 또는 석재 산지에서 금 +2"
 }
 
 	"Gain 100 Gold when you use a Great Person.":{
@@ -835,6 +898,7 @@
 		Polish:"Otrzymasz 100 sztuk zlota gdy użyjesz Wielkiego Człowieka"
 		Ukrainian:"Отримати 100 золота за використання видатної особи"
 		German:"Erhalte 100 Gold durch das Benutzen einer großen Persönlichkeit"
+		Korean:"위인이 소모될 때마다 금을 100 획득"
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
@@ -842,6 +906,7 @@
 		Polish:"'Cała ziemia jest grobowcem bohaterskich mężczyzn, a ich historia jest nie tylko wyryta w kamieniu, lecz splata się niewidocznymi nićmi z losami innych ludzi.' – Perykles"
 		Czech:"'Celá Země je hrobkou hrdinských mužů a jejich příběh není vytesán do kamene, ale zůstává všude bez viditelného symbolu vpleteného do života jiných lidí.' - Periklés"
 		Ukrainian:"'Уся Земля це могила героїв і їхні історії не тільки викарбувані на надгробках, а непомітно присутні всюди, вплетені в життя інших людей.' - Перикл"
+		Korean:"'영웅의 발자취는 석상과 비석에서만 찾을 수 있는 것이 아니다. 그들의 이야기는 이 세상 모든 사람의 삶에 녹아 있다.' - 페리클레스"
 }
 
 	"Petra":{
@@ -850,6 +915,7 @@
 		Polish:"Petra"
 		Ukrainian:"Петра"
 		German:"Petra"
+		Korean:"페트라"
 }
 
 	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
@@ -858,6 +924,7 @@
 		Polish:"+1 żywności i produkcji ze wszystkich pustynnych pól w mieście"
 		Ukrainian:"Усі робочі пустельні клітинки в місті (крім затоплених рівнин) дають їжі +1 і виробництва +1"
 		German:"+1 Nahrung und +1 Produktion von allen bewirtschafteten Wüstenfeldern in der Stadt (außer Flussauen)"
+		Korean:"도시에서 작업하는 사막 타일(범람원 제외) 하나당 식량 +1, 생산력 +1"
 }
 
 	"+6 Culture when discovering Archeology":{
@@ -866,6 +933,7 @@
 		Polish:"+6 do kultury za wynalezienie Archeologii"
 		Ukrainian:"При відкритті археології культура +6"
 		German:"+6 Kultur bei Entdeckung der Archäologie"
+		Korean:"고고학 연구 시 문화 +6"
 }
 
 	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
@@ -873,6 +941,7 @@
 		Polish:"'...kto zaś będzie pił wodę, którą Ja mu dam, nie będzie pragnął na wieki, lecz woda, którą Ja mu dam, stanie się w nim źródłem wody wytryskującej ku życiu wiecznemu. Niech dane mi będzie dotrzeć do Świętej Góry poprzez pustynię, góry i Dolinę Półksiężyca, aż do świątyni, gdzie spoczywa Czara.' - Indiana Jones"
 		Czech:"'... kdo vypije vodu, kterou mu dám, řekl Lord, bude mít v sobě pramen věčného života. Nechť mě přivedou na svatou horu. Přes poušť a přes hory do kaňonu půlměsíce ...' - Indiana Jones"
 		Ukrainian:"'...хто пʼє воду, яку я дав, сказав Бог, отримає джерело всередині, повне вічного життя. Нехай вони принесуть мене на вашу святу гору. Через пустелю і гори до Долини Півмісяця...' - Індіана Джонс"
+		Korean:"'...내가 주는 물을 마시는 자는 불로장생할 것이니 사람들이 나를 네가 있는 성스러운 산으로 인도하도록 할 지어다. 사막을 가로지르고 산을 넘으면 초승달 계곡이 나오는데...' - 인디아나 존스"
 }
 	*/
 
@@ -890,6 +959,7 @@
 		Czech:"Koloseum"
 		Ukrainian:"Колізей"
                 Malay:"Kolosseum"
+				Korean:"콜로세움"
 }
 
 	"Terracotta Army":{
@@ -902,6 +972,7 @@
 		Czech:"Terakotová armáda"
 		German:"Terrakotta Armee"
 		Ukrainian:"Терракотова армія"
+		Korean:"병마용"
 }
 
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
@@ -913,6 +984,7 @@
 		Czech:"'Považujte své vojáky za své děti a budou vás následovat do nejhlubších údolí; podívej se na ně jako na své milované syny, a ti budou za vámi stát až do smrti.' - Sun Tzu"
 		Russian:"'Если будешь смотреть на солдат, как на детей, сможешь отправиться с ними в самое глубокое ущелье; если будешь смотреть на солдат, как на любимых сыновей, сможешь идти с ними хоть на смерть.' - Сунь Цзы"
 		Ukrainian:"'Стався до воїнів як до дітей, і вони підуть за тобою у найглибші долини; стався до воїнів як до улюблених синів, і вони будуть готові померти разом з тобою.' - Мистецтво війни. Су Цзи"
+		Korean:"'병사를 자식처럼 부르면 어디든 따를 것이다. 병사를 사랑하는 자식 대하듯 하면 목숨을 바쳐 충성할 것이다.' - 손자"
 }
 
 	"Market":{
@@ -929,6 +1001,7 @@
 		Czech:"Tržiště"
 		Ukrainian:"Ринок"
                 Malay:"Pasar"
+				Korean:"시장"
 }
 
 	"Bazaar":{ // Arabian unique - transliterate?
@@ -944,6 +1017,7 @@
 		Czech:"Bazar Chán al-Chalílí"
 		Ukrainian:"Базар"
                 Malay:"Bazar"
+				Korean:"바자"
 }
 
 	"Provides 1 extra copy of each improved luxury resource near this City":{
@@ -958,6 +1032,7 @@
 		Russian:"Предоставляет копию каждого обрабатываемого редкого ресурса около данного города"
 		Czech:"Poskytne 1 extra kopii každé luxusní suroviny na území tohoto města"
 		Ukrainian:"Надає додаткову копію кожного вдосконаленого ресурсу розкошів біля цього міста"
+		Korean:"도시 주변의 개발된 각 사치 자원마다 자원 개수 +1"
 }
 
 	"+2 Gold for each source of Oil and oasis":{
@@ -972,6 +1047,7 @@
 		Russian:"+2 Золото от каждого источника Нефть и оазиса"
 		Czech:"+2 Zlata za každý zdroj Ropy a Oázu"
 		Ukrainian:"За кожне джерело нафти і оази золото +2"
+		Korean:"도시 주변의 석유와 오아시스에 금 +2"
 }
 
 	"Monastery":{
@@ -987,6 +1063,7 @@
 		Polish:"Klasztor"
 		Czech:"Klášter"
 		Ukrainian:"Монастир"
+		Korean:"수도원"
 }
 
 	"Notre Dame":{
@@ -1002,6 +1079,7 @@
 		Polish:"Notre Dame"
 		Czech:"Katedrála Notre-Dame"
 		Ukrainian:"Собор Паризької Богоматері"
+		Korean:"노트르담 대성당"
 }
 
 	"'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
@@ -1013,6 +1091,7 @@
 		Czech:"'Architektura zaznamenala skvělé myšlenky lidské rasy. Nejen každý náboženský symbol, ale každá lidská myšlenka má svou stránku v této obrovské knize.' - Victor Hugo"
 		Russian:"'Зодчество было главной летописью человечества... каждая общедоступная идея, как и каждый религиозный закон, имела свой памятник.' - Виктор Гюго" //civ 5 official
 		Ukrainian:"'Архітектура записала найвидатніші ідеї людства. Не тільки кожен релігійний символ, але кожна людська думка має власну сторінки у цій величезній книзі.' - Віктор Ґюґо"
+		Korean:"'건축은 항상 인류의 뛰어난 발상을 기록으로 남겼다. 종교적 상징하나하나가, 그뿐 아니라 인간의 생각 하나하나가 그 방대한 책의 한 페이지를 차지하고 있다.' - 빅토르 위고"
 }
 
 	"Hagia Sophia":{
@@ -1028,6 +1107,8 @@
 		Polish:"Hagia Sophia"
 		Czech:"Hagia Sophia"
 		Ukrainian:"Софійський собор"
+		Korean:"아야 소피아"
+		
 }
 
 	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis":{
@@ -1038,6 +1119,7 @@
 		Czech:"'Stoupá do výšky, aby se vyrovnal nebi, a jako by stoupal z ostatních budov, stojí vysoko a dívá se dolů na zbytek města, zdobí jej, protože je jeho součástí, oslavován svou vlastní krásou' - Procopius, De Aedificis"
 		Russian:"'В высоту он поднимается как будто до неба и, как корабль на высоких волнах моря, он выделяется среди других строений, как бы склоняясь над остальным городом, украшая его как составная его часть, и сам украшается им.' - Прокопий, 'О постройках'" //civ 5 official = 'В высоту он (Собор Святой Софии) поднимается...' 
 		Ukrainian:"'Він піднімається вгору до самого неба, виділяючись серед інших будівель, як ладдя в бурхливих хвилях відкритого моря… він весь сповнений сонячного світла, і здається, ніби храм сам випромінює світло' - Прокопій Кесарійський. Про будови"
+		Korean:"'하늘에 닿을 만큼 높이 솟아, 마치 다른 건물들의 복판에서 바로 솟아난 듯 높은 곳에 서서 도시를 내려다보며, 도시의 일부로서 도시를 장식하는 한편으로 그 자체의 아름다움으로 찬연히 빛나고 있다.' - 프로코피오스, 건물론"
 }
 
 	"+33% great person generation in all cities":{
@@ -1054,6 +1136,7 @@
 		Polish:"+33% do produkcji Wielkich Ludzi we wszystkich miastach"
 		Czech:"+33% produkce Velkých Osobností ve všech městech"
 		Ukrainian:"Cтворення видатних осіб в усіх містах +33%"
+		Korean:"모든 도시의 위인 출현률 +33%"
 }
 
 	"Mint":{
@@ -1069,6 +1152,7 @@
 		Polish:"Mennica"
 		Czech:"Mincovna"
 		Ukrainian:"Монетний двір"
+		Korean:"조폐국"
 }
 
 	"Machu Picchu":{
@@ -1084,6 +1168,7 @@
 		Polish:"Machu Picchu"
 		Czech:"Machu Picchu"
 		Ukrainian:"Мачу-Пікчу"
+		Korean:"마추픽추"
 }
 
 	"'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham":{
@@ -1094,6 +1179,7 @@
 		Czech:"'Těžko se hledá romantika, jenž může někdy překonat žulové citadely na vrcholu broukavých srázů Machu Picchu, koruny Incké země.' - Hiram Bingham"
 		Russian:"'Даже самый захватывающий вид не вызовет такого движения сердца, как гранитная крепость на крутых уступах Мачу-Пикчу - короны земли инков.' - Хирам Бингам"
 		Ukrainian:"'Тільки кілька витворів уяви можуть перевершити цю гранітну цитаделю над бурхливими проваллями Мачу-Пікчу' - Хайрем Бінґем"
+		Korean:"'잉카 땅의 정수 마추픽추의 들쭉날쭉한 벼랑 위에 우뚝 선 화강암 도시의 낭만보다 더한 낭만은 잘 없을 것이다.' - 하이람 빙엄"
 }
 
 	"Gold from all trade routes +25%":{
@@ -1110,6 +1196,7 @@
 		Polish:"+25% złota ze wszystkich szlaków handlowych"
 		Czech:"+25% Zlata ze všech obchodních cest"
 		Ukrainian:"З усіх торгових шляхів золото +25%"
+		Korean:"교역로에서 얻는 금 +25%"
 }
 
 	"Aqueduct":{
@@ -1125,6 +1212,7 @@
 		Polish:"Akwedukt"
 		Czech:"Akvadukt"
 		Ukrainian:"Акведук"
+		Korean:"송수로"
 }
 
 	"40% of food is carried over after a new citizen is born":{
@@ -1141,6 +1229,7 @@
 		Polish:"40% więcej żywności za każdego nowego obywatela"
 		Czech:"40% Jídla je zachováno poté, co se město rozroste o nového obyvatele"
 		Ukrainian:"Після народження нового жителя додається 40% їжі"
+		Korean:"새로운 시민이 태어난 후 40%의 식량이 보전됨"
 }
 
 	"Great Wall":{
@@ -1153,6 +1242,7 @@
 		Czech:"Velká čínská zeď"
 		German:"die Große Mauer"
 		Ukrainian:"Великий китайський мур"
+		Korean:"만리장성"
 }
 
 	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
@@ -1163,6 +1253,7 @@
 		Czech:"'Umění války nás učí nespoléhat na pravděpodobnost, že nepřítel neútočí, ale spíše na skutečnost, že je naše pozice nepřekonatelná.' - Sun Tzu"
 		Russian:"'Искуство ведения войны заключается в том, чтобы не полагаться на то, что враг не нападет, а на то, что я сделаю нападение на себя невозможным.' - Сунь Цзы"
 		Ukrainian:"'Мистецтво війни вчить нас не покладатися на вірогідність, що ворог не нападе, а більше на створення неприступної позиції' - Мистецтво війни. Су Цзи"
+		Korean:"'병법은 적군이 쳐들어오지 않기를 바라는 것이 아니라, 적군이 우리를 공격할 엄두가 나지 않을 방비 태세에 의지해야 하는 것이다.' - 손자"
 }
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
@@ -1175,6 +1266,7 @@
 		Czech:"Nepřátelské pozemní jednotky spotřebují 1 extra bod pohybu uvnitř našeho území (do vynalezení dynamitu)"
 		German:"Feindliche Landeinheiten müssen 1 extra Bewegungspunkt innerhalb deines Territoriums ausgeben (veraltet durch Dynamit)"
 		Ukrainian:"Ворожі наземні підрозділи мають витратити додатково 1 пункт руху на вашій території (до відкриття динаміту)"
+		Korean:"당신의 영토에서 적군의 지상 유닛이 이동할 때 행동력을 추가로 1 더 소모 (다이너마이트 기술 연구 전까지)"
 }
 
 	"Workshop":{
@@ -1190,6 +1282,7 @@
 		Polish:"Warsztat"
 		Czech:"Dílna"
 		Ukrainian:"Майстерня"
+		Korean:"작업장"
 }
 
 	"Longhouse":{	// Iroquois unique
@@ -1202,6 +1295,7 @@
 		Czech:"Dlouhý dům"
 		German:"Langhaus"
 		Ukrainian:"Довгий будинок"
+		Korean:"롱하우스"
 }
 
 	"+1 Production from each worked Forest tile":{
@@ -1214,6 +1308,7 @@
 		Czech:"+1 produkce pro každého dělníka na políčku s lesem"
 		German:"+1 Produktion von jedem bewirtschafteten Waldfeld"
 		Ukrainian:"За кожну робочу лісову клітинку виробництво +1"
+		Korean:"도시에서 작업하는 숲 타일마다 생산력 +1"
 }
 
 	"Forge":{
@@ -1229,6 +1324,7 @@
 		Polish:"Kuźnia"
 		Czech:"Kovárna"
 		Ukrainian:"Кузня"
+		Korean:"대장간"
 }
 
 	"Harbor":{
@@ -1244,6 +1340,7 @@
 		Polish:"Port"
 		Czech:"Přístav"
 		Ukrainian:"Гавань"
+		Korean:"항만"
 }
 
 	"+1 production from all sea resources worked by the city":{
@@ -1259,6 +1356,7 @@
 		Russian:"+1 Производство от всех обрабатываемых городом морских клеток"
 		Czech:"+1 produkce ze všech mořských zdrojů využívaných městem"
 		Ukrainian:"За усі робочі морські ресурси міста виробництво +1"
+		Korean:"도시에서 작업하는 모든 해양 자원의 생산력 +1"
 }
 
 	"Connects trade routes over water":{
@@ -1274,6 +1372,7 @@
 		Russian:"Создаёт водные торговые пути"
 		Czech:"Propojí obchodní cesty přes vodu (oceán)"
 		Ukrainian:"З’єднує водні торгові шляхи"
+		Korean:"바다를 통해 교역로 연결"
 }
 
 	"University":{
@@ -1290,6 +1389,7 @@
 		Czech:"Univerzita"
 		Ukrainian:"Університет"
                 Malay:"Universiti"
+				Korean:"대학"
 }
 
 	"+2 Science from each worked Jungle tile":{
@@ -1306,6 +1406,7 @@
 		Polish:"+2 nauki z pól dżungli"
 		Czech:"+2 Výzkum za každého dělníka na políčku džungle"
 		Ukrainian:"За кожну робочу клітинку джунглів наука +2"
+		Korean:"도시에서 작업하는 정글 타일마다 과학 +2"
 }
 	"Wat":{	//Siamese unique
 		Italian:"Wat"
@@ -1316,6 +1417,7 @@
 		Traditional_Chinese:"經院"
 		Ukrainian:"Ват"
 		German:"Wat"
+		Korean:"와트"
 }
 
 	"Oxford University":{
@@ -1332,6 +1434,7 @@
 		Czech:"Oxfordská Universita"
 		Ukrainian:"Оксфордський університет"
                 Malay:"Universiti Oxford"
+				Korean:"옥스퍼드 대학"
 }
 
 	"Castle":{
@@ -1348,6 +1451,7 @@
 		Czech:"Hrad"
 		Ukrainian:"Замок"
                 Malay:"Istana"
+				Korean:"성"
 }
 
 	"Mughal Fort":{	//Indian unique
@@ -1360,6 +1464,7 @@
 		Czech:"Mughalská pevnost"
 		German:"Fort Mughal"
 		Ukrainian:"Червоний форт"
+		Korean:"무굴 요새"
 }
 
 	"Alhambra":{
@@ -1372,6 +1477,7 @@
 		Russian:"Альгамбра"
 		Czech:"Alhambra"
 		Ukrainian:"Альгамбра"
+		Korean:"알함브라 궁전"
 }
 
 	"'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison":{
@@ -1382,6 +1488,7 @@
 		Czech: "'Spravedlnost je nepřekonatelná pevnost postavená na vrcholu hory, kterou nesvrhne dravá voda ani nemůže být zničena silou armád.' - Joseph Addison"
 		Russian:"'Справедливость - это неприступная крепость, построенная на гребне горы, которую не может разрушить ярость стихий или уничтожить армия солдат.' - Джозеф Эддисон"
 		Ukrainian:"'Справедливість є неприступною фортецею, збудованою на горі, яку неможливо скинути потоками насильства, або знищити силою війська' - Джозеф Еддісон"
+		Korean:"'정의란 급류나 군대로도 무너트릴 수 없는 산꼭대기에 세운 무적의 요새다.' - 조저프 에디슨"
 }
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -1394,6 +1501,7 @@
 		Russian:"Производимые в данном городе юниты конные, бронированные, а также ближнего боя получают повышение Муштра I"
 		Czech:"Všechny nově postavené jednotky pro boj zblízka, na dálku a obrněné jednotky v tomto městě získají povýšení Dril 1 "
 		Ukrainian:"В цьому місті усі новонавчені ближньобійні, верхові, броньовані підрозділи отримують вдосконалення Вишкіл I"
+		Korean:"건설한 도시에서 생산되는 모든 근접 육상 유닛들은 훈련 I 진급을 가진다."
 }
 
 	"Angkor Wat":{
@@ -1409,6 +1517,7 @@
 		Polish:"Angkor Wat"
 		Czech:"Angkor Vat"
 		Ukrainian:"Ангкор-Ват"
+		Korean:"앙코르와트"
 }
 
 	"'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena":{
@@ -1419,6 +1528,7 @@
 		Czech:"'Chrám je jako žádná jiná budova na světě. Má věže a výzdobu a všechna vylepšení, která si lidský génius dokáže představit.' - Antonio da Magdalena"
 		Russian:"'Храм - выдающееся сооружение. Оно имеет башни, рельефы и украшения, какие только может вообразить человеческий гений.' - Антонио де Магдалена"
 		Ukrainian:"'Храм є унікальною будовою. Він має вежі і оздобу і таку витонченість, які тільки здатен створити талант людини.' - Антоніу да Мадалена"
+		Korean:"'세상에 또 이런 건물은 없을 것이다. 탑이 있고 장식이 있으며 인간의 재주로 생각할 수 있는 기교란 기교는 다 있다.' - 안토니오 데 막달레나"
 }
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -1435,6 +1545,7 @@
 		Polish:"Koszt zakupu nowych pól obniżony o 25%"
 		Czech:"Cena za nákup nového území města se sníží o 25%"
 		Ukrainian:"Вартість отримання нових клітинок -25%"
+		Korean:"새로운 타일을 확보하는데 필요한 문화와 금 -25%"
 }
 
 	"Porcelain Tower":{
@@ -1450,6 +1561,7 @@
 		Polish:"Porcelanowa Wieża"
 		Czech:"Porcelánová pagoda"
 		Ukrainian:"Порцелянова пагода"
+		Korean:"영곡탑"
 }
 
 	"'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell":{
@@ -1460,6 +1572,7 @@
 		Czech:"'Věci se vždy zdají spravedlivější, když se na ně podíváme zpět, a to je z té nepřístupné věže minulosti, která se dlouze naklání a kývá.' - James Russell Lowell"
 		Russian:"'Многое начинает казаться лучше, когда остается в прошлом - и из этой неприступной башни Прошлого нас зовет и манит рукою Тоска.' - Джеймс Расселл Лоуэлл" //civ 5 official
 		Ukrainian:"'Речі завжди здаються справедливішими, коли ми дивимось на них з тієї неприступної вежі минулого, де туга сховалася і манить' - Джеймс Расселл Ловелл"
+		Korean:"'만사는 지나고 나서 돌아보면 더 좋아보이며, 바로 그 다가갈 수 없는 과거의 탑으로부터 동경은 몸을 내밀어 우리를 부른다.' - 제임스 러셀 로웰"
 }
 
 	"Free great scientist appears":{
@@ -1475,6 +1588,7 @@
 		Russian:"Появляется бесплатный Великий Учёный"
 		Czech:"Získáme Velkého Vědce zdarma"
 		Ukrainian:"Безкоштовно з’являється видатний науковець"
+		Korean:"근처에 위대한 과학자 하나가 무료로 출현"
 }
 
 	"Ironworks":{
@@ -1490,6 +1604,7 @@
 		Polish:"Huta"
 		Czech:"Železárny"
 		Ukrainian:"Чавуноливарня"
+		Korean:"제철소"
 }
 
 	"Armory":{
@@ -1505,6 +1620,7 @@
 		Polish:"Zbrojownia"
 		Czech:"Zbrojnice"
 		Ukrainian:"Зброярня"
+		Korean:"무기고"
 }
 
 	"Observatory":{
@@ -1520,6 +1636,7 @@
 		Polish:"Obserwatorium"
 		Czech:"Observatoř"
 		Ukrainian:"Обсерваторія"
+		Korean:"천문대"
 }
 
 	"Opera House":{
@@ -1536,6 +1653,7 @@
 		Czech:"Operní dům"
 		Ukrainian:"Оперний театр"
                 Malay:"Rumah Opera"
+				Korean:"오페라 극장"
 }
 
 	"Sistine Chapel":{
@@ -1551,6 +1669,7 @@
 		Polish:"Kaplica Sykstyńska"
 		Czech:"Sixtinská kaple"
 		Ukrainian:"Сікстинська капела"
+		Korean:"시스티나 성당"
 }
 
 	"'I live and love in God's peculiar light.' - Michelangelo Buonarroti":{
@@ -1561,6 +1680,7 @@
 		Czech:"'Žiji a miluji v zvláštním božím světle.' - Michelangelo Buonarroti"
 		Russian:"'Я живу и люблю в особом свете Господа.' - Микеланджело Буонаротти"
 		Ukrainian:"'Живу і кохаю під особливим божим осяянням' - Мікеланджело Буонарроті"
+		Korean:"'나는 신의 경이로운 빛 속에서 살며 사랑한다.' - 미켈란젤로 부오나로티"
 }
 	"Culture in all cities increased by 25%":{
 		Italian:"+25% cultura in ogni città"
@@ -1576,6 +1696,7 @@
 		Polish:"Kultura we wszystkich miastach wzrasta o 25%"
 		Czech:"Kultura ve všech městech vzroste o 25%"
 		Ukrainian:"В усіх містах культура +25%"
+		Korean:"모든 도시의 문화 +25%"
 }
 
 	"Bank":{
@@ -1592,6 +1713,7 @@
 		Czech:"Banka"
 		Ukrainian:"Банк"
                 Malay:"Bank"
+				Korean:"은행"
 }
 
 	"Hanse":{	//German unique
@@ -1604,6 +1726,7 @@
 		Czech:"Hanza"
 		German:"Hanse"
 		Ukrainian:"Ганза"
+		Korean:"한자 연합"
 }
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
@@ -1616,6 +1739,8 @@
 		Czech:"+5% produkce pro každou obchodní stezku s hlavním městem říše"
 		German:"+5% Produktion für jeden Handelsweg mit einem Stadtstaat innerhalb des Imperiums"
 		Ukrainian:"За кожен торговий шлях з містом-державою виробництво +5%"
+		Korean:"도시국가와 연결된 교역로 하나 당 도시의 생산력 +5%"
+		
 }
 
 	"Satrap's Court":{	//Persian unique
@@ -1628,6 +1753,7 @@
 		Russian:"Двор сатрапа"
 		German:"Satraps Gerichtshaus"
 		Ukrainian:"Двір сатрапа"
+		Korean:"사트레프 관청"
 }
 
 	"Forbidden Palace":{
@@ -1643,6 +1769,7 @@
 		Polish:"Zakazany Pałac"
 		Czech:"Zakázané město"
 		Ukrainian:"Заборонене місто"
+		Korean:"자금성"
 }
 
 	"'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock":{
@@ -1653,6 +1780,7 @@
 		Czech:"'Většina z nás se může rozhodnout, jestli si z tohoto světa uděláme palác nebo vězení.' - John Lubbock"
 		Russian:"'Фактически любой из нас может по собственному желанию превратить мир во дворец или в темницу' - Джон Лаббок"
 		Ukrainian:"'Більшість з нас може, за власним вибором, зробити цей світ палацом або в’язницею' - Джон Лаббок"
+		Korean:"'우리 대부분은 마음 먹기에 따라 세상을 궁궐로 만들 수도 있고 감옥으로 만들 수도 있다.' - 존 러벅"
 }
 	"Unhappiness from population decreased by 10%":{
 		Italian:"-10% infelicità dalla popolazione"
@@ -1668,6 +1796,7 @@
 		Polish:"Niezadowolenie z populacji zmniejszone o 10%"
 		Czech:"Nespokojenost za celkovou Populaci se snižuje o 10%"
 		Ukrainian:"Нещастя населення -10%"
+		Korean:"인구 수로 인한 불행 -10%"
 }
 
 	"Theatre":{
@@ -1683,6 +1812,7 @@
 		Polish:"Teatr"
 		Czech:"Divadlo"
 		Ukrainian:"Театр"
+		Korean:"극장"
 }
 
 	"Leaning Tower of Pisa":{
@@ -1697,6 +1827,7 @@
 		Russian:"Пизанская башня"
 		Czech:"Šikmá Věž V Pise"
 		Ukrainian:"Пізанська вежа"
+		Korean:"피사의 탑"
 }
 
 	"'Don't clap too hard - it's a very old building.' - John Osbourne":{
@@ -1707,6 +1838,7 @@
 		Czech:"'Příliš netleskejte - je to velmi stará budova' - John Osbourne"
 		Russian:"'Не хлопайте так громко - здание старое, может развалиться.' - Джон Осборн"
 		Ukrainian:"'Не плескайте занадто гучно - це дуже стара будівля' - Джон Джеймс Осборн"
+		Korean:"'아주 오래된 건물이니까, 너무 세게 손뼉 치지 마십시오.' - 존 오스본"
 }
 
 	"Free Great Person":{
@@ -1721,6 +1853,7 @@
 		Russian:"Бесплатный Великий человек"
 		Czech:"Velká Osobnost zdarma"
 		Ukrainian:"Безкоштовно з’являється видатна особа"
+		Korean:"원하는 무료 위인 하나 출현"
 }
 
 	"Choose a free great person":{
@@ -1733,6 +1866,7 @@
 		Czech:"Vyberme si Velkou Osobnost zdarma"
 		German:"Wähle eine kostenlose große Persönlichkeit"
 		Ukrainian:"Обрати видатну особу безкоштовно"
+		Korean:"무료 위인을 선택하십시오"
 }
 
 	"Get ":{
@@ -1743,6 +1877,7 @@
 		Polish:"Otrzymaj"
 		Ukrainian:"Отримати:"
                 Malay:"Dapat"
+				Korean:"얻기: "
 }
 
 	"Himeji Castle":{
@@ -1755,6 +1890,7 @@
 		Czech:"Hrad Himedži"
 		German:"Schloss Himeji"
 		Ukrainian:"Замок Хімедзі"
+		Korean:"히메지 성"
 }
 
 	"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo":{
@@ -1765,6 +1901,7 @@
 		Czech:"'Bushido je realizováno v přítomnosti smrti. To znamená vybrat si smrt, kdykoli je na výběr mezi životem a smrtí. Neexistuje žádná jiná volba.' - Yamamoto Tsunetomo"
 		Russian:"'Бусидо - путь воина - означает смерть. Когда для выбора имеются два пути, выбирай тот, который ведет к смерти. Не рассуждай! Направь мысль на путь, который ты предпочел, и иди.' - Ямамото Цунетомо"
 		Ukrainian:"’Шлях воїна проявляється у присутності смерті. Треба обирати смерть, коли є вибір між життям і смертю. Інших міркувань немає' - Ямамото Цунетомо"
+		Korean:"'무사도는 죽음을 마주했을 때 실현된다. 즉, 삶과 죽음의 기로에서 죽음을 택한다는 뜻이다. 다른 생각의 여지는 없다.' - 야마모토 츠네모토"
 }
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1777,6 +1914,7 @@
 		Czech:"+15% bojové síly pro jednotky bojující v přátelském území"
 		German:"+15% Kampfstärke für Einheiten, die in einem alliierten Gebiet kämpfen"
 		Ukrainian:"Підрозділи на дружній території отримують в битві силу атаки +15%"
+		Korean:"우호 지역에서 싸우는 유닛의 전투력 +15%"
 }
 
 	"Taj Mahal":{
@@ -1793,6 +1931,7 @@
 		Polish:"Tadź Mahal"
 		Czech:"Tádž Mahal"
 		Ukrainian:"Тадж-Махал"
+		Korean:"타지마할"
 }
 
 	"'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore":{
@@ -1803,6 +1942,7 @@
 		Czech:"'Tádž Mahal stoupá nad břehy řeky jako osamělá slza zavěšená na tváři času.' - Rabindranath Tagore"
 		Russian:"'Пусть великолепие алмаза, рубина исчезнет, как магическое мерцание от радуги, только пусть одна слеза - Тадж-Махал - ярко сияет на щеке времени.' - Рабиндарат Тагор"
 		Ukrainian:"'Тадж-Махал здіймається над берегом річки як самотня сльоза на щоці часу' - Рабіндранат Тагор"
+		Korean:"'타지마할은, 시간의 뺨에 흐르는 눈물 한 방울과도 같이 강둑 위로 솟아있다.' - 라빈드라나트 타고르"
 }
 
 	"Empire enters golden age":{
@@ -1819,6 +1959,7 @@
 		Polish:"Imperium wkroczyło w złotą erę"
 		Czech:"Naše říše vstoupila do Zlatého věku"
 		Ukrainian:"Почався золотий вік"
+		Korean:"황금기를 시작시킴"
 }
 
 	"Windmill":{
@@ -1834,6 +1975,7 @@
 		Polish:"Wiatrak"
 		Czech:"Větrný mlýn"
 		Ukrainian:"Вітряк"
+		Korean:"풍차"
 }
 
 	"Must not be on hill":{
@@ -1846,6 +1988,7 @@
 		Czech:"Nesmí být na kopci"
 		German:"Darf sich nicht auf einem Hügel befinden"
 		Ukrainian:"Не може бути на пагорбі"
+		Korean:"언덕에 지을 수 없음"
 }
 
 	"Museum":{
@@ -1862,6 +2005,7 @@
 		Czech:"Muzeum"
 		Ukrainian:"Музей"
                 Malay:"Muzium"
+				Korean:"박물관"
 }
 
 	"Hermitage":{
@@ -1877,6 +2021,7 @@
 		Polish:"Ermitaż"
 		Czech:"Ermitáž"
 		Ukrainian:"Ермітаж"
+		Korean:"에르미타주 박물관"
 }
 
 	"The Louvre":{
@@ -1892,6 +2037,7 @@
 		Polish:"Luwr"
 		Czech:"Muzeum Louvre"
 		Ukrainian:"Лувр"
+		Korean:"루브르 박물관"
 }
 
 	"'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson":{
@@ -1902,6 +2048,7 @@
 		Czech:"'Každé opravdové umělecké dílo má tolik důvodů k bytí jako Země a Slunce' - Ralph Waldo Emerson"
 		Russian:"'У подлинного произведения искусства столько же прав на существование, сколько у солнца и земли.' - Ральф Уолдо Эмерсон"
 		Ukrainian:"'Кожен витвір мистецтва має стільки ж причин існувати, як земля і сонце’- Ральф Волдо Емерсон"
+		Korean:"'진실한 예술품의 존재 가치는 지구와 태양의 존재 가치와 같다.' - 랄프 왈도 에머슨"
 }
 
 	"Free Great Artist Appears":{
@@ -1918,6 +2065,7 @@
 		Polish:"Pojawił się darmowy Wielki Artysta"
 		Czech:"Získáme Velkéhu Umělce zdarma"
 		Ukrainian:"Безкоштовно з’являється видатний митець"
+		Korean:"위대한 예술가 한 명이 무료로 출현"
 }
 
 	"Seaport":{
@@ -1934,6 +2082,7 @@
 		Czech:"Námořní přístav"
 		Ukrainian:"Морський порт"
                 Malay:"Pelabuhan"
+				Korean:"항구"
 }
 
 	"+1 production and gold from all sea resources worked by the city":{
@@ -1949,6 +2098,7 @@
 		Russian:"+1 Производство и Золото от всех обрабатываемых морских клеток вокруг города"
 		Czech:"+1 produkce Zlata a všech mořských zdrojů v tomto městě"
 		Ukrainian:"За усі робочі морські ресурси міста виробництво +1 і золото +1"
+		Korean:"도시에서 작업하는 모든 해양 자원의 생산력 +1, 금 +1"
 }
 
 	"+15% production of naval units":{
@@ -1964,6 +2114,7 @@
 		Russian:"+15% Производство при постройке кораблей"
 		Czech:"+15% produkce pro námořní jednotky"
 		Ukrainian:"Виробництво морських підрозділів +15%"
+		Korean:"해양 유닛 생산 시 생산력 +15%"
 }
 
 	"Public School":{
@@ -1980,6 +2131,7 @@
 		Czech:"Veřejná škola"
 		Ukrainian:"Публічна школа"
                 Malay:"Sekolah Kerajaan"
+				Korean:"공립학교"
 }
 
 	"Hospital":{
@@ -1996,6 +2148,7 @@
 		Czech:"Nemocnice"
 		Ukrainian:"Шпиталь"
                 Malay:"Hospital"
+				Korean:"병원"
 }
 
 	"25% of food is carried over after a new citizen is born":{
@@ -2012,6 +2165,7 @@
 		Polish:"25% więcej żywności po pojawieniu się nowego obywatela"
 		Czech:"25% Jídla je zachováno poté, co se město rozroste o nového obyvatele"
 		Ukrainian:"Після народження нового жителя додається 25% їжі"
+		Korean:"새로운 시민이 태어난 후 25%의 식량이 보전됨"
 }
 
 	"Factory":{
@@ -2028,6 +2182,7 @@
 		Czech:"Továrna"
 		Ukrainian:"Фабрика"
                 Malay:"Kilang"
+				Korean:"공장"
 }
 
 	"Stock Exchange":{
@@ -2044,6 +2199,7 @@
 		Czech:"Burza"
 		Ukrainian:"Біржа"
                 Malay:"Bursa Saham"
+				Korean:"증권 거래소"
 }
 
     	"Big Ben":{
@@ -2057,6 +2213,7 @@
 		German:"Big Ben"
 		Ukrainian:"Біг-Бен"
                 Malay:"Big Ben"
+				Korean:"빅 벤"
 }
 
 	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
@@ -2067,6 +2224,7 @@
 		Czech:"'K dosažení velkých věcí jsou zapotřebí dvě věci: plán a nedostatek času.' - Leonard Bernstein"
 		Russian:"'Для великих свершений потребны две вещи: план действий и недостаток времени.' - Леонард Бернстайн"
 		Ukrainian:"'Для досягнення визначних результатів потрібні дві речі: план, і не зовсім достатньо часу' - Леонард Бернштейн"
+		Korean:"'위대한 업적을 이루려면 두 가지가 필요하다. 하나는 계획이고, 하나는 적당히 빠듯한 시간이다.' - 레너드 번스타인"
 }
 
 	"-15% to purchasing items in cities":{
@@ -2079,6 +2237,7 @@
 		Czech:"-15% ceny při nákupu věcí ve městech"
 		German:"-15% auf Einkäufe innerhalb der Stadt"
 		Ukrainian:"Вартість речей в містах -15%"
+		Korean:"도시에서 구입에 소모되는 금 -15%"
 }
 
 	"Cristo Redentor":{
@@ -2094,6 +2253,7 @@
 		Polish:"Statua Chrystusa Zbawiciela"
 		Czech:"Socha Krista Spasitele"
 		Ukrainian:"Христос-Спаситель"
+		Korean:"구세주 그리스도상"
 }
 
 	"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28":{
@@ -2104,6 +2264,7 @@
 		Czech:"'Pojďte ke mně, všichni, kdo se namáháte a jste obtíženi břemeny, a já vám dám odpočinout.' - Nový Zákon, Matouš 11:28"
 		Russian:"'Придите ко Мне все трудящиеся и обремененные, и Я успокою вас.' - Евангелие от Матфея, 11:28"
 		Ukrainian:"'Прийдіть до Мене, усі струджені та обтяжені, і Я вас заспокою!' - Євангеліє Від Матвія 11:28"
+		Korean:"'고생하며 무거운 짐을 진 너희는 모두 나에게 오너라. 내가 너희에게 안식을 주겠다.' - 성경, 마태복음 11:28"
 }
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -2120,6 +2281,7 @@
 		Polish:"Wdrożenie nowych ustrojów społecznych zmniejszone o 10% kultury"
 		Czech:"Počet Kulturních bodů na získání nové sociální politiky se sníží o 10%"
 		Ukrainian:"Культурна вартість затвердження нових політик -10%"
+		Korean:"새 정책 도입에 필요한 문화량 -10%"
 }
 
 	"Kremlin":{
@@ -2134,6 +2296,7 @@
 		Czech:"Kreml"
 		Ukrainian:"Кремль"
                 Malay:"Kremlin"
+				Korean:"크렘린 궁전"
 }
 
 	"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed":{
@@ -2144,6 +2307,7 @@
 		Czech:"'Zákon je pevnost na kopci, kterou nezničí armády a povodeň neodplaví.' - Proork Mohamed"
 		Russian:"'Закон - это крепость на холме, которую не подточат воды, не возьмут осаждающие' - пророк Мухаммед"
 		Ukrainian:"'Закон є фортецею на горі, яку не можуть захопити війська або змити потоки' - Пророк Магомет"
+		Korean:"'법이란 군대에 빼앗기지도 않고 홍수에 휩쓸리지도 않는 언덕 위의 요새다.' - 선지자 무함마드"
 }
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -2156,6 +2320,7 @@
 		Czech:"Obranné budovy ve všech městech budou o 25% účinnější"
 		German:"Defensive Gebäude in der Stadt sind 25% effektiver"
 		Ukrainian:"Оборонні будівлі в усіх містах стають на 25% ефективнішими"
+		Korean:"모든 도시의 방어 건물 효과 +25%"
 }
 
 	"Neuschwanstein":{
@@ -2167,6 +2332,7 @@
 		Russian:"Замок Нойшванштайн"
 		Czech:"Zámek Neuschwanstein"
 		Ukrainian:"Замок Нойшванштайн"
+		Korean:"노이슈반슈타인 성"
 }
 
 	"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria":{
@@ -2177,6 +2343,7 @@
 		Czech:"'... místo je jedním z nejkrásnějších které lze nalézt, svatých a nepřístupných, hodných chrámů pro božského přítele, který přinesl světu spasení a skutečné požehnání.' - Král Ludvík II. Bavorský"
 		Russian:"'... это одно из самых красивых мест, святое и безупречное, достойный монастырь для божественного друга, который принес спасение и благословение миру.' - Король Баварии Людвиг II"
 		Ukrainian:"'...місцина одна з найкрасивіших, яку можна знайти, свята і неприступна, гідний храм для божественного друга, який приніс спасіння і справжнє благословення для світу.' - Король Баварії Людвіг II"
+		Korean:"'…아름답고 성스럽고 범접할 수 없는 곳에 있다. 세상을 구원하고 축복하러 온 신성한 친구에게 어울리는 곳이다.' - 루트비히 2세"
 }
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -2189,6 +2356,7 @@
 		Czech:"+1 Spokojenost +2 Kulturní body a +3 Zlata za každý Hrad"
 		German:"+1 Zufriedenheit, +2 Kultur und +3 Gold für jedes Schloss"
 		Ukrainian:"За кожен замок щастя +1, культура +2, золото +3"
+		Korean:"성이 있는 모든 도시에 행복 +1, 문화 +2, 금 +3"
 }
 
 	"Military Academy":{
@@ -2205,6 +2373,7 @@
 		Czech:"Vojenská akademie"
 		Ukrainian:"Військова академія"
                 Malay:"Akedemi Tentera"
+				Korean:"사관 학교"
 	}
 	
 	"Brandenburg Gate":{
@@ -2215,6 +2384,7 @@
 		Traditional_Chinese:"勃蘭登堡門"
 		German:"Brandenburger Tor"
 		Ukrainian:"Бранденбурські ворота"
+		Korean:"브란덴부르크 문"
 	}
 	
 	"Free Great General appears near the Capital":{
@@ -2225,6 +2395,7 @@
 		Czech:"Velký Generál zdarma se objevil poblíž hlavního města"
 		German:"Kostenloser neuer General erscheint nahe der Hauptstadt"
 		Ukrainian:"біля столиці безкоштовно з’являється видатний генерал"
+		Korean:"수도 근처에 무료로 위대한 장군 하나가 출현"
 	}
 	
 	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
@@ -2234,6 +2405,7 @@
 		Simplified_Chinese:"“苍白的死神平等地叩响穷人房舍的小门和国王宫殿的大门。”——昆图斯·贺拉斯·弗拉库斯"
 		Traditional_Chinese:"“蒼白的死神平等地叩響窮人房舍的小門和國王宮殿的大門。”——昆圖斯·賀拉斯·弗拉庫斯"
 		Ukrainian:"'Смерть приходить однаково до хиж бідняків і королівських палаців' - Горацій"
+		Korean:"'창백한 죽음은 가난한 자의 문과 왕의 궁전을 똑같이 두드린다.' - 호라티우스"
 	}
 
 	"Broadcast Tower":{
@@ -2250,6 +2422,7 @@
 		Czech:"Vysílací věž"
 		Ukrainian:"Радіовежа"
                 Malay:"Menara Pencawang"
+				Korean:"방송탑"
 }
 
 	"Eiffel Tower":{
@@ -2266,6 +2439,7 @@
 		Czech:"Eiffelova věž"
 		Ukrainian:"Ейфелева вежа"
                 Malay:"Menara Eiffel"
+				Korean:"에펠탑"
 }
 
 	"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran":{
@@ -2276,6 +2450,7 @@
 		Czech:"'Žijeme jenom kvůli odhalování krásy, všechno ostatní je jen formou čekání.' - Kahlil Gibran"
 		Russian:"'Мы живем лишь для того, чтобы познавать красоту. Все прочее – ожидание' - Халиль Джебран"
 		Ukrainian:"'Ми живемо тільки для відкриття краси, усе інше є формою очікування' - Халіль Джебран"
+		Korean:"'우리 삶의 유일한 목적은 아름다움을 발견하는 것이다. 다른 모든 것은 일종의 기다림이다.' - 칼릴 지브란"
 }
 
 	"Provides 1 happiness per social policy":{
@@ -2292,6 +2467,7 @@
 		Polish:"+1 do zadowolenia z każdego ustroju społecznego"
 		Czech:"Poskytuje 1 Spokojenost za každou sociální politiku"
 		Ukrainian:"За кожну соціальну політику щастя +1"
+		Korean:"채택한 사회 정책 하나마다 행복 +1"
 }
 
 	"Statue of Liberty":{
@@ -2305,6 +2481,7 @@
 		Czech:"Socha Svobody"
 		Ukrainian:"Статуя Свободи"
                 Malay:"Patung Liberty"
+				Korean:"자유의 여신상"
 }
 
 	"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus":{
@@ -2315,6 +2492,7 @@
 		Czech:"'Dej mi své unavené, své ubohé, tvé schoulené masy toužící po svobodném nadechnutí, uboze odmítnuté tvým oplývajícím břehem. Pošli mi ty, bez domova, zmítané bouří. Pozvednu svou lampu u zlatých dveří!' - Emma Lazarus"
 		Russian:"'А мне отдайте ваших усталых, ваших бедных... А мне отдайте из глубин бездонных, Своих изгоев, люд забитый свой, Пошлите мне отверженных, бездомных,Я им свечу у двери золотой...' - Эмма Лазарус"
 		Ukrainian:"'До мене ідіть... Хто в лахмітті, хто хворий, голодний, бездомний, Кого викинув світ у сваволі крутій, - Нехай прийдуть до мене холодні та змучені штормом, Підіймаю цей факел для них біля входу у рай золотий!' - Емма Лазарус"
+		Korean:"'고단한 자여, 가난한 자여, 자유로이 숨쉬고자 하는 군중이여, 내게로 오라. 너희 들끓는 해변의 초라한 자여, 갈 곳이 없는 자여, 폭풍에 휩쓸린 자여, 내게로 오라. 내가 황금 문 옆에 등불을 높이 쳐들리라!' - 엠마 라자루스"
 }
 
 	"+1 Production from specialists":{
@@ -2327,6 +2505,7 @@
 		Russian:"+1 Производство от специалистов"
 		Czech:"+1 Produkce od specialistů"
 		Ukrainian:"За кожного спеціаліста виробництво +1"
+		Korean:"모든 도시의 전문가들의 생산력 +1"
 }
 
 	"Medical Lab":{
@@ -2342,6 +2521,7 @@
 		Polish:"Laboratorium medyczne"
 		Czech:"Lékařská laboratoř"
 		Ukrainian:"Медична лабораторія"
+		Korean:"의학 연구소"
 }
 
 	"Research Lab":{
@@ -2358,6 +2538,7 @@
 		Czech:"Výzkumná laboratoř"
 		Ukrainian:"Дослідницька лабораторія"
                 Malay:"Makmal Penyelidik"
+				Korean:"연구소"
 }
 
 	"Hydro Plant":{
@@ -2373,6 +2554,7 @@
 		Polish:"Elektrownia wodna"
 		Czech:"Vodní elektrárna"
 		Ukrainian:"Гідроелектростанція"
+		Korean:"수력 발전소"
 }
 
 	"Stadium":{
@@ -2389,6 +2571,7 @@
 		Czech:"Stadión"
 		Ukrainian:"Стадіон"
                 Malay:"Stadium"
+				Korean:"경기장"
 }
 
 	"Solar Plant":{
@@ -2404,6 +2587,7 @@
 		Polish:"Elektrownia słoneczna"
 		Czech:"Solární elektrárna"
 		Ukrainian:"Сонячна електростанція"
+		Korean:"태양열 발전소"
 }
 
 	"Must be next to desert":{
@@ -2420,6 +2604,7 @@
 		Polish:"Musi być obok pustyni"
 		Czech:"Musí být vedle pouště"
 		Ukrainian:"Має бути біля пустелі"
+		Korean:"도시가 사막 옆에 있어야 함"
 }
 
 	"Must be next to mountain":{
@@ -2433,6 +2618,7 @@
 		Spanish:"Debe estar próximo a una montaña"
 		German:"Muss an einen Berg grenzen"
 		Ukrainian:"Має бути біля гори"
+		Korean:"도시가 산 옆에 있어야 함"
 }
 
 	"Sydney Opera House":{
@@ -2449,6 +2635,7 @@
 		Czech:"Opera v Sydney"
 		Ukrainian:"Сіднейський оперний театр"
                 Malay:"Rumah Sydney Opera"
+				Korean:"시드니 오페라 하우스"
 }
 
 	"'Those who lose dreaming are lost.'  - Australian Aboriginal saying":{
@@ -2459,6 +2646,7 @@
 		Czech:"Ti, kteří ztratili sny, jsou ztraceni - Australské domorodé přísloví"
 		Russian:"'У кого погибли мечты, тот и сам погиб.' - пословица австралийских аборигенов"
 		Ukrainian:"'Хто не мріє, той не жмве' - приказка австралійських аборигенів"
+		Korean:"'꿈을 잃어버리면 길도 잃는다.' - 호주 원주민 속담"
 }
 
 	/*
@@ -2473,6 +2661,7 @@
 		Czech:"CN Tower"
 		Ukrainian:"Сі-Ен-Тавер"
                 Malay:"Menara CN"
+				Korean:"CN 타워"
 }
 	*/
 
@@ -2487,6 +2676,7 @@
 		Czech:"+1 Populace v každém městě"
 		Ukrainian:"У кожному місті населення +1"
                 Malay:"+1 populasi di setiap bandar"
+				Korean:"각 도시마다 인구 +1"
 }
 
 	"+1 happiness in each city":{
@@ -2500,6 +2690,7 @@
 		Czech:"+1 Spokojenost v každém městě"
 		Ukrainian:"У кожному місті щастя +1"
                 Malay:"+1 kegembiraan di setiap bandar"
+				Korean:"각 도시마다 행복 +1"
 }
 
 	"Pentagon":{
@@ -2513,6 +2704,7 @@
 		Czech:"Pentagon"
 		Ukrainian:"Пентагон"
                 Malay:"Pentagon"
+				Korean:"펜타곤"
 }
 
 	"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower":{
@@ -2523,6 +2715,7 @@
 		Czech:"'Při přípravě bitvy jsem vždy zjistil, že plány jsou k ničemu ale plánování je nezbytné.' - Dwight D. Eisenhower"
 		Russian:"'При подготовке к битве планы незаменимы, но, как только битва началась, план становится совершенно бесполезным.' - Дуайт Эйзенхауэр"
 		Ukrainian:"'Готуючись до бою, я завжди виявляв марність планів, але планування незамінне' - Двайт Айзенгавер"
+		Korean:"'나는 전투 준비에 있어서, 계획은 아무 쓸모가 없지만 계획을 세우는 일은 꼭 필요하다는 사실을 늘 깨닫게 된다.' - 드와이트 D. 아이젠하워"
 }
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -2538,6 +2731,7 @@
 		Polish:"Koszt ulepszenia jednostki bojowej zmniejszony o 33%"
 		Czech:"Cena Zlata za vylepšení vojenských jednotek bude snížena o 33%"
 		Ukrainian:"Ціна покращення військових підрозділів у золоті -33%"
+		Korean:"군사 유닛 업그레이드에 필요한 금 -33%"
 }
 
 	"Apollo Program":{
@@ -2553,6 +2747,7 @@
 		Czech:"Program Apollo"
 		Ukrainian:"Програма Аполлон"
                 Malay:"Program Apollo"
+				Korean:"아폴로 프로그램"
 }
 
 	"Enables construction of Spaceship parts":{
@@ -2569,6 +2764,7 @@
 		Polish:"Pozwala na konstrukcję części statku kosmicznego"
 		Czech:"Zpřístupní kunstrukci části vesmírné lodi"
 		Ukrainian:"Дозволяє будівництво частин космічного корабля"
+		Korean:"도시에서 우주선 부품 생산 가능"
 }
 
 	"Nuclear Plant":{
@@ -2585,6 +2781,7 @@
 		Czech:"Jaderná elektrárna"
 		Ukrainian:"Ядерна електростанція"
                 Malay:"Penjana Nuklear"
+				Korean:"원자력 발전소"
 }
 
 	"Spaceship Factory":{
@@ -2600,6 +2797,7 @@
 		Polish:"Fabryka statków kosmicznych"
 		Czech:"Továrna na výrobu kosmických lodí"
 		Ukrainian:"Завод космічних кораблів"
+		Korean:"우주선 공장"
 }
 
 	"Increases production of spaceship parts by 50%":{
@@ -2616,6 +2814,7 @@
 		Polish:"Zwiększa produkcję części statku kosmicznego o 50%"
 		Czech:"Zvyšuje produkci částí vesmírných lodí o 50%"
 		Ukrainian:"Виробництво частин космічного корабля +50%"
+		Korean:"우주선 부품 생산 시 생산력 +50%"
 }
 
 	"Spaceship part":{
@@ -2632,6 +2831,7 @@
 		Polish:"Część statku kosmicznego"
 		Czech:"Části kosmické lodi"
 		Ukrainian:"Частина космічного корабля"
+		Korean:"우주선 부품"
 }
 
 	"Hubble Space Telescope":{
@@ -2644,6 +2844,7 @@
 		Russian:"Телескоп Хаббл"
 		Czech:"Hubblův vesmírný dalekohled"
 		Ukrainian:"Космічний телескоп 'Габбл'"
+		Korean:"허블 우주 망원경"
 }
 
 	"'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France":{
@@ -2654,6 +2855,7 @@
 		Russian:"'Чудо не в том, что звездный небосклон столь обширен, но в том, что человек сумел измерить его' -  Анатоль Франс"
 		Polish:"Zadziwiające jest to, że pole gwiazd nie jest tak ogromne, ale że człowiek je zmierzył. - Anatole France"
 		Ukrainian:"'Дивним є не такий величезний зоряний простір, а вимірювання його людиною' - Анатоль Франс"
+		Korean:"'진정한 불가사의는 우주의 방대한 크기가 아니라 인간이 그 크기를 측정했다는 사실이다.' - 아나톨 프랑스"
 }
 
 	"2 free great scientists appear":{
@@ -2666,6 +2868,7 @@
 		Russian:"Появляется 2 бесплатных Великих учёных"
 		Czech:"2 Velcí Vědci zdarma"
 		Ukrainian:"Безкоштовно з’являються 2 видатні науковці"
+		Korean:"위대한 과학자 두 명이 무료로 출현"
 }
 
 	"Increases production of spaceship parts by 25%":{
@@ -2678,6 +2881,7 @@
 		Russian:"+25% Производство при постройке частей космического корабля"
 		Czech:"Zvyšuje produkci částí vesmírné lodi o 25%"
 		Ukrainian:"Виробництво частин космічного корабля +25%"
+		Korean:"우주선 부품 생산 시 생산력 +25%"
 }
 
 	"SS Booster":{	//no translation that I know of
@@ -2693,6 +2897,7 @@
 		Russian:"Ускоритель КК"
 		Czech:"SS Pomocný motor"
 		Ukrainian:"Ракетний прискорювач"
+		Korean:"SS 추진기"
 }
 
 	"SS Cockpit":{	//no translation that I know of
@@ -2708,6 +2913,7 @@
 		Russian:"Кокпит КК"
 		Czech:"SS Kabina"
 		Ukrainian:"Кабіна екіпажу"
+		Korean:"SS 조종부"
 }
 
 	"SS Engine":{	//no translation that I know of
@@ -2723,6 +2929,7 @@
 		Russian:"Двигатель КК"
 		Czech:"SS Motor"
 		Ukrainian:"Ракетний двигун"
+		Korean:"SS 엔진"
 }
 
 	"SS Stasis Chamber":{	//no translation that I know of
@@ -2738,6 +2945,7 @@
 		Russian:"Стазис-капусла КК"
 		Czech:"SS Stázová komora"
 		Ukrainian:"Камера стазису"
+		Korean:"SS 동면 장치"
 }
 
 
@@ -2755,6 +2963,7 @@
 		Czech:"Nejprve musíte vybodovat [buildingName] ve městě"
 		German:"Benötigt den Bau von [buildingName]"
 		Ukrainian:"У місті має бути будівля: [buildingName]"
+		Korean:"도시 내부에 [buildingName] 건물이 지어져 있어야 합니다."
 }
 
 	"Requires [buildingName] to be built in all cities":{
@@ -2768,6 +2977,7 @@
 		Czech:"Vyžaduje vybudování [buildingName] ve všech městech"
 		German:"Benötigt den Bau von [buildingName] in allen Städten"
 		Ukrainian:"В усіх містах має бути будівля: [buildingName]"
+		Korean:"모든 도시에 [buildingName] 건물이 지어져 있어야 합니다."
 }
 
 	"Provides a free [buildingName] in the city":{
@@ -2781,6 +2991,7 @@
 		Czech:"Poskytuje zdarma budovu [buildingName] ve městě"
 		German:"Stellt das Gebäude [buildingName] kostenlos bereit"
 		Ukrainian:"Безкоштовно надає місту будівлю: [buildingName]"
+		Korean:"도시 내부에 무료로 [buildingName] 건물을 제공합니다."
 }
 
 	"Requires worked [resource] near city":{
@@ -2794,6 +3005,7 @@
 		Czech:"Vyžaduje zdroj suroviny [resource] na území města"
 		German:"Benötigte eine Bewirtschaftung von [resource] in der Nähe der Stadt"
 		Ukrainian:"Біля міста має бути робочий ресурс: [resource]"
+		Korean:"도시 근처에 [resource] 자원이 개발되어 있어야 합니다."
 }
 
 	"Wonder is being built elsewhere":{
@@ -2807,6 +3019,7 @@
 		Czech:"Div světa již stavíte v jiném městě"
 		German:"Das Wunder wird woanders gebaut"
 		Ukrainian:"Диво будується за тридевʼять земель"
+		Korean:"불가사의가 이미 다른 곳에서 지어지고 있습니다."
 }
 
 	"Requires a [buildingName] in all cities":{
@@ -2820,6 +3033,7 @@
 		Czech:"Vyžaduje: [buildingName] ve všech městech"
 		German:"Benötigt das Gebäude [buildingName] in allen Städten"
 		Ukrainian:"В усіх містах має бути будівля: [buildingName]"
+		Korean:"모든 도시에 [buildingName] 건물이 지어져 있어야 합니다."
 }
 
 	"Requires a [buildingName] in this city":{
@@ -2833,6 +3047,7 @@
 		Czech:"Vyžaduje: [buildingName] v tomto městě"
 		German:"Benötigt das Gebäude [buildingName] in dieser Stadt" 
 		Ukrainian:"У місті має бути будівля: [buildingName]"
+		Korean:"이 도시에 [buildingName] 건물이 지어져 있어야 합니다."
 }
 
 	"Requires [resource]":{
@@ -2846,6 +3061,7 @@
 		Czech:"Vyžaduje surovinu [resource]"
 		German:"Benötigt [resource]"
 		Ukrainian:"Потрібен ресурс: [resource]"
+		Korean:"[resource] 자원이 필요합니다."
 }
 
 	"Required tech: [requiredTech]":{
@@ -2859,6 +3075,7 @@
 		Czech:"Vyžaduje technologii: [requiredTech]"
 		German:"Benötigt Technologie: [requiredTech]"
 		Ukrainian:"Потрібна технологія: [requiredTech]"
+		Korean:"[requiredTech] 기술이 연구되어야 합니다."
 }
 
 }

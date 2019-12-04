@@ -12,6 +12,7 @@
 		German:"Benötigt"
 		Czech:"Požadavky"
 		Ukrainian:"Потребує"
+		Korean:"선행 조건"
 }
 
 	"Adopt policy":{
@@ -25,6 +26,7 @@
 		Portuguese:"Adotar Política"
 		German:"Grundsatz verabschieden"
 		Czech:"Přijmout sociální politiku"
+		Korean:"정책 채택"
 }
 
 	"Adopt free policy":{
@@ -38,6 +40,7 @@
 		Portuguese:"Adotar Política"
 		German:"Grundsatz verabschieden",
 		Czech:"Přijmout sociální politiku zdarma"
+		Korean:"무료 정책 채택"
 }
 
 	"Unlocked at":{
@@ -52,6 +55,7 @@
 		German:"Freigeschaltet bei" //this could be wrong, "at" is very flexible and its translation depends on the context
 		Czech:"Odemkne se po"
 		Ukrainian:"Розблокується у"
+		Korean:"등장 시대:"
 }
 
 ////// Tradition branch
@@ -69,6 +73,7 @@
 		Czech:"Tradice"
 		Ukrainian:"Традиція"
 		German:"Tradition"
+		Korean:"전통"
 }
 
 	"+3 culture in capital and increased rate of border expansion":{
@@ -83,6 +88,7 @@
 		French:"+3 culture dans la capitale and accélère la vitesse d'expension du territoire"
 		Czech:"+3 kulturní body v hlavním městě a rychlejší rozšiřuvání území města"
 		Ukrainian:"+3 культури в столиці і підвищення швидкості розширення кордонів"
+		Korean:"수도에서 문화 +3, 영토 확장 속도 증가"
 }
 
 	"Aristocracy":{
@@ -97,6 +103,7 @@
 		French:"Aristocratie"
 		Czech:"Aristokracie"
 		Ukrainian:"Аристокатія"
+		Korean:"귀족제"
 }
 
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
@@ -110,6 +117,7 @@
 		German:"+15% Produktion beim Errichten von Wundern; +1 Zufriedenheit für jede(n) 10. Einwohner(in) in einer Stadt" // gender sensitive
 		French:"+15% production lors de la construction de merveilles, +1 de bonheur pour chaque tranche de 10 citoyens dans chaques villes"
 		Czech:"+15% produkce při stavbě Divu, +1 spokojenost za každých 10 obyvatel ve městě"
+		Korean:"불가사의 건설 시 생산력 +15%, 도시 시민 10명당 행복 +1"
 }
 
 	"Legalism":{
@@ -123,6 +131,7 @@
 		German:"Legalismus"
 		French:"Légalisme"
 		Czech:"Legalismus"
+		Korean:"율법 정치"
 }
 
 	"Immediately creates a cheapest available cultural building in each of your first 4 cities for free":{
@@ -136,6 +145,7 @@
 		German:"Kostenloses Kulturgebäude in den ersten 4 Städten"
 		French:"Un monument culturel gratuit dans vos 4 premières villes"
 		Czech:"Okamžitě a zdarma postaví nejlevnější kulturní budovu v každém z prvních 4 založených měst"
+		Korean:"내 최초 4개 도시에 가장 싼 비용의 문화 건물 무료로 건설"
 }
 
 	"Oligarchy":{
@@ -149,6 +159,7 @@
 		German:"Oligarchie"
 		French:"Oligarchie"
 		Czech:"Oligarchie"
+		Korean:"과두제"
 }
 
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
@@ -163,6 +174,7 @@
 		French:"Les unités en garnison n'ont plus de coût d'entretien, +50% de la force d'attaque"
 		Japanese:"都市のユニットは維持費、駐屯地の都市+ 50％の攻撃力"
 		Czech:"Jednotky ve městech nestojí žádný udržovací poplatek, města s posádkou získají +50% k síle"
+		Korean:"도시에 주둔한 유닛의 유지비 없음, 유닛이 주둔중인 도시의 공격력 +50%"
 }
 
 	"Landed Elite":{
@@ -176,6 +188,7 @@
 		German:"Landjunkerschaft" //according to: https://en.wikipedia.org/wiki/Landed_nobility
 		French:"Élite terrienne"
 		Czech:"Pozemkové vlastnictví"
+		Korean:"대지주"
 }
 
 	"+10% food growth and +2 food in capital":{
@@ -189,6 +202,7 @@
 		German:"+10% Nahrungswachstum und +2 Nahrung in der Hauptstadt"
 		French:"Croissance +10% et Nourriture +2 dans la capitale"
 		Czech:"+10% růst a +2 jídla v hlavním městě"
+		Korean:"수도의 식량 생산량 +10%, 식량 +2"
 }
 
 	"Monarchy":{
@@ -202,6 +216,7 @@
 		German:"Monarchie"
 		French:"Monarchie"
 		Czech:"Monarchie"
+		Korean:"군주제"
 }
 
 	"+1 gold and -1 unhappiness for every 2 citizens in capital":{
@@ -215,6 +230,7 @@
 		German:"+1 Gold und -1 Unzufriedenheit für jede(n) 2. Einwohner(in) in der Hauptstadt" // gender sensitive
 		French:"Or +1 et mécontentement -1 tous les 2 citoyens dans la capitale"
 		Czech:"+1 zlato a -1 nespokojenost za každé 2 obyvatele v hlavním městě"
+		Korean:"수도의 시민 2명당 금 +1, 불행 -1"
 }
 
 	"Tradition Complete":{
@@ -228,6 +244,7 @@
 		German:"Tradition vollständig"
 		French:"Tradition complète"
 		Czech:"Kompletní Tradice"
+		Korean:"전통 정책 완성"
 }
 
 	"+15% growth and +2 food in all cities":{ //You should add an Acqueduct in the first 4 cities
@@ -241,6 +258,7 @@
 		German:"+15% Wachstum und +2 Nahrung in allen Städten"
 		French:"+15% de croissance et +2 nourriture dans toutes les villes"
 		Czech:"+15% růst a +2 jídla ve všech městech"
+		Korean:"모든 도시에 성장률 +15%, 식량 +2"
 }
 
 ////// Liberty branch
@@ -256,6 +274,7 @@
 		German:"Unabhängigkeit" // may be "Freiheit" as well...depends on the context
 		French:"Liberté"
 		Czech:"Volnost"
+		Korean:"자유"
 }
 
 	"+1 culture in every city":{
@@ -269,6 +288,7 @@
 		German:"+1 Kultur in jeder Stadt"
 		French:"+1 Culture dans toutes les villes"
 		Czech:"+1 kultura v každém městě"
+		Korean:"모든 도시에서 문화 +1"
 }
 
 	"Collective Rule":{
@@ -282,6 +302,7 @@
 		German:"Kollektivherrschaft"
 		French:"Pouvoir collectif" //official translation, but "règles collectives" is more accurate
 		Czech:"Kolektivní právo"
+		Korean:"집단체제"
 }
 
 	"Training of settlers increased +50% in capital, receive a new settler near the capital":{
@@ -295,6 +316,7 @@
 		German:"Ausbildung von SiedlerInnen in der Hauptstadt ist um 50% erhöht; ein(e) kostenlose(r) Siedler(in) erscheint in der Hauptstadt."
 		French:"La vitesse de formation des colons augmente de 50% dans la capital capitale et un colon gratuit apparaît à proximité"
 		Czech:"Vycvičení osadníka zrychleno o 50% v hlavním městě, zdarma obdržíte osadníka v blízkosti hlavního města"
+		Korean:"수도의 개척자 생산 속도 +50%, 수도 근처에 무료 개척자 출현"
 }
 
 	"Citizenship":{
@@ -308,6 +330,7 @@
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
 		Czech:"Občanství"
+		Korean:"시민권"
 }
 
 	"Tile improvement speed +25%, receive a free worker near the capital":{
@@ -321,6 +344,7 @@
 		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei ArbeiterInnenn; ein(e) kostenlose(r) Arbeiter(in) erscheint in der Hauptstadt"
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
 		Czech:"Rychlost vylepšení na políčkách vzroste o 25%, zdarma obdržíte dělníka v blízkosti hlavního města"
+		Korean:"타일 시설 건설 속도 +25%, 수도 근처에 무료 노동자 출현"
 }
 
 	"Republic":{
@@ -334,6 +358,7 @@
 		German:"Republik"
 		French:"République"
 		Czech:"Republika"
+		Korean:"공화국"
 }
 
 	"+1 construction in every city, +5% construction when constructing buildings":{
@@ -347,6 +372,7 @@
 		German:"+1 Produktion in jeder Stadt; +5% Produktion beim Bau von Gebäuden in Städten"
 		French:"production +1, et production +5% dans les villes lors de la construction de bâtiments"
 		Czech:"+1 konstrukce v každém městě, +5% konstrukce při stavbě budov"
+		Korean:"모든 도시에서 생산력 +1, 건물 건설 시 추가로 생산력 +5%"
 }
 
 	"Representation":{
@@ -360,6 +386,7 @@
 		German:"Repräsentation"
 		French:"Représentation"
 		Czech:"Zastupitelství"
+		Korean:"대의제"
 }
 
 	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{
@@ -373,6 +400,7 @@
 		German:"Jede gegründete Stadt erhöht die Kulturkosten von Grundsätzen um 33% weniger als üblich. Es beginnt ein Goldenes Zeitalter."
 		French:"Pour chaque ville fondée, le coût en culture des doctrines augmentera 33% moins vite. Déclenche également un âge d'or"
 		Czech:"Každé založené město zvyšuje cenu sociální politiky o 33% méně než obvykle. Započne zlatý věk."
+		Korean:"도시 수로 인한 정책의 문화 요구치 증가량 -33%, 즉시 황금기 시작"
 }
 
 	"Meritocracy":{
@@ -386,6 +414,7 @@
 		German:"Meritokratie"
 		French:"Méritocratie"
 		Czech:"Meritokracie"
+		Korean:"능력주의"
 }
 
 	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{
@@ -399,6 +428,7 @@
 		German:"+1 Zufriedenheit für jede mit der Hauptstadt verbundenen Stadt; -5% Unzufriedenheit von EinwohnerInnen"
 		French:"Ville nationale reliée à la capitale : bonheur +1, et mécontentement -5% grâce aux citoyens des villes non occupées"
 		Czech:"+1 spokojenost za každé město propojené s hlavním městem, -5% nespokojenosti za obyvatelstvo"
+		Korean:"수도와 연결된 도시마다 행복 +1, 시민으로 인한 불행 -5%"
 }
 
 	"Liberty Complete":{
@@ -412,6 +442,7 @@
 		German:"Unabhängigkeit vollständig"
 		French:"Liberté complète"
 		Czech:"Kompletní Volnost"
+		Korean:"자유 정책 완성"
 }
 
 	"Free Great Person of choice near capital":{
@@ -425,6 +456,7 @@
 		German:"Kostenlose Große Persönlichkeit der Wahl erscheint in der Hauptstadt"
 		French:"personnage illustre gratuit près de votre capitale"
 		Czech:"Obdržíte zdarma velkou osobnost dle vašeho výběru v blízkosti hlavního města"
+		Korean:"원하는 위인 하나가 수도에 무료로 출현"
 }
 
 ////// Honor branch
@@ -440,6 +472,7 @@
 		German:"Ehre"
 		French:"Honneur"
 		Czech:"Čest"
+		Korean:"명예"
 }
 
 	"+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit":{ //25% in Vanilla, 33% in G&K
@@ -453,6 +486,7 @@
 		German:"+25% Bonus gegen Barbaren; du bekommst Kulturpunkte für das Töten von barbarischen Einheiten"
 		French:"bonus de combat de 25% contre les Barbares"
 		Czech:"+25% bonus proti barbarům, za každého zabitého barbara obdržíte kulturní body"
+		Korean:"야만인과 전투 시 전투력 +25%, 야만인 처치 시 문화 획득"
 }
 
 	"Warrior Code":{
@@ -466,6 +500,7 @@
 		German:"Kriegerkodex"
 		French:"Code du guerrier"
 		Czech:"Kodex válečníka"
+		Korean:"무예 정신"
 }
 
 	"+20% production when training melee units":{ //it's +15% in the original game
@@ -479,6 +514,7 @@
 		German:"+20% Produktion beim Rekrutieren von Nahkampfeinheiten"
 		French:"Production +20% lors de la formation d'unités de combat rapproché"
 		Czech:"+20% produkce při výcviku jednotky pro buj zblízka"
+		Korean:"근접 유닛 생산 시 생산력 +20%"
 }
 
 	"Discipline":{
@@ -492,6 +528,7 @@
 		German:"Disziplin"
 		French:"Discipline"
 		Czech:"Disciplína"
+		Korean:"규율"
 }
 
 	"+15% combat strength for melee units which have another military unit in an adjacent tile":{
@@ -505,6 +542,7 @@
 		German:"+15% Kampfstärke für Nahkampfeinheiten, die eine andere Militäreinheit in einem anliegenden Feld haben"
 		French:"Puissance de combat +15% pour les unités de combat rapproché si une autre unité militaire se trouve sur une case adjacente"
 		Czech:"+15% bojové síly pro jednotky pro boj zblízka, které mají vedle sebe další vojenskou jednotku"
+		Korean:"다른 군사 유닛과 인접한 근접 유닛의 전투력 +15%"
 }
 
 	"Military Tradition":{
@@ -518,6 +556,7 @@
 		German:"Militärtradition"
 		French:"Tradition militaire"
 		Czech:"Vojenská tradice"
+		Korean:"군사 전통"
 }
 
 	"Military units gain 50% more Experience from combat":{
@@ -531,6 +570,7 @@
 		German:"Militäreinheiten erhalten 50% mehr Erfahrung (EP) durch Kämpfe"
 		French:"Unités militaires : EXP gagnée en combat +50%"
 		Czech:"Vojenské jednotky získávají o 50% více zkušenosti z boje"
+		Korean:"군사 유닛이 전투에서 얻는 경험치 +50%"
 }
 
 	"Military Caste":{
@@ -544,6 +584,7 @@
 		German:"Militarisierte Burg"
 		French:"Caste militaire"
 		Czech:"Vojenská třída"
+		Korean:"군사 신분제"
 }
 
 	"Each city with a garrison increases happiness by 1 and culture by 2":{
@@ -557,6 +598,7 @@
 		German:"Jede besetzte Stadt erhöht die Zufriedenheit um 1 und die Kultur um 2"
 		French:"Dans chaque ville possédant une garnison, +1 Bonheur et +2 Culture"
 		Czech:"Každé město vojenskou posádku zvyšuje spokojenost o 1 a kulturu o 2 "
+		Korean:"유닛이 주둔한 도시의 행복 +1, 문화 +2"
 }
 
 	"Professional Army":{
@@ -570,6 +612,7 @@
 		German:"Berufsarmee"
 		French:"Armée de métier"
 		Czech:"Profesionální armáda"
+		Korean:"상비군"
 }
 
 	"Honor Complete":{
@@ -583,6 +626,7 @@
 		German:"Ehre vollständig"
 		French:"Honneur complète"
 		Czech:"Kompletní Čest"
+		Korean:"명예 정책 완성"
 }
 
 	"Gain gold for each unit killed":{
@@ -596,6 +640,7 @@
 		German:"Jede zerstörte Einheit gibt Gold"
 		French:"Chaque unités tués rapporte de l'or"
 		Czech:"Obdržíte zlato za každou zabitou jednotku"
+		Korean:"적 유닛 처치 시 금 획득"
 }
 
 ////// Piety branch
@@ -611,6 +656,7 @@
 		German:"Frömmigkeit"
 		French:"Piété"
 		Czech:"Zbožnost"
+		Korean:"신앙"
 }
 
 	"Building time of culture buildings reduced by 15%":{
@@ -624,6 +670,7 @@
 		German:"Bauzeit für Kulturgebäude ist um 15% reduziert"
 		French:"diminue de 15% le temps nécessaire à la construction des batiments produisant de la culture"
 		Czech:"Čas potřebný na stavbu kulturních budov je o 15% kratší"
+		Korean:"문화 건물의 건설 속도 -15%"
 }
 
 	"Organized Religion":{
@@ -637,6 +684,7 @@
 		German:"Organisierte Religion"
 		French:"Religion organisée"
 		Czech:"Organizovaná víra"
+		Korean:"종교 체제"
 }
 
 	"+1 happiness for each monument, temple and monastery":{
@@ -650,6 +698,7 @@
 		German:"+1 Zufriedenheit für jedes Monument, Kloster und Tempel"
 		French:"+1 bonheur pour chaque monument, temple et monastère"
 		Czech:"+1 spokojenost za každý pomník, chrám a klášter"
+		Korean:"기념비, 사원, 수도원 하나마다 행복 +1"
 }
 
 	"Mandate Of Heaven":{
@@ -663,6 +712,7 @@
 		German:"Mandat des Himmels"
 		French:"Mandat du Ciel"
 		Czech:"Mandát Nebes"
+		Korean:"천명"
 }
 
 	"50% of excess happiness added to culture towards policies":{
@@ -676,6 +726,7 @@
 		German:"50% der überschüssigen Zufriedenheit wird zu Kultur für Grundsätze umgewandelt"
 		French:"50% du bonheur excédentaire est ajouté en Culture"
 		Czech:"50% z nadbytečné spokojenosti je je přidáno na sociální politiku"
+		Korean:"잉여 행복의 50%가 문화에 추가됨"
 }
 
 	"Theocracy":{
@@ -689,6 +740,7 @@
 		German:"Theokratie"
 		French:"Théocratie"
 		Czech:"Teokracie"
+		Korean:"신권정치"
 }
 
 	"Temples give +10% gold":{
@@ -702,6 +754,7 @@
 		German:"Tempel geben +10% Gold"
 		French:"Les temples augmentent la production des villes de 10% "
 		Czech:"Chrámy přidávají +10% zlata"
+		Korean:"사원을 건설한 도시의 금 +10%"
 }
 
 	"Reformation":{
@@ -715,6 +768,7 @@
 		German:"Reformation"
 		French:"Réforme"
 		Czech:"Reformace"
+		Korean:"종교 개혁"
 }
 
 	"+33% culture in all cities with a world wonder, immediately enter a golden age":{
@@ -728,6 +782,7 @@
 		German:"+33% Kultur in allen Städten mit einem Weltwunder; Ein Goldenes Zeitalter beginnt."
 		French:"+33% de culture dans toutes les villes ayant une Merveille, déclenche un âge d'or"
 		Czech:"33% kultury ve všech městech s Divem světa, okamžitý začátek Zlatého věku"
+		Korean:"세계 불가사의가 있는 모든 도시의 문화 +33%, 즉시 황금기 시작"
 }
 
 	"Free Religion":{
@@ -741,6 +796,7 @@
 		German:"Religionsfreiheit"
 		French:"Tolérance religieuse" //official, or "Religion libre"
 		Czech:"Svoboda vyznání"
+		Korean:"종교적 관용"
 }
 
 	"+1 culture for each monument, temple and monastery. Gain a free policy.":{
@@ -754,6 +810,7 @@
 		German:"+1 Kultur für jedes Monument, Kloster und Tempel; Ein kostenloser Grundsatz."
 		French:"+1 culture pour chaque monument, temple et monastère, donne une doctrine gratuite"
 		Czech:"+1 kulturní bod za každý pomník, chrám a klášter. Obdržíte zdarma další sociální politiku"
+		Korean:"기념비, 사원, 수도원에서 문화 +1, 무료 정책 획득"
 }
 
 	"Piety Complete":{
@@ -767,6 +824,7 @@
 		German:"Frömmigkeit vollständig"
 		French:"Piété complète"
 		Czech:"Kompletní Zbožnost"
+		Korean:"후원 정책 완성"
 }
 
 	"Reduce culture cost of future policies by 10%":{
@@ -780,6 +838,7 @@
 		German:"Reduziere Kulturkosten von zukünftigen Grundsätzen um 10%"
 		French:"Réduit le cout en culture des futures doctrines de 10%"
 		Czech:"Redukuje cenu dalších sociálních politik o 10%"
+		Korean:"앞으로 정책 채택에 드는 비용 -10%"
 }
 
 
@@ -790,84 +849,98 @@
 		Italian:"Mecenatismo"
 		Czech:"Patronát"
 		German:"Schirmherrschaft"
+		Korean:"후원"
 }
 
 	"Influence with City-States degrades 25% slower than normal.":{
 		Italian:"L'Influenza con le Città-Stato cala il 25% più lentamente rispetto al normale."
 		Czech:"Vliv Městských států oslabuje o 25% pomaleji než obvykle."
 		German:"Einfluss mit Stadtstaaten sinkt 25% langsamer als normal."
+		Korean:"도시 국가에의 영향력이 감소하는 속도 -25%"
 }
 
 	"Philantropy":{ //unlocked when adopting Patronage
 		Italian:"Filantropia"
 		Czech:"Filantropie"
 		German:"Philantropie"
+		Korean:"자선사업"
 }
 
 	"Gifting Gold to a City-State generates 25% more Influence":{
 		Italian:"Donare Oro a una Città-Stato genera il 25% di Influenza in più."
 		Czech:"Darování zlata městským státům generuje o 25% více vlivu než obvykle"
 		German:"Goldspenden an einen Stadtstaaten erzeugt 25% mehr Einfluss"
+		Korean:"도시 국가에 금을 선물할 때 얻는 영향력 +25%"
 }
 
 	"Aesthetics":{ //unlocked when adopting Patronage
 		Italian:"Estetica"
 		Czech:"Estetika"
 		German:"Ästhetik"
+		Korean:"미학"
 }
 
 	"Resting point for Influence level with all City-States is increased by 20.":{
 		Italian:"Il punto neutro di livello d'Influenza per tutte le Città-Stato è portato a +20."
 		Czech:"Zbývající body vlivu v Městských státech jsou zvýšeny o 20%."
 		German:"Startwert für Einfluss ist in allen Stadtstaaten um 20 erhöht."
+		Korean:"도시 국가의 영향력 정지점 +20"
 }
 
 	"Scholasticism":{ //Needs Philantropy
 		Italian:"Scolasticismo"
 		Czech:"Scholastika"
 		German:"Schulbildung"
+		Korean:"스콜라 철학"
 }
 
 	"All Allied City-States provide a Science bonus equal to 25% of what they produce for themselves.":{
 		Italian:"Le Città-Stato tue alleate ti donano un bonus scientifico del 25% rispetto a quello che producono da sole."
 		Czech:"Všechny městské státy, se kterými máme alianci, poskytují Výzkumný bonus ve výši 25% z jejich celkového výzkumu."
 		German:"Alle verbündeten Stadtstaaten geben einen Wissenschaftsbonus von 25% ihrer eigenen Produktion."
+		Korean:"동맹 상태인 모든 도시국가가 생산하는 과학력의 25%를 제공받음"
 }
 
 	"Cultural Diplomacy":{ //Needs Scholasticism
 		Italian:"Diplomazia culturale"
 		Czech:"Kulturní diplomacie"
 		German:"Kulturdiplomatie"
+		Korean:"문화적 외교"
 }
 
 	"Happiness from gifted Luxuries increased by 50%.":{
 		Italian:"+50% Felicità dalle Risorse di Lusso date dalle città che ti sono Amiche o Alleate."
 		Czech:"Spokojenost z darovaných Luxusních zdrojů se zvyšuje o 50%."
 		German:"Zufriedenheit von geschenkten Luxusgütern um 50% erhöht."
+		Korean:"선물받은 사치 자원에서 얻는 행복 +50%"
 }
 
 	"Educated Elite":{ //Needs Scholasticism and Aesthetics
 		Italian:"Elite culturale"
 		Czech:"Intelektuální elita"
 		German:"Gebildete Elite"
+		Korean:"지식인"
 }
 
 	"Allied City-States will occasionally gift you Great People.":{
 		Italian:"Le Città-Stato Alleate ti doneranno occasionalmente dei Grandi Personaggi."
 		Czech:"Všechny městské státy, se kterými máme alianci vám občas darují Velkou osobnost."
 		German:"Verbündete Stadtstaaten beschenken gelegentliche große Persönlichkeiten."
+		Korean:"동맹인 도시 국가가 가끔 위인을 선물함"
 }
 
 	"Patronage Complete":{
 		Italian:"Mecenatismo completo"
 		Czech:"Kompletní Patronát"
 		German:"Schirmherrschaft vollständig"
+		Korean:"후원 정책 완성"
 }
 
 	"Influence with City-States degrades 25% slower than normal.":{
 		Italian:"L'Influenza con le Città-Stato cala il 33% più lentamente rispetto al normale."
 		Czech:"Vliv v městských státech se snižuje o 25% pomaleji než je obvyklé."
 		German:"Einfluss mit Stadtstaaten sinkt 25% langsamer als normal."
+		Korean:"도시 국가에의 영향력이 감소하는 속도 -25%"
 }
 
 */
@@ -884,8 +957,9 @@
         Traditional_Chinese:"商業政策"
 		Portuguese:"Comércio"
 		German:"Kommerz"
-		French:"Commerce",
+		French:"Commerce"
 		Czech:"Kupectví"
+		Korean:"상업"
 }
 
 	"+25% gold in capital":{
@@ -899,6 +973,7 @@
 		German:"+25% Gold in der Hauptstadt"
 		French:"+25% de production d'or dans la capitale"
 		Czech:"+25% zlata v hlavním městě"
+		Korean:"수도의 금 +25%"
 }
 
 	"Trade Unions":{
@@ -912,6 +987,7 @@
 		German:"Handelsunion"
 		French:"Unions commerciales"
 		Czech:"Odborová organizace"
+		Korean:"노동 조합"
 }
 
 	"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
@@ -925,6 +1001,7 @@
 		German:"Instandhaltung von Straßen und Schienen um 33% reduziert; +2 Gold für alle Handelsrouten"
 		French:"Le coût des routes et des chemins de fer est réduit de 33%, +2 or pour chaques routes commerciales"
 		Czech:"Údržba cest a železnic je snížena o 33%, +2 zlata za každou obchodní cestu"
+		Korean:"도로와 철도 유지비 -33%, 모든 무역로에서 금 +2"
 }
 
 	"Mercantilism":{
@@ -938,6 +1015,7 @@
 		German:"Merkantilismus"
 		French:"Mercantilisme",
 		Czech:"Merkantilismus"
+		Korean:"중상주의"
 }
 
 	"-25% to purchasing items in cities":{
@@ -951,6 +1029,7 @@
 		German:"-25% Gold Kosten beim Kauf von Objekten in Städten"
 		French:"-25% de coût en or d'achat de batiments/unités dans les villes"
 		Czech:"-25% na nákup všech věcí ve všech městech"
+		Korean:"도시에서 구매할 때 드는 비용 -25%"
 }
 
 	"Entrepreneurship":{
@@ -964,6 +1043,7 @@
 		//same in German
 		French:"Entreprenariat"
 		Czech:"Podníkání"
+		Korean:"기업가 정신"
 }
 
 	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{
@@ -977,6 +1057,7 @@
 		German:"Große HändlerInnen erscheinen 25% schneller; +1 Wissenschaft von jeder Prägeanstalt, Bank, Markt und Börse."
 		French:"Apparition des marchands illustres 25% plus rapide, +1 science pour chaque Hôtel de la monnaie, Marché, Banque et Douane"
 		Czech:"Velký obchodník se rodí o 25% rychleji, +1 Výzkum za každou Mincovnu, Tržiště, Banku a Burzu."
+		Korean:"위대한 상인 출현률 +25%, 조폐국, 시장, 은행, 증권 교환소마다 과학 +1"
 }
 
 	"Patronage":{
@@ -990,6 +1071,7 @@
 		German:"Mäzenatentum" //according to https://en.wikipedia.org/wiki/Patronage --> click on German language post
 		French:"Patronat",
 		Czech:"Patronát"
+		Korean:"후원"
 }
 
 	"Cost of purchasing culture buildings reduced by 50%":{
@@ -1003,6 +1085,7 @@
 		German:"Kosten für den Kauf von Kulturgebäuden ist um 50% reduziert"
 		French:"Coût d'achat des batiments culturelles réduit de 50%"
 		Czech:"Cena za nákup kulturních budov se sníží o 50%"
+		Korean:"문화 건물의 구매 비용 -50%"
 }
 
 	"Protectionism":{
@@ -1016,6 +1099,7 @@
 		German:"Protektionismus"
 		French:"Protectionnisme",
 		Czech:"Protekcionismus"
+		Korean:"보호무역주의"
 }
 
 	"+1 happiness from each luxury resource":{
@@ -1029,6 +1113,7 @@
 		German:"+1 Zufriedenheit für jede Luxusresource"
 		French:"+1 Bonheur pour chaque ressource de luxe"
 		Czech:"+1 spokojenost za každý luxusní zdroj"
+		Korean:"사치 자원 하나 당 행복 +1"
 }
 
 	"Commerce Complete":{
@@ -1042,12 +1127,14 @@
 		German:"Kommerz vollständig"
 		French:"Commerce complet"
 		Czech:"Kompletní Kupectví"
+		Korean:"상업 정책 완성"
 }
 
 	"+1 gold from every trading post, double gold from Great Merchant trade missions":{
 		Italian:"+1 Oro per ogni stazione commerciale, e oro raddoppiato dalle missioni commerciali dei Grandi Mercanti"
 		Simplified_Chinese:"每处贸易站+1金钱，大商业家拓展贸易获得的金钱加倍"
         	Traditional_Chinese:"每處貿易站+1金錢，大商業家拓展貿易獲得的金錢加倍"
+		Korean:"모든 교역소에서 금 +1, 위대한 상인의 교역 임무에서 얻는 금 2배"
 }
 
 //////Rationalism branch
@@ -1063,6 +1150,7 @@
 		German:"Rationalismus"
 		French:"Rationalisme",
 		Czech:"Racionalismus"
+		Korean:"합리주의"
 }
 
 	"Production to science conversion in cities increased by 33%":{
@@ -1076,6 +1164,7 @@
 		German:"Umwandlung von Produktion in Wissenschaft in Städten ist um 33% erhöht."
 		French:"+33% de production lors de conversion de la production en science"
 		Czech:"Konverze produkce na výzkum ve městech se zvyšuje o 33%"
+		Korean:"도시에서 과학력을 생산 시 변환량 +33%"
 }
 
 	"Secularism":{
@@ -1089,6 +1178,7 @@
 		German:"Säkularismus"
 		French:"Laïcité",
 		Czech:"Sekularismus "
+		Korean:"세속주의"
 }
 
 	"+2 science from every specialist":{
@@ -1102,6 +1192,7 @@
 		German:"+2 Wissenschaft durch jede(n) Spezialistin"
 		French:"Spécialiste : science +2."
 		Czech:"+2 výzkum za každého specialistu"
+		Korean:"전문가 하나 당 과학 +2"
 }
 
 	"Humanism":{
@@ -1115,6 +1206,7 @@
 		German:"Humanismus"
 		French:"Humanisme"
 		Czech:"Humanismus"
+		Korean:"인본주의"
 }
 
 	"+1 happiness from every university, observatory and public school":{
@@ -1128,6 +1220,7 @@
 		German:"+1 Zufriedenheit durch jede Universität, öffentliche Schule oder Observatorium."
 		French:"+1 bonheur pour chaque université, observatoire et école publique"
 		Czech:"+1 spokojenost za každou univerzitu, observatoř a veřejnou školu"
+		Korean:"대학, 천문대, 공립학교 하나마다 행복 +1"
 }
 
 	"Free Thought":{
@@ -1141,6 +1234,7 @@
 		German:"Freies Denken"
 		French:"Liberté de pensée",
 		Czech:"Volnomyšlenkářství"
+		Korean:"자유사상"
 }
 
 	"+1 science from every trading post, +17% science from universities":{
@@ -1154,6 +1248,7 @@
 		German:"+1 Wissenschaft durch jeden Handelsposten; +17% Wissenschaft von Universitäten"
 		French:"Comptoirs commerciaux : science +1 et science +17% grâce aux universités",
 		Czech:"+1 výzkum za každou Obchodní stanici, +17% výzkumu z univerzit"
+		Korean:"교역소에서 과학 +1, 대학에서 과학 +17%"
 }
 
 	"Sovereignty":{
@@ -1167,6 +1262,7 @@
 		German:"Souveränität"
 		French:"Souveraineté",
 		Czech:"Svrchovanost lidu"
+		Korean:"국민주권"
 }
 
 	"+15% science while empire is happy":{
@@ -1180,6 +1276,7 @@
 		German:"+15% Wissenschaft solange das Reich zufrieden ist"
 		French:"+15% science tant que l'empire est heureux"
 		Czech:"+15% výzkumu, pokud jsou obyvatelé vaší říše spokojení"
+		Korean:"행복한 상태일 때 과학 +15%"
 }
 
 	"Scientific Revolution":{
@@ -1193,6 +1290,7 @@
 		German:"Wissenschaftsrevolution"
 		French:"Révolution scientifique",
 		Czech:"Vědecká revoluce"
+		Korean:"과학 혁명"
 }
 
 	"Gain 2 free technologies":{
@@ -1206,6 +1304,7 @@
 		German:"2 kostenlose Technologien"
 		French:"2 technologies gratuites"
 		Czech:"Získáte 2 technologie zdarma"
+		Korean:"무료 기술 2개 획득"
 }
 
 	"Rationalism Complete":{
@@ -1219,6 +1318,7 @@
 		German:"Rationalismus vollständig"
 		French:"Rationalisme complet",
 		Czech:"Kompletní Racionalismus"
+		Korean:"합리주의 정책 완성"
 }
 
 	"+1 gold from all science buildings":{
@@ -1231,7 +1331,8 @@
 		Portuguese:"+1 ouro de todos os edifícios de ciência"
 		German:"+1 Gold von allen Wissenschaftsgebäuden"
 		French:"Les batiments scientifiques rapportent +1 or"
-    Czech:"+1 zlato ze všech vědeckých budov"
+		Czech:"+1 zlato ze všech vědeckých budov"
+		Korean:"모든 과학 건물에서 금 +1"
 	}
 
 	
@@ -1241,71 +1342,85 @@
 	"Order":{
 		Italian:"Ordine"
 		German:"Ordnung"
+		Korean:"질서"
 	}
 
 	"+1 Happiness per City":{
 		Italian:"+Felicità per Città"
 		German:"+1 Zufriedenheit pro Stadt"
+		Korean:"도시 하나마다 행복 +1"
 	}
     
 	"Nationalism":{
 		Italian:"Nazionalismo"
 		German:"Nationalismus"
+		Korean:"민족주의"
 	}
 
 	"25% Attack bonus when fighting in friendly territory":{
 		Italian:"+25 Forza in territorio amico"
 		German:"25% Angriffsbonus bei Kämpfen in freundlichem Gebiet"
+		Korean:"우호적인 영토에서 싸울 때 전투력 +25%"
 	}
 
 	"United Front":{
 		Italian:"Fronte unito"
 		German:"Geeinte Front"
+		Korean:"통일 전선"
 	}
 
 	"Militaristic City-States grant units twice as often when you are at war with a common foe":{
 		Italian:"Le Città Stato militaristiche ti danno unità a doppia velocità quando siete in guerra con un nemico in comune"
 		German:"Militärische Stadtstaaten gewähren Einheiten doppelt so oft, wenn man mit einem gemeinsamen Gegner im Krieg ist."
+		Korean:"군사적 도시국가와 같은 적을 두고 싸울 시 그 도시 국가에서 유닛을 두 배로 자주 제공함"
 	}
 
 	"Planned economy":{
 		Italian:"Economia pianificata"
 		German:"Planwirtschaft"
+		Korean:"계획 경제"
 	}
 
 	"Factories increase a cities Science output by 25%":{
 		Italian:"+25% Scienza dalle industrie"
 		German:"+25% Wissenschaft durch Fabriken"
+		Korean:"공장이 있는 도시의 과학 +25%"
 	}
 
 	"Socialism":{
 		Italian:"Socialismo"
 		German:"Sozialismus"
+		Korean:"사회주의"
 	}
 
 	"Gold maintenance costs of Buildings reduced by 15%":{
 		Italian:"-15% mantenimenti in Oro dagli edifici"
 		German:"-15% Wartungskosten von Gebäuden"
+		Korean:"건물의 유지에 드는 금 -15%"
 	}
 
 	"Communism":{
 		Italian:"Comunismo"
 		German:"Kommunismus"
+		Korean:"공산주의"
 	}
 
 	"+2 Production per City and +10% Production when constructing buildings":{
 		Italian:"+2 Produzione dalle Città e +10% Produzione quando costruisci un edificio"
 		German:"+2 Produktion pro Stadt und +10% Produktion beim Bau von Gebäuden"
+		Korean:"건물을 건설하는 도시에 각각 생산력 +2, 생산력 +10%"
 	}
 
 	"Order Complete":{
 		Italian:"Ordine Completo"
 		German:"Ordnung vollständig"
+		Korean:"질서 이념 완성"
 	}
 
 	"+1 Food, Production, Science, Gold and Culture per city":{
 		Italian:"+1 Cibo, Produzione, Scienza, Oro e Cultura dalle Città"
 		German:"+1 Nahrung, Produktion, Wissenschaft, Gold und Kultur pro Stadt"
+		Korean:"각 도시마다 식량, 생산력, 과학, 금, 문화 +1"
 	}
 }
 */
@@ -1323,6 +1438,7 @@
 		German:"Freiheit"
 		French:"Liberté"
 		Czech:"Svoboda"
+		Korean:"평등"
 }
 
 	"+25% great people rate":{
@@ -1336,6 +1452,7 @@
 		German:"+25% mehr Große Persönlichkeiten"
 		French:"+25% d'apparition des personnages illustres"
 		Czech:"+25% k růstu Velkých osobností"
+		Korean:"위인 출현률 +25%"
 }
 
 	"Constitution":{
@@ -1349,6 +1466,7 @@
 		German:"Verfassung"
 		French:"Constitution",
 		Czech:"Ústavní systém"
+		Korean:""
 }
 
 	"+2 culture from each wonder":{
@@ -1362,6 +1480,7 @@
 		German:"+2 Kultur durch jedes Wunder"
 		French:"+2 culture pour chaque merveilles"
 		Czech:"+2 body kultury za každý Div"
+		Korean:"불가사의 하나마다 문화 +2"
 }
 
 	"Universal Suffrage":{
@@ -1375,6 +1494,7 @@
 		German:"Allgemeines Wahlrecht"
 		French:"Suffrage universel",
 		Czech:"Všeobecné volební právo"
+		Korean:"보통선거제도"
 }
 
 	"+1 production per 5 population":{
@@ -1388,6 +1508,7 @@
 		German:"+1 Produktion für jede(n) 5. Einwohner(in)"
 		French:"+1 production par tranches de 5 habitants"
 		Czech:"+1 produkce za každých 5 obyvatel"
+		Korean:"시민 5명당 생산력 +1"
 }
 
 	"Civil Society":{
@@ -1401,6 +1522,7 @@
 		German:"Zivilgesellschaft"
 		French:"Société civile",
 		Czech:"Občanská společnost"
+		Korean:"시민 사회"
 }
 
 	"-50% food consumption by specialists":{
@@ -1414,6 +1536,7 @@
 		German:"-50% Nahrungsverbrauch durch SpezialistInnen"
 		French:"-50% consommation de nourriture des spécialistes"
 		Czech:"-50% spotřeby jídla specialisty"
+		Korean:"전문가의 식량 소비 -50%"
 }
 
 	"Free Speech":{
@@ -1427,6 +1550,7 @@
 		German:"Meinungsfreiheit"
 		French:"Liberté de parler",
 		Czech:"Svoboda projevu"
+		Korean:"표현의 자유"
 }
 
 	"+1 culture for every 2 citizens":{
@@ -1440,6 +1564,7 @@
 		German:"+1 Kultur für jede(n) 2. Einwohner(in)"
 		French:"+1 culture tous les 2 citoyens"
 		Czech:"+1 kulturní bod za každé 2 obyvatele"
+		Korean:"시민 2명당 문화 +1"
 }
 
 	"Democracy":{
@@ -1453,6 +1578,7 @@
 		German:"Demokratie"
 		French:"Démocratie"
 		Czech:"Demokracie"
+		Korean:"민주주의"
 }
 
 	"Specialists produce half normal unhappiness":{
@@ -1466,6 +1592,7 @@
 		German:"SpezialistInnen produzieren 50% weniger Unzufriedenheit"
 		French:"Les spécialistes produisent moitié moins de mécontentement"
 		Czech:"Specialisté produkují polovinu běžné nespokojenosti"
+		Korean:"전문가로부터 나오는 불행 -50%"
 }
 
 	"Freedom Complete":{
@@ -1479,6 +1606,7 @@
 		German:"Freiheit vollständig"
 		French:"Liberté complète"
 		Czech:"Kompletní Svoboda"
+		Korean:"평등 이념 완성"
 }
 
 	"Tile yield from great improvement +100%, golden ages increase by 50%":{
@@ -1492,6 +1620,7 @@
 		German:"+100% Felderträge aus Verbesserungen Großer Persönlichkeiten; Goldene Zeitalter dauern 50% länger"
 		French:"Bonus des cases améliorés par les spécialistes +100%, la durée des âges d'or augmente de 50%"
 		Czech:"Zisk z políček od Velkých vylepšení +100%, Zlatý věk se prodlužuje o 50%"
+		Korean:"위인으로 건설한 타일 시설의 생산량 +100%, 황금기 지속 시간 +50%"
 }
 
 ////// Autocracy branch
@@ -1507,6 +1636,7 @@
 		German:"Autokratie"
 		French:"Autocratie",
 		Czech:"Autokracie"
+		Korean:"독재"
 }
 
 	"-33% unit upkeep costs":{
@@ -1520,6 +1650,7 @@
 		German:"-33% Unterhaltskosten für Einheiten"
 		French:"-33% de coût de maintenance des unités"
 		Czech:"-33% nákladů na údržbu jednotek"
+		Korean:"유닛 유지비 -33%"
 }
 
 	"Populism":{
@@ -1533,6 +1664,7 @@
 		German:"Populismus"
 		French:"Populisme",
 		Czech:"Populismus"
+		Korean:"포퓰리즘"
 }
 
 	"Wounded military units deal +25% damage":{
@@ -1546,6 +1678,7 @@
 		German:"Verwundete Militäreinheiten haben +25% Schaden"
 		French:"Les unités militaires blessés infligent +25% dégats"
 		Czech:"Zraněné vojenské jednotky způsobí 25% poškození více"
+		Korean:"부상당한 군사 유닛이 주는 피해 +25%"
 }
 
 	"Militarism":{
@@ -1559,6 +1692,7 @@
 		German:"Militarismus"
 		French:"Militarisme",
 		Czech:"Militarismus"
+		Korean:"군국주의"
 }
 
 	"Gold cost of purchasing units -33%":{
@@ -1572,6 +1706,7 @@
 		German:"-33% Goldkosten für das Kaufen von Einheiten"
 		French:"Le coût d'achat des unités militaires est réduit de 33%"
 		Czech:"Cena za nákup jednotek se snižuje o 33%"
+		Korean:"유닛을 금으로 구매하는 비용 -33%"
 }
 
 	"Facism":{
@@ -1585,6 +1720,7 @@
 		French:"fascisme"
 		Russian:"Фашизм",
 		Czech:"Fašismus"
+		Korean:"파시즘"
 }
 
 	"Quantity of strategic resources produced by the empire increased by 100%":{
@@ -1598,6 +1734,7 @@
 		German:"Menge an strategische Resourcen ist um 100% erhöht."
 		French:"La quantité de ressources stratégiques est doublé"
 		Czech:"Množství strategických zdrojů produkovaných naší říší se zvyšuje o 100%"
+		Korean:"전략 자원 생산량 +100%"
 }
 
 	"Police State":{
@@ -1611,6 +1748,7 @@
 		German:"Polizeistaat"
 		French:"Etat policier",
 		Czech:"Policejní stát"
+		Korean:"경찰국가"
 }
 
 	"Captured cities retain their previous borders":{
@@ -1624,6 +1762,7 @@
 		German:"Eingenommene Städte behalten ihre vorherigen Grenzen"
 		French:"Les villes capturés ne perdent plus leurs territoires"
 		Czech:"Zajaté města si ponechávají své původní hranice"
+		Korean:"점령한 도시가 이전 영토를 유지함"
 }
 
 	"Total War":{
@@ -1637,6 +1776,7 @@
 		French:"Guerre Totale"
 		Russian:"Тотальная война",
 		Czech:"Totální válka"
+		Korean:"총력전"
 }
 
 	"+15% production when building military units and new military units start with 15 Experience":{
@@ -1650,6 +1790,7 @@
 		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (EP)"
 		French:"+15% production lors de la construction d'unités militaires, les nouvelles unités apparaissent avec +15 EXP"
 		Czech:"+15% produkce při výcviku nových vojenských jednotek. Ty dokamžitě získají 15 zkušenosti"
+		Korean:"군사 유닛 생산 시 생산력 +15%, 새로 생산된 군사 유닛 경험치 +15"
 }
 
 	"Autocracy Complete":{
@@ -1660,6 +1801,7 @@
         Traditional_Chinese:"完整的獨裁政策"
 		Czech:"Kompletní Autokracie"
 		German:"Autokratie vollständig"
+		Korean:"독재 이념 완성"
 }
 
 	"+1 happiness from each Walls, Castle and Arsenal":{
@@ -1670,6 +1812,7 @@
         Traditional_Chinese:"每座城牆、城堡和兵工廠+1快樂"
 		Czech:"+1 spokojenost za každou Hradbu, Hrad a Zbrojnici"
 		German:"+1 Zufriedenheit für jede Mauer, jedes Schloss und jedes Arsenal"
+		Korean:"성벽, 성, 무기고 하나마다 행복 +1"
 }
 
 }

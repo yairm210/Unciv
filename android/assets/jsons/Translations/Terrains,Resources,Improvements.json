@@ -165,7 +165,8 @@
 		Simplified_Chinese:"核辐射"
 		Traditional_Chinese:"核輻射"
 		German:"Verseucht"
-		Portuguese:"Abrigo" // Could be this in portuguese? Makes a bit of sense
+		Portuguese:"Abrigo" // Could be this in portuguese? Makes a bit of sense'
+		Korean:"낙진"
 }
 
 	"Oasis":{
@@ -195,7 +196,7 @@
 		Simplified_Chinese:"雪原",
 		Traditional_Chinese:"雪原",
 		Portuguese:"Neve"
-                Korean:"눈"
+                Korean:"설원"
 		Czech:"Sníh"
 		Ukrainian:"Сніг"
 }
@@ -276,7 +277,7 @@
 		Simplified_Chinese:"牛群",
 		Traditional_Chinese:"牛群",
 		Portuguese:"Gado"
-                Korean:"가축"
+                Korean:"소"
 		Czech:"Dobytek"
 		Ukrainian:"Худоба"
 }
@@ -356,7 +357,7 @@
 		Simplified_Chinese:"花岗石",
 		Traditional_Chinese:"花崗石",
 		Portuguese:"Pedra"
-                Korean:"돌"
+                Korean:"석재"
 		Czech:"Kámen"
 		Ukrainian:"Камінь"
 }
@@ -372,7 +373,7 @@
 		Portuguese:"Peixes"
 		German:"Fisch"
 		Russian:"Рыба"
-                Korean:"물고기"
+                Korean:"생선"
 		Czech:"Ryba"
 		Ukrainian:"Риба"
 }
@@ -455,7 +456,7 @@
 		Simplified_Chinese:"石油",
 		Traditional_Chinese:"石油",
 		Portuguese:"Petróleo"
-                Korean:"기름"
+                Korean:"석유"
 		Czech:"Ropa"
 		Ukrainian:"Нафта"
 }
@@ -521,7 +522,7 @@
 		Simplified_Chinese:"棉花",
 		Traditional_Chinese:"棉花",
 		Portuguese:"Algodão"
-                Korean:"면"
+                Korean:"목화"
 		Czech:"Bavlna"
 		Ukrainian:"Бавовна"
 }
@@ -614,7 +615,7 @@
 		Simplified_Chinese:"丝绸",
 		Traditional_Chinese:"絲綢",
 		Portuguese:"Seda"
-                Korean:"실크"
+                Korean:"비단"
 		Czech:"Hedvábí"
 		Ukrainian:"Шовк"
 }
@@ -774,7 +775,7 @@
 		Simplified_Chinese:"柑橘",
 		Traditional_Chinese:"柑橘",
 		Portuguese:"Cítrico"
-                Korean:"감귤류"
+                Korean:"감귤"
 		Czech:"Citrusy"
 		Ukrainian:"Цитрус"
 }
@@ -790,7 +791,7 @@
 		Simplified_Chinese:"松露",
 		Traditional_Chinese:"松露",
 		Portuguese:"Trufas"
-                Korean:"송로 버섯"
+                Korean:"송로버섯"
 		Czech:"Lanýže"
 		Ukrainian:"Трюфелі"
 }
@@ -824,7 +825,7 @@
 		Simplified_Chinese:"锯木场",
 		Traditional_Chinese:"鋸木廠",
 		Portuguese:"Serralheria"
-                Korean:"목재공장"
+                Korean:"제재소"
 		Czech:"Pila"
 		Ukrainian:"Лісопилка"
 }
@@ -856,7 +857,7 @@
 		Simplified_Chinese:"贸易站",
 		Traditional_Chinese:"貿易站",
 		Portuguese:"Posto de comércio"
-                Korean:"무역소",
+                Korean:"교역소",
 		Czech:"Obchodní stanice"
 		Ukrainian:"Торговий пост"
 }
@@ -872,7 +873,7 @@
 		Simplified_Chinese:"猎场",
 		Traditional_Chinese:"獵場",
 		Portuguese:"Campo"
-                Korean:"캠프"
+                Korean:"야영지"
 		Czech:"Tábor"
 		Ukrainian:"Табір"
 }
@@ -917,7 +918,7 @@
 		Simplified_Chinese:"种植园",
 		Traditional_Chinese:"種植園",
 		Portuguese:"Plantação"
-                Korean:"재배원"
+                Korean:"대농장"
 		Czech:"Plantáž"
 		Ukrainian:"Плантація"
 }
@@ -947,7 +948,7 @@
 		Portuguese:"Barcos de pesca"
 		German:"Fischerboote"
 		Russian:"Рыбацкие лодки"
-                Korean:"낚싯배"
+                Korean:"어선"
 		Czech:"Rybářské lodě"
 		Ukrainian:"Рибальські човни"
 }
@@ -1061,6 +1062,7 @@
 		Traditional_Chinese:"消除核輻射"
 		German:"Entferne Verseuchung"
 		Portuguese:"Derrubar abrigo"
+		Korean:"낙진 제거"
 }
 
 	"Ancient ruins":{
@@ -1090,7 +1092,7 @@
 		Russian:"Руины города"
 		Portuguese:"Ruínas da cidade"
 		Dutch:"Ruïnes van de stad"
-                Korean:"도시의 폐허"
+                Korean:"도시 폐허"
 		Czech:"Zřiceniny města"
 		Ukrainian:"Руїни міста"
 }
@@ -1108,7 +1110,7 @@
 		Simplified_Chinese:"学院",
 		Traditional_Chinese:"學院",
 		Portuguese:"Academia"
-                Korean:"학원"
+                Korean:"아카데미"
 		Czech:"Akademie"
 		Ukrainian:"Академія"
 }
@@ -1125,7 +1127,7 @@
 		Simplified_Chinese:"风景地标",
 		Traditional_Chinese:"風景地標",
 		Portuguese:"Monumento" // Seems more accurate than 'Edifício emblemático'
-                Korean:"랜드마크",
+                Korean:"성지",
 		Czech:"Dominanta"
 		Ukrainian:"Визначна пам’ятка"
 }
@@ -1141,7 +1143,7 @@
 		Simplified_Chinese:"制造中心",
 		Traditional_Chinese:"製造中心",
 		Portuguese:"Fábrica"
-                Korean:"제조소"
+                Korean:"제조공장"
 		Czech:"Manufaktura"
 		Ukrainian:"Фабрика"
 }
@@ -1177,7 +1179,7 @@
 
 	"+1 additional Culture for each adjacent Moai":{
 		Italian:"+1 Cultura aggiuntiva per ogni Moai adiacente"
-                Korean:"인접한 각 Moai에 대해 +1 추가 문화"
+                Korean:"인접한 모아이 하나 당 문화 +1"
 		Czech:"+1 kulturní bod za každý Moai"
 		Simplified_Chinese:"每个相邻的摩艾石像群额外+1文化"
 		Ukrainian:"+1 додаткова Культура за кожну сусідню Moai"
