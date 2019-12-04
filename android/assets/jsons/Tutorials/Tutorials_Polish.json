@@ -13,22 +13,22 @@
 		],
 		[
 			"Po czym poznać że wybrane miejsce jest właściwe?",
-            "Na to pytanie nie ma łatwej odpowiedzi, ale zawsze dobrze mieć w swoim zasięgu luksusowe zasoby.",
+			"Na to pytanie nie ma prostej odpowiedzi, ale zawsze dobrze mieć w swoim zasięgu luksusowe zasoby.",
 			"Luksusowe zasoby to pola z klejnotami, bawełną, lub z jedwabiem (na mapie widoczne są jako uśmieszki obok ikony zasobów)",
 			"Te zasoby sprawiają że Twoja cywilizacja jest zadowolona. Zwróć też uwagę na zasoby, takie jak żelazo, potrzebne do budowy jednostek"
 		],
 		[
-            "Jednakże, miasta nie posiadają ustalonej strefy w których pracują ale o tym później!",
-            "To oznacza że nie ma potrzeby budować miast przy samych surowcach.",
+			"Jednakże, miasta nie posiadają ustalonej strefy w których pracują ale o tym później!",
+			"To oznacza, że nie ma potrzeby budować miast przy samych surowcach.",
 			"Powiedzmy że chcesz mieć dostęp do żelaza, ale ten zasób leży niemalże na pustyni.",
 			"Nie musisz zakładać miasta przy pustyni. Możesz zbudować miasto kilka pól dalej w bardziej prosperującuch ziemiach",
 			"Twoje miasto z czasem urośnie i ostatecznie dosięgnie swoimi granicami to przysłowiowe żelazo",
 			"Jeżeli natomiast jesteś w pilnej potrzebie danego zasobu i nie masz czasu wtedy to może być jedyne wyjście - ",
 			"   może tak się zdarzyć, a może nie, ale zazwyczaj będziesz miał o wiele za dużo czasu na takie taktyki."
 		],
-        [
-            "UWAGA! Polskie tłumaczenie jest w trakcie powstawania, więc za ewentualne błędy i braki w tłumaczeniu z góry przepraszam."
-        ],
+		[
+			"UWAGA! Polskie tłumaczenie jest w trakcie powstawania, więc za ewentualne błędy i braki w tłumaczeniu z góry przepraszam."
+		],
 
 	],
 
@@ -45,92 +45,89 @@
 
 	First_Steps : [
 		[
-            "Miasto po założeniu stanie się miejscem gdzie będziesz mógł tworzyć nowe jednostki",
-            "  jak również będzie miejscem odpowiedzialnym za badania."
-            "Na ten moment nie będę się zbytnio zagłębiał w temat badań, przynajmniej na razie - małymi kroczkami do celu - "
-			"  teraz zajmiemy się kwestią produkcji."
+			"Miasto po założeniu stanie się miejscem gdzie będziesz mógł towrzyć nowe jednostki",
+			"	jak również będzie miejscem odpowiedzialnym za badania.",
+			"Na ten moment nie będę się zbytnio zagłębiał w temat badań, przynajmniej na razie - małymi kroczkami do celu - ",
+			"	teraz zajmiemy się kwestią produkcji."
 		],
 		[
-            "Pierwszą najistotniejszą rzeczą na start jest wytrenowanie Wojownika lub Zwiadowcy.",
-            "Przewagą wojownika jest to, że dobrze sprawdza się jako obrońca na wczesnym etapie gry a poza tym może być ulepszony",
-			"  to the Swordsman unit later in the game for a relatively modest sum of gold.",
-            "  do Miecznik",
-			"Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.",
-			"Scouts don’t suffer a movement penalty in this terrain."
-			"If you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.",
-			"Fast expanding is absolutely critical in most games of this type.",
+			"Istotną rzeczą na start jest wytrenowanie Wojownika lub Zwiadowcy.",
+			"Przewagą Wojownika jest fakt, że dobrze sprawdza się jako obrońca we wczesnym etapie gry, a poza tym może być później ulepszony",
+			"	do Fechmistrza za niewielką opłatą w Złocie",
+			"Zwiadowcy są idealnym wyborem jeżeli wokół Ciebie znajdują się gęste Lasy i Wzgórza.",
+			"Zwiadowcy ignorują trudny teren i poruszają się na nich normalnie.",
+			"Jeżeli jesteś weteranem gier 4x, Twój pierwszy Wojownik lub Zwiadowca będzie poprzedzony Osadnikiem.",
+			"Szybka rozbudowa i rozprzestrzenianie się jest kluczową kwestią, wręcz najistotniejszą, w grach tego typu."
 		],
 	],
 
 
 	Next_Turn : [
 		[
-			"Once you've done everything you can in this turn, ",
-			"  click the next turn button on the top right to continue."
+			"Po wykonaniu wszystkich możliwych ruchów w danej turze,",
+			"	nadszedł w końcu czas na kliknięcie przycisku Następna tura w prawym, górnym rogu."
 		],
 		[
-			"Each turn, science, culture and gold are added",
-			"  to your civilization, your cities' construction",
-			"  continues, and they may grow in population or area."
+			"Kolejne tury powiększają Twoje dobra takie jak Nauka, Kultura i Złoto",
+			"  a Twoje Miasta kontynuują budowę nowych budowli i mogą się poszerzyć o nowych Cywili lub Teren"
 		]
 	],
 
 	Slow_Start: [
 		[
-			"In your first couple of turns,",
-			"  you will have very little options,",
-			"  but as your civilization grows, so do the ",
-			"  number of things requiring your attention"
+			"W pierwszych paru turach większość czynności będzie ograniczona,",
+			"jednakże wraz z rozwojem Twojej cywilizacji ilość czynności zwiększy się",
+			" wymagając tym samym od Ciebie większej uwagi na pozostałe."
 		]
 	],
 
 	Culture_and_Policies: [ // Activated when entering policy picker screen
 		[
-			"Each turn, the culture you gain from all your ",
-			"  cities is added to your Civilization's culture.",
-			"When you have enough culture, you may pick a ",
-			"  Social Policy, each one giving you a certain bonus."
+			"Co turę każde Miasto generuje Kulturę, która jest wspólna",
+			" dla całej cywilizacji.",
+			"Kiedy osiągniesz określony poziom, będziesz mógł",
+			" wybrać nową Politykę Społeczną, a co za tym idze otrzymasz bonus."
 		],
 		[
-			"The policies are organized into branches, with each",
-			"  branch providing a bonus ability when all policies ",
-			"  in the branch have been adopted."
+			"Polityki są podzielone na drzewka, a każdo z nich dodaje dodatkową",
+			" zdolność którą otrzymasz po odblokowaniu całego drzewka."
 		],
 		[
-			"With each policy adopted, and with each city built,",
-			"  the cost of adopting another policy rises - so choose wisely!"
+			"Z każdą nową Polityką i z każdym nowym powstałym miastem",
+			" koszt nowej Polityki rośnie więc wybieraj rozsądnie!"
 		]
 	],
 
 	Cities: [
 		[
-			"Each population in your city can work a single tile, providing the city with that tile's yields.",
-			"Population can be assigned and unassigned by clicking on the tiles - ",
-			"  but of course, you can only assign population if you have idle population to spare!"
+			"Każdy Cywil w Mieście może pracować wyłącznie na jednym polu, zapewniając",
+			" Miastu dostawę, oferowanych przez dane pole, zasobów.",
+			"Cywile mogą zostać przypisani poprzez kliknięcia na dano pole i na odwrót - ",
+			" jeśli oczywiście posiadasz Cywili którzy mają jeszcze ruch w tej turze!"
 		],
 		[
-			"The center tile of a city is always worked, and doesn't require population,",
-			"  but it cannot be improved by tile improvements."
-			"The city's production always goes towards the current construction - ",
-			"  you can pick the city's construction by clicking on the construction button on the bottom-left"
+			"Samo pole centrum Miasta nie potrzebuje Cywili do pracy przez co cały czas pracuje",
+			" jednakże nie może stać się bardziej wydajnym poprzez ulepszenia.",
+			"Produkcja Miasta zawsze skupia się na obecnej budowie - ",
+			" aby rozpocząć nową budowę kliknij przycisk Wybuduj w lewym dolnym rogu."
 		]
 		[
-			"Cities grow in population when you amass enough surplus food.",
-			"Similarly, your city's borders grow when you amass enough culture,",
-			"  which is not generated by tiles but rather by buildings."
+			"Miasta rosną po zapewnieniu im odpowiedniej ilości Żywności.",
+			"Podobnie rozszerzają się granice Miasta - w tym wypadku potrzebna jest Kultura,",
+			" którą zapewniają budowle."
 		],
 	],
 
 	Technology: [
 		[
-			"Technology is central to your civilization,",
-			" as technological progress brings with it",
-			" more construction options, improvements, and abilities"
+			"Technologia ma kluczowe znaczenie dla Twojej cywilizacji,",
+			" gdyż wraz z postępem technologicznym zyskujesz",
+			" więcej możliwych do zbudowania konstrukcji jak rówież ulepszeń i zdolności."
 		],
 		[
-			"Most technologies are dependent on other technologies being researched - ",
-			"  but you can choose a technology to aspire to,",
-			"  and your civilization will research the necessary technologies to get there"
+			"Większość technologii wymaga poprzednich badań do odblokowania, możesz więc",
+			" wybrać technologię, do której aspirujesz, a Twoja cywilizacja wykona",
+			"wszystkie niezbędne badania by osiągnąć to wybrane."
 		]
 	],
 
@@ -139,21 +136,22 @@
 
 	Happiness:[
 		[
-			"As cities grow in size and influence, you have to deal with a happiness mechanic that is no longer tied to each individual city.",
-			"Instead, your entire empire shares the same level of satisfaction.",
-			"As your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."
+			"Gdy Miasto rozrasta się i staje się bardziej wpływowe powinieneś zacząć zwracać uwagę na mechanikę Zadowolenia mieszkańców, która to",
+			" wpływa na całe imperium, a nie na pojedyńcze Miasta.",
+			"Wraz z ekspansją miast utrzymanie Zadowolenia miast stanie się coraz trudniejsze."
 		],
 		[
-			"In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.",
-			"If your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.",
-			"If your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)",
-			"  your armies will have a big penalty slapped on to their overall combat effectiveness."
+			"Ponad to nie możesz budować ulepszeń dla Miasta, które podnosi Zadowolenie, do czasu zakończenia odpowiednich badań.",
+			"Jeżeli Zadowolenie Twojego imperium kiedykolwiek spadnie poniżej zera tempo rozwoju miasta drastycznie zmaleje.",
+			"Jeżeli imperium będzie bardzo niezadowolone (znacznik znajduje się na górze interfejsu - to ta buźka)",
+			" Twoje armie doświadczą spadku efektywności w walce."
 		],
 		[
-			"This means that it is very difficult to expand quickly in Unciv."
-			"It isn’t impossible, but as a new player you probably shouldn’t do it."
-			"So what should you do? Chill out, scout, and improve the land that you do have by building Workers.",
-			"Only build new cities once you have found a spot that you believe is appropriate."
+			"Jak już widzisz trzeba cały czas balansować pomiędzy rozwojem i ekspansją a Zadowoleniem mieskańców.",
+			"To nie jest niemożliwe ale jako nowy gracz to nie jest dobry sposób na rozpoczęcie gry.",
+			"Póki co zamiast martwić się zbytnio o Zadowolenie na spokojnie zwiedzaj okoliczne ziemie i ulepszaj",
+			" je przy pomocy Budowniczych.",
+			"Co do Miast to zakładaj je tylko wtedy, kiedy masz pewność że wybrałeś właściwe miejsce."
 		],
 
 	]
@@ -161,246 +159,266 @@
 
 	World_Map: [
 		[
-			"The world map is made up of multiple tiles.",
-			"Each tile can contain units, resources and improvements, which we'll get to later.",
-			"The position of the icon tells you what it signifies.",
-			"For more details, you can click on the tile and see the tile information."
+			"Mapa świata jest złożona z wielu pól.",
+			"Każde pole może zawierać jednostki, zasoby oraz ulepszenia do których dojdziemy później",
+			"Aby wyświetlić więcej informacji o danym polu, kliknij na nie."
 		]
 	],
 
 
 	Tile_Clicked : [
 		[
-			"Clicking on a tile selects that tile,",
-			"  and displays information on that tile on the bottom-right.",
-			"If the tile contains a unit, that will become the selected unit,"
-			"  and its info and actions will be displayed on the bottom left."
+			"Po kliknięciu na pole, owo zostaje wybrane i",
+			" wyświetlone zostają informacje o polu w prawym dolnym rogu.",
+			"Jeżeli na polu znajdowała się jednostka, owa zostanie wybrana i rówież",
+			" informacja o danej jednosce pojawi się w prawym dolnym rogu."
 		]
 	],
 
 	Unit_Selected : [
 		[
-			"When a unit is selected, its information will be displayed on the bottom-left corner.",
-			"The available actions of that unit will appear above the tile information."
+			"Kiedy jednostka zostaje wybrana, informacje o niej zostaną wyświetlone w lewym dolnym rogu.",
+			"Możliwe akcje danej jednostki pokażą się nad polem informacji."
 		]
 	],
 
 
 	Unhappiness:  [
 		[
-			"It seems that your citizens are unhappy!",
-			"While unhappy, cities  will grow at 1/4 the speed,",
-			"  and your units will suffer a 2% penalty for each unhappiness"
+			"Wygląda na to że Twoja ludność jest nieszczęśliwa!",
+			"Przy niskim Zadowoleniu Miasta rozwijają się 4 razy wolniej, a",
+			" Twoje jednostki będą słabsze o 2% za każde Niezadowolenie"
 		],
 		[
-			"Unhappiness has two main causes: Population and cities",
-			"  Each city causes 3 unhappiness, and each population, 1"
+			"Niezadowolenie ma 2 przyczyny: Cywile i Miasta.",
+			" Każde miasto odbiera 3 Zadowolenia a każdy Cywil 1."
 		],
 		[
-			"There are 2 main ways to combat unhappiness:",
-			"  by building happiness buildings for your population",
-			"  or by having improved luxury resources within your borders"
+			"Są 2 główne sposoby na radzenie sobie z Niezadowoleniem:",
+			" - budowanie konstrukcji przynoszących Zadowolenie Cywilom",
+			" - pozyskanie lepszych Luksusowych Zasobów."
 		]
 	],
 
 	Golden_Age:  [
 		[
-			"You have entered a golden age!",
-			"Golden age points are accumulated each turn by the total happiness ",
-			"  of your civilization",
-			"When in a golden age, culture and production generation increases +20%,",
-			"  and every tile already providing at least one gold will provide an extra gold."
+			"Brawo !",
+			"Twoje imperium wkroczyło w Złoty Wiek!",
+			"Punkty Złotego Wieku gromadzone są co ture bazując na Zadowoleniu Twojej",  //checking context ingame
+			" cywilizacji",
+			"Podczas Złotego Wieku ilość zdobywanej Kultury i Produkcj wzrasta o 20%,",
+			" a każde pole które w tym momencie generuje co najmniej 1 Złoto, dodatkowo będzie dodawało jedno więcej."
 		]
 	],
 
 	Roads_and_Railroads:  [
 		[
-			"Connecting your cities to the capital by roads",
-			"  will generate gold via the trade route.",
-			"Note that each road costs 1 gold Maintenance per turn, and each Railroad costs 2 gold,"
-			"  so it may be more economical to wait until the cities grow!"
+			"Łączenie Twoich Miast do stolicy z użyciem dróg",
+			" będzie dostarczało Złoto poprzez szalak handlowy.",
+			"Zauważ jednak że utrzymanie drogi kosztuje 1 Złota na turę a Torowisko 2,",
+			" więc z ekonomicznego punktu widzenia czasem będzie lepiej po",
+			" prostu poczekać aż Miasta urosną."
 		]
 
 	]
 
 	Victory_Types:[
 		[
-			"Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.",
-			"Now is a good time to start thinking about how, exactly, you want to win – if you haven’t already."
+			"Po założeniu swoich pierwszych dwóch czy trzech miast będziesz prawdopodobnie po 100-nej turze.",
+			"Najwyższy czas pomyśleć jak dokładnie zamierzasz wygrać - jeżeli jeszcze o tym nie myślałeś oczywiście"
 		],
 		[
-			"There are three ways to win in Unciv. They are:",
-			" - Cultural Victory: Complete 4 Social Policy Trees",
-			" - Domination Victory: Survive as the last civilization",
-			" - Science Victory: Be the first to construct a spaceship to Alpha Centauri"
+			"Są 3 sposoby na wygraną w Unciv, a mianowicie:",
+			" - Zwycięstwo Kulturowe: Zakończ 4 drzewa Społecznych Polityk",
+			" - Dominacja: Zostań ostatnią cywilizacją na mapie",
+			" - Zwycięstwo Naukowe: Bądź pierwszą cywilizacją która zbuduje statek kosmiczny na Alfa Centaurie"
 		],
 		[
 			"So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness,",
-			"   and set yourself up for the victory condition you wish to pursue.",
-			"Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim.",
+			"Podsumowując, to są podstawy gry w Unciv:",
+			" - Załóż pierwsze miasto",
+			" - Powoli powiększaj swoje granice mając na uwadze Zadowolenie",
+			" - Wybierz w jaki sposób chcesz wygrać i dąż do tego",
+		],
+		[
+			"Oczywiście jest tego więcej ale najważniejsze to nie skakać na głęboką wodę, póki nie umiesz pływać.",
+			"Człowiek uczy się najlepiej na swoich błędach, więc nie przejmuj się jeżeli coś nie wyjdzie.",
+			"Powodzenia w podbijaniu świata i baw się dobrze ^w^"
 		]
 	]
 
 	Enemy_City:  [
 		[
-			"Cities can be conquered by reducing their health to 1,",
-			"  and entering the city with a melee unit.",
-			"Since cities heal each turn, it is best to attack with ranged units"
-			"  and use your melee units to defend them until the city has been defeated!"
+			"Miasta mogą zostać przejęte po zredukowaniu ich zdrowia do 1 i",
+			" wysłaniu do tego miasta jednostki do walki w zwarciu.",
+			"Ponieważ miasta się regenerują co turę najlepiej zrobisz atakując je jednostkami",
+			" do walki dystansowej, jednocześnie osłąniając je jednostkami do walki w zwarciu, do"
+			" momentu w którym Miasto zostanie pokonane!"
 		]
 	]
 
 	Luxury_Resource:  [
 		[
-			"Luxury resources within your domain and with their specific improvement are connected to your trade network.",
-			"Each unique Luxury resource you have adds 5 happiness to your civilization,",
-			"  but extra resources of the same type don't add anything, ",
-			"  so use them for trading with other civilizations!"
+			"Luksusowe Zasoby to nic innego jak droga do zysku z handlu.",
+			"Każdy unikatowy Luksusowy Zasób dodaje 5 Zadowolenia Twojej cywilizacji,",
+			" ale dodatkowe Zasoby tego samego typu nie dodają nic,",
+			" więc można je dobrze spożytkować handlując nimi z innymi!"
 		]
 	]
 
 	Strategic_Resource:  [
 		[
-			"Strategic resources within your domain and with their specific improvement are connected to your trade network.",
-			"Strategic resources allow you to train units and construct buildings that",
-			"  require those specific resources, for example the Horseman requires Horses."
-			"Each unit 'consumes' a copy of that resource, but if the unit is killed you can ",
-			"  construct a new unit wth your now-unused resource.",
-			"The top bar keeps count of how many unused strategic resources you own."
+			"Zasoby Strategiczne pozwalają Tobie na tworzenie nowych jednostek jak również na budowę nowych konstrukcji które",
+			" wymagają tych konkretnych zasobów, jak na prykład Jeźdcy potrzebują Koni",
+			"Każda jednostka 'zabiera' kopię tego zasoby, ale gdy jednostka ginie możesz",
+			" stworzyć nową jednostkę z obecnie niewykorzystanym zasobem.",
+			"Pasek na górze pokazuje dokładnie ile takowych zasobów posiadasz"
 		]
 	]
 
 	_EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
-			"The city can no longer put up any resistance!",
-			"However, to conquer it, you must enter the city with a melee unit"
+			"Miasto nie może już dłużej stawiać oporu!",
+			"Jednakże, aby podbić miasto musisz wprowadzić do niego jednostkę do walki w zwarciu."
 		]
 	],
 
 	After_Conquering: [
 		[
-			"When conquering a city, you can now choose to either  or raze, puppet, or annex the city.",
-			"Razing the city will lower its population by 1 each turn until the city is destroyed."
+			"Podczas podbijania Miasta możesz wybrać czy wolisz zburzyć je, czerpać z niego zysk",
+			" w zamian namiastkę autonomii czy zaanektować.",
+			"Burzenie miasta będzie co ture zabierało 1 Populacji co turę do momentu kiedy miasto zostanie zniszczone."
 		],
 		[
-			"Puppeting the city will mean that you have no control on the city's production.",
-			"The city will not increase your tech or policy cost, but its citizens will generate 1.5x the regular unhappiness.",
-			"Annexing the city will give you control over the production, but will increase the citizen's unhappiness to 2x!",
-			"This can be mitigated by building a courthouse in the city, returning the citizen's unhappiness to normal.",
-			"A puppeted city can be annexed at any time, but annexed cities cannot be returned to a puppeted state!"
+			"Uczynienie z Miasta marionetki oznacza tyle co czerpanie z niego korzyści ale brak kontroli nad produkcją.",
+			"Samo Miasto nie zwiększy kosztów Technologii czy Polityki, ale jego mieszkańcy będą generować 1.5x podstawowego Niezadowolenia.",
+			"Zaanektowanie Miasta da Ci kontrolę nad produkcją, ale tym samym zwiększy przyrost Niezadowolenia Cywili dwukrotnie!",
+			"Złagodzić to może zbudowanie Sądu w mieście, co przywróci Niezadowolenie Cywili do normy.",
+			"Miasta-marionetki mogą zostać zaanektowane, ale w drugą stronę to już nie zadziała!"
 		]
 	],
 
 	_BarbarianEncountered:  [
 		[
-			"You have encountered a barbarian unit!",
-			"Barbarians attack everyone indiscriminately, so don't let your ",
-			"  civilian units go near them, and be careful of your scout!"
+			"Napotkałeś jednostkę Barbażyńców!",
+			"Barbażyńcy atakują wszystkich bez wyjątku, więc nie pozwól",
+			" swoim Cywilom zbliżać się do nich!",
+			"Uważaj też na swoich Zwiadowców!"
 		]
 	]
 
 	_OtherCivEncountered:  [
 		[
-			"You have encountered another civilization!",
-			"Other civilizations start out peaceful, and you can trade with them,",
-			"  but they may choose to declare war on you later on"
+			"Napotkałeś nową cywilizację!",
+			"Nowo poznane cywilizacje zawsze są na początku obojętne, więc to od Ciebie",
+			" zależy czy wypowiesz im wojnę, czy będziesz z nimi handlował."
 		]
 	]
 
 	_GameCrashed:  [
 		[
-			"Oh no! It looks like something went DISASTROUSLY wrong!",
-			"This is ABSOLUTELY not supposed to happen!",
-			"Please send me (yairm210@hotmail.com) an email with the game information",
-			"   (menu -> save game -> copy game info -> paste into email)",
-			"   and I'll try to fix it as fast as I can!"
+			"O nie! Wygląda na to że coś przegapiłem!",
+			"To absolutnie nie powinno się wydarzyć!",
+			"Wyślij mi proszę (yairm210@hotmail.com) maila z informacją o grze",
+			" (menu -> zapisz grę -> skopiuj informacje o grze -> wklej do maila)",
+			" a ja postaram się to naprawić.",
+			"Dziękuję za pomoc."
 		]
 	]
 
 	Apollo_Program:  [
 		[
-			"Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities",
-			" (with the relevant technologies) to win a scientific victory!"
+			"Po ukończeniu programu Apollo możesz rozpocząć budowę części statku kosmicznego w swoich Miastach",
+			" (mając odpowiednie technologie oczywiście) i tym samym osiągnąć Naukowe Zwycięstwo!"
 		]
 	]
 
 	Injured_Units:[
 		[
-			"Injured units deal less damage, but recover after turns that they have been inactive",
-			"Units heal 5 health per turn in enemy territory, 10 in neutral land,"
-			"  15 inside your territory and 20 in your cities"
+			"Zranione jednostki zadają mniejsze obrażenia, lecz regenerują się w każdej turze w której",
+			" nie zostały użyte. Jednostki leczą się po:",
+			" - 20 punktów w Twoich Miastach",
+			" - 15 na Twoim terytorium",
+			" - 10 na neutralnych ziemiach",
+			" - 5 na terenie wroga"
 		]
 	]
 
 	Workers:[
 		[
-			"Workers are vital to your cities' growth, since only they can onstruct improvements on tiles",
-			"Improvements raise the yield of your tiles, allowing your city to produce more and grow faster",
-			"  while working the same amount of tiles!"
+			"Robotnicy są istotni dla rozwoju Twoich Miast bo jako jedyni są w stanie budować ulepszenia",
+			" na polach. Ulepszenia zwiększają wydajność Twoich pól, pozwalając Miastom na znacznie szybszą",
+			" produkuckję i rozwój, zachowując tą samą liczbę pracujących pól."
 		]
 	]
 
 	Siege_Units:[
 		[
 			"Siege units are extremely powerful against cities, but need to be Set Up before they can attack.",
-			"Once your siege unit is set up, it can attack from the current tile,",
-			"  but once moved to another tile, it will need to be set up again."
+			"Jednostki przystosowane do oblężeń są niezwykle potężne przeciwko Miastom, ale wymagają wcześniejszego",
+			" przygotowania zanim mogą być użyte.",
+			"Po przygotowaniu takiej jednostki, może ona atakować z tego pola. Jeżeli jednak przeniesiesz jednostkę",
+			" na inne pole, znowu będze potrzebna chwila na prygotowanie."
 		]
 	]
 
 	Embarking:[
 		[
 			"Once a certain tech is researched, your land units can embark, allowing them to traverse water tiles.",
-			"Entering or leaving water takes the entire turn.",
-			"Units are defenseless while embarked, so be careful!"
+			"Po odblokowaniu pewnych technologi, twoje lądowe jednostki będą mogły wsiąść na pokład statku i ",
+			" poruszać się po wodzie",
+			"Wejście i zejście z pokładu trwa całą turę.",
+			"Jednostki na czas wchodzenia lub zchodzenia ze statku są bezbronni, więc uważaj!"
 		]
 	]
 
 	City_Range:[
 		[
-			"Your citizens can work 3 tiles away from city center.",
-			"The city border will keep expanding,",
-			"   but citizens cannot be assigned to faraway tiles."
+			"Twoi mieszkańcy mogą pracować do 3 pól od centrum Miasta.",
+			"Nawet jeżeli granice miasta się poszerzą, to dystans"
+			" dla Cywili pozostaje ten sam."
 		]
 	]
 
 
 	Idle_Units:[
 		[
-			"If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.",
-			"If you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - ",
-			"  units in Fortify or Sleep are not considered idle units.",
-			"If you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units",
+			"Jeżeli nie chcesz wykonywać daną jednostką żadnych akcji w danej turze możesz ponownie kliknąć",
+			" przycisk 'Następna jednostka'.",
+			"Jeżeli nie planujesz w najbliższym czasie żadnych akcji związanych z daną jednostką możesz wprowadzić",
+			" ją w tryb snu lub fortyfikacji - te jednostki nie będą brane pod uwagę jako bezczynne.",
+			"Jeżeli chcesz wyłączyć funkcje 'Następna jednostka' całkowicie, możesz",
+			" to zrobić w Menu -> Sprawdź jednostki czekające na rozkazy"
 		]
 	]
 
 
 	Contact_Me:  [
 		[
-			"Hi there! If you've played this far, you've probably",
-			"  seen that the game is currently incomplete.",
-			"UnCiv is meant to be open-source and free, forever.",
-			"  That means no ads or any other nonsense.",
+			"Witaj ! Jeżeli doszedłeś aż tutaj to prawdopodobnie",
+			" zauważyłeś już że obecnie gra jest niekompletna.",
+			"UnCiv jest tworzone jako całkowicie darmowa gra.",
+			"Więc żadnych reklam czy innych dziwactw."
 		],
 		[
-			"What motivates me to keep working on it, ",
-			"  besides the fact I think it's amazingly cool that I can,"
-			"  is the support from the players - you guys are the best!"
+			"To co naprawdę mnie motywuje do pracy na tą grą, poza",
+			" tym że samo tworzenie sprawia mi frajdę, jest wsparcie",
+			" od innych graczy - jesteście najlepsi!"
 		],
 		[
-			"Every rating and review that I get puts a smile on my face =)",
-			"  So contact me! Send me an email, review, Github issue"
-			"  or mail pigeon, and let's figure out how to make the game ",
-			"  even more awesome!"
-			"(Contact info is in the Play Store)"
+			"Każda ocena i opinia motywuje mnie do dalszego działania.",
+			"Więc skontaktuj się ze mną! Wyślij mi maila, opinię albo",
+			" gołębiem pocztowym, i razem stwórzmy wspaniałą grę!",
+			"(Dane kontaktowe znajdują się w Sklepie Play)"
 		]
 	],
 
 	_Pillaging:[
 		[
-			"Military units can pillage improvements, which heals them 25 health and ruins the improvement.",
-			"The tile can still be worked, but advantages from the improvement - stat bonuses and resources - will be lost.",
-			"Workers can repair these improvements, which takes less time than building the improvement from scratch.",
+			"Jednostki wojskowe mogą plądrować ulepszenia co w rezultacie regeneruje im 25 punktów zdrowia, a tym samym",
+			"niszczy ulepszenie",
+			"Na tym polu wciąż będzie można pracować, ale wszystkie korzyści wynikające z ulepszenia - przepadają."
+			"Robotnicy mogą naprawiać ulepszenia, co zajmuje mniej czasu niż budowanie ich od początku."
 		]
 	]
 
