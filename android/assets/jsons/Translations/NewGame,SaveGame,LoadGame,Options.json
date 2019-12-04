@@ -12,7 +12,7 @@
 		Traditional_Chinese:"讀取剪貼簿的遊戲存檔",
 		Portuguese:"Carregar dados copiados"
 		Japanese:"コピーしたデータを読み込む"
-                Korean:"복사 된 데이터 로드"
+                Korean:"복사 된 데이터 불러옴"
 		Czech:"Načíst zkopírované data"
 		Polish:"Wczytaj skopiowane dane"
 		Ukrainian:"Завантажити копію даних"
@@ -92,6 +92,7 @@
 		Czech:"Výzva - Jen jedno město"
 		German:"Herausforderung eine Stadt"
 		Portuguese:"Desafio - Apenas Uma Cidade"
+		Korean:"단일 도시 도전"
 	}
 
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
@@ -116,6 +117,7 @@
 		Czech:"Bez starobylých ruin"
 		German:"Keine alten Ruinen"
 		Portuguese:"Sem ruínas antigas"
+		Korean:"고대 유적 없음"
 	}
 
 	"Victory conditions": {
@@ -184,6 +186,7 @@
 		Russian:"В РАЗРАБОТКЕ - ВЫ ПРЕДУПРЕЖДЕНЫ!"
 		German:"WARNUNG: HOCHGRADIG EXPERIMENTELL!"
 		Portuguese:"ESTÁ EM DESENVOLVIMENTO - VOCÊ FOI AVISADO!"
+		Korean:"현재 테스트 중임 - 경고합니다!"
 }
 
 	"Online Multiplayer": {
@@ -195,6 +198,7 @@
 		Polish:"Tryb wieloosobowy"
 		Russian:"Online мультиплеер"
 		German:"Multiplayer online"
+		Korean:"온라인 멀티플레이어"
 }
 
 	// Map sizes
@@ -427,7 +431,7 @@
 		Portuguese:"Imortal"
 		German:"Unsterbliche(r)"
 		Polish:"Nieśmiertelny"
-                Korean:"불멸"
+                Korean:"불멸자"
 		Czech:"Polobůh"
 		Ukrainian:"Безсмертний"
 }
@@ -460,6 +464,7 @@
 		Ukrainian:"ШІ"
 		German:"KI"
 		Portuguese:"Computador"
+		Korean:"컴퓨터"
 }
 
 	"Remove":{
@@ -519,7 +524,7 @@
 		Simplified_Chinese:"玩家ID",
 		Traditional_Chinese:"玩家ID",
 		Russian:"ID игрока"
-                Korean:"사용자 Id"
+                Korean:"사용자 ID"
 		Polish:"ID użytkownika"
 		Czech:"Uživatelské ID"
 		Ukrainian:"Ідентифікатор гравця"
@@ -545,7 +550,7 @@
 		Simplified_Chinese:"玩家姓名",
 		Traditional_Chinese:"玩家姓名",
 		Russian:"Пользователь"
-                Korean:"사용자이름"
+                Korean:"사용자 이름"
 		Polish:"Nazwa użytkownika"
 		Czech:"Uživatelské jméno"
 		Ukrainian:"Імʼя гравця"
@@ -624,7 +629,7 @@
 		Traditional_Chinese:"複製玩家ID",
 		Russian:"Скопировать ID игрока"
 		Polish:"Skopiuj ID użytkownika"
-                Korean:"사용자 Id 복사"
+                Korean:"사용자 ID 복사"
 		Czech:"Kopírovat uživatelské ID"
 		Ukrainian:"Копіювати ідентифікатор гравця"
 		German:"SpielerIn-ID kopieren"
@@ -636,7 +641,7 @@
 		Simplified_Chinese:"复制游戏ID",
 		Traditional_Chinese:"複製遊戲ID",
 		Russian:"Скопировать ID игры"
-                Korean:"게임 Id 복사"
+                Korean:"게임 ID 복사"
 		Polish:"Skopiuj ID gry"
 		Czech:"Kopírovat ID hry"
 		Ukrainian:"Копіювати ідентифікатор гри"
@@ -674,7 +679,7 @@
 	"To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.":{
 		Italian:"Per creare una partita multigiocatore, attiva la spunta su 'Multigiocatore' nella schermata Nuova Partita, e inserisci l'ID utente per del giocatore per ogni rispettivo giocatore umano"
                 Polish:"Aby utworzyć grę wieloosobową, zaznacz 'wieloosobowa' w oknie Nowej Gry, i dla każdego gracza wprowadź jego ID użytkownika"
-		Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어' 토글을 확인하고 각 인간 플레이어에 대해 해당 플레이어의 사용자 ID를 삽입하십시오."
+		Korean:"멀티플레이어 게임을 만들려면 새로운 게임 화면에서 '멀티플레이어'를 체크하고 참여할 플레이어의 사용자 ID를 각각 입력하십시오."
 		Czech:"Pro vytvoření hry pro více hráčů zaškrtněte 'Více hráčů' na obrazovce s novou hrou a pro každého lidského hráče vložte jeho hráčské ID."
 		Simplified_Chinese:"创建多人游戏时，首先请选中“开始新游戏”界面的“在线多人游戏”复选框，同时将每个参与游戏的玩家ID填入其想扮演文明的“Player ID”文本框内。"
 		Ukrainian:"Для створення багатокористувацької гри перевірте перемикач «Багатокористувацька» у віконці «Нова гра» і для кожної людини-гравця введіть відповідний ідентифікатор"
@@ -686,7 +691,7 @@
 
 	"You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.":{
 		Italian:"Puoi assegnarvi facilmente il tuo ID Utente, e altri giocatori possono copiarvi il loro ID Utente e mandartelo per unirsi alla partita."
-                Korean:"당신은 당신의 사용자 ID를 쉽게 거기에 할당할 수 있고, 다른 플레이어는 당신의 사용자 ID를 여기에 복사하여 당신이 게임에 포함하도록 당신에게 보낼 수 있습니다."
+                Korean:"당신은 당신의 사용자 ID를 쉽게 지정할 수 있고, 다른 플레이어는 각자의 ID를 당신에게 전달하여 당신이 그들을 참여시키도록 할 수 있습니다."
 		Czech:"Svoje vlastní ID můžete přiřadit jednoduše, ostatní hráči můžou zkopírovat svoje uživatelské ID tady a poslat vám ho, aby jste je připojil ke hře."
 		Polish:"Możesz łatwo przypisać własny ID użytkownika, a inni gracze mogą skopiować tutaj swoje ID użytkownika i wysłać je do Ciebie, abyś mógł ich włączyć do gry"
 		Simplified_Chinese:"直接点击“设置为当前玩家”就可自动填入你自己的玩家ID。对于其他玩家，他们可在终端上打开游戏并在当前界面点击“复制玩家ID”按钮将他们的ID复制到剪贴板，然后通过网络发送给你，你可以在“开始新游戏”界面将接收到的ID填入他们想扮演文明的“Player ID”文本框内使其加入游戏。"
@@ -699,7 +704,7 @@
 
 	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
 		Italian:"Una volta creata la tua partita, ritorna in questa schermata per copiare l'ID Partita e mandala ad altri giocatori."
-                Korean:"게임을 만든 후 이 화면을 다시 입력하여 게임 ID를 복사하여 다른 플레이어에게 전송하십시오."
+                Korean:"게임을 만든 후, 이 화면으로 다시 돌아와 게임 ID를 복사하여 다른 플레이어에게 전송하십시오."
 		Czech:"Ve chvíli kdy vytvoříte hru, vraťte se zpět na tuto obrazovku, zkopírujte ID hry a pošlete ho ostatním hráčům."
 		Polish:"Po utworzeniu gry ponownie wejdź na ten ekran, aby skopiować ID gry i wysłać go innym graczom"
 		Simplified_Chinese:"当你创建了多人游戏后，进入此界面同时点击“复制游戏ID”按钮将游戏ID复制到剪贴板并通过网络发送给其他玩家。"
@@ -772,7 +777,7 @@
 		Traditional_Chinese:"史詩",
 		Russian:"Эпическая"
                 Polish:"Szybka"
-		Korean:"서사시"
+		Korean:"느림"
 		Czech:"Dlouhá"
 		Ukrainian:"Епічна"
 		German:"Episch"
@@ -827,7 +832,7 @@
 		Russian:"Может, у вас слишком много игроков для такой небольшой карты?"
 		Simplified_Chinese:"可能您在如此小的地图上放置了太多玩家？"
 		Traditional_Chinese:"或許您在過小的地圖上放置了過多的玩家？"
-                Korean:"너무 작은 지도에 너무 많은 플레이어를 넣었나요?"
+                Korean:"아마도 너무 작은 지도에 너무 많은 플레이어를 넣은 것 같은데요?"
 		Czech:"Nevložili jste příliš mnoho hráčů do moc malé mapy?"
 		Ukrainian:"Можливо забагато гравців на замаленьку мапу?"
 		German:"Vielleicht hast du zu viele SpielerInnen in eine zu kleine Karte gepackt?"
@@ -953,7 +958,7 @@
 		Simplified_Chinese:"读取[saveFileName]",
 		Traditional_Chinese:"讀取[saveFileName]",
 		Portuguese:"Carregar [saveFileName]"
-                Korean:"불러오기 [saveFileName]",
+                Korean:"[saveFileName] 불러오기",
 		Czech:"Načíst hru [saveFileName]"
 		Ukrainian:"Завантажити [saveFileName]"
 		Polish:"Wczytaj [saveFileName]"
@@ -1026,7 +1031,7 @@
 		Traditional_Chinese:"上傳地圖",
 		Italian:"Carica"
 		Russian:"Отправить"
-                Korean:"업로드"
+                Korean:"지도 업로드"
   		Czech:"Nahrát mapu"
 		Ukrainian:"Вивантажити мапу"
 		German:"Karte hochladen"
@@ -1057,6 +1062,7 @@
 		German:"Karte hochladen war erfolgreich!"
 		Polish:"Mapa została przesłana pomyślnie"
 		Portuguese:"Mapa carregado com sucesso!"
+		Korean:"지도가 성공적으로 업로드되었습니다!"
 },
 
 
@@ -1092,7 +1098,7 @@
 		Traditional_Chinese:"顯示選項",
 		Portuguese:"Opções de tela"
 		Japanese:"表示オプション"
-                Korean:"해상도 설정"
+                Korean:"디스플레이 설정"
 		Czech:"Zobrazit možnosti"
 		Ukrainian:"Налаштування екрану"
 		Polish:"Ustawienia wyświetlacza"
@@ -1105,7 +1111,7 @@
 		Traditional_Chinese:"自動存檔間隔回合",
 		Portuguese:"Turnos entre autosaves"
 		Russian:"Кол-во ходов между автосохранениями"
-                Korean:"자동 저장 라운드"
+                Korean:"자동 저장 간격"
 		Czech:"Počet kol mezi automatickým uložením hry"
 		Ukrainian:"Ходів між автозбереженням"
 		German:"Runden bis zum nächsten automatischen Speichern"
@@ -1134,6 +1140,7 @@
 		German:"Lautstärke Musik"
 		Polish:"Poziom głośności muzyki"
 		Portuguese:"Volume da música"
+		Korean:"음악 음량"
 }
 
 	"Download music":{
@@ -1144,6 +1151,7 @@
 		German:"Musik herunterladen"
 		Polish:"Pobierz muzykę"
 		Portuguese:"Baixar música"
+		Korean:"음악 다운로드"
 }
 
 	"Downloading...": {
@@ -1154,6 +1162,7 @@
 		German:"Lade herunter..."
 		Polish:"Pobieranie..."
 		Portuguese:"Transferência em andamento..."
+		Korean:"다운로드 중..."
 }
 
 	"Could not download music!": {
@@ -1164,6 +1173,7 @@
 		German:"Kann Musik nicht herunterladen!"
 		Polish:"Nie udało się pobrać muzyki!"
 		Portuguese:"Não foi possível baixar!"
+		Korean:"음악을 다운로드 할 수 없습니다!"
 }
 
 	"Show":{
@@ -1212,6 +1222,7 @@
 		German:"Zeige bewirtschaftete Felder an"
 		Polish:"Pokaż pracujące pola"
 		Portuguese:"Mostrar hexágonos ativos"
+		Korean:"배치된 시민 표시"
 }
 
 	"Show resources and improvements":{
@@ -1224,6 +1235,7 @@
 		German:"Zeige Ressourcen und Verbesserungen an"
 		Polish:"Pokaż zasoby i ulepszenia"
 		Portuguese:"Mostrar recursos e melhorias"
+		Korean:"자원과 타일 시설 표시"
 }
 
 	"Check for idle units":{
@@ -1234,7 +1246,7 @@
 		German: "Untätige Einheiten anzeigen bei Rundenende"
 		French:"Vérifier les unités inactives"
 		Russian:"Найти незанятые юниты"
-		Korean:"턴이 끝나기 전에 미행동 유닛 보기"
+		Korean:"턴 종료 전에 행동하지 않은 유닛 보기"
 		Czech:"Kontrolovat zahálející jednotky"
 		Ukrainian:"Перевіряти неробочі підрозділи"
 		Polish:"Sprawdź jednostki czekające na rozkazy"
@@ -1247,7 +1259,7 @@
 		Russian:"Перемещать юниты одним касанием"
 		Simplified_Chinese:"点击目标地块立即移动",
 		Traditional_Chinese:"點擊目標地區立即移動",
-                Korean:"한 번의 탭으로 유닛 이동"
+                Korean:"한 번 눌러서 유닛 이동"
 		Czech:"Pohyb jednotek na jeden klik"
 		Ukrainian:"Переміщення підрозділів одним натиском"
 		Polish:"Przemieść jednostki jednym dotykiem"
@@ -1316,6 +1328,7 @@
 		German:"Zeige Pixel Einheiten"
 		Polish:"Pokaż jednostki jako pixele"
 		Portuguese:"Mostrar unidades de pixel"
+		Korean:"픽셀 단위 보이기"
 }
 
 	"Show pixel improvements":{ // not sure of the context....examples?
@@ -1328,6 +1341,7 @@
 		German:"Zeige Pixel Verbesserungen"
 		Polish:"Pokaż ulepszenia jako pixele"
 		Portuguese:"Mostrar melhorias de pixels"
+		Korean:"픽셀 향상"
 }
 
 	"Fontset":{
