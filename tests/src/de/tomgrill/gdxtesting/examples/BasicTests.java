@@ -25,9 +25,10 @@ public class BasicTests {
 
 	@Test
 	public void gameBasicsLoad() {
-		assertTrue("This test will only pass when the game.png exists",
+		assertTrue("This test will only pass when the jsons can be loaded",
 				GameBasics.INSTANCE.getBuildings().size() > 0);
 	}
+
 
 //	@Test
 //	public void setMapEditorScreen() {

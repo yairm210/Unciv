@@ -198,7 +198,7 @@ class SpecificUnitAutomation{
         }
 
         val pathsToCities = unit.movement.getArialPathsToCities()
-        if(pathsToCities.size==1) return // can't actually move anywhere else
+        if(pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { it.getTilesInDistance(unit.getRange())
@@ -213,43 +213,43 @@ class SpecificUnitAutomation{
         }
 
         // no city needs fighters to defend, so let's attack stuff from the closest possible location
-        val citiesThatCanAttackFrom = pathsToCities.keys
-                .filter { it.getTilesInDistance(unit.getRange())
-                        .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) } }
-        if(citiesThatCanAttackFrom.isEmpty()) return
-
-        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minBy { pathsToCities[it]!!.size }!!
-        val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
-        unit.movement.moveToTile(firstStepInPath)
+        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
 
     }
 
     fun automateBomber(unit: MapUnit) {
-        if(UnitAutomation().tryAttackNearbyEnemy(unit)) return
+        if (UnitAutomation().tryAttackNearbyEnemy(unit)) return
 
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-        val immediatelyReachableCities = tilesInRange
-                .filter { it.isCityCenter() && it.getOwner()==unit.civInfo && unit.movement.canMoveTo(it)}
 
-        for(city in immediatelyReachableCities){
-            if(city.getTilesInDistance(unit.getRange())
-                            .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) }) {
+        val immediatelyReachableCities = tilesInRange
+                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
+
+        for (city in immediatelyReachableCities) {
+            if (city.getTilesInDistance(unit.getRange())
+                            .any { UnitAutomation().containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
                 unit.movement.moveToTile(city)
                 return
             }
         }
 
         val pathsToCities = unit.movement.getArialPathsToCities()
-        if(pathsToCities.size==1) return // can't actually move anywhere else
+        if (pathsToCities.isEmpty()) return // can't actually move anywhere else
+        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+    }
 
+    private fun tryMoveToCitiesToArialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
-                .filter { it.getTilesInDistance(unit.getRange())
-                        .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) } }
-        if(citiesThatCanAttackFrom.isEmpty()) return
+                .filter {
+                    it != airUnit.currentTile
+                            && it.getTilesInDistance(airUnit.getRange())
+                            .any { UnitAutomation().containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                }
+        if (citiesThatCanAttackFrom.isEmpty()) return
 
         val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minBy { pathsToCities[it]!!.size }!!
         val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
-        unit.movement.moveToTile(firstStepInPath)
+        airUnit.movement.moveToTile(firstStepInPath)
     }
 
 }

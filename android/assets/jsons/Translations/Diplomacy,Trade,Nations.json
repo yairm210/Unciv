@@ -500,7 +500,11 @@
 		Russian:"Ваша воинственность для нас неприемлема."
 		Czech:"Vaše chování je pro nás nepřijatelné."
 		German:"Ihr kriegerisches Verhalten ist für uns inakzeptabel."
-}
+	},
+
+	"We applaud your liberation of conquered cities!": {
+
+	},
 
 	"You have captured our cities!":{
 		Italian:"Hai preso una delle nostre città!"
