@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.ImageGetter
@@ -39,7 +38,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
         val regularImprovements = VerticalGroup()
         regularImprovements.space(10f)
 
-        for (improvement in GameBasics.TileImprovements.values) {
+        for (improvement in game.gameBasics.TileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
             if(improvement.name == tileInfo.improvement) continue
             if(improvement.name==tileInfo.improvementInProgress) continue
@@ -63,7 +62,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             group.onClick {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
-                descriptionLabel.setText(improvement.getDescription())
+                descriptionLabel.setText(improvement.getDescription(game.gameBasics))
             }
 
             val pickNow = "Pick now!".toLabel()

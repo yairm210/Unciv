@@ -32,10 +32,6 @@ class TileResource : NamedStats() {
      */
     var building: String? = null
     var revealedBy: String? = null
-
-    fun getBuilding(): Building? {
-        return if (building == null) null else GameBasics.Buildings[building!!]
-    }
 }
 
 data class ResourceSupply(val resource:TileResource,var amount:Int, val origin:String)

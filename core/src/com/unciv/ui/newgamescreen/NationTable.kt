@@ -11,7 +11,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
-class NationTable(val nation: Nation, width:Float)
+class NationTable(val nation: Nation, width:Float, gameBasics: GameBasics)
     : Table(CameraStageBaseScreen.skin) {
     private val innerTable = Table()
 
@@ -25,12 +25,12 @@ class NationTable(val nation: Nation, width:Float)
         titleTable.add(nation.getLeaderDisplayName().toLabel(nation.getInnerColor(),24))
         innerTable.add(titleTable).row()
 
-        innerTable.add(getUniqueLabel(nation).apply { setWrap(true) }).width(width)
+        innerTable.add(getUniqueLabel(nation,gameBasics).apply { setWrap(true) }).width(width)
         touchable = Touchable.enabled
         add(innerTable)
     }
 
-    private fun getUniqueLabel(nation: Nation): Label {
+    private fun getUniqueLabel(nation: Nation, gameBasics: GameBasics): Label {
         val textList = ArrayList<String>()
 
         if (nation.unique != null) {
@@ -38,17 +38,17 @@ class NationTable(val nation: Nation, width:Float)
             textList += ""
         }
 
-        addUniqueBuildingsText(nation, textList)
-        addUniqueUnitsText(nation, textList)
-        addUniqueImprovementsText(nation, textList)
+        addUniqueBuildingsText(nation, textList,gameBasics)
+        addUniqueUnitsText(nation, textList,gameBasics)
+        addUniqueImprovementsText(nation, textList,gameBasics)
 
         return textList.joinToString("\n").tr().trim().toLabel(nation.getInnerColor())
     }
 
-    private fun addUniqueBuildingsText(nation: Nation, textList: ArrayList<String>) {
-        for (building in GameBasics.Buildings.values
+    private fun addUniqueBuildingsText(nation: Nation, textList: ArrayList<String>, gameBasics: GameBasics) {
+        for (building in gameBasics.Buildings.values
                 .filter { it.uniqueTo == nation.name }) {
-            val originalBuilding = GameBasics.Buildings[building.replaces!!]!!
+            val originalBuilding = gameBasics.Buildings[building.replaces!!]!!
 
             textList += building.name.tr() + " - {replaces} " + originalBuilding.name.tr()
             val originalBuildingStatMap = originalBuilding.toHashMap()
@@ -70,10 +70,10 @@ class NationTable(val nation: Nation, width:Float)
         }
     }
 
-    private fun addUniqueUnitsText(nation: Nation, textList: ArrayList<String>) {
-        for (unit in GameBasics.Units.values
+    private fun addUniqueUnitsText(nation: Nation, textList: ArrayList<String>, gameBasics: GameBasics) {
+        for (unit in gameBasics.Units.values
                 .filter { it.uniqueTo == nation.name }) {
-            val originalUnit = GameBasics.Units[unit.replaces!!]!!
+            val originalUnit = gameBasics.Units[unit.replaces!!]!!
 
             textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
             if (unit.cost != originalUnit.cost)
@@ -93,14 +93,14 @@ class NationTable(val nation: Nation, width:Float)
             for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
                 textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
             for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(GameBasics.UnitPromotions[promotion]!!.effect) + ")"
+                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(gameBasics.UnitPromotions[promotion]!!.effect) + ")"
 
             textList += ""
         }
     }
 
-    private fun addUniqueImprovementsText(nation: Nation, textList: ArrayList<String>) {
-        for (improvement in GameBasics.TileImprovements.values
+    private fun addUniqueImprovementsText(nation: Nation, textList: ArrayList<String>, gameBasics: GameBasics) {
+        for (improvement in gameBasics.TileImprovements.values
                 .filter { it.uniqueTo == nation.name }) {
 
             textList += improvement.name.tr()

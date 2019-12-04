@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.Difficulty
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.metadata.GameParameters
 import java.util.*
 
@@ -21,6 +20,7 @@ class GameInfo {
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
     @Transient var isUpToDate=false
+    @Transient var gameBasics = UncivGame.Current.gameBasics
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -165,13 +165,13 @@ class GameInfo {
     fun placeBarbarianUnit(tileToPlace: TileInfo) {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
-        val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
+        val allResearchedTechs = gameBasics.Technologies.keys.toMutableList()
         for (civ in civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
         val barbarianCiv = getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
-        val unitList = GameBasics.Units.values
+        val unitList = gameBasics.Units.values
                 .filter { !it.unitType.isCivilian()}
                 .filter { it.isBuildable(barbarianCiv) }
 
@@ -203,7 +203,7 @@ class GameInfo {
                 }
             }
 
-        tileMap.setTransients()
+        tileMap.setTransients(gameBasics)
 
         if(currentPlayer=="") currentPlayer=civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv=getCivilization(currentPlayer)
@@ -217,7 +217,7 @@ class GameInfo {
             getCurrentPlayerCivilization().playerType=PlayerType.Human
         if(getCurrentPlayerCivilization().difficulty!="Chieftain")
             difficulty= getCurrentPlayerCivilization().difficulty
-        difficultyObject = GameBasics.Difficulties[difficulty]!!
+        difficultyObject = gameBasics.Difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
         // because updating leads to getting the building uniques from the civ info,

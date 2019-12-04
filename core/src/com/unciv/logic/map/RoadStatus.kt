@@ -1,5 +1,7 @@
 package com.unciv.logic.map
 
+import com.unciv.logic.map.RoadStatus.Railroad
+import com.unciv.logic.map.RoadStatus.Road
 import com.unciv.models.gamebasics.GameBasics
 
 /**
@@ -13,6 +15,6 @@ enum class RoadStatus {
     Railroad;
 
     /** returns null for [None] */
-    fun improvement() = GameBasics.TileImprovements[this.name]
+    fun improvement(gameBasics: GameBasics) = gameBasics.TileImprovements[this.name]
 
 }

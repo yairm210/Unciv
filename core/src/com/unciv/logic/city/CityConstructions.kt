@@ -6,7 +6,6 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withItem
@@ -34,10 +33,10 @@ class CityConstructions {
         return toReturn
     }
 
-    internal fun getBuildableBuildings(): List<Building> = GameBasics.Buildings.values
+    internal fun getBuildableBuildings(): List<Building> = cityInfo.getGameBasics().Buildings.values
             .filter { it.isBuildable(this) }
 
-    fun getConstructableUnits() = GameBasics.Units.values
+    fun getConstructableUnits() = cityInfo.getGameBasics().Units.values
             .filter { it.isBuildable(this) }
 
     fun getStats(): Stats {
@@ -95,10 +94,11 @@ class CityConstructions {
     }
 
     internal fun getConstruction(constructionName: String): IConstruction {
-        if (GameBasics.Buildings.containsKey(constructionName))
-            return GameBasics.Buildings[constructionName]!!
-        else if (GameBasics.Units.containsKey(constructionName))
-            return GameBasics.Units[constructionName]!!
+        val gameBasics = cityInfo.getGameBasics()
+        if (gameBasics.Buildings.containsKey(constructionName))
+            return gameBasics.Buildings[constructionName]!!
+        else if (gameBasics.Units.containsKey(constructionName))
+            return gameBasics.Units[constructionName]!!
         else{
             if(constructionName=="") return getConstruction("Nothing")
             val special = SpecialConstruction.getSpecialConstructions().firstOrNull{it.name==constructionName}
@@ -155,7 +155,7 @@ class CityConstructions {
 
     //region state changing functions
     fun setTransients(){
-        builtBuildingObjects = ArrayList(builtBuildings.map { GameBasics.Buildings[it]!! })
+        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getGameBasics().Buildings[it]!! })
     }
 
     fun addProductionPoints(productionToAdd: Int) {
@@ -218,13 +218,13 @@ class CityConstructions {
     }
 
     fun addBuilding(buildingName:String){
-        val buildingObject = GameBasics.Buildings[buildingName]!!
+        val buildingObject = cityInfo.getGameBasics().Buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
         builtBuildings.add(buildingName)
     }
 
     fun removeBuilding(buildingName:String){
-        val buildingObject = GameBasics.Buildings[buildingName]!!
+        val buildingObject = cityInfo.getGameBasics().Buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         builtBuildings.remove(buildingName)
     }

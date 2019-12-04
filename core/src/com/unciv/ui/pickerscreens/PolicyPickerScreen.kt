@@ -6,14 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv, switchfromWorldScreen: Boolean = true) : PickerScreen() {
+class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv,
+                         switchfromWorldScreen: Boolean = true) : PickerScreen() {
     internal val viewingCiv: CivilizationInfo = civInfo
     private var pickedPolicy: Policy? = null
 
@@ -52,7 +52,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         topTable.row().pad(30f)
 
-        for (branch in GameBasics.PolicyBranches.values) {
+        for (branch in viewingCiv.gameInfo.gameBasics.PolicyBranches.values) {
             if (branch.name == "Commerce") topTable.addSeparator()
             val branchGroup = Table()
             branchGroup.row().pad(20f)
@@ -101,7 +101,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             if(policy.requires!!.isNotEmpty())
                 policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
             else
-                policyText += ("{Unlocked at} {"+policy.getBranch().era.toString()+" era}").tr()
+                policyText += ("{Unlocked at} {"+policy.branch.era.toString()+" era}").tr()
         }
         descriptionLabel.setText(policyText)
     }

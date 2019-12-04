@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
 import com.unciv.models.gamebasics.VictoryType
 import kotlin.math.min
@@ -46,7 +45,7 @@ class PolicyManager {
         if(isAdopted(policy.name)) return false
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (policy.getBranch().era > civInfo.getEra()) return false
+        if (policy.branch.era > civInfo.getEra()) return false
         return true
     }
 
@@ -54,7 +53,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = GameBasics.PolicyBranches.values
+        val hasAdoptablePolicies = civInfo.gameInfo.gameBasics.PolicyBranches.values
                 .flatMap { it.policies.union(listOf(it)) }
                 .any { civInfo.policies.isAdoptable(it) }
         return hasAdoptablePolicies
@@ -76,7 +75,7 @@ class PolicyManager {
         adoptedPolicies.add(policy.name)
 
         if (!branchCompletion) {
-            val branch = policy.getBranch()
+            val branch = policy.branch
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
                 adopt(branch.policies.last(), true) // add branch completion!
             }
@@ -101,7 +100,7 @@ class PolicyManager {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"
                         VictoryType.Domination,VictoryType.Neutral ->
-                            GameBasics.Units.keys.filter { it.startsWith("Great") }.random()
+                            civInfo.gameInfo.gameBasics.Units.keys.filter { it.startsWith("Great") }.random()
                     }
                     civInfo.addGreatPerson(greatPerson)
                 }

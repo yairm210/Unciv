@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -171,7 +170,8 @@ class NextTurnAutomation{
 
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+            val researchableTechs = civInfo.gameInfo.gameBasics.Technologies.values
+                    .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
 
@@ -198,7 +198,7 @@ class NextTurnAutomation{
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
 
-            val adoptablePolicies = GameBasics.PolicyBranches.values
+            val adoptablePolicies = civInfo.gameInfo.gameBasics.PolicyBranches.values
                     .flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
 
@@ -215,7 +215,10 @@ class NextTurnAutomation{
                         VictoryType.Neutral -> listOf()
                     }
             val policiesByPreference = adoptablePolicies
-                    .groupBy { if(it.branch in policyBranchPriority) policyBranchPriority.indexOf(it.branch) else 10 }
+                    .groupBy {
+                        if (it.branch.name in policyBranchPriority)
+                            policyBranchPriority.indexOf(it.branch.name) else 10
+                    }
 
             val preferredPolicies = policiesByPreference.minBy { it.key }!!.value
 

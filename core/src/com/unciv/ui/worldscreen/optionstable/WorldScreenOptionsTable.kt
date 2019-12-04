@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -16,9 +15,9 @@ import kotlin.concurrent.thread
 class Language(val language:String){
     val percentComplete:Int
     init{
-        val availableTranslations = GameBasics.Translations.count { it.value.containsKey(language) }
+        val availableTranslations = UncivGame.Current.gameBasics.Translations.count { it.value.containsKey(language) }
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations*100 / GameBasics.Translations.size)
+        else percentComplete = (availableTranslations*100 / UncivGame.Current.gameBasics.Translations.size)
     }
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
@@ -264,7 +263,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         innerTable.add("Language".toLabel())
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
+        UncivGame.Current.gameBasics.Translations.getLanguages().map { Language(it) }
+                .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == UncivGame.Current.settings.language }
@@ -286,7 +286,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             val missingTextSelectBox = SelectBox<String>(skin)
             val missingTextArray = Array<String>()
             val currentLanguage = UncivGame.Current.settings.language
-            GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach { missingTextArray.add(it.key) }
+            UncivGame.Current.gameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }
+                    .forEach { missingTextArray.add(it.key) }
             missingTextSelectBox.items = missingTextArray
             missingTextSelectBox.selected = "Untranslated texts"
             innerTable.add(missingTextSelectBox).pad(10f)

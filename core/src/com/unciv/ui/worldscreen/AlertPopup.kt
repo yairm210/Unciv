@@ -150,24 +150,26 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Very well."))
             }
             AlertType.WonderBuilt -> {
-                val wonder = GameBasics.Buildings[popupAlert.value]!!
+                val wonder = worldScreen.gameInfo.gameBasics.Buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 val centerTable = Table()
                 centerTable.add(wonder.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
-                centerTable.add(wonder.getShortDescription().toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.gameBasics)
+                        .toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
                 add(getCloseButton("Close"))
             }
             AlertType.TechResearched -> {
-                val tech = GameBasics.Technologies[popupAlert.value]!!
+                val gameBasics = worldScreen.gameInfo.gameBasics
+                val tech = gameBasics.Technologies[popupAlert.value]!!
                 addGoodSizedLabel(tech.name)
                 addSeparator()
                 val centerTable = Table()
                 centerTable.add(tech.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
-                centerTable.add(tech.getDescription().toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(tech.getDescription(gameBasics).toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
                 add(getCloseButton("Close"))
             }

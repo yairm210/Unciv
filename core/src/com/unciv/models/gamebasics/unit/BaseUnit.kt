@@ -78,11 +78,11 @@ class BaseUnit : INamed, IConstruction {
         return sb.toString()
     }
 
-    fun getMapUnit(): MapUnit {
+    fun getMapUnit(gameBasics: GameBasics): MapUnit {
         val unit = MapUnit()
         unit.name = name
 
-        unit.setTransients() // must be after setting name because it sets the baseUnit according to the name
+        unit.setTransients(gameBasics) // must be after setting name because it sets the baseUnit according to the name
 
         return unit
     }
@@ -131,7 +131,7 @@ class BaseUnit : INamed, IConstruction {
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+        if (civInfo.gameInfo.gameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (!UncivGame.Current.settings.nuclearWeaponEnabled
                 && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))

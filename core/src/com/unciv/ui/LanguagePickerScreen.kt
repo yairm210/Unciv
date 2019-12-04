@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
@@ -24,10 +23,11 @@ class LanguageTable(val language:String,skin: Skin):Table(skin){
         defaults().pad(10f)
         if(ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
-        val availableTranslations = GameBasics.Translations.filter { it.value.containsKey(language) }
+        val translations = UncivGame.Current.gameBasics.Translations
+        val availableTranslations = translations.filter { it.value.containsKey(language) }
 
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size) - 5
+        else percentComplete = (availableTranslations.size*100 / translations.size) - 5
 
         val spaceSplitLang = language.replace("_"," ")
         add("$spaceSplitLang ($percentComplete%)")
@@ -60,7 +60,7 @@ class LanguagePickerScreen: PickerScreen(){
                     "If you want to help translating the game into your language, \n"+
                     "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
-        languageTables.addAll(GameBasics.Translations.getLanguages().map { LanguageTable(it,skin) }
+        languageTables.addAll(UncivGame.Current.gameBasics.Translations.getLanguages().map { LanguageTable(it,skin) }
                 .sortedByDescending { it.percentComplete } )
 
         languageTables.forEach {

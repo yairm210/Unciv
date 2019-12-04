@@ -4,8 +4,8 @@ import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class CityCombatant(val city: CityInfo) : ICombatant {
@@ -41,8 +41,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         if(cityTile.baseTerrain== Constants.hill) strength+=5
         // as tech progresses so does city strength
         val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
-                GameBasics.Technologies.count()
-        strength += Math.pow(techsPercentKnown*5.5, 2.8).toFloat()
+                getCivInfo().gameInfo.gameBasics.Technologies.count()
+        strength += (techsPercentKnown * 5.5).pow(2.8).toFloat()
 
         // The way all of this adds up...
         // All ancient techs - 0.5 extra, Classical - 2.7, Medieval - 8, Renaissance - 17.5,

@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import java.util.*
 import kotlin.collections.HashMap
@@ -163,7 +162,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         }
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
-        for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
+        for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
+                .map { civInfo.gameInfo.gameBasics.TileResources[it]!! })
             newDetailedCivResources.add(resource,-1,"Units")
         civInfo.detailedCivResources = newDetailedCivResources
     }

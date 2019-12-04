@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
@@ -106,8 +105,10 @@ class WorkerAutomation(val unit: MapUnit) {
                             unit.movement.headTowards(tileToConstructRoadOn)
                         }
                         if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
-                                && unit.currentTile.improvementInProgress!=targetRoad.name)
-                            tileToConstructRoadOn.startWorkingOnImprovement(targetRoad.improvement()!!,unit.civInfo)
+                                && unit.currentTile.improvementInProgress!=targetRoad.name) {
+                            val improvement = targetRoad.improvement(unit.civInfo.gameInfo.gameBasics)!!
+                            tileToConstructRoadOn.startWorkingOnImprovement(improvement, unit.civInfo)
+                        }
                         return true
                     }
             }
@@ -198,7 +199,7 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
         if (improvementString == null) return null
-        return GameBasics.TileImprovements[improvementString]!!
+        return unit.civInfo.gameInfo.gameBasics.TileImprovements[improvementString]!!
     }
 
 }

@@ -16,6 +16,7 @@ import kotlin.concurrent.thread
 internal object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
+
         if (File("../Images").exists()) // So we don't run this from within a fat JAR
             packImages()
 

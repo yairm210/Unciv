@@ -10,7 +10,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.*
@@ -94,7 +93,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.background = ImageGetter.getBackground(Color.BLACK)
 
         val units = ArrayList<Table>()
-        for (unit in GameBasics.Units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
+        for (unit in city.getGameBasics().Units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name)
             units += getProductionButton(unit.name,
                     unit.name.tr() + "\r\n" + turnsToUnit + (if(turnsToUnit>1) " {turns}".tr() else " {turn}".tr()),
@@ -107,7 +106,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val buildableNationalWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
 
-        for (building in GameBasics.Buildings.values) {
+        for (building in city.getGameBasics().Buildings.values) {
             if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             val productionTextButton = getProductionButton(building.name,
@@ -198,7 +197,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         else if (construction is BaseUnit)
             description = construction.getDescription(true)
         else if (construction is Building)
-            description = construction.getDescription(true, city.civInfo)
+            description = construction.getDescription(true, city.civInfo,
+                    city.civInfo.gameInfo.gameBasics)
         else if(construction is SpecialConstruction)
             description = construction.description.tr()
         else description="" // Should never happen

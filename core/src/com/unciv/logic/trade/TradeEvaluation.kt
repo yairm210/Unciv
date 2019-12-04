@@ -5,7 +5,6 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -118,7 +117,7 @@ class TradeEvaluation{
             }
 
             TradeType.Technology ->
-                return (sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble())
+                return (sqrt(civInfo.gameInfo.gameBasics.Technologies[offer.name]!!.cost.toDouble())
                         * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
@@ -168,7 +167,7 @@ class TradeEvaluation{
             TradeType.Strategic_Resource -> {
                 if(!civInfo.isAtWar()) return 50*offer.amount
 
-                val canUseForUnits = GameBasics.Units.values
+                val canUseForUnits = civInfo.gameInfo.gameBasics.Units.values
                         .any { it.requiredResource==offer.name && it.isBuildable(civInfo) }
                 if(!canUseForUnits) return 50*offer.amount
 
@@ -189,7 +188,7 @@ class TradeEvaluation{
                 }
                 return totalCost
             }
-            TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
+            TradeType.Technology -> return sqrt(civInfo.gameInfo.gameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)

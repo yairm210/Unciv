@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.UncivGame
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 
@@ -32,6 +32,8 @@ object ImageGetter {
     init{
         setTextureRegionDrawables()
     }
+
+    fun getGameBasics() = UncivGame.Current.gameBasics
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
@@ -110,13 +112,13 @@ object ImageGetter {
             return getImage("OtherIcons/Stop")
         if(improvementName.startsWith("StartingLocation ")){
             val nationName = improvementName.removePrefix("StartingLocation ")
-            val nation = GameBasics.Nations[nationName]!!
+            val nation = getGameBasics().Nations[nationName]!!
             return getNationIndicator(nation,size)
         }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
-        val improvement = GameBasics.TileImprovements[improvementName]!!
+        val improvement = getGameBasics().TileImprovements[improvementName]!!
         when {
             improvement.food>0 -> iconGroup.circle.color= foodCircleColor
             improvement.production>0 -> iconGroup.circle.color= productionCircleColor
@@ -129,8 +131,8 @@ object ImageGetter {
     }
 
     fun getConstructionImage(construction: String): Image {
-        if(GameBasics.Buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
-        if(GameBasics.Units.containsKey(construction)) return getUnitIcon(construction)
+        if(getGameBasics().Buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
+        if(getGameBasics().Units.containsKey(construction)) return getUnitIcon(construction)
         if(construction=="Nothing") return getImage("OtherIcons/Stop")
         return getStatIcon(construction)
     }
@@ -178,7 +180,7 @@ object ImageGetter {
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = GameBasics.TileResources[resourceName]!!
+        val resource = getGameBasics().TileResources[resourceName]!!
         when {
             resource.food>0 -> iconGroup.circle.color= foodCircleColor
             resource.production>0 -> iconGroup.circle.color= productionCircleColor
@@ -202,7 +204,7 @@ object ImageGetter {
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
         var techIconColor = Color.WHITE
-        when (GameBasics.Technologies[techName]!!.era().name) {
+        when (getGameBasics().Technologies[techName]!!.era().name) {
             "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
             "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
             "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)

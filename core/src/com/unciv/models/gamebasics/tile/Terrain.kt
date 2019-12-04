@@ -7,13 +7,13 @@ import com.unciv.models.stats.NamedStats
 import com.unciv.ui.utils.colorFromRGB
 
 class Terrain : NamedStats() {
-    fun getDescription(): String {
+    fun getDescription(gameBasics: GameBasics): String {
         val sb = StringBuilder()
         sb.appendln(this.clone().toString())
         if (occursOn != null) {
             sb.appendln("Occurs on [${occursOn.joinToString(", ")}]".tr())
         }
-        val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
+        val resourcesFound = gameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
         if (resourcesFound.isNotEmpty()) {
             sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
         }

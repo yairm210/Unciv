@@ -20,11 +20,11 @@ class Technology {
     var row: Int = 0
     var quote=""
 
-    fun getDescription(): String {
+    fun getDescription(gameBasics: GameBasics): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
-        val improvedImprovements = GameBasics.TileImprovements.values
+        val improvedImprovements = gameBasics.TileImprovements.values
                 .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
         for (improvement in improvedImprovements) {
             val impimpString = improvement.value.joinToString { it.name.tr() } +
@@ -40,26 +40,26 @@ class Technology {
                 lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
         }
 
-        var enabledBuildings = getEnabledBuildings(viewingCiv)
+        val enabledBuildings = getEnabledBuildings(viewingCiv)
 
         val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
+                lineList += "* " + building.name.tr() + " (" + building.getShortDescription(gameBasics) + ")"
         }
 
         val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(gameBasics) + ")"
         }
 
-        val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
+        val revealedResource = gameBasics.TileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
         if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
 
-        val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired == name }
+        val tileImprovements = gameBasics.TileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 
@@ -67,7 +67,7 @@ class Technology {
     }
 
     fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
-        var enabledBuildings = GameBasics.Buildings.values.filter {
+        var enabledBuildings = civInfo.gameInfo.gameBasics.Buildings.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
@@ -81,7 +81,7 @@ class Technology {
     }
 
     fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
-        var enabledUnits = GameBasics.Units.values.filter {
+        var enabledUnits = civInfo.gameInfo.gameBasics.Units.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }

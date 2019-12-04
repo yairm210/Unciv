@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
@@ -134,7 +133,7 @@ class VictoryScreen : PickerScreen() {
     fun culturalVictoryColumn():Table{
         val t=Table()
         t.defaults().pad(5f)
-        for(branch in GameBasics.PolicyBranches.values) {
+        for(branch in playerCivInfo.gameInfo.gameBasics.PolicyBranches.values) {
             val finisher = branch.policies.last().name
             t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }

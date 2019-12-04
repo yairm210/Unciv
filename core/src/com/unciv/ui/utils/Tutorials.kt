@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
@@ -42,7 +41,7 @@ class Tutorials{
         // ...Yes. Disgusting. I wish I didn't have to do this.
         val x = LinkedHashMap<String, Array<Array<String>>>()
         val tutorials: LinkedHashMap<String, Array<Array<String>>> =
-                GameBasics.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
+                UncivGame.Current.gameBasics.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
         val tutorialMap = HashMap<String, ArrayList<String>>()
         for (tutorial in tutorials){
             val list = ArrayList<String>()
