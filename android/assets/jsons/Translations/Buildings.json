@@ -152,7 +152,6 @@
 
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
-		
 		French:"+10% de croissance dans toutes les villes"
 		German:"+10% Wachtum in allen Städten"
 		Czech:"10% Růst populace ve všech městech"
@@ -165,7 +164,6 @@
 
 	"+15% Production towards Ranged Units":{
 		Italian:"+15% Produzione per le unità a distanza"
-		
 		Czech:"15% Produkce jednotek pro boj na dálku"
 		Polish:"+15% Wzrostu produkcji jednostek walczących w dystansie"
 		Ukrainian:"Виробництво для далекобійних підрозділів +15%"
@@ -188,7 +186,7 @@
 		Polish:"Biblioteka"
 		Czech:"Knihovna"
 		Ukrainian:"Бібліотека"
-        Malay:"Perpustakaan"
+		Malay:"Perpustakaan"
 		Korean:"도서관"
 }
 
@@ -931,7 +929,7 @@
 		Ukrainian:"Отримати 100 золота за використання видатної особи"
 		German:"Erhalte 100 Gold durch das Benutzen einer großen Persönlichkeit"
 		Korean:"위인이 소모될 때마다 금을 100 획득"
-		Spanish:"Gana 100 de oro cuando uses a la Gran Persona
+		Spanish:"Gana 100 de oro cuando uses a la Gran Persona"
 }
 
 	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
