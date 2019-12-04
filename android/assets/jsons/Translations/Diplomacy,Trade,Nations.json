@@ -15,6 +15,7 @@
                 Polish:"Dyplomacja"
 		Czech:"Diplomacie"
                 Malay:"Diplomasi"
+		Korean:"외교"
 }
 
 	"War":{
@@ -30,6 +31,7 @@
                 Polish:"Wojna"
 		Czech:"Válka"
                 Malay:"Perang"
+		Korean:"전쟁"
 }
 
 	"Peace":{
@@ -45,6 +47,7 @@
                 Polish:"Pokój"
 		Czech:"Mír"
                 Malay:"Aman"
+		Korean:"평화"
 }
 
 	"Declare war":{
@@ -60,6 +63,7 @@
                 Polish:"Wypowiedz wojnę"
 		Czech:"Vyhlásit válku"
                 Malay:"Isytiharkan perang"
+		Korean:"전쟁 선포"
 }
 
 	"Declare war on [civName]?":{ //Don't translate in diplomacy view
@@ -73,6 +77,7 @@
 		Czech:"Vyhlásit válku civilizaci [civName]?"
 		German:"[civName] den Krieg erklären?"
                 Malay:"Isytiharkan perang keatas [civName]?"
+		Korean:"[civName]에 전쟁을 선포할까요?"
 }
 
 	"[civName] has declared war on us!":{
@@ -102,6 +107,2261 @@
 		Romanian:"[leaderName] de [nation]"
                 Polish:"[leaderName], władca cywilizacji [nation]"
 		Czech:"[leaderName], [nation]"
+}
+{
+
+////// Diplomacy!
+
+	"Diplomacy":{
+		Italian:"Diplomazia"
+		Russian:"Дипломатия"
+		French:"Diplomatie"
+		Romanian:"Diplomaţie"
+		Spanish:"Diplomacia"
+		Simplified_Chinese:"外交"
+		Traditional_Chinese:"外交"
+		Portuguese:"Diplomacia"
+		German:"Diplomatie"
+                Polish:"Dyplomacja"
+		Czech:"Diplomacie"
+                Malay:"Diplomasi"
+		Korean:"외교"
+}
+
+	"War":{
+		Italian:"Guerra"
+		Russian:"Война"
+		French:"Guerre"
+		Romanian:"Război"
+		Spanish:"Guerra"
+		Simplified_Chinese:"战争"
+		Traditional_Chinese:"戰爭"
+		Portuguese:"Guerra"
+		German:"Krieg"
+                Polish:"Wojna"
+		Czech:"Válka"
+                Malay:"Perang"
+		Korean:"전쟁"
+}
+
+	"Peace":{
+		Italian:"Pace"
+		Russian:"Мир"
+		French:"Paix"
+		Romanian:"Pace"
+		Spanish:"Paz"
+		Simplified_Chinese:"和平"
+		Traditional_Chinese:"和平"
+		Portuguese:"Paz"
+		German:"Frieden"
+                Polish:"Pokój"
+		Czech:"Mír"
+                Malay:"Aman"
+		Korean:"평화"
+}
+
+	"Declare war":{
+		Italian:"Dichiara guerra"
+		Russian:"Объявить войну"
+		French:"Déclarer la guerre"
+		Romanian:"Declară război"
+		Spanish:"Declarar guerra"
+		Simplified_Chinese:"宣战"
+		Traditional_Chinese:"宣戰"
+		Portuguese:"Declarar guerra"
+		German:"Krieg erklären"
+                Polish:"Wypowiedz wojnę"
+		Czech:"Vyhlásit válku"
+                Malay:"Isytiharkan perang"
+		Korean:"전쟁 선포"
+}
+
+	"Declare war on [civName]?":{ //Don't translate in diplomacy view
+		Italian:"Vuoi dichiarare guerra a [civName]?"
+		French:"Déclarer la guerre à [civName]?"
+		Simplified_Chinese:"向[civName]宣战吗？"
+		Traditional_Chinese:"向[civName]宣戰嗎？"
+		Portuguese:"Deseja declarar guerra a [civName]?"
+                Polish:"Wypowiedz wojnę cywilizacji [civName]"
+		Russian:"Объявить войну [civName]?",
+		Czech:"Vyhlásit válku civilizaci [civName]?"
+		German:"[civName] den Krieg erklären?"
+                Malay:"Isytiharkan perang keatas [civName]?"
+		Korean:"[civName]에 전쟁을 선포할까요?"
+}
+
+	"[civName] has declared war on us!":{
+		Italian:"La civiltà [civName] ci ha dichiarato guerra!"
+		Russian:"Цивилизация [civName]  объявила нам войну!"
+		French:"[civName] nous a déclaré la guerre!"
+		Romanian:"[civName] ne-au declarat război!"
+		Spanish:"¡[civName] te ha declarado la guerra!"
+		Simplified_Chinese:"[civName]已经对我们宣战！"
+		Traditional_Chinese:"[civName]已經對我們宣戰！"
+		Portuguese:"[civName] declarou guerra contra nós!"
+		German:"[civName] hat uns den Krieg erklärt!"
+                Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!"
+		Czech:"Civilizace [civName] nám vyhlásila válku!"
+                Malay:"[civName] telah mengisytiharkan perang pada kita"
+		Korean:"[civName]이(가) 우리에게 전쟁을 선포했습니다!"
+}
+
+	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
+		Italian:"[leaderName] dell'impero [nation]"
+		German:"[leaderName] von [nation]"
+		Spanish:"[leaderName] de [nation]"
+		Portuguese:"[leaderName] do [nation]"
+		Simplified_Chinese:"[nation]的[leaderName]"
+		Traditional_Chinese:"[nation]的[leaderName]"
+		French:"[leaderName] de [nation]"
+		Russian:"[leaderName] из [nation]"
+		Romanian:"[leaderName] de [nation]"
+                Polish:"[leaderName], władca cywilizacji [nation]"
+		Czech:"[leaderName], [nation]"
+		Korean:"[nation]의 [leaderName]"
+}
+
+	"You'll pay for this!":{
+		Italian:"Pagherai caro questo affronto!"
+		German:"Dafür werden Sie bezahlen!"
+		French:"Vous allez payer pour cela!"
+		Spanish:"¡Pagarás por esto!"
+		Russian:"Вы заплатите за это!"
+		Romanian:"Veți plăti pentru asta!"
+		Portuguese:"Você vai pagar por isso!"
+		Simplified_Chinese:"你会为此付出代价的！"
+		Traditional_Chinese:"你會為此付出代價的！"
+                Polish:"Zapłacisz za swą zuchwałość!"
+		Czech:"Za tohle zaplatite!"
+		Korean:"반드시 대가를 치르게 될거요!"
+}
+
+	"Negotiate Peace":{
+		Italian:"Negozia una pace"
+		Simplified_Chinese:"议和"
+		Traditional_Chinese:"談和"
+		Portuguese:"Negociar paz"
+		French:"Négocier la paix"
+                Polish:"Negocjuj pokój"
+		Russian:"Предложить мир"
+		Czech:"Mírové jednání"
+		German:"Frieden verhandeln"
+                Malay:"Berunding keamanan"
+		Korean:"평화 협상"
+}
+
+	"Very well.":{
+		Italian:"Molto bene."
+		French:"Très bien."
+		Simplified_Chinese:"很好。"
+		Traditional_Chinese:"很好。"
+		Portuguese:"Muito bem."
+                Polish:"Niech tak będzie."
+		Russian:"Очень хорошо."
+		Czech:"Jak je libo"
+		German:"Nun gut"
+                Malay:"Baiklah."
+		Korean:"아주 좋군."
+}
+
+	"Farewell.":{
+		Italian:"Addio."
+		French:"Adieu."
+		Simplified_Chinese:"再见。"
+		Traditional_Chinese:"再見。"
+		Portuguese:"Adeus."
+                Polish:"Żegnaj."
+		Russian:"До встречи."
+		Czech:"Sbohem"
+		German:"Auf Wiedersehen"
+                Malay:"Selamat tinggal."
+		Korean:"안녕히 계십시오."
+}
+
+	"Sounds good!":{
+		Italian:"Sta bene!"
+		French:"Très bien!"
+		Simplified_Chinese:"听起来还不错。"
+		Traditional_Chinese:"聽起來不錯。"
+                Polish:"Bardzo dobrze!"
+		Russian:"Звучит неплохо!"
+		Czech:"To zní dobře"
+		German:"Sehr gut"
+                Malay:"Bagus juga!"
+		Korean:""
+}
+
+	"Not this time.":{ // declining trade text
+		Italian:"Non questa volta."
+		Simplified_Chinese:"这次不行，我只和有诚意的人交易。"
+		Traditional_Chinese:"這次不行，我只和有誠意的人交易。"
+		French:"Pas cette fois."
+		Portuguese:"Dessa vez não."
+                Polish:"To się nie uda"
+		Russian:"Не в этот раз."
+		Czech:"Z toho nic nebude"
+		German:"Vielleicht ein anderes Mal"
+                Malay:"Bukan sekarang"
+		Korean:"이건 무리입니다."
+}
+
+	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
+		Italian:"Eccellente!"
+		Simplified_Chinese:"真是荣幸之至！互相尊重、平等互利是建立友好关系的第一步。"
+		Traditional_Chinese:"真是榮幸之至！互相尊重、平等互利是建立友好關係的第一步。"
+		French:"Excellent!"
+		Portuguese:"Excelente!"
+                Polish:"Wyśmienicie!"
+		Russian:"Превосходно!"
+		Czech:"Skvěle!"
+		German:"Hervorragend!"
+                Malay:"Bagus!"
+		Korean:"훌륭하군요!"
+}
+
+	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
+		Italian:"Che ne dici di questa offerta?"
+		Simplified_Chinese:"谈判桌上的尔虞我诈才是我的兴趣所在。"
+		Traditional_Chinese:"談判桌上的爾虞我詐才是我的興趣所在。"
+		French:"Pourquoi pas autre chose..."
+		Portuguese:"Porque não algo mais..."
+                Polish:"Oto nasza oferta."
+		Russian:"Как насчёт другого..."
+		Czech:"Co třeba zkusit něco jiného..."
+		German:"Wie wäre es mit etwas anderem..."
+                Malay:"Mungkin benda lain"
+		Korean:"이런 건 어떠신지요..."
+}
+
+	"A pleasure to meet you.":{
+		Italian:"Siamo lieti di incontrarvi."
+		French:"Un plaisir de vous rencontrez"
+		Simplified_Chinese:"很高兴见到你。"
+		Traditional_Chinese:"很高興見到你。"
+		Portuguese:"Prazer conhece-lo"
+                Polish:"Czuję się zaszczycony."
+		Russian:"Рады видеть вас."
+		Czech:"Rádi vás poznáváme"
+		German:"Eine Freude, Sie getroffen zu haben."
+                Malay:"Selamat berkenalan"
+		Korean:"만나게 되어 영광입니다."
+}
+
+	"Our relationship: ":{
+		Italian:"I nostri rapporti: "
+		French:"Notre relation: " //or l'état de notre relation
+		Simplified_Chinese:"我们的关系："
+		Traditional_Chinese:"我們的關係："
+		Portuguese:"Nossas relações: "
+                Polish:"Nasze relacje:"
+		Russian:"Наши отношения: "
+		Czech:"Náš vzájemný vztah: "
+		German:"Unsere Beziehung: "
+                Malay:"Hubungan kita"
+		Korean:"현재 관계 : "
+}
+
+	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
+		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
+		Portuguese:"Nós encontramos a cidade-estado de [name]"
+		French:"Nous avons rencontré la cité-état de [name]!"
+		Polish:"Napotkaliśmy państwo-miasto o nazwie [name]!"
+		Simplified_Chinese:"我们遇到了城邦[name]！"
+		Traditional_Chinese:"我們遇到了城邦[name]！"
+		Russian:"Мы обнаружили город-государство [name]!",
+		Czech:"Poprvé jsme se setkali s městským státem [name]"
+		German:"Wir haben den Stadtstaat von [name] entdeckt!"
+		Korean:"도시 국가 [name]와(과) 만났습니다!"
+}
+
+	// Friendship declaration flavor texts
+	"Declare Friendship ([numberOfTurns] turns)":{
+		Italian:"Dichiarazione di Amicizia ([numberOfTurns] turni)"
+		French:"Déclaration d'Amitié ([numberOfTurns] tours)"
+		Simplified_Chinese:"宣布相互友善([numberOfTurns]回合)"
+		Traditional_Chinese:"宣佈相互友善([numberOfTurns]回合)"
+		Portuguese:"Declarar amizade ([numberOfTurns] turns)"
+                Polish:"Zadeklaruj przyjaźń na [numberOfTurns] tur"
+		Russian:"Объявить о дружбе на [numberOfTurns] ходов",
+		Czech:"Deklarace přátelství ([numberOfTurns] kol)"
+		German:"Freundschaft erklären ([numberOfTurns] Runden)"
+                Malay:"Isytihar Persahabatan ([numberOfTurns] pusingan)"
+		Korean:"우호 관계 선언 ([numberOfTurns] 턴 동안)"
+}
+
+	"May our nations forever remain united!":{
+		Italian:"Possano le nostre nazioni rimanere per sempre unite!"
+		French:"Puissent nos nations rester unies pour toujours!"
+		Simplified_Chinese:"我们两个文明将永远肝胆相照、休戚与共地站在一起！"
+		Traditional_Chinese:"我們兩個文明將永遠肝膽相照、休戚與共地站在一起！"
+		Portuguese:"Que nossas nações se mantenho unidas para sempre!"
+                Polish:"Oby ta przyjaźń już zawsze łączyła nasze cywilizacje!"
+		Russian:"Да будут наши державы навеки едины!"
+		Czech:"Nechť naše národy zůstanou navždy spojené"
+		German:"Mögen unsere Nationen auf immer in Freundschaft vereint sein!"
+                Malay:"Harap negara ini kekal bersatu selamanya"
+		Korean:"우리 두 국가가 언제나 힘을 합쳐 나가길!"
+}
+
+	"Indeed!":{
+		Italian:"Perfetto!"
+		French:"Parfait!" //or En effet! , more accurate but harder to understand what it means
+		Simplified_Chinese:"这是无比正确的命运抉择！"
+		Traditional_Chinese:"這是無比正確的選擇！"
+		Portuguese:"Perfeito!"
+                Polish:"Wspaniale!"
+		Russian:"Разумеется!"
+		Czech:"Vskutku!"
+		German:"Auf jeden Fall!"
+                Malay:"Sesungguhnya"
+		Korean:"좋소!"
+}
+
+	// Denunceation flavour texts
+	"Denounce ([numberOfTurns] turns)":{
+		Italian:"Denuncia ([numberOfTurns] turni)"
+		French:"Dénoncer ([numberOfTurns] tours)"
+		Simplified_Chinese:"谴责([numberOfTurns]回合)"
+		Traditional_Chinese:"譴責([numberOfTurns]回合)"
+                Polish:"Potęp cywilizację na [numberOfTurns] tur"
+		Russian:"Осуждение на [numberOfTurns] ходов",
+		Czech:"Odsoudit ([numberOfTurns] kol)"
+		German:"Denunziere ([numberOfTurns] Runden)"
+                Malay:"Kecam ([numberOfTurns] pusingan)"
+		Korean:"비난 ([numberOfTurns] 턴 동안)"
+}
+
+	"We will remember this.":{
+		Italian:"Non credere che ce lo scorderemo!"
+		French:"Nous nous en souviendrons."
+		Simplified_Chinese:"这种侮辱我们绝不会忘记。请好自为之！"
+		Traditional_Chinese:"這種侮辱我們絕不會忘記。請好自為之！"
+		Polish:"Zapamiętamy to sobie!"
+		Russian:"Мы это запомним"
+		Czech:"To vám nikdy nezapomeneme!"
+		German:"Das werden wir nie vergessen!"
+                Malay:"Kami akan ingat perkara ini"
+		Korean:"우리는 이 일을 기억할 것입니다."
+}
+
+
+	// Relationship states, from worst (Unforgivable) to best (Ally)
+
+  	"Unforgivable":{
+		Italian:"Imperdonabile!"
+		French:"Impardonnable"
+		Simplified_Chinese:"仇深似海"
+		Traditional_Chinese:"仇深似海"
+		Polish:"Niewybaczlne"
+		Portuguese:"Imperdoável"
+		Russian:"Непростительно враждебные"
+  		Czech:"Nenávist"
+		German:"Todfeind"
+                Malay:"Tidak dapat dimaafkan"
+		Korean:"용서 못함"
+}
+
+  	"Enemy":{
+		Italian:"Nemici"
+		French:"Ennemi"
+		Simplified_Chinese:"宿命之敌"
+		Polish:"Wrogowie"
+		Traditional_Chinese:"宿命之敵"
+		Portuguese:"Inimigos" //as in 'we are enemies' not just 'they are our enemy'
+		Russian:"Враждебные"
+  		Czech:"Nepřátelství"
+		German:"Feind"
+                Malay:"Musuh"
+		Korean:"적대적"
+}
+
+  	"Competitor":{
+	  	Italian:"Avversari"
+		French:"Adversaire" //or en compétition
+		Simplified_Chinese:"瑜亮之争"
+		Traditional_Chinese:"瑜亮之爭"
+		Polish:"Konkurenci"
+		Portuguese:"Adversários"
+		Russian:"Соперничающие"
+  		Czech:"Negativní"
+		German:"Konkurrent"
+                Malay:"Persaingan"
+		Korean:"경쟁자"
+}
+
+  	"Neutral":{
+		Italian:"Neutri"
+		French:"Neutre"
+		Simplified_Chinese:"泛泛之交"
+		Traditional_Chinese:"泛泛之交"
+		Polish:"Neutralny"
+		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
+		Russian:"Нейтральные"
+  		Czech:"Neutrální"
+		German:"Neutral"
+                Malay:"Neutral"
+                 
+		Korean:"중립적"
+}
+
+  	"Favorable":{
+		Italian:"Favorevoli"
+		French:"Favorable"
+		Simplified_Chinese:"惺惺相惜"
+		Traditional_Chinese:"惺惺相惜"
+		Polish:"Ulubieniec"
+		Portuguese:"Favorável"
+		Russian:"Приемлемые"
+  		Czech:"Pozitivní"
+		German:"Beliebt"
+                Malay:"Disukai"
+		Korean:"좋아함"
+}
+
+  	"Friend":{
+		Italian:"Amichevoli"
+		French:"Ami"
+		Simplified_Chinese:"秦晋之好"
+		Polish:"Przyjaciel"
+		Traditional_Chinese:"秦晉之好"
+		Portuguese:"Amigos"
+		Russian:"Дружеские"
+ 	 	Czech:"Přátelství"
+		German:"Freund"
+                Malay:"Kawan"
+		Korean:"우호적"
+}
+
+  	"Ally":{
+		Italian:"Alleati"
+		French:"Allié"
+		Simplified_Chinese:"歃血之盟"
+		Traditional_Chinese:"歃血之盟"
+		Polish:"Sojusznik"
+		Portuguese:"Aliado"
+		Russian:"Союзнические"
+  		Czech:"Aliance"
+		German:"Alliiert"
+                Malay:"Pakatan"
+		Korean:"동맹"
+}
+
+	// City States
+
+	"Provides [amountOfCulture] culture at [30] Influence":{
+		Italian:"Dona [amountOfCulture] punti Cultura a minimo 30 Punti Influenza"
+		French:"Fournit [amountOfCulture] de Culture à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时提供[amountOfCulture]文化"
+		Polish:"Dodaje [amountOfCulture] kultury przy Wpływie równym 30"
+		Traditional_Chinese:"當影響力不低於30時提供[amountOfCulture]文化"
+		Russian:"Даёт [amountOfCulture] культуры при 30 Влияния",
+		Czech:"Poskytují [amountOfCulture] bodů Kultury při Vlivu [30] "
+		German:"Bietet [amountOfCulture] Kultur für 30 Einflusspunkte"
+		Korean:"영향력이 [30]일 때부터 문화 [amountOfCulture]을(를) 제공합니다."
+}
+
+	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
+		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città a minimo 30 Punti Influenza"
+		French:"Fournit 3 Nourriture à la capitale et 1 nourriture pour les autres villes à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时为首都提供3食物，为其他城市提供1食物"
+		Polish:"Dodaje 3 jednostki żywności w stolicy i 1 jednostkę w innych miastach przy poziomie Wpływów równym 30"
+		Traditional_Chinese:"當影響力不低於30時為首都提供3食物，為其他城市提供1食物"
+		Russian:"Даёт 3 Еды в столице и 1 Еда в остальных городах при 30 Влияния"
+		Czech:"Poskytuje 3 jídla v hlavním městě a 1 jídlo ve všech ostatních městech při Vlivu 30"
+		German:"Bietet 3 Nahrung in der Hauptstadt und 1 Nahrung in anderen Städten für 30 Einflusspunkte"
+		Korean:"영향력이 30일 때부터 수도에 식량 +3, 수도가 아닌 도시에 식량 +1을 제공합니다."
+}
+
+	"Provides 3 happiness at 30 Influence":{
+		Italian:"Dona 3 Punti Felicità a minimo 30 Punti Influenza"
+		French:"Fournit 3 de Bonheur à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时提供3快乐"
+		Traditional_Chinese:"當影響力不低於30時提供3快樂"
+		Polish:"Dodaje z jednostki szczęścia przy poziomie Wpływów równym 30"
+		Russian:"Даёт 3 Счастья при 30 Влияния"
+		Czech:"Poskytuje 3 body Spokojenosti při Vlivu 30"
+		German:"Bietet 3 Zufriedenheit für 30 Einflusspunkte"
+		Korean:"영향력이 30일 때부터 행복 +3을 제공합니다."
+},
+
+	"Provides land units every 20 turns at 30 Influence":{
+		Italian:"Concede un'unità terrestre ogni 20 turni a minimo 30 Punti Influenza"
+		French:"Fournit des unités terrestres tous les 20 tours à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时每20回合提供陆军单位"
+		Polish:"Zapewnia jednostki lądowe co 20 tur przy poziomie Wpływów równym 30"
+		Traditional_Chinese:"當影響力不低於30時每20回合提供陸軍單位"
+		Russian:"Даёт сухопутные юниты каждые 20 ходов при 30 Влияния"
+		Czech:"Poskytuje pozemní jednotky každých 20 kol při Vlivu 30"
+		German:"Bietet eine Landeinheit alle 20 Runden für 30 Einflusspunkte"
+		Korean:"영향력이 30일 때부터 20턴마다 지상 유닛을 제공합니다."
+},
+
+	"Gift [giftAmount] gold (+[influenceAmount] influence)":{
+		Italian:"Dona [giftAmount] oro (+[influenceAmount] Influenza)"
+		Simplified_Chinese:"赠予[giftAmount]金钱(+[influenceAmount]影响力)"
+		Polish:"Dodaje [giftAmount] złota (+[influenceAmount] influence)"
+		Traditional_Chinese:"贈予[giftAmount]金錢(+[influenceAmount]影響力)"
+		Czech:"Darujme [giftAmount] Zlata (+ [influenceAmount] Vlivu)"
+		Russian:"Подарить [giftAmount] золота (+[influenceAmount] Влияния)"
+		German:"Geschenk [giftAmount] Gold (+[influenceAmount] Einfluss) "
+		Korean:"금 [giftAmount] 선물 (영향력 +[influenceAmount])"
+}
+
+	"Relationship changes in another [turnsToRelationshipChange] turns":{
+		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
+		French:"Les relations changent dans [turnsToRelationshipChange] tours"
+		Polish:"Relacje zmieniają się w następnych [turnsToRelationshipChange] turach"
+		Simplified_Chinese:"将在[turnsToRelationshipChange]回合后失去对该城邦的影响"
+		Traditional_Chinese:"將在[turnsToRelationshipChange]回合後失去對該城邦的影響"
+		Russian:"Отношения изменятся в следующие [turnsToRelationshipChange] ходов",
+		Czech:"Mezinárodní vztahy se změní během příštích/ho [turnsToRelationshipChange] kol(a)"
+		German:"Die Beziehung verändert sich in [turnsToRelationshipChange] Runden"
+		Korean:"[turnsToRelationshipChange] 턴 후 관계도가 변경됩니다."
+}
+
+
+////// Diplomatic modifiers
+
+
+	"You declared war on us!":{
+		Italian:"Ci hai dichiarato guerra!"
+		French:"Vous nous avez déclaré la guerre!"
+		Simplified_Chinese:"不知死活的蠢货！你竟敢向我们宣战！"
+		Traditional_Chinese:"不知死活的蠢貨！你竟敢向我們宣戰！"
+		Polish:"Wypowiedziałeś z nami wojnę!"
+		Portuguese:"Você declarou guerra contra nós!"
+		Russian:"Вы объявляли нам войну!"
+		Czech:"Vyhlásili jste nám válku!"
+		German:"Sie haben uns den Krieg erklärt!"
+                Malay:"Kamu isytihar perang pada saya"
+		Korean:"우리는 지금 전쟁 중일 텐데! 무엇을 말하려고 오셨소?"
+}
+
+	"Your warmongering ways are unacceptable to us.":{
+		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
+		French:"Votre bellicisme est inacceptable pour nous."
+		Simplified_Chinese:"你的穷兵黩武行径是我们无法容忍的！"
+		Traditional_Chinese:"你的窮兵黷武行竟是我們無法容忍的！"
+		Polish:"Wasze podżeganie jest dla nas nie do przyjęcia."
+		Portuguese:"Seus costumes de guerra são inaceitáveis para nós."
+		Russian:"Ваша воинственность для нас неприемлема."
+		Czech:"Vaše chování je pro nás nepřijatelné."
+		German:"Ihr kriegerisches Verhalten ist für uns inakzeptabel."
+		Korean:"당신이 하는 전쟁광적 행동은 절대 용납할 수 없습니다."
+}
+
+	"You have captured our cities!":{
+		Italian:"Hai preso una delle nostre città!"
+		French:"Vous avez capturé nos villes!"
+		Simplified_Chinese:"多行不义必自毙！你竟敢占领我们的城市！"
+		Traditional_Chinese:"多行不義必自斃！你竟敢佔領我們的城市！"
+		Polish:"Przejąłeś nasze miasta!"
+		Portuguese:"Você capturou nossas(nossa) cidades(cidade)!"
+		Russian:"Вы захватывали наши города!"
+		Czech:"Obsadili jste naše města!"
+		German:"Sie haben unsere Städte erobert!"
+                Malay:"Kamu tawan bandar kami"
+		Korean:"감히 우리의 도시까지 점령하다니!"
+}
+
+	"Years of peace have strengthened our relations.":{
+		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
+		French:"Les années de paix ont renforcées notre relation"
+		Simplified_Chinese:"多年的和平时光让我们更加珍视彼此的关系。"
+		Traditional_Chinese:"多年的和平時光讓我們更加珍視彼此的關係。"
+		Portuguese:"Anos de paz fortaleceram nossas relações."
+		Polish:"Lata pokoju wzmocniły nasze relacje."
+		Russian:"Годы мира укрепили наши отношения"
+		Czech:"Roky míru posílily naše vzájemné vztahy."
+		German:"Die Jahre des Friedens haben unsere Beziehung gestärkt."
+                Malay:"Keamanan bertahun-tahun telah menguatkan hubungan kita."
+		Korean:"오래전부터 지속된 평화가 더 강한 관계를 만드는군요."
+}
+
+	"Our mutual military struggle brings us closer together.":{
+		Italian:"I nostri nemici in comune ci hanno tenuti insieme."
+		French:"Nos problèmes militaires communs nous ont rapprochés"
+		Simplified_Chinese:"共同的戎马岁月拉近了彼此的距离。"
+		Traditional_Chinese:"共同的戎馬歲月拉近了彼此的距離。"
+		Polish:"Nasza wspólna walka zbliża nas do siebie."
+		Portuguese:"Nossas lutas mutuas nos fazem mais próximos."
+		Russian:"Наши совместные боевые действия сблизили нас"
+		Czech:"Naše společné vélečné tažení nás sblížíli"
+		German:"Unser gemeinsamer militärischer Kampf bringt uns näher zusammen."
+		Korean:"공동의 적에 맞선다는 사실이 우리의 관계를 더 강하게 하고 있습니다."
+}
+
+	"We have signed a public declaration of friendship":{
+		Italian:"Abbiamo segnato una dichiarazione pubblica d'amicizia!"
+		Simplified_Chinese:"真是美好的一天！我们宣布：两个文明间将彼此尊重、相互友善！"
+		Traditional_Chinese:"真是美好的一天！我們宣佈：兩個文明間將彼此尊重、相互友善！"
+		French:"Nous avons publiquement signé une Déclaration d'Amitié"
+		Polish:"Podpisaliśmy deklarację o przyjaźni"
+		Portuguese:"Assinamos uma declaração pública de amizade"
+		Russian:"Мы подписали публичную декларацию дружбы"
+		Czech:"Podepsali jsme veřejnou deklaraci přátelství"
+		German:"Wir haben eine öffentliche Freundschaftserklärung unterzeichnet."
+		Korean:"오셨군요. 이렇게 우호 관계를 선언해주는 벗을 만나기란 어렵지요."
+}
+
+	"You have declared friendship with our enemies!":{
+		Italian:"Hai dichiarato un'amicizia con i nostri nemici!"
+		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
+		Simplified_Chinese:"渡尽劫波兄弟在，相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！",
+		Polish:"Zadeklarowałeś przyjaźń z naszym wrogiem!"
+		Traditional_Chinese:"你竟敢對我們的敵人表示友好！",
+		Portuguese:"Voçê declarou amizade a um de nossos inimigos!"
+		Russian:"Вы дружите с нашими врагами!"
+		Czech:"Deklarovali jste přátelství s našimi nepřáteli!"
+		German:"Du hast Freundschaft mit unseren Feinden erklärt!"
+		Korean:"우리의 적과 우호 관계를 선언하지 않았소!"
+}
+	"You have declared friendship with our allies":{
+		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
+		French:"Vous avez signé une Déclaration d'Amitié avec nos alliés"
+		Simplified_Chinese:"兄弟齐心、其利断金！我们宣布：我们与盟友间兄弟般的友谊永世长存！"
+		Polish:"Zadeklarowałeś przyjaźń z naszymi sojusznikami"
+		Traditional_Chinese:"兄弟齊心、其力斷金！我們宣佈：我們與盟友間兄弟般的友誼永世長存！"
+		Portuguese:"Voçê declarou amizade a um de nossos aliados"
+		Russian:"Вы дружите с нашими союзниками"
+		Czech:"Deklarovali jste přátelství s našimi spojenci"
+		German:"Du hast die Freundschaft mit unseren Alliierten erklärt!"
+		Korean:"우리의 동맹과 우호 관계를 선언해 주셔서 감사합니다."
+}
+
+	"Our open borders have brought us closer together.":{
+		Italian:"I nostri accordi di passaggio hanno avvicinato le nostre nazioni."
+		French:"Notre Accord de libre passage nous a rapprochés"
+		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
+		Polish:"Nasze otwarte granice zbliżyły nas do siebie."
+		Traditional_Chinese:"開放的邊界促進了彼此的了解，讓我們的人民心心相通！"
+		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
+		Russian:"Наши открытые границы сблизили нас"
+		Czech:"Dohoda o otevřených hranicích nás sblížila."
+		German:"Unsere offenen Grenzen haben uns einander näher gebracht."
+		Korean:"국경을 열어 놓음으로써, 서로 가까워지는 기분이 드는군요."
+}
+
+
+	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
+		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"
+		Portuguese:"Sua chamada 'amizade' não vale nada."
+		Polish:"Wasza tak zwana 'przyjaźń' jest nic warta."
+		French:"Votre soi-disant 'amitié' ne vaut rien."
+		Simplified_Chinese:"你所谓的“友谊”一文不值。"
+		Traditional_Chinese:"你所謂的“友誼”一文不值。"
+		Russian:"Ваше так называемое дружелюбие ничего не значит."
+		Czech:"Naše takzvané 'přátelství' pro vás nic neznamená."
+		German:"Ihre so genannte 'Freundschaft' ist nichts wert."
+		Korean:"지금까지의 '우정'은 모두 거짓이었군요."
+}
+
+	"You have publicly denounced us!":{
+		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
+		French:"Vous nous avez dénoncé publiquement!"
+		Polish:"Potępiłeś nas publicznie!"
+		Simplified_Chinese:"批判的武器不能代替武器的批判，谴责是无力的懦夫行为。"
+		Traditional_Chinese:"批判的武器不能代替武器的批判，譴責是無力的懦夫行為。"
+		Russian:"Вы публично осудили нас!"
+		Czech:"Veřejně jste nás odsoudili!"
+		German:"Ihr habt uns öffentlich angeprangert!"
+                Malay:"Kamu telah mengutuk kami secara awam!"
+		Korean:"당신은 우리를 공개적으로 비난했소!"
+}
+
+	"You have denounced our allies":{
+		Italian:"Hai denunciato i nostri alleati!"
+		French:"Vous avez dénoncé nos alliées"
+		Polish:"Potępiłeś naszych sojuszników publicznie!"
+		Simplified_Chinese:"对我们盟友的侮辱也是对我们的冒犯，请好自为之！"
+		Traditional_Chinese:"對我們盟友的汙辱也是對我們的冒犯，請好自為之！"
+		Russian:"Вы осудили наших союзников!"
+		Czech:"Osdoudili jsme naše spojence"
+		German:"Ihr habt unsere Alliierten öffentlich angeprangert!"
+                Malay:"Kamu telah kutuk pakatan kamu"
+		Korean:"당신은 우리의 동맹을 공개적으로 비난했소!"
+}
+
+	"You have denounced our enemies":{
+		Italian:"Hai denunciato i nostri nemici!"
+		French:"Vous avez dénoncé nos ennemies"
+		Simplified_Chinese:"敌人的敌人就是朋友，你的谴责是维护公正的仗义执言，我们期待听到更多。"
+		Polish:"Potępiłeś naszych wrogów"
+		Traditional_Chinese:"敵人的敵人就是朋友，你的譴責是維護公正的仗義執言。"
+		Russian:"Вы осудили наших врагов"
+		Czech:"Odsoudili jsme naše nepřátele"
+		German:"Ihr habt unsere Feinde öffentlich angeprangert!"
+                Malay:"Kamu telah kutuk musuh kamu"
+		Korean:"우리의 적을 공개적으로 비난하셨더군요. 우리도 같은 생각이랍니다."
+}
+
+	// Demands
+	"Demands":{
+		Italian:"Richieste"
+		French:"Demandes"
+		Polish:"Żądania"
+		Simplified_Chinese:"要求"
+		Traditional_Chinese:"要求"
+		Russian:"Требования"
+		Czech:"Požadavky:"
+		German:"Forderungen"
+                Malay:"Permintaan"
+		Korean:"요구"
+}
+	"Please don't settle new cities near us.":{
+		Italian:"Smetti di fondare città vicino a noi."
+		French:"Veuillez ne pas construire de villes proches de nous."
+		Polish:"Proszę nie osiedlaj się w pobliżu naszych miast."
+		Simplified_Chinese:"请不要在我们附近建立新的城市。"
+		Traditional_Chinese:"請不要在我們附近建立新的城市。"
+		Russian:"Пожалуйста, не закладывайте новых городов рядом с нами."
+		Czech:"Prosím nezakládejte města poblíž našeho území."
+		German:"Bitte keine neuen Städte in unserer Nähe bauen."
+                Malay:"Tolong jangan menetap berdekatan bandar kami"
+		Korean:"우리 근처에 새 도시를 짓지 마시오."
+}
+	"Very well, we shall look for new lands to settle.":{
+		Italian:"Ti porgiamo le nostre scuse."
+		French:"Très bien, nous chercherons d'autres terres à coloniser"
+		Simplified_Chinese:"好的，我们将会寻找新的建城位置。"
+		Polish:"Bardzo proszę, będziemy szukać nowych ziem do osiedlenia się."
+		Traditional_Chinese:"好的，我們將會尋找其他位置建立城市。"
+		Russian:"Хорошо, мы найдем другие земли для поселений"
+		Czech:"Nu dobrá, podíváme se po nových místech k zakládání měst."
+		German:"Einverstanden, wir werden nach anderem Bauland Ausschau halten."
+		Korean:"알겠습니다. 정착할 새로운 땅을 찾아 보도록 하지요."
+}
+	"We shall do as we please.":{
+		Italian:"Colonizzeremo la terra che ci pare e piace."
+		French:"Nous faisons ce que nous voulons."
+		Polish:"Zrobimy jak chcemy"
+		Simplified_Chinese:"我们只是自己的奴隶，这里不需要弱者叽叽喳喳。"
+		Traditional_Chinese:"我們只依照自己的意志行事。"
+		Russian:"Мы поступим, как сочтем нужным"
+		Czech:"Uděláme si to po svém."
+		German:"Wir machen was wir wollen"
+		Korean:"우리가 원하는 데 살고자 하는 것이 잘못입니까?"
+}
+
+	"You betrayed your promise to not settle cities near us":{
+		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
+		French:"Vous avez trahis votre promesse de ne pas fonder de ville proche de nous"
+		Polish:"Nie dotrzymałeś umowy by nie osiedlać się blisko naszych miast"
+		Simplified_Chinese:"你违背了不在我们附近建城的承诺，请好自为之。"
+		Traditional_Chinese:"你違背了不在我們附近建立城市的承諾，請好自為之。"
+		Russian:"Вы нарушили ваше обещание не закладывать города рядом с нами"
+		Czech:"Porušili jste svůj slib nezakládat města u našich hranic"
+		German:"Ihr habt euer Versprechen gebrochen, nicht in unserer Nähe neue Städte zu gründen"
+		Korean:"당신은 우리 근처에 도시를 세우지 않겠다는 약속을 배신했소."
+}
+
+	"You fulfilled your promise to stop settling cities near us!":{
+		Italian:"Hai mantenuto la tua promessa di non fondare città nelle nostre vicinanze."
+		French:"Vous avez tenu votre promesse de ne pas fonder de ville proche de nous!"
+		Polish:"Wywiązałeś się z umowy aby nie osiedlać się blisko naszych miast"
+		Simplified_Chinese:"感谢你履行了不在我们附近建城的承诺。"
+		Traditional_Chinese:"感謝你履行了不在我們附近建立城市的承諾。"
+		Russian:"Вы выполнили ваше обещание не закладывать города рядом с нами"
+		Czech:"Dodrželi jste svůj slib nezakládat města poblíž našich hranic."
+		German:"Ihr habt euer Versprechen gehalten, nicht in unserer Nähe neue Städte zu gründen"
+		Korean:"우리 근처에 도시를 세우지 않겠다는 약속을 지켰군요."
+}
+
+	"You refused to stop settling cities near us":{
+		Italian:"Hai continuato a fondare città nelle nostre vicinanze."
+		French:"Vous avez refusez de ne pas fonder de villes proches de nous"
+		Polish:"Odmówiłeś prośby aby nie osiedlać się blisko naszych miast"
+		Simplified_Chinese:"你拒绝停止在我们附近建城的决定是愚蠢的，好自为之！"
+		Traditional_Chinese:"你拒絕停止在我們附近建立城市的決定是愚蠢的，好自為之！"
+		Russian:"Вы отказались не закладывать города рядом с нами"
+		Czech:"Odmítli jste žádost o nezakládání měst poblíž našich hranic"
+		German:"Ihr habt euch geweigert, nicht in unserer Nähe neue Städte zu gründen"
+		Korean:"당신은 우리 근처에 도시를 세우지 말라는 제안을 거절했소."
+}
+
+	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
+		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
+		French:"Nous avons remarquez votre nouvelle ville à notre frontière, malgré votre promesse. Cela aura des... conséquences."
+		Polish:"Mimo obietnicy zauważyliśmy twoje nowe miasto w pobliżu naszych granic. Poniesiesz za to konsekwencje"
+		Simplified_Chinese:"尽管你答应了，我们还是注意到你在我们边境附近建立了新城市。如果有不好的影响...这将是你自找的！"
+		Traditional_Chinese:"儘管你答應了，我們還是注意到你在我們邊境附近建立了新城市。如果有不好的影響...這將是你自找的！"
+		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
+		Czech:"Odhalili jsme nové město poblíž našich hranic navzdory vašim slibům. To bude mít... patřičné následky."
+		German:"Wir haben eure neue Stadt an unserer Grenze bemerkt - entgegen eures Versprechens. Das wird Folgen haben."
+		Korean:"우리 근처에 새 도시를 세우지 않겠다고 했는데, 이번에 새로운 도시를 세우셨군요. 그렇게 나오시겠다는 겁니까?"
+}
+
+	"Your arrogant demands are in bad taste":{
+		Italian:"Hai fatto una richiesta arrogante."
+		French:"Vos arrogantes demandes sont de mauvais goût"
+		Polish:"Twoje aroganckie żądania są w złym guście"
+		Simplified_Chinese:"你的傲慢要求不合情理。"
+		Traditional_Chinese:"你的傲慢要求不合情理。"
+		Russian:"Ваши высокомерные требования раздражают"
+		Czech:"Vaše arogantní požadavky jsou dalším důkazem vaší zkaženosti"
+		German:"Ihre arroganten Forderungen sind geschmacklos."
+		Korean:"이치에 맞지 않는 요구를 하고 있군요."
+}
+
+
+////// City-States Types
+
+
+	"Cultured":{
+		Italian:"Acculturata"
+		French:"Cultivée"
+		Polish:"Wykształcony"
+		Simplified_Chinese:"文化型"
+		Traditional_Chinese:"文化型"
+		Russian:"Культурный"
+		Czech:"Kulturní"
+		German:"Kultiviert"
+		Korean:"문화적"
+}
+
+	"Maritime":{
+		Italian:"Marittima"
+		French:"Maritime" //same
+		Polish:"Nadmorski"
+		Simplified_Chinese:"航海型"
+		Traditional_Chinese:"航海型"
+		Russian:"Морской"
+		Czech:"Nomořní"
+		German:"Maritim"
+		Korean:"해양적"
+}
+
+	"Mercantile":{
+		Italian:"Mercantile"
+		//same in french
+		Simplified_Chinese:"商业型"
+		Polish:"Handlowy"
+		Traditional_Chinese:"商業型"
+		Russian:"Торговый"
+		Czech:"Obchodní"
+		German:"Finanztechnisch"
+		Korean:"상업적"
+}
+
+	"Militaristic":{
+		Italian:"Militaristica"
+		French:"Militarisée"
+		Polish:"Militarny"
+		Simplified_Chinese:"军事型"
+		Traditional_Chinese:"軍事型"
+		Russian:"Воинственный"
+		Czech:"Militaristický"
+		German:"Militärisch"
+		Korean:"군사적"
+}
+
+	"Type: ":{
+		Italian:"Tipo: "
+		Simplified_Chinese:"城邦类型："
+		Traditional_Chinese:"城邦類型："
+		Polish:"Rodzaj"
+		Russian:"Тип: "
+		Czech:"Typ:"
+		German:"Typ: "
+		Korean:"성향 : "
+}
+
+	"Influence: ":{
+		Italian:"Influenza: "
+		Simplified_Chinese:"影响力："
+		Polish:"Wpływ"
+		Traditional_Chinese:"影響力："
+		Russian:"Влияние: "
+		Czech:"Vliv: "
+		German:"Einfluss: "
+		Korean:"영향력 : "
+}
+
+	"Reach 30 for friendship.":{
+		Italian:"Stringi un'amicizia superando il limite minimo di 30 Influenza."
+		Simplified_Chinese:"影响力到达30以建立友谊"
+		Traditional_Chinese:"影響力到達30以建立友誼"
+		Czech:"Získejte vliv 30 a více pro dosažení přátelství."
+		German:"Erreiche 30 für Freundschaft."
+		Polish:"Zdobądź 30 dla przyjaźni."
+		Korean:"우호 관계가 되고 싶다면 30 이상의 영향력을 보유하십시오."
+}
+
+	"Reach highest influence above 60 for alliance.":{
+		Italian:"Stringi un'alleanza superando 60 Influenza al di sopra di tutti."
+		Simplified_Chinese:"影响力≥60且高于其他文明以成为友邦同盟"
+		Traditional_Chinese:"影響力≥60且高於其他文明以成為友邦同盟"
+		Czech:"Získejte vliv 60 a více pro dosažení aliance."
+		German:"Erreiche den höchsten Einfluss über 60 für Allianzen"
+		Polish:"Osiągnij wpływ powyżej 60 dla sojuszu." //checking context ingame - will delete after confirming
+		Korean:"동맹 상태가 되려면 60 이상이면서 가장 높은 영향력을 보유하십시오."
+}
+
+	"Ally: ":{
+		Italian:"Alleati: "
+		Simplified_Chinese:"同盟："
+		Traditional_Chinese:"同盟："
+		Czech:"Aliance: "
+		German:"Alliierte"
+		Polish:"Sojusznik: "
+		Korean:"동맹 : "
+}
+
+////// Trade
+
+	"Trade":{
+		Italian:"Negozia"
+		Russian:"Торговля"
+		French:"Échanges"
+		Romanian:"Comerț"
+		Spanish:"Comerciar"
+		Simplified_Chinese:"贸易"
+		Traditional_Chinese:"貿易"
+		Portuguese:"Comércio"
+		German:"Handel"
+		Czech:"Obchod"
+		Polish:"Wymiana"
+                Malay:"Dagang"
+		Korean:"거래"
+}
+
+	"Offer trade":{
+		Italian:"Offri scambio"
+		Russian:"Предложить обмен"
+		French:"Proposer un échange"
+		Romanian:"Ofertă comercială"
+		Spanish:"Ofrecer intercambio"
+		Simplified_Chinese:"提供贸易"
+		Traditional_Chinese:"提供貿易"
+		Portuguese:"Oferecer uma troca comercial" // seems like not one person wants to :D
+		German:"Handel anbieten"
+		Czech:"Učinit nabídku"
+		Polish:"Zaproponuj wymianę"
+                Malay:"Tawar dagang"
+		Korean:"거래 제안"
+}
+
+	"Retract offer":{
+		Italian:"Ritira offerta"
+		Russian:"Отменить предложение"
+		Simplified_Chinese:"撤回报价"
+		Traditional_Chinese:"撤回報價"
+		Czech:"Zrušit nabídku"
+		German:"Angebot zurückziehen"
+		Polish:"Wycofaj ofertę"
+                Malay:"Tarik balik tawaran"
+		Korean:"제안 취소"
+}
+
+	"What do you have in mind?":{
+		Italian:"Cos'hai in mente?"
+		Russian:"Что вы об этом думаете?"
+		French:"À quoi pensez-vous?"
+		Romanian:"La ce te gândești?"
+		Spanish:"¿Qué tienes en mente?"
+		Simplified_Chinese:"你有什么想法？"
+		Traditional_Chinese:"你有什麼想法？"
+		Portuguese:"O que tens em mente?" //tens as in have or has nor tens of thousands of course
+		German:"Was schwebt Ihnen vor?"
+		Czech:"Co máte na mysli?"
+		Polish:"Co masz na myśli?"
+		Korean:"어떻게 생각하십니까?"
+}
+
+	"Our items":{
+		Italian:"I nostri articoli"
+		Russian:"Наши товары"
+		French:"Nos articles"
+		Romanian:"Articolele noastre"
+		Spanish:"Nuestros ítems"
+		Simplified_Chinese:"我们的贸易项目"
+		Traditional_Chinese:"我們的貿易項目"
+		Portuguese:"Nossos itens/recursos"
+		German:"Unsere Gegenstände"
+		Czech:"Naše obchodní artikly"
+		Polish:"Nasze przedmioty"
+		Korean:"우리의 물품"
+}
+
+	"Our trade offer":{
+		Italian:"La nostra offerta"
+		Russian:"Наше предложение"
+		French:"Notre offre d'échange"
+		Romanian:"Oferta noastră"
+		Spanish:"Nuestra oferta"
+		Simplified_Chinese:"我们的贸易提供"
+		Traditional_Chinese:"我們的貿易提供"
+		Portuguese:"Nossa oferta"
+		German:"Unser Handelsangebot"
+		Czech:"My nabízíme k obchodování"
+		Polish:"Nasza oferta wymiany"
+		Korean:"우리의 거래 제안"
+}
+
+	"[otherCiv]'s trade offer":{
+		Italian:"Offerta di [otherCiv]"
+		Russian:"Предложение от [otherCiv]"
+		French:"L'offre d'échange de [otherCiv]"
+		Romanian:"Ofertă de schimb a [otherCiv]"
+		Spanish:"Oferta de [otherCiv]"
+		Simplified_Chinese:"[otherCiv]的贸易提供"
+		Traditional_Chinese:"[otherCiv]的貿易提供"
+		Portuguese:"Oferta da(o/e) [otherCiv]" // da(o/e) meaning of in diffenrent genders
+		German:"[otherCiv]s Handelsangebot",
+		Czech:"[otherCiv] nabízí k obchodování"
+		Polish:"Oferta wymiany od [otherCiv]"
+		Korean:"[otherCiv]의 거래 제안"
+}
+
+	"[otherCiv]'s items":{
+		Italian:"Gli articoli di [otherCiv]"
+		Russian:"Товары цивилизации [otherCiv]"
+		French:"Les articles de [otherCiv]"
+		Romanian:"Articolele de la [otherCiv]"
+		Spanish:"Ítems de [otherCiv]"
+		Simplified_Chinese:"[otherCiv]的贸易项目"
+		Traditional_Chinese:"[otherCiv]的貿易項目"
+		Portuguese:"Itens da(o/e) [otherCiv]"
+		German:"[otherCiv]s Gegenstände",
+		Czech:"[otherCiv] obchodní artikly"
+		Polish:"Przedmioty od [otherCiv]"
+		Korean:"[otherCiv]의 물품"
+}
+
+	"Pleasure doing business with you!":{
+		Italian:"È un piacere fare affari con te!"
+		Russian:"С вами приятно иметь дело!"
+		French:"C'est un plaisir de faire des affaires avec vous!"
+		Romanian:"Este o plăcere să facem afaceri împreună!"
+		Spanish:"¡Un placer hacer negocios contigo!"
+		Simplified_Chinese:"很高兴和您做生意！"
+		Traditional_Chinese:"很高興和您做生意！"
+		Portuguese:"É um prazer fazer negócios com voçê" // can remove 'É um prazer' as it translates to 'it is a pleasure'
+		German:"Angenehm, mit Ihnen Geschäfte zu machen!"
+		Czech:"Bylo nám potěšení s vámi obchodovat!"
+		Polish:"Miło jest robić z tobą interesy!"
+		Korean:"당신과의 거래는 언제나 환영입니다."
+}
+
+	"I think not.":{
+		Italian:"Non ci penso proprio!"
+		Russian:"Думаю, нет."
+		French:"Je ne crois pas."
+		Romanian:"Nu cred."
+		Spanish:"Creo que no."
+		Simplified_Chinese:"我认为不可行。"
+		Traditional_Chinese:"我認為不可行。"
+		Portuguese:"Acho que não"
+		German:"Lieber nicht."
+		Czech:"Myslím, že to neklapne."
+		Polish:"Myślę że nie."
+                Malay:"Saya rasa tidak"
+		Korean:"그건 안 됩니다."
+}
+
+	"That is acceptable.":{
+		Italian:"È accettabile."
+		Russian:"Это приемлемо."
+		French:"C'est acceptable."
+		Romanian:"E acceptabil."
+		Spanish:"Es aceptable"
+		Simplified_Chinese:"这是可以接受的。"
+		Traditional_Chinese:"這是可以接受的。"
+		Portuguese:"Isto é aceitavel"
+		German:"Das ist akzeptabel."
+		Czech:"To se zdá přijatelné."
+		Polish:"To jest akceptowalne." //checking context ingame - will delete after confirming
+		Korean:"이 정도면 적당하군요."
+}
+
+	"Accept":{
+		Italian:"Accetta"
+		Russian:"Принять"
+		French:"Accepter"
+		Romanian:"Acceptă"
+		Spanish:"Aceptar"
+		Simplified_Chinese:"同意"
+		Traditional_Chinese:"同意"
+		Portuguese:"Aceitar"
+		German:"Annehmen"
+		Czech:"Souhlasíme"
+		Polish:"Zatwierdź"
+                Malay:"Mahu"
+		Korean:"수락"
+}
+
+	"Keep going":{
+		Italian:"Continua..."
+		French:"Continuer..."
+		Simplified_Chinese:"继续..."
+		Traditional_Chinese:"繼續..."
+		Portuguese:"Prossiga"
+		Russian:"Продолжить"
+		Czech:"Pokračujte"
+		German:"Weitermachen"
+		Polish:"Kontynuuj"
+                Malay:"Teruskan"
+		Korean:"계속"
+}
+
+	"There's nothing on the table":{
+		Italian:"Non c'è niente da trattare"
+		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
+		French:"Il n'y a rien a échangé" //if it's in case of empty trade it's accurate
+		Romanian:"Nu e nimic pe masă"
+		Spanish:"¿Estas de broma?"
+		Simplified_Chinese:"未选择任何交易"
+		Traditional_Chinese:"未選擇任何交易"
+		Portuguese:"Não ha nada á mesa"
+		German:"Der Verhandlungstisch ist leer"
+		Czech:"Nemáme se o čem bavit"
+		Polish:"Na stole nie ma nic"
+		Korean:"거래할 물품이 없지 않소?"
+}
+
+	"Peace Treaty":{//Corrected
+		Italian:"Trattato di pace"
+		Russian:"Мирный договор"
+		French:"Traité de paix"
+		Romanian:"Tratat de pace"
+		Spanish:"Tratado de paz"
+		Simplified_Chinese:"和平条约"
+		Traditional_Chinese:"和平條約"
+		Portuguese:"Tratado de paz"
+		German:"Friedensabkommen"
+		Czech:"Mírová smlouva"
+		Polish:"Traktat pokojowy"
+		Korean:"평화 조약"
+}
+
+	"Agreements":{
+		Italian:"Accordi"
+		Simplified_Chinese:"协定"
+		Traditional_Chinese:"協定"
+		French:"Accords"
+		Portuguese:"Acordos"
+		Russian:"Соглашения"
+		Czech:"Obchodní dohody"
+		German:"Vereinbarungen"
+		Polish:"Umowa"
+		Korean:"협정"
+}
+
+	"Open Borders":{
+		Italian:"Diritto di passaggio"
+		Simplified_Chinese:"开放边境"
+		Traditional_Chinese:"開放邊境"
+		French:"Accord de libre passage"
+		Portuguese:"Acordo de fronteiras abertas"
+		Russian:"Открытые границы"
+		Czech:"Otevřené hranice"
+		German:"Offene Grenzen"
+		Polish:"Otwórz granice"
+                Malay:"Buka Sempadan"
+		Korean:"국경 개방"
+}
+
+	"Gold per turn":{
+		Italian:"Oro per turno"
+		Russian:"Золота за ход"
+		French:"Or par tour"
+		Romanian:"Aur per rundă"
+		Spanish:"Oro por turno"
+		Simplified_Chinese:"金钱/回合"
+		Traditional_Chinese:"金錢/回合"
+		Portuguese:"Ouro por turno"
+		German:"Gold pro Runde"
+		Czech:"Zlato za kolo"
+		Polish:"Złoto na turę"
+                Malay:"Emas setiap pusingan"
+		Korean:"턴 당 금"
+}
+
+	"Cities":{
+		Italian:"Città"
+		Romanian:"Orase"
+		Spanish:"Ciudades"
+		Simplified_Chinese:"城市"
+		Traditional_Chinese:"城市"
+		German:"Städte"
+		Dutch:"Cities"
+		French:"Villes"
+		Portuguese:"Cidades"
+		Russian:"Города"
+		Czech:"Města"
+		Polish:"Miasta"
+                Malay:"Bandar"
+		Korean:"도시"
+}
+
+	"Technologies":{
+		Italian:"Tecnologie"
+		German:"Technologien"
+		French:"Technologies"
+		Simplified_Chinese:"科技"
+		Traditional_Chinese:"科技"
+		Portuguese:"Tecnologias"
+		Russian:"Технологии"
+		Czech:"Technologie"
+		Polish:"Technologie"
+                Malay:"Teknologi"
+		Korean:"기술"
+}
+
+	"Declarations of war":{
+		Italian:"Dichiarazione di guerra"
+		French:"Déclarations de guerre"
+		Simplified_Chinese:"宣战"
+		Traditional_Chinese:"宣戰"
+		Portuguese:"Declarações de guerra"
+		Russian:"Объявления войны"
+		Czech:"Vyhlášení války"
+		German:"Kriegserklärungen"
+		Polish:"Deklaracja wojny"
+		Korean:"전쟁 선포"
+}
+
+	"Introduction to [nation]":{
+		Italian:"Introduci a [nation]"
+		Simplified_Chinese:"介绍认识[nation]"
+		Traditional_Chinese:"介紹認識[nation]"
+		Russian:"Представиться [nation]",
+		Czech:"Představení národa [nation]"
+		German:"Vorstellung der Nation [nation]"
+		Polish:"Przedstawienie narodu [nation]" //checking context ingame - will delete after confirming
+		Korean:"[nation]에 대한 소개"
+}
+
+	"Declare war on [nation]":{
+		Italian:"Dichiara guerra a [nation]"
+		Simplified_Chinese:"宣战[nation]"
+		Traditional_Chinese:"宣戰[nation]"
+		Czech:"Vyhlásit válku národů [nation]"
+		Russian:"Объявить войну: [nation]"
+		German:"[nation] den Krieg erklären"
+		Polish:"Wypowiedz wojnę z [nation]"
+		Korean:"[nation]에 전쟁 선포"
+}
+
+	"Luxury resources":{
+		Italian:"Risorse di lusso"
+		French:"Ressources de luxes"
+		Simplified_Chinese:"奢侈资源"
+		Traditional_Chinese:"奢侈資源"
+		Portuguese:"Recursos raros/luxuosos" //raros = rare luxuosos = luxurious
+		Russian:"Редкие ресуры"
+		Czech:"Luxusní zdroje"
+		German:"Luxusgüter"
+		Polish:"Zasoby luksusowe"
+		Korean:"사치 자원"
+}
+
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
+		French:"Ressources stratégiques"
+		Simplified_Chinese:"战略资源"
+		Traditional_Chinese:"戰略資源"
+		Portuguese:"Recursos estratégicos"
+		Russian:"Стратегические ресуры"
+		Czech:"Strategiské zdroje"
+		German:"Strategische Ressourcen"
+		Polish:"Zasoby strategiczne"
+		Korean:"전략 자원"
+}
+
+
+	// Nations and uniques
+
+
+	"replaces":{// As in "Camel Archer replaces Knight", "Krepost replaces Barracks"
+		Italian:"sostituisce"
+		Romanian:"înlocuiește"
+		Spanish:"Remplaza"
+		Simplified_Chinese:"替代"
+		Traditional_Chinese:"替代"
+		German:"ersetzt"
+		French:"remplace"
+		Portuguese:"substitui"
+		Russian:"заменяет"
+		Czech:"nahrazuje"
+		Polish:"zastępuje"
+		Korean:"대체되는 것 : "
+}
+
+	"[resourceName] not required":{
+		Italian:"Risorsa [resourceName] non richiesta"
+		Simplified_Chinese:"无需战略资源：[resourceName]"
+		Traditional_Chinese:"無須戰略資源：[resourceName]"
+		French:"[resourceName] non requis"
+		Portuguese:"[resourceName] não requirido"
+		Russian:"[resourceName] не требуется",
+		Czech:"[resourceName] není potřeba"
+		German:"[resourceName] wird nicht benötigt"
+		Polish:"[resourceName] nie jest wymagane/ny" //checking context ingame - will delete after confirming
+		Korean:"[resourceName] 자원이 필요 없음"
+}
+
+	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
+		Italian:"Non possiede "
+		Simplified_Chinese:"失去能力"
+		Traditional_Chinese:"失去能力"
+		Russian:"Не имеет "
+		Czech:"Ztráta schopnosti"
+		German:"Verlorene Eigenschaft"
+		Polish:"Utracona zdolność"
+		Korean:"없어진 특성"
+}
+
+	"National ability":{ // the unique ability that each nation has
+		Italian:"Abilità della civiltà"
+		Romanian:"Abilitate a națiunii"
+		Spanish:"Bonus de nacion"
+		German:"Nationalfähigkeit"
+		French:"Capacité de la civilisation"
+		Portuguese:"Habilidade nacional"
+		Russian:"Национальная особенность"
+		Simplified_Chinese:"民族特性"
+		Traditional_Chinese:"民族特性"
+		Czech:"Národní schopnost"
+		Polish:"Zdolność narodowa"
+		Korean:"문명 특성"
+}
+
+	"Babylon":{
+		Italian:"Babilonia"
+		Russian:"Вавилон"
+		French:"Babylone"
+		Romanian:"Babilonia"
+		Spanish:"Babilonia"
+		Simplified_Chinese:"巴比伦"
+		Traditional_Chinese:"巴比倫"
+		Portuguese:"Babilônia"
+		German:"Babylonien"
+		Czech:"Babylonie"
+		Polish:"Babilon"
+                Malay:"Babylon"
+		Korean:"바빌론"
+}
+
+	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
+		Italian:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura, e ricevi i Grandi Scienziati il 50% più in fretta"
+		Romanian:"La descoperirea abilității Scriere primești un Mare om de știință gratuit, următorii fiind obținuți cu 50% mai repede"
+		German:"Ein kostenloser Großer Wissenschaftler erscheint, wenn Schrift erforscht wurde; Große WissenschaftlerInnen erscheinen 50% häufiger"
+		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
+		Portuguese:"Receba gratuitamente um grande cientista quando você descobrir Escritura, ganhe grandes cientistas 50% mais rápido"
+		Russian:"Бесплатный Великий Ученый при исследовании Письменности. Великие Ученые появляются на 50% быстрее"
+		Simplified_Chinese:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%"
+		Traditional_Chinese:"發明文字後立即獲得一個大科學家，大科學家點數累積速率+50%"
+		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
+		Czech:"Obdržíte Velkého Vědce při objevení technologie 'Písemnictví', získejte Velkého Vědce o 50% rychleji"
+		Polish:"Otrzymaj Wielkiego Naukowca po odkryciu Pisma, Zdobądź Wielkiego Naukowca 50% szybciej"
+		Korean:"문자를 연구한 후 위대한 과학자 하나를 무료로 얻습니다. 위대한 과학자의 출현 속도 + 50%"
+}
+
+	"Nebuchadnezzar II":{//Babylonian Leader
+		Italian:"Nabucodonosor II"
+		French:"Nabuchodonosor II"
+		Simplified_Chinese:"尼布甲尼撒二世"
+		Traditional_Chinese:"尼布甲尼薩二世"
+		Russian:"Навуходоносор II",
+		Czech:"Nebukadnesar II."
+		German:"Nebukadnezar II"
+		Polish:"Nabuchodonozor II"
+		Korean:"네부카드네자르 2세"
+}
+
+	"Greece":{
+		Italian:"Grecia"
+		Russian:"Греция"
+		French:"Grèce"
+		Romanian:"Grecia"
+		Spanish:"Grecia"
+		Simplified_Chinese:"希腊"
+		Traditional_Chinese:"希臘"
+		Portuguese:"Grécia"
+		German:"Griechenland"
+		Czech:"Řecko"
+		Polish:"Grecja"
+                Malay:"Yunani"
+		Korean:"그리스"
+}
+
+	"Alexander":{
+		Italian:"Alessandro"
+		French:"Alexandre le Grand"
+		Simplified_Chinese:"亚历山大"
+		Traditional_Chinese:"亞歷山大"
+		Russian:"Александр"
+		Czech:"Alexandr Veliký"
+		// same in German
+		Polish:"Aleksander Wielki"
+                Malay:"Alexander"
+		Korean:"알렉산더"
+},
+
+	"City-State Influence degrades at half and recovers at twice the normal rate": {
+		Simplified_Chinese:"对城邦影响力衰减速度减半，恢复速度加倍"
+		Traditional_Chinese:"對城邦影響力衰減速度減半，恢復速度加倍"
+		Italian:"L'influenza sulle Città-Stato diminuisce il doppio più lentamente e aumenta il doppio più velocemente."
+		Russian:"Влияние на города-государства снижается вдвое медленнее и увеличивается вдвое быстрее"
+		Czech:"Vliv Městských států degraduje o polovinu a přibívá dvojnásobnou rychlostí."
+		German:"Der Einfluss des Stadtstaats reduziert sich nur halb so schnell und erholt sich doppelt so schnell"
+		Polish:"Wpływ Miasta-Państwa obniża się o połowę i odnawia dwukrotnie szybciej niż normalnie"
+		Korean:"도시국가에 대한 영향력 감소량이 절반이 되고, 영향력 회복량은 두 배가 됩니다."
+},
+
+	"China":{
+		Italian:"Cina"
+		Russian:"Китай"
+		French:"Chine"
+		Romanian:"China"
+		Spanish:"China"
+		Simplified_Chinese:"中华"
+		Traditional_Chinese:"中國"
+		Portuguese:"China"
+		German:"China"
+		Czech:"Čína"
+		Polish:"Chiny"
+                Malay:"Cina"
+		Korean:"중국"
+}
+
+	"Wu Zetian":{
+		Italian:"Wu Zetian" //Same as in Italian
+		Simplified_Chinese:"武则天"
+		Traditional_Chinese:"武則天"
+		Russian:"У Цзэтянь",
+		Czech:"Wu Ce-tchien"
+		// same in German
+		Polish:"Wu Zetian"
+		Korean:"측천무후"
+},
+
+	"Great general provides double combat bonus, and spawns 50% faster":{
+		Italian:"I Grandi Generali nascono il 50% più in fretta e il loro bonus è raddoppiato"
+		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
+		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
+		Traditional_Chinese:"大軍事家提供雙倍戰鬥力加成，大軍事家產生速率+50%"
+		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
+		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
+		Portuguese:"Grande general fornece bônus de combate duplo e é gerado 50% mais rápido"
+		Russian:"Великий полководец дает двойной боевой бонус и появляется на 50% быстрее"
+		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
+		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее" // Russian x2. As it should be?
+		Czech:"Velký Generál poskytne dvojnásobný bojový bonus a rodí se o 50% rychleji"
+		Polish:"Wielki generał zapewnia podwójną premię do walki i tworzy się 50% szybciej"
+		Korean:"위대한 장군으로 인한 전투력 보너스가 두 배가 됩니다. 위대한 장군 출현율 +50%"
+}
+
+	"Egypt":{
+		Italian:"Egitto"
+		Russian:"Египет"
+		French:"Égypte"
+		Romanian:"Egipt"
+		Spanish:"Egipto"
+		Simplified_Chinese:"埃及"
+		Traditional_Chinese:"埃及"
+		Portuguese:"Egíto"
+		German:"Ägypten"
+		Czech:"Egypt"
+		Polish:"Egipt"
+                Malay:"Mesir"
+		Korean:"이집트"
+}
+
+	"Ramesses II":{
+		Italian:"Ramses II"
+		French:"Ramsès II"
+		Simplified_Chinese:"拉美西斯二世"
+		Traditional_Chinese:"拉美西斯二世"
+		Russian:"Рамзес II"
+		Czech:"Ramesse II"
+		German:"Ramses II"
+		Polish:"Ramzes II"
+		Korean:"람세스 2세"
+}
+
+	"+20% production towards Wonder construction":{
+		Italian:"+20% Produzione per la costruzione delle Meraviglie"
+		German:"20% erhöhte Produktion beim Errichten von Wundern"
+		French:"+20% vitesse de construction des merveilles"
+		Spanish:"+ 20% de producción hacia la construcción de maravillas."
+		Romanian:"+ 20% producție spre construcția de mirare"
+		Portuguese:"+ 20% de produção para construção de maravilhas"
+		Russian:"+20% Производство при строительстве чудес"
+		Simplified_Chinese:"建造奇观时产能积累速率+20%"
+		Traditional_Chinese:"建造奇觀時產能累積速率+20%"
+		Czech:"+20% produkce při stavbě Divu světa"
+		Polish:"+20% do produkcji budowy Cudu"
+		Korean:"불가사의를 건설할 때 생산력 +20%"
+}
+
+	"England":{
+		Italian:"Inghilterra"
+		Russian:"Англия"
+		French:"Angleterre"
+		Romanian:"Anglia"
+		Spanish:"Inglaterra"
+		Simplified_Chinese:"英格兰"
+		Traditional_Chinese:"英國"
+		Portuguese:"Inglaterra"
+		German:"England"
+		Czech:"Anglie"
+		Polish:"Anglia"
+                Malay:"England"
+		Korean:"영국"
+}
+
+	"Elizabeth":{
+		Italian:"Elisabetta"
+		//same in french
+		Simplified_Chinese:"伊丽莎白"
+		Traditional_Chinese:"伊麗莎白"
+		Russian:"Елизавета"
+		Czech:"Alžběta I."
+		German:"Elisabeth"
+		Polish:"Elżbieta"
+		Korean:"엘리자베스 1세"
+}
+
+	"+2 movement for all naval units":{
+		Italian:"+2 movimento per tutte le unità navali"
+		Romanian:"+2 deplasare pentru toate unitățile navale"
+		Spanish:"+2 de movimiento a las unidades navales"
+		Simplified_Chinese:"所有海军+2移动力"
+		Traditional_Chinese:"所有海軍+2移動力"
+		German:"+2 Bewegung für alle Marineeinheiten"
+		French:"+2 mouvements pour les unités navales"
+		Portuguese:"+2 movimento para todas as unidades navais"
+		Russian:"+2 движение для всех военно-морских подразделений"
+		Czech:"+2 pohyb pro všechny námořní jednotky"
+		Polish:"+2 do Przemieszczenia się dla wszystkich jednostek morskich"
+		Korean:"모든 해상 유닛의 행동력 +2"
+}
+
+	"France":{
+		Italian:"Francia"
+		Russian:"Франция"
+		French:"France"
+		Romanian:"Franța"
+		Spanish:"Francia"
+		Simplified_Chinese:"法兰西"
+		Traditional_Chinese:"法國"
+		Portuguese:"França"
+		German:"Frankreich"
+		Czech:"Francie"
+		Polish:"Francja"
+                Malay:"Perancis"
+		Korean:"프랑스"
+}
+
+	"Napoleon":{
+		Italian:"Napoleone"
+		French:"Napoléon"
+		Simplified_Chinese:"拿破仑"
+		Traditional_Chinese:"拿破崙"
+		Russian:"Наполеон",
+		Czech:"Napoleon Bonaparte"
+		// same in German
+		Polish:"Napoleon"
+		Korean:"나폴레옹"
+}
+
+	"+2 Culture per turn from cities before discovering Steam Power":{
+		Italian:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore"
+		German:"+2 Kultur pro Runde von Städten (bevor Dampfkraft erforscht wurde)"
+		French:"+2 culture par tour et par villes jusqu'à la découverte de la machine à vapeur"
+		Spanish:"+2 Cultura por turno desde las ciudades antes de descubrir la Energía de Vapor."
+		Romanian:"+2 Cultură pe turn de la orașe înainte de a descoperi puterea de abur"
+		Portuguese:"+2 Cultura por turno das cidades antes de descobrir o poder do vapor" //'poder do vapor' means the power of steam
+		Russian:"+2 Культура за ход от городов до открытия Парового Двигателя"
+		Simplified_Chinese:"在发明蒸汽机之前，每座城市的文化+2"
+		Traditional_Chinese:"在發明蒸汽機之前，每座城市的文化+2"
+		Czech:"+2 body kultury ze všech měst před objevením technologie 'Parní stroj'"
+		Polish:"+2 Kultury na turę od miast przed odkryciem Energi Parowej"
+		Korean:"증기력을 연구하기 전까지, 모든 도시에서 턴 당 문화 +2"
+}
+
+	"Russia":{
+		Italian:"Russia"
+		Romanian:"Rusia"
+		Spanish:"Rusia"
+		Simplified_Chinese:"俄罗斯"
+		Traditional_Chinese:"俄羅斯"
+		German:"Russland"
+		French:"Russie"
+		Portuguese:"Rússia"
+		Russian:"Россия"
+		Czech:"Rusko"
+		Polish:"Rosja"
+                Malay:"Rusia"
+		Korean:"러시아"
+}
+
+	"Catherine":{
+		Italian:"Caterina II"
+		French:"Catherine II"
+		Simplified_Chinese:"叶卡捷琳娜二世"
+		Traditional_Chinese:"葉卡捷琳娜二世"
+		Russian:"Екатерина Великая"
+		Czech:"Kateřina II. Veliká"
+		German:"Katharina"
+		Polish:"Katarzyna"
+		Korean:"예카테리나 2세"
+}
+
+	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
+		Italian:"+1 Produzione dalle risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
+		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
+		Spanish:"Los recursos estrategicos proporcionan +1 de produccion y los caballos, uranio y hierro proporcionan 4 envez de 2 recursos"
+		Simplified_Chinese:"每处战略资源+1产能，并且马、铁和铀资源储量加倍"
+		Traditional_Chinese:"每處戰略資源+1產能，並且馬、鐵和鈾資源儲量加倍"
+		German:"Strategische Ressourcen geben +1 Produktion und Pferde, Eisen und Uran Ressourcen geben die doppelte Menge"
+		French:"Les ressources stratégiques donnent +1 production, et les quantités de chevaux, fer et uranium sont doublés"
+		Portuguese:"Recursos Estratégicos fornecem Produção de +1, recursos de cavalos, ferro e urânio fornecem quantidade dupla"
+		Russian:"Стратегические ресурсы дают +1 к производству, а количество ресуров Лошади, Железо и Уран удваивается"
+		Czech:"Strategické zdroje poskytují +1 produkci. Zdroje Koní, Železné rudy a Uranu jsou dvojnásobné"
+		Polish:"Surowce Strategiczne zapewniają +1 do Produkcji, a Konie, Żelazo i Uran zapewniają podwojoną ilość"
+		Korean:"말, 철, 그리고 우라늄 자원이 두 배가 됩니다. 전략 자원의 생산력 +1"
+}
+
+	"Rome":{
+		Italian:"Roma"
+		Romanian:"Roma"
+		Spanish:"Roma"
+		Simplified_Chinese:"罗马"
+		Traditional_Chinese:"羅馬"
+		German:"Rom"
+		French:"Rome"
+		Portuguese:"Roma"
+		Russian:"Рим"
+		Czech:"Řím"
+		Polish:"Rzym"
+                Malay:"Rom"
+		Korean:"로마"
+}
+
+	"Augustus Caesar":{
+		Italian:"Cesare Augusto"
+		French:"Jule César"
+		Simplified_Chinese:"奥古斯都·恺撒"
+		Traditional_Chinese:"奧古斯都·凱薩"
+		Russian:"Октавиан Август",
+		Czech:"Gaius Iulius Caesar"
+		German:"Julius Cäsar"
+		Polish:"Gajusz Juliusz Cezar"
+		Korean:"아우구스투스 카이사르"
+}
+
+	"+25% Production towards any buildings that already exist in the Capital":{
+		Italian:"+25% Produzione per gli edifici già costruiti nella Capitale"
+		Romanian:"+25% Producție pentru toate clădirile deja existente în capitală"
+		Spanish:"+25% De producion a las construciones que ya existan en la capital "
+		German:"+25% Produktion für alle Gebäude, die bereits in der Hauptstadt existieren"
+		French:"+25% de production pour tous les batiments déjà construits dans la capitale"
+		Portuguese:"+ 25% Produção para quaisquer edifícios que já existam na Capital"
+		Russian:"+25% Производство при постройке зданий, которые уже существуют в столице"
+		Simplified_Chinese:"在其他城市建造首都已建有的建筑时产能积累速率+25%"
+		Traditional_Chinese:"在其他城市建造首都已建有的建築時產能累積速率+25%"
+		Czech:"+25% produkce při stavbě všech budov, které už jsou postavené v hlavním městě"
+		Polish:"+25% do Produkcji budowli które już istenieją w Stolicy"
+		Korean:"수도에 지어진 건물을 지을 때 생산력 +25%"
+}
+
+	"Arabia":{
+		Italian:"Arabia"
+		Romanian:"Arabia"
+		Spanish:"Arabia"
+		Simplified_Chinese:"阿拉伯"
+		Traditional_Chinese:"阿拉伯"
+		German:"Arabien"
+		French:"Arabie"
+		Portuguese:"Arábia"
+		Russian:"Аравия"
+		Dutch:"Saudi"
+		Czech:"Arábie"
+		Polish:"Arabia"
+                Malay:"Arab"
+		Korean:"아라비아"
+}
+
+	"Harun al-Rashid":{
+		Italian:"Harun al-Rashid" //Same as Italian
+		French:"Hâroun ar-Rachîd"
+		Simplified_Chinese:"哈伦·拉希德"
+		Traditional_Chinese:"哈倫·拉希德"
+		Russian:"Гарун-аль-Рашид",
+		Czech:"Hárún ar-Rašíd"
+		// same in German
+		Polish:"Harun ar-Raszid"
+		Korean:"하룬 알 라시드"
+}
+
+	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni fonte di Petrolio"
+		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
+		Traditional_Chinese:"每條貿易路線+1金錢，石油儲量加倍"
+		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane
+		French:"+1 Or pour chaque route commerciale, la quantité de pétrole est doublée"
+		Russian:"+1 Золото от каждого торгового маршрута, количество ресурса Нефть удваивается"
+		Czech:"+1 Zlata za každou obchodní cestu, zdroje Ropy poskytují dvojnásobné množství"
+		German:"+1 Gold von jedem Handelsweg, Ölvorkommen bieten doppelte Menge"
+		Polish:"+1 Złota za każdy Szlak Handlowy, zasoby Ropy zapewnia podwojoną ilość"
+		Korean:"석유 자원이 두 배가 됩니다. 교역로마다 금 +1"
+}
+
+	"America":{
+		Italian:"Stati Uniti"
+		Romanian:"Statele Unite"
+		Spanish:"Estados Unidos"
+		Simplified_Chinese:"美利坚"
+		Traditional_Chinese:"美利堅"
+		German:"Amerika"
+		French:"Etats-Unis"
+		Portuguese:"América"
+		Russian:"Америка"
+		Czech:"Amerika"
+		Polish:"Ameryka"
+                Malay:"Amerika"
+		Korean:"미국"
+}
+
+	"George Washington":{
+		Italian:"George Washington" //Same as Italian
+		//same in french
+		Simplified_Chinese:"乔治·华盛顿"
+		Traditional_Chinese:"喬治·華盛頓"
+		Russian:"Джордж Вашингтон",
+		Czech:"George Washington"
+		// same in German
+		Polish:"George Washington"
+		Korean:"조지 워싱턴"
+}
+
+	"All land military units have +1 sight, 50% discount when purchasing tiles":{
+		Italian:"+1 Visione per le unità militari terrestri, e -50% costi in Oro quando acquisti una casella"
+		Romanian:"Toate unitățile militare terestre au raza vizuală +1, 50% reducere la cumpărarea celulelor"
+		Spanish:"Todas las unidades militares de tierra obtienen +1 de vision, 50% de descuento al comprar terrenos"
+		Simplified_Chinese:"陆军单位+1视野，购买地块花费-50%"
+		Traditional_Chinese:"陸軍單位+1視野，購買地區花費-50%"
+		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
+		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
+		Portuguese:"Todas as unidades militares terrestres ganham +1 alcançe devisão e 50% de desconto na compra de terrenos" //i don't remember my translations being this bad? who was the monster?
+		Russian:"Все наземные военные юниты имеют +1 обзор, скидка 50% при покупке клетки"
+		Czech:"Všechny pozemní vojenské jednotky získají +1 viditelnost, 50% sleva na nákup nového území města"
+		Polish:"Wszystkie naziemne jednostki wojskowe otrzymują +1 do wzroku, 50% zniżki podczas zakupu pola"
+		Korean:"모든 지상군 유닛의 시야 +1. 타일을 금으로 구매할 때 가격 -50%"
+}
+
+	"Japan":{
+		Italian:"Giappone"
+		Romanian:"Japonia"
+		Spanish:"Japón"
+		Simplified_Chinese:"日本"
+		Traditional_Chinese:"日本"
+		German:"Japan"
+		French:"Japon"
+		Portuguese:"Japão"
+		Russian:"Япония"
+		Czech:"Japonsko"
+		Polish:"Japonia"
+                Malay:"Jepun"
+		Korean:"일본"
+}
+
+	"Oda Nobunaga":{
+		Italian:"Oda Nobunaga" //Same as Italian
+		//same in french
+		Simplified_Chinese:"织田信长"
+		Traditional_Chinese:"織田信長"
+		Russian:"Ода Нобунага",
+		Czech:"Nobunaga Oda"
+		// same in German
+		Polish:"Oda Nobunaga"
+		Korean:"오다 노부나가"
+}
+
+	"Units fight as though they were at full strength even when damaged":{
+		Italian:"Le unità combattono come se fossero perfettamente sane, anche quando gravemente ferite"
+		Romanian:"Unitățile se luptă ca și cum ar fi la putere deplină chiar și atunci când sunt deteriorate"
+		Spanish:"Las unidades luchan como si estuvieran con toda su fuerza incluso cuando están dañadas"
+		Simplified_Chinese:"受伤单位造成的伤害不减"
+		Traditional_Chinese:"受傷單位造成的傷害不減"
+		German:"Einheiten kämpfen mit voller Stärke, selbst bei Beschädigung"
+		French:"Les unités combattent comme si elles étaient à pleine force même lorsqu'elles sont endommagées"
+		Portuguese:"Unidades lutam como se estivessem em força total mesmo quando danificadas"
+		Russian:"Юниты сражаются в полную силу, даже будучи ранеными"
+		Czech:"Jednotky bojují pořád v plné síle, i když jsou zraněné"
+		Polish:"Jednostki walczą z pełną sił, nawet kiedy są zranione"
+		Korean:"유닛이 피해를 입어도 전투력이 그대로 유지됩니다."
+}
+
+	"Germany":{
+		Italian:"Germania"
+		French:"Allemagne"
+		Simplified_Chinese:"德意志"
+		Traditional_Chinese:"德意志"
+		Portuguese:"Alemanha"
+		Russian:"Германия"
+		Czech:"Německo"
+		German:"Deutschland"
+		Polish:"Niemcy"
+                Malay:"Jerman"
+		Korean:"독일"
+}
+
+	"Otto von Bismark":{
+		Italian:"Otto von Bismark" //Same as Italian
+		French:"Otto von Bismarck"
+		Simplified_Chinese:"奥托·冯·俾斯麦"
+		Traditional_Chinese:"奧托·馮·俾斯麥"
+		Russian:"Отто фон Бисмарк",
+		Czech:"Otto von Bismarck"
+		Polish:"Otto von Bismarck"
+		Korean:"오토 폰 비스마르크"
+}
+
+	"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.":{
+		Italian:"67% di probabilità di ottenere 25 Oro e reclutare un'unità barbara da un accampamento catturato. -25% mantenimento delle unità terrestri."
+		French:"67% de chance de gagner 25 or et d'enroler une unité barbare lors de la prise d'un campement barbare. -25% de coût de maintenance pour les unités terrestres."
+		Simplified_Chinese:"击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%"
+		Traditional_Chinese:"擊敗蠻族營地中的蠻族單位有67%機率得到25金錢並使其加入，路上單位維護費-25%"
+		Russian:"Шанс 67% получить 25 Золото и варварский юнит из захваченного лагеря. -25% к стоимости содержания наземных юнитов."
+		Czech:"67% šance získat 25 Zlata a naverbovat Barbarskou jednotku z dobytého tábora, -25% žoldu pro všechny jednotky"
+		German:"67% Chance, 25 Gold zu verdienen und eine barbarische Einheit aus dem eroberten Lager zu rekrutieren, -25% Instandhaltung von Landeinheiten."
+		Polish:"67% szans na zdobycie 25 Złota i zrekrutowanie Barbażyńskiej jednostki z podbitego obozowiska, -25% do utrzymania jednostek lądowych."
+		Korean:"야만인 주둔지를 점령할 때 67% 확률로 금 25와 야만인 유닛을 획득합니다. 지낭 유닛 유지비 -25%"
+}
+
+	"India":{
+		Italian:"India"
+		French:"Inde"
+		Portuguese:"Índia"
+		Simplified_Chinese:"印度"
+		Traditional_Chinese:"印度"
+		Russian:"Индия"
+		Czech:"Indie"
+		German:"Indien"
+		Polish:"Indie"
+                Malay:"India"
+		Korean:"인도"
+}
+
+	"Gandhi":{
+		Italian:"Gandhi" //Same as Italian
+		//same in french
+		Simplified_Chinese:"甘地"
+		Traditional_Chinese:"甘地"
+		Russian:"Махатма Ганди",
+		Czech:"Mahátma Gándhí"
+		German:"Mahatma Gandhi"
+		Polish:"Mahatma Gandhi"
+		Korean:"간디"
+}
+
+	"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.":{
+		Italian:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata."
+		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
+		French:"Le mécontentement dut au nombre de villes est doublé. Le mécontentement dut au nombre de citoyens est réduit de moitié"
+		Simplified_Chinese:"城市数量导致的不满加倍，市民数量导致的不满减半"
+		Traditional_Chinese:"城市數量導致的不滿加倍，市民數量導致的不滿減半"
+		Russian:"Удвоенное недовольство от числа городов. Недовольство от количества горожан в два раза меньше."
+		Czech:"Nespokojenost za počet měst je dvojnásobné, nespokojenost za počet obyvatel měst je poloviční."
+		German:"Unzufriedenheit von Städten verdoppelt, Unzufriedenheit der Bevölkerung halbiert."
+		Polish:"Niezadowolenie mieszkańców Miast podwoiło się, Niezadowolenie mieszkańców Miast zmalało o połowę."
+		Korean:"도시 수로 인한 불행이 두 배가 되는 대신, 시민 수로 인한 불행이 반으로 감소합니다."
+}
+
+	"The Ottomans":{
+		Italian:"Turchia"
+		French:"Turquie"
+		Portuguese:"Turquia"
+		Simplified_Chinese:"奥斯曼"
+		Traditional_Chinese:"奧斯曼"
+		Russian:"Турция"
+		Czech:"Osmanská říše"
+		German:"Die Osmanen"
+		Polish:"Imperium Osmańskie"
+                Malay:"Uthmaniyyah"
+		Korean:"오스만"
+}
+
+	"Suleiman I":{
+		Italian:"Solimano I"
+		French:"Soliman le Magnifique"
+		Simplified_Chinese:"苏莱曼一世"
+		Traditional_Chinese:"蘇萊曼一世"
+		Russian:"Сулейман I",
+		Czech:"Sulejman I."
+		German:"Suleiman der Prächtige"
+		Polish:"Sulejman I"
+		Korean:"술레이만"
+}
+
+	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
+		Italian:"Le unità navali hanno un mantenimento ridotto a un terzo rispetto al normale. Quelle ravvicinate hanno un 34% di probabilità di catturare le unità navali nemiche sconfitte."
+		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
+		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
+		Simplified_Chinese:"海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位"
+		Traditional_Chinese:"海上單位維護費為正常值的1/3，海軍近戰單位擁有1/3機率俘獲戰敗的敵方海軍單位"
+		Russian:"Содержание морских юнитов стоит треть обычной цены. Морские юниты ближнего боя имеют 1/3 шанс захвата побеждённых кораблей."
+		Czech:"Platí pouze 1/3 žoldu námořním jednotkám. Námořní jednotky při boji zblízka mají 33% šanci na zajmutí poražené námořní jednotky."
+		German:"Bezahle nur 1/3 der üblichen Kosten für Instandhaltung der marinen Einheiten. Marine Nahkampfeinheiten haben eine 1/3 Chance, eine besiegte Marineeinheit zu fangen."
+		Polish:"Zapłać trzecią część zwykłego kosztu za utrzymanie jednostki morskiej. Morskie jednostki do walki w zwarciu mają 1/3 szansy na przejęcie pokonanych jednostek morskich."
+		Korean:"해상 유닛 유지비가 1/3이 됩니다. 해상 근접 유닛이 적 해상 유닛을 처치했을 때, 1/3 확률로 그 유닛을 포획합니다."
+}
+
+	"Korea":{
+		Italian:"Corea"
+		French:"Corée"
+		Portuguese:"Coréia"
+		Simplified_Chinese:"朝鲜"
+		Traditional_Chinese:"朝鮮"
+    		Russian:"Корея"
+		Czech:"Korea"
+		German:"Korea"
+		Polish:"Korea"
+                Malay:"Korea"
+		Korean:"한국"
+}
+
+	"Sejong":{
+		Italian:"Sejong"
+		Simplified_Chinese:"李裪"
+		Traditional_Chinese:"李祹"
+		Russian:"Седжон",
+		Czech:"Sedžong Veliký"
+		German:"Sejong"
+		Polish:"Sejong"
+		Korean:"세종대왕"
+}
+
+	"+2 Science for all specialists and Great Person tile improvements":{
+		Italian:"+2 Scienza per ogni specialista e ogni miglioramento dai Grandi Personaggi."
+		Simplified_Chinese:"所有专业人员和伟人设施+2科研"
+		Traditional_Chinese:"所有專業人員和偉人設施+2科研"
+		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
+		Czech:"+2 Výzkum pro všechny specialisty a Velké osobnosti při vylepšení polí města."
+		German:"+2 Wissenschaft für alle SpezialistInnen und Große Persönlichkeit Feldverbesserungen"
+		Polish:"+2 Nauki dla wszystkich specjalistów i polepszenie pola Wielkiej Osoby"
+		Korean:"전문가와 위인 타일 시설 하나당 과학 +2"
+}
+
+
+	"Iroquois":{
+		Italian:"Irochese"
+		French:"Iroquois"
+		Portuguese:"Tribo Iroquois" //tribo meaning tribe of course
+		Simplified_Chinese:"易洛魁"
+		Traditional_Chinese:"易洛魁"
+		Czech:"Irokézové"
+		Russian:"Ирокезы."
+		German:"Irokesen"
+		Polish:"Irokezi"
+		Korean:"이로쿼이"
+}
+
+	"Hiawatha":{
+		Italian:"Hiawatha"//Same as in Italian
+		Simplified_Chinese:"海华沙"
+		Traditional_Chinese:"海華沙"
+		Russian:"Хайавата",
+		Czech:"Hiawatha"
+		Polish:"Hiawatha"
+		Korean:"하이어워사"
+}
+
+	"All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.":{
+		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando scopri la Ruota."
+		Portuguese:"Mova-se por florestas e selvas em território amigo como se fossem estradas. Estas terras podem ser usadas para estabelecer rotas de comércio após pesquisar a roda."
+		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
+		Simplified_Chinese:"单位在己方森林和丛林地块上移动时视同在道路上移动，此类地块在研究轮子科技后可建立城市连接"
+		Traditional_Chinese:"單位在己方森林和叢林地區上移動時視同在道路上移動，此類地區在研究輪子科技後可建立城市連結"
+		Czech:"Všechny jednotky se pohybují lesem a džunglí, jako by na nich byla postavená cesta. Tyto pole zároveň slouží pro propojení měst před vynalezením technologie 'Kolo'."
+		Russian:"Все юниты двигаются по клеткам с джунглями и лесами как если бы на них были дороги. С помощью таких клеток можно установить соединение между городами после исследования Колеса."
+		German:"Alle Einheiten bewegen sich durch alliierte Wald und Dschungel Felder als hätten sie Straßen. Diese Felder können genutzt werden, um bei der Erforschung des Rades Stadtverbindungen herzustellen."
+		Polish:"Wszystkie jednostki przemieszczają się przez teren Lasu i Dżungli na przyjaznych terenach tak, jak na drogach. Te pola mogą być użyte do zakładania Łączników Miast po odkryciu Koła."
+		Korean:"유닛들이 아군 영토의 숲이나 정글 타일을 도로처럼 사용합니다. 바퀴를 연구한 뒤, 이러한 타일들로 도시를 연결할 수 있습니다."
+}
+
+
+	"Persia":{
+		Italian:"Persia"
+		French:"Perse"
+		Portuguese:"Pérsia"
+		Simplified_Chinese:"波斯"
+		Traditional_Chinese:"波斯"
+		Russian:"Персия"
+		Czech:"Persie"
+		German:"Persien"
+		Polish:"Persja"
+                Malay:"Parsi"
+		Korean:"페르시아"
+}
+
+	"Darius I":{
+		Italian:"Dario I"
+		Simplified_Chinese:"大流士一世"
+		Traditional_Chinese:"大流士一世"
+		Czech:"Dareios I."
+		Russian:"Дарий I"
+		German:"Dareios I"
+		Polish:"Dariusz I"
+		Korean:"다리우스 1세"
+}
+
+	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
+		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
+		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
+		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
+		Simplified_Chinese:"黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力"
+		Traditional_Chinese:"黃金時代持續時間+50%，處於黃金時代時單位+1移動力、+10%戰鬥力"
+		Czech:"Zlatá věk trvá o 50% déle. Během Zlatého věku získají všechny jednotky +1 Pohyb a +10% Síly"
+		Russian:"Золотой век длится на 50% дольше. Во время Золотого века юниты получают +1 к движению и +10% к силе."
+		German:"Das Goldene Zeitalter hält 50% länger an. Währenddessen erhalten Einheiten +1 Bewegung und +10% Stärke"
+		Polish:"Złoty Wiek utrzymuje się 50% dłużej. Podczas Złotego Wieku jednostki otrzymują +1 do Przemieszczania się i +10% Siły"
+		Korean:"황금기 동안, 유닛들의 행동력 +1, 체력 +10%. 황금기의 지속 시간 +50%."
+}
+
+	"Polynesia":{
+		Italian:"Polinesia"
+		French:"Polynésie"
+		Portuguese:"Polinésia"
+		Czech:"Polynésie"
+		Simplified_Chinese:"波利尼西亚"
+		Traditional_Chinese:"波利尼西亞"
+		Russian:"Полинезия"
+		German:"Polynesien"
+		Polish:"Polinezja"
+		Korean:"폴리네시아"
+}
+
+	"Kamehameha I":{
+		Italian:"Kamehameha I"
+		Czech:"Kamehameha I."
+		Simplified_Chinese:"卡美哈梅哈一世"
+		Traditional_Chinese:"卡美哈梅哈一世"
+		Russian:"Камеамеа I"
+		Polish:"Kamehameha I"
+		Korean:"카메하메하 1세"
+}
+
+	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.":{
+		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate, e +10% Forza entro 2 caselle con un Moai."
+		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
+		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
+		Czech:"Může se okamžitě přesunovat mezi pevninou a oceánem. +1 při nalodění. +10% bonus k bojové síle, pokud je v okolí 2 polí Moai."
+		Simplified_Chinese:"单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力"
+		Traditional_Chinese:"單位初始時就擁有船運能力，可進入海濱和海洋地區，單位處於船運狀態時+1視野。摩艾石像群周圍2格內單位+10%戰鬥力"
+		Russian:"Сразу может погружаться на корабль, а также плавать по побережьям и океанам. +1 к обзору при погружении на корабль. +10% к силе если находинтся в радиусе 2х клеток от Моаи."
+		German:"Kann sich sofort einschiffen und über Küsten und Ozeane bewegen. +1 Sicht beim Einschiffen. +10% Kampfstärkebonus, wenn innerhalb von 2 Feldern eines Moai."
+		Polish:"Możesz zaokrętować i ruszyć na Wybrzeża natychmiast. +1 do Wzroku po zaokrętowaniu. +10% Siły w walce w obrębie 2 pól od Moai."
+		Korean:"연구하지 않고도 승선과 대양 항해를 할 수 있습니다. 승선한 유닛의 시야 +1. 모아이와 2타일 이내에서 전투 시 전투력 +10%"
+}
+
+	"Siam":{
+		Italian:"Siam"//Same as in Italian
+		French:"Siam"
+		Portuguese:"Siam" //not sure but will do
+		Czech:"Siam"
+		Simplified_Chinese:"暹罗"
+		Traditional_Chinese:"暹羅"
+		Polish:"Siam"
+                Malay:"Siam"
+		Korean:"시암"
+}
+
+	"Ramkhamhaeng":{
+		Italian:"Ramkhamhaeng" //Same as in Italian
+		Czech: "Ram Khamhaeng"
+		Simplified_Chinese:"兰甘亨"
+		Traditional_Chinese:"蘭甘亨"
+		Polish:"Ramkhamhaeng"
+		Korean:"람캄행"
+}
+
+	"Food and Culture from Friendly City-States are increased by 50%":{
+		Italian:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche o alleate."
+		Portuguese:"Comida e cultura de cidades-estado amigas aumentada em 50%."
+		French:"La Nourriture et la Culture fournit par les cités-états sont augmentées de 50%"
+		Czech:"Jídlo a Kulturní body z spřátelených Městských států se zvednou o 50%."
+		Simplified_Chinese:"友好城邦提供的食物和文化增加50%"
+		Traditional_Chinese:"友好城邦提供的食物和文化增加50%"
+		German:"Nahrung und Kultur aus freundlichen Stadtstaaten werden um 50% erhöht."
+		Polish:"Zasoby Pożywienia i Kultura od Przyjaznych Miast-Państw są ziwiększone o 50%"
+		Korean:"우호적인 도시 국가에게서 제공받는 음식과 문화 +50%"
+}
+
+	"Songhai":{
+		Italian:"Songhai"
+		French:"Songhaï"
+		Portuguese:"Songhai" //not sure but will do
+		Czech:"Songhajská říše"
+		// same in German
+		Polish:"Songhaj"
+		Korean:"송가이"
+}
+
+	"Askia":{
+		Italian:"Askia"
+		Korean:"아스키아"
+}
+
+	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
+		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
+		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
+		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
+		Czech:"Získává trojnásobek zlata z Barbarských táborů a drancování měst. Jednotky při naloďování se můžou bránit."
+		German:"Erhalte dreimal soviel Gold von Barbaren-Camps und plündern von Städten. Eingeschiffte Einheiten können sich selbst verteidigen."
+		Polish:"Odtrymaj potrojone Złoto od Barbażyńskich obozowisk i plądrowanych Miast. Zaokrętowane jednostki mogą same się bronić"
+		Korean:"야만인 주둔지나 도시 약탈에서 얻는 금이 세 배가 됩니다. 승선한 유닛들이 스스로를 방어할 수 있습니다."
+}
+
+	/*
+	"Aztecs":{
+		Italian:"Azteca"
+		French:"Aztèques"
+		Portuguese:"Astecas"
+		Czech:"Aztékové"
+		German:"Azteken"
+		Polish:"Aztecy"
+		Korean:"아즈텍"
+}
+
+	"Gain Culture for the empire from each enemy unit killed.":{
+		Italian:"Ogni unità nemica eliminata frutta Cultura per il tuo impero."
+		Portuguese:"Ganhe cultura para seu império por cada inimigo morto"
+		French:"Gagne de la Culture à chaque unité ennemie détruite."
+		Czech:"Získají kulturní bod pro říši za každou zabitou nepřátelskou jednotku."
+		German:"Erhalte Kultur für das Reich für jeden besiegten Feind"
+		Polish:"Zdobądź punkty Kultury za każdą pokonaną jednostkę przeciwnika"
+		Korean:"적 유닛ㅇ르 죽일 때마다 문화를 얻습니다."
+}
+
+	"Denmark":{
+		Italian:"Danimarca"
+		French:"Danemark"
+		Portuguese:"Dinamarca"
+		Czech:"Dánsko"
+		German:"Dänemark"
+		Polish:"Dania"
+                Malay:"Denmark"
+		Korean:"덴마크"
+}
+
+	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
+		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
+		Portuguese:"Unidades embarcadas tem um movimento a mais e usam apenas 1 ponto de movimento para se mover de terra a mar. Unidades corpo-a-corpo não gastam pontos de movimento para pilhar"
+		French:"Les unités embarquées ont +1 de mouvement et ne perde qu'un point de mouvement en débarquant. Le pillage ne coûte pas de point de déplacement pour les unités de mélée"
+		German:"Eingeschiffte Einheiten haben +1 Bewegung und bezahlen nur 1 Bewegungspunkt, um vom Meer zum Land zu wechseln. Nahkampf Einheiten bezahlen keine Bewegungspunkte für eine Plünderung"
+		Polish:"Zaokrętowane Jednostki otrzymują +1 do Poruszania się i używają tylko 1-go punktu ruchu podczas przemieszczania się z morza na ląd. Jednostki do Walki w Zwarciu nie używają punktu ruchu do plądrowania"
+		Korean:"승선한 유닛들의 행동력 +1. 상륙에 필요한 행동력이 1로 줄어듭니다. 근접 유닛이 약탈을 할 때 행동력을 소모하지 않습니다."
+}
+
+	"Inca":{
+		Italian:"Inca"
+		French:"Incas"
+		Portuguese:"Inca"
+		Czech:"Inkové"
+		German:"Inka"
+		Polish:"Inka"
+		Korean:"잉카"
+}
+
+	"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills, half cost elsewhere.":{
+		Italian:"Le unità si muovono senza costi di terreno sulle Colline. I miglioramenti sulle Colline sono azzerati, e sono dimezzati altrove."
+		Czech:"Jednotky ignorují obtížný terén v horách. Žádná pravidelná platba za vylepšení v horách, na ostatních polích stojí polovinu."
+		German:"Einheiten ignorieren Geländekosten, wenn sie ein Feld mit Hügeln betreten. Keine Wartungskosten für Hügelverbesserungen, sonst halbe Kosten."
+		Polish:"Jednostki ignorują dodatkowy koszt za niedogodności terenu podczas przemieszczania się na dowolne pole Wzgórz. Brak kosztów utrzymania za ulepszenia we Wzgórzach, połowa kosztów wszędzie indziej."
+		Korean:"언덕이 포함된 모든 지형을 이동할 때 소모되는 행동력이 1로 줄어듭니다. 언덕 위의 시설은 유지비가 들지 않고, 다른 지형의 시설은 유지비가 절반이 됩니다."
+}
+
+	"Mongolia":{
+		Italian:"Mongolia"
+		French:"Mongolie"
+		Portuguese:"Mongolia"
+		Czech:"Mongolové"
+		German:"Mongolei"
+		Polish:"Mongolia"
+                Malay:"Mongolia"
+		Korean:"몽골"
+}
+
+	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
+		Italian:"+30% Forza contro le Città-Stato e le loro unità. +1 Movimento per le Unità a cavallo."
+		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
+		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
+		Czech:"+30% bojové síly při boji s jednotkami městského státu, nebo útoku na městský stát. +1 Pohyb pro všechny jízdní jednotky."
+		German:"+30% Angriffsstärke bei Attacken auf Stadtstaaten oder dessen Einheiten. +1 Bewegung für alle berittenen Einheiten."
+		Polish:"+30% do Siły w walce kiedy walczysz z jednostkami Miasta-Państwa albo podczas ataku na Miasto-Państwo. +1 do Poruszania się dla wszystkich Osiodłanych Jednostek."
+		Korean:"도시국가 또는 도시국가의 유닛을 공격할 때 전투력 +30%. 모든 기병 유닛의 행동력 +1."
+}
+
+	"Spain":{
+		Italian:"Spagna"
+		Czech:"Španělsko"
+		German:"Spanien"
+		Polish:"Hiszpania"
+                Malay:"Sepanyol"
+		Korean:"스페인"
+}
+
+	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yields from Natural Wonders are doubled.":{
+		Italian:"Ottieni Oro bonus quando scopri una Meraviglia Naturale (aumenta se la scopri per primo). Doppia Cultura, Felicità e resa generale dalle Meraviglie Naturali."
+		Czech:"Bonus Zlata za objevení přírodních divů (pokud jste první), Kulturní body, Spokojenost a výnosy z polí s přírodními divy jsou zdvojnásobené."
+		German:"Gold Bonus für die Entdeckung von natürlichen Wundern (Bonus erhöht, falls erster Entdecker). Kultur, Zufriedenheit und Felderträge von natürlichen Wundern werden verdoppelt."
+		Polish:"Bonus w Złocie za odkrycie Cudu Natury (bonus zwiększa się jeżeli odkryłeś go pierwszy). Kultura, Zadowolenie i wydajność pól z Cudu Natury są podwojone"
+		Korean:"자연 경관을 발견했을 때 더 많은 금을 받습니다.(최초로 발견할 경우에는 추가 금을 더 받습니다.) 자연경관에서의 타일 생산량이 두 배가 됩니다."
+}
+
+
+	*/
+
+	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
+		Italian:"Abilità unica"
+		Romanian:"Uniques"
+		Spanish:"Uniques"
+		Simplified_Chinese:"独有"
+		Traditional_Chinese:"獨有"
+		German:"Unikate"
+		French:"Uniques"
+		Portuguese:"Únicos(a)"
+		Russian:"Уникальные юниты"
+		Czech:"Unikátní dovednosti"
+		Polish:"Unikalne jednostki"
+		Korean:"고유 유닛"
+}
+
+	"Promotions":{
+		Italian:"Promozioni"
+		Romanian:"Promoţii"
+		Spanish:"Promociones"
+		Simplified_Chinese:"晋升"
+		Traditional_Chinese:"晉升"
+		German:"Beförderungen"
+		French:"Promotions"
+		Portuguese:"Promoções"
+		Russian:"Повышения"
+		Czech:"Povýšení"
+		Polish:"Awanse"
+		Korean:"승급"
+}
+
+	"Barbarians":{
+		Italian:"Barbari"
+		Romanian:"Barbari"
+		Spanish:"Barbaros"
+		Simplified_Chinese:"蛮族"
+		Traditional_Chinese:"蠻族"
+		German:"Barbaren"
+		French:"Barbare"
+		Portuguese:"Bárbaros"
+		Russian:"Варвары"
+		Czech:"Barbaři"
+		Polish:"Barbażyńcy"
+		Korean:"야만인"
+}
+
 }
 
 	"You'll pay for this!":{
