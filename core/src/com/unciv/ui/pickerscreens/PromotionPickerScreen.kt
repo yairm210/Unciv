@@ -14,13 +14,13 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.Promotion
 import com.unciv.ui.utils.*
 
-class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
+class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
     private var selectedPromotion: Promotion? = null
 
 
     fun acceptPromotion(promotion: Promotion?) {
-        mapUnit.promotions.addPromotion(promotion!!.name)
-        if(mapUnit.promotions.canBePromoted()) game.setScreen(PromotionPickerScreen(mapUnit))
+        unit.promotions.addPromotion(promotion!!.name)
+        if(unit.promotions.canBePromoted()) game.setScreen(PromotionPickerScreen(unit))
         else game.setWorldScreen()
         dispose()
         game.worldScreen.shouldUpdate=true
@@ -35,18 +35,21 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
         rightSideButton.onClick("promote") {
           acceptPromotion(selectedPromotion)
         }
+        val canBePromoted = unit.promotions.canBePromoted()
+        if(!canBePromoted)
+            rightSideButton.disable()
 
         val availablePromotionsGroup = VerticalGroup()
         availablePromotionsGroup.space(10f)
 
-        val unitType = mapUnit.type
+        val unitType = unit.type
         val promotionsForUnitType = GameBasics.UnitPromotions.values.filter { it.unitTypes.contains(unitType.toString()) }
-        val unitAvailablePromotions = mapUnit.promotions.getAvailablePromotions()
+        val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
         for (promotion in promotionsForUnitType) {
-            if(promotion.name=="Heal Instantly" && mapUnit.health==100) continue
+            if(promotion.name=="Heal Instantly" && unit.health==100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
-            val unitHasPromotion = mapUnit.promotions.promotions.contains(promotion.name)
+            val unitHasPromotion = unit.promotions.promotions.contains(promotion.name)
 
             val selectPromotionButton = Button(skin)
             selectPromotionButton.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
@@ -55,7 +58,8 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
             selectPromotionButton.onClick {
                 selectedPromotion = promotion
                 rightSideButton.setText(promotion.name.tr())
-                if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()
+                if(canBePromoted && isPromotionAvailable && !unitHasPromotion)
+                    rightSideButton.enable()
                 else rightSideButton.disable()
 
                 // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city
@@ -75,7 +79,7 @@ class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
             promotionTable.add(selectPromotionButton)
 
 
-            if(isPromotionAvailable) {
+            if(canBePromoted && isPromotionAvailable) {
                 val pickNow = "Pick now!".toLabel()
                 pickNow.setAlignment(Align.center)
                 pickNow.onClick {
