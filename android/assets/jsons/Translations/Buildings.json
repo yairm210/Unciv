@@ -502,15 +502,15 @@
                 Malay:"Tempat Persemadian"
 				Korean:"왕릉"
 }
-
 	*/
+	
 	"Mud Pyramid Mosque":{	//Songhai unique
 		Italian:"Moschea della Piramide di Fango"
 		French:"Mosquée d'adobe" //official translation
 		Polish:"Wielki Meczet w Dżennie" //from civipedia
 		Czech:"Velká mešita v Djenné"
 		Ukrainian:"Могила Аскіа"
-                Malay:Masjid Piramid Lumpur"
+                Malay:"Masjid Piramid Lumpur"
 		Spanish:"Mesquita de barro"
 				Korean:"진흙 피라미드 모스크"
 }
