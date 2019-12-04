@@ -32,7 +32,7 @@
 		Japanese:"ワーキング..."
 		Czech:"Počítám..."
 		Ukrainian:"Обробка…"
-		Korean:"진행 중..."
+		Korean:"로딩 중..."
 }
 
 	"Waiting for other players...":{ // Displayed when next turn is being...turned
@@ -61,7 +61,7 @@
 		Japanese:"に"
 		Czech:"za"
 		Ukrainian:"через"
-		Korean:"완성까지"
+		Korean:"의 완성까지"
 }
 
 /////// Turn
@@ -3226,7 +3226,7 @@
 		Czech:"Chybějící překlady:"
 		Ukrainian:"Відсутній переклади"
 		German:"Fehlende Übersetzung"
-		Korean:"미완성된 번역 목록:"
+		Korean:"미완성 번역 목록:"
 }
 
 	"Version":{
