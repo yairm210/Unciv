@@ -1021,7 +1021,7 @@
 		Traditional_Chinese:"砍伐森林",
 		Portuguese:"Cortar floresta"
 		German:"Wald abholzen"
-                Korean:"숲 벌목"
+                Korean:"숲 제거"
 		Czech:"Vykácet les"
 		Ukrainian:"Вирубати ліс"
 }
@@ -1036,7 +1036,7 @@
 		Traditional_Chinese:"砍伐叢林",
 		Portuguese:"Cortar selva"
 		German:"Dschungel abholzen"
-                Korean:"정글 벌목"
+                Korean:"정글 제거"
 		Czech:"Vykácet džungli"
 		Ukrainian:"Вирубати хащі"
 }
