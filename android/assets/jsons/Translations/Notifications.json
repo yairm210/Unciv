@@ -56,7 +56,7 @@
 		Czech:"[resourceName] objeven(a) poblíž [cityName]",
 		Ukrainian:"[resourceName] виявлено біля [cityName]",
 		Polish:"[resourceName] odkryte nieopodal [cityName]"
-		Korean:"[cityName] 근처에서 [resourceName]을(를) 발견했습니다."
+		Korean:"[cityName] 근처에서 [resourceName] 자원을 발견했습니다."
 	}
 
 	"A [greatPerson] has been born in [cityName]!":{
