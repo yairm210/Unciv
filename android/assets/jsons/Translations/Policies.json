@@ -12,7 +12,7 @@
 		German:"Benötigt"
 		Czech:"Požadavky"
 		Ukrainian:"Потребує"
-		Korean:"선행조건"
+		Korean:"선행 조건"
 }
 
 	"Adopt policy":{
@@ -1620,7 +1620,7 @@
 		German:"+100% Felderträge aus Verbesserungen Großer Persönlichkeiten; Goldene Zeitalter dauern 50% länger"
 		French:"Bonus des cases améliorés par les spécialistes +100%, la durée des âges d'or augmente de 50%"
 		Czech:"Zisk z políček od Velkých vylepšení +100%, Zlatý věk se prodlužuje o 50%"
-		Korean:"위인으로 건설한 시설의 생산량 +100%, 황금기 지속 시간 +50%"
+		Korean:"위인으로 건설한 타일 시설의 생산량 +100%, 황금기 지속 시간 +50%"
 }
 
 ////// Autocracy branch
