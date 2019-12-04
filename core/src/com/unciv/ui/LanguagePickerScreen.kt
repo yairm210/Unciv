@@ -23,7 +23,7 @@ class LanguageTable(val language:String,skin: Skin):Table(skin){
         defaults().pad(10f)
         if(ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
-        val translations = UncivGame.Current.gameBasics.Translations
+        val translations = UncivGame.Current.ruleSet.Translations
         val availableTranslations = translations.filter { it.value.containsKey(language) }
 
         if(language=="English") percentComplete = 100
@@ -60,7 +60,7 @@ class LanguagePickerScreen: PickerScreen(){
                     "If you want to help translating the game into your language, \n"+
                     "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
-        languageTables.addAll(UncivGame.Current.gameBasics.Translations.getLanguages().map { LanguageTable(it,skin) }
+        languageTables.addAll(UncivGame.Current.ruleSet.Translations.getLanguages().map { LanguageTable(it,skin) }
                 .sortedByDescending { it.percentComplete } )
 
         languageTables.forEach {

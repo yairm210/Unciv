@@ -15,9 +15,9 @@ import kotlin.concurrent.thread
 class Language(val language:String){
     val percentComplete:Int
     init{
-        val availableTranslations = UncivGame.Current.gameBasics.Translations.count { it.value.containsKey(language) }
+        val availableTranslations = UncivGame.Current.ruleSet.Translations.count { it.value.containsKey(language) }
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations*100 / UncivGame.Current.gameBasics.Translations.size)
+        else percentComplete = (availableTranslations*100 / UncivGame.Current.ruleSet.Translations.size)
     }
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
@@ -263,7 +263,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         innerTable.add("Language".toLabel())
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        UncivGame.Current.gameBasics.Translations.getLanguages().map { Language(it) }
+        UncivGame.Current.ruleSet.Translations.getLanguages().map { Language(it) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray
@@ -286,7 +286,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             val missingTextSelectBox = SelectBox<String>(skin)
             val missingTextArray = Array<String>()
             val currentLanguage = UncivGame.Current.settings.language
-            UncivGame.Current.gameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }
+            UncivGame.Current.ruleSet.Translations.filter { !it.value.containsKey(currentLanguage) }
                     .forEach { missingTextArray.add(it.key) }
             missingTextSelectBox.items = missingTextArray
             missingTextSelectBox.selected = "Untranslated texts"

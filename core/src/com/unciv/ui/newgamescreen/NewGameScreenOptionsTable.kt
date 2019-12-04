@@ -128,7 +128,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
         val cityStatesArray = Array<Int>()
 
-        (0..UncivGame.Current.gameBasics.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        (0..UncivGame.Current.ruleSet.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
         add(cityStatesSelectBox).pad(10f).row()
@@ -141,7 +141,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addDifficultySelectBox() {
         add("{Difficulty}:".tr())
-        val difficultySelectBox = TranslatedSelectBox(UncivGame.Current.gameBasics.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
+        val difficultySelectBox = TranslatedSelectBox(UncivGame.Current.ruleSet.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
         difficultySelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.difficulty = difficultySelectBox.selected.value

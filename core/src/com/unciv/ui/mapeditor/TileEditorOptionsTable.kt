@@ -39,7 +39,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     private var currentHex: Actor = Group()
 
-    val gameBasics = UncivGame.Current.gameBasics
+    val gameBasics = UncivGame.Current.ruleSet
 
     init{
         height=mapEditorScreen.stage.height

@@ -70,7 +70,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())"BasicHelp/BasicHelp_$language"
         else "BasicHelp/BasicHelp"
 
-        val gameBasics = game.gameBasics
+        val gameBasics = game.ruleSet
         categoryToEntries["Basics"] = gameBasics.getFromJson(Array<CivilopediaEntry>::class.java, basicHelpFileName).toList()
         categoryToEntries["Buildings"] = gameBasics.Buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,gameBasics),

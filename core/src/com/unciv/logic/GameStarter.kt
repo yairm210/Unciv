@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.metadata.GameParameters
 import java.util.*
 import kotlin.collections.ArrayList
@@ -17,7 +17,7 @@ class GameStarter{
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
-        val gameBasics = UncivGame.Current.gameBasics
+        val gameBasics = UncivGame.Current.ruleSet
 
         if(newGameParameters.mapType==MapType.file)
             gameInfo.tileMap = MapSaver().loadMap(newGameParameters.mapFileName!!)
@@ -54,9 +54,9 @@ class GameStarter{
         return gameInfo
     }
 
-    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, gameBasics: GameBasics) {
+    private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleSet: RuleSet) {
         val availableCivNames = Stack<String>()
-        availableCivNames.addAll(gameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
+        availableCivNames.addAll(ruleSet.Nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove("Barbarians")
 
@@ -82,7 +82,7 @@ class GameStarter{
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the city states with starting tiles first in a random order,
         //   and then all the other city states in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll(gameBasics.Nations.filter { it.value.isCityState() }.keys
+        availableCityStatesNames.addAll(ruleSet.Nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {

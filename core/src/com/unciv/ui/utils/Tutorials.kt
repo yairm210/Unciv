@@ -41,7 +41,7 @@ class Tutorials{
         // ...Yes. Disgusting. I wish I didn't have to do this.
         val x = LinkedHashMap<String, Array<Array<String>>>()
         val tutorials: LinkedHashMap<String, Array<Array<String>>> =
-                UncivGame.Current.gameBasics.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
+                UncivGame.Current.ruleSet.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
         val tutorialMap = HashMap<String, ArrayList<String>>()
         for (tutorial in tutorials){
             val list = ArrayList<String>()

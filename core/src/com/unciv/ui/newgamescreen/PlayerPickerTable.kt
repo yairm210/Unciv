@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
@@ -30,7 +30,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
     fun update() {
         playerListTable.clear()
-        val gameBasics = UncivGame.Current.gameBasics // when we add mods, this will need to change
+        val gameBasics = UncivGame.Current.ruleSet // when we add mods, this will need to change
         for (player in newGameParameters.players)
             playerListTable.add(getPlayerTable(player,gameBasics)).pad(10f).row()
         if(newGameParameters.players.count() < gameBasics.Nations.values.count { it.isMajorCiv() }) {
@@ -39,12 +39,12 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         }
     }
 
-    fun getPlayerTable(player: Player, gameBasics: GameBasics): Table {
+    fun getPlayerTable(player: Player, ruleSet: RuleSet): Table {
         val playerTable = Table()
         playerTable.pad(20f)
         playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.8f))
 
-        val nationTable = getNationTable(player,gameBasics)
+        val nationTable = getNationTable(player,ruleSet)
         playerTable.add(nationTable)
 
         val playerTypeTextbutton = TextButton(player.playerType.name, CameraStageBaseScreen.skin)
@@ -102,22 +102,22 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         return playerTable
     }
 
-    private fun getNationTable(player: Player, gameBasics: GameBasics): Table {
+    private fun getNationTable(player: Player, ruleSet: RuleSet): Table {
         val nationTable = Table()
         val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.BLACK,30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
-        else ImageGetter.getNationIndicator(gameBasics.Nations[player.chosenCiv]!!, 50f)
+        else ImageGetter.getNationIndicator(ruleSet.Nations[player.chosenCiv]!!, 50f)
         nationTable.add(nationImage)
         nationTable.add(player.chosenCiv.toLabel()).pad(20f)
         nationTable.touchable = Touchable.enabled
         nationTable.onClick {
-            popupNationPicker(player,gameBasics)
+            popupNationPicker(player,ruleSet)
         }
         return nationTable
     }
 
-    private fun popupNationPicker(player: Player, gameBasics: GameBasics) {
+    private fun popupNationPicker(player: Player, ruleSet: RuleSet) {
         val nationsPopup = PopupTable(newGameScreen)
         val nationListTable = Table()
 
@@ -137,11 +137,11 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         nationListTable.add(randomPlayerTable).pad(10f).width(halfWidth).row()
 
 
-        for (nation in gameBasics.Nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
+        for (nation in ruleSet.Nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, halfWidth,gameBasics).onClick {
+            nationListTable.add(NationTable(nation, halfWidth,ruleSet).onClick {
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()

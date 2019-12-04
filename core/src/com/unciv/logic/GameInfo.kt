@@ -20,7 +20,7 @@ class GameInfo {
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
     @Transient var isUpToDate=false
-    @Transient var gameBasics = UncivGame.Current.gameBasics
+    @Transient var gameBasics = UncivGame.Current.ruleSet
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?

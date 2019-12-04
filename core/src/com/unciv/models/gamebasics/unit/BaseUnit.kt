@@ -6,7 +6,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.INamed
@@ -78,11 +78,11 @@ class BaseUnit : INamed, IConstruction {
         return sb.toString()
     }
 
-    fun getMapUnit(gameBasics: GameBasics): MapUnit {
+    fun getMapUnit(ruleSet: RuleSet): MapUnit {
         val unit = MapUnit()
         unit.name = name
 
-        unit.setTransients(gameBasics) // must be after setting name because it sets the baseUnit according to the name
+        unit.setTransients(ruleSet) // must be after setting name because it sets the baseUnit according to the name
 
         return unit
     }

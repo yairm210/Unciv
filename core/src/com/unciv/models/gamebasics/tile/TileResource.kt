@@ -1,7 +1,5 @@
 package com.unciv.models.gamebasics.tile
 
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats

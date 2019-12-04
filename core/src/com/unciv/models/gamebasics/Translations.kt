@@ -90,7 +90,7 @@ fun String.tr(): String {
 
         val translationStringWithSquareBracketsOnly = replace(squareBraceRegex,"[]")
 
-        val translationEntry = UncivGame.Current.gameBasics.Translations.values
+        val translationEntry = UncivGame.Current.ruleSet.Translations.values
                 .firstOrNull { translationStringWithSquareBracketsOnly == it.entryWithShortenedSquareBrackets }
 
         if(translationEntry==null ||
@@ -115,6 +115,6 @@ fun String.tr(): String {
         return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
 
-    val translation = UncivGame.Current.gameBasics.Translations.get(this, UncivGame.Current.settings.language) // single word
+    val translation = UncivGame.Current.ruleSet.Translations.get(this, UncivGame.Current.settings.language) // single word
     return translation
 }

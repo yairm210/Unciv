@@ -12,7 +12,7 @@ import com.unciv.models.gamebasics.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
-class GameBasics {
+class RuleSet {
     val Buildings = LinkedHashMap<String, Building>()
     val Terrains = LinkedHashMap<String, Terrain>()
     val TileResources = LinkedHashMap<String, TileResource>()

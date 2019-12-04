@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.tile.*
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
@@ -13,7 +13,7 @@ import kotlin.math.abs
 
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
-    @Transient lateinit var gameBasics: GameBasics  // a tile can be a tile with a ruleset, even without a map.
+    @Transient lateinit var ruleSet: RuleSet  // a tile can be a tile with a ruleset, even without a map.
     @Transient var owningCity:CityInfo?=null
     @Transient private lateinit var baseTerrainObject:Terrain
 
@@ -85,11 +85,11 @@ open class TileInfo {
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
-            else gameBasics.TileResources[resource!!]!!
+            else ruleSet.TileResources[resource!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
 
-    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else gameBasics.TileImprovements[improvement!!]
+    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleSet.TileImprovements[improvement!!]
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
@@ -118,7 +118,7 @@ open class TileInfo {
     }
 
     fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else gameBasics.Terrains[terrainFeature!!]
+        return if (terrainFeature == null) null else ruleSet.Terrains[terrainFeature!!]
     }
 
     fun isWorked(): Boolean {
@@ -310,7 +310,7 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients(){
-        baseTerrainObject = gameBasics.Terrains[baseTerrain]!! // This is a HACK.
+        baseTerrainObject = ruleSet.Terrains[baseTerrain]!! // This is a HACK.
         isWater = getBaseTerrain().type==TerrainType.Water
         isLand = getBaseTerrain().type==TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
@@ -318,7 +318,7 @@ open class TileInfo {
         for (unit in getUnits()) {
             unit.currentTile = this
             unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner),false)
-            unit.setTransients(gameBasics)
+            unit.setTransients(ruleSet)
         }
     }
 

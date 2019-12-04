@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.Promotion

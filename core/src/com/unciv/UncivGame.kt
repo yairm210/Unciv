@@ -8,7 +8,7 @@ import com.badlogic.gdx.audio.Music
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.LanguagePickerScreen
@@ -36,11 +36,11 @@ class UncivGame(val version: String) : Game() {
     val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized=false
 
-    lateinit var gameBasics:GameBasics
+    lateinit var ruleSet:RuleSet
 
     override fun create() {
         Current = this
-        gameBasics =  GameBasics()
+        ruleSet =  RuleSet()
 
         if(Gdx.app.type!= Application.ApplicationType.Desktop)
             viewEntireMapForDebug=false
