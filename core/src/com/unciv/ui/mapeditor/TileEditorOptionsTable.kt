@@ -157,6 +157,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 clearSelection()
                 selectedResource = resource
                 val tileInfo = TileInfo()
+                tileInfo.ruleSet = UncivGame.Current.ruleSet
 
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = gameBasics.Terrains[terrain]!!
@@ -180,6 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in gameBasics.Terrains.values) {
             val tileInfo = TileInfo()
+            tileInfo.ruleSet = UncivGame.Current.ruleSet
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn != null -> terrain.occursOn.first()
