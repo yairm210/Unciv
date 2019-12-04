@@ -1,3 +1,5 @@
+{
+
 ////// Diplomacy!
 
 	"Diplomacy":{
@@ -536,11 +538,7 @@
 		Czech:"Vaše chování je pro nás nepřijatelné."
 		German:"Ihr kriegerisches Verhalten ist für uns inakzeptabel."
 		Korean:"당신이 하는 전쟁광적 행동은 절대 용납할 수 없습니다."
-	},
-
-	"We applaud your liberation of conquered cities!": {
-		Korean:"점령되었던 우리의 도시를 돌려주셔서 감사합니다."
-	},
+}
 
 	"You have captured our cities!":{
 		Italian:"Hai preso una delle nostre città!"
@@ -732,7 +730,7 @@
 		Russian:"Мы поступим, как сочтем нужным"
 		Czech:"Uděláme si to po svém."
 		German:"Wir machen was wir wollen"
-		Korean:"우리가 원하는 데 사는 것을 막을 수는 없지요."
+		Korean:"우리가 원하는 데 살고자 하는 것이 잘못입니까?"
 }
 
 	"You betrayed your promise to not settle cities near us":{
@@ -1900,7 +1898,7 @@
 		Czech:"Platí pouze 1/3 žoldu námořním jednotkám. Námořní jednotky při boji zblízka mají 33% šanci na zajmutí poražené námořní jednotky."
 		German:"Bezahle nur 1/3 der üblichen Kosten für Instandhaltung der marinen Einheiten. Marine Nahkampfeinheiten haben eine 1/3 Chance, eine besiegte Marineeinheit zu fangen."
 		Polish:"Zapłać trzecią część zwykłego kosztu za utrzymanie jednostki morskiej. Morskie jednostki do walki w zwarciu mają 1/3 szansy na przejęcie pokonanych jednostek morskich."
-		Korean:"해상 유닛 유지비가 1/3이 됩니다. 해상 근접 유닛이 적 해상 유닛을 처치했을 때, 1/3 확률로 처치한 유닛을 포획합니다."
+		Korean:"해상 유닛 유지비가 1/3이 됩니다. 해상 근접 유닛이 적 해상 유닛을 처치했을 때, 1/3 확률로 그 유닛을 포획합니다."
 }
 
 	"Korea":{
