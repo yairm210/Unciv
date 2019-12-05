@@ -845,376 +845,376 @@
 	//City states
 	{
 		name:"Milan",
-		translatedName:"米兰",
-		adjective:["米兰的"],
+		translatedName:"밀라노",
+		adjective:["밀라노"],
 		cityStateType:"Cultured",
 		
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"You fiend! History shall remember this!"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"악마 같으니! 역사가 이를 기억할 것이오!"
 
 		
 		outerColor:[0, 0, 0],
 		innerColor:[185,132,66],
-		cities:["米兰"]
+		cities:["밀라노"]
 	},
 	{
 		name:"Florence",
-		translatedName:"佛罗伦萨",
-		adjective:["佛罗伦萨的"],
+		translatedName:"피렌체",
+		adjective:["피렌체"],
 		cityStateType:"Cultured",
 		
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"And so the flower of Florence falls to barbaric hands..."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"피렌체라는 꽃이 어떤 야만인에게 짓밟히는구나..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[62,197,252],
-		cities:["佛罗伦萨"]
+		cities:["피렌체"]
 	},
 	{
 		name:"Rio de Janeiro",
-		translatedName:"里约热内卢",
-		adjective:["里约热内卢的"],
+		translatedName:"리우 데 자네이루",
+		adjective:["리우 데 자네이루"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We shall have our revenge."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리는 복수의 칼날을 갈 것이다."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211, 220, 103],
-		cities:["里约热内卢"]
+		cities:["리우 데 자네이루"]
 	},
 	{
 		name:"Antwerp",
-		translatedName:"安特卫普",
-		adjective:["安特卫普的"],
+		translatedName:"앤트워프",
+		adjective:["앤트워프"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"They will write songs of this.... pray that they shall be in your favor."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"이것에 대한 노래를 하나 써야겠군요.... 당신의 취향에 맞기를 바랍니다."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[194,97,255],
-		cities:["安特卫普"]
+		cities:["앤트워프"]
 	},
 	{
 		name:"Dublin",
-		translatedName:"都柏林",
-		adjective:["都柏林的"],
+		translatedName:"더블린",
+		adjective:["더블린"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Hah! A fine victory."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"하! 완벽한 승리로군..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211,180,113],
-		cities:["都柏林"]
+		cities:["더블린"]
 	},
 	{
 		name:"Tyre",
-		translatedName:"推罗",
-		adjective:["推罗的"],
+		translatedName:"티레",
+		adjective:["티레"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We never fully trusted you from the start."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"처음 만났을 때부터 그대를 신용하지 않았소."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,97,255],
-		cities:["推罗"]
+		cities:["티레"]
 	},
 	{
 		name:"Ur",
-		translatedName:"乌尔",
-		adjective:["乌尔的"],
+		translatedName:"우르",
+		adjective:["우르"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Why must you do such a thing?"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"꼭 이래야만 했습니까?"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
-		cities:["乌尔"]
+		cities:["우르"]
 	},
 	{
 		name:"Genoa",
-		translatedName:"热那亚",
-		adjective:["热那亚的"],
+		translatedName:"제노바",
+		adjective:["제노바"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"How barbaric. Those who live by the sword shall perish by the sword."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"야만적이군. 검으로 부흥한 자는 검으로 망하게 될 것이다."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[45,255,86],
-		cities:["热那亚"]
+		cities:["제노바"]
 	},
 	{
 		name:"Venice",
-		translatedName:"威尼斯",
-		adjective:["威尼斯的"],
+		translatedName:"베니스",
+		adjective:["베니스"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"If our legacy continues, you will never have truly won."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리의 역사가 살아 숨쉬는 한, 그대는 우리를 꺾지 못하오."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[18,178,210],
-		cities:["威尼斯"]
+		cities:["베니스"]
 	},
 	{
 		name:"Brussels",
-		translatedName:"布鲁塞尔",
-		adjective:["布鲁塞尔的"],
+		translatedName:"브리쉘",
+		adjective:["브리쉘"],
 		cityStateType:"Cultured",
 		
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"I guess you weren't here for the sprouts after all..."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"그대만 없었더라도 수많은 문명의 싹들이 자라났을 텐데..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,255,51],
-		cities:["布鲁塞尔"]
+		cities:["브리쉘"]
 	},
 	{
 		name:"Kabul",
-		translatedName:"喀布尔",
-		adjective:["喀布尔的"],
+		translatedName:"카불",
+		adjective:["카불"],
 		cityStateType:"Cultured",
 		
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Unacceptable!"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리가 패배하다니... 믿을 수 없군..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,0,76],
-		cities:["喀布尔"]
+		cities:["카불"]
 	},
 	{
 		name:"Sidon",
-		translatedName:"西顿",
-		adjective:["西顿的"],
+		translatedName:"시돈",
+		adjective:["시돈"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"What a fine battle! Sidon is willing to serve you!"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"훌륭한 전투였소. 그대의 전술을 인정할 수밖에 없군."
 
 		outerColor:[0, 0, 0],
 		innerColor:[250,128,114],
-		cities:["西顿"]
+		cities:["시돈"]
 	},
 	{
 		name:"Almaty",
-		translatedName:"阿拉木图",
-		adjective:["阿拉木图的"],
+		translatedName:"알마티",
+		adjective:["알마티"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"How could we fall to the likes of you?!"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"당신같은 사람에게 질 수밖에 없다니!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[102,0,51],
-		cities:["阿拉木图"]
+		cities:["알마티"]
 	},
 	{
 		name:"Edinburgh",
-		translatedName:"爱丁堡",
-		adjective:["爱丁堡的"],
+		translatedName:"에든버러",
+		adjective:["에든버러"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"There is no dishonor in losing to a worthier foe."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리보다 강한 나라에게 지는 것은 치욕적이지 않습니다."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
-		cities:["爱丁堡"]
+		cities:["에든버러"]
 	},
 	{
 		name:"Singapore",
-		translatedName:"新加坡",
-		adjective:["新加坡的"],
+		translatedName:"싱가포르",
+		adjective:["싱가포르"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Perhaps, in another world, we could have been friends..."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"어딘가 다른 우주에서는, 우리가 친구였을 수도 있겠지요..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,255,0],
-		cities:["新加坡"]
+		cities:["싱가포르"]
 	},
 	{
 		name:"Zanzibar",
-		translatedName:"桑给巴尔",
-		adjective:["桑给巴尔的"],
+		translatedName:"잔지바르",
+		adjective:["잔지바르"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"May the Heavens forgive you for inflicting this humiliation to our people."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리 백성에게 이런 굴욕을 준 당신을 하늘이 용서해 주기를."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,255],
-		cities:["桑给巴尔"]
+		cities:["잔지바르"]
 	},
 	{
 		name:"Sydney",
-		translatedName:"悉尼",
-		adjective:["悉尼的"],
+		translatedName:"시드니",
+		adjective:["시드니"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"The principles for which we have fought will survive longer than any nation you could ever build."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리의 전투정신은 당신이 이룩하는 그 어떤 국가보다도 오래 ."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,204,204],
-		cities:["悉尼"]
+		cities:["시드니"]
 	},
 	{
 		name:"Cape Town",
-		translatedName:"开普敦",
-		adjective:["开普敦的"],
+		translatedName:"케이프 타운",
+		adjective:["케이프 타운"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"I have failed. May you, at least, know compassion towards our people."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"나는 실패했지만, 당신이라면 적어도 우리 민족에 대한 열정을 보여줄 수 있겠지요."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,153],
-		cities:["开普敦"]
+		cities:["케이프 타운"]
 	},
 	{
 		name:"Kathmandu",
-		translatedName:"加德满都",
-		adjective:["加德满都的"],
+		translatedName:"카트만두",
+		adjective:["카트만두"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We... defeated? No... we had so much work to do!"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리가... 패배했다고? 아직 할 일이 산처럼 쌓여 있었단 말이다!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,25,0],
-		cities:["加德满都"]
+		cities:["카트만두"]
 	},
 	{
 		name:"Hanoi",
-		translatedName:"河内",
-		adjective:["河内的"],
+		translatedName:"하노이",
+		adjective:["하노이"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"So this is how does it feel to die..."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"이것이 죽음에서 느껴지는 감정이었구나..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,0,255],
-		cities:["河内"]
+		cities:["하노이"]
 	},
 	{
 		name:"Quebec City",
-		translatedName:"魁北克",
-		adjective:["魁北克的"],
+		translatedName:"퀘벡",
+		adjective:["퀘벡"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We were too weak to protect ourselves..."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"아아...스스로를 지키기에도 너무나 나약했었구나..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,102,0],
-		cities:["魁北克"]
+		cities:["퀘벡"]
 	},
 	{
 		name:"Helsinki",
-		translatedName:"赫尔辛基",
-		adjective:["赫尔辛基的"],
+		translatedName:"헬싱키",
+		adjective:["헬싱키"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"The day of judgement has come to us. But rest assured, the same will go for you!"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"우리에게 심판의 시간이 도래했군요. 하지만 주의하십시오, 언젠간 당신도 심판을 받게 될 것입니다!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
-		cities:["赫尔辛基"]
+		cities:["헬싱키"]
 	},
 	{
 		name:"Kuala Lumpur",
-		translatedName:"吉隆坡",
-		adjective:["吉隆坡的"],
+		translatedName:"쿠알라 룸푸르",
+		adjective:["쿠알라 룸푸르"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Today, the Malay people obey you, but do not think this is over..."
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"오늘날의 우리는 그대에게 복종할 지 몰라도, 이 슬픔은 마음속에 영원히 남을 것입니다!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
-		cities:["吉隆坡"]
+		cities:["쿠알라 룸푸르"]
 	},
 	{
 		name:"Manila",
-		translatedName:"马尼拉",
-		adjective:["马尼拉的"],
+		translatedName:"마닐라",
+		adjective:["마닐라"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Ah, Gods! Why have you forsaken us?"
+		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
+		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
+		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
+		defeated:"아, 신이시여! 왜 우리를 버리시나이까!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[96,96,96],
-		cities:["马尼拉"]
+		cities:["마닐라"]
 	},
 	
 	//Barbarian
 	{
 		name:"Barbarians",
-		translatedName:"蛮族",
+		translatedName:"야만인",
 		outerColor:[0,0,0],
 		innerColor:[182,0,0]
 	}
