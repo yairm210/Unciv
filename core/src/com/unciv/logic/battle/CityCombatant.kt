@@ -41,7 +41,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         if(cityTile.baseTerrain== Constants.hill) strength+=5
         // as tech progresses so does city strength
         val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
-                getCivInfo().gameInfo.gameBasics.Technologies.count()
+                getCivInfo().gameInfo.ruleSet.Technologies.count()
         strength += (techsPercentKnown * 5.5).pow(2.8).toFloat()
 
         // The way all of this adds up...

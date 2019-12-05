@@ -99,7 +99,7 @@ class GameStarter{
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
-            val availableMilitaryUnits = gameInfo.gameBasics.Units.values.filter {
+            val availableMilitaryUnits = gameInfo.ruleSet.Units.values.filter {
                 it.isBuildable(civ)
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()

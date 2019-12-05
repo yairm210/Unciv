@@ -159,7 +159,7 @@ open class TileInfo {
             val resource = getTileResource()
             stats.add(getTileResource()) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
-                val resourceBuilding = tileMap.gameInfo.gameBasics.Buildings[resource.building!!]!!
+                val resourceBuilding = tileMap.gameInfo.ruleSet.Buildings[resource.building!!]!!
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic

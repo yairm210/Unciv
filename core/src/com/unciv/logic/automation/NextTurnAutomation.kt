@@ -170,7 +170,7 @@ class NextTurnAutomation{
 
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = civInfo.gameInfo.gameBasics.Technologies.values
+            val researchableTechs = civInfo.gameInfo.ruleSet.Technologies.values
                     .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
@@ -198,7 +198,7 @@ class NextTurnAutomation{
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
 
-            val adoptablePolicies = civInfo.gameInfo.gameBasics.PolicyBranches.values
+            val adoptablePolicies = civInfo.gameInfo.ruleSet.PolicyBranches.values
                     .flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
 

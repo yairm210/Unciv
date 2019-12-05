@@ -36,7 +36,7 @@ class UnitPromotions{
     }
 
     fun getAvailablePromotions(): List<Promotion> {
-        return unit.civInfo.gameInfo.gameBasics.UnitPromotions.values
+        return unit.civInfo.gameInfo.ruleSet.UnitPromotions.values
                 .filter { unit.type.toString() in it.unitTypes && it.name !in promotions }
                 .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
     }

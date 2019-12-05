@@ -107,13 +107,13 @@ class CivilizationInfo {
     //region pure functions
     fun getDifficulty():Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return gameInfo.gameBasics.Difficulties["Chieftain"]!!
+        return gameInfo.ruleSet.Difficulties["Chieftain"]!!
     }
 
     fun getTranslatedNation(): Nation {
         val language = UncivGame.Current.settings.language.replace(" ","_")
         if(!Gdx.files.internal("jsons/Nations/Nations_$language.json").exists()) return nation
-        val translatedNation = gameInfo.gameBasics.getFromJson(Array<Nation>::class.java, "Nations/Nations_$language")
+        val translatedNation = gameInfo.ruleSet.getFromJson(Array<Nation>::class.java, "Nations/Nations_$language")
                 .firstOrNull { it.name==civName}
         if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
             return nation      // default to english
@@ -170,7 +170,7 @@ class CivilizationInfo {
      */
     fun getCivResourcesByName():HashMap<String,Int>{
         val hashMap = HashMap<String,Int>()
-        for(resource in gameInfo.gameBasics.TileResources.keys) hashMap[resource]=0
+        for(resource in gameInfo.ruleSet.TileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
         return hashMap
@@ -228,19 +228,19 @@ class CivilizationInfo {
 
 
     fun getEquivalentBuilding(buildingName:String): Building {
-        val baseBuilding = gameInfo.gameBasics.Buildings[buildingName]!!.getBaseBuilding(gameInfo.gameBasics)
+        val baseBuilding = gameInfo.ruleSet.Buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
 
-        for(building in gameInfo.gameBasics.Buildings.values)
+        for(building in gameInfo.ruleSet.Buildings.values)
             if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
                 return building
         return baseBuilding
     }
 
     fun getEquivalentUnit(baseUnitName:String):BaseUnit {
-        for (unit in gameInfo.gameBasics.Units.values)
+        for (unit in gameInfo.ruleSet.Units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        return gameInfo.gameBasics.Units[baseUnitName]!!
+        return gameInfo.ruleSet.Units[baseUnitName]!!
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
@@ -295,7 +295,7 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.gameBasics.Nations[civName]!!
+        nation = gameInfo.ruleSet.Nations[civName]!!
     }
 
     fun setTransients() {

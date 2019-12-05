@@ -51,11 +51,11 @@ class UncivGame(val version: String) : Game() {
             settings.save()
         }
         if (GameSaver().getSave("Autosave").exists()) {
-//            try {
+            try {
                 loadGame("Autosave")
-//            } catch (ex: Exception) { // silent fail if we can't read the autosave
-//                startNewGame()
-//            }
+            } catch (ex: Exception) { // silent fail if we can't read the autosave
+                startNewGame()
+            }
         }
         else setScreen(LanguagePickerScreen())
 

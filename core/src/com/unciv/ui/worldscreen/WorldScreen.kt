@@ -254,7 +254,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techButtonHolder.isVisible = viewingCiv.cities.isNotEmpty()
         techButtonHolder.clearChildren()
 
-        val researchableTechs = viewingCiv.gameInfo.gameBasics.Technologies.values.filter { !viewingCiv.tech.isResearched(it.name) && viewingCiv.tech.canBeResearched(it.name) }
+        val researchableTechs = viewingCiv.gameInfo.ruleSet.Technologies.values.filter { !viewingCiv.tech.isResearched(it.name) && viewingCiv.tech.canBeResearched(it.name) }
         if (viewingCiv.tech.currentTechnology() == null && researchableTechs.isEmpty())
             viewingCiv.tech.techsToResearch.add(Constants.futureTech)
 

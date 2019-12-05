@@ -113,7 +113,7 @@ class MapUnit {
         val uniques = ArrayList<String>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniques)
-        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.gameBasics.UnitPromotions[it]!!.effect })
+        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.UnitPromotions[it]!!.effect })
         tempUniques = uniques
 
         if("Ignores terrain cost" in uniques) ignoresTerrainCost=true
@@ -454,7 +454,7 @@ class MapUnit {
             city.population.autoAssignPopulation()
             civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",tile.position, Color.GREEN)
         }
-        val researchableAncientEraTechs = tile.tileMap.gameInfo.gameBasics.Technologies.values
+        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.Technologies.values
                 .filter {
                     !civInfo.tech.isResearched(it.name)
                             && civInfo.tech.canBeResearched(it.name)

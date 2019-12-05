@@ -7,12 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
-class Language(val language:String){
+class Language(val language:String, ruleSet: RuleSet){
     val percentComplete:Int
     init{
         val availableTranslations = UncivGame.Current.ruleSet.Translations.count { it.value.containsKey(language) }
@@ -263,7 +264,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         innerTable.add("Language".toLabel())
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        UncivGame.Current.ruleSet.Translations.getLanguages().map { Language(it) }
+        val ruleSet = worldScreen.gameInfo.ruleSet
+        ruleSet.Translations.getLanguages().map { Language(it, ruleSet) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray

@@ -106,7 +106,7 @@ class WorkerAutomation(val unit: MapUnit) {
                         }
                         if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
                                 && unit.currentTile.improvementInProgress!=targetRoad.name) {
-                            val improvement = targetRoad.improvement(unit.civInfo.gameInfo.gameBasics)!!
+                            val improvement = targetRoad.improvement(unit.civInfo.gameInfo.ruleSet)!!
                             tileToConstructRoadOn.startWorkingOnImprovement(improvement, unit.civInfo)
                         }
                         return true
@@ -199,7 +199,7 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
         if (improvementString == null) return null
-        return unit.civInfo.gameInfo.gameBasics.TileImprovements[improvementString]!!
+        return unit.civInfo.gameInfo.ruleSet.TileImprovements[improvementString]!!
     }
 
 }

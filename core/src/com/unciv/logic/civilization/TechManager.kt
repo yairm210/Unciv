@@ -43,7 +43,7 @@ class TechManager {
         return toReturn
     }
 
-    fun getGameBasics() = civInfo.gameInfo.gameBasics
+    fun getGameBasics() = civInfo.gameInfo.ruleSet
 
     fun costOfTech(techName: String): Int {
         var techCost = getGameBasics().Technologies[techName]!!.cost.toFloat()
