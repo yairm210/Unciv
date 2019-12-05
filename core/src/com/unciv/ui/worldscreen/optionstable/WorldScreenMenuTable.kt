@@ -40,7 +40,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         addSeparator()
 
         addSquareButton("Civilopedia".tr()){
-            UncivGame.Current.setScreen(CivilopediaScreen())
+            UncivGame.Current.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
             remove()
         }.size(width,height)
         addSeparator()

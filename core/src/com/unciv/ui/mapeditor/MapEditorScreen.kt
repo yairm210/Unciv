@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.tr
@@ -17,8 +18,9 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     var tileMap = TileMap()
     var mapName = "My first map"
     lateinit var mapHolder: TileGroupMap<TileGroup>
-    private val tileEditorOptions = TileEditorOptionsTable(this)
     private val showHideEditorOptionsButton = TextButton(">",skin)
+    val ruleSet = UncivGame.Current.ruleSet
+    private val tileEditorOptions = TileEditorOptionsTable(this)
 
     constructor(mapNameToLoad:String?):this(){
         var mapToLoad = mapNameToLoad
@@ -40,7 +42,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     }
 
     fun initialize() {
-        tileMap.setTransients(game.ruleSet)
+        tileMap.setTransients(ruleSet)
         val mapHolder = getMapHolder(tileMap)
 
         stage.addActor(mapHolder)

@@ -33,7 +33,7 @@ object ImageGetter {
         setTextureRegionDrawables()
     }
 
-    fun getGameBasics() = UncivGame.Current.ruleSet
+    fun getRuleSet() = UncivGame.Current.ruleSet
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
@@ -112,13 +112,13 @@ object ImageGetter {
             return getImage("OtherIcons/Stop")
         if(improvementName.startsWith("StartingLocation ")){
             val nationName = improvementName.removePrefix("StartingLocation ")
-            val nation = getGameBasics().Nations[nationName]!!
+            val nation = getRuleSet().Nations[nationName]!!
             return getNationIndicator(nation,size)
         }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
-        val improvement = getGameBasics().TileImprovements[improvementName]!!
+        val improvement = getRuleSet().TileImprovements[improvementName]!!
         when {
             improvement.food>0 -> iconGroup.circle.color= foodCircleColor
             improvement.production>0 -> iconGroup.circle.color= productionCircleColor
@@ -131,8 +131,8 @@ object ImageGetter {
     }
 
     fun getConstructionImage(construction: String): Image {
-        if(getGameBasics().Buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
-        if(getGameBasics().Units.containsKey(construction)) return getUnitIcon(construction)
+        if(getRuleSet().Buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
+        if(getRuleSet().Units.containsKey(construction)) return getUnitIcon(construction)
         if(construction=="Nothing") return getImage("OtherIcons/Stop")
         return getStatIcon(construction)
     }
@@ -180,7 +180,7 @@ object ImageGetter {
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = getGameBasics().TileResources[resourceName]!!
+        val resource = getRuleSet().TileResources[resourceName]!!
         when {
             resource.food>0 -> iconGroup.circle.color= foodCircleColor
             resource.production>0 -> iconGroup.circle.color= productionCircleColor
@@ -204,7 +204,7 @@ object ImageGetter {
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
         var techIconColor = Color.WHITE
-        when (getGameBasics().Technologies[techName]!!.era().name) {
+        when (getRuleSet().Technologies[techName]!!.era().name) {
             "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
             "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
             "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)
