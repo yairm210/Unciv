@@ -164,6 +164,7 @@
 		Polish:+15% Wzrostu produkcji jednostek walczących w dystansie"
 		Ukrainian:"Виробництво для далекобійних підрозділів +15%"
 		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
+		French:"+15% de production pour les unités à distance"
 	}
 
 	*/
@@ -1488,7 +1489,8 @@
 		Czech: "'Spravedlnost je nepřekonatelná pevnost postavená na vrcholu hory, kterou nesvrhne dravá voda ani nemůže být zničena silou armád.' - Joseph Addison"
 		Russian:"'Справедливость - это неприступная крепость, построенная на гребне горы, которую не может разрушить ярость стихий или уничтожить армия солдат.' - Джозеф Эддисон"
 		Ukrainian:"'Справедливість є неприступною фортецею, збудованою на горі, яку неможливо скинути потоками насильства, або знищити силою війська' - Джозеф Еддісон"
-		Korean:"'정의란 급류나 군대로도 무너트릴 수 없는 산꼭대기에 세운 무적의 요새다.' - 조저프 에디슨"
+		Korean:"'정의란 급류나 군대로도 무너트릴 수 없는 산꼭대기에 세운 무적의 요새다.' - 조저프 에디슨" 
+		French:"'La justice est une forteresse insaisissable, construite au sommet d'une montagne qui ne peut être renversée par la violence des torrents ni démolie par la force des armées.' - Joseph Addison"
 }
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -1529,6 +1531,7 @@
 		Russian:"'Храм - выдающееся сооружение. Оно имеет башни, рельефы и украшения, какие только может вообразить человеческий гений.' - Антонио де Магдалена"
 		Ukrainian:"'Храм є унікальною будовою. Він має вежі і оздобу і таку витонченість, які тільки здатен створити талант людини.' - Антоніу да Мадалена"
 		Korean:"'세상에 또 이런 건물은 없을 것이다. 탑이 있고 장식이 있으며 인간의 재주로 생각할 수 있는 기교란 기교는 다 있다.' - 안토니오 데 막달레나"
+		French:"'Un temple est une construction sans équivalent. Il a les tours, les décorations et tous les rafinements que le génie humain peut concevoir.' - Antonio da Magdalena"
 }
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -1681,6 +1684,7 @@
 		Russian:"'Я живу и люблю в особом свете Господа.' - Микеланджело Буонаротти"
 		Ukrainian:"'Живу і кохаю під особливим божим осяянням' - Мікеланджело Буонарроті"
 		Korean:"'나는 신의 경이로운 빛 속에서 살며 사랑한다.' - 미켈란젤로 부오나로티"
+		French:"'Je vis et j'aime dans la lumière particulière de Dieu' - Michelangelo Buonarroti"
 }
 	"Culture in all cities increased by 25%":{
 		Italian:"+25% cultura in ogni città"
@@ -1781,6 +1785,7 @@
 		Russian:"'Фактически любой из нас может по собственному желанию превратить мир во дворец или в темницу' - Джон Лаббок"
 		Ukrainian:"'Більшість з нас може, за власним вибором, зробити цей світ палацом або в’язницею' - Джон Лаббок"
 		Korean:"'우리 대부분은 마음 먹기에 따라 세상을 궁궐로 만들 수도 있고 감옥으로 만들 수도 있다.' - 존 러벅"
+		French:"'La plupart d'entre nous peut, de son propre choix, faire de ce monde un palais ou une prison.'- John Lubbock"
 }
 	"Unhappiness from population decreased by 10%":{
 		Italian:"-10% infelicità dalla popolazione"
@@ -1839,6 +1844,7 @@
 		Russian:"'Не хлопайте так громко - здание старое, может развалиться.' - Джон Осборн"
 		Ukrainian:"'Не плескайте занадто гучно - це дуже стара будівля' - Джон Джеймс Осборн"
 		Korean:"'아주 오래된 건물이니까, 너무 세게 손뼉 치지 마십시오.' - 존 오스본"
+		French:"'N'applaudissez pas trop fort - c'est un très vieux bâtiment.' - John Osbourne"
 }
 
 	"Free Great Person":{
@@ -1878,6 +1884,7 @@
 		Ukrainian:"Отримати:"
                 Malay:"Dapat"
 				Korean:"얻기: "
+		French:"Obtenir "
 }
 
 	"Himeji Castle":{
@@ -1902,6 +1909,7 @@
 		Russian:"'Бусидо - путь воина - означает смерть. Когда для выбора имеются два пути, выбирай тот, который ведет к смерти. Не рассуждай! Направь мысль на путь, который ты предпочел, и иди.' - Ямамото Цунетомо"
 		Ukrainian:"’Шлях воїна проявляється у присутності смерті. Треба обирати смерть, коли є вибір між життям і смертю. Інших міркувань немає' - Ямамото Цунетомо"
 		Korean:"'무사도는 죽음을 마주했을 때 실현된다. 즉, 삶과 죽음의 기로에서 죽음을 택한다는 뜻이다. 다른 생각의 여지는 없다.' - 야마모토 츠네모토"
+		French:"'Le Bushido est pratiqué en présence de la mort. Cela implique de choisir la mort quand il y a un choix entre la vie et la mort. Il n'y a pas d'autres raisonnement.' - Yamamoto Tsunetomo"
 }
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1943,6 +1951,7 @@
 		Russian:"'Пусть великолепие алмаза, рубина исчезнет, как магическое мерцание от радуги, только пусть одна слеза - Тадж-Махал - ярко сияет на щеке времени.' - Рабиндарат Тагор"
 		Ukrainian:"'Тадж-Махал здіймається над берегом річки як самотня сльоза на щоці часу' - Рабіндранат Тагор"
 		Korean:"'타지마할은, 시간의 뺨에 흐르는 눈물 한 방울과도 같이 강둑 위로 솟아있다.' - 라빈드라나트 타고르"
+		French:"'Le Taj Mahal s'élève sur les bords d'une rivière comme une larme solitaire suspendue sur la joue du temps.'  - Rabindranath Tagore"
 }
 
 	"Empire enters golden age":{
@@ -2049,6 +2058,7 @@
 		Russian:"'У подлинного произведения искусства столько же прав на существование, сколько у солнца и земли.' - Ральф Уолдо Эмерсон"
 		Ukrainian:"'Кожен витвір мистецтва має стільки ж причин існувати, як земля і сонце’- Ральф Волдо Емерсон"
 		Korean:"'진실한 예술품의 존재 가치는 지구와 태양의 존재 가치와 같다.' - 랄프 왈도 에머슨"
+		French:"'Toute véritable oeuvre d'art a autant de raisons d'être que la terre et le soleil.' - Ralph Waldo Emerson"
 }
 
 	"Free Great Artist Appears":{
@@ -2225,6 +2235,7 @@
 		Russian:"'Для великих свершений потребны две вещи: план действий и недостаток времени.' - Леонард Бернстайн"
 		Ukrainian:"'Для досягнення визначних результатів потрібні дві речі: план, і не зовсім достатньо часу' - Леонард Бернштейн"
 		Korean:"'위대한 업적을 이루려면 두 가지가 필요하다. 하나는 계획이고, 하나는 적당히 빠듯한 시간이다.' - 레너드 번스타인"
+		French:"'Pour accomplir de grandes choses, on a besoin de deux éléments : un plan, et pas assez de temps'- Leonard Bernstein"
 }
 
 	"-15% to purchasing items in cities":{
@@ -2265,6 +2276,7 @@
 		Russian:"'Придите ко Мне все трудящиеся и обремененные, и Я успокою вас.' - Евангелие от Матфея, 11:28"
 		Ukrainian:"'Прийдіть до Мене, усі струджені та обтяжені, і Я вас заспокою!' - Євангеліє Від Матвія 11:28"
 		Korean:"'고생하며 무거운 짐을 진 너희는 모두 나에게 오너라. 내가 너희에게 안식을 주겠다.' - 성경, 마태복음 11:28"
+		French:"'Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos." - Nouveau Testament, Matthieu 11:28"
 }
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -2308,6 +2320,7 @@
 		Russian:"'Закон - это крепость на холме, которую не подточат воды, не возьмут осаждающие' - пророк Мухаммед"
 		Ukrainian:"'Закон є фортецею на горі, яку не можуть захопити війська або змити потоки' - Пророк Магомет"
 		Korean:"'법이란 군대에 빼앗기지도 않고 홍수에 휩쓸리지도 않는 언덕 위의 요새다.' - 선지자 무함마드"
+		French:"'La loi est une forteresse sur une colline dont les armées ne peuvent s'emparer prendre ou que les inondations peuvent emporter' - Le prophète Mahomet"
 }
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -2385,6 +2398,7 @@
 		German:"Brandenburger Tor"
 		Ukrainian:"Бранденбурські ворота"
 		Korean:"브란덴부르크 문"
+		French:"Porte de Brandebourg"
 	}
 	
 	"Free Great General appears near the Capital":{
@@ -2396,6 +2410,7 @@
 		German:"Kostenloser neuer General erscheint nahe der Hauptstadt"
 		Ukrainian:"біля столиці безкоштовно з’являється видатний генерал"
 		Korean:"수도 근처에 무료로 위대한 장군 하나가 출현"
+		French:"Un général illustre gratuit apparaît près de la Capitale"
 	}
 	
 	"'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace":{
@@ -2406,6 +2421,7 @@
 		Traditional_Chinese:"“蒼白的死神平等地叩響窮人房舍的小門和國王宮殿的大門。”——昆圖斯·賀拉斯·弗拉庫斯"
 		Ukrainian:"'Смерть приходить однаково до хиж бідняків і королівських палаців' - Горацій"
 		Korean:"'창백한 죽음은 가난한 자의 문과 왕의 궁전을 똑같이 두드린다.' - 호라티우스"
+		French:"'La mort pâle frappe de la même manière la porte du pauvre et le palais des rois.' - Horace"
 	}
 
 	"Broadcast Tower":{
@@ -2451,6 +2467,7 @@
 		Russian:"'Мы живем лишь для того, чтобы познавать красоту. Все прочее – ожидание' - Халиль Джебран"
 		Ukrainian:"'Ми живемо тільки для відкриття краси, усе інше є формою очікування' - Халіль Джебран"
 		Korean:"'우리 삶의 유일한 목적은 아름다움을 발견하는 것이다. 다른 모든 것은 일종의 기다림이다.' - 칼릴 지브란"
+		French:"'Nous ne vivons que pour découvrir la beauté, tout le reste n'est qu'une forme d'attente' - Kahlil Gibran"
 }
 
 	"Provides 1 happiness per social policy":{
@@ -2646,6 +2663,7 @@
 		Czech:"Ti, kteří ztratili sny, jsou ztraceni - Australské domorodé přísloví"
 		Russian:"'У кого погибли мечты, тот и сам погиб.' - пословица австралийских аборигенов"
 		Ukrainian:"'Хто не мріє, той не жмве' - приказка австралійських аборигенів"
+		French:"'Ceux qui perdent leurs rêves sont perdus.' - Dicton arborigène australien"
 		Korean:"'꿈을 잃어버리면 길도 잃는다.' - 호주 원주민 속담"
 }
 
@@ -2716,6 +2734,7 @@
 		Russian:"'При подготовке к битве планы незаменимы, но, как только битва началась, план становится совершенно бесполезным.' - Дуайт Эйзенхауэр"
 		Ukrainian:"'Готуючись до бою, я завжди виявляв марність планів, але планування незамінне' - Двайт Айзенгавер"
 		Korean:"'나는 전투 준비에 있어서, 계획은 아무 쓸모가 없지만 계획을 세우는 일은 꼭 필요하다는 사실을 늘 깨닫게 된다.' - 드와이트 D. 아이젠하워"
+		French:"'Dans la préparation d'une bataille j'ai toujours trouvé que les plans étaient inutiles mais la plannification indispensable.' - Dwight D. Eisenhower"
 }
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -2856,6 +2875,7 @@
 		Polish:"Zadziwiające jest to, że pole gwiazd nie jest tak ogromne, ale że człowiek je zmierzył. - Anatole France"
 		Ukrainian:"'Дивним є не такий величезний зоряний простір, а вимірювання його людиною' - Анатоль Франс"
 		Korean:"'진정한 불가사의는 우주의 방대한 크기가 아니라 인간이 그 크기를 측정했다는 사실이다.' - 아나톨 프랑스"
+		French:"'Ce qui est admirable, ce n'est pas que le champ des étoiles soit si vaste, c'est que l'homme l'ait mesuré.' - Anatole France"
 }
 
 	"2 free great scientists appear":{
@@ -3012,7 +3032,7 @@
 		Italian:"Meraviglia in costruzione altrove"
 		Simplified_Chinese:"其他城市正在建造该奇观"
 		Traditional_Chinese:"其他城市正在建造該奇觀"
-        	French:"Cette merveille est déjà en construction ailleurs"
+		French:"Cette merveille est déjà en construction ailleurs"
 		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
 		Polish:"Cud jest już budowany gdzie indziej"
 		Russian:"Чудо света строится где-то ещё"
@@ -3040,7 +3060,7 @@
 		Italian:"Richiede [buildingName] nella città"
 		Simplified_Chinese:"需要城市建有[buildingName]"
 		Traditional_Chinese:"需要城市建有[buildingName]"
-        	French:"Nécessite un(e) [buildingName] dans cette ville"
+		French:"Nécessite un(e) [buildingName] dans cette ville"
 		Portuguese:"Requer um [buildingName] nessa cidade"
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
 		Russian:"Требует [buildingName] в городе"
