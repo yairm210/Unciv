@@ -495,6 +495,7 @@
 		Russian:"Подарить [giftAmount] золота (+[influenceAmount] Влияния)"
 		German:"Geschenk [giftAmount] Gold (+[influenceAmount] Einfluss) "
 		Korean:"금 [giftAmount] 선물 (영향력 +[influenceAmount])"
+		French:"Donne [giftAmount] Or (+[influenceAmount] Influence)"
 }
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
@@ -854,6 +855,7 @@
 		Czech:"Typ:"
 		German:"Typ: "
 		Korean:"성향 : "
+		French:"Type : "
 }
 
 	"Influence: ":{
@@ -895,6 +897,7 @@
 		German:"Alliierte"
 		Polish:"Sojusznik: "
 		Korean:"동맹 : "
+		French:"Allié :"
 }
 
 ////// Trade
@@ -941,12 +944,13 @@
 		Polish:"Wycofaj ofertę"
                 Malay:"Tarik balik tawaran"
 		Korean:"제안 취소"
+		French:"Retirer l'offre"
 }
 
 	"What do you have in mind?":{
 		Italian:"Cos'hai in mente?"
 		Russian:"Что вы об этом думаете?"
-		French:"À quoi pensez-vous?"
+		French:"À quoi pensez-vous ?"
 		Romanian:"La ce te gândești?"
 		Spanish:"¿Qué tienes en mente?"
 		Simplified_Chinese:"你有什么想法？"
@@ -1220,6 +1224,7 @@
 		German:"Vorstellung der Nation [nation]"
 		Polish:"Przedstawienie narodu [nation]" //checking context ingame - will delete after confirming
 		Korean:"[nation]에 대한 소개"
+		French:"Présentation à [nation]"
 }
 
 	"Declare war on [nation]":{
@@ -1231,6 +1236,7 @@
 		German:"[nation] den Krieg erklären"
 		Polish:"Wypowiedz wojnę z [nation]"
 		Korean:"[nation]에 전쟁 선포"
+		French:"Déclarer la guerre à [nation]"
 }
 
 	"Luxury resources":{
@@ -1300,6 +1306,7 @@
 		German:"Verlorene Eigenschaft"
 		Polish:"Utracona zdolność"
 		Korean:"없어진 특성"
+		French:"capacité manquante"
 }
 
 	"National ability":{ // the unique ability that each nation has
@@ -1398,6 +1405,7 @@
 		German:"Der Einfluss des Stadtstaats reduziert sich nur halb so schnell und erholt sich doppelt so schnell"
 		Polish:"Wpływ Miasta-Państwa obniża się o połowę i odnawia dwukrotnie szybciej niż normalnie"
 		Korean:"도시국가에 대한 영향력 감소량이 절반이 되고, 영향력 회복량은 두 배가 됩니다."
+		French:"L'Influence d'une cité-état diminue deux fois moins vite et revient deux fois plus vite"
 },
 
 	"China":{
@@ -1425,6 +1433,7 @@
 		// same in German
 		Polish:"Wu Zetian"
 		Korean:"측천무후"
+		French:"Wu Zetian"
 },
 
 	"Great general provides double combat bonus, and spawns 50% faster":{
@@ -1633,7 +1642,7 @@
 
 	"Augustus Caesar":{
 		Italian:"Cesare Augusto"
-		French:"Jule César"
+		French:"Jules César"
 		Simplified_Chinese:"奥古斯都·恺撒"
 		Traditional_Chinese:"奧古斯都·凱薩"
 		Russian:"Октавиан Август",
@@ -1924,6 +1933,7 @@
 		German:"Sejong"
 		Polish:"Sejong"
 		Korean:"세종대왕"
+		French:"Sejong"
 }
 
 	"+2 Science for all specialists and Great Person tile improvements":{
@@ -1935,6 +1945,7 @@
 		German:"+2 Wissenschaft für alle SpezialistInnen und Große Persönlichkeit Feldverbesserungen"
 		Polish:"+2 Nauki dla wszystkich specjalistów i polepszenie pola Wielkiej Osoby"
 		Korean:"전문가와 위인 타일 시설 하나당 과학 +2"
+		French:"+2 en Science pour tous les spécialistes les améliorations de tuiles des personnages illustres"
 }
 
 
@@ -1959,6 +1970,7 @@
 		Czech:"Hiawatha"
 		Polish:"Hiawatha"
 		Korean:"하이어워사"
+		French:"Hiawatha"
 }
 
 	"All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.":{
@@ -1998,6 +2010,7 @@
 		German:"Dareios I"
 		Polish:"Dariusz I"
 		Korean:"다리우스 1세"
+		French:"Darius I"
 }
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
@@ -2034,6 +2047,7 @@
 		Russian:"Камеамеа I"
 		Polish:"Kamehameha I"
 		Korean:"카메하메하 1세"
+		French:"Kamehameha I"
 }
 
 	"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.":{
@@ -2068,6 +2082,7 @@
 		Traditional_Chinese:"蘭甘亨"
 		Polish:"Ramkhamhaeng"
 		Korean:"람캄행"
+		French:"Ramkhamhaeng"
 }
 
 	"Food and Culture from Friendly City-States are increased by 50%":{
@@ -2099,6 +2114,7 @@
 		Simplified_Chinese:"阿斯基亚"
 		Traditional_Chinese:"阿斯基亞"
 		Korean:"아스키아"
+		French:"Askia"
 }
 
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
@@ -2170,6 +2186,7 @@
 		German:"Einheiten ignorieren Geländekosten, wenn sie ein Feld mit Hügeln betreten. Keine Wartungskosten für Hügelverbesserungen, sonst halbe Kosten."
 		Polish:"Jednostki ignorują dodatkowy koszt za niedogodności terenu podczas przemieszczania się na dowolne pole Wzgórz. Brak kosztów utrzymania za ulepszenia we Wzgórzach, połowa kosztów wszędzie indziej."
 		Korean:"언덕이 포함된 모든 지형을 이동할 때 소모되는 행동력이 1로 줄어듭니다. 언덕 위의 시설은 유지비가 들지 않고, 다른 지형의 시설은 유지비가 절반이 됩니다."
+		French:"Les unité ignorent les coûts de déplacement dans les collines. Aucun coût de maintenance pour les améliorations sur des collines, à moitié coût ailleurs"
 }
 
 	"Mongolia":{
@@ -2200,6 +2217,7 @@
 		Polish:"Hiszpania"
                 Malay:"Sepanyol"
 		Korean:"스페인"
+		French:"Espagne"
 }
 
 	"Gold bonus for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yields from Natural Wonders are doubled.":{
@@ -2208,6 +2226,7 @@
 		German:"Gold Bonus für die Entdeckung von natürlichen Wundern (Bonus erhöht, falls erster Entdecker). Kultur, Zufriedenheit und Felderträge von natürlichen Wundern werden verdoppelt."
 		Polish:"Bonus w Złocie za odkrycie Cudu Natury (bonus zwiększa się jeżeli odkryłeś go pierwszy). Kultura, Zadowolenie i wydajność pól z Cudu Natury są podwojone"
 		Korean:"자연 경관을 발견했을 때 더 많은 금을 받습니다.(최초로 발견할 경우에는 추가 금을 더 받습니다.) 자연경관에서의 타일 생산량이 두 배가 됩니다."
+		French:"Bonus en Or pour la découverte de merveilles naturelles (bonus supplémentaire si est le premier à la découvrir). La Culture, le Bonheur et les productions provenant de merveilles naturelles sont doublés"
 }
 
 
@@ -2250,7 +2269,7 @@
 		Simplified_Chinese:"蛮族"
 		Traditional_Chinese:"蠻族"
 		German:"Barbaren"
-		French:"Barbare"
+		French:"Barbares"
 		Portuguese:"Bárbaros"
 		Russian:"Варвары"
 		Czech:"Barbaři"
