@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.tile.*
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
@@ -13,6 +13,7 @@ import kotlin.math.abs
 
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
+    @Transient lateinit var ruleSet: RuleSet  // a tile can be a tile with a ruleset, even without a map.
     @Transient var owningCity:CityInfo?=null
     @Transient private lateinit var baseTerrainObject:Terrain
 
@@ -84,11 +85,11 @@ open class TileInfo {
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
-            else GameBasics.TileResources[resource!!]!!
+            else ruleSet.TileResources[resource!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
 
-    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
+    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleSet.TileImprovements[improvement!!]
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
@@ -117,7 +118,7 @@ open class TileInfo {
     }
 
     fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else GameBasics.Terrains[terrainFeature!!]
+        return if (terrainFeature == null) null else ruleSet.Terrains[terrainFeature!!]
     }
 
     fun isWorked(): Boolean {
@@ -158,7 +159,8 @@ open class TileInfo {
             val resource = getTileResource()
             stats.add(getTileResource()) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
-                stats.add(resource.getBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
+                val resourceBuilding = tileMap.gameInfo.gameBasics.Buildings[resource.building!!]!!
+                stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic
                     && observingCiv.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
@@ -179,7 +181,7 @@ open class TileInfo {
         val improvement = getTileImprovement()
         if (improvement != null) {
             if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
-                stats.add(getTileResource().improvementStats!!) // resource-specifc improvement
+                stats.add(getTileResource().improvementStats!!) // resource-specific improvement
             else
                 stats.add(improvement) // basic improvement
 
@@ -238,10 +240,6 @@ open class TileInfo {
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
         return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
-    }
-
-    fun hasIdleUnit(): Boolean {
-        return getUnits().any{it.isIdle()}
     }
 
     fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): MutableList<TileInfo> {
@@ -312,7 +310,7 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients(){
-        baseTerrainObject = GameBasics.Terrains[baseTerrain]!!
+        baseTerrainObject = ruleSet.Terrains[baseTerrain]!! // This is a HACK.
         isWater = getBaseTerrain().type==TerrainType.Water
         isLand = getBaseTerrain().type==TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
@@ -320,7 +318,7 @@ open class TileInfo {
         for (unit in getUnits()) {
             unit.currentTile = this
             unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner),false)
-            unit.setTransients()
+            unit.setTransients(ruleSet)
         }
     }
 

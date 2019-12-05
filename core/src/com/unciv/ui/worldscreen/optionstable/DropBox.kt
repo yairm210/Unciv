@@ -71,6 +71,13 @@ class DropBox {
         dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
                 "{\"path\":\"$fileName\"}","application/json")
     }
+//
+//    fun createTemplate(): String {
+//        val result =  dropboxApi("https://api.dropboxapi.com/2/file_properties/templates/add_for_user",
+//                "{\"name\": \"Security\",\"description\": \"These properties describe how confidential this file or folder is.\",\"fields\": [{\"name\": \"Security Policy\",\"description\": \"This is the security policy of the file or folder described.\nPolicies can be Confidential, Public or Internal.\",\"type\": \"string\"}]}"
+//                ,"application/json")
+//        return BufferedReader(InputStreamReader(result)).readText()
+//    }
 
 
     class FolderList{

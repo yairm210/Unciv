@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -267,7 +266,7 @@ class UnitAutomation{
 
     private fun tryUpgradeUnit(unit: MapUnit, unitActions: List<UnitAction>): Boolean {
         if (unit.baseUnit().upgradesTo != null) {
-            val upgradedUnit = GameBasics.Units[unit.baseUnit().upgradesTo!!]!!
+            val upgradedUnit = unit.civInfo.gameInfo.gameBasics.Units[unit.baseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
                 if (upgradeAction != null && upgradeAction.canAct) {

@@ -12,7 +12,7 @@ import com.unciv.models.gamebasics.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
-object GameBasics {
+class RuleSet {
     val Buildings = LinkedHashMap<String, Building>()
     val Terrains = LinkedHashMap<String, Terrain>()
     val TileResources = LinkedHashMap<String, TileResource>()
@@ -30,7 +30,7 @@ object GameBasics {
         return Json().apply { ignoreUnknownFields = true }.fromJson(tClass, jsonText)
     }
 
-    fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
+    private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>()
         for (item in items)
             hashMap[item.name] = item
@@ -52,7 +52,7 @@ object GameBasics {
         Buildings += createHashmap(getFromJson(Array<Building>::class.java, "Buildings"))
         for (building in Buildings.values) {
             if (building.requiredTech == null) continue
-            val column = building.getRequiredTech().column
+            val column = Technologies[building.requiredTech!!]!!.column
             if (building.cost == 0)
                 building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
         }
@@ -66,9 +66,9 @@ object GameBasics {
         PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
         for (branch in PolicyBranches.values) {
             branch.requires = ArrayList()
-            branch.branch = branch.name
+            branch.branch = branch
             for (policy in branch.policies) {
-                policy.branch = branch.name
+                policy.branch = branch
                 if (policy.requires == null) policy.requires = arrayListOf(branch.name)
             }
             branch.policies.last().name = branch.name + " Complete"

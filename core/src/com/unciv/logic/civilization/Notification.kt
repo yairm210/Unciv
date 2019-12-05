@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -41,7 +40,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 /** show tech screen */
 class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        val tech = GameBasics.Technologies[techName]
+        val tech = worldScreen.gameInfo.gameBasics.Technologies[techName]
         worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
     }
 }

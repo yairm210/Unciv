@@ -1,11 +1,12 @@
 package com.unciv.models.gamebasics.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import java.util.*
+import kotlin.math.roundToInt
 
 class TileImprovement : NamedStats() {
 
@@ -26,10 +27,10 @@ class TileImprovement : NamedStats() {
             realTurnsToBuild *= 0.75f
         if (civInfo.policies.isAdopted("Citizenship"))
             realTurnsToBuild *= 0.75f
-        return Math.round(realTurnsToBuild)
+        return realTurnsToBuild.roundToInt()
     }
 
-    fun getDescription(): String {
+    fun getDescription(ruleSet: RuleSet): String {
         val stringBuilder = StringBuilder()
         if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
@@ -40,7 +41,7 @@ class TileImprovement : NamedStats() {
             stringBuilder.appendln("Can be built on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))//language can be changed when setting changes.
         }
         val statsToResourceNames = HashMap<String, ArrayList<String>>()
-        for (tr: TileResource in GameBasics.TileResources.values.filter { it.improvement == name }) {
+        for (tr: TileResource in ruleSet.TileResources.values.filter { it.improvement == name }) {
             val statsString = tr.improvementStats.toString()
             if (!statsToResourceNames.containsKey(statsString))
                 statsToResourceNames[statsString] = ArrayList()

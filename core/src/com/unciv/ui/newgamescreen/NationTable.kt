@@ -3,7 +3,7 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
@@ -11,7 +11,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
-class NationTable(val nation: Nation, width:Float)
+class NationTable(val nation: Nation, width:Float, ruleSet: RuleSet)
     : Table(CameraStageBaseScreen.skin) {
     private val innerTable = Table()
 
@@ -25,12 +25,12 @@ class NationTable(val nation: Nation, width:Float)
         titleTable.add(nation.getLeaderDisplayName().toLabel(nation.getInnerColor(),24))
         innerTable.add(titleTable).row()
 
-        innerTable.add(getUniqueLabel(nation).apply { setWrap(true) }).width(width)
+        innerTable.add(getUniqueLabel(nation,ruleSet).apply { setWrap(true) }).width(width)
         touchable = Touchable.enabled
         add(innerTable)
     }
 
-    private fun getUniqueLabel(nation: Nation): Label {
+    private fun getUniqueLabel(nation: Nation, ruleSet: RuleSet): Label {
         val textList = ArrayList<String>()
 
         if (nation.unique != null) {
@@ -38,17 +38,17 @@ class NationTable(val nation: Nation, width:Float)
             textList += ""
         }
 
-        addUniqueBuildingsText(nation, textList)
-        addUniqueUnitsText(nation, textList)
-        addUniqueImprovementsText(nation, textList)
+        addUniqueBuildingsText(nation, textList,ruleSet)
+        addUniqueUnitsText(nation, textList,ruleSet)
+        addUniqueImprovementsText(nation, textList,ruleSet)
 
         return textList.joinToString("\n").tr().trim().toLabel(nation.getInnerColor())
     }
 
-    private fun addUniqueBuildingsText(nation: Nation, textList: ArrayList<String>) {
-        for (building in GameBasics.Buildings.values
+    private fun addUniqueBuildingsText(nation: Nation, textList: ArrayList<String>, ruleSet: RuleSet) {
+        for (building in ruleSet.Buildings.values
                 .filter { it.uniqueTo == nation.name }) {
-            val originalBuilding = GameBasics.Buildings[building.replaces!!]!!
+            val originalBuilding = ruleSet.Buildings[building.replaces!!]!!
 
             textList += building.name.tr() + " - {replaces} " + originalBuilding.name.tr()
             val originalBuildingStatMap = originalBuilding.toHashMap()
@@ -70,10 +70,10 @@ class NationTable(val nation: Nation, width:Float)
         }
     }
 
-    private fun addUniqueUnitsText(nation: Nation, textList: ArrayList<String>) {
-        for (unit in GameBasics.Units.values
+    private fun addUniqueUnitsText(nation: Nation, textList: ArrayList<String>, ruleSet: RuleSet) {
+        for (unit in ruleSet.Units.values
                 .filter { it.uniqueTo == nation.name }) {
-            val originalUnit = GameBasics.Units[unit.replaces!!]!!
+            val originalUnit = ruleSet.Units[unit.replaces!!]!!
 
             textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
             if (unit.cost != originalUnit.cost)
@@ -93,14 +93,14 @@ class NationTable(val nation: Nation, width:Float)
             for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
                 textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
             for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(GameBasics.UnitPromotions[promotion]!!.effect) + ")"
+                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleSet.UnitPromotions[promotion]!!.effect) + ")"
 
             textList += ""
         }
     }
 
-    private fun addUniqueImprovementsText(nation: Nation, textList: ArrayList<String>) {
-        for (improvement in GameBasics.TileImprovements.values
+    private fun addUniqueImprovementsText(nation: Nation, textList: ArrayList<String>, ruleSet: RuleSet) {
+        for (improvement in ruleSet.TileImprovements.values
                 .filter { it.uniqueTo == nation.name }) {
 
             textList += improvement.name.tr()

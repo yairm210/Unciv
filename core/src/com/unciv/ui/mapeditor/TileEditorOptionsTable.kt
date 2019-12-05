@@ -10,7 +10,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileImprovement
@@ -39,6 +38,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     val editorPickTable = Table()
 
     private var currentHex: Actor = Group()
+
+    val gameBasics = UncivGame.Current.ruleSet
 
     init{
         height=mapEditorScreen.stage.height
@@ -73,7 +74,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }).row()
 
-        for(improvement in GameBasics.TileImprovements.values){
+        for(improvement in gameBasics.TileImprovements.values){
             if(improvement.name.startsWith("Remove")) continue
             val improvementImage = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
             improvementImage.onClick {
@@ -87,7 +88,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.add(ScrollPane(improvementsTable)).height(mapEditorScreen.stage.height*0.7f)
 
         val nationsTable = Table()
-        for(nation in GameBasics.Nations.values){
+        for(nation in gameBasics.Nations.values){
             val nationImage = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
             nationImage.onClick {
                 clearSelection()
@@ -150,15 +151,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         })
 
-        for (resource in GameBasics.TileResources.values) {
+        for (resource in gameBasics.TileResources.values) {
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
                 clearSelection()
                 selectedResource = resource
                 val tileInfo = TileInfo()
+                tileInfo.ruleSet = UncivGame.Current.ruleSet
 
                 val terrain = resource.terrainsCanBeFoundOn.first()
-                val terrainObject = GameBasics.Terrains[terrain]!!
+                val terrainObject = gameBasics.Terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain = when {
                         terrainObject.occursOn == null -> terrainObject.occursOn!!.first()
@@ -177,8 +179,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
-        for (terrain in GameBasics.Terrains.values) {
+        for (terrain in gameBasics.Terrains.values) {
             val tileInfo = TileInfo()
+            tileInfo.ruleSet = UncivGame.Current.ruleSet
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn != null -> terrain.occursOn.first()

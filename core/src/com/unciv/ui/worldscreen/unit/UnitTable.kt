@@ -6,11 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.unciv.UncivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
+import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -36,6 +38,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         touchable = Touchable.enabled
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
+        promotionsTable.touchable=Touchable.enabled
+
         add(VerticalGroup().apply {
             pad(5f)
 
@@ -47,12 +51,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }).left()
 
         add(Table().apply {
-            add(Table().apply {
+            val moveBetweenUnitsTable = Table().apply {
                 add(prevIdleUnitButton)
                 add(unitIconHolder)
                 add(unitNameLabel).pad(5f)
                 add(nextIdleUnitButton)
-            }).colspan(2).fill().row()
+            }
+            add(moveBetweenUnitsTable).colspan(2).fill().row()
+
             separator= addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
             add(unitDescriptionTable)
@@ -167,7 +173,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(selectedUnit!=null) {
             unitIconHolder.add(UnitGroup(selectedUnit!!,30f)).pad(5f)
             for(promotion in selectedUnit!!.promotions.promotions)
-                promotionsTable.add(ImageGetter.getPromotionIcon(promotion))//.size(20f)
+                promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
+
+            // Since Clear also clears the listeners, we need to re-add it every time
+            promotionsTable.onClick {
+                if(selectedUnit==null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
+                UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
+            }
 
         }
 

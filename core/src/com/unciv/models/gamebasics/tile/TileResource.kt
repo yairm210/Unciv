@@ -1,7 +1,5 @@
 package com.unciv.models.gamebasics.tile
 
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
@@ -32,10 +30,6 @@ class TileResource : NamedStats() {
      */
     var building: String? = null
     var revealedBy: String? = null
-
-    fun getBuilding(): Building? {
-        return if (building == null) null else GameBasics.Buildings[building!!]
-    }
 }
 
 data class ResourceSupply(val resource:TileResource,var amount:Int, val origin:String)

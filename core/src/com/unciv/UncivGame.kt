@@ -8,7 +8,7 @@ import com.badlogic.gdx.audio.Music
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.LanguagePickerScreen
@@ -19,7 +19,7 @@ import java.util.*
 import kotlin.concurrent.thread
 
 class UncivGame(val version: String) : Game() {
-    var gameInfo: GameInfo = GameInfo()
+    lateinit var gameInfo: GameInfo
     lateinit var settings : GameSettings
     /**
      * This exists so that when debugging we can see the entire map.
@@ -36,24 +36,26 @@ class UncivGame(val version: String) : Game() {
     val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized=false
 
+    lateinit var ruleSet:RuleSet
+
     override fun create() {
         Current = this
+        ruleSet =  RuleSet()
 
         if(Gdx.app.type!= Application.ApplicationType.Desktop)
             viewEntireMapForDebug=false
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
-        GameBasics.run {  } // just to initialize the GameBasics
         settings = GameSaver().getGeneralSettings()
         if(settings.userId=="") { // assign permanent user id
             settings.userId = UUID.randomUUID().toString()
             settings.save()
         }
         if (GameSaver().getSave("Autosave").exists()) {
-            try {
+//            try {
                 loadGame("Autosave")
-            } catch (ex: Exception) { // silent fail if we can't read the autosave
-                startNewGame()
-            }
+//            } catch (ex: Exception) { // silent fail if we can't read the autosave
+//                startNewGame()
+//            }
         }
         else setScreen(LanguagePickerScreen())
 

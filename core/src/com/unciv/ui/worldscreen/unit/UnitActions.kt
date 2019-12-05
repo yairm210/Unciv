@@ -9,7 +9,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -142,7 +141,7 @@ class UnitActions {
             actionList += UnitAction("Construct improvement",
                     unit.currentMovement > 0
                             && !tile.isCityCenter()
-                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
+                            && unit.civInfo.gameInfo.gameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
                     currentAction = unit.currentTile.hasImprovementInProgress()
             ) { worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null }) }
 
@@ -161,7 +160,7 @@ class UnitActions {
                 && tile.roadStatus==RoadStatus.None
                 && tile.improvementInProgress != "Road"
                 && tile.isLand
-                && unit.civInfo.tech.isResearched(GameBasics.TileImprovements["Road"]!!.techRequired!!))
+                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(unit.civInfo.gameInfo.gameBasics)!!.techRequired!!))
             actionList+=UnitAction("Construct road", unit.currentMovement >0){
                 tile.improvementInProgress="Road"
                 tile.turnsToImprovement=4
@@ -172,7 +171,7 @@ class UnitActions {
                     && tile.isWater // because fishing boats can enter cities, and if there's oil in the city... ;)
                     && tile.improvement==null
                     && tile.getTileResource().improvement == improvement
-                    && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
+                    && unit.civInfo.tech.isResearched(unit.civInfo.gameInfo.gameBasics.TileImprovements[improvement]!!.techRequired!!)
             )
                 actionList += UnitAction("Create [$improvement]", unit.currentMovement >0) {
                     tile.improvement = improvement

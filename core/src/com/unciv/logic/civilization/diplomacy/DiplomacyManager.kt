@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
 
 enum class RelationshipLevel{
@@ -164,10 +163,10 @@ class DiplomacyManager() {
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
+                    counter.add(civInfo.gameInfo.gameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,offer.amount,"Trade")
+                    counter.add(civInfo.gameInfo.gameBasics.TileResources[offer.name]!!,offer.amount,"Trade")
         }
         return counter
     }

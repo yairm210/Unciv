@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.util.*
@@ -71,24 +70,24 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())"BasicHelp/BasicHelp_$language"
         else "BasicHelp/BasicHelp"
 
-
-        categoryToEntries["Basics"] = GameBasics.getFromJson(kotlin.Array<CivilopediaEntry>::class.java, basicHelpFileName).toList()
-        categoryToEntries["Buildings"] = GameBasics.Buildings.values
-                .map { CivilopediaEntry(it.name,it.getDescription(false, null),
+        val gameBasics = game.ruleSet
+        categoryToEntries["Basics"] = gameBasics.getFromJson(Array<CivilopediaEntry>::class.java, basicHelpFileName).toList()
+        categoryToEntries["Buildings"] = gameBasics.Buildings.values
+                .map { CivilopediaEntry(it.name,it.getDescription(false, null,gameBasics),
                         ImageGetter.getConstructionImage(it.name)) }
-        categoryToEntries["Resources"] = GameBasics.TileResources.values
+        categoryToEntries["Resources"] = gameBasics.TileResources.values
                 .map { CivilopediaEntry(it.name,it.getDescription(),
                         ImageGetter.getResourceImage(it.name,50f)) }
-        categoryToEntries["Terrains"] = GameBasics.Terrains.values
-                .map { CivilopediaEntry(it.name,it.getDescription()) }
-        categoryToEntries["Tile Improvements"] = GameBasics.TileImprovements.values
-                .map { CivilopediaEntry(it.name,it.getDescription(),
+        categoryToEntries["Terrains"] = gameBasics.Terrains.values
+                .map { CivilopediaEntry(it.name,it.getDescription(gameBasics)) }
+        categoryToEntries["Tile Improvements"] = gameBasics.TileImprovements.values
+                .map { CivilopediaEntry(it.name,it.getDescription(gameBasics),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
-        categoryToEntries["Units"] = GameBasics.Units.values
+        categoryToEntries["Units"] = gameBasics.Units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name)) }
-        categoryToEntries["Technologies"] = GameBasics.Technologies.values
-                .map { CivilopediaEntry(it.name,it.getDescription(),
+        categoryToEntries["Technologies"] = gameBasics.Technologies.values
+                .map { CivilopediaEntry(it.name,it.getDescription(gameBasics),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
 
         categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys

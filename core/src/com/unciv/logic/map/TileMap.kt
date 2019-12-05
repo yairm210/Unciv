@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 
 class TileMap {
 
@@ -32,10 +32,10 @@ class TileMap {
 
 
 
-    constructor(radius:Int){
+    constructor(radius:Int, ruleSet: RuleSet){
         for(vector in HexMath().getVectorsInDistance(Vector2.Zero, radius))
             tileList.add(TileInfo().apply { position = vector; baseTerrain= Constants.grassland })
-        setTransients()
+        setTransients(ruleSet)
     }
 
 
@@ -64,7 +64,7 @@ class TileMap {
     }
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
-        val unit = GameBasics.Units[unitName]!!.getMapUnit()
+        val unit = gameInfo.gameBasics.Units[unitName]!!.getMapUnit(gameInfo.gameBasics)
 
         fun isTileMovePotential(tileInfo:TileInfo): Boolean {
             if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()
@@ -146,7 +146,7 @@ class TileMap {
         return viewableTiles
     }
 
-    fun setTransients() {
+    fun setTransients(ruleSet: RuleSet) {
         if(tiles.any())
             tileList.addAll(tiles.values)
 
@@ -164,6 +164,7 @@ class TileMap {
         for (tileInfo in values){
             tileMatrix[tileInfo.position.x.toInt()-leftX][tileInfo.position.y.toInt()-bottomY] = tileInfo
             tileInfo.tileMap = this
+            tileInfo.ruleSet = ruleSet
             tileInfo.setTransients()
         }
     }

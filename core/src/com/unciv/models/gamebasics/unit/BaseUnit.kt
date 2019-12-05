@@ -6,7 +6,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.INamed
@@ -78,11 +78,11 @@ class BaseUnit : INamed, IConstruction {
         return sb.toString()
     }
 
-    fun getMapUnit(): MapUnit {
+    fun getMapUnit(ruleSet: RuleSet): MapUnit {
         val unit = MapUnit()
         unit.name = name
 
-        unit.setTransients() // must be after setting name because it sets the baseUnit according to the name
+        unit.setTransients(ruleSet) // must be after setting name because it sets the baseUnit according to the name
 
         return unit
     }
@@ -131,7 +131,7 @@ class BaseUnit : INamed, IConstruction {
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+        if (civInfo.gameInfo.gameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (!UncivGame.Current.settings.nuclearWeaponEnabled
                 && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))

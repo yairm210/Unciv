@@ -2,7 +2,7 @@
 
 package de.tomgrill.gdxtesting.examples;
 
-import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.gamebasics.RuleSet;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,26 +21,26 @@ public class TranslationTests {
 	@Test
 	public void translationsLoad() {
 		assertTrue("This test will only pass there are translations",
-				GameBasics.INSTANCE.getTranslations().size() > 0);
+				RuleSet.INSTANCE.getTranslations().size() > 0);
 	}
 
 	@Test
 	public void allUnitsHaveTranslation() {
-		Boolean allUnitsHaveTranslation = allStringAreTranslated(GameBasics.INSTANCE.getUnits().keySet());
+		Boolean allUnitsHaveTranslation = allStringAreTranslated(RuleSet.INSTANCE.getUnits().keySet());
 		assertTrue("This test will only pass when there is a translation for all units",
 					allUnitsHaveTranslation);
 	}
 
 	@Test
 	public void allBuildingsHaveTranslation() {
-		Boolean allBuildingsHaveTranslation = allStringAreTranslated(GameBasics.INSTANCE.getBuildings().keySet());
+		Boolean allBuildingsHaveTranslation = allStringAreTranslated(RuleSet.INSTANCE.getBuildings().keySet());
 		assertTrue("This test will only pass when there is a translation for all buildings",
 				allBuildingsHaveTranslation);
 	}
 
 	@Test
 	public void allTerrainsHaveTranslation() {
-		Set<String> strings = GameBasics.INSTANCE.getTerrains().keySet();
+		Set<String> strings = RuleSet.INSTANCE.getTerrains().keySet();
 		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
 		assertTrue("This test will only pass when there is a translation for all buildings",
 				allStringsHaveTranslation);
@@ -48,7 +48,7 @@ public class TranslationTests {
 
 	@Test
 	public void allImprovementsHaveTranslation() {
-		Set<String> strings = GameBasics.INSTANCE.getTileImprovements().keySet();
+		Set<String> strings = RuleSet.INSTANCE.getTileImprovements().keySet();
 		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
 		assertTrue("This test will only pass when there is a translation for all improvements",
 				allStringsHaveTranslation);
@@ -56,7 +56,7 @@ public class TranslationTests {
 
 	@Test
 	public void allTechnologiesHaveTranslation() {
-		Set<String> strings = GameBasics.INSTANCE.getTechnologies().keySet();
+		Set<String> strings = RuleSet.INSTANCE.getTechnologies().keySet();
 		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
 		assertTrue("This test will only pass when there is a translation for all technologies",
 				allStringsHaveTranslation);
@@ -64,7 +64,7 @@ public class TranslationTests {
 
 	@Test
 	public void allPromotionsHaveTranslation() {
-		Set<String> strings = GameBasics.INSTANCE.getUnitPromotions().keySet();
+		Set<String> strings = RuleSet.INSTANCE.getUnitPromotions().keySet();
 		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
 		assertTrue("This test will only pass when there is a translation for all promotions",
 				allStringsHaveTranslation);
@@ -73,7 +73,7 @@ public class TranslationTests {
 	private Boolean allStringAreTranslated(Set<String> strings) {
 		boolean allBuildingsHaveTranslation = true;
 		for (String unitName : strings) {
-			if (!GameBasics.INSTANCE.getTranslations().containsKey(unitName)) {
+			if (!RuleSet.INSTANCE.getTranslations().containsKey(unitName)) {
 				allBuildingsHaveTranslation = false;
 				System.out.println(unitName);
 			}

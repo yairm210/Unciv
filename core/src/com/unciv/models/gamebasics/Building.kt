@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -45,16 +44,15 @@ class Building : NamedStats(), IConstruction{
      */
     var resourceBonusStats: Stats? = null
 
-    fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
-    fun getShortDescription(): String { // should fit in one line
+    fun getShortDescription(ruleSet: RuleSet): String { // should fit in one line
         val infoList= mutableListOf<String>()
         val str = getStats(null).toString()
         if(str.isNotEmpty()) infoList += str
         for(stat in getStatPercentageBonuses(null).toHashMap())
             if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key.toString().tr()}"
 
-        val improvedResources = GameBasics.TileResources.values.filter { it.building==name }.map { it.name.tr() }
+        val improvedResources = ruleSet.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
@@ -68,7 +66,7 @@ class Building : NamedStats(), IConstruction{
         return infoList.joinToString()
     }
 
-    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?): String {
+    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleSet: RuleSet): String {
         val stats = getStats(civInfo)
         val stringBuilder = StringBuilder()
         if(uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
@@ -104,7 +102,7 @@ class Building : NamedStats(), IConstruction{
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
         if (resourceBonusStats != null) {
-            val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
+            val resources = ruleSet.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
         }
 
@@ -125,7 +123,7 @@ class Building : NamedStats(), IConstruction{
         val stats = this.clone()
         if(civInfo != null) {
             val adoptedPolicies = civInfo.policies.adoptedPolicies
-            val baseBuildingName = getBaseBuilding().name
+            val baseBuildingName = getBaseBuilding(civInfo.gameInfo.gameBasics).name
 
             if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(baseBuildingName ))
                 stats.happiness += 1
@@ -163,7 +161,7 @@ class Building : NamedStats(), IConstruction{
         if(civInfo==null) return stats // initial stats
 
         val adoptedPolicies = civInfo.policies.adoptedPolicies
-        val baseBuildingName = getBaseBuilding().name
+        val baseBuildingName = getBaseBuilding(civInfo.gameInfo.gameBasics).name
 
         if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
             stats.gold = 10f
@@ -252,7 +250,7 @@ class Building : NamedStats(), IConstruction{
 
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
+        if (civInfo.gameInfo.gameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         // Regular wonders
@@ -325,7 +323,7 @@ class Building : NamedStats(), IConstruction{
         if (providesFreeBuilding != null && !construction.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
-            for(building in GameBasics.Buildings.values)
+            for(building in civInfo.gameInfo.gameBasics.Buildings.values)
                 if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
                     buildingToAdd = building.name
 
@@ -347,7 +345,7 @@ class Building : NamedStats(), IConstruction{
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
             if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-            else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
+            else civInfo.addGreatPerson(civInfo.gameInfo.gameBasics.Units.keys.filter { it.startsWith("Great") }.random())
         }
         if ("+1 population in each city" in uniques) {
             for(city in civInfo.cities){
@@ -369,8 +367,8 @@ class Building : NamedStats(), IConstruction{
         return false
     }
 
-    fun getBaseBuilding(): Building {
+    fun getBaseBuilding(ruleSet: RuleSet): Building {
         if(replaces==null) return this
-        else return GameBasics.Buildings[replaces!!]!!
+        else return ruleSet.Buildings[replaces!!]!!
     }
 }

@@ -40,7 +40,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     }
 
     fun initialize() {
-        tileMap.setTransients()
+        tileMap.setTransients(game.ruleSet)
         val mapHolder = getMapHolder(tileMap)
 
         stage.addActor(mapHolder)

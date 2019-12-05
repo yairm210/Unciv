@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
@@ -58,7 +57,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
-        val revealedStrategicResources = GameBasics.TileResources.values
+        val revealedStrategicResources = screen.gameInfo.gameBasics.TileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
             val resourceImage = ImageGetter.getResourceImage(resource.name,20f)
@@ -106,7 +105,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
 
     internal fun update(civInfo: CivilizationInfo) {
-        val revealedStrategicResources = GameBasics.TileResources.values
+        val revealedStrategicResources = civInfo.gameInfo.gameBasics.TileResources.values
                 .filter { it.resourceType == ResourceType.Strategic }
         val civResources = civInfo.getCivResources()
         for (resource in revealedStrategicResources) {

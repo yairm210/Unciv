@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tr
@@ -127,7 +127,8 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         add("{Number of city-states}:".tr())
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
         val cityStatesArray = Array<Int>()
-        (0..GameBasics.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+
+        (0..UncivGame.Current.ruleSet.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
         add(cityStatesSelectBox).pad(10f).row()
@@ -140,7 +141,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addDifficultySelectBox() {
         add("{Difficulty}:".tr())
-        val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
+        val difficultySelectBox = TranslatedSelectBox(UncivGame.Current.ruleSet.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
         difficultySelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.difficulty = difficultySelectBox.selected.value

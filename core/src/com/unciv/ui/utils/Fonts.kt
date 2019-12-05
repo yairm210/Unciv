@@ -3,7 +3,6 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.GameBasics
 import core.java.nativefont.NativeFont
 import core.java.nativefont.NativeFontPaint
 
@@ -37,7 +36,7 @@ class Fonts {
             if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())
                 charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").readString().asIterable())
 
-            for (entry in GameBasics.Translations.entries) {
+            for (entry in UncivGame.Current.ruleSet.Translations.entries) {
                 for (lang in entry.value) {
                     if (lang.key == language) charSet.addAll(lang.value.asIterable())
                 }
