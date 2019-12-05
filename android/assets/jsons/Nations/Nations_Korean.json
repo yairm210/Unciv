@@ -65,8 +65,8 @@
 				
 		outerColor:[181, 232, 232],
 		innerColor:[68,142,249],
-    uniqueName:"그리스 동맹",
-    unique:"도시 국가의 영향력 감소량이 절반이 되고, 회복량은 두 배가 됩니다."
+		uniqueName:"그리스 동맹",
+		unique:"도시 국가의 영향력 감소량이 절반이 되고, 회복량은 두 배가 됩니다.",
 		cities:["아테네","스파르타","코린트","아르고스","크노소스","미케네","파르살로스","에페소스","할리카르나소스","로도스",
 			"에레트리아","페르가몬","밀레토스","메가라","포카이아","시키온","티린스","사모스","미틸레네","키오스",
 			"파로스","엘리스","시라쿠사","헤라클레이아","고르틴","칼키스","필로스","펠라","낙소스"]
@@ -209,9 +209,9 @@
 		innerColor:[239,236,148],
 		uniqueName:"앙시앵 레짐",
 		unique:"증기력을 연구하기 전까지 모든 도시에서 턴당 문화 +2",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
+		cities:["파리","오를레앙","리옹","트루아","투르","마르세유","샤르트르","아비뇽","루앙","그르노블",
+			"디종","아미앵","셰르부르","푸아티에","툴루즈","바욘","스트라스부르","브레스트","보르도","렌",
+			"니스","생테티엔","낭트","랭스","르망","몽펠리에","리모주","낭시","릴","캉"]
 	},
 	{
 		name:"Russia",
@@ -223,209 +223,174 @@
 		startIntroPart1: "러시아 제국의 위대한 여제 예카테리나시여, 안녕하십니까. 그대는 세계에서 가장 큰 나라를 움직이십니다. 강대한 러시아는 동쪽으로는 태평양으로부터 서쪽으로는 발트해까지 펼쳐져 있습니다. 전쟁과 가뭄, 모든 종류의 재앙에도 불구하고, 용감한 러시아인들은 살아남아 번영하였으며 세계 최고의 예술가와 과학자들을 배출했습니다. 오늘날까지 제국은 파괴적인 힘을 가진 엄청난 군사력으로 인류 역사상 가장 강대한 제국 중 하나로 남아있습니다.",
 		startIntroPart2: "예카테리나시여, 백성들은 그대가 다시 한 번 러시아와 러시아 백성들에게 영광스러운 시대를 가져다주고, 계몽사상을 널리 퍼트려 이 땅에 활력을 불어넣어 주시길 바랍니다. 그대의 백성들을 또다시 위대한 시대로 이끄시고 시간의 한계를 뛰어넘는 문명을 건설해 주시겠습니까?",
 	
-		declaringWar:"如果我可以活到两百岁，整个世界都将匍匐在我脚下，现在首先从你开始！。",
-		attacked:"运气为而备，一旦遭受欺辱，我们绝不放弃还击。",
-		defeated:"没有实力的愤怒毫无意义，一旦可能，我们会血债血偿！",
-		introduction:"如果你的智慧和理性能像你的相貌那样出众，我们可以谈谈人生哲理。",
+		declaringWar:"당신이 너무 못되게 굴었다는 것을 스스로도 잘 알겠죠. 이제 보복할 시간이군요.",
+		attacked:"내 열정을 약점으로 받아들이다니, 후회하게 해드리죠.",
+		defeated:"우리가 당신의 포로가 되었군요. 최악의 경우보다는 낫겠죠.",
+		introduction:"안녕하세요, 낯선 이여! 당신이 나와 같은 매력과 지력을 가지고 있다면, 잘 지낼 수 있을 거예요.",
 		
-		neutralHello:"你好！",
-		neutralLetsHearIt:["继续。","请讲。"],
-		neutralNo:["我们拒绝。","哈，你在搞笑么？","绝对不可接受。"],
-		neutralYes:["当然可以。","同意。","非常好。"],
+		neutralHello:"안녕하세요!",
+		neutralLetsHearIt:["말해 보세요.","계속하세요."],
+		neutralNo:["물론 안 되죠.","거절합니다.","안 돼요."],
+		neutralYes:["좋아요.","멋지네요.","아주 좋아요."],
 
-		hateHello:"你究竟需要什么？",
-		hateLetsHearIt:["还有呢？","继续说。","请讲。"],
-		hateNo:["你在搞笑么？","抱歉，这不可接受。","完全不行。"],
-		hateYes:["我想想……暂且同意吧","很好。","成交。"],
+		hateHello:"대체 뭘 원하는 건가요?",
+		hateLetsHearIt:["그래서요?","계속 해 보세요.","계속하세요."],
+		hateNo:["하! 물론 안 되죠!","거절하겠습니다.","당연히 안 됩니다."],
+		hateYes:["음... 그래요.","동의해야 하겠군요.","좋아요."],
 		
-		afterPeace:"战争的终点就是和平。",
-		tradeRequest:"这份交易你认为如何？",
+		afterPeace:"평화의 열매를 맛볼 때가 되었군요.",
+		tradeRequest:"우리가 제안을 해도 되겠습니까?",
 				
 		outerColor:[ 236, 178, 0],
 		innerColor:[0,0,0],
-		uniqueName:"自然财富",
-		unique:"每处战略资源+1产能，每处马、铁和铀资源储量加倍",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
+		uniqueName:"시베리아의 풍요",
+		unique:"말,철,우라늄 전략 자원의 수가 두 배가 됩니다. 전략 자원이 있는 타일의 생산력 +1",
+		cities:["모스크바","상트페테르부르크","노브고로드","로스토브","야로슬라블리","예카테린부르크","야쿠츠크","블라디보스토크","스몰렌스크","오렌부르크",
+			"크라스노야르스크","하바롭스크","브리안스크","트베리","노보시비르스크","마가단","무르만스크","이르쿠츠크","치타","사마라",
+			"아르한겔스크","첼랴빈스크","토볼스크","볼로그다","옴스크","아스트라한","쿠르스크","사라토프","눌라","블라디미르"]
 	},
 	{
 		name:"Rome",
-		translatedName:"罗马",
-		leaderName:"奥古斯都·恺撒",
-		adjective:["罗马的"],
+		translatedName:"로마",
+		leaderName:"아우구스투스 카이사르",
+		adjective:["로마"],
 		
-		startIntroPart1: "愿众神赐福给您，罗马帝国及罗马公民的皇帝奥古斯都·恺撒。您的帝国是西方文明中最强大最持久的帝国，您的人民独立创造了罗马的文化、法律、艺术和军事成就，这样的伟业前无古人、后无来者。历年来光荣的征战，罗马掌控了整个地中海，领土西起西班牙，东至叙利亚。罗马的统治最终扩张至不列颠大部与日耳曼北部。罗马的艺术与建筑至今仍然使世人敬畏，赋予世人灵感。她仍然为一切后来者所憧憬和向往。",
-		startIntroPart2: "我全能的皇帝，您的人民求您重建罗马的荣光。您会否响应人民的愿望，使帝国再一次腾飞？您会否为世界重新带来和平与秩序？您能否让罗马再度成为世界的中心？您所建立的帝国，能否延绵万代？",
+		startIntroPart1: "로마의 모든 속주의 황제이신 카이사르 아우구스투스여, 황제 폐하께 신의 축복이 내리시길 빌겠습니다. 그대의 제국은 서양 문명 중에서 가장 위대하고 가장 길었으며, 그대의 백성들은 스스로의 힘으로 전무후무할 문화와 법, 예술과 전쟁을 이룩했습니다. 영광스러운 정복의 시대 이후 로마는 서쪽으로는 스페인 그리고 동쪽으로는 시리아에 이르는 지중해의 모든 대지를 지배하게 되었고, 로마의 지배력은 마침내 영국과 북부 독일까지 미치게 되었습니다. 또한, 로마의 예술과 건축술은 뒤따르는 모든 미진한 문명의 선망의 대상이 되었습니다.",
+		startIntroPart2: "위대한 황제여, 그대의 백성은 다시 한 번 로마의 영광을 되찾고 싶어합니다. 제국을 다시 일으켜 세상에 안녕과 질서를 가져오시지 않겠습니까? 로마를 다시 한 번 세상의 중심으로 만들고 시간의 한계를 뛰어넘는 문명을 건설해 주시겠습니까?",
 		
 		declaringWar:"我来！我见！我征服！吾剑所指，皆是目标！",
-		attacked:"蠢货，是愚昧给了你挑衅的勇气！厄运如密布的箭弩落下，而你终将无处躲避。",
-		defeated:"你即使征服了全世界，如果没有人分享，终将倍感凄凉。罗马荣耀永存！",
-		introduction:"欢迎你。我是奥古斯都，罗马帝国皇帝兼最高祭司。如果你是罗马的朋友，那么你将受到欢迎。",
+		attacked:"내 국고가 바닥나고, 군사들은 동요하고 있네. 그래... 이제 자네가 죽어줘야겠군.",
+		defeated:"신들이 로마로부터 그들의 은총을 거두는구나. 그래, 우리가 정복당했군.",
+		introduction:"그대에게 인사하지. 나는 로마의 황제이자 대제사장인 아우구스투스다. 그대를 로마의 친구로서 환영한다.",
 		
-		neutralHello:"你好。",
-		neutralLetsHearIt:["说吧。","继续。"],
-		neutralNo:["不行。","绝对不行。"],
-		neutralYes:["好的。","同意。"],
+		neutralHello:"안녕하신가.",
+		neutralLetsHearIt:["시작하시게.","진행하시게."],
+		neutralNo:["싫군.","거절하지."],
+		neutralYes:["좋군.","동의한다."],
 
-		hateHello:"你想做什么？",
-		hateLetsHearIt:["然后呢。","继续。"],
-		hateNo:["这项提议让人恼火。","你是认真的吗？"],
-		hateYes:["好的。","嗯，这样也好。"],
+		hateHello:"원하는 게 뭔가?",
+		hateLetsHearIt:["뭐야?","계속해."],
+		hateNo:["장난을 하자는 건가?","불쾌한 요구만 하는군."],
+		hateYes:["음, 좋군.","동의한다."],
 		
-		afterPeace:"这不是和平，只是短暂的休战。祝你好运！",
-		tradeRequest:"我有项提议，希望你能考虑。",
+		afterPeace:"그대의 병사들은 잘 싸웠지. 그대의 승리를 축하한다.",
+		tradeRequest:"그대에게 이 거래를 제안한다.",
 				
 		outerColor:[ 53,0,87],
 		innerColor:[238,201,9],
-		uniqueName:"罗马荣耀",
-		unique:"在其他城市建造首都已有建筑时+25%产能积累",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
+		uniqueName:"로마의 영광",
+		unique:"수도에 건설된 건물을 다른 도시에서 건설할 때 생산력 +25%",
+		cities:["로마","안티움","쿠마에","네압볼리","라벤나","아레티움","메디오라눔","아르피눔","치르체","세티아",
+			"사트리쿰","아르데아","오스티아","벨리트라이","비로코니움","타렌툼","브룬디시움","카이사라우구스타","카이사레아","팔미라",
+			"시그니아","아퀠레이아","클루시움","수트리움","크레모나","플라켄티아","히스팔리스","아르탁사타","아우렐리아노룸","니코폴리스"]
 	},
 	{
 		name:"Arabia",
-		translatedName:"阿拉伯",
-		leaderName:"哈伦·拉希德",
-		adjective:["阿拉伯的"],
+		translatedName:"아라비아",
+		leaderName:"하룬 알 라시드",
+		adjective:["아라비아"],
 		startBias:["Desert"],
 		
-		startIntroPart1: "愿真主赐福与您，伟大的哈里发哈伦·拉希德，虔诚的阿拉伯人民的领袖！公元632年先知穆罕默德归真后不久，他的追随者们便发动了一系列的征服战争，以期将真主的统治带给大地上的每个人民。动荡过后，哈里发的穆斯林帝国建立了。之后，哈里发愈发强势，在其鼎盛时期，统治区域包括西班牙、北非、中东、安纳托利亚（小亚细亚）、巴尔干半岛和波斯，一个甚至比罗马还要大的帝国。当欧洲国家陷入愚昧和混乱的中世纪时，艺术与科学正在阿拉伯的土地上百花齐放。伊斯兰王权存在了600年，最后屈服于毁灭了数个帝国的蒙古人的武力。",
-		startIntroPart2: "伟大的哈里发哈伦·拉希德，您的人民企盼您带领他们重建丰功伟业，让阿拉伯再一次成为艺术与知识的开明之地，再一次成为无所畏惧的国家。哈里发啊，您愿意接受挑战吗？您能开创一个历久弥新的文明吗？",
+		startIntroPart1: "오, 신실한 아라비아의 지도자, 위대한 칼리프 하룬 알 라시드여. 그대에게 하늘의 축복이 있기를! 예언자 무함마드 사후 환란의 시기에 무함마드의 추종자들이 하늘의 말씀을 전 세계에 전하기 위해 기원후 632년에 아랍 제국을 건설했습니다. 아랍 제국은 그 전성기에 스페인과 북아프리카, 중동, 아나톨리아, 발칸 제국, 페르시아를 아우르는 대제국이었습니다. 로마 제국만큼이나 강대한… 아니, 어쩌면 더 강대한 제국이었을 것입니다. 유럽 국가들이 무지와 혼란에 빠져 있던 중세에도 아라비아에서는 예술과 과학이 꽃을 피웠습니다. 600년간 유지한 아랍 제국은 이미 여러 제국을 정복한 몽골의 공격에 무릎을 꿇고 말았습니다.",
+		startIntroPart2: "위대한 칼리프 하룬 알 라시드여, 백성은 그대가 과거의 영광을 되찾아주리라 기대하고 있습니다. 아라비아를 다시금 예술과 지식이 꽃 피는 문명의 땅으로, 어떤 적도 두려워하지 않아도 되는 강대국으로 변모시켜주리라 기대하고 있습니다. 칼리프여, 이 도전을 받아들이고 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"哈里发的天空不允许有两轮太阳。弯刀所至，皆为吾土。",
-		attacked:"蠢货！有一天你会后悔今天的所为！以汝之血拭我之刃！",
-		defeated:"你胜利了，我现在把宫殿托付于你，不过别太得意，我会在地狱盯着你的！",
-		introduction:"欢迎你，陌生人！我是阿拉伯的统治者哈伦·拉希德。来吧——告诉我关于你们帝国的故事。",
+		declaringWar:"이 세계에서 그대만 사라진다면 더 아름다워질 것 같군. 전쟁을 준비하시오.",
+		attacked:"어리석은 자 같으니! 곧 후회할 것이오! 반드시!",
+		defeated:"그대가 이겼소. 축하하오. 이 궁전은 이제 당신 것이오. 내 공작새를 잘 보살펴주시오.",
+		introduction:"반갑습니다, 이방인이여. 나는 아랍의 칼리프, 하룬 알 라시드라 하오. 나에게 당신의 나라에 대해 얘기 좀 해주오.",
 		
-		neutralHello:"你好，希望你平安幸福。",
-		neutralLetsHearIt:["这是什么？","你在说什么？"],
-		neutralNo:["当然不行。","绝对不行。"],
-		neutralYes:["好吧。","非常好。"],
+		neutralHello:"반갑소. 신의 평화가 함께하길 바라오.",
+		neutralLetsHearIt:["무엇이오?","무엇을 말하려 하시오?"],
+		neutralNo:["안되오.","당연히 안 되오."],
+		neutralYes:["좋소.","훌륭하오!"],
 
-		hateHello:"原来是你啊。",
-		hateLetsHearIt:["这是什么？！","请把话讲明白些。"],
-		hateNo:["不可接受。","如果没有诚意的话，请滚开。"],
-		hateYes:["很好。","如果是这样的话我就接受。"],
+		hateHello:"아... 그대인가.",
+		hateLetsHearIt:["무엇이오?","말해보시오."],
+		hateNo:["받아들일 수 없소.","여긴 농담을 하는 장소가 아니오."],
+		hateYes:["아주 좋소.","그래야만 한다면, 하겠소."],
 		
-		afterPeace:"感谢你的慷慨和仁慈，我们将永远铭记。",
-		tradeRequest:"请上前来，让我们做成这笔买卖。",
+		afterPeace:"그대의 관대함에는 언제나 감사해하고 있소. 우리에게 보여준 호의는 잊지 않겠소.",
+		tradeRequest:"함께 거래해보지 않겠소?",
 				
 		outerColor:[ 41,83,42],
 		innerColor:[146,221,9],
-		uniqueName:"沙漠之舟",
-		unique:"每条贸易路线+1金钱，石油资源储量加倍",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
+		uniqueName:"사막의 배",
+		unique:"석유 전략자원이 두 배가 됩니다. 모든 교역로에서 금 +1",
+		cities:["메카","메디나","다마스쿠스","바그다드","나즈란","쿠파","바스라","쿠라산","안자르","푸스타트",
+			"아덴","야마","무스카트","만수라","부하라","페스","쉬라즈","머르우","발흐","모술",
+			"아이답","바잇 라스","수하르","타이프","하마","따북","사나","시르","트리폴리","튀니스"]
 	},
 	{
 		name:"America",
-		translatedName:"美利坚",
-		leaderName:"乔治·华盛顿",
-		adjective:["美利坚的"],
+		translatedName:"미국",
+		leaderName:"조지 워싱턴",
+		adjective:["미국"],
 		
-		startIntroPart1: "欢迎，华盛顿总统！您所带领的是勤劳的美利坚文明。美国建立于18世纪的革命战争中，在一百年后联邦又卷入了几乎将其一分为二的可怕内战。但是，仅仅经过了数十年发展，到20世纪时美国达到了其力量的巅峰，以胜利的雄姿，屹立于毁灭了多个伟大国家的两次可怕的世界大战中。",
-		startIntroPart2: "美国是一个移民国家，充满了乐观与决心。人民只缺一个领袖来引领他们实现梦想。华盛顿总统，您能带领美国人民走向伟大吗？您能建立起一个经受得住时间考验的文明吗？",
+		startIntroPart1: "반갑습니다, 워싱턴 대통령이여! 그대는 근면한 미국 문명의 지도자입니다. 18세기 혁명을 통해 수립된 신생 국가 미국은, 100년도 되기 전에 끔찍한 남북전쟁에 휘말려 거의 와해될 뻔했습니다. 그러나 바로 그 몇 년 후 20세기에 미국의 위력은 정점에 달해, 수많은 강국을 파멸시킨 두 차례의 전쟁에서 위풍당당하게 승리합니다.",
+		startIntroPart2: "미국은 낙관주의와 결의로 가득한 이민자의 나라입니다. 그들에게는 그 꿈을 실현해 줄 지도자가 필요합니다. 워싱턴 대통령이여, 미국인이 위업을 이루도록 이끌고 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 
-		declaringWar:"强大的国家有一种法律，弱小的国家则有另一种。要么与我们一样，要么选择毁灭，你接受还是反对？",
-		attacked:"剑是我们维护自由的最后手段。自由绝不屈服于暴力！",
-		defeated:"力量虽能征服一切，不过是短暂的。祝你好运！",
-		introduction:"真正的友谊，是一株成长缓慢的植物，美利坚合众国人民欢迎您。",
+		declaringWar:"당신의 무자비한 도발을 보니, 더이상 선택의 여지가 없소. 전쟁을 준비하시오!",
+		attacked:"우리는 나약한 것이 아니라, 평화를 사랑할 뿐이오. 반드시 이걸 후회하게 될 것이오!",
+		defeated:"당신이 승리했소. 부디 승리에서 자비를 베풀기를 바라오.",
+		introduction:"나는 미국의 지도자, 조지 워싱턴이오. 아메리카 합중국 사람들은 그대를 환영하오.",
 		
-		neutralHello:"真是美好的一天啊。",
-		neutralLetsHearIt:["请讲。","继续。","我在听。"],
-		neutralNo:["当然不行。","不行。"],
-		neutralYes:["很好。","好的。","当然可以。"],
+		neutralHello:"안녕하시오.",
+		neutralLetsHearIt:["들어 보겠소.","계속하시오.","듣고 있소."],
+		neutralNo:["안되오.","그건 어렵겠소."],
+		neutralYes:["잘 알겠소.","좋소.","알겠소!"],
 
-		hateHello:"你好。",
-		hateLetsHearIt:["继续。","你说什么？"],
-		hateNo:["绝对不行。","我拒绝。","我想你不是认真的。"],
-		hateYes:["很好。","我决定接受。","成交。","好的。"],
+		hateHello:"무슨 일로 오셨소?",
+		hateLetsHearIt:["계속하시오.","말하고 있었소?"],
+		hateNo:["당치도 않소!","거절하겠소!","진심으로 하는 말이오?"],
+		hateYes:["알겠소.","동의하오.","좋소.","그리 하겠소."],
 		
-		afterPeace:"不论用何方法获得名誉，如没有品格来维持，终将会失去，请好自为之！",
-		tradeRequest:"我们来做笔交易你感兴趣吗？",
+		afterPeace:"우리는 그대와 같은 위대한 국가와의 평화를 환영하오. 우리 두 민족 사이에 오해가 다시 오지 않기를 기도하오.",
+		tradeRequest:"이 제안에 관심이 있으시오?",
 				
 		outerColor:[ 28,51,119],
 		innerColor:[255,255,255],
-		uniqueName:"昭昭天命",
-		unique:"陆军单位+1视野，购买地块费用-50%",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
+		uniqueName:"확장 정신",
+		unique:"지상 군사 유닛의 시야 +1，타일 구매 비용 -50%",
+		cities:["워싱턴","뉴욕","보스턴","필라델피아","애틀랜타","시카고","시애틀","샌프란시스코","로스앤젤레스","휴스턴",
+			"포틀랜드","세인트 루이스","마이애미","버팔로","디트로이트","뉴올리언스","볼티모어","덴버","신시내티","댈러스","멤피스",
+			"클리블랜드","캔자스시티","샌디에이고","리치몬드","라스베가스","피닉스","앨버커키","미니애폴리스","피츠버그"]
 	},
 	{
 		name:"Japan",
-		translatedName:"日本",
-		leaderName:"织田信长",
-		adjective:["日本的"],
+		translatedName:"일본",
+		leaderName:"오다 노부나가",
+		adjective:["일본"],
 		startBias:["Coast"],
 		
-		startIntroPart1: "降福于您高贵的织田信长大人，日出之地的统治者，愿您永远行走于鲜花盛开之地。日本人居住在大地东边尽头的岛屿上，虔诚于他们的文学，自豪于他们的艺术。日本文明可以追溯上千年，有时默默无闻，有时血腥争霸；有时对外扩张，有时闭关锁国；有巨富豪商，也有饿殍遍地。他们在战场上勇猛无畏，同时在工厂里也是精力无限，而技术方面往往又能推陈出新，这样强大的工业力量，常叫人羡慕不已。",
-		startIntroPart2: "传奇的大名，信长阁下，您能够抓住命运的缰绳吗？您能为您的家族与人民带来荣耀吗？您能再一次拿起剑盾，走向胜利吗？天下布武，能够实现吗？",
+		startIntroPart1: "태양이 떠오르는 나라를 다스리는 고귀한 오다 노부나가여, 그대가 축복 속에서 피어나는 꽃잎 사이를 오래오래 걷기를 기원합니다. 일본인은 풍부한 예술과 학문, 문화를 자랑하는 섬 국민입니다. 일본 문명의 역사는 수천 년을 거슬러 올라가는 피 튀기는 전쟁의 역사, 확장과 고립의 역사, 엄청난 부와 엄청난 빈곤의 역사입니다. 일본인은 전투에 두각을 드러내는 한편으로 매우 성실하기도 하며, 그 기술 혁명과 엄청난 공장은 전 세계 약소국의 부러움을 삽니다.",
+		startIntroPart2: "전설적인 다이묘여, 운명의 고삐를 쥐고 그대의 가문과 국민에게 영광을 안겨주시지 않겠습니까? 다시 한번 검과 방패를 들고 승리를 향해 진군하여, 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"顺我者昌，逆我者亡。洗净脖子甘心就戮吧。",
-		attacked:"凡触怒我者我必践之。",
-		defeated:"人生五十载，去事恍如梦幻，天下之内，岂有长生不灭者。",
-		introduction:"非为我友，即为我敌。阁下请慎行，好自为之。",
+		declaringWar:"이제부터 그대의 위대한 나라를 이 세상에서 완전히 없애버릴 것이오.",
+		attacked:"한심하고 어리석군! 이제 그대를 박살 내 주리다!",
+		defeated:"그대는 내가 생각한 바 이상으로 훨씬 현명한 사람이었소이다.",
+		introduction:"무용을 떨치는 그대에게 인사올리오. 공정하며 공평한 협력관계가 되기를 진심으로 바라는 바이오.",
 		
-		neutralHello:"请赐教。",
-		neutralLetsHearIt:["请说。","请坦率言之。","请讲，不必王顾左右而言他。"],
-		neutralNo:["请恕难以从命。","不行。","恕不奉陪。"],
-		neutralYes:["姑且允之。","成交。","与阁下做事真是爽快。"],
+		neutralHello:"안녕하시오.",
+		neutralLetsHearIt:["시작하시오.","계속하시오.","듣고 있소."],
+		neutralNo:["미안하오.","싫소.","다음 기회에 하겠소."],
+		neutralYes:["좋소이다.","잘 알겠소.","좋소."],
 
-		hateHello:"今日前来，不知有何见教。",
-		hateLetsHearIt:["姑妄听之。","细细道来。","请说。"],
-		hateNo:["不可。","阴行诡计，绝不可为。","如此行事，概不奉陪。"],
-		hateYes:["姑且允之。","吾暂且答应了。","舍此之外，别无他途。"],
+		hateHello:"아아, 또 그대요?",
+		hateLetsHearIt:["들어나 보겠소.","시작해 보시오.","말하시오."],
+		hateNo:["싫소.","불가능한 부탁을 하지 마시오.","못 들은 걸로 하겠소."],
+		hateYes:["찬성하겠소.","뭐, 좋소.","알겠소이다."],
 		
-		afterPeace:"光阴如露，梦幻似水，岂有长生不灭者？愿阁下武运昌隆。",
-		tradeRequest:"吾之珍宝阁下是否有兴致？",
+		afterPeace:"그대와 싸울 수 있어서 영광이었소.",
+		tradeRequest:"이 제안을 승락해준다면 고맙겠소.",
 				
 		outerColor:[215,225,225],
 		innerColor:[185,0,0],
-		uniqueName:"武士道",
-		unique: "受伤单位造成的伤害不减",
+		uniqueName:"무사도",
+		unique: "유닛이 피해를 입어도 원래의 전투력을 유지합니다.",
 		cities:["","","","","","","","","","",
 			"","","","","","","","","","",
 			"","","","","","","","","",""]
 	},	
-	{
-		name:"Germany",
-		translatedName:"德意志",
-		leaderName:"奥托·冯·俾斯麦",
-		adjective:["德意志的"],
-		
-		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
-		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!"
-		attacked:"Corrupted villain! We will bring you into the ground!"
-		defeated:"Germany has been destroyed. I weep for the future generations."
-		introduction:"Guten tag. In the name of the great German people, I bid you welcome."
-		
-		neutralHello:"What now?"
-		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"]
-		neutralNo:["We do not accept.","Nein.","Not a chance."]
-		neutralYes:["Agreed","Very well, then","Alright."]
-
-		hateHello:"So, out with it!"
-		hateLetsHearIt:["And?!","Come on!","Well, tell me!"]
-		hateNo:["That is unacceptable!","Ye can't be serious!","Nein!"]
-		hateYes:["Well, okay.","Gut.","It seems I can't refuse."]
-		
-		afterPeace:"What do ye think about calling it a draw?"
-		tradeRequest:"It would be in your best interest, to carefully consider this proposal."
-				
-		outerColor:[224,224,224],
-		innerColor:[64,64,64],
-		uniqueName:"Furor Teutonicus"
-		unique:"击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
-	},
 	{
 		name:"India",
 		translatedName:"印度",
@@ -433,30 +398,66 @@
 		adjective:["印度的"],
 		startBias:["Grassland"],
 		
-		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
-		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "",
+		startIntroPart2: "",
 		
-		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
-		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
-		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
-		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
+		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders.",
+		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind.",
+		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. ",
+		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend.",
 		
-		neutralHello:"I wish you peace."
-		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
-		neutralNo:["Absolutely not.","No.","This is unacceptable"]
-		neutralYes:["Okay.","We agree.","Fine."]
+		neutralHello:"I wish you peace.",
+		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."],
+		neutralNo:["Absolutely not.","No.","This is unacceptable"],
+		neutralYes:["Okay.","We agree.","Fine."],
 
-		hateHello:"What do you want?"
-		hateLetsHearIt:["Continue.","And?","Go on."]
-		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
-		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
+		hateHello:"What do you want?",
+		hateLetsHearIt:["Continue.","And?","Go on."],
+		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."],
+		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."],
 		
-		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
-		tradeRequest:"My friend, are you interested in this arrangement?"
+		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it.",
+		tradeRequest:"My friend, are you interested in this arrangement?",
 				
 		outerColor:[0,255,0],
 		innerColor:[255,153,51],
+		uniqueName:"",
 		unique:"城市数量导致的不满加倍，市民数量导致的不满减半",
+		cities:["","","","","","","","","","",
+			"","","","","","","","","","",
+			"","","","","","","","","",""]
+	},
+	{
+		name:"Germany",
+		translatedName:"德意志",
+		leaderName:"奥托·冯·俾斯麦",
+		adjective:["德意志的"],
+		
+		startIntroPart1: "독일 제국의 초대 수상, 위대한 비스마르크에 경의를! 독일은 신성 로마 제국의 폐허에서 탄생한 신생 국가로 한 세기 조금 더 전인 1871년에 마침내 통일됐습니다. 독일인은 그들이 창의적이고 성실하면서도 잔인한 전사임을 입증했습니다. 20세기 전반 큰 위기를 겪었음에도, 독일은 여전히 세계의 경제와 예술, 기술을 선도하고 있습니다.",
+		startIntroPart2: "위대한 비스마르크여, 독일인은 그대의 지도 하에 다시금 영광을 되찾고 싶어합니다. 독일인은 결의를 굳게 다지며, 존경해 마지않는 철혈 재상이 다시금 독일을 이끌어주리라 기대하고 있습니다. 철과 피로써 지배하고 정복하겠습니까, 아니면 게르만의 예술과 산업을 장려하고 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
+		
+		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!",
+		attacked:"Corrupted villain! We will bring you into the ground!",
+		defeated:"Germany has been destroyed. I weep for the future generations.",
+		introduction:"Guten tag. In the name of the great German people, I bid you welcome.",
+		
+		neutralHello:"What now?",
+		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"],
+		neutralNo:["We do not accept.","Nein.","Not a chance."],
+		neutralYes:["Agreed","Very well, then","Alright."],
+
+		hateHello:"So, out with it!",
+		hateLetsHearIt:["And?!","Come on!","Well, tell me!"],
+		hateNo:["That is unacceptable!","Ye can't be serious!","Nein!"],
+		hateYes:["Well, okay.","Gut.","It seems I can't refuse."],
+		
+		afterPeace:"What do ye think about calling it a draw?",
+		tradeRequest:"It would be in your best interest, to carefully consider this proposal.",
+				
+		outerColor:[224,224,224],
+		innerColor:[64,64,64],
+		uniqueName:"게르만의 분노",
+		unique:"击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%",
 		cities:["","","","","","","","","","",
 			"","","","","","","","","","",
 			"","","","","","","","","",""]
@@ -852,7 +853,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"악마 같으니! 역사가 이를 기억할 것이오!"
+		defeated:"악마 같으니! 역사가 이를 기억할 것이오!",
 
 		
 		outerColor:[0, 0, 0],
@@ -868,7 +869,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"피렌체라는 꽃이 어떤 야만인에게 짓밟히는구나..."
+		defeated:"피렌체라는 꽃이 어떤 야만인에게 짓밟히는구나...",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[62,197,252],
@@ -884,7 +885,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리는 복수의 칼날을 갈 것이다."
+		defeated:"우리는 복수의 칼날을 갈 것이다.",
 
 		outerColor:[0, 0, 0],
 		innerColor:[211, 220, 103],
@@ -900,7 +901,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"이것에 대한 노래를 하나 써야겠군요.... 당신의 취향에 맞기를 바랍니다."
+		defeated:"이것에 대한 노래를 하나 써야겠군요.... 당신의 취향에 맞기를 바랍니다.",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[194,97,255],
@@ -915,7 +916,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"하! 완벽한 승리로군..."
+		defeated:"하! 완벽한 승리로군...",
 
 		outerColor:[0, 0, 0],
 		innerColor:[211,180,113],
@@ -931,7 +932,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"처음 만났을 때부터 그대를 신용하지 않았소."
+		defeated:"처음 만났을 때부터 그대를 신용하지 않았소.",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,97,255],
@@ -947,7 +948,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"꼭 이래야만 했습니까?"
+		defeated:"꼭 이래야만 했습니까?",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
@@ -963,7 +964,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"야만적이군. 검으로 부흥한 자는 검으로 망하게 될 것이다."
+		defeated:"야만적이군. 검으로 부흥한 자는 검으로 망하게 될 것이다.",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[45,255,86],
@@ -979,7 +980,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리의 역사가 살아 숨쉬는 한, 그대는 우리를 꺾지 못하오."
+		defeated:"우리의 역사가 살아 숨쉬는 한, 그대는 우리를 꺾지 못하오.",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[18,178,210],
@@ -994,7 +995,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"그대만 없었더라도 수많은 문명의 싹들이 자라났을 텐데..."
+		defeated:"그대만 없었더라도 수많은 문명의 싹들이 자라났을 텐데...",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,255,51],
@@ -1009,7 +1010,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리가 패배하다니... 믿을 수 없군..."
+		defeated:"우리가 패배하다니... 믿을 수 없군...",
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,0,76],
@@ -1024,7 +1025,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"훌륭한 전투였소. 그대의 전술을 인정할 수밖에 없군."
+		defeated:"훌륭한 전투였소. 그대의 전술을 인정할 수밖에 없군.",
 
 		outerColor:[0, 0, 0],
 		innerColor:[250,128,114],
@@ -1039,7 +1040,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"당신같은 사람에게 질 수밖에 없다니!"
+		defeated:"당신같은 사람에게 질 수밖에 없다니!",
 
 		outerColor:[0, 0, 0],
 		innerColor:[102,0,51],
@@ -1054,7 +1055,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리보다 강한 나라에게 지는 것은 치욕적이지 않습니다."
+		defeated:"우리보다 강한 나라에게 지는 것은 치욕적이지 않습니다.",
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
@@ -1069,7 +1070,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"어딘가 다른 우주에서는, 우리가 친구였을 수도 있겠지요..."
+		defeated:"어딘가 다른 우주에서는, 우리가 친구였을 수도 있겠지요...",
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,255,0],
@@ -1084,7 +1085,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리 백성에게 이런 굴욕을 준 당신을 하늘이 용서해 주기를."
+		defeated:"우리 백성에게 이런 굴욕을 준 당신을 하늘이 용서해 주기를.",
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,255],
@@ -1099,7 +1100,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리의 전투정신은 당신이 이룩하는 그 어떤 국가보다도 오래 ."
+		defeated:"우리의 전투정신은 당신이 이룩하는 그 어떤 국가보다도 오래 지속될 것이오.",
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,204,204],
@@ -1114,7 +1115,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"나는 실패했지만, 당신이라면 적어도 우리 민족에 대한 열정을 보여줄 수 있겠지요."
+		defeated:"나는 실패했지만, 당신이라면 적어도 우리 민족에 대한 열정을 보여줄 수 있겠지요.",
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,153],
@@ -1129,7 +1130,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리가... 패배했다고? 아직 할 일이 산처럼 쌓여 있었단 말이다!"
+		defeated:"우리가... 패배했다고? 아직 할 일이 산처럼 쌓여 있었는데!",
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,25,0],
@@ -1144,7 +1145,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"이것이 죽음에서 느껴지는 감정이었구나..."
+		defeated:"이것이 죽음에서 느껴지는 감정이었구나...",
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,0,255],
@@ -1159,7 +1160,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"아아...스스로를 지키기에도 너무나 나약했었구나..."
+		defeated:"아아...스스로를 지키기에도 너무나 나약했었구나...",
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,102,0],
@@ -1174,7 +1175,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"우리에게 심판의 시간이 도래했군요. 하지만 주의하십시오, 언젠간 당신도 심판을 받게 될 것입니다!"
+		defeated:"우리에게 심판의 시간이 도래했군요. 하지만 주의하십시오, 언젠간 당신도 심판을 받게 될 것입니다!",
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
@@ -1189,7 +1190,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"오늘날의 우리는 그대에게 복종할 지 몰라도, 이 슬픔은 마음속에 영원히 남을 것입니다!"
+		defeated:"오늘날의 우리는 그대에게 복종할 지 몰라도, 이 슬픔은 마음속에 영원히 남을 것입니다!",
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
@@ -1204,7 +1205,7 @@
 		declaringWar:"선택의 여지를 주지 않는군요. 전쟁을 일으켜야만 하겠습니다.",
 		attacked:"그렇게 나오시는군요. 이 일은 잊지 않겠습니다.",
 		afterPeace:"평화가 영원히 우리 둘을 축복하기를.",
-		defeated:"아, 신이시여! 왜 우리를 버리시나이까!"
+		defeated:"아, 신이시여! 왜 우리를 버리시나이까!",
 
 		outerColor:[0, 0, 0],
 		innerColor:[96,96,96],
