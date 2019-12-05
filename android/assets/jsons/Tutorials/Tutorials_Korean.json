@@ -62,12 +62,12 @@
 	Next_Turn : [
 		[
 			"유닛들이 모든 행동을 마치고, 도시 설정도 다 끝났다면,",
-			"  오른쪽 위의 "다음 턴" 버튼을 눌러 차례를 마칠 수 있습니다."
+			"  오른쪽 위의 '다음 턴' 버튼을 눌러 차례를 마칠 수 있습니다."
 		],
 		[
 			"자신의 차례, 즉 '턴'이 지날 수록, 금이나 과학이 생산되어",
 			"  당신의 문명에 추가되고, 도시의 건설은 계속되며, 도시의",
-			"  인구나 영토는 계속 확장됩니다."
+			"  인구나 영토는 계속 증가하고, 확장됩니다."
 		]
 	],
 
@@ -142,7 +142,7 @@
 		[
 			"기술을 연구하다 보면, '행복도'를 늘려주는 건물을 지을 수 있게 됩니다.",
 			"만약 행복도가 0 이하로 떨어지게 되면, '불행'상태가 되어 도시들의 성장률이 크게 감소합니다.",
-			"상단에 있는 웃는 아이콘이 행복도를 나타내는데, 문명이 심각하게 불행한 상태라면,",
+			"상단에 있는 웃는 아이콘이 행복도를 나타내는데, 문명이 불행하면 불행할수록,",
 			"  군사 유닛들이 전투를 할 때의 '전투력'이 감소하게 됩니다."
 		],
 		[
@@ -167,42 +167,42 @@
 
 	Tile_Clicked : [
 		[
-			"타일을 누르게 되면 그 타일이 선택되며,",
+			"빈 타일을 누르게 되면 그 타일이 선택되며,",
 			"  오른쪽 아래에 그 타일의 설명이 나오게 됩니다.",
-			"If the tile contains a unit, that will become the selected unit,"
-			"  and its info and actions will be displayed on the bottom left."
+			"만약 유닛이 있는 타일을 누르게 된다면, 타일 설명 아래에 유닛 설명이 나오며,"
+			"  왼쪽 아래에 유닛에 대한 상세 설명과 가능한 행동이 나오게 됩니다."
 		]
 	],
 
 	Unit_Selected : [
 		[
-			"When a unit is selected, its information will be displayed on the bottom-left corner.",
-			"The available actions of that unit will appear above the tile information."
+			"유닛이 선택된다면, 왼쪽 아래에 그 유닛의 행동력, 전투력, 경험치가 나옵니다.",
+			"또한, 유닛이 할 수 있는 행동들이 그 위에 나오게 됩니다."
 		]
 	],
 
 
 	Unhappiness:  [
 		[
-			"It seems that your citizens are unhappy!",
-			"While unhappy, cities  will grow at 1/4 the speed,",
-			"  and your units will suffer a 2% penalty for each unhappiness"
+			"'행복도'가 0 이하가 되면 문명이 '불행' 상태에 빠집니다.",
+			"불행한 상태에서는, 도시의 성장률이 1/4로 감소하게 되며,",
+			"  부족한 행복도 하나마다 유닛의 전투력이 2%씩 감소합니다."
 		],
 		[
-			"Unhappiness has two main causes: Population and cities",
-			"  Each city causes 3 unhappiness, and each population, 1"
+			"불행의 원인에는 크게 '인구'와 '도시' 두 가지가 있습니다.",
+			"  도시 수 하나마다 3의 불행이, 시민 수 하나마다 1의 불행이 생성됩니다."
 		],
 		[
-			"There are 2 main ways to combat unhappiness:",
-			"  by building happiness buildings for your population",
-			"  or by having improved luxury resources within your borders"
+			"불행 상태에서 벗어나려면 어떻게 해야 할까요?",
+			"  우선 행복도를 올려주는 건물을 지을 수도 있고,",
+			"  '일꾼'을 통해 국경 안에 있는 '사치 자원'을 개발할 수도 있습니다."
 		]
 	],
 
 	Golden_Age:  [
 		[
-			"You have entered a golden age!",
-			"Golden age points are accumulated each turn by the total happiness ",
+			"문명이 황금기에 진입했습니다!",
+			"매 턴마다 행복도가 문명의 '황금기 점수'에 축적되게 됩니다.",
 			"  of your civilization",
 			"When in a golden age, culture and production generation increases +20%,",
 			"  and every tile already providing at least one gold will provide an extra gold."
