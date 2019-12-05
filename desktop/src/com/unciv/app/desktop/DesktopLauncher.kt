@@ -64,7 +64,9 @@ internal object DesktopLauncher {
 
             thread {
                 while (true) {
-                    updateRpc(game)
+                    try {
+                        updateRpc(game)
+                    }catch (ex:Exception){}
                     Thread.sleep(1000)
                 }
             }

@@ -28,7 +28,7 @@ class LanguageTable(val language:String, ruleSet: RuleSet):Table(){
         val availableTranslations = translations.filter { it.value.containsKey(language) }
 
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / translations.size) - 5
+        else percentComplete = (availableTranslations.size*100 / translations.size) - 1 //-1 so if the user encounters anything not translated he'll be like "OK that's the 1% missing"
 
         val spaceSplitLang = language.replace("_"," ")
         add("$spaceSplitLang ($percentComplete%)".toLabel())

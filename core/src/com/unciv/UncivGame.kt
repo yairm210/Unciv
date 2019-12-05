@@ -109,7 +109,7 @@ class UncivGame(val version: String) : Game() {
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
         // My guess is that resume() was called but create() wasn't, or perhaps was aborted too early,
         // and the original (and empty) initial GameInfo remained.
-        if(gameInfo.civilizations.isEmpty())
+        if(!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
             return create()
 
         if(::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
