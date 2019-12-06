@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
@@ -39,7 +39,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         }
     }
 
-    fun getPlayerTable(player: Player, ruleSet: RuleSet): Table {
+    fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
         val playerTable = Table()
         playerTable.pad(20f)
         playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.8f))

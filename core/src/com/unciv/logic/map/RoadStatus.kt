@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.logic.map.RoadStatus.Railroad
 import com.unciv.logic.map.RoadStatus.Road
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 
 /**
  * You can use RoadStatus.name to identify [Road] and [Railroad]
@@ -15,6 +15,6 @@ enum class RoadStatus {
     Railroad;
 
     /** returns null for [None] */
-    fun improvement(ruleSet: RuleSet) = ruleSet.TileImprovements[this.name]
+    fun improvement(ruleset: Ruleset) = ruleset.TileImprovements[this.name]
 
 }

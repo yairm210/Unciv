@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
@@ -14,7 +14,7 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
 
-class LanguageTable(val language:String, ruleSet: RuleSet):Table(){
+class LanguageTable(val language:String, ruleset: Ruleset):Table(){
     private val blue = ImageGetter.getBlue()
     private val darkBlue = blue.cpy().lerp(Color.BLACK,0.5f)!!
     val percentComplete: Int
@@ -24,7 +24,7 @@ class LanguageTable(val language:String, ruleSet: RuleSet):Table(){
         defaults().pad(10f)
         if(ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
-        val translations = ruleSet.Translations
+        val translations = ruleset.Translations
         val availableTranslations = translations.filter { it.value.containsKey(language) }
 
         if(language=="English") percentComplete = 100
@@ -61,7 +61,7 @@ class LanguagePickerScreen: PickerScreen(){
                     "If you want to help translating the game into your language, \n"+
                     "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
-        val ruleSet = UncivGame.Current.ruleSet
+        val ruleSet = UncivGame.Current.ruleset
         languageTables.addAll(ruleSet.Translations.getLanguages().map { LanguageTable(it,ruleSet) }
                 .sortedByDescending { it.percentComplete } )
 

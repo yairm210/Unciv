@@ -36,12 +36,13 @@ class Tutorials{
     }
 
     fun getTutorialsOfLanguage(language: String): HashMap<String, ArrayList<String>> {
-        if(!Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists()) return hashMapOf()
+        val filePath = "jsons/Tutorials/Tutorials_$language.json"
+        if(!Gdx.files.internal(filePath).exists()) return hashMapOf()
 
         // ...Yes. Disgusting. I wish I didn't have to do this.
         val x = LinkedHashMap<String, Array<Array<String>>>()
         val tutorials: LinkedHashMap<String, Array<Array<String>>> =
-                UncivGame.Current.ruleSet.getFromJson(x.javaClass, "Tutorials/Tutorials_$language")
+                UncivGame.Current.ruleset.getFromJson(x.javaClass, filePath)
         val tutorialMap = HashMap<String, ArrayList<String>>()
         for (tutorial in tutorials){
             val list = ArrayList<String>()

@@ -19,7 +19,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     var mapName = "My first map"
     lateinit var mapHolder: TileGroupMap<TileGroup>
     private val showHideEditorOptionsButton = TextButton(">",skin)
-    val ruleSet = UncivGame.Current.ruleSet
+    val ruleSet = UncivGame.Current.ruleset
     private val tileEditorOptions = TileEditorOptionsTable(this)
 
     constructor(mapNameToLoad:String?):this(){

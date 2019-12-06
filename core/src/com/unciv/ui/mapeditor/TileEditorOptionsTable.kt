@@ -157,7 +157,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 clearSelection()
                 selectedResource = resource
                 val tileInfo = TileInfo()
-                tileInfo.ruleSet = mapEditorScreen.ruleSet
+                tileInfo.ruleset = mapEditorScreen.ruleSet
 
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = ruleSet.Terrains[terrain]!!
@@ -181,7 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in ruleSet.Terrains.values) {
             val tileInfo = TileInfo()
-            tileInfo.ruleSet = mapEditorScreen.ruleSet
+            tileInfo.ruleset = mapEditorScreen.ruleSet
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn != null -> terrain.occursOn.first()
