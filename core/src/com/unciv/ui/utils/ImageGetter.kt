@@ -243,7 +243,7 @@ object ImageGetter {
     }
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
-        val techIconColor = when(getGameBasics().Technologies[techName]!!.era().name) {
+        val techIconColor = when(getRuleSet().Technologies[techName]!!.era().name) {
             "Ancient" -> colorFromRGB(255, 87, 35)
             "Classical" -> colorFromRGB(233, 31, 99)
             "Medieval" -> colorFromRGB(157, 39, 176)
