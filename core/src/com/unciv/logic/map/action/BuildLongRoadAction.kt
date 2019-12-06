@@ -89,7 +89,7 @@ class BuildLongRoadAction(
         val tile = unit.currentTile
         if (unit.currentMovement > 0 && isRoadableTile(tile)) {
             val roadToBuild = unit.civInfo.tech.getBestRoadAvailable()
-            roadToBuild.improvement(unit.civInfo.gameInfo.gameBasics)?.let { improvement ->
+            roadToBuild.improvement(unit.civInfo.gameInfo.ruleSet)?.let { improvement ->
                 if (tile.roadStatus < roadToBuild && tile.improvementInProgress != improvement.name) {
                     tile.startWorkingOnImprovement(improvement, unit.civInfo)
                     return true

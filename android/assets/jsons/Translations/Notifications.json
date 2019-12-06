@@ -69,6 +69,7 @@
 		Traditional_Chinese:"一個[greatPerson]在[cityName]誕生了!",
 		Portuguese:"[cityName] - Um [greatPerson] nasceu!",
 		German:"[cityName] - Ein [greatPerson] wurde geboren!",
+		Dutch:"[cityName] - Een [greatPerson] is geboren!",
 		Czech:"[cityName] - Narodil se [greatPerson]",
 		Ukrainian:"[cityName] - Народився [greatPerson]!",
 		Polish:"[cityName] - [greatPerson] urodził/a się!"
@@ -85,6 +86,7 @@
 		Traditional_Chinese:"我們遇到了[civName]!"
 		Portuguese:"Nós encontramos [civName]!"
 		German:"Wir sind auf [civName] getroffen!"
+		Dutch:"We zijn [civName] tegengekomen!"
 		Japanese:"[civName]に遭遇しました。",
 		Czech:"Setkali jsme se s [civName]"
 		Ukrainian:"Виявлена цивілізація: [civName]"
@@ -98,6 +100,7 @@
 		Spanish:"¡No se puede mantener [unitName] - unidad disuelta!"
 		French:"Le support ne peut être fournit pour [unitName] - l'unité a été dissoute!"
 		Romanian:"Nu se poate oferi susținere pentru [unitName] - unitatea a fost desființată!"
+		Dutch:"Kan unit niet onderhouden voor [unitName] - unit is opgeheven!"
 		Simplified_Chinese:"无法为[unitName]提供维护费 - 单位已被解散！",
 		Traditional_Chinese:"無法為[unitName]提供維護費 - 單位已被解散！",
 		Portuguese:"Não é possivel providenciar manutenção para [unitName] - a unidade foi dissolvida!"
@@ -189,6 +192,7 @@
 		Russian:"[wonder] был построен в далёких землях"
 		Simplified_Chinese:"[wonder]已在遥远的土地上建成"
 		Traditional_Chinese:"[wonder]已在遙遠的土地上建成"
+		Dutch:"is gebouwd in een land ver weg"
 		Czech:"Div světa [wonder] byl vybudován ve vzdálené zemi"
 		Ukrainian:"[wonder] збудовано за тридевʼять земель"
 		German:"[wonder] wurde in einem fernen Land gebaut"
@@ -221,6 +225,7 @@
 		Simplified_Chinese:"[cityName]无法继续建造/组建[construction]",
 		Traditional_Chinese:"[cityName]無法繼續建造/訓練[construction]",
 		Czech:"Město [cityName] nemůže pokračovat ve stavbě budovy [construction]"
+		Dutch:"[cityName] kan niet verder werken aan [construction]"
 		Ukrainian:"[construction]: неможливо продовжити будувати в місті [cityName]"
 		German:"[cityName] kann nicht weiter an [construction] arbeiten"
 		Polish:"Miasto [cityName] nie może dalej pracować nad [construction]"
@@ -328,6 +333,7 @@
 		Traditional_Chinese:"敵方城市[cityName]攻擊了我們的[ourUnit]",
 		Czech:"Nepřátelské město [cityName] zaútočilo na naši jednotku [ourUnit]"
 		Ukrainian:"Вороже місто [cityName] атакувало наш підрозділ [ourUnit]"
+		Dutch:"Vijandelijke stad [cityName] heeft onze [ourUnit] aangevallen"
 		German:"Feindliche Stadt [cityName] hat unsere Einheit [ourUnit] angegriffen"
 		Polish:"Wrogie miasto [cityName] zaatakowało nasze jednostki [ourUnit]"
 		Korean:"적의 도시 [cityName]이(가) 우리의 [ourUnit]을(를) 공격했습니다."
@@ -395,7 +401,8 @@
 		Ukrainian:"Ворожий підрозділ [RangedUnit] знищив оборону нашого міста [cityname]"
 		Russian:"Вражеский [RangedUnit] прорвал оборону города [cityname]"
 		German:"Die feindliche Einheit [RangedUnit] hat die Verteidigung der Stadt [cityname] zerstört"
-		Polish:"Wrogie jednostki dystansowe [RangedUnits] zniszczyły obronę miasta [cityname]"
+		Polish:"Wrogie jednostki dystansowe [RangedUnit] zniszczyły obronę miasta [cityname]"
+		Dutch:"Een vijand [RangedUnit] heeft de verdediging van [cityname] vernietigd"
 		Korean:"적 [RangedUnit]이(가) [cityname]의 방어선을 파괴했습니다"
 	}
 
@@ -408,6 +415,7 @@
 		Czech:"Nepřátelské město [cityName] zničilo naši jednotku [ourUnit]"
 		Ukrainian:"Вороже місто [cityName] знищило наш підрозділ [ourUnit]"
 		German:"Die feindliche Stadt [cityName] hat unsere Einheit [ourUnit] zerstört"
+		Dutch:"Vijandelijke stad [cityName] heeft onze [ourUnit] vernietigd"
 		Polish:"Wrogie miasto [cityName] pokonało nasze jednostki [ourUnit]"
 		Korean:"적 도시 [cityName]이(가) 아군 [ourUnit]을(를) 파괴했습니다"
 	}
@@ -457,6 +465,7 @@
 		Czech:"Naše jednotka [attackerName] byla zničena po zachycení jednotkou [interceptorName]"
 		Ukrainian:"Наш підрозділ [attackerName] знищено при перехопленні ворожим підрозділом [interceptorName]"
 		German:"Unser [attackerName] wurde durch einen abfangenden [interceptorName] zerstört."
+		Dutch:"Onze [attackerName] is vernietigd door een onderscheppende [interceptorName]"
 		Polish:"Nasz [attackerName] został przechwycony przez [interceptorName]"
 		Korean:"아군 [attackerName]이(가) 적 [interceptorName]의 요격으로 파괴되었습니다"
 	}
@@ -544,6 +553,7 @@
 		French:"[amount] unités ennemies ont été repérées proche de notre territoire"
 		Russian:"[amount] вражеских юнитов было замечено у нашей территории",
 		Czech:"[amount] napřátelských jednotek bylo spatřeno poblíž našeho území"
+		Dutch:"[amount] vijandelijke eenheden werden gezien in de buurt van ons territorium"
 		Ukrainian:"Біля нашої території помічено ворожих підрозділів: [amount]"
 		Polish:"[amount] wrogich jednostek zostało zauważonych blisko naszego terytorium"
 		Korean:"[amount] 명의 적들이 아군 영토 근처에서 발견되었습니다"
@@ -557,6 +567,7 @@
 		French:"[amount] unités ennemies ont été repérées sur notre territoire"
 		Russian:"[amount] вражеских юнитов было замечено на нашей территории",
 		Czech:"[amount] nepřátelských jednotek bylo spatřeno na našem území"
+		Dutch:"[amount] vijandelijke eenheden werden gespot op ons grondgebied"
 		Ukrainian:"На нашій території помічено ворожих підрозділів: [amount]"
 		Polish:"[amount] wrogich jednostek zostało zauważonych na naszym terytorium"
 		Korean: "[amount] 명의 적들이 아군 영토 근처에서 발견되었습니다"
@@ -588,6 +599,7 @@
 		Traditional_Chinese:"[name]城邦已經滅亡！",
 		Czech:"Městský stát [name] byl zničen!"
 		Ukrainian:"[name]: місто-держава знищена!"
+		Dutch:"De stadstaat van [name] is vernietigd!"
 		German:"Der Stadtstaat von [name] wurde zerstört!"
 		Polish:"Miasto-Państwo [name] zostało zniszczone!"
 		Korean:"[name] 도시국가가 멸망했습니다!"
@@ -613,6 +625,7 @@
 		Simplified_Chinese:"蛮族的[unitType]加入了我们！",
 		Traditional_Chinese:"蠻族的[unitType]加入了我們！",
 		Czech:"Barbarská jednotka [unitType] se připojila k nám!"
+		Dutch:"Een barbaar [unitType] heeft zich bij ons aangesloten!"
 		Ukrainian:"Варварський підрозділ [unitType] приєднався до нас!"
 		German:"Eine barbarische Einheit [unitType] hat sich uns angeschlossen!"
 		Polish:"Barbażyńska jednostka [unitType] przyłączyła się do nas!"

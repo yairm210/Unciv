@@ -163,10 +163,10 @@ class DiplomacyManager() {
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.gameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
+                    counter.add(civInfo.gameInfo.ruleSet.TileResources[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.gameBasics.TileResources[offer.name]!!,offer.amount,"Trade")
+                    counter.add(civInfo.gameInfo.ruleSet.TileResources[offer.name]!!,offer.amount,"Trade")
         }
         return counter
     }

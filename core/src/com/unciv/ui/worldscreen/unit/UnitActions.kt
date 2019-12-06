@@ -141,7 +141,7 @@ class UnitActions {
             actionList += UnitAction("Construct improvement",
                     unit.currentMovement > 0
                             && !tile.isCityCenter()
-                            && unit.civInfo.gameInfo.gameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
+                            && unit.civInfo.gameInfo.ruleSet.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
                     currentAction = unit.currentTile.hasImprovementInProgress()
             ) { worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null }) }
 
@@ -160,7 +160,7 @@ class UnitActions {
                 && tile.roadStatus==RoadStatus.None
                 && tile.improvementInProgress != "Road"
                 && tile.isLand
-                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(unit.civInfo.gameInfo.gameBasics)!!.techRequired!!))
+                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet)!!.techRequired!!))
             actionList+=UnitAction("Construct road", unit.currentMovement >0){
                 tile.improvementInProgress="Road"
                 tile.turnsToImprovement=4
@@ -171,7 +171,7 @@ class UnitActions {
                     && tile.isWater // because fishing boats can enter cities, and if there's oil in the city... ;)
                     && tile.improvement==null
                     && tile.getTileResource().improvement == improvement
-                    && unit.civInfo.tech.isResearched(unit.civInfo.gameInfo.gameBasics.TileImprovements[improvement]!!.techRequired!!)
+                    && unit.civInfo.tech.isResearched(unit.civInfo.gameInfo.ruleSet.TileImprovements[improvement]!!.techRequired!!)
             )
                 actionList += UnitAction("Create [$improvement]", unit.currentMovement >0) {
                     tile.improvement = improvement

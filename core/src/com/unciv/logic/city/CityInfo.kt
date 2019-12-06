@@ -119,7 +119,7 @@ class CityInfo {
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
-    fun getGameBasics() = civInfo.gameInfo.gameBasics
+    fun getGameBasics() = civInfo.gameInfo.ruleSet
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()

@@ -23,12 +23,13 @@ import kotlin.concurrent.thread
 class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UncivGame.Current.gameInfo.gameParameters
+    val ruleSet = UncivGame.Current.ruleSet
 
     init {
         setDefaultCloseAction()
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        topTable.add(NewGameScreenOptionsTable(newGameParameters) { playerPickerTable.update() })
+        topTable.add(NewGameScreenOptionsTable(newGameParameters,ruleSet) { playerPickerTable.update() })
         topTable.add(playerPickerTable).pad(10f)
         topTable.pack()
         topTable.setFillParent(true)

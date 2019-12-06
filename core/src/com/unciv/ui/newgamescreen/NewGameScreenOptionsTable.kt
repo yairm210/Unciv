@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
-import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tr
@@ -17,7 +17,7 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMultiplayerToggled:()->Unit)
+class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleSet: RuleSet, val onMultiplayerToggled:()->Unit)
     : Table(CameraStageBaseScreen.skin){
     init{
         addMapTypeSizeAndFile()
@@ -128,7 +128,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
         val cityStatesArray = Array<Int>()
 
-        (0..UncivGame.Current.ruleSet.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        (0..ruleSet.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
         add(cityStatesSelectBox).pad(10f).row()
@@ -141,7 +141,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
 
     private fun addDifficultySelectBox() {
         add("{Difficulty}:".tr())
-        val difficultySelectBox = TranslatedSelectBox(UncivGame.Current.ruleSet.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
+        val difficultySelectBox = TranslatedSelectBox(ruleSet.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
         difficultySelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.difficulty = difficultySelectBox.selected.value

@@ -3,17 +3,18 @@ package com.unciv.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
+import com.unciv.models.gamebasics.RuleSet
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 
 
-class LanguageTable(val language:String,skin: Skin):Table(skin){
+class LanguageTable(val language:String, ruleSet: RuleSet):Table(){
     private val blue = ImageGetter.getBlue()
     private val darkBlue = blue.cpy().lerp(Color.BLACK,0.5f)!!
     val percentComplete: Int
@@ -23,14 +24,14 @@ class LanguageTable(val language:String,skin: Skin):Table(skin){
         defaults().pad(10f)
         if(ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
-        val translations = UncivGame.Current.ruleSet.Translations
+        val translations = ruleSet.Translations
         val availableTranslations = translations.filter { it.value.containsKey(language) }
 
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / translations.size) - 5
+        else percentComplete = (availableTranslations.size*100 / translations.size) - 1 //-1 so if the user encounters anything not translated he'll be like "OK that's the 1% missing"
 
         val spaceSplitLang = language.replace("_"," ")
-        add("$spaceSplitLang ($percentComplete%)")
+        add("$spaceSplitLang ($percentComplete%)".toLabel())
         update("")
         touchable = Touchable.enabled // so click listener is activated when any part is clicked, not only children
         pack()
@@ -60,7 +61,8 @@ class LanguagePickerScreen: PickerScreen(){
                     "If you want to help translating the game into your language, \n"+
                     "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
-        languageTables.addAll(UncivGame.Current.ruleSet.Translations.getLanguages().map { LanguageTable(it,skin) }
+        val ruleSet = UncivGame.Current.ruleSet
+        languageTables.addAll(ruleSet.Translations.getLanguages().map { LanguageTable(it,ruleSet) }
                 .sortedByDescending { it.percentComplete } )
 
         languageTables.forEach {

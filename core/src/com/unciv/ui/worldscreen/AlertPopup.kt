@@ -149,19 +149,19 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Very well."))
             }
             AlertType.WonderBuilt -> {
-                val wonder = worldScreen.gameInfo.gameBasics.Buildings[popupAlert.value]!!
+                val wonder = worldScreen.gameInfo.ruleSet.Buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 val centerTable = Table()
                 centerTable.add(wonder.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
-                centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.gameBasics)
+                centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
                         .toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
                 add(getCloseButton("Close"))
             }
             AlertType.TechResearched -> {
-                val gameBasics = worldScreen.gameInfo.gameBasics
+                val gameBasics = worldScreen.gameInfo.ruleSet
                 val tech = gameBasics.Technologies[popupAlert.value]!!
                 addGoodSizedLabel(tech.name)
                 addSeparator()

@@ -42,7 +42,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         techEnabledIcons.defaults().pad(5f)
 
         val civName = techManager.civInfo.civName
-        val gameBasics = techManager.civInfo.gameInfo.gameBasics
+        val gameBasics = techManager.civInfo.gameInfo.ruleSet
 
         val tech = gameBasics.Technologies[techName]!!
 

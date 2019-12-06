@@ -38,7 +38,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
         val regularImprovements = VerticalGroup()
         regularImprovements.space(10f)
 
-        for (improvement in game.ruleSet.TileImprovements.values) {
+        for (improvement in tileInfo.tileMap.gameInfo.ruleSet.TileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
             if(improvement.name == tileInfo.improvement) continue
             if(improvement.name==tileInfo.improvementInProgress) continue
@@ -62,7 +62,8 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             group.onClick {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
-                descriptionLabel.setText(improvement.getDescription(game.ruleSet))
+                val ruleSet = tileInfo.tileMap.gameInfo.ruleSet
+                descriptionLabel.setText(improvement.getDescription(ruleSet))
             }
 
             val pickNow = "Pick now!".toLabel()

@@ -26,7 +26,7 @@ public class BasicTests {
 	@Test
 	public void gameBasicsLoad() {
 		assertTrue("This test will only pass when the jsons can be loaded",
-				RuleSet.INSTANCE.getBuildings().size() > 0);
+				new RuleSet().getBuildings().size() > 0);
 	}
 
 

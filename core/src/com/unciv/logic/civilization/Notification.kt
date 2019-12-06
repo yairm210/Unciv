@@ -40,7 +40,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 /** show tech screen */
 class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        val tech = worldScreen.gameInfo.gameBasics.Technologies[techName]
+        val tech = worldScreen.gameInfo.ruleSet.Technologies[techName]
         worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
     }
 }

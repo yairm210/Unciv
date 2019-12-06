@@ -67,7 +67,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 wonderDetailsTable.clear()
             else{
                 val detailsString = building.getDescription(true,
-                        cityScreen.city.civInfo, cityScreen.city.civInfo.gameInfo.gameBasics)
+                        cityScreen.city.civInfo, cityScreen.city.civInfo.gameInfo.ruleSet)
                 wonderDetailsTable.add(detailsString.toLabel().apply { setWrap(true)})
                         .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
                 if(!building.isWonder && !building.isNationalWonder) {
