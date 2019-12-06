@@ -348,6 +348,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             else {
                 val improvement = tileInfo.getTileImprovement()!!
                 if(tileInfo.getBaseTerrain().impassable) tileInfo.improvement=null
+                if(improvement.terrainsCanBeBuiltOn.isEmpty() && tileInfo.isWater)
+                    tileInfo.improvement=null
                 if (improvement.terrainsCanBeBuiltOn.isNotEmpty() // for "everywhere" improvements like city ruins, encampments, ancient ruins
                         && improvement.terrainsCanBeBuiltOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
                     tileInfo.improvement = null
