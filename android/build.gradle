@@ -41,7 +41,7 @@ android {
         release {
             // Don't add local save files and fonts to release, obviously
             aaptOptions {
-                ignoreAssetsPattern "!SaveFiles:!fonts:!maps:!music"
+                ignoreAssetsPattern "!SaveFiles:!fonts:!maps:!music:!mods"
             }
         
             minifyEnabled false

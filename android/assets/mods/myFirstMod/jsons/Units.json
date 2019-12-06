@@ -1,0 +1,13 @@
+[
+	{
+		name:"Warrior",
+		unitType:"Melee",
+		movement:2,
+		strength:12,
+		cost: 40,
+		hurryCostModifier:20,
+		obsoleteTech:"Metal Casting",
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
+	}
+]
