@@ -31,7 +31,7 @@
 		outerColor:[27,53,63],
 		innerColor:[213,249,255],
 		uniqueName:"독창성",
-		unique:"문자 연구 시 위대한 과학자가 출현합니다. 위대한 과학자 출현 속도 +50%",
+		unique:"문자를 연구한 후 위대한 과학자 하나를 무료로 얻습니다. 위대한 과학자의 출현 속도 + 50%",
 		cities:["바빌론","아카드","두르 쿠리갈주","니푸르","보르시파","시파르","오피","마리","슈산","예수눈나",
 			"엘라사르","에레크","쿠타","시르풀라","네립툼","아수르","니네베","니므루드","아르밸라","누지",
 			"투투브","아르랍크하이","샤두품","라피쿰","마쉬칸 사피르","투툴","라마디","아나","하라둠","아그랍"]
@@ -68,7 +68,7 @@
 		outerColor:[181, 232, 232],
 		innerColor:[68,142,249],
 		uniqueName:"그리스 동맹",
-		unique:"도시 국가의 영향력 감소량이 절반이 되고, 회복량은 두 배가 됩니다.",
+		unique:"도시국가에 대한 영향력 감소량이 절반이 되고, 영향력 회복량은 두 배가 됩니다.",
 		cities:["아테네","스파르타","코린트","아르고스","크노소스","미케네","파르살로스","에페소스","할리카르나소스","로도스",
 			"에레트리아","페르가몬","밀레토스","메가라","포카이아","시키온","티린스","사모스","미틸레네","키오스",
 			"파로스","엘리스","시라쿠사","헤라클레이아","고르틴","칼키스","필로스","펠라","낙소스"]
@@ -104,7 +104,7 @@
 		outerColor:[9, 112, 84],
 		innerColor:[255,255,255],
 		uniqueName:"손자병법",
-		unique:"위대한 장군이 주는 보너스가 두 배가 됩니다. 위대한 장군 출현 속도 +50%",
+		unique:"위대한 장군으로 인한 전투력 보너스가 두 배가 됩니다. 위대한 장군 출현율 +50%",
 		cities:["베이징","상하이","광저우","난징","시안","청두","항저우","톈진","마카오","산둥",
 			"카이펑","닝보","바오딩","양저우","하얼빈","충칭","뤄양","쿤밍","타이베이","선양",
 			"타이위안","타이난","다롄","리장","우시","쑤저우","마오밍","사오관","양장","허위안"]
@@ -141,7 +141,7 @@
 		outerColor:[ 231, 213, 0],
 		innerColor:[98,10,210],
 		uniqueName:"불가사의 건축가",
-		unique:"불가사의를 건축할 때 생산력 +20%",
+		unique:"불가사의를 건설할 때 생산력 +20%",
 		cities:["테베","멤피스","헬리오폴리스","엘레판티네","알렉산드리아","피-람세스","기자","비블로스","아케타텐","히에라콘폴리스",
 			"아비도스","아슈트","아바리스","리슈트","부토","에드푸","피톰","부시리스","카훈","아트리비스",
 			"멘데스","엘 아쉬무네인","타니스","부바스티스","오릭스","세베니투스","아크민","카르나크","룩소르","엘 캅"]
@@ -214,7 +214,7 @@
 		outerColor:[ 38, 98, 255],
 		innerColor:[239,236,148],
 		uniqueName:"앙시앵 레짐",
-		unique:"증기력을 연구하기 전까지 모든 도시에서 턴당 문화 +2",
+		unique:"증기력을 연구하기 전까지, 모든 도시에서 턴 당 문화 +2",
 		cities:["파리","오를레앙","리옹","트루아","투르","마르세유","샤르트르","아비뇽","루앙","그르노블",
 			"디종","아미앵","셰르부르","푸아티에","툴루즈","바욘","스트라스부르","브레스트","보르도","렌",
 			"니스","생테티엔","낭트","랭스","르망","몽펠리에","리모주","낭시","릴","캉"]
@@ -251,7 +251,7 @@
 		outerColor:[ 236, 178, 0],
 		innerColor:[0,0,0],
 		uniqueName:"시베리아의 풍요",
-		unique:"말,철,우라늄 전략 자원의 수가 두 배가 됩니다. 전략 자원이 있는 타일의 생산력 +1",
+		unique:"말, 철, 그리고 우라늄 자원이 두 배가 됩니다. 전략 자원의 생산력 +1",
 		cities:["모스크바","상트페테르부르크","노브고로드","로스토브","야로슬라블리","예카테린부르크","야쿠츠크","블라디보스토크","스몰렌스크","오렌부르크",
 			"크라스노야르스크","하바롭스크","브리안스크","트베리","노보시비르스크","마가단","무르만스크","이르쿠츠크","치타","사마라",
 			"아르한겔스크","첼랴빈스크","토볼스크","볼로그다","옴스크","아스트라한","쿠르스크","사라토프","눌라","블라디미르"]
@@ -287,7 +287,7 @@
 		outerColor:[ 53,0,87],
 		innerColor:[238,201,9],
 		uniqueName:"로마의 영광",
-		unique:"수도에 건설된 건물을 다른 도시에서 건설할 때 생산력 +25%",
+		unique:"수도에 지어진 건물을 지을 때 생산력 +25%",
 		cities:["로마","안티움","쿠마에","네압볼리","라벤나","아레티움","메디오라눔","아르피눔","치르체","세티아",
 			"사트리쿰","아르데아","오스티아","벨리트라이","비로코니움","타렌툼","브룬디시움","카이사라우구스타","카이사레아","팔미라",
 			"시그니아","아퀠레이아","클루시움","수트리움","크레모나","플라켄티아","히스팔리스","아르탁사타","아우렐리아노룸","니코폴리스"]
@@ -324,7 +324,7 @@
 		outerColor:[ 41,83,42],
 		innerColor:[146,221,9],
 		uniqueName:"사막의 배",
-		unique:"석유 전략자원이 두 배가 됩니다. 모든 교역로에서 금 +1",
+		unique:"석유 자원이 두 배가 됩니다. 교역로마다 금 +1",
 		cities:["메카","메디나","다마스쿠스","바그다드","나즈란","쿠파","바스라","쿠라산","안자르","푸스타트",
 			"아덴","야마","무스카트","만수라","부하라","페스","쉬라즈","머르우","발흐","모술",
 			"아이답","바잇 라스","수하르","타이프","하마","따북","사나","시르","트리폴리","튀니스"]
@@ -360,7 +360,7 @@
 		outerColor:[ 28,51,119],
 		innerColor:[255,255,255],
 		uniqueName:"확장 정신",
-		unique:"지상 군사 유닛의 시야 +1，타일 구매 비용 -50%",
+		unique:"모든 지상군 유닛의 시야 +1. 타일을 금으로 구매할 때 가격 -50%",
 		cities:["워싱턴","뉴욕","보스턴","필라델피아","애틀랜타","시카고","시애틀","샌프란시스코","로스앤젤레스","휴스턴",
 			"포틀랜드","세인트 루이스","마이애미","버팔로","디트로이트","뉴올리언스","볼티모어","덴버","신시내티","댈러스","멤피스",
 			"클리블랜드","캔자스시티","샌디에이고","리치몬드","라스베가스","피닉스","앨버커키","미니애폴리스","피츠버그"]
@@ -397,7 +397,7 @@
 		outerColor:[215,225,225],
 		innerColor:[185,0,0],
 		uniqueName:"무사도",
-		unique: "유닛이 피해를 입어도 원래의 전투력을 유지합니다.",
+		unique: "유닛이 피해를 입어도 전투력이 그대로 유지됩니다.",
 		cities:["교토","오사카","도쿄","사쓰마","가고시마","나라","나고야","이즈모","나가사키","요코하마",
 			"시모노세키","마츠야마","삿포로","하코다테","이세","토야마","후쿠시마","수오","비젠","에치젠",
 			"이즈미","오미","에치고","코주케","사도","고베","나가노","히로시마","타카야마","아키타","후쿠오카","아오모리",
@@ -435,7 +435,7 @@
 		outerColor:[0,255,0],
 		innerColor:[255,153,51],
 		uniqueName:"인구 성장",
-		unique:"도시 수에서 얻는 불행이 두 배가 되지만, 시민 수에 의한 불행이 반으로 감소합니다.",
+		unique:"도시 수로 인한 불행이 두 배가 되는 대신, 시민 수로 인한 불행이 반으로 감소합니다.",
 		cities:["델리","뭄바이","비자야나가라","파탈리푸트라","바라나시","아그라","캘커타","라호르","방갈로르","하이데라바드","마두라","아마다바드",
 			"콜라푸르","프라야가","아요디아","인드라쁘라스타","마투라","우자인","굴바르가","자운푸르","라자그리하","슈라바스티","티루치라팔리","탄자부르",
 			"보드가야","쿠쉬나가르","아마라바티","가우르","괄리오르","자이푸르","카라치"]
@@ -450,154 +450,159 @@
 		startIntroPart1: "독일 제국의 초대 수상, 위대한 비스마르크에 경의를! 독일은 신성 로마 제국의 폐허에서 탄생한 신생 국가로 한 세기 조금 더 전인 1871년에 마침내 통일됐습니다. 독일인은 그들이 창의적이고 성실하면서도 잔인한 전사임을 입증했습니다. 20세기 전반 큰 위기를 겪었음에도, 독일은 여전히 세계의 경제와 예술, 기술을 선도하고 있습니다.",
 		startIntroPart2: "위대한 비스마르크여, 독일인은 그대의 지도 하에 다시금 영광을 되찾고 싶어합니다. 독일인은 결의를 굳게 다지며, 존경해 마지않는 철혈 재상이 다시금 독일을 이끌어주리라 기대하고 있습니다. 철과 피로써 지배하고 정복하겠습니까, 아니면 게르만의 예술과 산업을 장려하고 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!",
-		attacked:"Corrupted villain! We will bring you into the ground!",
-		defeated:"Germany has been destroyed. I weep for the future generations.",
-		introduction:"Guten tag. In the name of the great German people, I bid you welcome.",
+		declaringWar:"그대들이 강해지는 것을 지켜 볼 수만은 없군. 전쟁을 준비하시오!",
+		attacked:"사악한 악당 같으니라고! 땅 속에 묻어 주지!",
+		defeated:"독일은 파괴되었소. 미래세대를 위해 울고 싶은 마음이군.",
+		introduction:"위대한 독일인들을 대표하여, 그대를 환영하오.",
 		
-		neutralHello:"What now?",
-		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"],
-		neutralNo:["We do not accept.","Nein.","Not a chance."],
-		neutralYes:["Agreed","Very well, then","Alright."],
+		neutralHello:"어쩐 일로 오셨소?",
+		neutralLetsHearIt:["무엇을 원하십니까?","네?","듣고 있습니다."],
+		neutralNo:["거절하겠소.","안 되겠군요.","그럴 수는 없습니다."],
+		neutralYes:["좋소","그 정도면 좋군요.","알겠습니다."],
 
-		hateHello:"So, out with it!",
-		hateLetsHearIt:["And?!","Come on!","Well, tell me!"],
-		hateNo:["That is unacceptable!","Ye can't be serious!","Nein!"],
-		hateYes:["Well, okay.","Gut.","It seems I can't refuse."],
+		hateHello:"어서 물러가시오!",
+		hateLetsHearIt:["그래서?","말해 보시오!","말하시오!"],
+		hateNo:["불가능하오.","제 정신인가?","안되오!"],
+		hateYes:["뭐, 그러지.","좋군.","거절할 수는 없군."],
 		
-		afterPeace:"What do ye think about calling it a draw?",
-		tradeRequest:"It would be in your best interest, to carefully consider this proposal.",
+		afterPeace:"무승부로 치면 어떻겠소?",
+		tradeRequest:"이 제안에 흥미가 있을 것 같군요.",
 				
 		outerColor:[224,224,224],
 		innerColor:[64,64,64],
 		uniqueName:"게르만의 분노",
-		unique:"击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%",
-		cities:["","","","","","","","","","",
-			"","","","","","","","","","",
-			"","","","","","","","","",""]
+		unique:"야만인 주둔지를 점령할 때 67% 확률로 금 25와 야만인 유닛을 획득합니다. 지낭 유닛 유지비 -25%",
+		cities:["베를린","함부르크","뮌헨","쾰른","프랑크푸르트","에센","도르트문트","스투트가르트","뒤셀도르프","브레멘",
+			"하노버","뒤스부르크","라이프치히","드레스덴","본","보훔","빌레펠트","칼스루에","겔젠키르헨","비스바덴",
+			"먼스터","로슈톡","켐니츠","브라운슈바이크","할레","묀헨글라트바흐","킬","부퍼탈","프라이부르크","하겐",
+		        "에어푸르트","카이저슬라우테른","카셀","오버하우젠","함","자르부르켄","크레펠트","피르마젠스","포츠담","졸링겐",
+		        "오스나브뤼크","루드빅스하펜","레버쿠젠","올덴부르크","노이스","뮐하임","다름슈타트","헤르네","뷔르츠부르크",
+			"레클링하우젠","괴팅겐","볼프스부르크","코블란츠","힐데스하임","에어랑엔"]
 	},
 	{
 		name:"The Ottomans",
-		translatedName:"奥斯曼",
-		leaderName:"苏莱曼一世",
-		adjective:["奥斯曼的"],
+		translatedName:"오스만",
+		leaderName:"술레이만",
+		adjective:["오스만"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "",
-		startIntroPart2: "",
+		startIntroPart1: "오, 위대한 황제 술레이만이여, 신의 축복이 함께하기를! 그대의 권세와 부강함, 그리고 자비로움에 세상이 경배할 것입니다! 그대야말로 '대제'라는 이름에 적합한 왕입니다! 그대의 제국은 12세기에 아나톨리아 동부의 소국 비티니아에서 시작되었습니다. 비티니아의 오스만 1세 왕은 셀주크 술탄국 등의 쇠퇴를 틈타 서쪽으로 아나톨리아까지 영토를 확장했습니다. 그 후 100년 동안 그대의 신민은 비잔티움 제국을 정복하여, 그 지배 하에 있던 터키와 발칸 제국을 합병했습니다. 15세기 중반 오스만 제국은 고대 콘스탄티노플을 정복하여, 유럽과 중동을 잇는 전략적 요지를 손에 넣었습니다. 오스만 제국은 몇 세기 동안 확장을 거듭하여, 그 전성기에는 북아프리카, 중동, 동유럽의 대부분을 아울렀습니다.",
+		startIntroPart2: "위대한 술레이만이여, 백성의 부름을 들으십시오! 오스만 제국을 다시금 그 권세와 영광의 정점에 올려놓아, 세상이 그대의 위대함을 칭송하도록 하십시오. 위대한 황제여, 도전을 받아들여 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war.",
-		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire.",
-		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets.",
-		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!",
+		declaringWar:"그대의 무례함과 오만함을 보니, 그대의 국가는 전쟁을 피할 수 없어 보이는군.",
+		attacked:"좋네. 내 군대의 막강한 힘과 내 왕국의 영광을 드디어 경험해 보게 되겠군.",
+		defeated:"파멸일세, 파멸이야! 이스탄불이 모래 한 줌으로 돌아가는 날이 올 줄은 꿈에도 몰랐다네.",
+		introduction:"장엄한 톱카프 궁전의 나라, 오스만국은 이방인을 환영한다네! 난 술레이만일세! 환영하네!",
 		
-		neutralHello:"Greetings!",
-		neutralLetsHearIt:["I'm listening.","Go on."],
-		neutralNo:["No.","Of course not!","We decline."],
-		neutralYes:["Very good.","Fine.","We accept!"],
+		neutralHello:"환영하네!",
+		neutralLetsHearIt:["듣고 있네.","어서 말해보게나."],
+		neutralNo:["안 되네.","그건 어렵겠네.","거부해야 하겠네."],
+		neutralYes:["좋네.","수락하겠네.","좋은 거래일세!"],
 
-		hateHello:"What do you want?",
-		hateLetsHearIt:["So you say!","Go on!"],
-		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"],
-		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."],
+		hateHello:"그대에게 묻겠네. 뭘 원해서 왔는가?",
+		hateLetsHearIt:["말해보시게!","어서 말하시게!"],
+		hateNo:["무리일세!","불가능 하네!","진심이 아닌 걸로 받아들이겠네."],
+		hateYes:["좋은 거래일세.","매우 좋군.","받아들일 수밖에 없겠군."],
 		
-		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!",
-		tradeRequest:"Let us do business! Would you be interested?",
+		afterPeace:"자네의 승리를 축하하네. 평화가 영원히 지속되었으면 하는 바람일세.",
+		tradeRequest:"우리 거래해보세! 이 거래에 관심이 있었으면 좋겠네.",
 				
 		outerColor:[204,255,229],
 		innerColor:[0,102,0],
-		unique:"海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位",
-		cities:["伊斯坦布尔","埃迪尔内","安卡拉","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
-			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
-			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
-			"Bitlis","Yalova"]
+		uniqueName:"바르바리 해적",
+		unique:"해상 유닛 유지비가 1/3이 됩니다. 해상 근접 유닛이 적 해상 유닛을 처치했을 때, 1/3 확률로 그 유닛을 포획합니다.",
+		cities:["이스탄불","에디르네","안카라","부르사","코니아","삼순","가지안테프","디야르바크르","이즈미르","카이셰리","말라티야",
+			"마르신","안탈야","종굴다크","데니즐리","위두","물라","에스키셰히르","이네볼루","시노프","아다나","아르투인",
+			"보드럼","에레일리","실리프케","시바스","아마시아","마르마리스","트라브존","에르주룸","우르파","이즈미트","아피온",
+			"비트리스","얄로바"]
 	},
 	{
 		name:"Korea",
-		translatedName:"朝鲜",
-		leaderName:"李裪",
-		adjective:["朝鲜的"],
+		translatedName:"한국",
+		leaderName:"세종",
+		adjective:["한국"],
 		startBias:["Coast"],
 		preferredVictoryType:"Scientific",
 		
-		startIntroPart1: "Greetings to you, exalted King Sejong the Great, servant to the people and protector of the Choson Dynasty! Your glorious vision of prosperity and overwhelming benevolence towards the common man made you the most beloved of all Korean kings. From the earliest days of your reign, the effort you took to provide a fair and just society for all was surpassed only by the technological advances spurred onwards by your unquenched thirst for knowledge. Guided by your wisdom, the scholars of the Jade Hall developed Korea's first written language, Hangul, bringing the light of literature and science to the masses after centuries of literary darkness."
-		startIntroPart2: "Honorable Sejong, once more the people look to your for guidance. Will you rise to the occasion, bringing harmony and understanding to the people? Can you once again advance your kingdom's standing to such wondrous heights? Can you build a civilization that stands the test of time?"
+		startIntroPart1: "백성들의 종복이자 조선 왕조의 수호자이신 위대한 세종대왕이시여, 대왕님께 문안드리옵나이다. '조선의 번영을 내다보는 안목을 가지신데다 지극히 자비로우셨던 덕에, 대왕께서는 한국에서 가장 사랑받는 왕이 되셨습니다. 대왕님은 공정하고 정의로운 사회를 만들기 위해서 집권 초부터 많은 노력을 기울였고 지식을 중시해 기술을 크게 발전시키셨습니다. 대왕님의 현명함으로 한국 최초의 문자인 한글을 창제하시어 수 세기를 지속한 문학의 암흑기에 한 줄기 빛을 선사한 것으로 대중에게 문학과 과학을 접할 기회를 열어준 것이었습니다.",
+		startIntroPart2: "영예로운 세종대왕이시여, 대왕님의 현명함으로 조선 백성을 다시 한 번 이끌어 주십시오! 조선 백성에게 조화와 지식을 선사하십시오. 조선을 빛낼 위대한 업적을 다시 이룰 수 있겠습니까? 세월의 시련을 이겨낼 문명을 건설하십시오!",
 		
-		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
-		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
-		defeated:"Now the question is who will protect my people. A dark age has come."
-		introduction:"Welcome to the palace of Choson, stanger. I am the learned King Sejong, who looks after his great people."
+		declaringWar:"네 놈의 성가신 행태를 과인이 더이상 보고 있을 수만은 없다. 무력으로라도 너의 탄압받는 백성들을 자유롭게 하고, 그들을 깨우치게 하리라!",
+		attacked:"가엾고 딱한 자로다! 이제 이 나라의 과학의 막강한 힘에 짓밟히고 말 것이거늘!",
+		defeated:"이제 나의 백성들은 누가 지켜준단 말이냐. 암흑의 시대가 도래하였구나.",
+		introduction:"조선의 궁궐에 당도한 것을 환영하오, 낯선 이여. 나는 나의 훌륭한 백성들을 굽어 살피는 깨우친 임금, 세종이오.",
 		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["I will hear it.","Go on","Continue."]
-		neutralNo:["I cannot do that.","Apologies, but I will not accept it."]
-		neutralYes:["That is good.","I understand.","Of course!"]
+		neutralHello:"안녕하시오.",
+		neutralLetsHearIt:["들어보겠소.","계속해 보시오.","그래서?"],
+		neutralNo:["아니하겠소.","그리 할 수 없겠소."],
+		neutralYes:["아주 좋소.","알겠소.","물론이오!"],
 
-		hateHello:"Oh, it's you"
-		hateLetsHearIt:["What do you wish to say?","So?","Continue your speech."]
-		hateNo:["Heaven forbid","That is crazy talk!","I cannot do that."]
-		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
+		hateHello:"네놈이로구나.",
+		hateLetsHearIt:["무슨 말인가?","그래서?","계속하라."],
+		hateNo:["그럴 수 없소.","어림없는 소리!","당치도 않군!"],
+		hateYes:["음... 매우 좋군.","그리 해야 한다면 하겠소.","아주 좋군..."],
 		
-		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many things to discuss and have much to benefit from each other."
+		afterPeace:"어찌 이럴수가. 어떠한 전략을 운영한 것이냐?",
+		tradeRequest:"동지여, 우리는 상의해야 할 것이 많고, 서로에게 얻을 수 있는 것이 많소.",
 				
 		outerColor:[0,0,255],
 		innerColor:[255,0,0],
-		unique:"所有专业人员和伟人设施+2科研",
-		cities:["首尔","釜山","全州","大邱","平壤","开城","水原","光州","江陵","咸兴","原州","蔚山","昌原","安东","公州","海州","清州","木浦","东豆川","巨济","顺天","晋州","尚州","罗先","庆州","忠州","泗川","金堤","安州"]
+		uniqueName:"집현전",
+		unique:"전문가와 위인 타일 시설 하나당 과학 +2",
+		cities:["서울","부산","전주","대구","평양","개성","수원","광주","강릉","함흥","원주","울산","창원","안동","공주","해주","청주","목포","동두천","거제","순천","진주","상주","나선","경주","충주","사천","김제","안주"]
 	},
 	{
 		name:"Iroquois",
-		translatedName:"易洛魁",
-		leaderName:"海华沙",
-		adjective:["易洛魁的"],
+		translatedName:"이로쿼이",
+		leaderName:"하이어워사",
+		adjective:["이로쿼이"],
 		startBias:["Forest"],
 		preferredVictoryType:"Scientific",
 		
-		startIntroPart1: "Greetings, noble Hiawatha, leader of the mighty Iroquois nations! Long have your people lived near the great and holy lake Ontario in the land that has come to be known as the New York state in North America. In the mists of antiquity, the five peoples of Seneca, Onondaga, Mohawks, Cayugas and Oneida united into one nation, the Haudenosaunee, the Iroquois. With no written language, the wise men of your nation created the great law of peace, the model for many contitutions including that of the United States. For many years, your people battled great enemies, such as the Huron, and the French and English invaders. Tought outnumbered and facing weapons far more advanced than the ones your warriors wielded, the Iroquois survived and prospered, until they were finally overwhelmed by the mighty armies of the new United States."
-		startIntroPart2: "Oh noble Hiawatha, listen to the cries of your people! They call out to you to lead them in peace and war, to rebuild the great longhouse and unite the tribes once again. Will you accept this challenge, great leader? Will you build a civilization that will stand the test of time?"
+		startIntroPart1: "반갑습니다, 고귀한 하이어워사여, 막강한 이로쿼이 연맹의 수장이여! 그대의 백성은 '북아메리카의 뉴욕 주'라고 알려지게 된 위대하고 신성한 온타리오 호수 기슭에 오랫동안 살아왔습니다. 까마득한 옛날에 세네카족, 오논다가족, 모호크족, 카유가족, 오네이다족의 다섯 부족이 하나의 나라 '하우데노사우니'를 이루었으니, 이들을 이로쿼이족이라고 합니다. 그대 나라의 현인들은 문자도 존재하지 않는 상황에서, 미국 헌법을 비롯한 여러 헌법의 모범이 된 '위대한 평화의 법'을 제정했습니다. 이로쿼이족은 오랫동안 휴런족, 프랑스와 영국 침략자 등 강대한 적에 맞서 싸웠습니다. 비록 수적으로 열세였고 부족의 전사들이 사용하던 것보다 훨씬 진보한 무기를 상대해야 했음에도 이로쿼이족은 살아남아 번영하다가, 끝내는 신생 미국의 막강한 군대에 제압당하고 말았습니다.",
+		startIntroPart2: "오 고귀한 하이어워사여! 백성의 부름에 귀를 기울이십시오! 그들은 평화와 전쟁의 시대로 이로쿼이를 이끌어줄 지도자를 갈구하고 있습니다! 도시를 재건하고 다섯 부족을 다시 규합하십시오. 이 시련을 받아들여 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"You are a plague upon Mother Earth! Prepare for battle!"
-		attacked:"You evil creature! My braves will slaughter you!"
-		defeated:"You have defeated us... but our spirits will never be vanquished! We shall return!"
-		introduction:"Greetings, stranger. I am Hiawatha, speaker for the Iroquois. We seek peace with all, but we do not shrink from war."
+		declaringWar:"대지의 어머니를 좀먹는 해충 같으니. 전쟁을 준비해라.",
+		attacked:"악한 자 같으니! 내 전사들이 그대를 처리할 것이다!",
+		defeated:"우리를 멸망시키다니... 우리의 정신은 다시 살아 돌아와 그대의 목을 죌 것이다!",
+		introduction:"반갑네, 이방인이여. 나는 이로쿼이의 대족장 하이어워사라 한다. 우리는 평화를 추구하지만, 그렇다고 우리가 약하다는 것은 아니다.",
 		
-		neutralHello:"Good day."
-		neutralLetsHearIt:["Yes?","I'm listening"]
-		neutralNo:["No.","Certainly not."]
-		neutralYes:["Very well.","Alright."]
+		neutralHello:"좋은 날이군.",
+		neutralLetsHearIt:["뭔가?","듣고 있다."],
+		neutralNo:["안 된다.","어려운 부탁이군."],
+		neutralYes:["좋다.","알겠다."],
 
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["I'm listening.","Speak."]
-		hateNo:["That's unacceptable","You cannot be serious!"]
-		hateYes:["I suppose I must.","Very well."]
+		hateHello:"오, 자네로군.",
+		hateLetsHearIt:["들어는 주지.","말해라."],
+		hateNo:["불가능하다.","진심은 아니겠지!"],
+		hateYes:["해야만 하겠군.","좋네."],
 		
-		afterPeace:"I thank you for your mercy. I pray that we can now be friends."
-		tradeRequest:"Does this trade work for you, my friend?"
+		afterPeace:"그대의 자비에 감사를 표한다. 우리가 친구로 지낼 수 있기를.",
+		tradeRequest:"내 이웃이여, 이 제안을 수락해 주겠나?",
 				
 		outerColor:[54,72,72],
 		innerColor:[246,205,137],
-		uniqueName:"The Great Warpath"
-		unique:"单位在己方森林和丛林地块上移动时视同在道路上移动，此类地块在研究轮子科技后可建立城市连接",
-		cities:["奥内达加","奥斯尼卡","格兰德里弗","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
-			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
-			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
-			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+		uniqueName:"위대한 출정",
+		unique:"유닛들이 아군 영토의 숲이나 정글 타일을 도로처럼 사용합니다. 바퀴를 연구한 뒤, 이러한 타일들로 도시를 연결할 수 있습니다.",
+		cities:["오논다가","오시니카","그랜드 리버","아크웨사스메","버팔로 크리크","브랜트포드","몬트리올","제네시 리버",
+			"캐넌다이과 레이크","레이크 심코","살라망카","고완다","쿠바","아크론","카네사타케","가니엔케","카유가 캐슬",
+			"촌도테","캐너조해리","네드로","오나이더 레이크","카논왈로헤일","그린 베이","사우스올드","모호크 밸리",
+			"쇼하리","베이 오브 퀸테","카나웨일","카나시오카레케","톈디나가","하흐타"]
 	},
 	{
 		name:"Persia",
-		translatedName:"波斯",
-		leaderName:"大流士一世",
-		adjective:["波斯的"],
+		translatedName:"페르시아",
+		leaderName:"다리우스 1세",
+		adjective:["페르시아"],
 		preferredVictoryType:"Scientific",
 		
-		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
-		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "경애하는 페르시아의 다리우스 왕이시여, 천상의 축복이 함께하시기를 빕니다! 왕께서는 강하고 현명한 백성을 이끄십니다. 기원전 550년, 페르시아의 위대한 지도자이신 키루스는 강대하던 메데스 제국을 무너뜨렸습니다. 키루스 대왕은 외교 책략과 군사력을 바탕으로 부유한 리디아와 강력한 바빌론을 정복하였고, 그로부터 수년 후 그의 아들은 오만한 이집트를 정복하였습니다. 마케도니아의 알렉산더가 단 한 번의 전쟁으로 페르시아 제국을 파멸시키지만 않았어도 페르시아는 건방진 그리스 도시 국가들의 문전에 있는 머나먼 마케도니아까지 진출할 수도 있었을 것입니다.",
+		startIntroPart2: "다리우스시여, 페르시아의 백성은 그대가 다시 한 번 페르시아의 영광과 권위를 되찾으시길 원합니다! 선조의 제국을 다시 일으켜 적에게서 승리를 거두고 세계에 평화와 질서를 가져와야 합니다. 왕이시여, 부름에 응하고 시대의 한계를 뛰어넘는 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
-		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
-		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
+		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!",
+		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!",
+		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!",
 		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
 		
 		neutralHello:"Good day to you!"
@@ -615,8 +620,8 @@
 				
 		outerColor:[153,5,3],
 		innerColor:[244,232,54],
-		uniqueName:"Achaemenid Legacy"
-		unique:"黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力",
+		uniqueName:"아케메네스의 유산"
+		unique:"황금기 동안, 유닛들의 행동력 +1, 체력 +10%. 황금기의 지속 시간 +50%.",
 		cities:["波斯波利斯","帕萨加迪","苏萨","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
