@@ -7,7 +7,7 @@
 		startBias:["Avoid Tundra"],
 		preferredVictoryType:"Scientific",
 		
-		startIntroPart1: "오, 강대한 고대 바빌론의 아버지, 위대한 네부카드네자르여, 하늘의 축복이 그대와 함께하기를! 사르곤이 약 5천년 전 바빌론을 건설했을 때만 해도 세상은 창조된 지 오래되지 않았습니다. 바빌로니아는 법전을 만드신 신성한 함무라비 왕 치하 기원전 18세기에 처음으로 제국을 이루었습니다. 비록 카시트인과 아시리아인에게 정복당했으나, 시련을 이겨낸 바빌로니아는 불사조와도 같이 파괴의 잿더미에서 솟아올라 수많은 적의 틈바구니에서 독립을 되찾았습니다.",
+		startIntroPart1: "오, 강대한 고대 바빌론의 아버지, 위대한 네부카드네자르여, 하늘의 축복이 그대와 함께하기를! 사르곤이 약 5천년 전 바빌론을 건설했을 때만 해도 세상은 창조된 지 오래되지 않았습니다. 바빌로니아는 법전을 만드신 신성한 함무라비 왕 치하 기원전 18세기에 처음으로 제국을 이루었습니다. 비록 카시트인과 아시리아인에게 정복당했으나, 시련을 이겨낸 바빌로니아는 불사조와도 같이 파괴의 잿더미에서 솟아올라 수많은 적의 틈바구니에서 독립을 되찾았습니다. 바빌론은 고대 세계에서 진정한 예술과 학문의 중심지였습니다!",
 		startIntroPart2: "네부카드네자르여, 그대가 세상을 떠난 후 얼마 지나지 않아 바빌로니아 제국은 강대한 페르시아와 그리스에 정복당해, 기원전 141년에는 바빌론 시마저 파괴되었습니다. 위대한 네부카드네자르여, 바빌론이 정말 영원히 사라진 것입니까? 백성은 그대가 다시금 제국을 부활시키리라 기대하고 있습니다! 이 도전을 받아들여 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
 		declaringWar:"악마가 병사들의 피를 갈구하는군!",
@@ -415,7 +415,7 @@
 		startIntroPart2: "간디여, 백성은 그대가 인도를 보다 큰 영광으로 이끌어주기를 기대하고 있습니다! 인도인의 잠재력을 실현하여 다시금 인도가 세계의 예술, 문화, 종교 중심지가 되도록 하여 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
 		declaringWar:"방금 많은 군인들이 당신의 국경에 들어갔다는 보고를 받았습니다.",
-		attacked:"안타깝게도 모두가 저처럼 비폭력주의에 전념하는 것은 아니지요. '눈에는 눈'을 고집한다면 모든 세상의 눈은 멀게 될 것입니다.",
+		attacked:"안타깝게도 모두가 저처럼 비폭력주의에 전념하는 것은 아니지요. '눈에는 눈'을 고집한다면 결국 모든 세상의 눈은 멀게 될 것입니다.",
 		defeated:"저를 쇠사슬로 묶고, 고문하고, 심지어 제 몸뚱이를 파괴할 수 있을지도 모르지만, 결코 제 정신을 구속할 수는 없을 것입니다.",
 		introduction:"인도 사람들을 대표하여, 저는 당신에게 친선의 손을 뻗습니다.",
 		
@@ -600,366 +600,377 @@
 		startIntroPart1: "경애하는 페르시아의 다리우스 왕이시여, 천상의 축복이 함께하시기를 빕니다! 왕께서는 강하고 현명한 백성을 이끄십니다. 기원전 550년, 페르시아의 위대한 지도자이신 키루스는 강대하던 메데스 제국을 무너뜨렸습니다. 키루스 대왕은 외교 책략과 군사력을 바탕으로 부유한 리디아와 강력한 바빌론을 정복하였고, 그로부터 수년 후 그의 아들은 오만한 이집트를 정복하였습니다. 마케도니아의 알렉산더가 단 한 번의 전쟁으로 페르시아 제국을 파멸시키지만 않았어도 페르시아는 건방진 그리스 도시 국가들의 문전에 있는 머나먼 마케도니아까지 진출할 수도 있었을 것입니다.",
 		startIntroPart2: "다리우스시여, 페르시아의 백성은 그대가 다시 한 번 페르시아의 영광과 권위를 되찾으시길 원합니다! 선조의 제국을 다시 일으켜 적에게서 승리를 거두고 세계에 평화와 질서를 가져와야 합니다. 왕이시여, 부름에 응하고 시대의 한계를 뛰어넘는 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!",
-		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!",
-		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!",
-		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
+		declaringWar:"모든 지도자들이 자네의 존재를 싫어하고 있다는 것은 알고 있는가? 이제는 내가 자네를 박살 내 주겠네!",
+		attacked:"오만한 자 같으니! 자네가 내 아래에 있다는 걸 모르나 보군? 자네를 박살 내 주겠네!",
+		defeated:"자네를 저주하겠네! 세상은 자네의 부도덕함을 오랫동안 기억할 것일세!",
+		introduction:"환영합니다, 이방인이여. 나는 페르시아의 위대한 지도자 다리우스라고 합니다... 그대도 익히 들어 왔겠지요.",
 		
-		neutralHello:"Good day to you!"
-		neutralLetsHearIt:["Go on.","You said?"]
-		neutralNo:["You are not serious!","Not good enough."]
-		neutralYes:["Good!","Certainly.","Agreed!"]
+		neutralHello:"좋은 날이군.",
+		neutralLetsHearIt:["말해 보시오.","무슨 일이오?"],
+		neutralNo:["그정도론 부족하오.","거절해야 하겠군."],
+		neutralYes:["좋소!","당연히.","동의하겠네!"],
 
-		hateHello:"Ahh... you..."
-		hateLetsHearIt:["I'm listening.","Go on!"]
-		hateNo:["We say... no!","Of course not!"]
-		hateYes:["Alright!","Agreed."]
+		hateHello:"아... 자네인가...",
+		hateLetsHearIt:["듣고 있네.","계속해보게!"],
+		hateNo:["절대 안되지!","당연히 안되지!"],
+		hateYes:["좋군!","동의하지."],
 		
-		afterPeace:"It appears we should call it a tie..."
-		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
+		afterPeace:"무승부로 치는 것이 어떻겠소?",
+		tradeRequest:"내가 친히 자네에게 이 거래를 제안하네. 동의해주지 않겠는가?",
 				
 		outerColor:[153,5,3],
 		innerColor:[244,232,54],
-		uniqueName:"아케메네스의 유산"
+		uniqueName:"아케메네스의 유산",
 		unique:"황금기 동안, 유닛들의 행동력 +1, 체력 +10%. 황금기의 지속 시간 +50%.",
-		cities:["波斯波利斯","帕萨加迪","苏萨","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
-			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
-			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
-			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
-			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
-			"Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
-			"Paishiyauvada","Patigrbana","Phrada"]
+		cities:["페르세폴리스","파사르가대","수사","엑바타나","타르수스","고르디움","박트라","사르디스","에르길리","다리우쉬카비르",
+			"굴라만","조하크","이스타흐르","진잔","보라잔","헤라트","다캬누스","밤퍼","튜렝 테페","레이","쉬라즈",
+			"투쉬바","하산루","가배","메르브","베히스툰","칸다하르","알틴 테페","버니언","카르사다","우라 트유베",
+			"듀라 유로포스","알레포","카트나","카불","카피사","키레크크하타","마라칸다","페샤와르","반","프테이라","아르샤다",
+			"아르타코아나","아스파보타","아우티야라","바가스타나","백스트리","다르마사","다프네","드라프사카","에이온","간두타바",
+			"가우가멜라","하르모제이아","에카톰필로스","이자타","캄파다","카피샤","카르마나","코우나악사","쿠가나카","나우타카",
+			"파이시야우바다","파티그르바나","프라다"]
 	},
 	{
 		name:"Polynesia",
-		translatedName:"波利尼西亚",
-		leaderName:"卡美哈梅哈一世",
-		adjective:["波利尼西亚的"],
+		translatedName:"폴리네시아",
+		leaderName:"카메하메하",
+		adjective:["폴리네시아"],
 		startBias:["Coast"],
 		preferredVictoryType:"Cultural",
 		
-		startIntroPart1: "Greetings and blessings be upon you, Kamehameha the Great, chosen by the heavens to unite your scattered peoples. Oh mighty King, you were the first to bring the Big Island of Hawai'I under one solitary rule in 1791 AD. This was followed by the merging of all the remaining islands under your standard in 1810. As the first King of Hawai'I, you standardized the legal and taxation systems and instituted the Mamalahoe Kawanai, an edict protecting civilians in times of war. You ensured the continued unification and sovereignty of the islands by your strong laws and deeds, even after your death in 1819."
-		startIntroPart2: "Oh wise and exalted King, your people wish for a kingdom of their own once more and require a leader of unparalleled greatness! Will you answer their call and don the mantle of the Lion of the Pacific? Will you build a kingdom that stands the test of time?"
+		startIntroPart1: "흩어진 민족을 통일하도록 하늘의 선택을 받은 카메하메하 대왕이여, 축복이 함께 하기를. 오 위대한 왕이여, 그대는 기원후 1791년에 하와이 섬을 하나로 통일한 최초의 군주였습니다. 그후로 1810년에는 나머지 섬도 모두 그대의 지배 하에 통합되었습니다. 하와이의 초대 왕으로서, 그대는 법과 조세 체제를 표준화하고 전시에 민간인을 보호하는 칙명인 ‘부서진 노의 율법’을 제정했습니다. 그대는 강력한 법률를 제정하고 이를 실행함으로써, 1819년 그대가 죽은 후에도 하와이 제도의 통일과 주권이 유지되도록 하였습니다.",
+		startIntroPart2: "오 현명하고 고귀한 왕이여, 하와이 민족은 다시금 왕국을 건설하고 싶어하며 위대한 지도자를 필요로 합니다! 그들의 부름에 응답해 ‘태평양의 사자’의 갈기를 쓰고 세월의 시련을 이겨낼 왕국을 건설해 주시겠습니까?",
 		
-		declaringWar:"The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome."
-		attacked:"It is obvious now that I misjudged you and your true intentions."
-		defeated:"The hard-shelled crab yields, and the lion lies down to sleep. Kanaloa comes for me now."
-		introduction:"Aloha! Greetings and blessings upon you, friend. I am Kamehameha, Great King of this strand of islands."
+		declaringWar:"다른 결과를 기대했었지만, 하늘을 가로질러 번쩍이는 이 고대의 불들이 이 날이 올 것이라고 알려주었소.",
+		attacked:"내가 당신과 당신의 속마음을 잘못 판단하고 있었구려.",
+		defeated:"딱딱한 게는 수확하고 사자는 잠들기 위해 누워있소. 저 멀리서 카날로아가 나에게 오는군.",
+		introduction:"알로하, 친구여. 당신에게 인사와 축복을 주리다. 나는 이 섬들의 위대한 왕인 카메하메하라고 하오.",
 		
-		neutralHello:"Welcome, friend!"
-		neutralLetsHearIt:["Proceed.","And?","What is it?"]
-		hateNo:["Certainly not.","We will have to decline."]
-		hateYes:["It is agreed, then.","Excellent!"]
+		neutralHello:"알로하, 친구여!",
+		neutralLetsHearIt:["진행하게.","그래서?","무엇인가?"],
+		neutralNo:["그렇게는 안 되겠네.","거절할 수밖에 없군. 미안하네."],
+		neutralYes:["동의하겠네.","아주 좋군!"],
 
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["Proceed.","I'm listening","What is it?"]
-		hateNo:["Certainly not!","That's not acceptable!"]
-		hateYes:["Yes, I suppost I must.","Yes, so be it."]
+		hateHello:"음, 자네인가.",
+		hateLetsHearIt:["진행하게.","듣고 있네.","또 뭔가?"],
+		hateNo:["그럴 수는 없네!","불공평하군!"],
+		hateYes:["그래야만 하겠군.","그러겠네."],
 		
-		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
-		tradeRequest:"Come, let our people feast together!"
+		afterPeace:"어쩌면 별들이 잘못 배치된 걸 수도 있소. 카후나님께 물어보겠소.",
+		tradeRequest:"이 제안을 통해 함께 이득을 얻는 것은 어떤가!",
 				
 		outerColor:[225,105,0],
 		innerColor:[255,255,78],
-		uniqueName:"Wayfinding"
-		unique:"单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力",
-		cities:["火奴鲁鲁","萨摩亚","汤加","努库希瓦","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
-			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
-			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
-			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+		uniqueName:"활로 개척",
+		unique:"연구하지 않고도 승선과 대양 항해를 할 수 있습니다. 승선한 유닛의 시야 +1. 모아이와 2타일 이내에서 전투 시 전투력 +10%",
+		cities:["호놀룰루","사모아","통가","누쿠 히바","라이아테아","아오테아로아","타히티","힐로","테 와이 포우나무","라파 누이",
+			"투아모투","라로통가","투발루","투부아이","망가레바","오아후","키리티마티","온통 자바","니우에","레코후",
+			"라카항가","보라 보라","카일루아","우베아","후투나","로투마","토켈라우","라하이나","벨로나","문가바","티코피아",
+			"에마에","카핑가마랑기","타쿠","누쿠오로","시카이아나","아누타","누구리아","피레니","누쿠마누"]
 	},
 	{
 		name:"Siam",
-		translatedName:"暹罗",
-		leaderName:"兰甘亨",
-		adjective:["暹罗的"],
+		translatedName:"시암",
+		leaderName:"람캄행",
+		adjective:["시암"],
 		startBias:["Avoid Forest"],
 		//preferredVictoryType:"Diplomatic",
 		
-		startIntroPart1: "Greetings to you, Great King Ramkhamhaeng, leader of the glorious Siamese people! O mighty King, your people bow down before you in awe and fear! You are the ruler of Siam, an ancient country in the heart of Southeast Asia, a beautiful and mysterious land. Surrounded by foes, beset by bloody war and grinding poverty, the clever and loyal Siamese people have endured and trumphed. King Ramkhamhaeng, your empire was once part of the Khmer Empire, until the 13th century AD, when your ancestors revolted, forming the small Sukhothai kingdom. Through successful battle and cunning diplomacy, the tiny kingdom grew into a mighty empire, an empire which would dominate South East Asia for more than a century!"
-		startIntroPart2: "Oh, wise and puissant King Ramkhamhaeng, your people need you to once again lead them to greatness! Cann you use your wits and strenght of arms to protect your people and defeat your foes? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "시암족의 지도자 위대한 람캄행 왕이여, 반갑습니다! 오 위대한 왕이여, 그대의 백성이 경외로 그대 앞에 절합니다. 그대는 동남아시아 중심에 자리했던 옛 왕국 시암의 군주입니다. 총명하고 성실한 시암족은, 적에게 둘러싸이고 끔찍한 전쟁과 뼈아픈 빈곤에 처해서도 살아남았습니다. 람캄행 왕이여, 그대의 제국은 크메르 제국의 일부였으나, 13세기 그대의 조상이 반란을 일으켜 수코타이라는 소왕국을 세웠습니다. 이 작은 왕국은 성공적인 전투와 교묘한 외교를 통해 동남아시아를 백 년이 넘게 호령한 막강한 제국으로 성장하였습니다!",
+		startIntroPart2: "오 현명하고 강대한 람캄행 왕이여, 다시 한번 그대의 백성을 영광으로 이끄십시오! 그대의 지혜와 힘으로 백성을 보호하고 적을 무찌르고 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?"
 		
-		declaringWar:"You lowly, arrogant fool! I will make you regret of your insolence!"
-		attacked:"You scoundrel! I shall prepare to fend you off!"
-		defeated:"Althought I lost, my honor shall endure. I wish you good luck."
-		introduction:"I, Pho Kun Ramkhamhaeng, King of Siam, consider it a great honor that you have walked to visit my country of Siam."
+		declaringWar:"그대는 나에게 오만하게 굴었지. 이제 그것을 후회하게 해 주겠네."
+		attacked:"어리석군. 그대에게 대항할 준비는 이미 마쳤네!"
+		defeated:"내가 졌어도, 내 명예는 살아 남을 것일세. 행운을 빌겠네."
+		introduction:"시암의 통치자, 람캄행이 그대를 맞이하네. 나의 국가에 그대가 찾아온 것을 영광으로 생각하겠네."
 		
-		neutralHello:"Welcome."
-		neutralLetsHearIt:["Let us hear it.","You say?","I'm listening"]
-		neutralNo:["No.","Certainly no.","No way."]
-		neutralYes:["In that case...","Of course.","Agreed."]
+		neutralHello:"반갑네, 벗이여."
+		neutralLetsHearIt:["들어 보겠네.","말해 보시게.","듣고 있다네."]
+		neutralNo:["안되네.","거절하겠네.","그럴 수는 없네."]
+		neutralYes:["그렇다면야...","당연하네.","동의하겠네."]
 
-		hateHello:"Greetings."
-		hateLetsHearIt:["You were saying?.","Please proceed","So?"]
-		hateNo:["That is unacceptable.","You probably didn't mean that.","What did you say?"]
-		hateYes:["I think I must do as such.","Very well."]
+		hateHello:"반갑네."
+		hateLetsHearIt:["무슨 일인가?.","말해 보게.","그래서?"]
+		hateNo:["불공평하군.","의도한 바는 다를 것이라 생각하겠네.","지금 뭐라 했는가?"]
+		hateYes:["해야만 하겠군.","아주 좋네."]
 		
-		afterPeace:"You have won, but I shall return to repay this debt."
-		tradeRequest:"Greetings. I believe this is a fair proposal for both parties. What do you think?"
+		afterPeace:"그대가 이겼지만, 우리는 언젠가 이걸 되갚아줄 것이네."
+		tradeRequest:"이 제안은 우리 모두에게 이득이 될 것 같네. 어떻게 생각하는가?"
 				
 		outerColor:[228,208,43],
 		innerColor:[193,21,17],
-		uniqueName:"Father Governs Children"
-		unique:"友好城邦提供的食物和文化增加50%",
-		cities:["素可泰","西萨查那莱","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
-			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
-			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
-			"Ban Phai","Loci","Khan Kaen","Surin"]
+		uniqueName:"군신은 부자와 같다"
+		unique:"우호적인 도시 국가에게서 제공받는 식량과 문화 +50%",
+		cities:["수고타이","씨 싸차날라이","무앙 살루앙","람팡","핏사눌룩","깜팽 펫","나콘 춤","비엔티안",
+			"나콘 시 탐마랏","마르타반","나콘 사완","차이낫","루앙 프라방","우따라딧","치앙 통","프래",
+			"난","탁","수판부리","홍사와디","타와이","아유타야","타판 힌","우타이 타니","롭 부리","랏차시마",
+			"반 파이","로치","칸 카엔","수린"]
 	},
 	{ // REQUiRES RIVERS
 		name:"Aztecs",
-		leaderName:"Montezuma I",
-		adjective:["Aztec"],
+		translatedName:"아즈텍",
+		leaderName:"몬테수마",
+		adjective:["아즈텍"],
 		startBias:["Jungle"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
-		startIntroPart2: "O great king Mintezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
+		startIntroPart1: "성스러운 몬테수마여! 그대의 위엄 앞에 엎드려 절 하나이다! 그 앞날에 하늘의 축복이 가득하기를! 그대는 위대한 아즈텍의 지도자십니다. 아즈텍인은 북쪽의 고향을 잃고 유랑해온 유목민으로, 12세기에 훗날 멕시코가 될 땅의 중앙에 있는 메사센트랄에 정착했습니다. 아즈텍인은 성스러운 호수 텍스코코, 살로칸, 슴팡고 주위의 풍요로운 땅을 점령하기 위해 싸우는 여러 부족의 틈바구니에서, 절묘한 동맹과 뛰어난 무용으로써 중미 지역을 지배하고 바다에서 바다에 이르는 강대한 제국을 건설했습니다. 그러나 그대의 충직한 전사들은 결코 본 적 없는 악마 같은 무기를 휘두르는 외세의 악마, 저주받을 스페인의 공격에 쓰러졌고 아즈텍 제국은 마침내 몰락하고 말았습니다.",
+		startIntroPart2: "위대한 왕 몬테수마여! 백성은 그대가 다시금 일어나 과거의 영광을 되찾아주리라 믿습니다! 백성에게 부와 권력을 안겨주고, 적을 지배할 힘을 주십시오! 백성의 믿음에 답하여 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
-		attacked:"Excellent! Let the blood flow in raging torrents!"
-		defeated:" Monster! Who are you to destroy my greatness?"
-		introduction:"What do I see before me? Another beating heart for my sacrificial fire."
+		declaringWar:"죽어라! 죽어라! 죽어라!",
+		attacked:"그대는 예전부터 오만했지. 이제 온 강을 피로 물들이겠다!",
+		defeated:"괴물 같은 놈! 어떻게 나를 멸망시킨 것이지?",
+		introduction:"내 제사불 앞에 가까워지는 또 하나의 요동치는 심장이 느껴지는군. 난 아즈텍의 몬테수마다.",
 		
-		neutralHello:"Welcome, friend."
-		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
-		neutralNo:["Certainly not!","No!","Unacceptable!"]
-		neutralYes:["Certainly.","Yes, it is good.","Agreed!"]
+		neutralHello:"반갑네, 친구여.",
+		neutralLetsHearIt:["말해보게.","계속하게.","듣고 있네."],
+		neutralNo:["절대 안되지!","안 되겠군!","거절하지!"],
+		neutralYes:["분명히.","그래, 좋군.","수락하지!"],
 
-		hateHello:"What do you want?"
-		hateLetsHearIt:["What?","What do you say?","Go on."]
-		hateNo:["Are you crazy?","Certainly not!","I would rather pierce my bowels with hot skewers!"]
-		hateYes:["Oh, very well.","I suppose I must.","Yes, it is good!"]
+		hateHello:"뭘 원하는 거냐?",
+		hateLetsHearIt:["뭐?","뭘 말하는 거냐?","계속해라."],
+		hateNo:["제 정신인가?","절대 안 되지!","차라리 내 몸을 불로 지지겠다!"],
+		hateYes:["아, 좋군.","해야 하겠군.","그래, 좋군!"],
 		
-		afterPeace:"Curses! I will sacrifice ten thousand citizens to expiate this humiliation!"
-		tradeRequest:" Accept this agreement or suffer the consequences."
+		afterPeace:"저주하겠다! 이 굴욕을 달래려면 피의 희생을 벌여야겠군!",
+		tradeRequest:"수락하던가, 대가를 맛보던가. 선택해라.",
 		
 		outerColor:[255,51,51],
 		innerColor:[153,255,255],
-		unique:"Gain Culture for the empire from each enemy unit killed.",
-		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
+		uniqueName:"포로 공양",
+		unique:"적 유닛 처치 시마다 문화를 얻습니다.",
+		cities:["테노치티틀란","테오티우아칸","틀라텔롤코","텍스코코","틀락스칼라","칼릭스틀라우아카","쇼치칼코","틀라코판",
+			"아츠카포찰코","친춘첸","말리날코","툴라","타무인","테아요","젬포라","찰코","틀라마날코","이스타파루카",
+			"우엑소틀라","테펙스판","테페틀라옥스톡","치코나우틀라","시탈테펙","코요테펙","테킥스키악","힐로친고","틀라파날로야",
+			"툴티탄","에카테펙","코아테펙","찰치우이테스","치아우히타","차풀테펙","이차팔라파","아요친코","이스타팜"]
 	},
 	{
 		name:"Mongolia",
-		leaderName:"Genghis Khan",
-		adjective:["Mongolian"],
+		translatedName:"몽골",
+		leaderName:"징기스칸",
+		adjective:["몽골"],
 		startBias:["Plains"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "Greetings, o great Temujin, immortal emperor of the mighty Mongol Empire! Your fists shatter walls of cities and your voice brings despair to your enemies. O Khan! You united the warring tribes of Northern Asia into a mighty people, creating the greatest cavalry force the world has ever witnessed. Your people's cunning diplomacy divided their enemies, making them weak and helpless before Mongolia's conquering armies. In a few short years, your people soldiers conquered most of China and Eastern Asia, and the empire continued to grow until it reached west into Europe and south to Korea. Indeed, it was the greatest empire ever seen, dwarfing those pathetic conquests of the Romans of the Greeks."
-		startIntroPart2: "Temujin, your people cann upon you once more to lead them to battle and conquest. Will the world once again trembe at the thunderous sound of your cavalry, sweeping down from the steppes? Will you build a civilization that stands the test of time?"
+		startIntroPart1: "강대한 몽골 제국의 영원불멸한 황제, 위대하신 테무친을 뵈옵니다! 그대의 주먹은 성벽을 산산이 부수고 그 음성은 적들을 절망에 빠뜨릴 정도입니다. 칸이시여, 그대는 전쟁을 벌이던 북아시아 부족들을 강력한 신민으로 통일시키시고 세상 그 누구도 경험하지 못한 강대한 기병대를 만드셨습니다! 그 놀라운 외교력은 몽골 군대가 도착하기도 전에 적들을 나약하고 무력하게 만들어 스스로 분열하게 만들 정도입니다. 단 몇 년 만에 그대의 군대는 중국과 동아시아 대부분을 점령하였습니다. 그리하여 제국은 서쪽으로는 유럽, 남쪽으로는 고려에 이를 정도로 넓어졌습니다. 이는 역사상 가장 큰 제국이며 로마나 그리스가 이룩한 것을 초라하게 만들 정도의 위업이십니다.",
+		startIntroPart2: "테무친이시여, 백성들은 다시 한 번 전쟁과 정복의 시대로 이끌어줄 지도자를 기다리고 있습니다! 대초원을 가르는 천둥 같은 말발굽 소리에 세계가 다시 한 번 두려움에 떨게 하고, 시대의 한계를 뛰어넘는 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"You stand in the way of my armies. Let us solve this like warriors!"
-		attacked:"No more words. Today, Mongolia charges toward your defeat."
-		defeated:"You have hobbled the Mongolian clans. My respect for you nearly matches the loathing. I am waiting for my execution."
-		introduction:"I am Temuujin, conqueror of cities and countries. Before me lie future Mongolian lands. Behind me is the only cavalry that matters."
+		declaringWar:"내 군대의 길을 막지 마시오. 전사답게 결판을 내길 바라오.",
+		attacked:"더 이상 다른 말은 하지 않겠소. 그대의 파멸이 다가왔음을 알리겠소.",
+		defeated:"그대는 몽골을 정복했소. 허나 난 그대를 존경하지 않겠소. 처형당할 준비는 되었소.",
+		introduction:"나는 이 넓은 초원의 제왕이자 수많은 도시와 나라들을 무릎꿇린 자, 테무진이오.",
 		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["I'm listening.","What?"]
-		neutralNo:["No.","Of course not!"]
-		neutralYes:["Good.","That works.","Of course!"]
+		neutralHello:"반갑소.",
+		neutralLetsHearIt:["듣고 있소.","무엇이오?"],
+		neutralNo:["안되오.","당연히 안되오!"],
+		neutralYes:["좋소.","그 정도면 좋소.","당연하오!"],
 
-		hateHello:"So what now?"
-		hateLetsHearIt:["And then?","Continue..."]
-		hateNo:["Stop playing around.","This is not to be tolerated!"]
-		hateYes:["Very well...","Fine!"]
+		hateHello:"그래, 뭔가?",
+		hateLetsHearIt:["그래서?","해보시오..."],
+		hateNo:["이곳은 노는 곳이 아니오.","용납하지 않겠소!"],
+		hateYes:["아주 좋군...","좋소!"],
 		
-		afterPeace:"It seems I have underestimate you. Very well... I won't take you head for now."
-		tradeRequest:"I am not always this generous, but we hope you take this rare opportunity we give you."
+		afterPeace:"그대를 과소평가했구려... 당분간은 그대를 건드리지 않겠소.",
+		tradeRequest:"내가 이렇게까지 관대한 것은 드물지. 이 제안을 받아들이겠는가?",
 				
 		outerColor:[51,0,0],
 		innerColor:[0,204,102],
-		uniqueName:"Mongol Terror"
-		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
-		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
-			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
-			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor",
-			"Har-Ayrag","Nalayh","Tes"]
+		uniqueName:"공포의 몽골",
+		unique:"도시국가 또는 도시국가의 유닛을 공격할 때 전투력 +30%. 모든 기병 유닛의 행동력 +1.",
+		cities:["카라코람","베쉬발리크","투루판","하","올드 사라이","뉴 사라이","타브리즈","티플리스","오르타르","산추","카잔",
+			"알마릭","울란바토르","호브드","다르한","달란자드가드","만달고비","초이발산","에르데네","체체클렉",
+			"바룬 우르트","얼리안","바시릿","초이르","울란곰","토손트센겔","앳레이","울라이스타이","바얀혼고르",
+			"하르 아이라그","날라이흐","테스"]
 	},
 	{
 		/////NEEDS NATURAL WONDERS
 		name:"Spanish",
-		leaderName:"Isabella",
-		adjective:["Spanish"],
+		translatedName:"스페인",
+		leaderName:"이사벨라",
+		adjective:["스페인"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "Blessed Isabella, servant of God, holy queen of Castille and Leòn! Your people greet and welcome you. You are the ruler of Spain, a beautiful and ancient country at the crossroads of the world between Europe and Africa, one shor on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish are a multicultural people with roots in the Muslim and Christian worlds. A seafaring race, Spanish explorers found and conquered much of the New World, and, for many centuries, its gold and silver brought Spain unrivalled wealth and power, making the Spanish court the  envy of the world."
-		startIntroPart2: "O fair and virtuous Isabella! Will you rebuld the Spanish empire and show the world again the greatness of your people? Will your take up the mantle of the holy monarchy, and vanquish your foes under heaven's watchful eyes? Your adoring subjects await your command! Will you build a civilization that stands the test of time?"
+		startIntroPart1: "축복받은 신의 종이자 카스티야레온의 성스러운 여왕 이사벨라시여, 당신은 유럽과 아프리카, 지중해와 대서양이 만나는 아름답고 유서 깊은 땅 스페인의 지도자이십니다. 스페인은 가톨릭과 이슬람이 뒤섞인 다문화를 자랑합니다. 또한 스페인은 해양 강국으로, 신대륙을 발견하고 탐험하고 정복했으며 수 세기 동안 신대륙에서 흘러들어온 막대한 금과 은으로 유럽 열강의 위치를 누렸습니다.",
+		startIntroPart2: "아름답고 고결한 여왕이시여. 스페인 제국이 다시 세상에 이름을 떨치도록 과거의 영광을 되찾으시겠습니까? 기독교의 수호자가 되어 적에게 하늘의 심판을 내리시겠습니까? 스페인 백성이 당신을 기다립니다. 세월의 시련을 이겨낼 문명을 건설할 수 있겠습니까?",
 		
-		declaringWar:"God will probably forgive you... but I shall not. Prepare for war."
-		attacked:"Repugnant spawn of the devil! You will pay!"
-		defeated:"If my defeat is, without any doubt, the will of God, then I will accept it."
-		introduction:"God blesses those who deserve it. I am Isabel of Spain."
+		declaringWar:"아마도 하느님께서는 당신을 용서하실 겁니다. 하지만 저는 그렇지 않습니다. 전쟁을 준비하십시오!",
+		attacked:"역겨운 악마의 피붙이 같으니! 대가를 치루게 되리라!",
+		defeated:"좋습니다. 이 또한 하느님의 인도하심이겠지요. 저는 그에 따라야 합니다.",
+		introduction:"하느님의 은총이 있기를. 나는 에스파냐의 이사벨라입니다.",
 		
-		neutralHello:"Greetings."
-		neutralLetsHearIt:["Proceed","I'm listening.","Yes?"]
-		neutralNo:["We refuse.","Not before God.","No way."]
-		neutralYes:["Very well.","Excellent.","With the blessing of God, I accept."]
+		neutralHello:"안녕하세요.",
+		neutralLetsHearIt:["진행하십시오.","듣고 있습니다.","예?"],
+		neutralNo:["거절하겠어요.","하느님께 맹세코 안됩니다.","그럴 수는 없습니다."],
+		neutralYes:["매우 좋습니다.","훌륭합니다.","그대에게도 하느님의 축복이 함께 하기를."],
 
-		hateHello:"Well?"
-		hateLetsHearIt:["Onward","What were you saying?","Continue."]
-		hateNo:["That is unacceptable.","Of course not.","Are you crazy?"]
-		hateYes:["I agree.","Fine.","I think that I am obliged to accept."]
+		hateHello:"네?",
+		hateLetsHearIt:["시작하세요.","뭘 원하는 거죠?","계속하세요."],
+		hateNo:["받아들일 수 없습니다.","당연히 안됩니다.","제정신인가요?"],
+		hateYes:["동의하지요.","좋습니다.","받아들여야만 하겠군요."],
 		
-		afterPeace:"May God bless you for your clemency to the defeated enemy."
-		tradeRequest:"I hope this deal will receive your blessing."
+		afterPeace:"패배한 적에게 베푸는 당신의 자비로움에 하느님께서 축복을 내리실 겁니다.",
+		tradeRequest:"이 제안에 당신의 축복이 있기를 바랍니다.",
 				
 		outerColor:[102,0,0],
 		innerColor:[255,102,102],
-		uniqueName:"Seven Cities of Gold"
-		unique:"Gold nous for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.",
-		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
-			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
-			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
-			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
+		uniqueName:"일곱 개의 황금 도시",
+		unique:"자연 경관을 발견했을 때 더 많은 금을 받습니다.(최초로 발견할 경우에는 추가 금을 더 받습니다.) 자연경관에서의 타일 생산량이 두 배가 됩니다.",
+		cities:["마드리드","바르셀로나","세비야","코르도바","톨레도","산티아고","살라망카","무르시아","발렌시아","사라고사","팜플로나",
+			"비토리아","산탄데르","오비에도","하엔","로그로뇨","바야돌리드","팔마","테루엘","알메리아","레온","사모라","미다",
+			"루고","알리칸테","카디스","엘체","알코르콘","부르고스","비고","바다호스","라코루냐","과달키비르","빌바오",
+			"산 세바스티안","그라나다","메리다","우엘바","이비자","라스팔마스","테네리페"]
 	},
 	{
 		name:"Incan",
-		leaderName:"Pachacuti",
-		adjective:["Incan"],
+		translatedName:"잉카",
+		leaderName:"파차쿠티",
+		adjective:["잉카"],
 		startBias:["Hill"],
 		preferredVictoryType:"Cultural",
 		
-		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
-		startIntroPart2: "Oh King Pachacuti, truly are you called 'Earth Shaker'! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "세상을 다시 빚는 위대한 파차쿠티 왕이여, 그대의 충직한 신민이 경배하나이다! 그대는 잉카인의 통치자이십니다. 잉카인은 작은 나라 쿠스코에서 출발하여 수많은 적을 향해 진군하여 적군을 쳐부수고, 에콰도르에서 칠레에 이르는 강대한 제국을 건설함으로써 위대함을 증명했습니다. 이는 실로 콜럼버스 이전 아메리카 대륙에서 유례가 없는 대제국이었습니다. 잉카인은 전쟁뿐 아니라 건축과 예술에도 재능이 있어, 그 작품에 아직도 전 세계가 경탄합니다.",
+		startIntroPart2: "그대는 진정한 '대지의 지배자'입니다, 파차쿠티 왕이여! 다시 한번 대지의 힘과 더불어 싸우시지 않겠습니까? 잉카군이 그대의 신호가 떨어지기만 기다리고 있습니다. 병사들이 그대의 명령만을 기다리고 있습니다. 옛 제국의 영광을 되찾아 주시겠습니까? 세월의 시련을 이겨낼 문명을 건설할 수 있겠습니까?",
 		
-		declaringWar:"Resistance is futile! You cannot hope to stand against the mighty Incan empire. If you will not surrender immediately, then prepare for war!"
-		attacked:"Declare war on me?!? You can't, because I declare war on you first!"
-		defeated:"How did you darken the sun? I ruled with diligence and mercy—see that you do so as well."
-		introduction:"How are you? You stand before Pachacuti Inca Yupanqui."
+		declaringWar:"저항은 필요 없다! 위대한 잉카 제국에게 맞설 수 없을 것이다. 지금 항복하지 않겠다면, 전투를 준비해라!",
+		attacked:"나에게 전쟁을 선포하겠다? 좋아, 내가 그보다 먼저 선전포고를 해 주마!",
+		defeated:"어떻게 태양을 가릴 수 있었지? 나도 근면함과 자비로움으로 사람들을 통치했는데...",
+		introduction:"반갑네. 나는 잉카의 통치자 파차쿠티일세.",
 		
-		neutralHello:"How are you doing?"
-		neutralLetsHearIt:["Go on.","What do you say?","You may begin."]
-		neutralNo:["We absolutely refuse.","No!","I refuse."]
-		neutralYes:["Very good.","Of course, yes","That is very good."]
+		neutralHello:"어쩐 일인가?",
+		neutralLetsHearIt:["계속하게.","뭘 원하는가?","시작해도 좋네."],
+		neutralNo:["분명히 거절하겠네.","안 되네!","거절하지."],
+		neutralYes:["매우 좋군.","음, 당연히 하겠네.","상당히 좋군."],
 
-		hateHello:"What do you want now?"
-		hateLetsHearIt:["Speak!","What do you say?","Go on."]
-		hateNo:["That is not possible!","We are not agreeing to that!","I beg your pardon?"]
-		hateYes:["That is fine.","That is good enough.","Very well..."]
+		hateHello:"무엇을 원해서 왔는가?",
+		hateLetsHearIt:["말해 보게!","뭘 원하는가?","계속하게."],
+		hateNo:["불가능한 제안이군!","수락하지 않을 것이네!","뭐라고 했나?"],
+		hateYes:["좋군.","충분히 좋다.","아주 좋군..."],
 		
-		afterPeace:"Viracocha has frowned upon our war, and has agreed to our peace agreements."
-		tradeRequest:"The Incan people offer this fair trade."
+		afterPeace:"내 아버지인 비라코차가 오더라도 당신에게서는 두려움을 느낄 것이네. 평화 조약에 감사하네.",
+		tradeRequest:"잉카인들은 이 거래를 원하고 있네.",
 				
 		outerColor:[255,255,51],
 		innerColor:[0,204,102],
-		uniqueName:"Great Andean Road"
-		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
-		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos",
-			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
-			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
-			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
-	}
+		uniqueName:"위대한 안데스의 길",
+		unique:"언덕이 포함된 모든 지형을 이동할 때 소모되는 행동력이 1로 줄어듭니다. 언덕 위의 시설은 유지비가 들지 않고, 다른 지형의 시설은 유지비가 절반이 됩니다.",
+		cities:["쿠스코","티와나쿠","마추","올란타이탐보","코리와랴치나","우아망가","빌카스","빌카밤바","비코스",
+			"안다우일라스","이카","아레키파","나스카","아티코","쥴리","취토","추쿠에아포","후아누코 팜파","탐보코챠",
+			"우아라스","리오밤바","칵사말카","소우사","탐보 콜로라도","후아카","툼베스","찬찬","시판","파차카맥",
+			"락타파타","피삭","큐에랍","파자텐","추퀴토","초퀘키라오"]
+	},
 	{
 		name:"Songhai",
-		leaderName:"Askia",
-		adjective:["Songhai"],
+		translatedName:"송가이",
+		leaderName:"아스키아",
+		adjective:["송가이"],
 		startBias:["Avoid Tundra"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen."
-		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "위대한 하느님의 축복이 송가이 민족의 지도자인 아스키아 그대와 함께하기를! 오랫동안 그대의 왕국은 서아프리카의 막강한 제국 말리의 속국이었으나, 14세기 중반 수니 알리 베르 왕이 말리로부터 독립을 쟁취하고 많은 적과 싸워 이기며 넓은 영토를 점령했습니다. 부유한 도시 팀북투와 젠네를 정복하면서 얻은 경제력으로, 송가이 제국은 100여 년을 지속하다가 발전된 기술력을 지닌 적의 손에 멸망했습니다. 머스킷을 든 병사를 창병이 상대해야 했으니까요.",
+		startIntroPart2: "아스키아 왕이여, 백성은 그대가 송가이를 영광으로 이끌어주리라 기대하고 있습니다. 그대가 송가이에 권세와 부를 안겨주고, 어떤 적이라도 무찌를 수 있는 무기를 주리라 기대하고 있습니다. 오 왕이여, 그들을 멸망으로부터 구하고 세월의 시련을 이겨낼 문명을 건설해 주시겠습니까?",
 		
-		declaringWar:"You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!"
-		attacked:"Fool! You have doomed your people to fire and destruction!"
-		defeated:"We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!"
-		introduction:"I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past."
+		declaringWar:"당신은 이 땅에서 사라져야 할 악마요! 내가 그대를 사라지게 만들어야겠소!",
+		attacked:"어리석군. 지금 당신은 그대의 백성들을 화염과 파괴의 길로 빠트린 거요!",
+		defeated:"우리는 증오와 분노의 불길에 휩싸여 사라질 것입니다. 이 세계에서의 승리를 즐기십시오. 언젠간 무거운 대가를 치를 것이니!",
+		introduction:"저는 송가이의 아스키아입니다. 우리는 평화를 추구하나, 위협은 강력히 응징합니다. 다른 사람들이 과거에 범한 실수를 되풀이하지 않기를 바랍니다.",
 		
-		neutralHello:"Greetings."
-		neutralLetsHearIt:["Yes?","Proceed."]
-		neutralNo:["No","Of course not."]
-		neutralYes:["Very well.","Yes.","Fine."]
+		neutralHello:"환영하오.",
+		neutralLetsHearIt:["네?","계속하시오."],
+		neutralNo:["어렵겠군요.","안 되겠습니다."],
+		neutralYes:["아주 좋군요.","그러지요.","좋습니다."],
 
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["And?","Continue."]
-		hateNo:["You cannot be serious!","That's unacceptable!","We decline."]
-		hateYes:["Oh, very well.","Alright."]
+		hateHello:"오, 너로군.",
+		hateLetsHearIt:["그래서?","계속해 보시오."],
+		hateNo:["진심은 아니겠지!","받아들일 수 없소!","거절하지."],
+		hateYes:["음, 좋소.","좋군."],
 		
-		afterPeace:"We thank you for bringing an end to this pointless war."
-		tradeRequest:"Can I interest you in this deal?"
+		afterPeace:"이 무의미한 전쟁을 끝내주어 고맙소.",
+		tradeRequest:"이 거래에 흥미가 있으십니까?",
 				
 		outerColor:[204,102,0],
 		innerColor:[255,0,0],
-		uniqueName:"River Warlord"
-		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
-		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
-			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
-			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+		uniqueName:"수로의 지배자",
+		unique:"야만인 주둔지나 도시 약탈에서 얻는 금이 세 배가 됩니다. 승선한 유닛들이 스스로를 방어할 수 있습니다.",
+		cities:["가오","톰북투","젠네","타가자","톤디비","쿰비 살레","쿠키아","왈라타","테그다오스트","아르궁구","관두",
+			"케비","부사","몹티","바마코","와","카예스","아우다그오스트","우아단","다카르","타드메켓","테케다","카노",
+			"아가데즈","니아메이","토로디","우아타구나","도리","밤바","세구"]
 	},
 	{
 		//NEEDS SNOW AND ICE
 		name:"Denmark",
-		leaderName:"Harald Bluetooth",
-		adjective:["Danish"],
+		translatedName:"덴마크",
+		leaderName:"하랄 블로탄",
+		adjective:["덴마크"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "Honor and glory be yours, Harald Bluetooth Gormsson, mighty heir of King Gorm of the Old and Thryra Dannebod. Not only were you victorious on the battlefield against the armies of Norway, you also completed massive construction project across the land - numerous Ring Fortresses to protect the populace from invasion and internal strife. You successfully drove off waves of German settlers in 983 AD and sheltered your kingdom from unwanted foreign influence."
-		startIntroPart2: "Stalwart Viking, the time for greatness is upon you once more. You are called to rise up and lead your people to renewed power and trumph! Will you make the world shudder once more at the very thought of your great armies of the Northsmen? Will you let the Viking battle cry ring out across the crashing waved? Will you build a civilization to stand the test of time?"
+		startIntroPart1: "위대한 고름 대왕과 튀레 다네보드의 후계자이신 하랄 블로탄 고름손에게 명예와 영광이 함께하기를. 당신은 노르웨이군과의 전투에서 승리하고 곳곳에 외적과 내분으로부터 백성을 보호할 원형 요새를 건설하였습니다. 또한 기원후 983년, 쇄도하던 게르만족 정착민을 물리쳐, 원치 않는 외세의 영향으로부터 왕국을 보호하였습니다.",
+		startIntroPart2: "강건한 바이킹 왕이시여, 다시금 그 위용을 떨칠 때가 찾아왔습니다. 다시 일어나 당신 백성을 새로운 영예와 승리로 이끄십시오! 온 세상이 북방의 군대를 생각만 해도 벌벌 떨게 만드십시오. 거친 파도를 넘어 바이킹의 함성이 온 세상에 울려 퍼지도록 하십시오. 세월의 시련을 이겨낼 문명을 건설하십시오!",
 		
-		declaringWar:"If I am to be honest, I tire of those pointless charades. Why don't we settle our disputes on the field of battle, like true men? Perhaps the skalds will sing of your valor... or mine!"
-		attacked:"Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!"
-		defeated:"Loki must have stood by you, for a common man alone could not have defeated me... Oh well! I will join the einherjar in Valhalla and feast, while you toil away here."
-		introduction:"Harad Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?"
+		declaringWar:"솔직히 말해서, 비위 맞춰주기엔 질렸소. 한번 남자답게 전쟁터에서 승부를 보는 것이 어떻소? 바이킹의 시에 그대의 이름이 남을 수 있을지 누가 알겠소!",
+		attacked:"하하하! 바이킹의 실력을 보고 싶었나 보군요! 당신이 죽을 수도 있다는 것은 알고 계신가요?",
+		defeated:"로키 신이 당신을 도와 준 게 틀림없군... 그래, 그대가 이 세상에서 살아남고자 발버둥칠 때 나는 발할라에서 전사들과 함께 축제나 벌이고 있겠소.",
+		introduction:"환영하오. 나는 이 세계를 휘어잡을 바이킹의 후예, 하랄 블로탄이오. 하, 벌써부터 두려워하는 표정이 보이는군.",
 		
-		neutralHello:"Hail to you."
-		neutralLetsHearIt:["Let us hear it.","Go ahead.","I'm listening"]
-		neutralNo:["No.","Not today, I'm afraid.","I must decline."]
-		neutralYes:["Very well.","Of course, my friend!","That's a deal!"]
+		neutralHello:"반갑네.",
+		neutralLetsHearIt:["들어 보겠네.","말해 보시오.","듣고 있소."],
+		neutralNo:["안 되겠네.","지금은 어렵겠네.","취소해야만 하겠군."],
+		neutralYes:["아주 좋군.","수락하겠네, 내 벗이여!","좋은 거래일세!"],
 
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["What is it?.","And?","Go on"]
-		hateNo:["Don't be silly!","That is unacceptable."]
-		hateYes:["I guess I have to.","Oh, very well."]
+		hateHello:"오, 자네로군.",
+		hateLetsHearIt:["뭔가?.","그래서?","계속 하게."],
+		hateNo:["어리석은 소리는 그만하게!","수락할 수 없네."],
+		hateYes:["그래야만 하겠군.","음, 잘 알겠네."],
 		
-		afterPeace:"By the hammer of Thor, you have proven yourself a worthy opponent today. I congratulate you!"
-		tradeRequest:"This is a fine deal! Even a drunk beggar would agree!"
+		afterPeace:"토르의 망치 앞에서, 그대는 자신의 용맹함을 보였네. 이건 인정해야 하겠군!",
+		tradeRequest:"이건 좋은 제안이오. 아마 자네라면 기뻐하며 냉큼 받아들일 것이오!",
 				
 		outerColor:[51,25,0],
 		innerColor:[255,255,102],
-		uniqueName:"Viking Fury"
-		unique:"+1 Movement to all embarked units, units pay only 1 movement point to embark and disembark. Melee units pay no movement cost to pillage.",
-		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
-			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
-			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
-			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
-			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
+		uniqueName:"바이킹의 분노",
+		unique:"승선한 유닛들의 행동력 +1. 상륙에 필요한 행동력이 1로 줄어듭니다. 근접 유닛이 약탈을 할 때 행동력을 소모하지 않습니다.",
+		cities:["코펜하겐","오르후스","카우팡","리베","비보르크","톤스버그","로스킬레","헤데비","오슬로","옐링","트루소",
+			"베르겐","파에로에르네","레이캬비크","트론헤임","고트호브","헬률란드","릴레해머","마르클란드","헬싱괴르",
+			"사름스보르그","오덴세","올보르","스태벤거","보르바세","슐레스비히","크리스티안앤드","할로가랜드","란데르스",
+			"프레드릭스태드","콜딩","호르센스","트롬소","바일레","고게","샌드네스","홀스테브로","슬라겔세","드라멘",
+			"힐데뢰드","손더보리","스키언","스벤보르","홀베크","히링","플라드스트란드","하데르슬레우","링스테드","스키브"]
 	},
 	{        
 	    	name:"Sweden",
-		leaderName:"Gustavus Adolphus",
-		adjective:["Swedish"],
+		translatedName:"스웨덴",
+		leaderName:"구스타부스 아돌푸스",
+		adjective:["스웨덴"],
 		startBias:["Tundra"],
 		preferredVictoryType:"Diplomatic",
 		
-		startIntroPart1:"All hail the transcendent King Gustavus Adolphus, founder of the Swedish Empire and her most distinguished military tactician. It was during your reign that Sweden emerged as one of the greatest powers in Europe, due in no small part to your wisdom, both on and off the battlefield. As king, you initiated a number of domestic reforms that ensured the economic stability and prosperity of your people. As the general who came to be known as the "Lion of the North," your visionary designs in warfare gained the admiration of military commanders the world over. Thanks to your triumphs in the Thirty Years' War, you were assured a legacy as one of history's greatest generals.",
-		startIntroPart2:"Oh noble King, the people long for your prudent leadership, hopeful that once again they will see your kingdom rise to glory. Will you devise daring new strategies, leading your armies to victory on the theater of war? Will you build a civilization that stands the test of time?",
+		startIntroPart1:"스웨덴 제국의 설립자이시자 최고의 군사 전략가이신 구스타부스 아돌푸스 왕께 경배를! 당신은 스웨덴을 유럽 최강 국가 중 하나로 성장시켰으며 전쟁터 안팎에서 유감없이 지혜를 발휘하셨습니다. 왕위에 오른 후 당신은 수많은 개혁 정책으로 경제적 안정과 번영을 이끌어냈습니다. '북방의 사자'라 불린 장군이기도 한 당신은 뛰어난 전술과 선견지명으로 세계적으로 존경받는 군대 지휘자가 되었습니다. 30년 전쟁에서 승리한 당신은 역사상 가장 뛰어난 장군 중 하나로 남았습니다.",
+		startIntroPart2:"고귀한 왕이시여, 백성은 당신의 사려 깊은 지도를 기대하며 다시 왕국이 영광을 되찾기를 희망합니다. 과감한 새 전략을 고안하여 스웨덴군을 승리로 이끄시겠습니까? 세월의 시련을 이겨낼 문명을 건설하겠습니까?",
 		
-		declaringWar:"The Hakkapeliittas will ride again and your men will fall just at the sight of my cavalry!God with us!",
-		attacked:"Ha ha ha, captain Gars will be very glad to head out to war again.",
-		defeated:"I am Sweden's king. You can take my lands, my people, my kingdom, but you will never reach the House of Vasa.",
-		introduction:"Stranger, welcome to the Snow King's kingdom! I am Gustavus Adolphus,member of the esteemed House of Vasa",
+		declaringWar:"우리의 하카펠리타 기병대들이 그대의 군대를 박살낼 것이네! 신이 우리와 함께하기를!",
+		attacked:"하하하! 우리 병사들도 전쟁을 목빠지게 기다리고 있었네!",
+		defeated:"나는 스웨덴의 왕이다. 내 땅, 내 시민, 내 왕국은 가져갈 수 있어도, 나의 왕실인 '바사 왕실'만은 가질 수 없을 것이다.",
+		introduction:"이방인이여, 설원 위의 왕국에 온 걸 환영하네! 나는 바사 왕실에서 스웨덴을 통치하고 있는 구스타부스 아돌푸스일세.",
 		
-		neutralHello:"Oh","welcome!",
-		neutralLetsHearIt:["Let us hear.","Go on.","I am listening."],
-		neutralNo:["I must decline.","No, absolutely not.","We must decline."]
-		neutralYes:["Very good!","Gladly!","Hah, excellent!"]
+		neutralHello:"오","환영하네!",
+		neutralLetsHearIt:["들어 보겠네.","말하게.","듣고 있네."],
+		neutralNo:["수락하기는 어렵겠네.","아니, 절대로 안 되네.","거절하겠네."],
+		neutralYes:["매우 좋군!","기꺼이 하지!","하, 상당히 좋군!"],
 		
-		hateHello:"Oh, it is you."
-		hateLetsHearIt:["Go on."]
-		hateNo:["That is unacceptable.","You can't be serious.","What did you say!?"]
-		hateYes:[" Aargh, very well!"," Aargh, very well!","Bah, I guess I have no choice."]
+		hateHello:"그대였군.",
+		hateLetsHearIt:["말하게."],
+		hateNo:["불가능하네.","진심은 아니겠지.","지금 뭐라 했는가?"],
+		hateYes:["아, 매우 좋군!","아, 좋군!","하, 선택지가 없겠군."],
 		
-		afterPeace:"Enjoy your victory while you can. It will not be long-lasting."
-		tradeRequest:"My friend, it is my belief that this settlement can benefit both our peoples."
+		afterPeace:"즐길 수 있을 때까지 승리에 취하시오. 언젠가는 그 승리를 뺏기게 될 것이니까.",
+		tradeRequest:"내 친구여, 이 거래가 우리 둘 모두의 백성들에게 이익이 될 거라 생각하네.",
 		
-		innerColor:[194,97,255]
-		uniqueName:"The Lion of the North,"
-		unique:"Gain 90 Influence with a Great Person gift to a City-State,When declaring friendship, Sweden and their friend gain a +10% boost to Great Person generation"
-		cities:["StockHolm","Malmo","Gothenburg","Visby","Upssala","Umea","Lund","Kiruna","Helsingborg",
-		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
-		"Copenhagen","Jonkoping",Boras",]
+		innerColor:[194,97,255],
+		uniqueName:"북방의 사자",
+		unique:"도시국가에 위인을 선물하면 우호도가 90 증가합니다. 다른 문명과 우호 관계를 맺으면 양국의 위인 출현율이 10% 증가합니다.",
+		cities:["스톡홀름","말뫼","예테보리","비스비","웁살라","우메오","룬드","키루나","헬싱보리",
+		"오레브로","베스테로스","린셰핑","노르셰핑","예블레","칼스크로나","할름스타드","칼스타드","벡셰",
+		"코펜하겐","이왼최핑","보라스"]
 	},
 	*/
 
