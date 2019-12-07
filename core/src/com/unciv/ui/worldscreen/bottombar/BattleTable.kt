@@ -37,38 +37,51 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun update() {
         isVisible = true
+
+        val attacker = tryGetAttacker()
+        if(attacker==null){ hide(); return }
+
+        val defender = tryGetDefender()
+        if(defender==null){ hide(); return }
+
+        simulateBattle(attacker, defender)
+    }
+
+    private fun tryGetAttacker(): ICombatant? {
         val unitTable = worldScreen.bottomUnitTable
-        val attacker : ICombatant?
         if (unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.type.isCivilian()) {
-            attacker = MapUnitCombatant(unitTable.selectedUnit!!)
+            return MapUnitCombatant(unitTable.selectedUnit!!)
         } else if (unitTable.selectedCity != null) {
-            attacker = CityCombatant(unitTable.selectedCity!!)
+            return CityCombatant(unitTable.selectedCity!!)
         } else {
-            hide()
-            return // no attacker
+            return null // no attacker
         }
+    }
 
-        if (worldScreen.tileMapHolder.selectedTile == null) return
+    private fun tryGetDefender(): ICombatant? {
+        val attackerCiv = worldScreen.viewingCiv
+        if (worldScreen.tileMapHolder.selectedTile == null) return null // no selected tile
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
 
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
-                defender.getCivInfo()==worldScreen.viewingCiv
-                || !(UncivGame.Current.viewEntireMapForDebug
-                        || attacker.getCivInfo().exploredTiles.contains(selectedTile.position))) {
-            hide()
-            return
+                defender.getCivInfo()==attackerCiv)
+            return null  // no enemy combatant in tile
+
+        val canSeeDefender = if(UncivGame.Current.viewEntireMapForDebug) true
+        else {
+            when {
+                defender.isInvisible() -> attackerCiv.viewableInvisibleUnitsTiles.contains(selectedTile)
+                defender.getUnitType()==UnitType.City -> attackerCiv.exploredTiles.contains(selectedTile.position)
+                else -> attackerCiv.viewableTiles.contains(selectedTile)
+            }
         }
 
-        if(defender.isInvisible()
-                && !attacker.getCivInfo().viewableInvisibleUnitsTiles.contains(selectedTile)) {
-            hide()
-            return
-        }
+        if(!canSeeDefender) return null
 
-        simulateBattle(attacker, defender)
+        return defender
     }
 
     fun simulateBattle(attacker: ICombatant, defender: ICombatant){

@@ -308,7 +308,7 @@ class Building : NamedStats(), IConstruction{
         if(!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
-        
+
         return ""
     }
 

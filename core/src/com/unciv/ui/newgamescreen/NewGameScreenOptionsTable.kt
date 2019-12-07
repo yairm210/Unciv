@@ -32,7 +32,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         addNoRuinsCheckbox()
         addIsOnlineMultiplayerCheckbox()
 
-        addModCheckboxes()
+        // addModCheckboxes()
 
         pack()
     }
@@ -260,25 +260,19 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
             }
         }
 
-        for (victoryType in VictoryType.values()) {
-            if (victoryType == VictoryType.Neutral) continue
-            val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
-            victoryCheckbox.name = victoryType.name
-            victoryCheckbox.isChecked = newGameParameters.victoryTypes.contains(victoryType)
-            victoryCheckbox.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    // If the checkbox is checked, adds the victoryTypes else remove it
-                    if (victoryCheckbox.isChecked) {
-                        newGameParameters.victoryTypes.add(victoryType)
-                    } else {
-                        newGameParameters.victoryTypes.remove(victoryType)
-                    }
-                }
-            })
-            modCheckboxTable.add(victoryCheckbox)
-            if (++i % 2 == 0) modCheckboxTable.row()
-        }
         add(modCheckboxTable).colspan(2).row()
     }
 
 }
+
+//
+//class Mod(val name:String){
+//    val ruleSet=Ruleset(false)
+//
+//    fun tryLoadRuleset(){
+//        val folderPath="mods/$name"
+//        val jsonsFolderLocation = folderPath+"/jsons"
+//        if(Gdx.files.local(jsonsFolderLocation).exists())
+//
+//    }
+//}
