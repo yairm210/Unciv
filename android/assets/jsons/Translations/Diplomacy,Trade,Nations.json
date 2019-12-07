@@ -179,6 +179,7 @@
 		German:"Sehr gut"
                 Malay:"Bagus juga!"
 		Korean:"좋습니다."
+                Portuguese:"Soa Bem!"
 }
 
 	"Not this time.":{ // declining trade text
@@ -228,7 +229,7 @@
 		French:"Un plaisir de vous rencontrez"
 		Simplified_Chinese:"很高兴见到你。"
 		Traditional_Chinese:"很高興見到你。"
-		Portuguese:"Prazer conhece-lo"
+		Portuguese:"Foi um Prazer conhece-lo"
                 Polish:"Czuję się zaszczycony."
 		Russian:"Рады видеть вас."
 		Czech:"Rádi vás poznáváme"
@@ -284,7 +285,7 @@
 		French:"Puissent nos nations rester unies pour toujours!"
 		Simplified_Chinese:"我们两个文明将永远肝胆相照、休戚与共地站在一起！"
 		Traditional_Chinese:"我們兩個文明將永遠肝膽相照、休戚與共地站在一起！"
-		Portuguese:"Que nossas nações se mantenho unidas para sempre!"
+		Portuguese:"Que nossas nações se mantenham unidas para sempre!"
                 Polish:"Oby ta przyjaźń już zawsze łączyła nasze cywilizacje!"
 		Russian:"Да будут наши державы навеки едины!"
 		Czech:"Nechť naše národy zůstanou navždy spojené"
@@ -319,6 +320,7 @@
 		German:"Denunziere ([numberOfTurns] Runden)"
                 Malay:"Kecam ([numberOfTurns] pusingan)"
 		Korean:"비난 ([numberOfTurns] 턴 동안)"
+                Portuguese:"Denúncia  ([numberOfTurns] turns)"
 }
 
 	"We will remember this.":{
@@ -332,6 +334,7 @@
 		German:"Das werden wir nie vergessen!"
                 Malay:"Kami akan ingat perkara ini"
 		Korean:"우리는 이 일을 기억할 것입니다."
+                Portuguese:"Nós vamos lembrar disso."
 }
 
 
@@ -448,6 +451,7 @@
 		Czech:"Poskytují [amountOfCulture] bodů Kultury při Vlivu [30] "
 		German:"Bietet [amountOfCulture] Kultur für 30 Einflusspunkte"
 		Korean:"영향력이 [30]일 때부터 문화 [amountOfCulture]을(를) 제공합니다."
+                Portuguese:"Providência [amountOfCulture] de Cultura por [30] pontos de Influência"
 }
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
@@ -460,6 +464,7 @@
 		Czech:"Poskytuje 3 jídla v hlavním městě a 1 jídlo ve všech ostatních městech při Vlivu 30"
 		German:"Bietet 3 Nahrung in der Hauptstadt und 1 Nahrung in anderen Städten für 30 Einflusspunkte"
 		Korean:"영향력이 30일 때부터 수도에 식량 +3, 수도가 아닌 도시에 식량 +1을 제공합니다."
+                Portuguese:"Providência 3 de comida na capital e 1 e comida em outras cidades por 30 pontos de Influência"
 }
 
 	"Provides 3 happiness at 30 Influence":{
@@ -472,6 +477,7 @@
 		Czech:"Poskytuje 3 body Spokojenosti při Vlivu 30"
 		German:"Bietet 3 Zufriedenheit für 30 Einflusspunkte"
 		Korean:"영향력이 30일 때부터 행복 +3을 제공합니다."
+                Portuguese:"Providência 3 de felicidade por 30 pontos de Influência"
 },
 
 	"Provides land units every 20 turns at 30 Influence":{
@@ -484,6 +490,7 @@
 		Czech:"Poskytuje pozemní jednotky každých 20 kol při Vlivu 30"
 		German:"Bietet eine Landeinheit alle 20 Runden für 30 Einflusspunkte"
 		Korean:"영향력이 30일 때부터 20턴마다 지상 유닛을 제공합니다."
+                Portuguese:"Fornece  unidades terrestres a cada 20 turnos  por 30 pontos de Influência"
 },
 
 	"Gift [giftAmount] gold (+[influenceAmount] influence)":{
@@ -496,6 +503,7 @@
 		German:"Geschenk [giftAmount] Gold (+[influenceAmount] Einfluss) "
 		Korean:"금 [giftAmount] 선물 (영향력 +[influenceAmount])"
 		French:"Donne [giftAmount] Or (+[influenceAmount] Influence)"
+                Portuguese:"Doe [giftAmount] Ouro (+[influenceAmount] influence)"
 }
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
@@ -508,6 +516,7 @@
 		Czech:"Mezinárodní vztahy se změní během příštích/ho [turnsToRelationshipChange] kol(a)"
 		German:"Die Beziehung verändert sich in [turnsToRelationshipChange] Runden"
 		Korean:"[turnsToRelationshipChange] 턴 후 관계도가 변경됩니다."
+                Portuguese:"As relações  mudam em outro [turnsToRelationshipChange] turns"
 }
 
 
@@ -601,7 +610,7 @@
 		Simplified_Chinese:"渡尽劫波兄弟在，相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！",
 		Polish:"Zadeklarowałeś przyjaźń z naszym wrogiem!"
 		Traditional_Chinese:"你竟敢對我們的敵人表示友好！",
-		Portuguese:"Voçê declarou amizade a um de nossos inimigos!"
+		Portuguese:"Você declarou amizade a um de nossos inimigos!"
 		Russian:"Вы дружите с нашими врагами!"
 		Czech:"Deklarovali jste přátelství s našimi nepřáteli!"
 		German:"Du hast Freundschaft mit unseren Feinden erklärt!"
@@ -613,7 +622,7 @@
 		Simplified_Chinese:"兄弟齐心、其利断金！我们宣布：我们与盟友间兄弟般的友谊永世长存！"
 		Polish:"Zadeklarowałeś przyjaźń z naszymi sojusznikami"
 		Traditional_Chinese:"兄弟齊心、其力斷金！我們宣佈：我們與盟友間兄弟般的友誼永世長存！"
-		Portuguese:"Voçê declarou amizade a um de nossos aliados"
+		Portuguese:"Você declarou amizade a um de nossos aliados"
 		Russian:"Вы дружите с нашими союзниками"
 		Czech:"Deklarovali jste přátelství s našimi spojenci"
 		German:"Du hast die Freundschaft mit unseren Alliierten erklärt!"
@@ -626,7 +635,7 @@
 		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
 		Polish:"Nasze otwarte granice zbliżyły nas do siebie."
 		Traditional_Chinese:"開放的邊界促進了彼此的了解，讓我們的人民心心相通！"
-		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
+		Portuguese:"Nossas fronteiras abertas nos fizeram mais próximos."
 		Russian:"Наши открытые границы сблизили нас"
 		Czech:"Dohoda o otevřených hranicích nás sblížila."
 		German:"Unsere offenen Grenzen haben uns einander näher gebracht."
@@ -658,6 +667,7 @@
 		German:"Ihr habt uns öffentlich angeprangert!"
                 Malay:"Kamu telah mengutuk kami secara awam!"
 		Korean:"당신은 우리를 공개적으로 비난했소!"
+                Portuguese:"Você nos denunciou publicamente!"
 }
 
 	"You have denounced our allies":{
@@ -671,6 +681,7 @@
 		German:"Ihr habt unsere Alliierten öffentlich angeprangert!"
                 Malay:"Kamu telah kutuk pakatan kamu"
 		Korean:"당신은 우리의 동맹을 공개적으로 비난했소!"
+                Portuguese:"Você denunciou nossos aliados!"
 }
 
 	"You have denounced our enemies":{
@@ -684,6 +695,7 @@
 		German:"Ihr habt unsere Feinde öffentlich angeprangert!"
                 Malay:"Kamu telah kutuk musuh kamu"
 		Korean:"우리의 적을 공개적으로 비난하셨더군요. 우리도 같은 생각이랍니다."
+                Portuguese:"Você denunciou nossos inimigos"
 }
 
 	// Demands
@@ -698,6 +710,7 @@
 		German:"Forderungen"
                 Malay:"Permintaan"
 		Korean:"요구"
+                Portuguese:"Demandas"
 }
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
@@ -710,6 +723,7 @@
 		German:"Bitte keine neuen Städte in unserer Nähe bauen."
                 Malay:"Tolong jangan menetap berdekatan bandar kami"
 		Korean:"우리 근처에 새 도시를 짓지 마시오."
+                Portuguese:"Porfavor, não coloque novas cidades próximos a nós."
 }
 	"Very well, we shall look for new lands to settle.":{
 		Italian:"Ti porgiamo le nostre scuse."
@@ -721,6 +735,7 @@
 		Czech:"Nu dobrá, podíváme se po nových místech k zakládání měst."
 		German:"Einverstanden, wir werden nach anderem Bauland Ausschau halten."
 		Korean:"알겠습니다. 정착할 새로운 땅을 찾아 보도록 하지요."
+                Portuguese:"Pois nem, nós iremos procurar novas terras para se assentar."
 }
 	"We shall do as we please.":{
 		Italian:"Colonizzeremo la terra che ci pare e piace."
@@ -732,6 +747,7 @@
 		Czech:"Uděláme si to po svém."
 		German:"Wir machen was wir wollen"
 		Korean:"우리가 원하는 데 살고자 하는 것이 잘못입니까?"
+                Portuguese:"Nós faremos oque quisermos"
 }
 
 	"You betrayed your promise to not settle cities near us":{
@@ -744,6 +760,7 @@
 		Czech:"Porušili jste svůj slib nezakládat města u našich hranic"
 		German:"Ihr habt euer Versprechen gebrochen, nicht in unserer Nähe neue Städte zu gründen"
 		Korean:"당신은 우리 근처에 도시를 세우지 않겠다는 약속을 배신했소."
+                Portuguese:"Você traiu a sua promessa de não fundar uma cidade próximo a nós"
 }
 
 	"You fulfilled your promise to stop settling cities near us!":{
@@ -756,6 +773,7 @@
 		Czech:"Dodrželi jste svůj slib nezakládat města poblíž našich hranic."
 		German:"Ihr habt euer Versprechen gehalten, nicht in unserer Nähe neue Städte zu gründen"
 		Korean:"우리 근처에 도시를 세우지 않겠다는 약속을 지켰군요."
+                Portuguese:"Você cumpriu a sua promessa de parar de fundar cidades próximos próximos nós!"
 }
 
 	"You refused to stop settling cities near us":{
@@ -768,6 +786,7 @@
 		Czech:"Odmítli jste žádost o nezakládání měst poblíž našich hranic"
 		German:"Ihr habt euch geweigert, nicht in unserer Nähe neue Städte zu gründen"
 		Korean:"당신은 우리 근처에 도시를 세우지 말라는 제안을 거절했소."
+                Portuguese:"Você recusou a parar de fundar cidades próximas a nós"
 }
 
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
@@ -779,7 +798,8 @@
 		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
 		Czech:"Odhalili jsme nové město poblíž našich hranic navzdory vašim slibům. To bude mít... patřičné následky."
 		German:"Wir haben eure neue Stadt an unserer Grenze bemerkt - entgegen eures Versprechens. Das wird Folgen haben."
-		Korean:"우리 근처에 새 도시를 세우지 않겠다고 했는데, 이번에 새로운 도시를 세우셨군요. 그렇게 나오시겠다는 겁니까?"
+		Korean:"우리 근처에 새 도시를 세우지 않겠다고 했는데, 이번에 새로운 도시를 세우셨군요. 그렇게 나오시겠다는 겁니까?"  
+                Portuguese:"Nós percebemos a sua boba cidade próxima a nossas fronteiras, apesar da sua promessa. ISSO haverá... consequências."
 }
 
 	"Your arrogant demands are in bad taste":{
@@ -792,6 +812,7 @@
 		Czech:"Vaše arogantní požadavky jsou dalším důkazem vaší zkaženosti"
 		German:"Ihre arroganten Forderungen sind geschmacklos."
 		Korean:"이치에 맞지 않는 요구를 하고 있군요."
+                Portuguese:"Suas demandas arrogantes estão com um gosto ruim."
 }
 
 
@@ -808,6 +829,7 @@
 		Czech:"Kulturní"
 		German:"Kultiviert"
 		Korean:"문화적"
+
 }
 
 	"Maritime":{
@@ -820,6 +842,7 @@
 		Czech:"Nomořní"
 		German:"Maritim"
 		Korean:"해양적"
+                Portuguese:"Marítima"
 }
 
 	"Mercantile":{
@@ -832,6 +855,7 @@
 		Czech:"Obchodní"
 		German:"Finanztechnisch"
 		Korean:"상업적"
+                Portuguese:"Mercantil"
 }
 
 	"Militaristic":{
@@ -844,6 +868,7 @@
 		Czech:"Militaristický"
 		German:"Militärisch"
 		Korean:"군사적"
+                Portuguese:"Militarista"
 }
 
 	"Type: ":{
@@ -856,6 +881,7 @@
 		German:"Typ: "
 		Korean:"성향 : "
 		French:"Type : "
+                Portuguese:"Tipo : "
 }
 
 	"Influence: ":{
@@ -867,6 +893,7 @@
 		Czech:"Vliv: "
 		German:"Einfluss: "
 		Korean:"영향력 : "
+                Portuguese:"Influência: "
 }
 
 	"Reach 30 for friendship.":{
@@ -877,6 +904,7 @@
 		German:"Erreiche 30 für Freundschaft."
 		Polish:"Zdobądź 30 dla przyjaźni."
 		Korean:"우호 관계가 되고 싶다면 30 이상의 영향력을 보유하십시오."
+                Portuguese:"Alcance 30 para conseguir a Amizade."
 }
 
 	"Reach highest influence above 60 for alliance.":{
@@ -887,6 +915,7 @@
 		German:"Erreiche den höchsten Einfluss über 60 für Allianzen"
 		Polish:"Osiągnij wpływ powyżej 60 dla sojuszu." //checking context ingame - will delete after confirming
 		Korean:"동맹 상태가 되려면 60 이상이면서 가장 높은 영향력을 보유하십시오."
+                Portuguese:"Alcance a influência  mais alta acima dos 60 para formar uma aliança."
 }
 
 	"Ally: ":{
@@ -898,6 +927,7 @@
 		Polish:"Sojusznik: "
 		Korean:"동맹 : "
 		French:"Allié :"
+                Portguese:"Aliado : "
 }
 
 ////// Trade
@@ -945,6 +975,7 @@
                 Malay:"Tarik balik tawaran"
 		Korean:"제안 취소"
 		French:"Retirer l'offre"
+                Portuguese:"Retirar oferta"
 }
 
 	"What do you have in mind?":{
@@ -1030,7 +1061,7 @@
 		Spanish:"¡Un placer hacer negocios contigo!"
 		Simplified_Chinese:"很高兴和您做生意！"
 		Traditional_Chinese:"很高興和您做生意！"
-		Portuguese:"É um prazer fazer negócios com voçê" // can remove 'É um prazer' as it translates to 'it is a pleasure'
+		Portuguese:"É um prazer fazer negócios com você" // can remove 'É um prazer' as it translates to 'it is a pleasure'
 		German:"Angenehm, mit Ihnen Geschäfte zu machen!"
 		Czech:"Bylo nám potěšení s vámi obchodovat!"
 		Polish:"Miło jest robić z tobą interesy!"
@@ -1061,7 +1092,7 @@
 		Spanish:"Es aceptable"
 		Simplified_Chinese:"这是可以接受的。"
 		Traditional_Chinese:"這是可以接受的。"
-		Portuguese:"Isto é aceitavel"
+		Portuguese:"Isto é aceitável "
 		German:"Das ist akzeptabel."
 		Czech:"To se zdá přijatelné."
 		Polish:"To jest akceptowalne." //checking context ingame - will delete after confirming
@@ -1225,6 +1256,7 @@
 		Polish:"Przedstawienie narodu [nation]" //checking context ingame - will delete after confirming
 		Korean:"[nation]에 대한 소개"
 		French:"Présentation à [nation]"
+                Portuguese:"Introdução para [nation]"
 }
 
 	"Declare war on [nation]":{
@@ -1237,6 +1269,7 @@
 		Polish:"Wypowiedz wojnę z [nation]"
 		Korean:"[nation]에 전쟁 선포"
 		French:"Déclarer la guerre à [nation]"
+                Portuguese:"Declarar guerra à  [nation]"
 }
 
 	"Luxury resources":{
@@ -1307,6 +1340,7 @@
 		Polish:"Utracona zdolność"
 		Korean:"없어진 특성"
 		French:"capacité manquante"
+                Portuguese:"Habilidade perdida"
 }
 
 	"National ability":{ // the unique ability that each nation has
@@ -1365,6 +1399,7 @@
 		German:"Nebukadnezar II"
 		Polish:"Nabuchodonozor II"
 		Korean:"네부카드네자르 2세"
+                Portuguese:"Nabucodonosor II"
 }
 
 	"Greece":{
@@ -1394,6 +1429,7 @@
 		Polish:"Aleksander Wielki"
                 Malay:"Alexander"
 		Korean:"알렉산더"
+                Portuguese:"Alexandro"!
 },
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
@@ -1478,6 +1514,7 @@
 		German:"Ramses II"
 		Polish:"Ramzes II"
 		Korean:"람세스 2세"
+                Portuguese:"Ramésses II"
 }
 
 	"+20% production towards Wonder construction":{
@@ -1521,6 +1558,7 @@
 		German:"Elisabeth"
 		Polish:"Elżbieta"
 		Korean:"엘리자베스 1세"
+                Portuguese:"Elisabeth"
 }
 
 	"+2 movement for all naval units":{
@@ -1564,6 +1602,7 @@
 		// same in German
 		Polish:"Napoleon"
 		Korean:"나폴레옹"
+                Portuguese:"Napoleão"
 }
 
 	"+2 Culture per turn from cities before discovering Steam Power":{
@@ -1735,6 +1774,7 @@
 		// same in German
 		Polish:"George Washington"
 		Korean:"조지 워싱턴"
+                // same in Portuguese
 }
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
