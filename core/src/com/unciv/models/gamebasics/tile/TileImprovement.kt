@@ -1,7 +1,7 @@
 package com.unciv.models.gamebasics.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
@@ -30,7 +30,7 @@ class TileImprovement : NamedStats() {
         return realTurnsToBuild.roundToInt()
     }
 
-    fun getDescription(ruleSet: RuleSet): String {
+    fun getDescription(ruleset: Ruleset): String {
         val stringBuilder = StringBuilder()
         if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
@@ -41,7 +41,7 @@ class TileImprovement : NamedStats() {
             stringBuilder.appendln("Can be built on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))//language can be changed when setting changes.
         }
         val statsToResourceNames = HashMap<String, ArrayList<String>>()
-        for (tr: TileResource in ruleSet.TileResources.values.filter { it.improvement == name }) {
+        for (tr: TileResource in ruleset.TileResources.values.filter { it.improvement == name }) {
             val statsString = tr.improvementStats.toString()
             if (!statsToResourceNames.containsKey(statsString))
                 statsToResourceNames[statsString] = ArrayList()

@@ -3,7 +3,7 @@ package com.unciv.models.gamebasics.tech
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import java.util.*
@@ -20,11 +20,11 @@ class Technology {
     var row: Int = 0
     var quote=""
 
-    fun getDescription(ruleSet: RuleSet): String {
+    fun getDescription(ruleset: Ruleset): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
-        val improvedImprovements = ruleSet.TileImprovements.values
+        val improvedImprovements = ruleset.TileImprovements.values
                 .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
         for (improvement in improvedImprovements) {
             val impimpString = improvement.value.joinToString { it.name.tr() } +
@@ -46,20 +46,20 @@ class Technology {
         if (regularBuildings.isNotEmpty()) {
             lineList += "{Buildings enabled}: "
             for (building in regularBuildings)
-                lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleSet) + ")"
+                lineList += "* " + building.name.tr() + " (" + building.getShortDescription(ruleset) + ")"
         }
 
         val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
         if (wonders.isNotEmpty()) {
             lineList += "{Wonders enabled}: "
             for (wonder in wonders)
-                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleSet) + ")"
+                lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        val revealedResource = ruleSet.TileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
+        val revealedResource = ruleset.TileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
         if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
 
-        val tileImprovements = ruleSet.TileImprovements.values.filter { it.techRequired == name }
+        val tileImprovements = ruleset.TileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 

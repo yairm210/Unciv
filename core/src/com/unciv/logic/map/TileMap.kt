@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 
 class TileMap {
 
@@ -32,10 +32,10 @@ class TileMap {
 
 
 
-    constructor(radius:Int, ruleSet: RuleSet){
+    constructor(radius:Int, ruleset: Ruleset){
         for(vector in HexMath().getVectorsInDistance(Vector2.Zero, radius))
             tileList.add(TileInfo().apply { position = vector; baseTerrain= Constants.grassland })
-        setTransients(ruleSet)
+        setTransients(ruleset)
     }
 
 
@@ -146,7 +146,7 @@ class TileMap {
         return viewableTiles
     }
 
-    fun setTransients(ruleSet: RuleSet) {
+    fun setTransients(ruleset: Ruleset) {
         if(tiles.any())
             tileList.addAll(tiles.values)
 
@@ -164,7 +164,7 @@ class TileMap {
         for (tileInfo in values){
             tileMatrix[tileInfo.position.x.toInt()-leftX][tileInfo.position.y.toInt()-bottomY] = tileInfo
             tileInfo.tileMap = this
-            tileInfo.ruleSet = ruleSet
+            tileInfo.ruleset = ruleset
             tileInfo.setTransients()
         }
     }

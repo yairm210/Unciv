@@ -18,7 +18,7 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.DropBox
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 
-class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
+class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
     init{
         val mapNameEditor = TextField(mapEditorScreen.mapName, skin)
         mapNameEditor.addListener{ mapEditorScreen.mapName=mapNameEditor.text; true }

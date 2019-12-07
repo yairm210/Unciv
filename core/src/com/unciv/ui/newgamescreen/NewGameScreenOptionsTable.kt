@@ -1,5 +1,6 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -8,7 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tr
@@ -17,7 +18,7 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleSet: RuleSet, val onMultiplayerToggled:()->Unit)
+class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleset: Ruleset, val onMultiplayerToggled:()->Unit)
     : Table(CameraStageBaseScreen.skin){
     init{
         addMapTypeSizeAndFile()
@@ -30,6 +31,8 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleS
         addOneCityChallengeCheckbox()
         addNoRuinsCheckbox()
         addIsOnlineMultiplayerCheckbox()
+
+        addModCheckboxes()
 
         pack()
     }
@@ -128,7 +131,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleS
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
         val cityStatesArray = Array<Int>()
 
-        (0..ruleSet.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        (0..ruleset.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
         add(cityStatesSelectBox).pad(10f).row()
@@ -141,7 +144,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleS
 
     private fun addDifficultySelectBox() {
         add("{Difficulty}:".tr())
-        val difficultySelectBox = TranslatedSelectBox(ruleSet.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
+        val difficultySelectBox = TranslatedSelectBox(ruleset.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
         difficultySelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.difficulty = difficultySelectBox.selected.value
@@ -235,5 +238,47 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleS
         return worldSizeSelectBox
     }
 
+
+    fun addModCheckboxes(){
+
+        add("{Victory conditions}:".tr()).colspan(2).row()
+
+        // Create a checkbox for each VictoryType existing
+        var i = 0
+        val modCheckboxTable = Table().apply { defaults().pad(10f) }
+
+        val mods = Gdx.files.local("mods")
+
+        for(modFolder in mods.list()){
+                if(modFolder.list().any { it.name()=="jsons" }) {
+                    val ruleSet = Ruleset(false)
+
+                    try {
+                        val modRuleset = ruleSet.load(modFolder.path() + "/jsons")
+
+                    }catch (ex:Exception){}
+            }
+        }
+
+        for (victoryType in VictoryType.values()) {
+            if (victoryType == VictoryType.Neutral) continue
+            val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
+            victoryCheckbox.name = victoryType.name
+            victoryCheckbox.isChecked = newGameParameters.victoryTypes.contains(victoryType)
+            victoryCheckbox.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    // If the checkbox is checked, adds the victoryTypes else remove it
+                    if (victoryCheckbox.isChecked) {
+                        newGameParameters.victoryTypes.add(victoryType)
+                    } else {
+                        newGameParameters.victoryTypes.remove(victoryType)
+                    }
+                }
+            })
+            modCheckboxTable.add(victoryCheckbox)
+            if (++i % 2 == 0) modCheckboxTable.row()
+        }
+        add(modCheckboxTable).colspan(2).row()
+    }
 
 }

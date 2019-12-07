@@ -45,14 +45,14 @@ class Building : NamedStats(), IConstruction{
     var resourceBonusStats: Stats? = null
 
 
-    fun getShortDescription(ruleSet: RuleSet): String { // should fit in one line
+    fun getShortDescription(ruleset: Ruleset): String { // should fit in one line
         val infoList= mutableListOf<String>()
         val str = getStats(null).toString()
         if(str.isNotEmpty()) infoList += str
         for(stat in getStatPercentageBonuses(null).toHashMap())
             if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key.toString().tr()}"
 
-        val improvedResources = ruleSet.TileResources.values.filter { it.building==name }.map { it.name.tr() }
+        val improvedResources = ruleset.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
@@ -66,7 +66,7 @@ class Building : NamedStats(), IConstruction{
         return infoList.joinToString()
     }
 
-    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleSet: RuleSet): String {
+    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?, ruleset: Ruleset): String {
         val stats = getStats(civInfo)
         val stringBuilder = StringBuilder()
         if(uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
@@ -102,7 +102,7 @@ class Building : NamedStats(), IConstruction{
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
         if (resourceBonusStats != null) {
-            val resources = ruleSet.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
+            val resources = ruleset.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
         }
 
@@ -367,8 +367,8 @@ class Building : NamedStats(), IConstruction{
         return false
     }
 
-    fun getBaseBuilding(ruleSet: RuleSet): Building {
+    fun getBaseBuilding(ruleset: Ruleset): Building {
         if(replaces==null) return this
-        else return ruleSet.Buildings[replaces!!]!!
+        else return ruleset.Buildings[replaces!!]!!
     }
 }

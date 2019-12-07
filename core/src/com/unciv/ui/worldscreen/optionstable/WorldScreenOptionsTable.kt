@@ -8,18 +8,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
-class Language(val language:String, ruleSet: RuleSet){
+class Language(val language:String, ruleset: Ruleset){
     val percentComplete:Int
     init{
-        val availableTranslations = ruleSet.Translations.count { it.value.containsKey(language) }
+        val availableTranslations = ruleset.Translations.count { it.value.containsKey(language) }
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations*100 / ruleSet.Translations.size)
+        else percentComplete = (availableTranslations*100 / ruleset.Translations.size)
     }
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")

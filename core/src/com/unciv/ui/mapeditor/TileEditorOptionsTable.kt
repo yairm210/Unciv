@@ -157,7 +157,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 clearSelection()
                 selectedResource = resource
                 val tileInfo = TileInfo()
-                tileInfo.ruleSet = mapEditorScreen.ruleSet
+                tileInfo.ruleset = mapEditorScreen.ruleSet
 
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = ruleSet.Terrains[terrain]!!
@@ -181,7 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in ruleSet.Terrains.values) {
             val tileInfo = TileInfo()
-            tileInfo.ruleSet = mapEditorScreen.ruleSet
+            tileInfo.ruleset = mapEditorScreen.ruleSet
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn != null -> terrain.occursOn.first()
@@ -347,11 +347,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
             else {
                 val improvement = tileInfo.getTileImprovement()!!
+                if(tileInfo.getBaseTerrain().impassable) tileInfo.improvement=null
+                if(improvement.terrainsCanBeBuiltOn.isEmpty() && tileInfo.isWater)
+                    tileInfo.improvement=null
                 if (improvement.terrainsCanBeBuiltOn.isNotEmpty() // for "everywhere" improvements like city ruins, encampments, ancient ruins
                         && improvement.terrainsCanBeBuiltOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
                     tileInfo.improvement = null
             }
         }
+        if(tileInfo.getBaseTerrain().impassable || tileInfo.isWater)
+            tileInfo.roadStatus=RoadStatus.None
     }
 
 

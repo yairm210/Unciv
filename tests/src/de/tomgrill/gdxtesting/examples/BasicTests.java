@@ -3,7 +3,7 @@
 package de.tomgrill.gdxtesting.examples;
 
 import com.badlogic.gdx.Gdx;
-import com.unciv.models.gamebasics.RuleSet;
+import com.unciv.models.gamebasics.Ruleset;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ public class BasicTests {
 	@Test
 	public void gameBasicsLoad() {
 		assertTrue("This test will only pass when the jsons can be loaded",
-				new RuleSet().getBuildings().size() > 0);
+				new Ruleset(true).getBuildings().size() > 0);
 	}
 
 

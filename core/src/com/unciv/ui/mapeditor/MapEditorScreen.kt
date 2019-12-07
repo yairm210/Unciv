@@ -19,7 +19,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     var mapName = "My first map"
     lateinit var mapHolder: TileGroupMap<TileGroup>
     private val showHideEditorOptionsButton = TextButton(">",skin)
-    val ruleSet = UncivGame.Current.ruleSet
+    val ruleSet = UncivGame.Current.ruleset
     private val tileEditorOptions = TileEditorOptionsTable(this)
 
     constructor(mapNameToLoad:String?):this(){
@@ -65,9 +65,11 @@ class MapEditorScreen(): CameraStageBaseScreen(){
         stage.addActor(showHideEditorOptionsButton)
 
 
-        val optionsMenuButton = TextButton("Options".tr(), skin)
+        val optionsMenuButton = TextButton("Menu".tr(), skin)
         optionsMenuButton.onClick {
-            MapEditorOptionsTable(this)
+            if(stage.actors.any { it is MapEditorMenuPopup })
+                return@onClick // already open
+            MapEditorMenuPopup(this)
         }
         optionsMenuButton.label.setFontSize(24)
         optionsMenuButton.labelCell.pad(20f)

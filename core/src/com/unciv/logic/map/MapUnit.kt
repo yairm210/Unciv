@@ -8,7 +8,7 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.logic.map.action.StringAction
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
@@ -265,10 +265,10 @@ class MapUnit {
     //endregion
 
     //region state-changing functions
-    fun setTransients(ruleSet: RuleSet) {
+    fun setTransients(ruleset: Ruleset) {
         promotions.unit=this
         mapUnitAction?.unit = this
-        baseUnit=ruleSet.Units[name]!!
+        baseUnit=ruleset.Units[name]!!
         updateUniques()
     }
 

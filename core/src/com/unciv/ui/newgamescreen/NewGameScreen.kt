@@ -9,6 +9,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
@@ -23,7 +24,7 @@ import kotlin.concurrent.thread
 class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UncivGame.Current.gameInfo.gameParameters
-    val ruleSet = UncivGame.Current.ruleSet
+    val ruleSet = Ruleset(true)
 
     init {
         setDefaultCloseAction()

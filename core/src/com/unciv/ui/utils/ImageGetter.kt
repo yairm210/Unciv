@@ -35,7 +35,7 @@ object ImageGetter {
         setTextureRegionDrawables()
     }
 
-    fun getRuleSet() = UncivGame.Current.ruleSet
+    fun getRuleSet() = UncivGame.Current.ruleset
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()

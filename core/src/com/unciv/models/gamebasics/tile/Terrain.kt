@@ -1,19 +1,19 @@
 package com.unciv.models.gamebasics.tile
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.models.gamebasics.RuleSet
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.utils.colorFromRGB
 
 class Terrain : NamedStats() {
-    fun getDescription(ruleSet: RuleSet): String {
+    fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
         sb.appendln(this.clone().toString())
         if (occursOn != null) {
             sb.appendln("Occurs on [${occursOn.joinToString(", ")}]".tr())
         }
-        val resourcesFound = ruleSet.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
+        val resourcesFound = ruleset.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
         if (resourcesFound.isNotEmpty()) {
             sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
         }

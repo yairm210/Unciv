@@ -73,6 +73,7 @@
 	},
 	{
 		name:"Fishing Boats",
+		terrainsCanBeBuiltOn:["Coast"],
 		food:1,
 		techRequired:"Sailing",
 		improvingTech:"Compass",
