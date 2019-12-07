@@ -304,6 +304,11 @@ class Building : NamedStats(), IConstruction{
             if (!civInfo.containsBuildingUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
+
+        if(!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
+                && "Enables construction of Spaceship parts" in uniques)
+            return "Can't construct spaceship parts if scientific victory is not enabled!"
+        
         return ""
     }
 
