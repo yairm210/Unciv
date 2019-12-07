@@ -48,7 +48,7 @@ deploy:
     - deploy/Unciv-Windows32.zip
     - deploy/Unciv-Windows64.zip
     - deploy/linuxFilesForJar.zip
-    - android/build/outputs/apk/release/android-release-unsigned.apk
+    - android/build/outputs/apk/release/Unciv-release-unsigned.apk
   on:
     repo: yairm210/Unciv
     tags: true

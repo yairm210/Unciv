@@ -23,6 +23,8 @@ android {
         targetSdkVersion 29
         versionCode 337
         versionName "3.3.6"
+
+        archivesBaseName = "Unciv"
     }
 
     // Had to add this crap for Travis to build, it wanted to sign the app
