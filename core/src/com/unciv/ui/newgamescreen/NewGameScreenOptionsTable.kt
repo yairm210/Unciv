@@ -98,24 +98,31 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         val worldSizeSelectBox = getWorldSizeSelectBox()
         val worldSizeLabel = "{World size}:".toLabel()
 
+        fun updateOnMapTypeChange(){
+            newGameParameters.mapType = mapTypeSelectBox.selected.value
+            if (newGameParameters.mapType == MapType.file) {
+                worldSizeSelectBox.isVisible = false
+                worldSizeLabel.isVisible = false
+                mapFileSelectBox.isVisible = true
+                mapFileLabel.isVisible = true
+                newGameParameters.mapFileName = mapFileSelectBox.selected
+            } else {
+                worldSizeSelectBox.isVisible = true
+                worldSizeLabel.isVisible = true
+                mapFileSelectBox.isVisible = false
+                mapFileLabel.isVisible = false
+                newGameParameters.mapFileName = null
+            }
+        }
+
+        updateOnMapTypeChange() // activate once, so when we had a file map before we'll have the right things set for another one
+
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.mapType = mapTypeSelectBox.selected.value
-                if (newGameParameters.mapType == MapType.file) {
-                    worldSizeSelectBox.isVisible = false
-                    worldSizeLabel.isVisible = false
-                    mapFileSelectBox.isVisible = true
-                    mapFileLabel.isVisible = true
-                    newGameParameters.mapFileName = mapFileSelectBox.selected
-                } else {
-                    worldSizeSelectBox.isVisible = true
-                    worldSizeLabel.isVisible = true
-                    mapFileSelectBox.isVisible = false
-                    mapFileLabel.isVisible = false
-                    newGameParameters.mapFileName = null
-                }
+                updateOnMapTypeChange()
             }
         })
+
         add(mapTypeSelectBox).pad(10f).row()
 
 
