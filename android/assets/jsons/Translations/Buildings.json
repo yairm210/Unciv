@@ -30,7 +30,8 @@
 		Russian:"Показывает столицу"
 		Czech:"Označuje hlavní město"
 		Ukrainian:"Позначає столицю"
-		Korean:"수도를 나타내는 건물"
+		Korean:"수도를 나타내는 건물"          
+                Portuguese:"Indica a Capital!"
 }
 
 	"Monument":{
@@ -93,6 +94,7 @@
 		German:"Darf nicht auf dem Flachland sein."
 		Ukrainian:"Не може бути на рівнинах"
 		Korean:"평지에 건설 "
+                Portuguese:"Não deve estar em uma planície."
 }
 
 	"Stonehenge":{
@@ -122,6 +124,7 @@
 		Polish:"'Czas kruszy wszystko; wszystko się starzeje i zostaje zapomniane w obliczu potęgi czasu.' - Arystoteles"
 		Ukrainian:"'Час знищує речі; усе старіє і забувається під тиском часу' - Арістотель"
 		Korean:"'사물은 시간과 함께 스러진다. 시간의 힘 아래 만물이 늙어가고 잊혀진다.' - 아리스토텔레스" 
+                Portuguese:"'Coisas sucumbem ao tempo ; qualquer coisa cresce e envelhece e é  esquecido embaixo do poder do tempo.' - Aristóteles"
 }
 
 	/*
@@ -144,6 +147,7 @@
 		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
 		Ukrainian:"'Не тільки краса лісу зворушує людські серця, а щось невловиме, його повітря, енергія старих дерев, що так чудово змінює і відновлює стомлений дух' - Роберт Луїс Стівенсон"
 		Korean:"'인간이 숲을 동경하는 이유는 그저 숲이 아름다워서가 아니라 오래된 숲의 고목에서 뿜어져 나오는 공기에 존재하는 미묘한 무엇인가가 사람의 지친 영혼에 활기를 불어넣어 주고 회복시켜 주기 때문이다.'-로버트 루이스 스티븐슨"
+                Portuguese:"'Não é  muita coisa para a beleza que a floresta cria e conquista em cima do coração  dos homens, com isso qualquer coisa fica sutil, a qualidade do ar, essa emanação  das árvores velhas, essa maravilha muda e renova um espírito novo.' - Robert Louis Stevenson"
 	}
 
 	"+10% Growth in all Cities":{
@@ -155,6 +159,7 @@
 		Ukrainian:"Населення усіх міст +10%"
         Malay:"+10% pertumbuhan di semua bandar"
 		Korean:"모든 도시의 식량 생산량 +10%"
+                Portuguese:"+10% De crescimento em todas as cidades."
 
 	}
 
@@ -165,6 +170,7 @@
 		Ukrainian:"Виробництво для далекобійних підрозділів +15%"
 		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
 		French:"+15% de production pour les unités à distance"
+                Portuguese:"+15% De produção  para Unidades à  distância."
 	}
 
 	*/
@@ -218,6 +224,7 @@
 		Ukrainian:"Папірня"
                 Malay:"Pembuat kertas"
 				Korean:"종이 공방"
+                Portuguese:"Fabricador de papel"
 }
 
 	"The Great Library":{
@@ -248,6 +255,7 @@
 		Ukrainian:"Технологія безкоштово"
                 Malay:"Teknologi Percuma"
 				Korean:"기술 하나를 무료로 획득"
+                Portuguese:"Tecnologia gratuita"
 }
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
@@ -308,6 +316,7 @@
 		Ukrainian:"Мури Вавілону"
                 Malay:"Dinding Babylon"
 				Korean:"바빌론 성벽"
+                Portuguese:"Muralhas da Babilônia"
 }
 
 	"The Pyramids":{
@@ -431,6 +440,7 @@
 		German:"Koloss"
 		Ukrainian:"Колос Родоський"
 		Korean:"로도스의 거상"
+                Portuguese:"Colossos"
 }
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -455,6 +465,7 @@
 		German:"+1 für bewirtschaftete Wasserfelder der Stadt"
 		Ukrainian:"Одна робоча клітинка у цьому місті дає золота +1"
 		Korean:"물 타일에 시민을 배치했을 때 얻는 금 +1"
+                Portuguese:"+1 Ouro do trabalho da região  da água  na cidade"
 }
 
 	"Temple":{
@@ -572,6 +583,7 @@
 		Polish:"Projekt Manhattan"
                 Malay:"Projek Manhattan"
 				Korean:"맨해튼 프로젝트"
+                Portuguese:"Projeto Manhattan"
 				
 }
 
