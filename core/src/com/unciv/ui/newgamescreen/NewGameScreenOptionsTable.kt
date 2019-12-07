@@ -32,7 +32,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         addNoRuinsCheckbox()
         addIsOnlineMultiplayerCheckbox()
 
-        addModCheckboxes()
+        // addModCheckboxes()
 
         pack()
     }
@@ -98,24 +98,31 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         val worldSizeSelectBox = getWorldSizeSelectBox()
         val worldSizeLabel = "{World size}:".toLabel()
 
+        fun updateOnMapTypeChange(){
+            newGameParameters.mapType = mapTypeSelectBox.selected.value
+            if (newGameParameters.mapType == MapType.file) {
+                worldSizeSelectBox.isVisible = false
+                worldSizeLabel.isVisible = false
+                mapFileSelectBox.isVisible = true
+                mapFileLabel.isVisible = true
+                newGameParameters.mapFileName = mapFileSelectBox.selected
+            } else {
+                worldSizeSelectBox.isVisible = true
+                worldSizeLabel.isVisible = true
+                mapFileSelectBox.isVisible = false
+                mapFileLabel.isVisible = false
+                newGameParameters.mapFileName = null
+            }
+        }
+
+        updateOnMapTypeChange() // activate once, so when we had a file map before we'll have the right things set for another one
+
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.mapType = mapTypeSelectBox.selected.value
-                if (newGameParameters.mapType == MapType.file) {
-                    worldSizeSelectBox.isVisible = false
-                    worldSizeLabel.isVisible = false
-                    mapFileSelectBox.isVisible = true
-                    mapFileLabel.isVisible = true
-                    newGameParameters.mapFileName = mapFileSelectBox.selected
-                } else {
-                    worldSizeSelectBox.isVisible = true
-                    worldSizeLabel.isVisible = true
-                    mapFileSelectBox.isVisible = false
-                    mapFileLabel.isVisible = false
-                    newGameParameters.mapFileName = null
-                }
+                updateOnMapTypeChange()
             }
         })
+
         add(mapTypeSelectBox).pad(10f).row()
 
 
@@ -260,25 +267,19 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
             }
         }
 
-        for (victoryType in VictoryType.values()) {
-            if (victoryType == VictoryType.Neutral) continue
-            val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
-            victoryCheckbox.name = victoryType.name
-            victoryCheckbox.isChecked = newGameParameters.victoryTypes.contains(victoryType)
-            victoryCheckbox.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    // If the checkbox is checked, adds the victoryTypes else remove it
-                    if (victoryCheckbox.isChecked) {
-                        newGameParameters.victoryTypes.add(victoryType)
-                    } else {
-                        newGameParameters.victoryTypes.remove(victoryType)
-                    }
-                }
-            })
-            modCheckboxTable.add(victoryCheckbox)
-            if (++i % 2 == 0) modCheckboxTable.row()
-        }
         add(modCheckboxTable).colspan(2).row()
     }
 
 }
+
+//
+//class Mod(val name:String){
+//    val ruleSet=Ruleset(false)
+//
+//    fun tryLoadRuleset(){
+//        val folderPath="mods/$name"
+//        val jsonsFolderLocation = folderPath+"/jsons"
+//        if(Gdx.files.local(jsonsFolderLocation).exists())
+//
+//    }
+//}

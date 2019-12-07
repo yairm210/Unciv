@@ -237,7 +237,7 @@
     		Ukrainian:"Дальність"
 		German:"Reichweite"
 		French:"Portée"
-			Korean:"공격범위"
+			Korean:"공격 범위"
 }
 
 /////// Unit actions
@@ -564,7 +564,7 @@
 		Japanese:"あなたは本当にこのユニットを解散したいですか？"
 		Czech:"Opravdu chcete propustit tuto jednotku?"
 		Ukrainian:"Ви дійсно хочете розформувати цей підрозділ?"
-		Korean:"이 유닛을 정말 제거하겠습니까?"
+		Korean:"이 유닛을 정말 삭제하겠습니까?"
 }
 	"Disband this unit for [goldAmount] gold?":{
 		Italian:"Vuoi sciogliere questa unità per [goldAmount] Oro?"
@@ -580,7 +580,7 @@
 		Russian:"Распустить юнит за [goldAmount] золота?",
 		Czech:"Propustit tuto jednotku - dostaneme [goldAmount] zlata?"
 		Ukrainian:"Розформувати цей підрозділ за [goldAmount] золота?"
-		Korean:"이 유닛을 제거하면 금 [goldAmount]을 얻습니다. 제거하겠습니까?"
+		Korean:"이 유닛을 삭제하면 금 [goldAmount]을 얻습니다. 삭제하겠습니까?"
 }
 
 	"Create [improvement]":{ // for great units, fishing boats, etc.
@@ -702,7 +702,7 @@
 		Japanese:"幸福"
 		Czech:"Spokojenost"
 		Ukrainian:"Щастя"
-		Korean:"행복"
+		Korean:"행복도"
 }
 
 	"Production":{
@@ -795,7 +795,7 @@
 		Ukrainian:"до н.е."
 		German:"[year] v. Chr."
 		French:"[year] avant J.C."
-		Korean:"기원전 [year]년 BC"
+		Korean:"기원전 [year]년"
 }
 
 	"[year] AD":{ // Anno Domini
@@ -1104,7 +1104,7 @@
 		Ukrainian:"Забезпечити [resource]"
 		German:"Stellt [resource] zur Verfügung"
 		French:"Fournit [resource]"
-			Korean:"[resource]을(를) 제공합니다"
+		Korean:"[resource]을(를) 제공합니다"
 }
 
 	"Replaces [improvement]":{
@@ -1361,7 +1361,7 @@
 		Russian:"Обмен еды на производство"
 		German:"Nahrung in Produktion verwandeln"
 		French:"Nourriture convertie en production"
-		Korean:"식량이 생산량으로 전환됨"
+		Korean:"식량이 생산력으로 전환됨"
 }
 
 	"[turnsToStarvation] turns to lose population":{
@@ -1378,7 +1378,7 @@
 		Japanese:"[turnsToStarvation]人口を減らす",
 		Czech:"[turnsToStarvation] tah(y/ů) do ztráty populace"
 		Ukrainian:"[turnsToStarvation] ходів до зменшення населення"
-		Korean:"인구 수가 줄기까지 [turnsToStarvation]턴"
+		Korean:"인구 감소까지 [turnsToStarvation]턴"
 }
 
 	"Stopped population growth":{
@@ -2157,7 +2157,7 @@
 		Russian:"Базовое счастье"
 		German:"Besetzte Städte"
 		French:"Cité Occupée"
-			Korean:"점령한 도시"
+		Korean:"점령한 도시"
 }
 
 	"Buildings":{
@@ -2647,7 +2647,7 @@
 		Portuguese:"Um turno mais...!"
 		Czech:"Ještě jedno kolo..."
 		Ukrainian:"Ще один хід..."
-		Korean:"하,한 턴만 더..."
+		Korean:"한 턴만 더...!"
 }
 
 	"Built Apollo Program":{ // Menu -> Victory status -> Science victory -> Built Apollo Program (header)
@@ -2673,7 +2673,7 @@
 		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
 		Czech:"Zničit [civName]"
 		Ukrainian:"Знищити [civName]"
-		Korean:"[civName] 점령"
+		Korean:"[civName] 정복"
 }
 
 	"Our status":{

@@ -68,6 +68,16 @@ Note that Right-to-Left languages such as Arabic and Hebrew are not supported by
 - Fork the repo, and clone your fork
 - Configure an Application run configuration with DesktopLauncher as the Main Class and \<repo_folder\>\android\assets\ as the Working directory
 
+To help you get started, the main classes are (in tree form, so you can see how the game itself saves them):
+
+- GameInfo
+   - TileMap
+        - TileInfo
+            - MapUnit
+   - CivilizationInfo
+        - CityInfo
+        
+
 ## [Adding a new Civ](docs/NewCivs.md)
 
 # FAQ

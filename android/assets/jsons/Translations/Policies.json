@@ -258,7 +258,7 @@
 		German:"+15% Wachstum und +2 Nahrung in allen Städten"
 		French:"+15% de croissance et +2 nourriture dans toutes les villes"
 		Czech:"+15% růst a +2 jídla ve všech městech"
-		Korean:"모든 도시에 성장률 +15%, 식량 +2"
+		Korean:"모든 도시에서 성장률 +15%, 식량 +2"
 }
 
 ////// Liberty branch
@@ -316,7 +316,7 @@
 		German:"Ausbildung von SiedlerInnen in der Hauptstadt ist um 50% erhöht; ein(e) kostenlose(r) Siedler(in) erscheint in der Hauptstadt."
 		French:"La vitesse de formation des colons augmente de 50% dans la capital capitale et un colon gratuit apparaît à proximité"
 		Czech:"Vycvičení osadníka zrychleno o 50% v hlavním městě, zdarma obdržíte osadníka v blízkosti hlavního města"
-		Korean:"수도의 개척자 생산 속도 +50%, 수도 근처에 무료 개척자 출현"
+		Korean:"수도에서 개척자 생산 속도 +50%, 수도 근처에서 무료 개척자 출현"
 }
 
 	"Citizenship":{
@@ -344,7 +344,7 @@
 		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei ArbeiterInnenn; ein(e) kostenlose(r) Arbeiter(in) erscheint in der Hauptstadt"
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
 		Czech:"Rychlost vylepšení na políčkách vzroste o 25%, zdarma obdržíte dělníka v blízkosti hlavního města"
-		Korean:"타일 시설 건설 속도 +25%, 수도 근처에 무료 노동자 출현"
+		Korean:"타일 시설 건설 속도 +25%, 수도 근처에서 무료 노동자 출현"
 }
 
 	"Republic":{
@@ -698,7 +698,7 @@
 		German:"+1 Zufriedenheit für jedes Monument, Kloster und Tempel"
 		French:"+1 bonheur pour chaque monument, temple et monastère"
 		Czech:"+1 spokojenost za každý pomník, chrám a klášter"
-		Korean:"기념비, 사원, 수도원 하나마다 행복 +1"
+		Korean:"기념비, 사원, 수도원 하나당 행복 +1"
 }
 
 	"Mandate Of Heaven":{
@@ -824,7 +824,7 @@
 		German:"Frömmigkeit vollständig"
 		French:"Piété complète"
 		Czech:"Kompletní Zbožnost"
-		Korean:"후원 정책 완성"
+		Korean:"신앙 정책 완성"
 }
 
 	"Reduce culture cost of future policies by 10%":{
@@ -898,7 +898,7 @@
 		Italian:"Le Città-Stato tue alleate ti donano un bonus scientifico del 25% rispetto a quello che producono da sole."
 		Czech:"Všechny městské státy, se kterými máme alianci, poskytují Výzkumný bonus ve výši 25% z jejich celkového výzkumu."
 		German:"Alle verbündeten Stadtstaaten geben einen Wissenschaftsbonus von 25% ihrer eigenen Produktion."
-		Korean:"동맹 상태인 모든 도시국가가 생산하는 과학력의 25%를 제공받음"
+		Korean:"동맹 상태인 모든 도시 국가가 생산하는 과학력의 25%를 제공받음"
 }
 
 	"Cultural Diplomacy":{ //Needs Scholasticism
@@ -1164,7 +1164,7 @@
 		German:"Umwandlung von Produktion in Wissenschaft in Städten ist um 33% erhöht."
 		French:"+33% de production lors de conversion de la production en science"
 		Czech:"Konverze produkce na výzkum ve městech se zvyšuje o 33%"
-		Korean:"도시에서 과학력을 생산 시 변환량 +33%"
+		Korean:"도시에서 생산력을 과학력으로 변환 시 변환량 +33%"
 }
 
 	"Secularism":{
@@ -1192,7 +1192,7 @@
 		German:"+2 Wissenschaft durch jede(n) Spezialistin"
 		French:"Spécialiste : science +2."
 		Czech:"+2 výzkum za každého specialistu"
-		Korean:"전문가 하나 당 과학 +2"
+		Korean:"전문가 하나당 과학 +2"
 }
 
 	"Humanism":{
@@ -1220,7 +1220,7 @@
 		German:"+1 Zufriedenheit durch jede Universität, öffentliche Schule oder Observatorium."
 		French:"+1 bonheur pour chaque université, observatoire et école publique"
 		Czech:"+1 spokojenost za každou univerzitu, observatoř a veřejnou školu"
-		Korean:"대학, 천문대, 공립학교 하나마다 행복 +1"
+		Korean:"대학, 천문대, 공립학교 하나당 행복 +1"
 }
 
 	"Free Thought":{
@@ -1372,7 +1372,7 @@
 	"Militaristic City-States grant units twice as often when you are at war with a common foe":{
 		Italian:"Le Città Stato militaristiche ti danno unità a doppia velocità quando siete in guerra con un nemico in comune"
 		German:"Militärische Stadtstaaten gewähren Einheiten doppelt so oft, wenn man mit einem gemeinsamen Gegner im Krieg ist."
-		Korean:"군사적 도시국가와 같은 적을 두고 싸울 시 그 도시 국가에서 유닛을 두 배로 자주 제공함"
+		Korean:"군사적 도시 국가와 같은 적을 두고 싸울 시 그 도시 국가에서 유닛을 두 배로 자주 제공함"
 	}
 
 	"Planned economy":{
@@ -1812,7 +1812,7 @@
         Traditional_Chinese:"每座城牆、城堡和兵工廠+1快樂"
 		Czech:"+1 spokojenost za každou Hradbu, Hrad a Zbrojnici"
 		German:"+1 Zufriedenheit für jede Mauer, jedes Schloss und jedes Arsenal"
-		Korean:"성벽, 성, 무기고 하나마다 행복 +1"
+		Korean:"성벽, 성, 무기고 하나당 행복 +1"
 }
 
 }

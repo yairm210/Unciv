@@ -2100,6 +2100,7 @@
 	"Songhai":{
 		Italian:"Songhai"
 		French:"Songhaï"
+		Traditional_Chinese:"桑海帝國"
 		Portuguese:"Songhai" //not sure but will do
 		Czech:"Songhajská říše"
 		// same in German
@@ -2110,6 +2111,7 @@
 }
 
 	"Askia":{
+		Traditional_Chinese:"阿斯基亞"
 		Italian:"Askia"
 		Simplified_Chinese:"阿斯基亚"
 		Traditional_Chinese:"阿斯基亞"
@@ -2118,6 +2120,7 @@
 }
 
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
+		Traditional_Chinese:"能從蠻族營地與掠奪城市中獲得三倍金錢。單位船運時有自衛能力。"
 		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
 		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
 		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
