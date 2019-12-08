@@ -22,8 +22,7 @@ open class CameraStageBaseScreen : Screen {
     var hasPopupOpen = false
 
     init {
-        val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-        stage = Stage(ExtendViewport(resolutions[0], resolutions[1]), batch)// FitViewport(1000,600)
+        stage = Stage(ExtendViewport(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat()), batch)// FitViewport(1000,600)
     }
 
 
