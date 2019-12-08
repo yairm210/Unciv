@@ -22,7 +22,26 @@ open class CameraStageBaseScreen : Screen {
     var hasPopupOpen = false
 
     init {
-        stage = Stage(ExtendViewport(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat()), batch)// FitViewport(1000,600)
+        val width:Float
+        val height:Float
+        if(game.settings.resolution=="Auto"){
+            // lower than 750x500 just doesn't manage to fit all the components into the screen
+            if(Gdx.graphics.width >= 750 && Gdx.graphics.height.toFloat() >= 500){
+                width=Gdx.graphics.width.toFloat()
+                height=Gdx.graphics.height.toFloat()
+            }
+            else{
+                width=750f
+                height=500f
+            }
+        }
+        else {
+            val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
+            width = resolutions[0]
+            height = resolutions[1]
+        }
+        stage = Stage(ExtendViewport(width, height), batch)
+
     }
 
 

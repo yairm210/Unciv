@@ -8,6 +8,7 @@ class GameSettings {
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
     var language: String = "English"
+    var resolution: String = "Auto"
     var tutorialsShown = ArrayList<String>()
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f

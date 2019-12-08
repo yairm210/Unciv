@@ -122,6 +122,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         addLanguageSelectBox(innerTable)
 
+        addResolutionSelectBox(innerTable)
+
         addAutosaveTurnsSelectBox(innerTable)
 
         addTileSetSelectBox(innerTable)
@@ -204,6 +206,26 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         }
     }
 
+    private fun addResolutionSelectBox(innerTable: PopupTable) {
+        innerTable.add("Resolution".toLabel())
+
+        val resolutionSelectBox = SelectBox<String>(skin)
+        val resolutionArray = Array<String>()
+        resolutionArray.addAll("Auto","750x500","900x600", "1050x700", "1200x800", "1500x1000")
+        resolutionSelectBox.items = resolutionArray
+        resolutionSelectBox.selected = UncivGame.Current.settings.resolution
+        innerTable.add(resolutionSelectBox).pad(10f).row()
+
+        resolutionSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UncivGame.Current.settings.resolution = resolutionSelectBox.selected
+                UncivGame.Current.settings.save()
+                UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
+                UncivGame.Current.setWorldScreen()
+                WorldScreenOptionsTable(UncivGame.Current.worldScreen)
+            }
+        })
+    }
 
     private fun addTileSetSelectBox(innerTable: PopupTable) {
         innerTable.add("Tileset".toLabel())
