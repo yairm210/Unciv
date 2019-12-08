@@ -325,7 +325,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [War](https://thenounproject.com/term/war/1643541/) By Abdul Karim for Total War
 * [Military Grade](https://thenounproject.com/term/military-grade/578687/) By Ben Davis for Militarism
-* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere for Facism
+* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere for Fascism
 * [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
 * [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
