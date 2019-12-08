@@ -29,19 +29,14 @@ class NativeFont @JvmOverloads constructor(paint: NativeFontPaint = NativeFontPa
 
     private fun createListener() {
         var className = "core.java.nativefont.NativeFont"
-        when (Gdx.app.type) {
-            Application.ApplicationType.Desktop -> {
-                className += "Desktop"
-            }
-            Application.ApplicationType.Android -> {
-                className += "Android"
-            }
-            Application.ApplicationType.iOS -> {
-                className += if (robovm) "IOS" else "IOSMoe"
-            }
-            Application.ApplicationType.WebGL -> {
-                className += "Html"
-            }
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            className += "Desktop"
+        } else if (Gdx.app.type == Application.ApplicationType.Android) {
+            className += "Android"
+        } else if (Gdx.app.type == Application.ApplicationType.iOS) {
+            className += if (robovm) "IOS" else "IOSMoe"
+        } else if (Gdx.app.type == Application.ApplicationType.WebGL) {
+            className += "Html"
         }
         listener = try {
             val claz = Gdx.app.javaClass.classLoader.loadClass(className) as Class<out NativeFontListener>
