@@ -21,7 +21,7 @@ internal object DesktopLauncher {
             packImages()
 
         val config = LwjglApplicationConfiguration()
-        // Don't activate GL 3.0 because it causes problems for MacOS computers
+        config.useGL30 = true
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
         config.useHDPI = true
