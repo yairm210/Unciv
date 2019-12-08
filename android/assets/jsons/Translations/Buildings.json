@@ -139,6 +139,7 @@
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
 		French:"'Ce n'est pas tant pour sa beauté que la forêt s'impose dans le cœur des hommes, mais pour ce quelque chose de subtil, cette qualité de l'air, cette émanation des vieux arbres, qui change et renouvelle à merveille un esprit las.' - Robert Louis Stevenson"
+		German:"Es ist nicht so sehr wegen seiner Schönheit, dass der Wald die Herzen der Menschen in Anspruch nimmt, sondern vielmehr wegen diesen subtilen Etwas, dieser Luftqualität, der Ausstrahlung von alten Bäumen, die einen müden Geist so wunderbar verändert und erneuert.' - Robert Louis Stevenson"
 		Italian:"'Non è tanto con la sua bellezza che la foresta tocca il cuore degli uomini, ma con un'indefinibile sottigliezza, una certa qualità dell'aria, con l'emanazione degli antichi alberi, che così meravigliosamente muta e rinnova uno spirito fiaccato.' - Robert Louis Stevenson"
 		Czech:"'Není to ani tak pro svou krásu, že les působí na lidská srdce, jako na to jemné cosi, ta kvalitu vzduchu, energie vyzařující ze starých stromů, které tak úžasně mění a osvěžuje unaveného ducha.' - Robert Louis Stevenson"
 		Polish:"'Nie tylko chodzi o piękno, gdy las obejmuje we władanie ludzkie serca, lecz także o to nieuchwytne coś, specyficzne powietrze i emanację pradawnych drzew, które tak wspaniale zmieniają i wzmacniają zmęczonego ducha.' - Robert Louis Stevenson"
@@ -149,7 +150,7 @@
 	"+10% Growth in all Cities":{
 		Italian:"+10% Crescita in tutte le Città"
 		French:"+10% de croissance dans toutes les villes"
-		German:"+10% Wachtum in allen Städten"
+		German:"+10% Wachstum in allen Städten"
 		Czech:"10% Růst populace ve všech městech"
 		Polish:"10% Wzrostu populacji we wszystkich miastach"
 		Ukrainian:"Населення усіх міст +10%"
@@ -161,6 +162,7 @@
 	"+15% Production towards Ranged Units":{
 		Italian:"+15% Produzione per le unità a distanza"
 		Czech:"15% Produkce jednotek pro boj na dálku"
+		German:"+15% Produktion für Fernkampfeinheiten"
 		Polish:+15% Wzrostu produkcji jednostek walczących w dystansie"
 		Ukrainian:"Виробництво для далекобійних підрозділів +15%"
 		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
