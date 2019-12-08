@@ -579,7 +579,7 @@
 		Russian:"Наши совместные боевые действия сблизили нас"
 		Czech:"Naše společné vélečné tažení nás sblížíli"
 		German:"Unser gemeinsamer militärischer Kampf bringt uns näher zusammen."
-		Korean:"공동의 적에 맞선다는 사실이 우리의 관계를 더 강하게 하고 있습니다."
+		Korean:"공동의 적에 맞선다는 사실이 우리의 관계를 더 강하게 하는군요."
 }
 
 	"We have signed a public declaration of friendship":{
@@ -605,7 +605,7 @@
 		Russian:"Вы дружите с нашими врагами!"
 		Czech:"Deklarovali jste přátelství s našimi nepřáteli!"
 		German:"Du hast Freundschaft mit unseren Feinden erklärt!"
-		Korean:"우리의 적과 우호 관계를 선언하지 않았소!"
+		Korean:"당신은 우리의 적과 우호 관계를 선언하지 않았소!"
 }
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
@@ -886,7 +886,7 @@
 		Czech:"Získejte vliv 60 a více pro dosažení aliance."
 		German:"Erreiche den höchsten Einfluss über 60 für Allianzen"
 		Polish:"Osiągnij wpływ powyżej 60 dla sojuszu." //checking context ingame - will delete after confirming
-		Korean:"동맹 상태가 되려면 60 이상이면서 가장 높은 영향력을 보유하십시오."
+		Korean:"동맹 상태가 되려면 60 이상이면서 문명들 중 가장 높은 영향력을 보유하십시오."
 }
 
 	"Ally: ":{
@@ -1034,7 +1034,7 @@
 		German:"Angenehm, mit Ihnen Geschäfte zu machen!"
 		Czech:"Bylo nám potěšení s vámi obchodovat!"
 		Polish:"Miło jest robić z tobą interesy!"
-		Korean:"당신과의 거래는 언제나 환영입니다."
+		Korean:"당신과의 거래는 언제나 환영입니다!"
 }
 
 	"I think not.":{
@@ -1294,7 +1294,7 @@
 		Czech:"[resourceName] není potřeba"
 		German:"[resourceName] wird nicht benötigt"
 		Polish:"[resourceName] nie jest wymagane/ny" //checking context ingame - will delete after confirming
-		Korean:"[resourceName] 자원이 필요 없음"
+		Korean:"[resourceName] 자원이 불필요함"
 }
 
 	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
@@ -1352,7 +1352,7 @@
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 		Czech:"Obdržíte Velkého Vědce při objevení technologie 'Písemnictví', získejte Velkého Vědce o 50% rychleji"
 		Polish:"Otrzymaj Wielkiego Naukowca po odkryciu Pisma, Zdobądź Wielkiego Naukowca 50% szybciej"
-		Korean:"문자를 연구한 후 위대한 과학자 하나를 무료로 얻습니다. 위대한 과학자의 출현 속도 + 50%"
+		Korean:"문자를 연구한 후 위대한 과학자 하나를 무료로 얻습니다. 위대한 과학자의 출현 속도 +50%"
 }
 
 	"Nebuchadnezzar II":{//Babylonian Leader
@@ -1449,7 +1449,7 @@
 		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее" // Russian x2. As it should be?
 		Czech:"Velký Generál poskytne dvojnásobný bojový bonus a rodí se o 50% rychleji"
 		Polish:"Wielki generał zapewnia podwójną premię do walki i tworzy się 50% szybciej"
-		Korean:"위대한 장군으로 인한 전투력 보너스가 두 배가 됩니다. 위대한 장군 출현율 +50%"
+		Korean:"위대한 장군으로 인한 전투력 보너스가 두 배가 됩니다. 위대한 장군 출현 속도 +50%"
 }
 
 	"Egypt":{
@@ -2094,7 +2094,7 @@
 		Traditional_Chinese:"友好城邦提供的食物和文化增加50%"
 		German:"Nahrung und Kultur aus freundlichen Stadtstaaten werden um 50% erhöht."
 		Polish:"Zasoby Pożywienia i Kultura od Przyjaznych Miast-Państw są ziwiększone o 50%"
-		Korean:"우호적인 도시 국가에게서 제공받는 음식과 문화 +50%"
+		Korean:"우호적인 도시 국가에게서 제공받는 식량과 문화 +50%"
 }
 
 	"Songhai":{
@@ -2144,7 +2144,7 @@
 		Czech:"Získají kulturní bod pro říši za každou zabitou nepřátelskou jednotku."
 		German:"Erhalte Kultur für das Reich für jeden besiegten Feind"
 		Polish:"Zdobądź punkty Kultury za każdą pokonaną jednostkę przeciwnika"
-		Korean:"적 유닛ㅇ르 죽일 때마다 문화를 얻습니다."
+		Korean:"적 유닛을 처치할 때마다 문화를 얻습니다."
 }
 
 	"Denmark":{
@@ -2222,7 +2222,7 @@
 		Czech:"Bonus Zlata za objevení přírodních divů (pokud jste první), Kulturní body, Spokojenost a výnosy z polí s přírodními divy jsou zdvojnásobené."
 		German:"Gold Bonus für die Entdeckung von natürlichen Wundern (Bonus erhöht, falls erster Entdecker). Kultur, Zufriedenheit und Felderträge von natürlichen Wundern werden verdoppelt."
 		Polish:"Bonus w Złocie za odkrycie Cudu Natury (bonus zwiększa się jeżeli odkryłeś go pierwszy). Kultura, Zadowolenie i wydajność pól z Cudu Natury są podwojone"
-		Korean:"자연 경관을 발견했을 때 더 많은 금을 받습니다.(최초로 발견할 경우에는 추가 금을 더 받습니다.) 자연경관에서의 타일 생산량이 두 배가 됩니다."
+		Korean:"자연 경관을 발견했을 때 더 많은 금을 받습니다.(최초로 발견한 문명일 경우 더 많은 금 획득) 자연경관에서의 타일 생산량이 두 배가 됩니다."
 		French:"Bonus en Or pour la découverte de merveilles naturelles (bonus supplémentaire si est le premier à la découvrir). La Culture, le Bonheur et les productions provenant de merveilles naturelles sont doublés"
 }
 
