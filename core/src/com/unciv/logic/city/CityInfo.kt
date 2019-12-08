@@ -171,7 +171,7 @@ class CityInfo {
             var amountToAdd = 1
             if(resource.resourceType == ResourceType.Strategic){
                 amountToAdd = 2
-                if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
+                if(civInfo.policies.isAdopted("Fascism")) amountToAdd*=2
                 if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
                         && resource.name in listOf("Horses","Iron","Uranium"))
                     amountToAdd *= 2
