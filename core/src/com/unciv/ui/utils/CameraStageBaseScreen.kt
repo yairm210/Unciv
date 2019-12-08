@@ -131,7 +131,6 @@ open class CameraStageBaseScreen : Screen {
 }
 
 
-
 fun Button.disable(){
     touchable= Touchable.disabled
     color= Color.GRAY
