@@ -76,6 +76,44 @@ open class CameraStageBaseScreen : Screen {
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
         internal var batch: Batch = if(Gdx.app.type == Application.ApplicationType.Android) SpriteBatch() else SpriteBatch(1000, createDefaultShader())
+
+        // This is so the MacOS works with GL 3.0, see https://github.com/yairm210/Unciv/issues/1428
+        fun createDefaultShader(): ShaderProgram? {
+            val vertexShader = ("#version 330 core\n"
+                    + "in vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+                    + "in vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+                    + "in vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+                    + "uniform mat4 u_projTrans;\n" //
+                    + "out vec4 v_color;\n" //
+                    + "out vec2 v_texCoords;\n" //
+                    + "\n" //
+                    + "void main()\n" //
+                    + "{\n" //
+                    + "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
+                    + "   v_color.a = v_color.a * (255.0/254.0);\n" //
+                    + "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
+                    + "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+                    + "}\n")
+            val fragmentShader = ("#version 330 core\n"
+                    + "#ifdef GL_ES\n" //
+                    + "#define LOWP lowp\n" //
+                    + "precision mediump float;\n" //
+                    + "#else\n" //
+                    + "#define LOWP \n" //
+                    + "#endif\n" //
+                    + "in LOWP vec4 v_color;\n" //
+                    + "in vec2 v_texCoords;\n" //
+                    + "out vec4 fragColor;\n" //
+                    + "uniform sampler2D u_texture;\n" //
+                    + "void main()\n" //
+                    + "{\n" //
+                    + "  fragColor = v_color * texture(u_texture, v_texCoords);\n" //
+                    + "}")
+            val shader = ShaderProgram(vertexShader, fragmentShader)
+            require(shader.isCompiled) { "Error compiling shader: " + shader.log }
+            return shader
+        }
+
     }
 
     fun onBackButtonClicked(action:()->Unit){

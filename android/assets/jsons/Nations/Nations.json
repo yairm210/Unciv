@@ -517,8 +517,8 @@
 		
 		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
 		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
-		defeated:"Now the question is who will protect my people. A dark age has come."
-		introduction:"Welcome to the palace of Choson, stanger. I am the learned King Sejong, who looks after his great people."
+		defeated:"Now the question is who will protect my people. A dark age has come.",
+		introduction:"Welcome to the palace of Choson, stranger. I am the learned King Sejong, who looks after his great people.",
 		
 		neutralHello:"Hello."
 		neutralLetsHearIt:["I will hear it.","Go on","Continue."]

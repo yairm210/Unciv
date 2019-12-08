@@ -139,3 +139,4 @@ tests/build/
 desktop/packr/
 desktop/packrCache/
 deploy/
+android/release/
