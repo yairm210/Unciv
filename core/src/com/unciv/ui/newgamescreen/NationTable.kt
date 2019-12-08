@@ -24,7 +24,7 @@ class NationTable(val nation: Nation, width:Float, ruleset: Ruleset)
         titleTable.add(ImageGetter.getNationIndicator(nation, 50f)).pad(10f)
         val leaderDisplayLabel = nation.getLeaderDisplayName().toLabel(nation.getInnerColor(),24)
         val leaderDisplayNameMaxWidth = width - 70 // for the nation indicator
-        if(leaderDisplayLabel.width > leaderDisplayNameMaxWidth){
+        if(leaderDisplayLabel.width > leaderDisplayNameMaxWidth){ // for instance Polish has really long [x] of [y] translations
             leaderDisplayLabel.setWrap(true)
             titleTable.add(leaderDisplayLabel).width(leaderDisplayNameMaxWidth)
         }
