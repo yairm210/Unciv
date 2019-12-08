@@ -157,10 +157,10 @@
 
 	World_Map: [
 		[
-			"The world map is made up of multiple tiles.",
-			"Each tile can contain units, resources and improvements, which we'll get to later.",
-			"The position of the icon tells you what it signifies.",
-			"For more details, you can click on the tile and see the tile information."
+			"Карта світу складається з багатьох плиток.",
+			"Кожна плитка може містити одиниці, ресурси та вдосконалення, про які ми буде написано згодом.",
+			"Положення іконки говорить про те, що вона означає.",
+			"Щоб отримати детальнішу інформацію, ви можете натиснути на плитку та переглянути її інформацію."
 		]
 	],
 
@@ -201,7 +201,7 @@
 
 	Golden_Age:  [
 		[
-			"You have entered a golden age!",
+			"Ви вступили в золотий вік!",
 			"Golden age points are accumulated each turn by the total happiness ",
 			"  of your civilization",
 			"When in a golden age, culture and production generation increases +20%,",
@@ -289,17 +289,17 @@
 
 	_BarbarianEncountered:  [
 		[
-			"You have encountered a barbarian unit!",
-			"Barbarians attack everyone indiscriminately, so don't let your ",
-			"  civilian units go near them, and be careful of your scout!"
+			"Ви зіткнулися з підрозділом варварів!",
+			"Варвари нападають на всіх без розбору, тому не дозволяйте ",
+			"  цивільним підрозділам підходити до них і стежте уважно за своїм розвідником!"
 		]
 	]
 
 	_OtherCivEncountered:  [
 		[
-			"You have encountered another civilization!",
-			"Other civilizations start out peaceful, and you can trade with them,",
-			"  but they may choose to declare war on you later on"
+			"Ви зіткнулися з іншою цивілізацією!",
+			"Інші цивілізації починають мирно, і ви можете торгувати з ними,",
+			"  але вони можуть згодом оголосити вам війну"
 		]
 	]
 
@@ -363,9 +363,9 @@
 
 	Idle_Units:[
 		[
-			"If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.",
-			"If you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - ",
-			"  units in Fortify or Sleep are not considered idle units.",
+			"Якщо ви не хочете, щоб підрозділ рухався на цьому ході, то ви можете пропустити хід натиснувши на «Наступний підрозділ» знову",
+			"Якщо ви деякий час не будете переміщувати його, ви можете ввімкнути режим «Укріпити» або «Спати». ",
+			"Підрозділи у цих режимах не вважаються не активними",
 			"If you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units",
 		]
 	]
@@ -384,17 +384,17 @@
 			"  is the support from the players - you guys are the best!"
 		],
 		[
-			"Every rating and review that I get puts a smile on my face =)",
-			"  So contact me! Send me an email, review, Github issue"
-			"  or mail pigeon, and let's figure out how to make the game ",
-			"  even more awesome!"
-			"(Contact info is in the Play Store)"
+			"Кожна оцінка та відгуки, які я отримую, викликають посмішку на моєму обличчі =).",
+			"  Тож зв’яжіться зі мною! Надішліть мені електронний лист, огляд, issue на Github"
+			"  або поштового голуба для того, щоб розібратися, як зробити гру ",
+			"  ще більш чудовою!"
+			"(Контактна інформація знаходиться в Google Play)"
 		]
 	],
 
 	_Pillaging:[
 		[
-			"Military units can pillage improvements, which heals them 25 health and ruins the improvement.",
+			"Військові підрозділи можуть розкрадати поліпшення, що оздоровляє їх 25 здоров'я і руйнує поліпшення.",
 			"The tile can still be worked, but advantages from the improvement - stat bonuses and resources - will be lost.",
 			"Workers can repair these improvements, which takes less time than building the improvement from scratch.",
 		]
