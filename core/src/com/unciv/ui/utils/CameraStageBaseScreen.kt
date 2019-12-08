@@ -24,15 +24,14 @@ open class CameraStageBaseScreen : Screen {
     init {
         val width:Float
         val height:Float
-        if(game.settings.resolution=="Auto"){
+        if(game.settings.resolution=="Auto") {
             // lower than 750x500 just doesn't manage to fit all the components into the screen
-            if(Gdx.graphics.width >= 750 && Gdx.graphics.height.toFloat() >= 500){
-                width=Gdx.graphics.width.toFloat()
-                height=Gdx.graphics.height.toFloat()
-            }
-            else{
-                width=750f
-                height=500f
+            if (Gdx.graphics.width >= 750 && Gdx.graphics.height.toFloat() >= 500) {
+                width = Gdx.graphics.width.toFloat()
+                height = Gdx.graphics.height.toFloat()
+            } else {
+                width = 750f
+                height = 500f
             }
         }
         else {
