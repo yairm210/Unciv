@@ -7,6 +7,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
@@ -316,6 +317,11 @@ class Battle(val gameInfo:GameInfo) {
             tile.turnsToImprovement = 0
             tile.roadStatus = RoadStatus.None
             if (tile.isLand) tile.terrainFeature = "Fallout"
+        }
+
+        for(civ in attacker.getCivInfo().getKnownCivs()){
+            civ.getDiplomacyManager(attacker.getCivInfo())
+                    .setModifier(DiplomaticModifiers.UsedNuclearWeapons,-50f)
         }
     }
 

@@ -276,6 +276,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 RefusedToNotSettleCitiesNearUs -> "You refused to stop settling cities near us"
                 FulfilledPromiseToNotSettleCitiesNearUs -> "You fulfilled your promise to stop settling cities near us!"
                 UnacceptableDemands -> "Your arrogant demands are in bad taste"
+                UsedNuclearWeapons -> "Your use of nuclear weapons is disgusting!"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
