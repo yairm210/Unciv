@@ -44,6 +44,7 @@ enum class DiplomaticModifiers{
     RefusedToNotSettleCitiesNearUs,
     BetrayedPromiseToNotSettleCitiesNearUs,
     UnacceptableDemands,
+    UsedNuclearWeapons,
 
     YearsOfPeace,
     SharedEnemy,
