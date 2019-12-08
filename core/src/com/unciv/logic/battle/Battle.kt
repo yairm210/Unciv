@@ -297,6 +297,7 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun nuclearBlast(attacker: ICombatant, defender: ICombatant) {
+        val attackingCiv = attacker.getCivInfo()
         for (tile in defender.getTile().getTilesInDistance(2)) {
             if (tile.isCityCenter()) { //duantao: To Do
                 val city = tile.getCity()!!
@@ -310,6 +311,16 @@ class Battle(val gameInfo:GameInfo) {
                 }
             }
 
+            for(unit in tile.getUnits()){
+                unit.destroy()
+                postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
+                if(unit.civInfo!=attackingCiv
+                        && unit.civInfo.knows(attackingCiv)
+                        && unit.civInfo.getDiplomacyManager(attackingCiv).canDeclareWar()){
+                    unit.civInfo.getDiplomacyManager(attackingCiv).declareWar()
+                }
+            }
+
             if (tile.militaryUnit != null) tile.militaryUnit!!.destroy()
             if (tile.civilianUnit != null) tile.civilianUnit!!.destroy()
             tile.improvement = null
@@ -320,7 +331,7 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         for(civ in attacker.getCivInfo().getKnownCivs()){
-            civ.getDiplomacyManager(attacker.getCivInfo())
+            civ.getDiplomacyManager(attackingCiv)
                     .setModifier(DiplomaticModifiers.UsedNuclearWeapons,-50f)
         }
     }
