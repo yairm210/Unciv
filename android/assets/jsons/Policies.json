@@ -407,7 +407,7 @@
 				column:5
 			},
 			{
-				name:"Facism",
+				name:"Fascism",
 				description:"Quantity of strategic resources produced by the empire increased by 100%",
 				requires:["Populism","Militarism"],
 				row:2,
@@ -423,7 +423,7 @@
 			{
 				name:"Total War",
 				description:"+15% production when building military units and new military units start with 15 Experience",
-				requires:["Police State","Facism"],
+				requires:["Police State","Fascism"],
 				row:3,
 				column:4
 			},
