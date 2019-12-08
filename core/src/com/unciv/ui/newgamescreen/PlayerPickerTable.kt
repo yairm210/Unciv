@@ -20,7 +20,7 @@ import java.util.*
 
 class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters: GameParameters): Table() {
     val playerListTable = Table()
-    val halfWidth = newGameScreen.stage.width / 2.5f
+    val nationsPopupWidth = newGameScreen.stage.width / 2.5f
 
     init {
         add(ScrollPane(playerListTable)).width(newGameScreen.stage.width/2)
@@ -134,18 +134,18 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             nationsPopup.close()
             update()
         }
-        nationListTable.add(randomPlayerTable).pad(10f).width(halfWidth).row()
+        nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
 
         for (nation in newGameScreen.ruleSet.Nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, halfWidth,newGameScreen.ruleSet).onClick {
+            nationListTable.add(NationTable(nation, nationsPopupWidth,newGameScreen.ruleSet).onClick {
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
-            }).pad(10f).width(halfWidth).row()
+            }).pad(10f).width(nationsPopupWidth).row()
         }
         nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
         nationsPopup.open()
