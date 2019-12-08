@@ -197,7 +197,8 @@ fun Table.addSeparator(): Cell<Image> {
 
 fun Table.addSeparatorVertical(): Cell<Image> {
     val image = ImageGetter.getWhiteDot()
-    return add(image).width(2f).fillY()
+    val cell = add(image).width(2f).fillY()
+    return cell
 }
 
 /**
