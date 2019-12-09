@@ -53,6 +53,12 @@
 		Ukrainian:"Почати!"
 }
 
+	"Map options":{
+	}
+	
+	"Game options":{
+	}
+
 	"Map type":{
 		Italian:"Tipo di mappa"
 		Russian:"Тип карты"
@@ -68,7 +74,11 @@
                 Korean:"지도 유형"
 		Czech:"Typ mapy"
 		Ukrainian:"Тип мапи"
-}
+	}
+
+	"Map generation type": {
+
+	}
 
 	"Number of city-states":{
 		Italian:"Numero di Città-Stato"

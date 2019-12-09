@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tech.TechEra
@@ -24,7 +23,10 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters,
                                 val ruleset: Ruleset, val onMultiplayerToggled:()->Unit)
     : Table(CameraStageBaseScreen.skin){
     init{
-        addMapTypeSizeAndFile()
+        add("Map options".toLabel(fontSize = 24)).colspan(2).row()
+        addMapTypeSelection()
+
+        add("Game options".toLabel(fontSize = 24)).padTop(20f).colspan(2).row()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
         addEraSelectBox()
@@ -32,13 +34,73 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters,
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
         addOneCityChallengeCheckbox()
-        addNoRuinsCheckbox()
         addIsOnlineMultiplayerCheckbox()
 
         // addModCheckboxes()
 
         pack()
     }
+
+    private fun addMapTypeSelection() {
+        add("{Map type}:".toLabel())
+        val mapTypes = arrayListOf("Generated")
+        if(MapSaver().getMaps().isNotEmpty()) mapTypes.add("Existing")
+
+        val mapFileLabel = "{Map file}:".toLabel()
+        val mapFileSelectBox = getMapFileSelectBox()
+        mapFileLabel.isVisible = false
+        mapFileSelectBox.isVisible = false
+
+        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
+
+        val mapParameterTable = MapParametersTable(mapParameters)
+
+        fun updateOnMapTypeChange(){
+            mapParameters.type = mapTypeSelectBox.selected.value
+            if (mapParameters.type == "Existing") {
+                mapParameterTable.isVisible = false
+                mapFileSelectBox.isVisible = true
+                mapFileLabel.isVisible = true
+                mapParameters.name = mapFileSelectBox.selected
+            } else {
+                mapParameterTable.isVisible = true
+                mapFileSelectBox.isVisible = false
+                mapFileLabel.isVisible = false
+                mapParameters.name = ""
+            }
+        }
+
+        updateOnMapTypeChange() // activate once, so when we had a file map before we'll have the right things set for another one
+
+        mapTypeSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                updateOnMapTypeChange()
+            }
+        })
+
+        add(mapTypeSelectBox).pad(10f).row()
+        add(mapParameterTable).colspan(2).row()
+
+        add(mapFileLabel)
+        add(mapFileSelectBox).pad(10f).row()
+    }
+
+
+    private fun getMapFileSelectBox(): SelectBox<String> {
+        val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+        val mapNames = Array<String>()
+        for (mapName in MapSaver().getMaps()) mapNames.add(mapName)
+        mapFileSelectBox.items = mapNames
+        if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
+
+        mapFileSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                mapParameters.name = mapFileSelectBox.selected!!
+            }
+        })
+        return mapFileSelectBox
+    }
+
 
     private fun addBarbariansCheckbox() {
         val noBarbariansCheckbox = CheckBox("No barbarians".tr(), CameraStageBaseScreen.skin)
@@ -62,17 +124,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters,
         add(oneCityChallengeCheckbox).colspan(2).row()
     }
 
-    private fun addNoRuinsCheckbox() {
-        val noRuinsCheckbox = CheckBox("No ancient ruins".tr(), CameraStageBaseScreen.skin)
-        noRuinsCheckbox.isChecked = mapParameters.noRuins
-        noRuinsCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.noRuins = noRuinsCheckbox.isChecked
-            }
-        })
-        add(noRuinsCheckbox).colspan(2).row()
-    }    
-
     private fun addIsOnlineMultiplayerCheckbox() {
 
         val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
@@ -84,56 +135,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters,
             }
         })
         add(isOnlineMultiplayerCheckbox).colspan(2).row()
-    }
-
-    private fun addMapTypeSizeAndFile() {
-        add("{Map type}:".tr())
-        val mapTypes = arrayListOf(MapType.default,MapType.continents,MapType.perlin,MapType.pangaea)
-        if(MapSaver().getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
-
-        val mapFileLabel = "{Map file}:".toLabel()
-        val mapFileSelectBox = getMapFileSelectBox()
-        mapFileLabel.isVisible = false
-        mapFileSelectBox.isVisible = false
-
-        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, CameraStageBaseScreen.skin)
-
-        val worldSizeSelectBox = getWorldSizeSelectBox()
-        val worldSizeLabel = "{World size}:".toLabel()
-
-        fun updateOnMapTypeChange(){
-            mapParameters.type = mapTypeSelectBox.selected.value
-            if (mapParameters.type == MapType.custom) {
-                worldSizeSelectBox.isVisible = false
-                worldSizeLabel.isVisible = false
-                mapFileSelectBox.isVisible = true
-                mapFileLabel.isVisible = true
-                mapParameters.name = mapFileSelectBox.selected
-            } else {
-                worldSizeSelectBox.isVisible = true
-                worldSizeLabel.isVisible = true
-                mapFileSelectBox.isVisible = false
-                mapFileLabel.isVisible = false
-                mapParameters.name = ""
-            }
-        }
-
-        updateOnMapTypeChange() // activate once, so when we had a file map before we'll have the right things set for another one
-
-        mapTypeSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                updateOnMapTypeChange()
-            }
-        })
-
-        add(mapTypeSelectBox).pad(10f).row()
-
-
-        add(worldSizeLabel)
-        add(worldSizeSelectBox).pad(10f).row()
-
-        add(mapFileLabel)
-        add(mapFileSelectBox).pad(10f).row()
     }
 
     private fun addCityStatesSelectBox() {
@@ -215,40 +216,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters,
         add(victoryConditionsTable).colspan(2).row()
     }
 
-    private fun getMapFileSelectBox(): SelectBox<String> {
-        val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val mapNames = Array<String>()
-        for (mapName in MapSaver().getMaps()) mapNames.add(mapName)
-        mapFileSelectBox.items = mapNames
-        if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
-
-        mapFileSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.name = mapFileSelectBox.selected!!
-            }
-        })
-        return mapFileSelectBox
-    }
-
-    private fun getWorldSizeSelectBox(): TranslatedSelectBox {
-        val worldSizeToRadius = LinkedHashMap<String, Int>()
-        worldSizeToRadius["Tiny"] = 10
-        worldSizeToRadius["Small"] = 15
-        worldSizeToRadius["Medium"] = 20
-        worldSizeToRadius["Large"] = 30
-        worldSizeToRadius["Huge"] = 40
-
-        val currentWorldSizeName = worldSizeToRadius.entries
-                .first { it.value == mapParameters.radius }.key
-        val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys, currentWorldSizeName, CameraStageBaseScreen.skin)
-
-        worldSizeSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.radius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
-            }
-        })
-        return worldSizeSelectBox
-    }
 
 
     fun addModCheckboxes(){

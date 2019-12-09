@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
+import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.saves.Gzip
@@ -44,6 +45,8 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
 
         val saveMapButton = TextButton("Save map".tr(), skin)
         saveMapButton.onClick {
+            mapEditorScreen.tileMap.mapParameters.name=mapEditorScreen.mapName
+            mapEditorScreen.tileMap.mapParameters.type=MapType.custom
             MapSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
             UncivGame.Current.setWorldScreen()
         }
