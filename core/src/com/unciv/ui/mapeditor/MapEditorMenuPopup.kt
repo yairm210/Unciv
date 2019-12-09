@@ -1,8 +1,6 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
@@ -13,8 +11,6 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.saves.Gzip
-import com.unciv.ui.saves.LoadMapScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.DropBox
 import com.unciv.ui.worldscreen.optionstable.PopupTable
@@ -88,12 +84,6 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
         }
         add(uploadMapButton).row()
 
-        val downloadMapButton = TextButton("Download map".tr(), skin)
-        downloadMapButton.onClick {
-            remove()
-            MapDownloadTable(mapEditorScreen)
-        }
-        add(downloadMapButton).row()
 
         val exitMapEditorButton = TextButton("Exit map editor".tr(), skin)
         exitMapEditorButton.onClick { UncivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
@@ -103,39 +93,6 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
 
-        open()
-    }
-}
-
-class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScreen) {
-    init {
-        val folderList: DropBox.FolderList
-        try {
-            folderList = DropBox().getFolderList("/Maps")
-            val scrollableMapTable = Table().apply { defaults().pad(10f) }
-            for (downloadableMap in folderList.entries) {
-                val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
-                downloadMapButton.onClick {
-                    try{
-                        val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
-                        val decodedMapJson = Gzip.unzip(mapJsonGzipped)
-                        val mapObject = MapSaver().mapFromJson(decodedMapJson)
-                        MapSaver().saveMap(downloadableMap.name, mapObject)
-                        UncivGame.Current.setScreen(MapEditorScreen(mapObject))
-                    }
-                    catch(ex:Exception){
-                        val couldNotDownloadMapPopup = PopupTable(screen)
-                        couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
-                        couldNotDownloadMapPopup.addCloseButton()
-                    }
-                }
-                scrollableMapTable.add(downloadMapButton).row()
-            }
-            add(ScrollPane(scrollableMapTable)).height(mapEditorScreen.stage.height * 2 / 3).row()
-        } catch (ex: Exception) {
-            addGoodSizedLabel("Could not get list of maps!").row()
-        }
-        addCloseButton()
         open()
     }
 }

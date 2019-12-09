@@ -31,7 +31,7 @@ class NewGameScreen: PickerScreen(){
         setDefaultCloseAction()
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        topTable.add(NewGameScreenOptionsTable(newGameParameters,mapParameters, ruleSet) { playerPickerTable.update() })
+        topTable.add(NewGameScreenOptionsTable(this) { playerPickerTable.update() })
         topTable.add(playerPickerTable).pad(10f)
         topTable.pack()
         topTable.setFillParent(true)
