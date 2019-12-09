@@ -56,7 +56,7 @@ object ImageGetter {
             textureRegionDrawables["StatIcons/Happiness"]= getfontDrawable("😊")
             textureRegionDrawables["StatIcons/Malcontent"]= getfontDrawable("😡")
             textureRegionDrawables["StatIcons/Population"]= getfontDrawable("👨")
-            textureRegionDrawables["StatIcons/Production"]= getfontDrawable("🛠️")
+            textureRegionDrawables["StatIcons/Production"]= getfontDrawable("⚙️")
             textureRegionDrawables["StatIcons/Science"]= getfontDrawable("💡")
             textureRegionDrawables["StatIcons/Strength"]= getfontDrawable("🛡️")
             textureRegionDrawables["StatIcons/Movement"]= getfontDrawable("👣")
