@@ -7,7 +7,6 @@ import com.unciv.models.Counter
 import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TerrainType
-import com.unciv.models.metadata.GameParameters
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.*
@@ -22,17 +21,18 @@ class MapType {
         val perlin="Perlin"
         val continents = "Continents"
         val pangaea = "Pangaea"
-        val file = "File"
+        val custom="Custom"
     }
 }
 
 class MapGenerator {
 
-    fun generateMap(gameParameters: GameParameters, ruleset: Ruleset): TileMap {
-        val mapRadius = gameParameters.mapRadius
-        val mapType = gameParameters.mapType
+    fun generateMap(mapParameters: MapParameters, ruleset: Ruleset): TileMap {
+        val mapRadius = mapParameters.radius
+        val mapType = mapParameters.type
 
         val map = TileMap(mapRadius, ruleset)
+        map.mapParameters = mapParameters
 
         // Step one - separate land and water, in form of Grasslands and Oceans
         if (mapType == MapType.perlin)
@@ -45,7 +45,7 @@ class MapGenerator {
 
         setWaterTiles(map)
 
-        for (tile in map.values) randomizeTile(tile, gameParameters, ruleset)
+        for (tile in map.values) randomizeTile(tile, mapParameters, ruleset)
 
         randomizeResources(map, mapRadius, ruleset)
 
@@ -94,13 +94,14 @@ class MapGenerator {
         }
     }
 
-    fun randomizeTile(tileInfo: TileInfo, gameParameters: GameParameters, ruleset: Ruleset) {
+    fun randomizeTile(tileInfo: TileInfo, mapParameters: MapParameters, ruleset: Ruleset) {
         if (tileInfo.getBaseTerrain().type == TerrainType.Land && Math.random() < 0.05f) {
             tileInfo.baseTerrain = Constants.mountain
             tileInfo.setTransients()
         }
         addRandomTerrainFeature(tileInfo, ruleset)
-        maybeAddAncientRuins(tileInfo, gameParameters)
+        if(!mapParameters.noRuins)
+            maybeAddAncientRuins(tileInfo)
     }
 
     fun getLatitude(vector: Vector2): Float {
@@ -194,9 +195,9 @@ class MapGenerator {
     }
 
 
-    fun maybeAddAncientRuins(tile: TileInfo, gameParameters: GameParameters) {
+    fun maybeAddAncientRuins(tile: TileInfo) {
         val baseTerrain = tile.getBaseTerrain()
-        if (!gameParameters.noRuins && baseTerrain.type != TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f / 100)
+        if (baseTerrain.type != TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f / 100)
             tile.improvement = Constants.ancientRuins
     }
 

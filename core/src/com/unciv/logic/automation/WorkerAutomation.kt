@@ -169,7 +169,9 @@ class WorkerAutomation(val unit: MapUnit) {
             if (tileInfo.isWorked()) priority += 3
         }
         // give a minor priority to tiles that we could expand onto
-        else if (tileInfo.getOwner()==null && tileInfo.neighbors.any { it.getOwner() ==civInfo }) priority += 1
+        else if (tileInfo.getOwner()==null && tileInfo.neighbors.any { it.getOwner() ==civInfo })
+            priority += 1
+
         if (priority!=0 && tileInfo.hasViewableResource(civInfo)) priority += 1
         return priority
     }

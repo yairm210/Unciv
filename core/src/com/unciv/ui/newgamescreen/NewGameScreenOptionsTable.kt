@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
+import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.VictoryType
@@ -18,7 +19,9 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val ruleset: Ruleset, val onMultiplayerToggled:()->Unit)
+class NewGameScreenOptionsTable(val newGameParameters: GameParameters,
+                                val mapParameters: MapParameters,
+                                val ruleset: Ruleset, val onMultiplayerToggled:()->Unit)
     : Table(CameraStageBaseScreen.skin){
     init{
         addMapTypeSizeAndFile()
@@ -61,10 +64,10 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
 
     private fun addNoRuinsCheckbox() {
         val noRuinsCheckbox = CheckBox("No ancient ruins".tr(), CameraStageBaseScreen.skin)
-        noRuinsCheckbox.isChecked = newGameParameters.noRuins
+        noRuinsCheckbox.isChecked = mapParameters.noRuins
         noRuinsCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.noRuins = noRuinsCheckbox.isChecked
+                mapParameters.noRuins = noRuinsCheckbox.isChecked
             }
         })
         add(noRuinsCheckbox).colspan(2).row()
@@ -86,32 +89,32 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
     private fun addMapTypeSizeAndFile() {
         add("{Map type}:".tr())
         val mapTypes = arrayListOf(MapType.default,MapType.continents,MapType.perlin,MapType.pangaea)
-        if(MapSaver().getMaps().isNotEmpty()) mapTypes.add(MapType.file)
+        if(MapSaver().getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
 
         val mapFileLabel = "{Map file}:".toLabel()
         val mapFileSelectBox = getMapFileSelectBox()
         mapFileLabel.isVisible = false
         mapFileSelectBox.isVisible = false
 
-        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, newGameParameters.mapType, CameraStageBaseScreen.skin)
+        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, CameraStageBaseScreen.skin)
 
         val worldSizeSelectBox = getWorldSizeSelectBox()
         val worldSizeLabel = "{World size}:".toLabel()
 
         fun updateOnMapTypeChange(){
-            newGameParameters.mapType = mapTypeSelectBox.selected.value
-            if (newGameParameters.mapType == MapType.file) {
+            mapParameters.type = mapTypeSelectBox.selected.value
+            if (mapParameters.type == MapType.custom) {
                 worldSizeSelectBox.isVisible = false
                 worldSizeLabel.isVisible = false
                 mapFileSelectBox.isVisible = true
                 mapFileLabel.isVisible = true
-                newGameParameters.mapFileName = mapFileSelectBox.selected
+                mapParameters.name = mapFileSelectBox.selected
             } else {
                 worldSizeSelectBox.isVisible = true
                 worldSizeLabel.isVisible = true
                 mapFileSelectBox.isVisible = false
                 mapFileLabel.isVisible = false
-                newGameParameters.mapFileName = null
+                mapParameters.name = ""
             }
         }
 
@@ -217,10 +220,11 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         val mapNames = Array<String>()
         for (mapName in MapSaver().getMaps()) mapNames.add(mapName)
         mapFileSelectBox.items = mapNames
+        if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
 
         mapFileSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.mapFileName = mapFileSelectBox.selected!!
+                mapParameters.name = mapFileSelectBox.selected!!
             }
         })
         return mapFileSelectBox
@@ -234,12 +238,13 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         worldSizeToRadius["Large"] = 30
         worldSizeToRadius["Huge"] = 40
 
-        val currentWorldSizeName = worldSizeToRadius.entries.first { it.value == newGameParameters.mapRadius }.key
+        val currentWorldSizeName = worldSizeToRadius.entries
+                .first { it.value == mapParameters.radius }.key
         val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys, currentWorldSizeName, CameraStageBaseScreen.skin)
 
         worldSizeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.mapRadius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
+                mapParameters.radius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
             }
         })
         return worldSizeSelectBox
@@ -251,7 +256,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val rules
         add("{Victory conditions}:".tr()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
-        var i = 0
         val modCheckboxTable = Table().apply { defaults().pad(10f) }
 
         val mods = Gdx.files.local("mods")
