@@ -40,7 +40,9 @@ Is this order:
 
 ## How can I help?
 
-If you're a programmer, you can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
+If you're a programmer, get started at [the Wiki!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+
+You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
