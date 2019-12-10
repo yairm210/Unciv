@@ -63,24 +63,9 @@ Do as much as you're comfortable with - it's a big game with a lot of named obje
 You don't need to download anything, all translation work can be done on the Github website :)
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
-
-## How can I get started working on this?
-
-- Install Android Studio
-- Fork the repo, and clone your fork
-- Configure an Application run configuration with DesktopLauncher as the Main Class and \<repo_folder\>\android\assets\ as the Working directory
-
-To help you get started, the main classes are (in tree form, so you can see how the game itself saves them):
-
-- GameInfo
-   - TileMap
-        - TileInfo
-            - MapUnit
-   - CivilizationInfo
-        - CityInfo
         
 
-## [Adding a new Civ](docs/NewCivs.md)
+## [Adding a new Civ](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization)
 
 # FAQ
 
