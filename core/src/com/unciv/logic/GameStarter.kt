@@ -13,15 +13,16 @@ import kotlin.math.max
 
 class GameStarter{
 
-    fun startNewGame(newGameParameters: GameParameters): GameInfo {
+    fun startNewGame(newGameParameters: GameParameters, mapParameters: MapParameters): GameInfo {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
         val gameBasics = UncivGame.Current.ruleset
 
-        if(newGameParameters.mapType==MapType.file)
-            gameInfo.tileMap = MapSaver().loadMap(newGameParameters.mapFileName!!)
-        else gameInfo.tileMap = MapGenerator().generateMap(newGameParameters, gameBasics)
+        if(mapParameters.name!="")
+            gameInfo.tileMap = MapSaver().loadMap(mapParameters.name)
+        else gameInfo.tileMap = MapGenerator().generateMap(mapParameters, gameBasics)
+        gameInfo.tileMap.mapParameters = mapParameters
 
         gameInfo.tileMap.setTransients(gameBasics)
 
@@ -29,7 +30,7 @@ class GameStarter{
         gameInfo.difficulty = newGameParameters.difficulty
 
 
-        addCivilizations(newGameParameters, gameInfo,gameBasics) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
+        addCivilizations(newGameParameters, gameInfo, gameBasics) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 

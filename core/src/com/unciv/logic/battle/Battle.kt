@@ -7,6 +7,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
@@ -248,6 +249,11 @@ class Battle(val gameInfo:GameInfo) {
         }
         city.hasJustBeenConquered = true
 
+        if (!attackerCiv.isMajorCiv()){
+            city.destroyCity()
+            return
+        }
+
         if (attackerCiv.isPlayerCivilization())
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         else {
@@ -296,6 +302,7 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun nuclearBlast(attacker: ICombatant, defender: ICombatant) {
+        val attackingCiv = attacker.getCivInfo()
         for (tile in defender.getTile().getTilesInDistance(2)) {
             if (tile.isCityCenter()) { //duantao: To Do
                 val city = tile.getCity()!!
@@ -309,6 +316,16 @@ class Battle(val gameInfo:GameInfo) {
                 }
             }
 
+            for(unit in tile.getUnits()){
+                unit.destroy()
+                postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
+                if(unit.civInfo!=attackingCiv
+                        && unit.civInfo.knows(attackingCiv)
+                        && unit.civInfo.getDiplomacyManager(attackingCiv).canDeclareWar()){
+                    unit.civInfo.getDiplomacyManager(attackingCiv).declareWar()
+                }
+            }
+
             if (tile.militaryUnit != null) tile.militaryUnit!!.destroy()
             if (tile.civilianUnit != null) tile.civilianUnit!!.destroy()
             tile.improvement = null
@@ -316,6 +333,11 @@ class Battle(val gameInfo:GameInfo) {
             tile.turnsToImprovement = 0
             tile.roadStatus = RoadStatus.None
             if (tile.isLand) tile.terrainFeature = "Fallout"
+        }
+
+        for(civ in attacker.getCivInfo().getKnownCivs()){
+            civ.getDiplomacyManager(attackingCiv)
+                    .setModifier(DiplomaticModifiers.UsedNuclearWeapons,-50f)
         }
     }
 

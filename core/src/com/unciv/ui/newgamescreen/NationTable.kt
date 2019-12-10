@@ -3,8 +3,8 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.Nation
+import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -22,7 +22,13 @@ class NationTable(val nation: Nation, width:Float, ruleset: Ruleset)
 
         val titleTable = Table()
         titleTable.add(ImageGetter.getNationIndicator(nation, 50f)).pad(10f)
-        titleTable.add(nation.getLeaderDisplayName().toLabel(nation.getInnerColor(),24))
+        val leaderDisplayLabel = nation.getLeaderDisplayName().toLabel(nation.getInnerColor(),24)
+        val leaderDisplayNameMaxWidth = width - 70 // for the nation indicator
+        if(leaderDisplayLabel.width > leaderDisplayNameMaxWidth){ // for instance Polish has really long [x] of [y] translations
+            leaderDisplayLabel.setWrap(true)
+            titleTable.add(leaderDisplayLabel).width(leaderDisplayNameMaxWidth)
+        }
+        else titleTable.add(leaderDisplayLabel)
         innerTable.add(titleTable).row()
 
         innerTable.add(getUniqueLabel(nation,ruleset).apply { setWrap(true) }).width(width)

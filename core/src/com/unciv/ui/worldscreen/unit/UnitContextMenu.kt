@@ -59,8 +59,12 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         thread {
             // these are the heavy parts, finding where we want to go
-            if (!selectedUnit.movement.canReach(targetTile)) return@thread // can't move here
-            val tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+            // Since this runs in a different thread, even if we check movement.canReach()
+            // then it might change until we get to the getTileToMoveTo, so we just try/catch it
+            val tileToMoveTo:TileInfo
+            try{
+                tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+            }catch (ex:Exception){ return@thread } // can't move here
 
             Gdx.app.postRunnable {
                 try {

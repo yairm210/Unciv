@@ -224,6 +224,12 @@ class GameInfo {
         // which in turn leads to us trying to get info on all the building in all the cities...
         // which can fail if there's an "unregistered" building anywhere
         for (civInfo in civilizations) {
+            // As of 3.3.7, Facism -> Fascism
+            if(civInfo.policies.adoptedPolicies.contains("Facism")){
+                civInfo.policies.adoptedPolicies.remove("Facism")
+                civInfo.policies.adoptedPolicies.add("Fascism")
+            }
+
             for (cityInfo in civInfo.cities) {
                 val cityConstructions = cityInfo.cityConstructions
 

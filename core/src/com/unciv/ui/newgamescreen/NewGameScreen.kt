@@ -24,13 +24,14 @@ import kotlin.concurrent.thread
 class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UncivGame.Current.gameInfo.gameParameters
+    val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
     val ruleSet = Ruleset(true)
 
     init {
         setDefaultCloseAction()
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        topTable.add(NewGameScreenOptionsTable(newGameParameters,ruleSet) { playerPickerTable.update() })
+        topTable.add(NewGameScreenOptionsTable(this) { playerPickerTable.update() })
         topTable.add(playerPickerTable).pad(10f)
         topTable.pack()
         topTable.setFillParent(true)
@@ -67,7 +68,7 @@ class NewGameScreen: PickerScreen(){
             thread {
                 // Creating a new game can take a while and we don't want ANRs
                 try {
-                    newGame = GameStarter().startNewGame(newGameParameters)
+                    newGame = GameStarter().startNewGame(newGameParameters,mapParameters)
                     if (newGameParameters.isOnlineMultiplayer) {
                         newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                         try {

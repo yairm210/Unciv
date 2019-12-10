@@ -7,8 +7,8 @@ import com.unciv.models.Counter
 import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TerrainType
-import com.unciv.models.metadata.GameParameters
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.*
 
 // This is no longer an Enum because there were map types that were disabled,
@@ -21,17 +21,18 @@ class MapType {
         val perlin="Perlin"
         val continents = "Continents"
         val pangaea = "Pangaea"
-        val file = "File"
+        val custom="Custom"
     }
 }
 
 class MapGenerator {
 
-    fun generateMap(gameParameters: GameParameters, ruleset: Ruleset): TileMap {
-        val mapRadius = gameParameters.mapRadius
-        val mapType = gameParameters.mapType
+    fun generateMap(mapParameters: MapParameters, ruleset: Ruleset): TileMap {
+        val mapRadius = mapParameters.radius
+        val mapType = mapParameters.type
 
         val map = TileMap(mapRadius, ruleset)
+        map.mapParameters = mapParameters
 
         // Step one - separate land and water, in form of Grasslands and Oceans
         if (mapType == MapType.perlin)
@@ -44,7 +45,7 @@ class MapGenerator {
 
         setWaterTiles(map)
 
-        for (tile in map.values) randomizeTile(tile, gameParameters, ruleset)
+        for (tile in map.values) randomizeTile(tile, mapParameters, ruleset)
 
         randomizeResources(map, mapRadius, ruleset)
 
@@ -93,13 +94,14 @@ class MapGenerator {
         }
     }
 
-    fun randomizeTile(tileInfo: TileInfo, gameParameters: GameParameters, ruleset: Ruleset) {
+    fun randomizeTile(tileInfo: TileInfo, mapParameters: MapParameters, ruleset: Ruleset) {
         if (tileInfo.getBaseTerrain().type == TerrainType.Land && Math.random() < 0.05f) {
             tileInfo.baseTerrain = Constants.mountain
             tileInfo.setTransients()
         }
         addRandomTerrainFeature(tileInfo, ruleset)
-        maybeAddAncientRuins(tileInfo, gameParameters)
+        if(!mapParameters.noRuins)
+            maybeAddAncientRuins(tileInfo)
     }
 
     fun getLatitude(vector: Vector2): Float {
@@ -193,9 +195,9 @@ class MapGenerator {
     }
 
 
-    fun maybeAddAncientRuins(tile: TileInfo, gameParameters: GameParameters) {
+    fun maybeAddAncientRuins(tile: TileInfo) {
         val baseTerrain = tile.getBaseTerrain()
-        if (!gameParameters.noRuins && baseTerrain.type != TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f / 100)
+        if (baseTerrain.type != TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f / 100)
             tile.improvement = Constants.ancientRuins
     }
 
@@ -205,13 +207,13 @@ class MapGenerator {
             if (tile.resource != null)
                 tile.resource = null
 
-        randomizeStrategicResources(mapToReturn, distance, ruleset)
-        randomizeResource(mapToReturn, distance, ResourceType.Luxury, ruleset)
-        randomizeResource(mapToReturn, distance, ResourceType.Bonus, ruleset)
+        spreadStrategicResources(mapToReturn, distance, ruleset)
+        spreadResource(mapToReturn, distance, ResourceType.Luxury, ruleset)
+        spreadResource(mapToReturn, distance, ResourceType.Bonus, ruleset)
     }
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
-    private fun randomizeStrategicResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
+    private fun spreadStrategicResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
         val resourcesOfType = ruleset.TileResources.values.filter { it.resourceType == ResourceType.Strategic }
         for (resource in resourcesOfType) {
             val suitableTiles = mapToReturn.values
@@ -227,7 +229,7 @@ class MapGenerator {
     }
 
     // Here, we need there to be some luxury/bonus resource - it matters less what
-    private fun randomizeResource(mapToReturn: TileMap, distance: Int, resourceType: ResourceType, ruleset: Ruleset) {
+    private fun spreadResource(mapToReturn: TileMap, distance: Int, resourceType: ResourceType, ruleset: Ruleset) {
         val resourcesOfType = ruleset.TileResources.values.filter { it.resourceType == resourceType }
 
         val suitableTiles = mapToReturn.values
@@ -254,11 +256,25 @@ class MapGenerator {
             var availableTiles = suitableTiles.toList()
             val chosenTiles = ArrayList<TileInfo>()
 
+            // If possible, we want to equalize the base terrains upon which
+            //  the resources are found, so we save how many have been
+            //  found for each base terrain and try to get one from the lowerst
+            val baseTerrainsToChosenTiles = HashMap<String,Int>()
+            for(tileInfo in availableTiles){
+                if(tileInfo.baseTerrain !in baseTerrainsToChosenTiles)
+                    baseTerrainsToChosenTiles.put(tileInfo.baseTerrain,0)
+            }
+
             for (i in 1..numberOfResources) {
                 if (availableTiles.isEmpty()) break
-                val chosenTile = availableTiles.random()
+                val orderedKeys = baseTerrainsToChosenTiles.entries
+                        .sortedBy { it.value }.map { it.key }
+                val firstKeyWithTilesLeft = orderedKeys
+                        .first { availableTiles.any { tile -> tile.baseTerrain== it} }
+                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
                 availableTiles = availableTiles.filter { it.arialDistanceTo(chosenTile) > distanceBetweenResources }
                 chosenTiles.add(chosenTile)
+                baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1
             }
             // Either we got them all, or we're not going to get anything better
             if (chosenTiles.size == numberOfResources || distanceBetweenResources == 1) return chosenTiles
