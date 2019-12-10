@@ -249,6 +249,11 @@ class Battle(val gameInfo:GameInfo) {
         }
         city.hasJustBeenConquered = true
 
+        if (!attackerCiv.isMajorCiv()){
+            city.destroyCity()
+            return
+        }
+
         if (attackerCiv.isPlayerCivilization())
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         else {

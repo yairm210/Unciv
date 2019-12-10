@@ -334,9 +334,6 @@ class CityInfo {
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: CivilizationInfo) {
-        if (!conqueringCiv.isMajorCiv()){
-            destroyCity()
-        }
 
         val oldCiv = civInfo
         moveToCiv(conqueringCiv)
