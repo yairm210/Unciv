@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Music
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
+import com.unciv.logic.map.MapParameters
 import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
@@ -91,7 +92,7 @@ class UncivGame(val version: String) : Game() {
     }
 
     fun startNewGame() {
-        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty="Chieftain" })
+        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty="Chieftain" }, MapParameters())
         loadGame(newGame)
     }
 

@@ -325,7 +325,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [War](https://thenounproject.com/term/war/1643541/) By Abdul Karim for Total War
 * [Military Grade](https://thenounproject.com/term/military-grade/578687/) By Ben Davis for Militarism
-* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere for Facism
+* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere for Fascism
 * [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
 * [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
@@ -502,6 +502,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
 * [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
 * [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
+* [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 
 # Sound credits
 

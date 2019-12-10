@@ -17,6 +17,7 @@ class TileMap {
     @Deprecated("as of 2.7.10")
     private var tiles = HashMap<String, TileInfo>()
 
+    var mapParameters= MapParameters()
     private var tileList = ArrayList<TileInfo>()
 
     constructor()  // for json parsing, we need to have a default constructor
@@ -170,3 +171,4 @@ class TileMap {
     }
 
 }
+
