@@ -18,3 +18,5 @@ So first things first - the initial "No assumptions" setup to have Unciv run fro
 Unciv uses Gradle to specify dependencies and how to run. In the background, the Gradle gnomes will be off fetching the packages (a one-time effort) and, once that's done, will the the project!
 
 Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!
+
+Now would be a good time to get to know the project in general at [the Project Structure overview!](https://github.com/yairm210/Unciv/wiki/Project-structure-overview)
