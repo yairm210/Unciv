@@ -1,3 +1,20 @@
+# Overview
+
+Civ, and therefore Unciv, is a game with endless interconnectivity - everything affects everything else.
+
+In order to have some semblance of order, we'll go over the main classes in the order in which they are serialized.
+
+So yes, you can - for instance - get the center tile of a city, a TileInfo, directly from CityInfo. But delving into all the connections would only harm the point of this overview, that's what the actual code is for ;)
+
+* GameInfo
+    * CivilizationInfo
+        * CityInfo
+    * TileMap
+        * TileInfo
+            * MapUnit
+    * RuleSet (unique in that it is not part of the game state)
+
+
 # The Game - `GameInfo`
 
 First off, let's clarify: When we say "The Game", we mean the *state* of the game (what turn it is, who the players are, what each one has etc) and not the *UI* of the game.
@@ -22,7 +39,7 @@ This represents one of the players of the game, and NOT a specific nation - mean
 As one of the focal points of the game, it contains a lot of important information, the most important of which are:
 
  - The list of cities the civilization has - `List<CityInfo>`
- - Which nation this is - a String value that points us towards a certain Nation
+ - Which nation this is - references a certain Nation (part of the ruleset)
  - Various Managers for the different aspects of the civilization - `PolicyManager`, `GoldenAgeManager`, `GreatPersonManager`, `TechManager`, `VictoryManager`, `DiplomacyManager`
 
 # A City - `CityInfo`
@@ -33,4 +50,30 @@ Beyond basic information like name, location on map etc, the most important clas
 
 - Calculating the yield of the city - `CityStats`
 - Managers for the various aspects - `PopulationManager`, `CityConstructions`, `CityExpansionManager`
-- The tiles controlled and worked by the city
+- The tiles controlled and worked by the city - only their locations are permanently saved in the CityInfo, the actual information is in the TileInfo in the TileMap
+
+# The map - `TileMap`
+
+This contains mostly helper functions and acts as a wrapper for the list of tiles it contains
+
+# A tile - `TileInfo`
+
+Each tile is comprised of several layers, and so has information for each.
+
+Tiles have, primarily:
+- A base terrain - Grassland, Hills, Desert etc. References a certain `Terrain` (part of the ruleset)
+- An optional terrain feature - Forest, Jungle, Oasis etc.  References a certain `Terrain`  (part of the ruleset)
+- An optional resource - Iron, Dye, Wheat etc. References a certain `TileResource` (part of the ruleset)
+- An improvement built on the tile, if any.  References a certain `TileImprovement` (part of the ruleset)
+- The units that are currently in the tile - `MapUnit`
+
+# A unit on the map - `MapUnit`
+
+Unlike buildings, Unit in Unciv has two meanings. One is a *Type* of unit (like Spearman), and one is a specific instance of a unit (say, a Babylonian Spearman, at a certain position, with X health).
+
+`MapUnit` is a specific instance of a unit, whereas `BaseUnit` is the type of unit.
+
+Main information:
+- A name - references a specific `BaseUnit`
+- Health and Movement
+- Promotion status - `UnitPromotions`
