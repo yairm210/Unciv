@@ -98,3 +98,5 @@ The various objects are:
 - `TileImprovement` - referenced mainly in `TileInfo`
 
 There are also Translations in the Ruleset, but they technically have nothing to do with the game state but rather with the UI display.
+
+The information for all of these is in json files in `android\assets\jsons`
