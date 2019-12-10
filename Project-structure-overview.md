@@ -77,3 +77,24 @@ Main information:
 - A name - references a specific `BaseUnit`
 - Health and Movement
 - Promotion status - `UnitPromotions`
+
+# Ruleset
+
+So far so good - but what of everything that makes Civ, Civ? The units, the buildings, the nations, the improvements etc?
+
+Since these things remain the same for every game, these are not saved on a per-game basis, but rather are saved in json files in Unciv's asset folder.
+
+Each class in the game state that saves one of these will reference it by name, and when the game is running it will check the Ruleset to find the relevant information for that object.
+
+The various objects are:
+- `Technology` - referenced mainly in `CivilizationInfo.TechManager`
+- `Nations` - referenced mainly in `CivilizationInfo`
+- `Policy`  - referenced mainly in `CivilizationInfo.PolicyManager` (seeing a pattern here?)
+- `Building` - referenced mainly in `CityInfo.ConstructionManager`
+- `BaseUnit` - referenced mainly in `MapUnit`
+- `Promotion` - referenced mainly in `MapUnit`
+- `Terrain` - referenced mainly in `TileInfo`
+- `TileResource` - referenced mainly in `TileInfo`
+- `TileImprovement` - referenced mainly in `TileInfo`
+
+There are also Translations in the Ruleset, but they technically have nothing to do with the game state but rather with the UI display.
