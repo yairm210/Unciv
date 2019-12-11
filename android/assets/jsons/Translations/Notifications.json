@@ -71,7 +71,7 @@
 		German:"[cityName] - Ein [greatPerson] wurde geboren!",
 		Dutch:"[cityName] - Een [greatPerson] is geboren!",
 		Czech:"[cityName] - Narodil se [greatPerson]",
-		Ukrainian:"[cityName] - Народився [greatPerson]!",
+		Ukrainian:"[cityName] — Народився [greatPerson]!",
 		Polish:"[cityName] - [greatPerson] urodził/a się!"
 		Korean:"[cityName]에서 [greatPerson]이(가) 탄생했습니다!"
 	}
@@ -107,7 +107,7 @@
 		German:"Der Unterhalt für [unitName] konnte nicht bezahlt werden - Einheit wurde aufgelöst!"
 		Japanese:"[unitName]のアップキープを提供できません - ユニットは解散されました！",
 		Czech:"Žold pro jednotku [unitName] nebyl zaplacen - jednotka byla rozpuštěna."
-		Ukrainian:"Неможливо забезпечити [unitName] - підрозділ ліквідовано!"
+		Ukrainian:"Неможливо забезпечити [unitName] — підрозділ ліквідовано!"
 		Polish:"Nie można dłużej utrzymać jednostki [unitName] - jednostka został rozwiązana!"
 		Korean:"[unitName]의 유지비를 지출할 수 없습니다. - 유닛이 해산되었습니다!"
 	}
@@ -836,6 +836,7 @@
 		German:"[cityName] ist nun an die Hauptstadt angebunden!"
 		Polish:"Miasto [cityName] zostało przyłączone do Twojej stolicy!"
 		Korean:"[cityName]이(가) 수도와 연결되었습니다!"
+		Ukrainian:"[cityName] було приєднано до вашої столиці!"
 	}
 
 	"[cityName] has been disconnected from your capital!":{
@@ -846,6 +847,7 @@
 		German:"Die Verbindung von [cityName] zur Hauptstadt ist unterbrochen!"
 		Polish:"Miasto [cityName] zostało odłączone od Twojej stolicy!"
 		Korean:"[cityName]와(과) 수도의 연결이 끊겼습니다!"
+		Ukrainian:"[cityName] було від’єднано до вашої столиці!"
 	}
 
 	// Trade
@@ -859,6 +861,7 @@
 		German:"[civName] hat deine Handelsanfrage akzeptiert"
 		Polish:"Cywilizacja [civName] przyjeła Twoją propozycję handlu"
 		Korean:"[civName]이(가) 당신의 거래 요청을 받아들였습니다"
+		Ukrainian:"[civName] приймає вашу торгівельну угоду"
 	}
 
 	"[civName] has denied your trade request":{
@@ -871,6 +874,7 @@
 		German:"[civName] hat deine Handelsanfrage abgelehnt"
 		Polish:"Cywilizacja [civName] odrzuciła Twoją propozycję handlu"
 		Korean:"[civName]이(가) 당신의 거래 요청을 거절하였습니다"
+		Ukrainian:"[civName] відхилили вашу торгівельну угоду"
 	}
 
 
@@ -886,6 +890,7 @@
 		German:"[tradeOffer] von [otherCivName] ist beendet"
 		Polish:"Termin [tradeOffer] od [otherCivName] upłynął"
 		Korean:"[otherCivName]의 [tradeOffer] 제안이 취소되었습니다."
+		Ukrainian:"Угода «[tradeOffer]» від [otherCivName] закінчилася"
 	}
 
 	"[tradeOffer] to [otherCivName] has ended":{
@@ -896,6 +901,7 @@
 		German:"[tradeOffer] für [otherCivName] ist beendet"
 		Polish:"Termin [tradeOffer] dla [otherCivName] upłynął"
 		Korean:"[otherCivName]에게의 [tradeOffer] 제안이 취소되었습니다."
+		Ukrainian:"Угода «[tradeOffer]» для [otherCivName] закінчилася"
 	}
 
 
@@ -911,6 +917,7 @@
 		German:"Einer unserer Handel mit [nation] ist beendet"
 		Polish:"Jedna z naszych wymian handlowych z [nation] została zakończona"
 		Korean:"[nation]와(과)의 거래가 만료되었습니다."
+		Ukrainian:"Одна з наших угод із [nation] закінчилася "
 	}
 
  	"One of our trades with [nation] has been cut short": {
@@ -958,6 +965,7 @@
 		German:"Wir sind mit [nation] alliiert."
 		Polish:"Jesteśmy sojusznikami z [nation]."
 		Korean:"[nation]의 동맹이 되었습니다."
+		Ukrainian:"Ми тепер союзники з [nation]."
 	}
 
 	"We have lost alliance with [nation].": {
@@ -968,5 +976,6 @@
 		German:"Wir haben die Alianz mit [nation] verloren."
 		Polish:"Nie jesteśmy już w sojuszu z [nation]."
 		Korean:"[nation]와(과)의 동맹 관계가 끝났습니다."
+		Ukrainian:"Тепер ми не союзники з [nation]."
 	}
 }

@@ -1454,7 +1454,6 @@
 	    	Russian:"Очки [greatPerson]",
 		Czech:"[greatPerson] - body"
 		Ukrainian:"[greatPerson] очків"
-		Ukrainian:"[greatPerson] очків"
 		German:"Punkte für [greatPerson]"
 		Korean:"[greatPerson] 위인 포인트"
 }
@@ -1862,6 +1861,7 @@
 		Traditional_Chinese:"核武器攻擊"
 		German:"Atombombe"
 		Korean:"핵 발사"
+		Ukrainian:"Ядерна зброя"
 }
 
 	"Captured!":{// Shown in the battle table when attacking a civilian unit
@@ -2014,6 +2014,7 @@
 		Traditional_Chinese:"您與[civName]拓展貿易獲得[goldAmount]金錢和[influenceAmount]影響力！"
 		French:"Votre mission commerciale vers [civName] vous a rapporté [goldAmount] Or et [influenceAmount] Influence!"
 		Korean:"[civName]에의 무역 임무로부터 금 [goldAmount]와(과) 영향력 [influenceAmount]을(를) 얻었습니다!"
+		Ukrainian:"Ваша торгова місія з цивілізіцією «[civName]» принесла вам [goldAmount] золота та [influenceAmount] впливу!"
 }
 
 	"Hurry Wonder":{
@@ -2914,6 +2915,7 @@
 		German:"Zerstören"
 		French:"Détruire"
 		Korean:"파괴"
+		Ukrainian:"Зруйнувати"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
@@ -2924,6 +2926,7 @@
 		German:"Die Zerstörung der Stadt macht sie sofort dem Erdboden gleich."
 		French:"Détruire la ville, la rase instantanément jusqu'au sol."
 		Korean:"도시를 파괴하면, 즉시 도시가 파괴됩니다."
+		Ukrainian:"Руйнування миттєво зрівняє місто із землею"
 }
 
 
@@ -3224,7 +3227,7 @@
 		French:"Traductions manquantes:"
 		Portuguese:"Traduções faltando:"
 		Czech:"Chybějící překlady:"
-		Ukrainian:"Відсутній переклади"
+		Ukrainian:"Відсутні переклади"
 		German:"Fehlende Übersetzung"
 		Korean:"미완성 번역 목록:"
 }
