@@ -1,4 +1,4 @@
-# Overview
+# Major classes
 
 Civ, and therefore Unciv, is a game with endless interconnectivity - everything affects everything else.
 
