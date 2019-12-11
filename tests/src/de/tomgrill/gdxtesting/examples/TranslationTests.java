@@ -2,6 +2,10 @@
 
 package de.tomgrill.gdxtesting.examples;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
+import com.unciv.models.gamebasics.Nation;
 import com.unciv.models.gamebasics.Ruleset;
 
 import org.junit.Test;
@@ -83,5 +87,13 @@ public class TranslationTests {
 		return allBuildingsHaveTranslation;
 	}
 
+	@Test
+	public void allTranslatedNationsFilesAreSerializable() {
+		for(FileHandle file : Gdx.files.internal("jsons/Nations").list()){
+			ruleSet.getFromJson(new Array<Nation>().getClass(), file.path());
+		}
+		assertTrue("This test will only pass when there is a translation for all promotions",
+				true);
+	}
 
 }
