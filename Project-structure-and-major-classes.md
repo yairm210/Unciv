@@ -16,6 +16,8 @@ In order to have some semblance of order, we'll go over the main classes in the 
 
 So yes, you can - for instance - get the center tile of a city, a TileInfo, directly from CityInfo. But delving into all the connections would only harm the point of this overview, that's what the actual code is for ;)
 
+The Game State:
+
 * GameInfo
     * CivilizationInfo
         * CityInfo
@@ -24,6 +26,12 @@ So yes, you can - for instance - get the center tile of a city, a TileInfo, dire
             * MapUnit
     * RuleSet (unique in that it is not part of the game state)
 
+The UI:
+
+* WorldScreen
+* CityScree
+* MapEditorScreen
+* Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen
 
 # The Game - `GameInfo`
 
@@ -110,3 +118,31 @@ The various objects are:
 There are also Translations in the Ruleset, but they technically have nothing to do with the game state but rather with the UI display.
 
 The information for all of these is in json files in `android\assets\jsons`
+
+# UI
+
+`UncivGame` is the 'base' class for the UI, from which everything starts, but it itself doesn't do much.
+
+When we change a screen, we're changing a value in UncivGame, the interesting stuff happens in the screens themselves.
+
+# The World Screen - `WorldScreen`
+
+90% of the game is spent on this screen, so naturally it's the fullest, with the most things happening.
+
+This is the main hub of the game, with all other screens being opened from it, and closing back to reveal it.
+
+Most notable are:
+* The map itself - a `TileMapHolder` - with each of the rendered tiles being a `TileGroup`
+* The information panels - `WorldScreenTopBar` for stats and resources, `UnitTable` for the currently selected unit, `TileInfoTable` or the currently selected tile, `BattleTable` for battle simulation, and `NotificationsScroll` for the notifications
+* The minimap - `MinimapHolder`
+* Buttons linking to other screens - to the `TechPickerScreen`, `EmpireOverviewScreen`, and `PolicyPickerScreen`
+* The almighty Next Turn button
+
+# The city screen - `CityScreen`
+
+The second-most important screen. 
+
+Notable parts:
+* the City Stats table - should definitely be its own class come to think of it
+* The construction list and current construction (bottom left) - `ConstructionsTable`
+* Existing buildings, specialists and stats drilldown - `CityInfoTable`
