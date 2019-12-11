@@ -54,9 +54,11 @@
 }
 
 	"Map options":{
+		Ukrainian:"Налаштування мапи!"
 	}
 	
 	"Game options":{
+		Ukrainian:"Налаштування гри!"
 	}
 
 	"Map type":{
@@ -77,7 +79,7 @@
 	}
 
 	"Map generation type": {
-
+		Ukrainian:"Тип генерації мап"
 	}
 
 	"Number of city-states":{
@@ -130,6 +132,7 @@
 		Portuguese:"Sem ruínas antigas"
 		French:"Aucune ruine ancienne"
 		Korean:"고대 유적 없음"
+		Ukrainian:"Жодної древньої руїни"
 	}
 
 	"Victory conditions": {
@@ -1192,6 +1195,7 @@
 		Portuguese:"Volume da música"
 		French:"Volume de la musique"
 		Korean:"음악 음량"
+		Ukrainian:"Гучність музики"
 }
 
 	"Download music":{
@@ -1204,6 +1208,7 @@
 		Portuguese:"Baixar música"
 		French:"Télécharger la musique"
 		Korean:"음악 다운로드"
+		Ukrainian:"Завантажити музику"
 }
 
 	"Downloading...": {
@@ -1216,6 +1221,7 @@
 		Portuguese:"Transferência em andamento..."
 		French:"Téléchargement..."
 		Korean:"다운로드 중..."
+		Ukrainian:"Завантаження…"
 }
 
 	"Could not download music!": {
@@ -1228,6 +1234,7 @@
 		Portuguese:"Não foi possível baixar!"
 		French:"Imposible de télécharger la musique !"
 		Korean:"음악을 다운로드 할 수 없습니다!"
+		Ukrainian:"Не вдалося завантажити музику"
 }
 
 	"Show":{
