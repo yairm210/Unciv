@@ -24,6 +24,7 @@
 		Czech:"'Začalo to obděláváním půdy, ostatní umění následovaly. Farmáři jsou tedy zakladatelé lidské civilizace.' - Daniel Webster"
 		Russian:"'Лишь на возделанной почве расцветают другие искусства. Поэтому фермеры — основатели цивилизации.' - Даниэль Уэбстер"
 		Korean:"'경작지가 생기는 곳에 다른 기술과 예술이 따라오기 마련이다. 따라서 농부야말로 바로 인간 문명의 선구자다.' - 데니얼 웹스터"
+		French:"'Là où débute le travail du sol, d'autres arts suivent. Les agriculteurs sont donc les fondateurs de la civilisation humaine' - Daniel Webster"
 	}
 
 	"Pottery":{
@@ -49,6 +50,7 @@
 		Czech:"'Běda tomu, kdo se chce přít se svým tvůrcem, střep z hliněných střepů!' - Bible Izajáš, 45:9"
 		Russian:"'Разве скажет глиняный сосуд гончару: Что ты делаешь?' - книга Исайи, 45:9"
 		Korean:"'진흙이 토기장이에게 이렇게 저렇게 만들어 달라 스스로 요구할 수 있겠느냐?' - 성경, 이사야서 45장 9절"
+		French:"'L'argile dit-elle à celui qui la façonne: Que fais-tu ?' - Bible Ésaïe 45:9"
 	}
 
 	"Animal Husbandry":{
@@ -74,6 +76,7 @@
 		Czech: "'Mlátícímu dobytčeti nedáš náhubek.' - Bible Mojžíšova 25:4"
 		Russian:"'Не заграждай рта волу, когда он молотит.' - Второзаконие 25:4"
 		Korean:"'곡식을 밟아 알갱이를 만드는 소의 주둥이에 마개를 씌우지 말라.' - - 성경, 신명기 25장 4절"
+		French:"'Tu n'emmuselleras point le boeuf, quand il foulera le grain.' - Bible Deuteronome 25:4"
 	}
 
 	"Archery":{
@@ -99,6 +102,7 @@
 		Czech:"'Dřík šípu byl opeřen orlím peřím, často dáváme nepřátelům prostředky na vlastní zničení' - Ezop"
 		Russian:"'Оперение на древке стрелы было сделано из орлиного пера. Мы сами вкладываем в руки врагов средства к своему уничтожению.' - Эзоп"
 		Korean:"'화살대에는 독수리 깃털이 달려있다. 우리는 우리 스스로를 파멸시킬 수단을 그대로 적에게 줄 때가 많다.' - 이솝"
+		French:"'La coche de la flèche a été faite avec l'une des propres plumes de l'aigle, nous donnons souvent à nos ennemis les moyens de notre propre destruction
 	}
 
 	"Mining":{
@@ -124,6 +128,7 @@
 		Czech:"'Pokorní zdědí Zemi, ale ne její nerostné bohatství.' - J. Paul Getty"
 		Russian:"'Кроткие унаследуют землю, но не ее минеральные ресурсы.' - Пол Гетти"
 		Korean:"'온유한 자는 땅을 차지하나, 광물은 차지할 수 없다.' - J. 폴 게티"
+		French:"'Les doux hériteront de la Terre, mais pas de ses droits miniers' - J. Paul Getty"
 	}
 
 	"Sailing":{
@@ -149,6 +154,7 @@
 		Czech:"'Ten, kdo vládne na moři, ten ovládá všechno' - Themistocles"
 		Russian:"'Тот, кто господствует на море, хозяин положения.' - Фемистокл"
 		Korean:"'바다를 지배하는 자가 모든 것을 지배한다.' - 테미스토클레스"
+		French:"'Celui qui a le contrôle des mers a le contrôle de tout.' - Thémistocle"
 	}
 
 	"Calendar":{
@@ -174,6 +180,7 @@
 		Czech:"'Naučiž nás počítati dnů našich, abychom uvodili moudrost v srdce.' - Bible Kralická, 90:12"
 		Russian:"'Научи нас так счислять дни наши, чтобы нам приобрести сердце мудрое.' - Псалом 89:12"
 		Korean:"'저희의 날수를 셀 줄 알도록 가르치소서. 저희가 슬기로운 마음을 얻으리이다.' - 성경, 시편, 90:12"
+		French:"'Enseigne-nous à bien compter nos jours, afin que nous appliquions notre coeur à la sagesse.' - Bible Psaume 90:12"
 	}
 
 	"Writing":{
@@ -199,6 +206,7 @@
 		Czech:"'Kdo zabíjí člověka, zabíjí rozumnou bytost; kdo však zabíjí dobrou knihu, zabíjí rozum sám.' - John Milton"
 		Russian:"'Тот, кто уничтожает книгу, убивает самый разум.' - Джон Мильтон"
 		Korean:"'좋은 책을 찢는 사람은 이성 그 자체를 죽이는 것과 마찬가지다.' - 존 밀턴"
+		French:"'Celui qui détruit un bon livre met fin à sa propre raison.'  - John Milton"
 	}
 
 	"Trapping":{
@@ -224,6 +232,7 @@
 		Czech:"'Ani divoká zvířata, ani putující ptáci se nechytí do stejné pasti dvakrát' - Svatý Jeremiáš"
 		Russian:"'Даже примитивные звери и перелётные птицы не попадают в одни и те же ловушки.' - Джон Мильтон" // not official
 		Korean:"'야만적인 짐승과 떠도는 새도 같은 덫이나 같은 그물에 두 번 걸리지 않는다.' - 성 예로니모"
+		French:"'Même les bêtes féroces et les oiseaux migrateurs ne tombent pas deux fois dans le même piège ou le même filet.' - Saint Jérome"
 	}
 
 	"The Wheel":{
@@ -249,6 +258,7 @@
 		Czech:"'Moudrost a ctnost jsou jako dvě kola vozíku' - Japonské přísloví"
 		Russian:"'Мудрость и добродетель — как два колеса телеги.' - японская пословица"
 		Korean:"'지혜와 미덕은 수레의 두 바퀴와 같다.' - 일본 속담"
+		French:"'La sagesse et la vertue sont comme les deux roues d'un chariot' - Proverbe japonais"
 	}
 
 	"Masonry":{
@@ -274,6 +284,7 @@
 		Czech:"'Jak šťastni jsou ti, jejichž zdi už byly vybudovány!' - Vergilius"
 		Russian:"'Счастливы те, для кого уж возводятся крепкие стены!' - Вергилий, «Энеида»"
 		Korean:"'이미 성벽을 드높은 자들은 얼마나 행복한 것인지!' - 베르길리우스"
+		French:"'Bienheureux sont dont les murs ne cessent jamais de s'élever' - Virgile"
 	}
 
 	"Bronze Working":{
@@ -299,6 +310,7 @@
 		Czech:"'Zde vstoupil Hektor s kopím jedenáct loktů dlouhým v ruce; bronzový hrot před ním se leskl a byl připevněn na špici oštěpu kroužkem ze zlata' - Homér"
 		Russian:"'В двери вступил божественный Гектор; в деснице держал он пику в одиннадцать локтей; далеко на древке сияло медное жало копья и кольцо вкруг него золотое.' - Гомер"
 		Korean:"'헥토르가 19척의 창을 손에 쥐고 들어오네. 황금 고리로 창대에 고정한 청동의 창끝이 그의 앞에서 빛나네.' - 호메로스"
+		French:"'Là Hector entra, avec une lance de onze pieds de long en main ; la pointe de bronze, fixée à la hampe par un anneau d'or,  étincelait devant lui." - Homère"
 	}
 
 ///////// Technologies (Classical Era)
@@ -326,6 +338,7 @@
 		Czech:"'Vyrobil nástroj aby poznal, jestli můsíc svítí úplně či nikoliv.' - Samuel Butler"
 		Russian:"'Он создал новый инструмент. Проверить, месяц есть иль нет.' - Сэмюэль Батлер"
 		Korean:"'그는 달이 열심히 빛나는지 알 수 있는 도구를 만들었다.' - 새뮤얼 버틀러"
+		French:"'Il a fabriqué un instrument pour savoir si c'est la pleine lune ou non.' - Samuel Butler"
 	}
 
 	"Horseback Riding":{
@@ -351,6 +364,7 @@
 		Czech:"'Království za koně!' - Shakespeare (Richard III)"
 		Russian:"'Коня! Коня! Престол мой за коня!' - Уильям Шекспир, «Ричард III»"
 		Korean:"'말! 말! 내 왕국을 줄 테니 말을 다오!' - 셰익스피어 <리처드 3세>"
+		French:"'Un cheval ! Mon royaume pour un cheval !' - Shakespeare (Richard III)"
 	}
 
 	"Mathematics":{
@@ -376,6 +390,7 @@
 		Czech:"'Matematika je bránou a klíčem do světa vědy' - Roger Bacon"
 		Russian:"'Математика — врата и ключ всех наук.' - Роджер Бэкон"
 		Korean:"'수학은 다른 과학으로 가는 문이자 열쇠다.' - 로저 베이컨"
+		French:"'Les mathématiques sont la porte et la clé des sciences.' - Roger Bacon"
 	}
 
 	"Construction":{
@@ -401,6 +416,7 @@
 		Czech:"'Na budově musí být zřetelné tři věci: že stojí na správném místě, že má pevné základy, že je kvalitně postavena.' - Johann Wolfgang von Goethe"
 		Russian:"'Три правила следует помнить при всякой постройке: здание должно стоять на подобающем месте, иметь прочное основание и быть полностью завершено.' - Иоганн Гете"
 		Korean:"'건물에서는 세 가지를 보면 된다. 위치가 올바른가, 토대가 굳건한가, 설계에 충실하게 잘 지어졌는가.' - 요한 볼프강 폰 괴테"
+		French:"'Il faut examiner trois choses dans un bâtiment: qu'il se trouve au bon endroit; qu'il soit solidement bâti; qu'il soit construit avec habilité.' - Johann Wolfgang von Goethe"
 	}
 
 	"Philosophy":{
@@ -426,6 +442,7 @@
 		Czech:"'Existuje jen jedno dobro a to je vědění. Existuje jen jedno zlo a to je nevědomost.' - Sókratés"
 		Russian:"'Есть лишь один бог - знание, и лишь один порок - невежество.' - Сократ"
 		Korean:"'유일한 선은 지식이고, 유일한 악은 무지다.' - 소크라테스"
+		French:"'Il n'y a qu'une bonne chose, la connaissance, et une seule mauvaise, l'ignorance.' - Socrates"
 	} 
 
 	"Currency":{
@@ -451,6 +468,7 @@
 		Czech:"'Je lepší jíst se šťastným srdce, než se soužit v bohatství.' - Amenemope"
 		Russian:"'Лучше хлеб, который съедается с радостным сердцем, чем богатство с заботами.' - Аменемоп"
 		Korean:"'마음이 행복할 때의 빵 한 조각이 불행할 때의 부보다 낫다.' - 아메네모페"
+		French:"'Mieux vaut du pain avec un coeur heureux, que des richesses avec des tracas.' - Aménémopé"
 	}
 
 	"Engineering":{
@@ -476,6 +494,7 @@
 		Czech:"'Instrumentální nebo mechanická věda je ze všech nejušlechtileší a především nejužitešnější.' - Leonardo da Vinci"
 		Russian:"'Механика — самая благородная и, главное, самая полезная из наук.' - Леонардо да Винчи"
 		Korean:"'계기학과 기계학이야말로, 그 무엇보다 고상하고 유용한 과학이다.' - 레오나르도 다 빈치"
+		French:"'La science des instruments et de la mécanique est la plus noble et, par dessus tout, la plus utile.' - Léonard de Vinci"
 	}
 
 	"Iron Working":{
@@ -501,6 +520,7 @@
 		Czech:"'Nečekejte s útokem, dokud se nerozžhaví železo, ale rozžhavte ho údery.' - William Butler Yeats"
 		Russian:"'Не жди, пока железо станет горячим для ковки - но куй, и оно станет горячим.' - Уильям Батлер Йейтс"
 		Korean:"'철이 달았을 때까지 기다렸다 치지 마라. 쳐서 달구라.' - 윌리엄 버틀러 예이츠"
+		French:"'N'attendez pas que le fer soit chaud pour le frapper, mais frapper le pour qu'il soit chaud.' - William Butler Yeats"
 	}
 
 /////////   Technologies (Medieval Era)
@@ -528,6 +548,7 @@
 Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; vědět co si přát; a vědet co mám dělat.' - Tomáš Akvinský"
 		Russian:"'Человеку для спасения нужно знать три вещи: чему он должен верить, чего желать и что делать.' - Фома Аквинский"
 		Korean:"'인간의 구원에는 세 가지가 필요하다. 믿을 것을 아는 것, 추구할 것을 아는 것, 해야 할 것을 아는 것이다.' - 성 토마스 아퀴나스"
+		French:"'Trois choses sont nécessaires au salut de l'homme: savoir ce qu'il doit croire; savoir ce qu'il doit désirer; et savoir ce qu'il doit faire.'- St. Thomas d'Aquin"
 	}
 
 	"Civil Service":{
@@ -553,6 +574,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Jediná věc, která nás ochrání před byrokracií je neefektivnost.' - Eugene McCarthy"
 		Russian:"'Единственное, что нас спасает от бюрократии, это ее неэффективность.' - Юджин Маккарти"
 		Korean:"'관료제의 해악으로부터 우리를 지켜주는 것은 관료제 자체의 비효율성 뿐이다.' - 유진 매카시"
+		French:"'La seule chose qui nous sauve de la bureaucratie est son inefficacité' - Eugene McCarthy"
 	}
 
 	"Enables Open Borders agreements":{
@@ -590,6 +612,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Když přichází obchodníci a kupci, jejich zisky jsou předem stanoveny...' - Sri Guru Granth Sahib"
 		Russian:"'Пришли купцы и торговцы; их прибыли предопределены...' - Шри Гуру Грант Сахиб"
 		Korean:"'상인과 장사치들이 왔으니 그들이 이윤을 남기는 것은 정해진 이치다.' - <스리 구루 그란트 사히브>"
+		French:"'Les marchands et les commerçants sont venus; leurs profits sont préétablis...' - Sri Guru Granth Sahib"
 	}
 
 	"Physics":{
@@ -615,6 +638,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Změřte vše co lze změřit a udělejte měřitelným to, co změřit nelze.' - Galileo Galilei"
 		Russian:"'Измеряй измеримое и делай неизмеримое измеримым.' - Галилео Галилей"
 		Korean:"'잴 수 있는 것은 재고, 잴 수 없는 것은 잴 수 있게 만들라.' - 갈릴레오 갈릴레이"
+		French:"'Mesure ce qui est mesurable et rend mesurable ce qui ne l'est pas." - Galileo Galilée"
 	}
 
 	"Metal Casting":{
@@ -640,6 +664,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Když se kusy bronzu, zlata nebo železa zlomí, kovář je znovu zkuje v ohni a spojení je vytvořeno.' - Sri Guru Granth Sahib"
 		Russian:"'Случись изделию из бронзы, золота или железа сломаться - кузнец сплавит обломки в огне, восстанавливая узы.' - Из книги 'Гратнх Сахиб'"
 		Korean:"'청동이나 금이나 철로 된 물건이 부러지면, 대장장이가 그것을 다시 불로 용접하였고, 그리하니 부러졌던 것이 다시 붙더라.' - <스리 그루 그란스 사히브>"
+		French:"'Quand une pièce, qu'elle soit de bronze, d'or ou de fer, casse, le forgeron les soude à nouveau dans les flammes et le lien est établi.' - Sri Guru Granth Sahib"
 	}
 
 	"Steel":{
@@ -665,6 +690,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'John Henry řekl svému kapitánovi: Člověk nic neznamená, ale muž, a před tím než mě nahradí váš parní stroj, tak zemřu s kladivem v ruce.' - Autor neznámy"
 		Russian:"'Закали свои порывы, / Преврати порывы в сталь / И лети мечтой игривой / Ты в заоблачную даль.' - Сергей Есенин" // Another text in official russian localization
 		Korean:"'존 헨리가 반장에게 말했네, '사람은 그냥 사람이죠, 반장님의 증기 드릴이 날 짓이기기 전에, 내 손에 망치를 쥐고 죽겠소.' - 강철말뚝박이 조 헨리의 발라드'"
+		French:"'John Henry dit à son capitaine, / 'Un homme n'est rien d'autre qu'un homme, / Et avant que je laisse votre foreuse à vapeur m'abattre, / Je mourrai avec le marteau à la main.' - Anonyme : La ballade de John Henry, l'homme au marteau"
 	}
 
 	"Compass":{
@@ -690,6 +716,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Zjistil jsem úžasnou věc o tomto světě. Není podstatné kde stojíme, ale kterým směrem se vydáme.' - Oliver Wendell Holmes"
 		Russian:"'Главное в этом мире не то, где мы стоим, а то, в каком направлении движемся.' - Оливер Уэнделл Холмс"
 		Korean:"'내 생각에 이 세상에서 중요한 것은 우리가 지금 어디 서 있느냐가 아니라, 어느 방향으로 움직이고 있느냐다.' - 올리버 웬델 홈즈"
+		French:"'Je trouve que la grande question de ce monde n'est pas tant où nous sommes que dans quelle direction allons nous ?' - Oliver Wendell Holmes"
 	}
 
 	"Education":{
@@ -715,6 +742,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Vzdělávání je nejlepším opatřením pro stáří.' - Aristoteles"
 		Russian:"'Воспитание - лучший припас к старости.' - Аристотель"
 		Korean:"'교육이 가장 훌륭한 노후 대책이다.' - 아리스토텔레스"
+		French:"'L'éducation est la meilleure des réserves pour les personnes agées.' - Aristote"
 	}
 
 	"Chivalry":{
@@ -740,6 +768,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Kdo vytýhne tento meč z kamene, stane se právoplatným králem Anglie.' - Thomas Malory"
 		Russian:"'Кто вытащит сей меч из-под наковальни, тот и есть по праву рождения король над всей землей английской.' - Сэр Томас Мэлори"
 		Korean:"'이 바위와 납모루에 박힌 검을 뽑는 자는 정당한 영국의 왕이 될지라.' - 토마스 말러리"
+		French:"'Quiconque sortira cette épée de cette pierre et de cette enclume sera le roi légitime de toute l'Angleterre.' - Malory"
 	}
 
 	"Machinery":{
@@ -765,6 +794,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Tisk je nejlepším nástrojem pro osvícení mysli člověka a zlepšení jeho racionálních, morálních a sociálních stránek.' - Thomas Jefferson"
 		Russian:"'Пресса - лучший способ просвещения и улучшения человека как существа мыслящего, нравственного и общительного.' - Томас Джефферсон"
 		Korean:"'인쇄기야말로 인간의 정신을 일깨우는 데, 그리고 이성적, 도덕적, 사회적으로 더 나은 존재가 되게 하는 데 가장 좋은 도구이다.' - 토머스 제퍼슨"
+		French:"'La presse est le meilleur instrument pour illuminer l'esprit humain et l'améliorer en tant qu'être rationnel, moral et social.' - Thomas Jefferson"
 	}
 
 ///////// Technologies (Renaissance Era)
@@ -792,6 +822,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Radostně, do větru napnul Odyseus plachtu, a obratně řídil kormodlo.' - Homér"
 		Russian:"'Сидя на крепком плоту, искусной рукою все время правил рулем Одиссей.' - Гомер"
 		Korean:"'순풍이 불어와 오디세우스는 기쁘게 돛을 펼치고, 키를 잡고 능란하게 배를 몰았다.' -호메로스"
+		French:"'Joyeusement le roi Ulysse déploya sa voile sous la brise, et avec son gouvernail il se dirigea avec habilité' - Homère"
 	}
 
 	"Acoustics":{
@@ -817,6 +848,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Jejich povstání se najednou neslo jako zvuk hromu do dáleka.' - John Milton"
 		Russian:"'Под громовый рык рогов и труб воинственных он повелел поднять свою могучую хоругвь.' - Джон Мильтон"
 		Korean:"'그들이 한꺼번에 일어나는 소리는 마치 멀리서 들려오는 천둥소리 같았다.' - 존 밀턴"
+		French:"'Lorsque qu'ils se levaient tous ensemble, le son était comme un tonnerre rugissant au loin' - Milton"
 	}
 
 	"Banking":{
@@ -842,6 +874,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Štěstí: dobrý bankovní účet, dobrý kuchař a dobré zažívání.' - Jean Jacques Rousseau"
 		Russian:"'Счастье - хороший счет в банке, хороший повар и хорошее пищеварение.' - Жан-Жак Руссо"
 		Korean:"'행복이란 : 두둑한 은행 계좌, 좋은 요리사, 뛰어난 소화력.' - 장 자크 루소"
+		French:"'Le bonheur: un bon compte en banque, un bon cuisinier et une bonne digestion.' - Jean Jacques Rousseau"
 	}
 
 	"Printing Press":{
@@ -867,6 +900,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Je povinností novin tisknout zprávy a nastolit peklo.' - The Chicago Times"
 		Russian:"'Долг газеты - печатать новости и поднимать скандалы.' - 'Чикаго Таймс'"
 		Korean:"'뉴스를 찍어내서 소동을 일으키는 것이 신문의 의무다.' - 시카고 타임즈"
+		French:"'C'est le devoir d'un journal d'imprimer les nouvelles et de soulever l'enfer.' - The Chicago Times"
 	}
 
 	"Gunpowder":{
@@ -892,6 +926,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'V den, kdy se dvě znepřátelené armády budou moci ve vteřině zničit, všechny civilizované národy, jak doufám, zastaví války a pošlou své vojáky domů.' - Alfred Nobel"
 		Russian:"'В тот день, когда у двух армий окажется возможность уничтожить друг друга за считанные секунды, все цивилизованные страны, надо надеяться, отвернутся от войны.' - Альфред Нобель"
 		Korean:"''양측 군대가 1초 안에 서로를 궤멸할 수 있게 되는 날', 그날이 되면 모든 문명국가가 전쟁을 포기하고 군대를 해산할 것이다.' - 알프레드 노벨"
+		French:"'Le jour où deux corps d'armées pourront s'anéantir l'un l'autre en une seconde, toutes les nations civilisées, espérons-le, rechignerons à faire la guerre et désarmerons leurs troupes.' - Alfred Nobel"
 	}
 
 	"Navigation":{
@@ -917,6 +952,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Vítr a vlny jsou vždy na straně nejschopnějších navigátorů.' - Alfred Nobel"
 		Russian:"'Ветер и волны всегда на стороне самых искусных мореходов.' - 'Эдвард Гиббон'"
 		Korean:"'바람과 파도는 언제나 유능한 항해사의 편이다.' - 에드워드 기번"
+		French:"'Les vents et les vagues sont toujours du coté des navigateurs les plus habiles.' - Edward Gibbon"
 	}
 
 	"Architecture":{
@@ -942,6 +978,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Architektura začíná tam, kde končí inženýrství.' - Walter Gropius"
 		Russian:"'Архитектура начинается там, где кончается машина.' - Ле Корбюзье"
 		Korean:"'토목 공학이 끝나는 시점이 바로 건축의 시작이다.' - 월터 그로피우스"
+		French:"'L'architecture commence quand l'ingénierie se termine.' - Walter Gropius"
 	}
 
 	"Economics":{
@@ -967,6 +1004,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Složený úrok je nejsilnější silou ve vesmíru.' - Albert Einstein"
 		Russian:"'Во всей Вселенной нет ничего более могущественного, чем сложный процент.' - Альберт Эйнштейн"
 		Korean:"'복리는 우주 최강의 힘이다.' -알베르트 아인슈타인"
+		French:"'Les intérêts composés sont la force la plus puissante del'univers.'- Albert Einstein"
 	}
 
 	"Metallurgy":{
@@ -992,6 +1030,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Nikdy by nevznikl dobrý nůž ze špatné oceli.' - Benjamin Franklin"
 		Russian:"'Из плохой стали не выковать хорошего клинка.' - Бенджамин Франклин"
 		Korean:"'질 나쁜 강철에서는 질 좋은 칼이 나온 적이 없다.' - 벤저민 프랭클린"
+		French:"'Il n'y a jamais eu de bon couteau fait d'un mauvais acier.'- Benjamin Franklin"
 	}
 
 	"Chemistry":{
@@ -1017,6 +1056,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Kamkoli se podíváme, práce chemiků zvýšila úroveň naší civilizace a zvýšila výrobní kapacitu národa.' - Calvin Coolidge"
 		Russian:"'Куда ни посмотри, химия повсеместно повысила уровень цивилизации и продуктивную способность нации.' - Джон Калвин Кулидж"
 		Korean:"'어떻게 보더라도, 화학자들의 공로로 우리 문명의 수준이 높아졌고 나라의 생산 역량이 증대된 것은 사실이다.' - 캘빈 쿨리지"
+		French:"'Où que nous regardions, le travail du chimiste a fait progresser le niveau de notre civilisation et a augmenté la capacité de production de la nation.' - Calvin Coolidge"
 	}
 
 ///////// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
@@ -1044,6 +1084,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Každý velký pokrok ve vědě pochází z troufalé fantazie.' - John Dewey"
 		Russian:"'Каждый великий успех науки имеет своим истоком великую дерзость воображения.' - Джон Дьюи"
 		Korean:"'과학의 큰 진보는 모두 대담한 상상력에서 비롯되었다.' - 존 듀이"
+		French:"'Chaque grande avancée de la science est issue d'une nouvelle audace de l'imagination' - John Dewey"
 	}
 
 	"Archaeology":{ //it should be in Industrial Age.
@@ -1069,6 +1110,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Ti, kteří si nepamatují svoji minulost, jsou odsouzeni si ji zopakovat.' - George Santayana"
 		Russian:"'Те, кто не помнит своей истории, обречены повторять ее.'- Джордж Сантаяна"
 		Korean:"'과거를 기억하지 않는 자는 과거를 반복할 수 밖에 없다.' - 조지 산타야나"
+		French:"'Ceux qui ne peuvent se souvenir du passé sont condamnés à le répeter.' - George Santayana"
 	}
 
 	"Industrialization":{
@@ -1094,6 +1136,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Industrializace založená na strojích, která se již označuje jako charakteristika našeho věku, je pouze jedním z aspektů revoluce, která je vyvolávána technologií.' - Emily Greene Balch"
 		Russian:"'Индустриализация, уже ставшая неотъемлемой чертой нашего века, - всего лишь *одно* из проявлений революции, которую произвели технические науки.'- Эмили Грин Болч"
 		Korean:"'기계로 인한 산업화는 이미 우리 시대의 특징이 되었지만, 이는 기술 발전이 일으킬 혁명의 극히 일부일 뿐이다.' - 에밀리 그린 볼치"
+		French:"'L'industrialisation basée sur la machinerie, déjà considérée comme une caractéristique de notre époque, n'est qu'un aspect de la révolution que la technologie opère' - Emily Greene Balch"
 	}
 
 	"Rifling":{
@@ -1119,6 +1162,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Je skvělé, že válka je tak příšerná, jinak bychom ji měli příliš rádi.' - Robert E. Lee"
 		Russian:"'Хорошо, что война так ужасна, иначе мы любили бы ее слишком сильно.'- генерал Роберт Ли"
 		Korean:"'전쟁이 그토록 끔찍한 것은 잘된 일이다. 아니면 우리는 전쟁을 좋아하게 될 테니까.' - 로버트 E. 리"
+		French:"'Heureusement que la guerre est si terrible, autrement nous finirions par trop l'aimer.' - Robert E. Lee"
 	}
 
 	"Military Science":{
@@ -1144,6 +1188,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Války mohou být bojovány se zbraněmi, ale vyhrávají je muži. Vítězství získává duch lidí, kteří ho následují, a člověka, který vede.' - George S. Patton"
 		Russian:"'Пусть войны ведутся оружием, выигрывают их люди. К победе приводит боевой дух того, кто ведет за собой, и тех, кто следует.' - Джордж Паттон"
 		Korean:"'전쟁은 무기로 싸우지만, 전쟁에 이기는 것은 사람이다. 승리를 쟁취하는 것은, 따르는 사람과 이끄는 사람의 정신력이다.' - 조지 S. 패튼"
+		French:"'Les guerres peuvent être menées avec des armées, mais elles sont gagnées par des hommes. C'est l'état des hommes qui obéissent  et de celui qui les mène qui conduit à la victoire.' - George S. Patton"
 	}
 
 	"Fertilizer":{
@@ -1169,6 +1214,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Národ, který ničí svou půdu, ničí sám sebe.' - Franklin Delano Roosevelt"
 		Russian:"'Народ, который разрушает свою почву, уничтожает сам себя.' - Франклин Делано Рузвельт"
 		Korean:"'땅을 파괴하는 나라는 자멸한다.' - 프랭클린 델러노 루즈벨트"
+		French:"'La nation qui détruit son sol se détruit elle-même.'- Franklin Delano Roosevelt"
 	}
 
 	"Biology":{
@@ -1194,6 +1240,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Kdyby byl mozek tak jednoduchý, že bychom mu rozuměli, byli bychom tak prostí, že bychom nemohli' - Lyall Watson"
 		Russian:"'Если бы работа мозга была доступна для нашего понимания, мы были бы слишком глупы, чтобы понять.' - Лиалл Уотсон"
 		Korean:"'두뇌가 우리가 이해할 수 있을 만큼 단순했다면, 우리는 너무 단순해서 두뇌를 이해할 수가 없을 것이다.' - 라이얼 왓슨"
+		French:"'Si le cerveau était si simple que nous pouvions le comprendre, nous serions si stupides que nous ne le pourrions pas'- Lyall Watson"
 	}
 
 	"Electricity":{
@@ -1219,6 +1266,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Je to skutečnost, nebo můj sen, že svět se stal díky elektřině obrovským nervem pulsujícím tisíce kilometrů během zlomku času.' - Nathaniel Hawthorne"
 		Russian:"'Верно ль - или мне почудилось? - что электричество преобразило мир вещей в гигантский трепещущий нерв, раскинувшийся на сотни километров в одно мгновение?' - Натаниель Готорн"
 		Korean:"'전기로 인해 물질세계가 숨 막히는 속도로 수천 마일을 진동하는 하나의 거대한 신경이 되었다는 것, 그것이 사실인가 나의 꿈인가?' - 너대니얼 호손"
+		French:"'Est-ce un fait - ou en ai-je rêvé - que, grâce à l'électricité, le monde de la matière est devenu un grand nerf, vibrant à des milliers de kilomètres en un moment de souffle haletant ?' - Nathaniel Hawthorne"
 	}
 
 	"Steam Power":{
@@ -1244,6 +1292,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Západní národy doufají, že se prostřednictvím parní komunikace stane celý svět jednou velkoiu rodinou.' - Townsend Harris"
 		Russian:"'Западные народы надеются, что паровая тяга сделает весь мир большой семьей' - Таунсенд Харрис"
 		Korean:"'서양 국가들은 증기 통신을 통해 전 세계가 하나의 가족이 되기를 바란다.' - 타운센드 해리스"
+		French:"'Les nations de l'Ouest espèrent que par le moyens de communication à vapeur le monde entier ne deviendra qu'une seule famille.' - Townsend Harris"
 	}
 
 	"Dynamite":{
@@ -1268,6 +1317,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Jakmile se lidé rozhodnou, že budou mít všechny prostředky k boji proti zlu, jejich dobro se stane nerozeznatelným od zla, které se chystají zničit.' - Christopher Dawson"
 		Russian:"'Стоит человечеству решить, что для борьбы с пороком все средства хороши, как добро становится неотличимым от порока, который было призвано победить' - Кристофер Доусон"
 		Korean:"'악에 대항하기 위해서라면 모든 수단이 용납된다는 판단을 내리는 순간, 선은 애초에 파괴하려고 했던 바로 그 악과 구별할 수 없게 된다.' - 크리스토퍼 도슨"
+		French:"'Aussitôt que les hommes décident que tous les moyens sont bons pour combattre le mal, alors le bien devient indiscernable du mal qu'ils cherchent à détruire.' - Christopher Dawson"
 	}
 
 ///////// Technologies (Modern Era)
@@ -1295,6 +1345,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Bezdomovci před tisicem domů stáli, poblíž tisíce stolů z borovic a chtěli jídlo' - William Wordsworth"
 		Russian:"'Метели, снега и туманы / Покорны морозу всегда, / Пойду на моря-окияны / -Построю дворцы изо льда' - Николай Некрасов" // Another text in localization
 		Korean:"'집이 없는 나는 천 채의 집 근처에 서서, 천 개의 식탁 옆에서 음식을 애타게 구했다.' - 윌리엄 워즈워드"
+		French:"'Et sans-abri à coté d'un millier de maisons où je me trouvais, et à coté d'un millier de tables qui désiraient et voulaient de la nourriture'- William Wordsworth"
 	}
 
 	"Replaceable Parts":{
@@ -1320,6 +1371,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Russian:"'Никакое дело не покажется невыполнимым, если разбить его на мелкие части' - Генри Форд"
 
 		Korean:"'매사를 여러 개의 작은 일로 쪼개면 특별히 어려울 일이 없다.' - 헨리 포드"
+		French:"'Rien n'est particulièrement ardu si vous le divisez en petites tâches.' - Henry Ford"
 	}
 
 	"Radio":{
@@ -1345,6 +1397,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Celá země byla propojena rádiem. Všichni jsme zažili stejné hrdiny a komiky a zpěváky. Byli to velikáni.' - Woody Allen"
 		Russian:"'Радио объединяло всю страну. Мы все росли на одних исполнителях, героях и юмористах' - Вуди Аллен, 'Радиодни'"
 		Korean:"'전국이 라디오 덕분에 하나로 연결되었다. 우리는 모두 같은 영웅과 같은 코미디언, 같은 가수를 경험했다. 그 사람들은 거인이었다.' - 우디 앨런"
+		French:"'Le pays entier était lié ensemble par la radio. Nous avons tous connus les mêmes héros, comédiens et chanteurs. Ils étaient des géants.'- Woody Allen"
 	}
 
 	"Combustion":{
@@ -1370,6 +1423,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Každý muž, který dokáže bezpečně řídit při líbání krásné dívky, jednoduše nevěnuje polibku pozornost, kterou si zaslouží.' - Albert Einstein"
 		Russian:"'Мужчина, который может спокойно вести машину, одновременно целуя красотку, просто не уделяет поцелую должного внимания.' - Альберт Эйнштейн"
 		Korean:"'아름다운 여자에게 키스하면서 운전을 할 수 있는 남자는 키스에 충분히 집중을 안 하고 있는 것이다.' - 알베르트 아인슈타인"
+		French:"'Tout homme qui peut conduire en toute sécurité pendant qu'il embrasse une jolie fille ne donne simplement pas à ce baiser l'attention qu'il mérite.' - Albert Einstein"
 	}
 
 	"Plastics":{
@@ -1395,6 +1449,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Bene, chci ti říct jedno slovo, jediné slovo: plasty.' - Buck Henry a Calder Willingham, Absolvent"
 		Russian:"'Все на свете из пластмассы, и вокруг пластмассовая жизнь.' - группа 'Сплин'" //Another text
 		Korean:"'벤, 내가 딱 한마디만 하마, 딱 한 마디만. 플라스틱이라구.' - 벅 헨리와 콜더 윌링엄, <졸업>"
+		French:"'Ben, je veux te dire un mot, juste un mot : plastique.' - Buck Henry and Calder Willingham, le diplômé."
 	}
 
 	"Electronics":{
@@ -1420,6 +1475,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Je zde základní princip o spotřební elektronice: Je pořád výkonnější a neustále levnější.' - Trip Hawkins"
 		Russian:"'Потребительские электротовары подчиняются простому принципу: они становятся все мощнее и все дешевле.' - Трип Хокинс"
 		Korean:"'전자 제품에는 한 가지 기본 원칙이 있다. 기능은 계속 강력해지고 가격은 계속 내려간다.' - 트립 호킨스"
+		French:"'C'est un principe de base du commerce éléctronique : c'est toujours plus puissant et c'est toujours moins cher tout le temps.' - Trip Hawkins"
 	}
 
 	"Ballistics":{
@@ -1444,6 +1500,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Muži, stejně jako kulky, dojdou nejdál, pokud jsouuhlazení.' - Jean Paul"
 		Russian:"'Люди, подобно пулям, чем лучше обработаны, тем дальше летят.' - Жан Поль"
 		Korean:"'사람은 총알과 같아서 매끄러울수록 좋다.' - 장 폴"
+		French:"'Les hommes, comme les balles, vont plus loin quand ils sont plus réguliers.' - Jean Paul"
 	}
 
 	"Mass Media":{
@@ -1485,6 +1542,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'' - "
 		Russian:"'Воздухоплавание не было ни наукой, ни отраслью промышленности. Оно было чудом.' - Игорь Сикорский"
 		Korean:"'항공학은 산업도 과학도 아니었다. 그것은 기적이었다.' - 이고르 시코르스키"
+		French:"'L'aéronautique n'était ni une industrie ni une science. C'était un miracle.' - Igor Sikorsky"
 	}
 
 	"'The introduction of so powerful an agent as steam to a carriage on wheels will make a great change in the situation of man.' - Thomas Jefferson":{//"Railroad" Technology quotes, it has been translated somewhere.
@@ -1494,6 +1552,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Zavedení něčeho tak mocného jako je pára do vozu na kolech, bude velkou změnou pro člověka.' - Thomas Jefferson"
 		Russian:"'Применение к колесному транспорту столь мощной движущей силы, как пар, радикально изменит положение человечества.' - Томас Джефферсон"
 		Korean:"'증기와 같이 강력한 힘이 바퀴 달린 마차에 적용된다면, 인간의 생활이 크게 변화할 것이다.' - 토머스 제퍼슨"
+		French:"'L'introduction d'un agent aussi puissant que la vapeur à un chariot sur roues changera grandement la situation de l'homme' - Thomas Jefferson"
 	}
 
 ///////// Technologies (Information Era)
@@ -1521,6 +1580,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'V ničem se lidé k božstvům blíží více, než když dávají lidem zdraví.' - Cicero"
 		Russian:"'Люди более всего приближаются к богам именно тогда, когда даруют людям спасение.' - Марк Туллий Цицерон"
 		Korean:"'인간을 건강하게 해주는 일에서만큼은 인간이 거의 신에 가깝다.' - 키케로"
+		French:"'En rien les hommes ne s'approchent plus des dieux qu'en donnant la santé aux hommes' - Cicéron"
 	}
 
 	"Radar":{
@@ -1542,6 +1602,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Vize je umění, vidět věci neviditelné' - Jonathan Swift"
 		Russian:"'Дальновидность - искусство узреть незримое' - Джонатан Свифт"
 		Korean:"'비전이란 보이지 않는 것을 보는 기술이다.' - 조너선 스위프트"
+		French:"'La vision est l'art de voir les choses invisibles.'- Jonathan Swift"
 	}
 
 	"Atomic Theory":{
@@ -1567,6 +1628,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Uvolnění síly atomu změnilo všechno zachraňující naše způsoby myšlení a tak jsme se posunuli k neporovnatelným katastrofám.' - Albert Einstein"
 		Czech:"'Высвобожденная ядерная энергия изменила все, кроме нашего мышления. Поэтому мы медленно близимся к катастрофе невиданных масштабов.' - Альберт Эйнштейн"
 		Korean:"'자유로워진 원자의 힘이 우리의 사고 방식을 제외하고는 모든 것을 바꾸어 놓았고, 그리하여 우리는 피할 수 없는 파국을 향해 치닫게 되었다.' - 알베르트 아인슈타인'"
+		French:"'La libération du pouvoir de l'atome a tout changé sauf nos modes de pensée, et nous dérivons ainsi vers des catastrophes sans précédent.'- Albert Einstein"
 	}
 
 	"Computers":{
@@ -1592,6 +1654,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Počítače jsou jako bohové Starého zákona: spousta pravidel a žádné milosrdenství.' - Joseph Campbell"
 		Russian:"'Компьютеры похожи на ветхозаветных богов: сплошные правила и ни капли жалости.' - Дж. Кэмпбелл"
 		Korean:"'컴퓨터는 구약 성서의 신들과도 같아서, 규칙만 많고 자비는 없다.' - 조지프 캠벨"
+		French:"'Les ordinateurs sont comme les dieux de l'ancien testament : beaucoup de règles et aucune pitié.' - Joseph Campbell"
 	}
 
 	"Mobile Tactics":{
@@ -1613,6 +1676,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Všichni lidé vidí tyto taktiky, díky nimž dobývám, ale to, co nikdo nevidí, je strategie, z níž se rodí vítězství.' - Sun Tzu"
 		Russian:"'Все воины знают форму, благодаря которой мы добиваемся победы, но никто не знает той формы, с помощью которой мы управляем победой.' - Сунь Цзы"
 		Korean:"'내가 설명한 병법은 누구나 알 수 있다. 실전에서 승리하려면 어떤 병법을 써야 할지 아는 사람은 없다.' - 손자"
+		French:"'Tous les hommes peuvent observer les tactiques par lesquelles je suis vainqueur, mais ce que personne ne peut voir, c'est la stratégie à partir de laquelle j'ai développé la victoire.'- Sun Tzu"
 	}
 
 	"Combined Arms":{
@@ -1636,6 +1700,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Kořenem zla není konstruování nových, strašlivějších zbraní. Je to dubyvatelský duch.' - Ludwig von Mises"
 		Russian:"'Корень зла лежит не в создании нового, более смертоносного оружия, а в духе завоевания.' - Людвиг фон Мизес"
 		Korean:"'모든 악의 근원은 새롭고 끔찍한 무기를 발명하는 행위가 아니라 인간의 정복욕이다.' - 루트비히 폰 미제스"
+		French:"'La racine du mal n'est pas dans la construction de nouvelles armes redoutables. Il est dans l'esprit de la conquête.' - Ludwig von Mises"
 	}
 
 	"Nuclear Fission":{
@@ -1661,6 +1726,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Stávám se smrtí, ničitelem světů.' - J. Robert Oppenheimer"
 		Russian:"'И я стану Смертью, разрушителем миров.' - Роберт Оппенгеймер"
 		Korean:"'나는 이제 세상의 파괴자, 죽음의 신이 되었도다.' - J. 로버트 오펜하이머"
+		French:"'Je deviens la Mort, le destructeur des mondes.' - J. Robert Oppenheimer"
 	}
 
 	"Ecology":{
@@ -1686,6 +1752,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Teprve v okamžiku, který představuje současné století, získal jeden druh, člověk, významnou sílu změnit povahu svého světa.' - Rachel Carson"
 		Russian:"'В нашем столетии один вид - человек - стал достаточно могущественным для того, чтобы изменять окружающую среду.' - Рейчел Карсон"
 		Korean:"'어떤 한 생물종이 환경을 변형시키는 힘을 얻게 된 것은 이 세기에 들어서이며, 그것은 바로 인간이다.' - 레이첼 카슨"
+		French:"'Ce n'est que dans le laps de temps représenté par le siècle actuel qu'une seule espèce, l'homme, a acquis un pouvoir significatif pour modifier la nature de son monde.' - Rachel Carson"
 	}
 
 	"Rocketry":{
@@ -1711,6 +1778,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Pro raketové experimenty je dobré držet se prvidla: Vždycky předpokládejte, že to vybouchne.' - Astronautický časopis, 1937"
 		Russian:"'Вот верное правило ракетостроения: всегда рассчитывайте на то, что в ходе эксперимента ракета взорвется.' - Журнал 'Астронавтика', 1937"
 		Korean:"'로켓으로 실험하는 사람이 꼭 염두에 둬야 할 점은 그것이 언제든지 폭발할 수 있음을 가정해야 한다는 것이다.' - 잡지 <Astronautics>, 1937년"
+		French:"'Une bonne règle à suivre pour ceux qui font des expériences sur les fusées : supposer toujours que cela va exploser.' - Magazine Astronautique, 1937"
 	}
 
 ///////// Technologies (Future Era)
@@ -1738,6 +1806,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'1. Robot nesmí člověku ublížit, ani nesmí v důsledku nečinnosti dovolit ublížit člověku. 2. Robot se musí řídit všemi příkazy, které mu byly dány lidmi, s výjimkou případů, kdy by takové příkazy byly v rozporu s prvním zákonem. 3. Robot musí chránit svou vlastní existenci, pokud taková ochrana není v rozporu s prvním nebo druhým zákonem.' - Isaac Asimov"
 		Russian:"'1. Робот не может причинить вреда человеку или своим бездействием допустить, чтобы человеку был причинен вред. 2. Робот должен повиноваться всем приказам, которые дает человек, кроме тех случаев, когда эти приказы противоречат Первому Закону. 3. Робот должен заботиться о своей безопасности в той мере, в которой это не противоречит Первому и Второму Законам.' - Айзек Азимов"
 		Korean:"'1. 로봇은 인간을 해치거나 인간이 해를 입도록 내버려둬서는 안된다. 2. 로봇은 명령이 제1규칙과 모순되지 않는 한 인간이 내리는 모든 명령에 복종해야 한다. 3. 로봇은 제1, 2규칙과 모순되지 않는 한 자신을 보호해야 한다.' - 아이작 아시모프"
+		French:"'1. Un robot ne peut porter atteinte à un être humain, ni, en restant passif, permettre qu'un être humain soit exposé au danger. 2. Un robot doit obéir aux ordres qui lui sont donnés par un être humain, sauf si de tels ordres entrent en conflit avec la première loi. 3. Un robot doit protéger son existence tant que cette protection n'entre pas en conflit avec la première ou la deuxième loi.' - Isaac Asimov"
 	}
 
 	"Lasers":{
@@ -1760,6 +1829,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Z pověření té první šelmy vykonává veškerou její moc. Nutí zemi a její obyvatele, aby klekali před první šelmou, které se zahojila její smrtelná rána.' - Svatá bible, 13:12"
 		Russian:"'Ночь прошла, а день приблизился: итак отвергнем дела тьмы и облечемся в оружия света.' - Послание к Римлянам, 13:12"
 		Korean:"'밤이 깊고 낮이 가까왔으니 그러므로 우리가 어둠의 일을 벗고 빛의 갑옷을 입자.' - 성경: 로마서, 13:12"
+		French:"'La nuit est avancée, le jour approche. Dépouillons-nous donc des oeuvres des ténèbres, et revêtons les armes de la lumière.' - La Saint Bible Romains 13:12"
 	}
 
 	"Nanotechnology":{
@@ -1785,6 +1855,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Očekává se, že vývoj nanotechnologií bude znamenat daleko větší dopad, než který na naše životy měla elektronická revoluce.' - Richard Schwartz"
 		Russian:"'Нанотехнологии, вероятно, наложат на нашу жизнь даже больший отпечаток, чем появление электронных приборов.' - Ричард Шварц"
 		Korean:"'나노기술의 영향은 전자공학 혁명이 우리 삶에 미친 영향보다 더 클 것이다.' - 리처드 슈워츠"
+		French:"'L'impact attendu des nouvelles technologies sera supérieur à celui que la révolution électronique a eu sur nos vies.' - Richard Schwartz"
 	}
 
 	"Satellites":{
@@ -1810,6 +1881,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Nyní, nějakým novým způsobem, obloha vypadá úplně jinak.' - Lyndon B. Johnson"
 		Russian:"'Теперь вдруг небо выглядело почти чужим.' - Линдон Джонсон"
 		Korean:"'왠지, 조금은 새로운 방향으로, 하늘이 아주 낯설어 보였다.' - 린든 B. 존슨"
+		French:"'Maintenant, en quelque sorte, d'une nouvelle manière, le ciel est pratiquement devenu extraterrestre' - Lyndon B. Johnson"
 	}
 
 	"Particle Physics":{
@@ -1835,6 +1907,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Síla, kterou se přitahují každé dva hmotné body ve Vesmíru, je přímo úměrná součinu jejich hmotností a nepřímo úměrná čtverci vzdálenosti mezi nimi.' - Isaac Newton"
 		Russian:"'Две частицы притягиваются друг к другу с силой, прямо пропорциональной произведению масс и обратно пропорциональной квадрату расстояния между ними.' - Исаак Ньютон"
 		Korean:"'물질을 구성하는 모든 입자는, 두 입자 사이 거리의 제곱에 반비례하는 힘으로 다른 입자를 끌어당긴다.' - 아이작 뉴턴"
+		French:"'Chaque particule de matière est attirée par ou gravite autour de toutes les autres particules de matière avec une force inversement proportionnelle au carré de leurs distances.' - Isaac Newton"
 	}
 
 	"Future Tech":{
@@ -1860,6 +1933,7 @@ Czech:"'Pro spásu duše jsou nezbytné tři věci: vědět čemu věřit; věd�
 		Czech:"'Myslím, že jsme se shodli, že minulost je za námi.' - George W. Bush"
 		Russian:"'Думаю, мы все согласны, что прошлое закончилось.' - Линдон Джонсон"
 		Korean:"'적어도 이 사실에만큼은 우리 의견이 일치하리라 믿습니다. 과거는 지나갔다는 사실 말입니다.' - 조지 W. 부시"
+		French:"'Je pense que nous sommes d'accord, le passé est terminé.' - George W. Bush"
 	}
 
 	"Who knows what the future holds?":{
