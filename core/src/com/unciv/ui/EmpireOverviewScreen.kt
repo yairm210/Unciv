@@ -423,7 +423,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 labelText = "???"
             }
 
-            civGroup.background = ImageGetter.getTableBackground(backgroundColor)
+            civGroup.background = ImageGetter.getRoundedEdgeTableBackground(backgroundColor)
             val label = labelText.toLabel(labelColor)
             label.setAlignment(Align.center)
 

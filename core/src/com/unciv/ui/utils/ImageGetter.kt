@@ -65,7 +65,7 @@ object ImageGetter {
         else return textureRegionDrawables[whiteDotLocation]!!
     }
 
-    fun getTableBackground(tintColor: Color?=null): Drawable? {
+    fun getRoundedEdgeTableBackground(tintColor: Color?=null): Drawable? {
         val drawable = getDrawable("OtherIcons/civTableBackground")
         drawable.minHeight=0f
         drawable.minWidth=0f

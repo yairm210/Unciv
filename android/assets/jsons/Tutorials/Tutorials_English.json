@@ -2,11 +2,9 @@
 	// Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
 	// Entries starting with a _ will NOT be shown in Civilopedia.
 
-
+	// Civilopedia only, because players said this was too wall-of-text
 	New_Game: [
 		[
-			"Hello, and welcome to Unciv!",
-			"Civilization games can be complex, so we'll  be guiding you step-by-step.",
 			"Your first mission is to found your capital city.",
 			"This is actually an important task because your capital city will probably be your most prosperous.",
 			"Many game bonuses apply only to your capital city and it will probably be the center of your empire."
@@ -26,27 +24,6 @@
 			"You only need to settle right next to resources if you need them immediately – ",
 			"   which might be the case now and then, but you’ll usually have the luxury of time."
 		],
-
-	],
-
-
-	_City_Founded : [
-		[
-			"You have founded a city!",
-			"Cities are the lifeblood of your empire, providing gold and science empire-wide,",
-			"  which are displayed on the top bar.",
-			"You can click the city name to enter  the city screen to assign population,",
-			"  choose production, and see information on the city"
-		],
-	]
-
-	First_Steps : [
-		[
-			"Once you have your first city up and running you’ll be able to start production of a new unit",
-			"  and you’ll be able to begin your research.",
-			"I’m not going to delve too deeply into the research element of the game yet – that will be handled later in the guide –",
-			"  so let’s just talk about production."
-		],
 		[
 			"The first thing coming out of your city should be either a Scout or Warrior."
 			"I generally prefer the Warrior because it can be used for defense and because it can be upgraded",
@@ -56,20 +33,9 @@
 			"If you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.",
 			"Fast expanding is absolutely critical in most games of this type.",
 		],
+
 	],
 
-
-	Next_Turn : [
-		[
-			"Once you've done everything you can in this turn, ",
-			"  click the next turn button on the top right to continue."
-		],
-		[
-			"Each turn, science, culture and gold are added",
-			"  to your civilization, your cities' construction",
-			"  continues, and they may grow in population or area."
-		]
-	],
 
 	Slow_Start: [
 		[
@@ -117,19 +83,6 @@
 		],
 	],
 
-	Technology: [
-		[
-			"Technology is central to your civilization,",
-			" as technological progress brings with it",
-			" more construction options, improvements, and abilities"
-		],
-		[
-			"Most technologies are dependent on other technologies being researched - ",
-			"  but you can choose a technology to aspire to,",
-			"  and your civilization will research the necessary technologies to get there"
-		]
-	],
-
 
 
 
@@ -154,32 +107,6 @@
 
 	]
 
-
-	World_Map: [
-		[
-			"The world map is made up of multiple tiles.",
-			"Each tile can contain units, resources and improvements, which we'll get to later.",
-			"The position of the icon tells you what it signifies.",
-			"For more details, you can click on the tile and see the tile information."
-		]
-	],
-
-
-	Tile_Clicked : [
-		[
-			"Clicking on a tile selects that tile,",
-			"  and displays information on that tile on the bottom-right.",
-			"If the tile contains a unit, that will become the selected unit,"
-			"  and its info and actions will be displayed on the bottom left."
-		]
-	],
-
-	Unit_Selected : [
-		[
-			"When a unit is selected, its information will be displayed on the bottom-left corner.",
-			"The available actions of that unit will appear above the tile information."
-		]
-	],
 
 
 	Unhappiness:  [

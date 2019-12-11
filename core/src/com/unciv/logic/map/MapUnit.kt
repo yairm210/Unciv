@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
@@ -324,6 +325,9 @@ class MapUnit {
         val tile=getTile()
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
+
+        if(civInfo.isCurrentPlayer())
+            UncivGame.Current.settings.addMissionCompleted("Construct an improvement")
         when {
             tile.improvementInProgress!!.startsWith("Remove") -> {
                 val tileImprovement = tile.getTileImprovement()

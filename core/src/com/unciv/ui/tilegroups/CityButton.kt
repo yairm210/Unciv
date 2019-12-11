@@ -47,7 +47,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
-        airUnitTable.background = ImageGetter.getTableBackground(city.civInfo.nation.getOuterColor())
+        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -92,7 +92,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getTableBackground(city.civInfo.nation.getOuterColor())
+        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
 
         if (city.resistanceCounter > 0) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")

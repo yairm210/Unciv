@@ -132,6 +132,7 @@ class UnitActions {
                     unit.currentMovement >0 &&
                             !tile.getTilesInDistance(3).any { it.isCityCenter() })
             {
+                UncivGame.Current.settings.addMissionCompleted("Found city")
                 unit.civInfo.addCity(tile.position)
                 tile.improvement = null
                 unit.destroy()

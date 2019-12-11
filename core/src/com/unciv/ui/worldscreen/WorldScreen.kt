@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
@@ -50,6 +51,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
+    private val missionTable=Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
     var alertPopupIsOpen = false // if we have an alert popup and then we changed screens, the old one shouldn't affect us
@@ -87,6 +89,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         stage.addActor(nextTurnButton)
         stage.addActor(techPolicyandVictoryHolder)
         stage.addActor(notificationsScroll)
+        stage.addActor(missionTable)
 
 
         diplomacyButtonWrapper.defaults().pad(5f)
@@ -99,8 +102,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         stage.addActor(unitActionsTable)
 
-        displayTutorials("New_Game")
-        displayTutorials("World_Map")
+//        displayTutorials("New_Game")
+//        displayTutorials("World_Map")
 
         createNextTurnButton() // needs civ table to be positioned
 
@@ -165,6 +168,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         bottomTileInfoTable.y=if(UncivGame.Current.settings.showMinimap)minimapWrapper.height else 0f
         battleTable.update()
 
+        missionTable.clear()
+        val mission =getCurrentMission()
+        if(mission==""){missionTable.isVisible=false}
+        else {
+            missionTable.add(mission.toLabel()
+                    .apply { setAlignment(Align.center) }).pad(10f)
+            missionTable.pack()
+            missionTable.centerX(stage)
+            missionTable.y = topBar.y - missionTable.height
+        }
+
         minimapWrapper.update(viewingCiv)
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
@@ -200,6 +214,35 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     }
 
+    private fun getCurrentMission(): String {
+        val completedMissions = game.settings.missionsCompleted
+        if(!completedMissions.contains("Move unit"))
+            return "Move a unit!\nClick on a unit > Click on a destination > Click the arrow popup"
+        if(!completedMissions.contains("Found city"))
+            return "Found a city!\nSelect the Settler (flag unit) > Click on 'Found city' (bottom-left corner)"
+        if(!completedMissions.contains("Enter city screen"))
+            return "Enter the city screen!\nClick the city button twice"
+        if(!completedMissions.contains("Pick technology"))
+            return "Pick a technology to research!\nClick on the tech button (greenish, top left) > \n select technology > click 'Research' (bottom right)"
+        if(!completedMissions.contains("Pick construction"))
+            return "Pick a construction!\nEnter city screen > Click on a unit or building (left side)"
+        if(!completedMissions.contains("Pass a turn"))
+            return "Pass a turn!\nCycle through units with 'Next unit' > Click 'Next turn'"
+        if(!completedMissions.contains("Reassign worked tiles"))
+            return "Reassign worked tiles!\nEnter city screen > click the assigned (green) tile to unassign > " +
+                    "\n click an unassigned tile to assign population"
+        if(!completedMissions.contains("Meet another civilization"))
+            return "Meet another civilization!\nExplore the map until you encounter another civilization!"
+        if(!completedMissions.contains("Open the options table"))
+            return "Open the options table!\nClick the menu button (top left) > click 'Options'"
+        if(!completedMissions.contains("Construct an improvement"))
+            return "Construct an improvement!\nConstruct a Worker unit > Move to a Plains or Grassland tile > " +
+                    "\n Choose 'Create improvement' > Choose the farm > " +
+                    "\n Leave the worker there until it's finished"
+
+        return ""
+    }
+
     private fun displayTutorialsOnUpdate() {
         if (UncivGame.Current.settings.hasCrashedRecently) {
             displayTutorials("_GameCrashed")
@@ -207,13 +250,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             UncivGame.Current.settings.hasCrashedRecently = false
             UncivGame.Current.settings.save()
         }
-
-        if (bottomUnitTable.selectedUnit != null) displayTutorials("Unit_Selected")
-        if (viewingCiv.cities.isNotEmpty()){
-            displayTutorials("_City_Founded")
-            displayTutorials("First_Steps")
-        }
-        if (UncivGame.Current.settings.tutorialsShown.contains("Cities")) displayTutorials("Next_Turn")
 
 
         if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
@@ -260,7 +296,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         if (viewingCiv.tech.currentTechnology() == null) {
             val buttonPic = Table()
-            buttonPic.background = ImageGetter.getTableBackground(colorFromRGB(7, 46, 43))
+            buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
             buttonPic.defaults().pad(20f)
             buttonPic.add("{Pick a tech}!".toLabel(Color.WHITE,30))
             techButtonHolder.add(buttonPic)
@@ -312,6 +348,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 return@onClick
             }
 
+            game.settings.addMissionCompleted("Pass a turn")
             nextTurn() // If none of the above
         }
 

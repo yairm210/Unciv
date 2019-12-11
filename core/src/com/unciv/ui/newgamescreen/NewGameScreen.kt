@@ -1,6 +1,7 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
@@ -31,7 +32,8 @@ class NewGameScreen: PickerScreen(){
         setDefaultCloseAction()
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        topTable.add(NewGameScreenOptionsTable(this) { playerPickerTable.update() })
+        val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
+        topTable.add(ScrollPane(newGameScreenOptionsTable)).height(topTable.parent.height)
         topTable.add(playerPickerTable).pad(10f)
         topTable.pack()
         topTable.setFillParent(true)

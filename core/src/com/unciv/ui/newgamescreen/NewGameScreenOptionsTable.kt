@@ -23,7 +23,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultipla
     val ruleset = newGameScreen.ruleSet
 
     init {
-
+        pad(10f)
         add("Map options".toLabel(fontSize = 24)).colspan(2).row()
         addMapTypeSelection()
 

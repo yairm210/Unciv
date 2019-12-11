@@ -48,6 +48,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     init {
         onBackButtonClicked { game.setWorldScreen() }
         addTiles()
+        UncivGame.Current.settings.addMissionCompleted("Enter city screen")
 
         val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
 
@@ -214,8 +215,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 if (!city.isPuppet) {
                     selectedTile = tileInfo
                     if (tileGroup.isWorkable && UncivGame.Current.worldScreen.isPlayersTurn) {
-                        if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
+                        if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
                             city.workedTiles.add(tileInfo.position)
+                            game.settings.addMissionCompleted("Reassign worked tiles")
+                        }
                         else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
                         city.cityStats.update()
                     }
