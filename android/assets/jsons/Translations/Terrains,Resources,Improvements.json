@@ -158,6 +158,7 @@
 		Portuguese:"Pântano"
                 Korean:"습지"
 		Czech:"Bažina"
+		Ukrainian:"Болото"
 }
 
 	"Fallout":{
@@ -167,6 +168,7 @@
 		German:"Verseucht"
 		Portuguese:"Abrigo" // Could be this in portuguese? Makes a bit of sense'
 		Korean:"낙진"
+		Ukrainian:"Радіоактивні опади"
 }
 
 	"Oasis":{
@@ -1063,6 +1065,7 @@
 		German:"Entferne Verseuchung"
 		Portuguese:"Derrubar abrigo"
 		Korean:"낙진 제거"
+		Ukrainian:"Прибрати радіоактивні опади"
 }
 
 	"Ancient ruins":{
@@ -1175,6 +1178,7 @@
 		German:"Moai"
 		French:"Moai"
 		Portuguese:"Moai"
+		Ukrainian:"Моаї"
 }
 
 	"+1 additional Culture for each adjacent Moai":{
@@ -1187,6 +1191,7 @@
 		German:"+1 zusätzliche Kultur für jedes anliegende Moai"
 		French:"+1 en culture pour chaque Moai adjacent"
 		Portuguese:"+1 de Cultura adicional para cada Moai adjacente"
+		Ukrainian:"+1 культура за кожного сусіднього Моаї"
 }
 
 	"Can only be built on Coastal tiles":{
