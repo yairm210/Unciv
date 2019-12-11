@@ -19,4 +19,4 @@ Unciv uses Gradle to specify dependencies and how to run. In the background, the
 
 Congratulations! Unciv should now be running on your computer! Now we can start changing some code, and later we'll see how your changes make it into the main repository!
 
-Now would be a good time to get to know the project in general at [the Project Structure overview!](https://github.com/yairm210/Unciv/wiki/Project-structure-overview)
+Now would be a good time to get to know the project in general at [the Project Structure overview!](https://github.com/yairm210/Unciv/wiki/Project-structure-and-major-classes)
