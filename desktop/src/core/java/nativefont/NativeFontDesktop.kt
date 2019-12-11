@@ -64,7 +64,7 @@ class NativeFontDesktop : NativeFontListener {
                 g.drawString(txt, 0, fm.ascent)
             }
         }
-        var pixmap: Pixmap? = null
+        lateinit var pixmap: Pixmap
         try {
             val buffer = ByteArrayOutputStream()
             ImageIO.write(bi, "png", buffer)
@@ -73,18 +73,18 @@ class NativeFontDesktop : NativeFontListener {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return pixmap!!
+        return pixmap
     }
 
     private fun getFont(vpaint: NativeFontPaint): Font? {
         val isBolo = vpaint.fakeBoldText || vpaint.strokeColor != null
         var font = fonts[vpaint.name]
         if (font == null) {
-            if (vpaint.ttfName == "") {
+            if (vpaint.tTFName == "") {
                 font = Font("", if (isBolo) Font.BOLD else Font.PLAIN, vpaint.textSize)
             } else {
                 try {
-                    val `in` = ByteArrayInputStream(Gdx.files.internal(vpaint.ttfName + if (vpaint.ttfName
+                    val `in` = ByteArrayInputStream(Gdx.files.internal(vpaint.tTFName + if (vpaint.tTFName
                                     .endsWith(".ttf")) "" else ".ttf").readBytes())
                     val fb = BufferedInputStream(`in`)
                     font = Font.createFont(Font.TRUETYPE_FONT, fb).deriveFont(Font.BOLD, vpaint.textSize.toFloat())
