@@ -24,21 +24,14 @@ open class CameraStageBaseScreen : Screen {
     init {
         val width:Float
         val height:Float
-        if(game.settings.resolution=="Auto") {
-            // lower than 750x500 just doesn't manage to fit all the components into the screen
-            if (Gdx.graphics.width >= 750 && Gdx.graphics.height.toFloat() >= 500) {
-                width = Gdx.graphics.width.toFloat()
-                height = Gdx.graphics.height.toFloat()
-            } else {
-                width = 750f
-                height = 500f
-            }
+        if(game.settings.resolution=="Auto") { // Aut-detecting resolution was a BAD IDEA since it needs to be based on DPI AND resolution.
+            game.settings.resolution = "900x600"
+            game.settings.save()
         }
-        else {
-            val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
-            width = resolutions[0]
-            height = resolutions[1]
-        }
+        val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
+        width = resolutions[0]
+        height = resolutions[1]
+
         stage = Stage(ExtendViewport(width, height), batch)
 
     }
