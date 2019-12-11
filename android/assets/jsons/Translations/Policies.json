@@ -13,6 +13,7 @@
 		Czech:"Požadavky"
 		Ukrainian:"Потребує"
 		Korean:"선행 조건"
+		Polish:"Wymagania"
 }
 
 	"Adopt policy":{
@@ -27,6 +28,7 @@
 		German:"Grundsatz verabschieden"
 		Czech:"Přijmout sociální politiku"
 		Korean:"정책 채택"
+		Polish:"Adoptuj politykę" 
 }
 
 	"Adopt free policy":{
@@ -41,6 +43,8 @@
 		German:"Grundsatz verabschieden",
 		Czech:"Přijmout sociální politiku zdarma"
 		Korean:"무료 정책 채택"
+		Polish:"Adoptuj politykę za darmo"
+		
 }
 
 	"Unlocked at":{
@@ -56,6 +60,7 @@
 		Czech:"Odemkne se po"
 		Ukrainian:"Розблокується у"
 		Korean:"등장 시대:"
+		Polish:"Odblokowany w" //Need context
 }
 
 ////// Tradition branch
@@ -74,6 +79,7 @@
 		Ukrainian:"Традиція"
 		German:"Tradition"
 		Korean:"전통"
+		Polish:"Tradycja"
 }
 
 	"+3 culture in capital and increased rate of border expansion":{
@@ -89,6 +95,7 @@
 		Czech:"+3 kulturní body v hlavním městě a rychlejší rozšiřuvání území města"
 		Ukrainian:"+3 культури в столиці і підвищення швидкості розширення кордонів"
 		Korean:"수도에서 문화 +3, 영토 확장 속도 증가"
+		Polish:"+3 do kultury w stolicy i zwiększone tempo rozszerzania granic."
 }
 
 	"Aristocracy":{
@@ -104,6 +111,7 @@
 		Czech:"Aristokracie"
 		Ukrainian:"Аристокатія"
 		Korean:"귀족제"
+		Polish:"Arystokracja"
 }
 
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
@@ -118,6 +126,7 @@
 		French:"+15% production lors de la construction de merveilles, +1 de bonheur pour chaque tranche de 10 citoyens dans chaques villes"
 		Czech:"+15% produkce při stavbě Divu, +1 spokojenost za každých 10 obyvatel ve městě"
 		Korean:"불가사의 건설 시 생산력 +15%, 도시 시민 10명당 행복 +1"
+		Polish:"+15% do produkcji w trakcie budowania codów, +1 do szczęścia za każde 10 mieszkańców w mieście."
 }
 
 	"Legalism":{
@@ -132,6 +141,7 @@
 		French:"Légalisme"
 		Czech:"Legalismus"
 		Korean:"율법 정치"
+		Polish:"Legalizm"
 }
 
 	"Immediately creates a cheapest available cultural building in each of your first 4 cities for free":{
@@ -146,6 +156,7 @@
 		French:"Un monument culturel gratuit dans vos 4 premières villes"
 		Czech:"Okamžitě a zdarma postaví nejlevnější kulturní budovu v každém z prvních 4 založených měst"
 		Korean:"내 최초 4개 도시에 가장 싼 비용의 문화 건물 무료로 건설"
+		Polish:"Natychmiastowo tworzy najtańszą możliwą budowlę kulturową w 4 pierwszych miastach za darmo."
 }
 
 	"Oligarchy":{
@@ -160,6 +171,7 @@
 		French:"Oligarchie"
 		Czech:"Oligarchie"
 		Korean:"과두제"
+		Polish:"Oligarchia"
 }
 
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
@@ -175,6 +187,7 @@
 		Japanese:"都市のユニットは維持費、駐屯地の都市+ 50％の攻撃力"
 		Czech:"Jednotky ve městech nestojí žádný udržovací poplatek, města s posádkou získají +50% k síle"
 		Korean:"도시에 주둔한 유닛의 유지비 없음, 유닛이 주둔중인 도시의 공격력 +50%"
+		Polish:"Jednostki w mieście bez kosztów utrzymania, miasto z garnizonem +50% do siły ataku." //garrisoned city is city with garrison building ?
 }
 
 	"Landed Elite":{
@@ -189,6 +202,7 @@
 		French:"Élite terrienne"
 		Czech:"Pozemkové vlastnictví"
 		Korean:"대지주"
+		Polish:"Elity lądowe"
 }
 
 	"+10% food growth and +2 food in capital":{
@@ -203,6 +217,7 @@
 		French:"Croissance +10% et Nourriture +2 dans la capitale"
 		Czech:"+10% růst a +2 jídla v hlavním městě"
 		Korean:"수도의 식량 생산량 +10%, 식량 +2"
+		Polish:"+10% do wzrostu żywności i +2% do żywności w stolicy."
 }
 
 	"Monarchy":{
@@ -217,6 +232,7 @@
 		French:"Monarchie"
 		Czech:"Monarchie"
 		Korean:"군주제"
+		Polish"Monarchia"
 }
 
 	"+1 gold and -1 unhappiness for every 2 citizens in capital":{
@@ -231,6 +247,7 @@
 		French:"Or +1 et mécontentement -1 tous les 2 citoyens dans la capitale"
 		Czech:"+1 zlato a -1 nespokojenost za každé 2 obyvatele v hlavním městě"
 		Korean:"수도의 시민 2명당 금 +1, 불행 -1"
+		Polish:"+1 do złota i -1 do szczęścia za każdych 2-óch mieszkańców w stolicy."
 }
 
 	"Tradition Complete":{
@@ -245,6 +262,7 @@
 		French:"Tradition complète"
 		Czech:"Kompletní Tradice"
 		Korean:"전통 정책 완성"
+		Polish:"Tradycja Ukończona"
 }
 
 	"+15% growth and +2 food in all cities":{ //You should add an Acqueduct in the first 4 cities
@@ -259,6 +277,7 @@
 		French:"+15% de croissance et +2 nourriture dans toutes les villes"
 		Czech:"+15% růst a +2 jídla ve všech městech"
 		Korean:"모든 도시에서 성장률 +15%, 식량 +2"
+		Polish:"+15% do wzrostu i +2 do żywności we wszystkich miastach."
 }
 
 ////// Liberty branch
@@ -275,6 +294,7 @@
 		French:"Liberté"
 		Czech:"Volnost"
 		Korean:"자유"
+		Polish:"Wolność"
 }
 
 	"+1 culture in every city":{
@@ -289,6 +309,7 @@
 		French:"+1 Culture dans toutes les villes"
 		Czech:"+1 kultura v každém městě"
 		Korean:"모든 도시에서 문화 +1"
+		Polish:"+1 do kultury w każdym mieście"
 }
 
 	"Collective Rule":{
@@ -303,6 +324,7 @@
 		French:"Pouvoir collectif" //official translation, but "règles collectives" is more accurate
 		Czech:"Kolektivní právo"
 		Korean:"집단체제"
+		Polish:"Zasada kolektywu" //I think in polish is other better world on that but I don't remember
 }
 
 	"Training of settlers increased +50% in capital, receive a new settler near the capital":{
@@ -317,6 +339,7 @@
 		French:"La vitesse de formation des colons augmente de 50% dans la capital capitale et un colon gratuit apparaît à proximité"
 		Czech:"Vycvičení osadníka zrychleno o 50% v hlavním městě, zdarma obdržíte osadníka v blízkosti hlavního města"
 		Korean:"수도에서 개척자 생산 속도 +50%, 수도 근처에서 무료 개척자 출현"
+		Polish:"Liczba osadników wzrasta o +50% w stolicy, odbiera nowego osadnika w okolicy stolicy." 
 }
 
 	"Citizenship":{
@@ -331,6 +354,7 @@
 		French:"Citoyenneté"
 		Czech:"Občanství"
 		Korean:"시민권"
+		Polish:"Obywatelstwo"
 }
 
 	"Tile improvement speed +25%, receive a free worker near the capital":{
@@ -345,6 +369,7 @@
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
 		Czech:"Rychlost vylepšení na políčkách vzroste o 25%, zdarma obdržíte dělníka v blízkosti hlavního města"
 		Korean:"타일 시설 건설 속도 +25%, 수도 근처에서 무료 노동자 출현"
+		Polish:"Szybkość ulepszania płytek +25%, odbiera nowego robotnika w okolicy stolicy."
 }
 
 	"Republic":{
@@ -359,6 +384,7 @@
 		French:"République"
 		Czech:"Republika"
 		Korean:"공화국"
+		Polish:"Republika"
 }
 
 	"+1 construction in every city, +5% construction when constructing buildings":{
@@ -373,6 +399,7 @@
 		French:"production +1, et production +5% dans les villes lors de la construction de bâtiments"
 		Czech:"+1 konstrukce v každém městě, +5% konstrukce při stavbě budov"
 		Korean:"모든 도시에서 생산력 +1, 건물 건설 시 추가로 생산력 +5%"
+		Polish::"+1 do produkcji w każdym mieście, +5% do produkcji w trakcie konstruowania budynków."
 }
 
 	"Representation":{
@@ -387,6 +414,7 @@
 		French:"Représentation"
 		Czech:"Zastupitelství"
 		Korean:"대의제"
+		Polish:"Reprezentacja"
 }
 
 	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{
@@ -401,6 +429,7 @@
 		French:"Pour chaque ville fondée, le coût en culture des doctrines augmentera 33% moins vite. Déclenche également un âge d'or"
 		Czech:"Každé založené město zvyšuje cenu sociální politiky o 33% méně než obvykle. Započne zlatý věk."
 		Korean:"도시 수로 인한 정책의 문화 요구치 증가량 -33%, 즉시 황금기 시작"
+		Polish:"W każdym założonym mieście spada kulturowy koszt polityki o 33%. Rozpoczyna złotą epokę." //May be good
 }
 
 	"Meritocracy":{
@@ -415,6 +444,7 @@
 		French:"Méritocratie"
 		Czech:"Meritokracie"
 		Korean:"능력주의"
+		Polish:"Merytokracja"
 }
 
 	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{
@@ -429,6 +459,7 @@
 		French:"Ville nationale reliée à la capitale : bonheur +1, et mécontentement -5% grâce aux citoyens des villes non occupées"
 		Czech:"+1 spokojenost za každé město propojené s hlavním městem, -5% nespokojenosti za obyvatelstvo"
 		Korean:"수도와 연결된 도시마다 행복 +1, 시민으로 인한 불행 -5%"
+		Polish:"+1 do szczęścia za każde miasto połączone ze stolicą,
 }
 
 	"Liberty Complete":{
@@ -443,6 +474,7 @@
 		French:"Liberté complète"
 		Czech:"Kompletní Volnost"
 		Korean:"자유 정책 완성"
+		Polish:"Wolność Ukończona"
 }
 
 	"Free Great Person of choice near capital":{
@@ -457,6 +489,7 @@
 		French:"personnage illustre gratuit près de votre capitale"
 		Czech:"Obdržíte zdarma velkou osobnost dle vašeho výběru v blízkosti hlavního města"
 		Korean:"원하는 위인 하나가 수도에 무료로 출현"
+		Polish:"Darmowy Wielki Człowiek do wyboru przy stolicy"
 }
 
 ////// Honor branch
