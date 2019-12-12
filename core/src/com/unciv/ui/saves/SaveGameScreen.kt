@@ -12,6 +12,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
+import kotlin.concurrent.thread
 
 
 class SaveGameScreen : PickerScreen() {
@@ -55,8 +56,11 @@ class SaveGameScreen : PickerScreen() {
 
         rightSideButton.setText("Save game".tr())
         rightSideButton.onClick {
-            GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
-            UncivGame.Current.setWorldScreen()
+            rightSideButton.setText("Saving...".tr())
+            thread{ 
+                GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
+                UncivGame.Current.setWorldScreen()
+            }
         }
         rightSideButton.enable()
     }

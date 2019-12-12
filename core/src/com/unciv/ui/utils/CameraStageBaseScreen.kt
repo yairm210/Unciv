@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.gamebasics.tr
+import kotlin.concurrent.thread
 
 open class CameraStageBaseScreen : Screen {
 
@@ -128,7 +129,7 @@ fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 fun Actor.onClickEvent(sound: String = "click", function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if (sound != "") Sounds.play(sound)
+            if (sound != "") thread{Sounds.play(sound)}
             function(event, x, y)
         }
     })
