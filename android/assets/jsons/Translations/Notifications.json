@@ -251,6 +251,11 @@
 		Korean:"[cityname]의 영토가 확장되었습니다!"
 	}
 
+
+	"Your Golden Age has ended.":{
+		Italian:"La tua Età dell'Oro è terminata."
+	}
+
 	/////////////	war, fight, ennemy
 
 	"[cityName] has been razed to the ground!":{
