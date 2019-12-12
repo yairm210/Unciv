@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
@@ -254,8 +255,10 @@ class Battle(val gameInfo:GameInfo) {
             return
         }
 
-        if (attackerCiv.isPlayerCivilization())
+        if (attackerCiv.isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
+            UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
+        }
         else {
             city.puppetCity(attackerCiv)
             if (city.population.population < 4) {

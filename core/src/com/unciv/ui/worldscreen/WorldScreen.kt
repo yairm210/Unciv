@@ -223,7 +223,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(!completedTasks.contains("Enter city screen"))
             return "Enter the city screen!\nClick the city button twice"
         if(!completedTasks.contains("Pick technology"))
-            return "Pick a technology to research!\nClick on the tech button (greenish, top left) > \n select technology > click 'Research' (bottom right)"
+            return "Pick a technology to research!\nClick on the tech button (greenish, top left) > " +
+                    "\n select technology > click 'Research' (bottom right)"
         if(!completedTasks.contains("Pick construction"))
             return "Pick a construction!\nEnter city screen > Click on a unit or building (left side)"
         if(!completedTasks.contains("Pass a turn"))
@@ -239,6 +240,18 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return "Construct an improvement!\nConstruct a Worker unit > Move to a Plains or Grassland tile > " +
                     "\n Choose 'Create improvement' > Choose the farm > " +
                     "\n Leave the worker there until it's finished"
+        if(!completedTasks.contains("Create a trade route")
+                && viewingCiv.citiesConnectedToCapital.any { it.civInfo==viewingCiv })
+            game.settings.addCompletedTutorialTask("Create a trade route")
+        if(viewingCiv.cities.size>1 && !completedTasks.contains("Create a trade route"))
+            return "Create a trade route!\nConstruct roads between your capital and another city" +
+                    "\nOr, automate your worker and let him get to that eventually"
+        if(viewingCiv.isAtWar() && !completedTasks.contains("Conquer a city"))
+            return "Conquer a city!\nBring an enemy city down to low health > " +
+                    "\nEnter the city with a melee unit"
+        if(viewingCiv.getCivUnits().any { it.type.isAirUnit() } && !completedTasks.contains("Move an air unit"))
+            return "Move an air unit!\nSelect an air unit > select another city withing range > " +
+                    "\nMove the unit to the other city"
 
         return ""
     }
