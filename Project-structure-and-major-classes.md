@@ -33,7 +33,9 @@ The UI:
 * MapEditorScreen
 * Picker Screens - TechPickerScreen, PolicyPickerScreen, ImprovementPickerScreen, PromotionPickerScreen
 
-# The Game - `GameInfo`
+# Game State
+
+## The Game - `GameInfo`
 
 First off, let's clarify: When we say "The Game", we mean the *state* of the game (what turn it is, who the players are, what each one has etc) and not the *UI* of the game.
 
@@ -50,7 +52,7 @@ When we save the game, or load the game, we're actually serializing and deserial
 
 Most objects in the "state tree" have a transient reference to their parent, meaning the tree can be traversed in-code in all directions, and frequently is.
 
-# A Civilization - `CivilizationInfo`
+## A Civilization - `CivilizationInfo`
 
 This represents one of the players of the game, and NOT a specific nation - meaning, not France, but rather "Player X who is France in this game". In another game, there will be another France.
 
@@ -60,7 +62,7 @@ As one of the focal points of the game, it contains a lot of important informati
  - Which nation this is - references a certain Nation (part of the ruleset)
  - Various Managers for the different aspects of the civilization - `PolicyManager`, `GoldenAgeManager`, `GreatPersonManager`, `TechManager`, `VictoryManager`, `DiplomacyManager`
 
-# A City - `CityInfo`
+## A City - `CityInfo`
 
 This contains the information about a specific city.
 
@@ -70,11 +72,11 @@ Beyond basic information like name, location on map etc, the most important clas
 - Managers for the various aspects - `PopulationManager`, `CityConstructions`, `CityExpansionManager`
 - The tiles controlled and worked by the city - only their locations are permanently saved in the CityInfo, the actual information is in the TileInfo in the TileMap
 
-# The map - `TileMap`
+## The map - `TileMap`
 
 This contains mostly helper functions and acts as a wrapper for the list of tiles it contains
 
-# A tile - `TileInfo`
+## A tile - `TileInfo`
 
 Each tile is comprised of several layers, and so has information for each.
 
@@ -85,7 +87,7 @@ Tiles have, primarily:
 - An improvement built on the tile, if any.  References a certain `TileImprovement` (part of the ruleset)
 - The units that are currently in the tile - `MapUnit`
 
-# A unit on the map - `MapUnit`
+## A unit on the map - `MapUnit`
 
 Unlike buildings, Unit in Unciv has two meanings. One is a *Type* of unit (like Spearman), and one is a specific instance of a unit (say, a Babylonian Spearman, at a certain position, with X health).
 
@@ -96,7 +98,7 @@ Main information:
 - Health and Movement
 - Promotion status - `UnitPromotions`
 
-# Ruleset
+## Ruleset
 
 So far so good - but what of everything that makes Civ, Civ? The units, the buildings, the nations, the improvements etc?
 
@@ -125,7 +127,7 @@ The information for all of these is in json files in `android\assets\jsons`
 
 When we change a screen, we're changing a value in UncivGame, the interesting stuff happens in the screens themselves.
 
-# The World Screen - `WorldScreen`
+## The World Screen - `WorldScreen`
 
 90% of the game is spent on this screen, so naturally it's the fullest, with the most things happening.
 
@@ -138,7 +140,7 @@ Most notable are:
 * Buttons linking to other screens - to the `TechPickerScreen`, `EmpireOverviewScreen`, and `PolicyPickerScreen`
 * The almighty Next Turn button
 
-# The city screen - `CityScreen`
+## The city screen - `CityScreen`
 
 The second-most important screen. 
 
