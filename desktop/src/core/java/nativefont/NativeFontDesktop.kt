@@ -26,16 +26,13 @@ class NativeFontDesktop : NativeFontListener {
             strHeight = vpaint.textSize
             strWidth = strHeight
         }
-        val bi = BufferedImage(strWidth, strHeight,
-                BufferedImage.TYPE_4BYTE_ABGR)
+        val bi = BufferedImage(strWidth, strHeight, BufferedImage.TYPE_4BYTE_ABGR)
         val g = bi.createGraphics()
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.font = font
         when {
             vpaint.strokeColor != null -> { // 描边
-                val v = font!!.createGlyphVector(fm.fontRenderContext,
-                        txt)
+                val v = font!!.createGlyphVector(fm.fontRenderContext, txt)
                 val shape = v.outline
                 g.color = UIManager.getColor(vpaint.color)
                 g.translate(0, fm.ascent)
@@ -54,8 +51,7 @@ class NativeFontDesktop : NativeFontListener {
             vpaint.strikeThruText -> { // 删除线
                 val `as` = AttributedString(txt)
                 `as`.addAttribute(TextAttribute.FONT, font)
-                `as`.addAttribute(TextAttribute.STRIKETHROUGH,
-                        TextAttribute.STRIKETHROUGH_ON)
+                `as`.addAttribute(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON)
                 g.color = UIManager.getColor(vpaint.color)
                 g.drawString(`as`.iterator, 0, fm.ascent)
             }
@@ -84,8 +80,8 @@ class NativeFontDesktop : NativeFontListener {
                 font = Font("", if (isBolo) Font.BOLD else Font.PLAIN, vpaint.textSize)
             } else {
                 try {
-                    val `in` = ByteArrayInputStream(Gdx.files.internal(vpaint.tTFName + if (vpaint.tTFName
-                                    .endsWith(".ttf")) "" else ".ttf").readBytes())
+                    val `in` = ByteArrayInputStream(Gdx.files.internal(vpaint.tTFName +
+                            if (vpaint.tTFName.endsWith(".ttf")) "" else ".ttf").readBytes())
                     val fb = BufferedInputStream(`in`)
                     font = Font.createFont(Font.TRUETYPE_FONT, fb).deriveFont(Font.BOLD, vpaint.textSize.toFloat())
                     fb.close()
