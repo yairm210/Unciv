@@ -573,6 +573,10 @@
 		Korean:"감히 우리의 도시까지 점령하다니!"
 }
 
+	"We applaud your liberation of our conquered cities!":{
+		Italian:"Applaudiamo il fatto che tu abbia liberato alcune nostre città!"
+}
+
 	"Years of peace have strengthened our relations.":{
 		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
 		French:"Les années de paix ont renforcées notre relation"
@@ -789,7 +793,7 @@
 }
 
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
-		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
+		Italian:"Abbiamo notato la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
 		French:"Nous avons remarquez votre nouvelle ville à notre frontière, malgré votre promesse. Cela aura des... conséquences."
 		Polish:"Mimo obietnicy zauważyliśmy twoje nowe miasto w pobliżu naszych granic. Poniesiesz za to konsekwencje"
 		Simplified_Chinese:"尽管你答应了，我们还是注意到你在我们边境附近建立了新城市。如果有不好的影响...这将是你自找的！"
@@ -813,6 +817,7 @@
 	}
 
 	"Your use of nuclear weapons is disgusting!": {
+		Italian:"Siamo disgustati dal tuo uso delle armi nucleari!"
 		Korean:"핵무기 사용을 그만하는 것이 좋지 않겠소!"
 	}
 
