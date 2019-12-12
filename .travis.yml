@@ -24,7 +24,8 @@ cache:
     - $HOME/.android/build-cache
 
 script:
-- ./gradlew test    
+- ./gradlew check
+- ./gradlew tests:test  
 - if [ -n "$TRAVIS_TAG" ]; then
     wget  -O jdk-windows.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip;
     ./gradlew desktop:packrWindows32;

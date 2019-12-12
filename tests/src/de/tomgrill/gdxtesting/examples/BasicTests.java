@@ -3,6 +3,7 @@
 package de.tomgrill.gdxtesting.examples;
 
 import com.badlogic.gdx.Gdx;
+import com.unciv.UncivGame;
 import com.unciv.models.gamebasics.Ruleset;
 
 import org.junit.Test;
@@ -27,6 +28,13 @@ public class BasicTests {
 	public void gameBasicsLoad() {
 		assertTrue("This test will only pass when the jsons can be loaded",
 				new Ruleset(true).getBuildings().size() > 0);
+	}
+
+	@Test
+	public void gameIsNotRunWithDebugModes() {
+		assertTrue("This test will only pass if the game is not run with debug modes",
+				!new UncivGame("").getSuperchargedForDebug()
+						&& !new UncivGame("").getViewEntireMapForDebug());
 	}
 
 
