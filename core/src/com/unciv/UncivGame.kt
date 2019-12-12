@@ -123,7 +123,8 @@ class UncivGame(val version: String) : Game() {
     }
 
     override fun dispose() {
-        GameSaver().autoSave(gameInfo)
+        if(::gameInfo.isInitialized)
+            GameSaver().autoSave(gameInfo)
     }
 
     companion object {

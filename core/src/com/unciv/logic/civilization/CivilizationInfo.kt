@@ -254,6 +254,8 @@ class CivilizationInfo {
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
         popupAlerts.add(PopupAlert(AlertType.FirstContact,otherCiv.civName))
+        if(isCurrentPlayer() || otherCiv.isCurrentPlayer())
+            UncivGame.Current.settings.addMissionCompleted("Meet another civilization")
     }
 
     override fun toString(): String {return civName} // for debug

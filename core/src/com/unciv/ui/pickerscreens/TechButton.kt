@@ -16,7 +16,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
     init {
         touchable = Touchable.enabled
         defaults().pad(10f)
-        background = ImageGetter.getTableBackground()
+        background = ImageGetter.getRoundedEdgeTableBackground()
         if (ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName, 60f))
 
