@@ -104,7 +104,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
-        worldScreen.displayTutorials("Tile_Clicked")
         unitActionOverlay?.remove()
         selectedTile = tileInfo
 
@@ -205,7 +204,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if (dto.unit.currentMovement > 0)
             moveHereButton.onClick(""){
-                UncivGame.Current.settings.addMissionCompleted("Move unit")
+                UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
                 UnitContextMenu(this, dto.unit, dto.tileInfo).onMoveButtonClick()
             }
 

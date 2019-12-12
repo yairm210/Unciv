@@ -10,7 +10,7 @@ class GameSettings {
     var language: String = "English"
     var resolution: String = "900x600"
     var tutorialsShown = ArrayList<String>()
-    var missionsCompleted = ArrayList<String>()
+    var tutorialTasksCompleted = ArrayList<String>()
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
     var musicVolume = 0.5f
@@ -31,8 +31,8 @@ class GameSettings {
         GameSaver().setGeneralSettings(this)
     }
 
-    fun addMissionCompleted(mission:String){
-        missionsCompleted.add(mission)
+    fun addCompletedTutorialTask(tutorialTask:String){
+        tutorialTasksCompleted.add(tutorialTask)
         save()
     }
 }

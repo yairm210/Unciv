@@ -23,14 +23,14 @@ class Tutorials{
     fun displayTutorials(name: String, screen:CameraStageBaseScreen) {
         if (!UncivGame.Current.settings.showTutorials) return
         if (UncivGame.Current.settings.tutorialsShown.contains(name)) return
-        if(tutorialTexts.any { it.name==name }) return // currently showing
 
         var texts: ArrayList<String>
         try {
             texts = getTutorials(name, UncivGame.Current.settings.language)
         } catch (ex: Exception) {
-            texts = ArrayList<String>().apply { add("Could not find matching tutorial!") }
+            texts = ArrayList<String>().apply { add("Could not find matching tutorial: $name") }
         }
+        if(tutorialTexts.any { it.name==name }) return // currently showing
         tutorialTexts.add(Tutorial(name, texts))
         if (!isTutorialShowing) displayTutorial(screen)
     }

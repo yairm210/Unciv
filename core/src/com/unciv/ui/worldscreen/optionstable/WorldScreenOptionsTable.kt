@@ -31,7 +31,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
     var selectedLanguage: String = "English"
 
     init {
-        UncivGame.Current.settings.addMissionCompleted("Open the options table")
+        UncivGame.Current.settings.addCompletedTutorialTask("Open the options table")
         update()
         open()
     }

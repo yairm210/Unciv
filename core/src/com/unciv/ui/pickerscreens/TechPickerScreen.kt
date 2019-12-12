@@ -51,7 +51,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         setButtonsInfo()
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick("paper") {
-            game.settings.addMissionCompleted("Pick technology")
+            game.settings.addCompletedTutorialTask("Pick technology")
             if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
             else civTech.techsToResearch = tempTechsToResearch
 
