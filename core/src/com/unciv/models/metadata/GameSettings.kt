@@ -9,8 +9,8 @@ class GameSettings {
     var singleTapMove: Boolean = false
     var language: String = "English"
     var resolution: String = "900x600"
-    var tutorialsShown = ArrayList<String>()
-    var tutorialTasksCompleted = ArrayList<String>()
+    var tutorialsShown = HashSet<String>()
+    var tutorialTasksCompleted = HashSet<String>()
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
     var musicVolume = 0.5f

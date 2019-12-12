@@ -205,6 +205,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         if (dto.unit.currentMovement > 0)
             moveHereButton.onClick(""){
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
+                if(dto.unit.type.isAirUnit())
+                    UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
                 UnitContextMenu(this, dto.unit, dto.tileInfo).onMoveButtonClick()
             }
 
