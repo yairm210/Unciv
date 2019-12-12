@@ -54,10 +54,12 @@
 }
 
 	"Map options":{
+		Italian:"Opzioni mappa"
 		Ukrainian:"Налаштування мапи!"
 	}
 	
 	"Game options":{
+		Italian:"Opzioni di gioco"
 		Ukrainian:"Налаштування гри!"
 	}
 
@@ -78,7 +80,17 @@
 		Ukrainian:"Тип мапи"
 	}
 
+	
+	"Generated": {
+		Italian:"Generato"
+	}
+
+	"Existing": {
+		Italian:"Esistente"
+	}
+
 	"Map generation type": {
+		Italian:"Tipo generazione mappa"
 		Ukrainian:"Тип генерації мап"
 	}
 
@@ -472,7 +484,7 @@
 	//Civilization select
 
 	"AI":{
-		Italian:"IA"
+		Italian:"IA"//Didn't translate it in Italian?
 		Simplified_Chinese:"电脑",
 		Traditional_Chinese:"電腦",
 		Russian:"ИИ"
@@ -514,7 +526,7 @@
 }
 
 	"Human":{
-		Italian:"Umano"
+		Italian:"Umano"//Didn't translate it in Italian?
 		Simplified_Chinese:"玩家",
 		Traditional_Chinese:"玩家",
 		Russian:"Человек"
@@ -1411,6 +1423,10 @@
 		Portuguese:"Mostrar melhorias de pixels"
 		French:"Afficher les améliorations en pixel-art"
 		Korean:"픽셀 효과 향상"
+}
+
+	"Enable nuclear weapons":{ 
+		Italian:"Abilita armi nucleari"
 }
 
 	"Fontset":{
