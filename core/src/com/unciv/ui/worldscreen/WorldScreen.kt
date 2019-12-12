@@ -51,7 +51,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
-    private val missionTable=Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
+    private val tutorialTaskTable=Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
     var alertPopupIsOpen = false // if we have an alert popup and then we changed screens, the old one shouldn't affect us
@@ -89,7 +89,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         stage.addActor(nextTurnButton)
         stage.addActor(techPolicyandVictoryHolder)
         stage.addActor(notificationsScroll)
-        stage.addActor(missionTable)
+        stage.addActor(tutorialTaskTable)
 
 
         diplomacyButtonWrapper.defaults().pad(5f)
@@ -164,19 +164,20 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         bottomUnitTable.update()
         bottomTileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
-        bottomTileInfoTable.x=stage.width-bottomTileInfoTable.width
-        bottomTileInfoTable.y=if(UncivGame.Current.settings.showMinimap)minimapWrapper.height else 0f
+        bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
+        bottomTileInfoTable.y = if (UncivGame.Current.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
 
-        missionTable.clear()
-        val mission =getCurrentMission()
-        if(mission==""){missionTable.isVisible=false}
-        else {
-            missionTable.add(mission.toLabel()
+        tutorialTaskTable.clear()
+        val tutorialTask = getCurrentTutorialTask()
+        if (tutorialTask == "") {
+            tutorialTaskTable.isVisible = false
+        } else {
+            tutorialTaskTable.add(tutorialTask.toLabel()
                     .apply { setAlignment(Align.center) }).pad(10f)
-            missionTable.pack()
-            missionTable.centerX(stage)
-            missionTable.y = topBar.y - missionTable.height
+            tutorialTaskTable.pack()
+            tutorialTaskTable.centerX(stage)
+            tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
         }
 
         minimapWrapper.update(viewingCiv)
@@ -198,7 +199,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         val isSomethingOpen = tutorials.isTutorialShowing || stage.actors.any { it is TradePopup }
                 || alertPopupIsOpen
-        if(!isSomethingOpen && isPlayersTurn) {
+        if (!isSomethingOpen && isPlayersTurn) {
             when {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
                 viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy() -> game.setScreen(PolicyPickerScreen(this))
@@ -211,31 +212,30 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
-
     }
 
-    private fun getCurrentMission(): String {
-        val completedMissions = game.settings.missionsCompleted
-        if(!completedMissions.contains("Move unit"))
+    private fun getCurrentTutorialTask(): String {
+        val completedTasks = game.settings.tutorialTasksCompleted
+        if(!completedTasks.contains("Move unit"))
             return "Move a unit!\nClick on a unit > Click on a destination > Click the arrow popup"
-        if(!completedMissions.contains("Found city"))
+        if(!completedTasks.contains("Found city"))
             return "Found a city!\nSelect the Settler (flag unit) > Click on 'Found city' (bottom-left corner)"
-        if(!completedMissions.contains("Enter city screen"))
+        if(!completedTasks.contains("Enter city screen"))
             return "Enter the city screen!\nClick the city button twice"
-        if(!completedMissions.contains("Pick technology"))
+        if(!completedTasks.contains("Pick technology"))
             return "Pick a technology to research!\nClick on the tech button (greenish, top left) > \n select technology > click 'Research' (bottom right)"
-        if(!completedMissions.contains("Pick construction"))
+        if(!completedTasks.contains("Pick construction"))
             return "Pick a construction!\nEnter city screen > Click on a unit or building (left side)"
-        if(!completedMissions.contains("Pass a turn"))
+        if(!completedTasks.contains("Pass a turn"))
             return "Pass a turn!\nCycle through units with 'Next unit' > Click 'Next turn'"
-        if(!completedMissions.contains("Reassign worked tiles"))
+        if(!completedTasks.contains("Reassign worked tiles"))
             return "Reassign worked tiles!\nEnter city screen > click the assigned (green) tile to unassign > " +
                     "\n click an unassigned tile to assign population"
-        if(!completedMissions.contains("Meet another civilization"))
+        if(!completedTasks.contains("Meet another civilization"))
             return "Meet another civilization!\nExplore the map until you encounter another civilization!"
-        if(!completedMissions.contains("Open the options table"))
+        if(!completedTasks.contains("Open the options table"))
             return "Open the options table!\nClick the menu button (top left) > click 'Options'"
-        if(!completedMissions.contains("Construct an improvement"))
+        if(!completedTasks.contains("Construct an improvement"))
             return "Construct an improvement!\nConstruct a Worker unit > Move to a Plains or Grassland tile > " +
                     "\n Choose 'Create improvement' > Choose the farm > " +
                     "\n Leave the worker there until it's finished"
@@ -251,7 +251,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             UncivGame.Current.settings.save()
         }
 
-
+        displayTutorials("Introduction")
         if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
             for (enemyCity in viewingCiv.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() }.flatMap { it.cities }) {
@@ -348,7 +348,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 return@onClick
             }
 
-            game.settings.addMissionCompleted("Pass a turn")
+            game.settings.addCompletedTutorialTask("Pass a turn")
             nextTurn() // If none of the above
         }
 
@@ -480,7 +480,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("Luxury_Resource")
         if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("Strategic_Resource")
         if("Enemy_City" !in shownTutorials
-                && gameInfo.civilizations.filter { it!=viewingCiv }
+                && viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
                         .flatMap { it.cities }.any { viewingCiv.exploredTiles.contains(it.location) })
             displayTutorials("Enemy_City")
         if(viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts"))

@@ -55,7 +55,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     cityScreen.city.cityConstructions.currentConstructionIsUserSet = true
                     cityScreen.city.cityStats.update()
                     cityScreen.update()
-                    cityScreen.game.settings.addMissionCompleted("Pick construction")
+                    cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
                 }
             }
 

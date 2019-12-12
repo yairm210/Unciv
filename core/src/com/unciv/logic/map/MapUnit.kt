@@ -327,7 +327,7 @@ class MapUnit {
         if (tile.turnsToImprovement != 0) return
 
         if(civInfo.isCurrentPlayer())
-            UncivGame.Current.settings.addMissionCompleted("Construct an improvement")
+            UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
         when {
             tile.improvementInProgress!!.startsWith("Remove") -> {
                 val tileImprovement = tile.getTileImprovement()

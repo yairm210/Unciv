@@ -255,7 +255,7 @@ class CivilizationInfo {
 
         popupAlerts.add(PopupAlert(AlertType.FirstContact,otherCiv.civName))
         if(isCurrentPlayer() || otherCiv.isCurrentPlayer())
-            UncivGame.Current.settings.addMissionCompleted("Meet another civilization")
+            UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
     }
 
     override fun toString(): String {return civName} // for debug
