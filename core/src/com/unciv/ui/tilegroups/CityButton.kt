@@ -92,7 +92,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val secondaryColor = city.civInfo.nation.getInnerColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
+        val iconcolor = city.civInfo.nation.getOuterColor()
+        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(Color(iconcolor.r, iconcolor.g, iconcolor.b, 0.5f))
 
         if (city.resistanceCounter > 0) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
