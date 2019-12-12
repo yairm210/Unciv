@@ -78,7 +78,8 @@ class GameInfo {
         switchTurn()
 
         while(thisPlayer.playerType==PlayerType.AI){
-            if(!thisPlayer.isDefeated()) NextTurnAutomation().automateCivMoves(thisPlayer)
+            if(thisPlayer.isBarbarian() || !thisPlayer.isDefeated())
+                NextTurnAutomation().automateCivMoves(thisPlayer)
             switchTurn()
         }
 
