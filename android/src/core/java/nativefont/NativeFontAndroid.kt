@@ -20,10 +20,10 @@ class NativeFontAndroid : NativeFontListener {
     override fun getFontPixmap(txt: String, vpaint: NativeFontPaint): Pixmap {
         val paint = Paint()
         if (vpaint.tTFName != "") {
-            Gdx.app.log("app", Gdx.files.internal(vpaint.tTFName
-                    + if (vpaint.tTFName.endsWith(".ttf")) "" else ".ttf").file().path)
-            val fontFace = Typeface.createFromAsset(androidApplication.assets, vpaint.tTFName
-                    + if (vpaint.tTFName.endsWith(".ttf")) "" else ".ttf")
+            Gdx.app.log("app", Gdx.files.internal(vpaint.tTFName +
+                    if (vpaint.tTFName.endsWith(".ttf")) "" else ".ttf").file().path)
+            val fontFace = Typeface.createFromAsset(androidApplication.assets, vpaint.tTFName +
+                    if (vpaint.tTFName.endsWith(".ttf")) "" else ".ttf")
             fontFaces[vpaint.tTFName] = fontFace
             paint.typeface = fontFace
         }
@@ -37,7 +37,7 @@ class NativeFontAndroid : NativeFontListener {
             w = h
         }
         var bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        var canvas: Canvas? = Canvas(bitmap!!)
+        var canvas: Canvas? = Canvas(bitmap)
         // 如果是描边类型
         if (vpaint.strokeColor != null) { // 绘制外层
             paint.color = getColor(vpaint.strokeColor)
