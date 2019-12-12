@@ -76,7 +76,8 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
-    //apply plugin: "kotlin-android" // This seems to have problems in Gradle 4.6
+    apply plugin: "kotlin-android"
+    apply plugin: "kotlin-android-extensions"
 
     configurations { natives }
 
