@@ -49,8 +49,21 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         val buttonTable = Table()
         buttonTable.pad(15f)
+        buttonTable.defaults().pad(10f)
+        val buttonTableScroll = ScrollPane(buttonTable)
+
+        val goToGameButton = TextButton("Close".tr(), skin)
+        goToGameButton.onClick {
+            game.setWorldScreen()
+            dispose()
+        }
+
+        val topTable = Table()
+        topTable.add(goToGameButton).pad(10f)
+        topTable.add(buttonTableScroll)
+
         val entryTable = Table()
-        val splitPane = SplitPane(buttonTable, entryTable, true, skin)
+        val splitPane = SplitPane(topTable, entryTable, true, skin)
         splitPane.splitAmount = 0.2f
         splitPane.setFillParent(true)
 
@@ -58,12 +71,6 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         description.setWrap(true)
 
-        val goToGameButton = TextButton("Close".tr(), skin)
-        goToGameButton.onClick {
-                game.setWorldScreen()
-                dispose()
-            }
-        buttonTable.add(goToGameButton)
 
 
 

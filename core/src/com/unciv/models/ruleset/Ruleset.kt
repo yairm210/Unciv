@@ -118,24 +118,25 @@ class Ruleset {
                 Translations.add(file.readString(Charsets.UTF_8.name()))
             }
         }
-        for(language in Translations.getLanguages()){
-            val translationsOfLanguage = HashMap<String,String>()
-            val stringBuilder=StringBuilder()
-            for(translation in Translations.values) {
 
-                stringBuilder.append(translation.entry)
-                stringBuilder.append('=')
-
-
-                if (translation.containsKey(language))
-                    stringBuilder.append(translation[language]!!)
-                stringBuilder.appendln()
-            }
-
-            val finalFile = stringBuilder.toString()
-            Gdx.files.local("jsons/Translations/$language.json")
-                    .writeString(finalFile,false,Charsets.UTF_8.name())
-        }
+//        for(language in Translations.getLanguages()){
+//            val translationsOfLanguage = HashMap<String,String>()
+//            val stringBuilder=StringBuilder()
+//            for(translation in Translations.values) {
+//
+//                stringBuilder.append(translation.entry)
+//                stringBuilder.append('=')
+//
+//
+//                if (translation.containsKey(language))
+//                    stringBuilder.append(translation[language]!!)
+//                stringBuilder.appendln()
+//            }
+//
+//            val finalFile = stringBuilder.toString()
+//            Gdx.files.local("jsons/Translations/$language.json")
+//                    .writeString(finalFile,false,Charsets.UTF_8.name())
+//        }
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading translation files - "+translationFilesTime+"ms")
