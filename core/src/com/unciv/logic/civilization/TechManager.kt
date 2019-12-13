@@ -171,15 +171,8 @@ class TechManager {
             return
 
         // We finished it!
-<<<<<<< HEAD
         val overflowscience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
         overflowScience = overflowScience(overflowscience)
-=======
-        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        overflowScience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
-        if(overflowScience > max(scienceForNewTurn * 5, getRuleset().Technologies[currentTechnology]!!.cost))
-            overflowScience = max(scienceForNewTurn * 5, getRuleset().Technologies[currentTechnology]!!.cost)
->>>>>>> Package move & civilopedia scroll fix
         addTechnology(currentTechnology)
     }
 
