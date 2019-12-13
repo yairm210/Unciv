@@ -4,75 +4,74 @@
 		name:"Babylon",
     translatedName:"Вавилон",
 		leaderName:"Навуходоносор II",
-		adjective:["Babylonian"],
+		adjective:["Вавилонський"],
 		startBias:["Avoid Tundra"],
 		preferredVictoryType:"Scientific",
 
-		startIntroPart1: "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
-		startIntroPart2: "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
+		startIntroPart1: "Нехай Бог благословить вас, о великий Навуходоносоре, батько могутнього і стародавнього Вавилона! Молодий був світ, коли Саргон збудував Вавилон десь п’ять тисяч років тому, довго він зростав і процвітав, вибудувавши свою першу імперію у вісімнадцятому столітті до нашої ери, під богоподібним Хаммурапі, дарувачем закону. Хоча був завойований касситами, а потім ассирійцями. Вавилон пережив завоювання і, незважаючи на численних ворогів, повернув своб незалежність неначе фенікс, що відродився із попелу руйнування. Дійсно, Вавилон був центром мистецтв та навчання в античному світі. О Навуходоносоре, ваша імперія витримала, але невдовзі після вашої смерті, потрапила до могутніх персів, а потім до греків, поки велике місто не було зруйноване у 141 р. до н.є.",
+		startIntroPart2: "Але чи справді Вавілон пішов назавжди, великий Навуходоносоре? Ваші люди сподіваються на вас, щоб ви ще раз повернули імперію до життя. Ви приймаєте виклик? Чи побудуєте ви цивілізацію, що витримає виробовування часом?",
 
-		declaringWar:"The demon wants the blood of soldiers!",
-		attacked:"Oh well, I presume you know what you're doing.",
-		defeated:"It is over. Perhaps now I shall have peace, at last.",
-		introduction:"Are you real or a phantom?",
+		declaringWar:"Демон хоче крові твоїх воїнів!",
+		attacked:"Ну добре. Я гадаю, ви знаєте, що робите.",
+		defeated:"Це кінець. Можливо, зараз у мене буде мир, нарешті.",
+		introduction:"Ви справжні чи лише примара?",
 
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
+		neutralHello:"Привітання.",
+		neutralLetsHearIt:["Я слухаю.","Що ти хочеш?"],
+		neutralNo:["Ні!","Звичайно, ні.","Це неприйнятно!"],
+		neutralYes:["Завершено!","Так!","Згоден!"],
 
 		hateHello:"ЩО ТИ ХОЧЕШ?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
+		hateLetsHearIt:["Я, безумовно, слухаю.","Я слухаю!"],
+		hateNo:["Ні!","Звичайно, що ні!","Це неприйнятно!!"],
 		hateYes:["ТАК!"],
 
-		afterPeace:"Foolish, foolish – letting me live.",
-		tradeRequest:"It appears that you do have a reason for existing – to make this deal with me.",
+		afterPeace:"Foolish, foolisрh – letting me live.",
+		tradeRequest:"Здається, у вас є причина для існування — укласти цю угоду зі мною.",
 
 		outerColor:[27,53,63],
 		innerColor:[213,249,255],
 		uniqueName:"Винахідливість",
-		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
-		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
-			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+		unique:"Отримайте безкоштовно Великого вченого, коли відкриєте для себе Writing, отримуйте Великих Вчених на 50% швидше",
+		cities:["Марі","Ашшур","Рапікум","Ешнунна","Сіппар","Вавилон","Кіш",""Малгіум,"Ніппур","Ісін","Ларса","Урук","Ереду","Ур","Лагаш","Сузи",
+			"Аррахва","Тутуб","Шадуппум","Рапікум","Машкан-Шапир","Туттуль","Рамад","Ана","Харадум","Аграб"]
 	},
 	{
 		name:"Greece",
-    translatedName:"",
-		leaderName:"Alexander",
-		adjective:["Greek"],
+    	translatedName:"Греція",
+		leaderName:"Олександр",
+		adjective:["Грецький"],
 		startBias:["Coast"],
 		// preferredVictoryType:"Diplomatic",
 
-		startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
-		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "Нехай вас благославлять боги, о великий царю Олександре! Ви правитель могутньої грецької нації. Ваш народ стільки років жив в ізольованих містах-державах — легендарних містах, таких як Афіни, Спарта, Фіви. Вони дали світові багато чудових речей, таких як демократія, філософія, рагедія, мистецтво та архітектура, тобто сам фундамент західної цивілізації. Хоча їх кількість чимала і вони часто ворожували між собою, у V столітті до нашої ери вони змогли перемогти свого значно більшого сусіда Персію на суші та морі."
+		startIntroPart2: "AОлександре, ваш народ готовий піти на війну, поширити велику грецьку культуру на мільйони і мільйони людей, та принести вам вічну славу. Чи готові ви прийняти свою долю, короле Олександре? Чи приведете ви своїх людей до тріумфу та величі?  Чи побудуєте ви цивілізацію, що витримає виробовування часом?
 
-		declaringWar:"You are in my way, you must be destroyed."
-		attacked:"As a matter of fact I too grow weary of peace."
-		defeated:"You have somehow become my undoing! What kind of beast are you?"
-		introduction:"Hello stranger! I am Alexandros, son of kings and grandson of the gods!"
+		declaringWar:"Ти на моєму шляху, ти повинен бути знищений."
+		attacked:"Власне кажучи, я занадто втомився від миру."
+		defeated:"Ви якимось чином стала моєю погибеллю! Що ви за звір то такий?"
+		introduction:"Привіт, незнайомцю! Я — Олександр, син царів і онук богів!"
 
-		neutralHello:"Greetings!"
-		neutralLetsHearIt:["I'm listening.","Go on.","Yes?","Come."]
-		neutralNo:["We decline.","Certainly not.","It is necessary not to accept."]
-		neutralYes:["Certainly.","Very much.","The very best!"]
+		neutralHello:"Привітання!"
+		neutralLetsHearIt:["Я слухаю.","Продовжуй.","Так?","Приходь."]
+		neutralNo:["Ми віхдхиляємо.","Звичайно, ні.","Не треба приймати."]
+		neutralYes:["Звичайно.","Дуже.","Найкращий!"]
 
-		hateHello:"What?"
-		hateLetsHearIt:["You say.","And?","Come on."]
-		hateNo:["This is not pleasant!","You're not being earnest!","Pardon me?"]
-		hateYes:["Oh, very well.","I suppose I must.","Well done."]
+		hateHello:"Що?"
+		hateLetsHearIt:["Ти кажеш.","Ну то й що?","Давай."]
+		hateNo:["Це не приємно!","Ти несерйозний!","Перепрошую?"]
+		hateYes:["О, дуже добре.","Я гадаю, що треба.","Гарна робота."]
 
-		afterPeace:"I must congratulate you on your remarkable victory."
-		tradeRequest:"My friend, does this seem reasonable to you?"
+		afterPeace:"Мушу привітати вас з вашою чудовою перемогою."
+		tradeRequest:"Друже мій, чи тобі це здається розумним?"
 
 		outerColor:[181, 232, 232],
 		innerColor:[68,142,249],
-		uniqueName:"Hellenic League",
-		unique:"City-State Influence degrades at half and recovers at twice the normal rate",
-		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
-			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
-			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
+		uniqueName:"Еллінська ліга",
+		unique:"Вплив міста-держави зменшується наполовину і відновлюється вдвічі більше норми",
+		cities:["Афіни","Спарта","Коринф","Аргос ","Кносс","Мікени","Фарсала","Ефес","Галікарнас","Родос",
+			"Еретрія","Пергамон","Мілет","Мегара","Фокея","Сікіон","Tиринф","Самос","Мітіліні","Хіос",
+			"Парос","Елліс","Сиракуща","Керкіра","Гортина","Халкіда","Пілос","Пелла","Наксос"]
 	},
 	{
 		name:"China",
@@ -169,7 +168,7 @@
 		neutralYes:["Certainly!","Very well!"]
 
 		hateHello:"Oh, it's you!"
-		hateLetsHearIt:["I'm listening.","You were saying?"]
+		hateLetsHearIt:["Я слухаю.","You were saying?"]
 		hateNo:["You cannot be serious.","Of course not!"]
 		hateYes:["Oh, very well!","I suppose I must!"]
 
@@ -200,13 +199,13 @@
 		introduction:"Welcome. I'm Napoleon, of France; the smartest military man in world history."
 
 		neutralHello:"Hello."
-		neutralLetsHearIt:["Continue.","I'm listening.","Go on.","You were saying?"]
+		neutralLetsHearIt:["Continue.","Я слухаю.","Go on.","You were saying?"]
 		neutralNo:["We refuse.","Of course not.","No."]
 		neutralYes:["Excellent.","Very well.","I heard."]
 
 		hateHello:"It's you."
 		hateLetsHearIt:["Speak."]
-		hateNo:["You cannot be serious.","Certainly not.","That's unacceptable."]
+		hateNo:["You cannot be serious.","Звичайно, ні.","That's unacceptable."]
 		hateYes:["All right.","I guess I've no choice.","Certainly.","It's all right."]
 
 		afterPeace:"It seems I underestimated you. I won't make the same mistake again, I promise you."
@@ -238,7 +237,7 @@
 
 		neutralHello:"Hello!"
 		neutralLetsHearIt:["Go on.","Speak."]
-		neutralNo:["We decline.","Ha! Of course not!","Certainly not."]
+		neutralNo:["We decline.","Ha! Of course not!","Звичайно, ні."]
 		neutralYes:["Of course.","I agree.","Excellent!"]
 
 		hateHello:"What do you need?!"
@@ -311,7 +310,7 @@
 
 		neutralHello:"Peace be upon you."
 		neutralLetsHearIt:["What is this?","What were you saying?"]
-		neutralNo:["Of course not.","Certainly not."]
+		neutralNo:["Of course not.","Звичайно, ні."]
 		neutralYes:["Okay.","Excellent."]
 
 		hateHello:"Oh, it's you."
@@ -383,7 +382,7 @@
 		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
 
 		neutralHello:"Hello."
-		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
+		neutralLetsHearIt:["Go on.","Proceed.","Я слухаю."]
 		neutralNo:["Sorry.","No.","Maybe another time."]
 		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
 
@@ -421,7 +420,7 @@
 		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
 
 		neutralHello:"I wish you peace."
-		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
+		neutralLetsHearIt:["Go ahead.","Yes?","Я слухаю."]
 		neutralNo:["Absolutely not.","No.","This is unacceptable"]
 		neutralYes:["Okay.","We agree.","Fine."]
 
@@ -498,7 +497,7 @@
 		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
 
 		neutralHello:"Greetings!"
-		neutralLetsHearIt:["I'm listening.","Go on."]
+		neutralLetsHearIt:["Я слухаю.","Go on."]
 		neutralNo:["No.","Of course not!","We decline."]
 		neutralYes:["Very good.","Fine.","We accept!"]
 
@@ -575,11 +574,11 @@
 
 		neutralHello:"Good day."
 		neutralLetsHearIt:["Yes?","I'm listening"]
-		neutralNo:["No.","Certainly not."]
+		neutralNo:["No.","Звичайно, ні."]
 		neutralYes:["Very well.","Alright."]
 
 		hateHello:"Oh, it's you."
-		hateLetsHearIt:["I'm listening.","Speak."]
+		hateLetsHearIt:["Я слухаю.","Speak."]
 		hateNo:["That's unacceptable","You cannot be serious!"]
 		hateYes:["I suppose I must.","Very well."]
 
@@ -616,7 +615,7 @@
 		neutralYes:["Good!","Certainly.","Agreed!"]
 
 		hateHello:"Ahh... you..."
-		hateLetsHearIt:["I'm listening.","Go on!"]
+		hateLetsHearIt:["Я слухаю.","Go on!"]
 		hateNo:["We say... no!","Of course not!"]
 		hateYes:["Alright!","Agreed."]
 
@@ -653,7 +652,7 @@
 
 		neutralHello:"Welcome, friend!"
 		neutralLetsHearIt:["Proceed.","And?","What is it?"]
-		hateNo:["Certainly not.","We will have to decline."]
+		hateNo:["Звичайно, ні.","We will have to decline."]
 		hateYes:["It is agreed, then.","Excellent!"]
 
 		hateHello:"Oh, it's you."
@@ -693,7 +692,7 @@
 		introduction:"What do I see before me? Another beating heart for my sacrificial fire."
 
 		neutralHello:"Welcome, friend."
-		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
+		neutralLetsHearIt:["Go ahead.","Proceed.","Я слухаю."]
 		neutralNo:["Certainly not!","No!","Unacceptable!"]
 		neutralYes:["Certainly.","Yes, it is good.","Agreed!"]
 
@@ -732,7 +731,7 @@
 		introduction:"I am Temuujin, conqueror of cities and countries. Before me lie future Mongolian lands. Behind me is the only cavalry that matters."
 
 		neutralHello:"Hello."
-		neutralLetsHearIt:["I'm listening.","What?"]
+		neutralLetsHearIt:["Я слухаю.","What?"]
 		neutralNo:["No.","Of course not!"]
 		neutralYes:["Good.","That works.","Of course!"]
 
@@ -770,8 +769,8 @@
 		defeated:"If my defeat is, without any doubt, the will of God, then I will accept it."
 		introduction:"God blesses those who deserve it. I am Isabel of Spain."
 
-		neutralHello:"Greetings."
-		neutralLetsHearIt:["Proceed","I'm listening.","Yes?"]
+		neutralHello:"Привітання."
+		neutralLetsHearIt:["Proceed","Я слухаю.","Yes?"]
 		neutralNo:["We refuse.","Not before God.","No way."]
 		neutralYes:["Very well.","Excellent.","With the blessing of God, I accept."]
 
@@ -846,7 +845,7 @@
 		defeated:"We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!"
 		introduction:"I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past."
 
-		neutralHello:"Greetings."
+		neutralHello:"Привітання."
 		neutralLetsHearIt:["Yes?","Proceed."]
 		neutralNo:["No","Of course not."]
 		neutralYes:["Very well.","Yes.","Fine."]
@@ -888,7 +887,7 @@
 		neutralNo:["No.","Certainly no.","No way."]
 		neutralYes:["In that case...","Of course.","Agreed."]
 
-		hateHello:"Greetings."
+		hateHello:"Привітання."
 		hateLetsHearIt:["You were saying?.","Please proceed","So?"]
 		hateNo:["That is unacceptable.","You probably didn't mean that.","What did you say?"]
 		hateYes:["I think I must do as such.","Very well."]
@@ -1000,7 +999,7 @@
 		neutralHello:"Hello."
 		neutralLetsHearIt:["What do you need.","Go on"]
 		neutralNo:["Sorry I cannot do that.","No Sorry."]
-		neutralYes:["Of Course!","Yes"]
+		neutralYes:["Of Course!","Так"]
 
 		hateHello:["You again"]
 		hateLetsHearIt:["Hurry Up!,"So?"]
@@ -1031,8 +1030,8 @@
 		defeated:"The principles for which we have fought will survive longer than any nation you could ever build.",
 		introduction:"My name is Jonathan Joseph Curtin, and I speak for the people of Australia as their Prime Minister. We seek sympathetic allies in the fight against the hawks of war.",
 
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you have in mind?"],
+		neutralHello:"Привітання.",
+		neutralLetsHearIt:["Я слухаю.","What do you have in mind?"],
 		neutralNo:["Sorry but no.","I decline.","I regret I must refuse."],
 		neutralYes:["As you wish!","So be it!","I agree!"],
 
