@@ -16,6 +16,7 @@
 		Ukrainian:"Палац"
         Malay:"Istana"
 		Korean:"궁전"
+		Estonian:"Palee"
 }
 
 	"Indicates the capital city":{
@@ -32,6 +33,7 @@
 		Ukrainian:"Позначає столицю"
 		Korean:"수도를 나타내는 건물"          
                 Portuguese:"Indica a Capital!"
+	        Estonian:"Tähistab pealinna"
 }
 
 	"Monument":{
@@ -49,6 +51,7 @@
 		Ukrainian:"Монумент"
         Malay:"Tugu"
 		Korean:"기념비"
+		Estonian:"Monument"
 }
 
 	"Granary":{
@@ -65,6 +68,7 @@
 		Czech:"Sýpka"
 		Ukrainian:"Житниця"
 		Korean:"곡창"
+		Estonian:"Viljaait"
 }
 
 	"Stone Works":{
@@ -81,6 +85,7 @@
 		Czech:"Kamenictví"
 		Ukrainian:"Каменярня"
 		Korean:"석재 공장"
+		Estonian:"Kivi töökoda"
 }
 
 	"Must not be on plains":{
@@ -95,6 +100,7 @@
 		Ukrainian:"Не може бути на рівнинах"
 		Korean:"평지에 건설 "
                 Portuguese:"Não deve estar em uma planície."
+		Estonian:"Ei tohi olla tasandikel"
 }
 
 	"Stonehenge":{
@@ -112,6 +118,7 @@
 		Ukrainian:"Стоунхендж"
         Malay:"Stonehenge"
 		Korean:"스톤헨지"
+		Estonian:"Stonehenge"
 }
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle": {
@@ -125,6 +132,7 @@
 		Ukrainian:"«Час знищує речі; усе старіє і забувається під тиском часу» — Арістотель"
 		Korean:"'사물은 시간과 함께 스러진다. 시간의 힘 아래 만물이 늙어가고 잊혀진다.' - 아리스토텔레스" 
                 Portuguese:"'Coisas sucumbem ao tempo ; qualquer coisa cresce e envelhece e é  esquecido embaixo do poder do tempo.' - Aristóteles"
+		Estonian:"'Aeg murendab asju; kõik vananeb ja unustatakse aja võimu all' - Aristoteles"
 }
 
 	/*
@@ -138,6 +146,7 @@
 		Ukrainian:"Храм Артеміди"
         Malay:"Kuil Artemis"
 		Korean:"아르테미스 사원"
+		Estonian:"Artemise tempel"
 	}
 
 	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
@@ -149,6 +158,7 @@
 		Ukrainian:"'Не тільки краса лісу зворушує людські серця, а щось невловиме, його повітря, енергія старих дерев, що так чудово змінює і відновлює стомлений дух' - Роберт Луїс Стівенсон"
 		Korean:"'인간이 숲을 동경하는 이유는 그저 숲이 아름다워서가 아니라 오래된 숲의 고목에서 뿜어져 나오는 공기에 존재하는 미묘한 무엇인가가 사람의 지친 영혼에 활기를 불어넣어 주고 회복시켜 주기 때문이다.'-로버트 루이스 스티븐슨"
                 Portuguese:"'Não é  muita coisa para a beleza que a floresta cria e conquista em cima do coração  dos homens, com isso qualquer coisa fica sutil, a qualidade do ar, essa emanação  das árvores velhas, essa maravilha muda e renova um espírito novo.' - Robert Louis Stevenson"
+		Estonian:"'See ei ole ainult metsa ilu, mis nõuab endale inimeste südameid, mis puutub sellesse peenesse millegisse, see õhu kvaliteet, mis tuleb vanadest puudest, mis nii imeliselt muudab ja uuendab vaime.' - Robert Louis Stevenson"
 	}
 
 	"+10% Growth in all Cities":{
@@ -161,6 +171,7 @@
         Malay:"+10% pertumbuhan di semua bandar"
 		Korean:"모든 도시의 식량 생산량 +10%"
                 Portuguese:"+10% De crescimento em todas as cidades."
+		Estonian:"+ 10% kasvu kõigis linnades"
 
 	}
 
@@ -173,6 +184,7 @@
 		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
 		French:"+15% de production pour les unités à distance"
                 Portuguese:"+15% De produção  para Unidades à  distância."
+		Estonain:"+ 15% toodangut kaugründajatele"
 	}
 
 	*/
@@ -192,6 +204,7 @@
 		Ukrainian:"Бібліотека"
         Malay:"Perpustakaan"
 		Korean:"도서관"
+		Estonian:"Raamatukogu"
 }
 
 	"+1 Science Per 2 Population":{
@@ -210,6 +223,7 @@
 		Ukrainian:"За кожні 2 населення наука +1"
         Malay:"Setiap 2 populasi +1 Sains"
 		Korean:"도시의 시민 2명당 과학 1 증가"
+		Estonian:"+1 teadus 2 populatsiooni kohta"
 }
 
 	"Paper Maker":{
@@ -227,6 +241,7 @@
     Malay:"Pembuat kertas"
     Portuguese:"Fabricador de papel"
     Korean:"종이 공방"
+		Estonian:"Paberimasin"
  
 }
 
@@ -244,6 +259,7 @@
 		Czech:"Alexandrijská knihovna"
 		Ukrainian:"Александрійська бібліотека"
 		Korean:"알렉산드리아 도서관"
+		Estonian:"Aleksandria raamatukogu"
 }
 
 	"Free Technology":{
@@ -258,6 +274,7 @@
 		Ukrainian:"Технологія безкоштово"
 		Korean:"기술 하나를 무료로 획득"
     Portuguese:"Tecnologia gratuita"
+		Estonian:"TAsuta tehnoloogia"
 
 
 }
@@ -273,6 +290,7 @@
 		Ukrainian:"«Бібліотеки — це святилища, де лежать і зберігаються мощі давніх святих, повні справжніх чеснот, і все, що не має обману і вигадок.» — Сер Френсіс Бекон"
 		Korean:"'도서관은, 진정한 미덕으로 가득한 고대 현인의 모든 유물이, 그리고 현혹과 기만이 없는 모든 것이 보존되어 안식하는 신전이다.' - 프랜시스 베이컨 경"
 		Portuguese:"'Bibliotecas são como um santuário aonde todas as relíquias dos santos anciãos, cheios da verdadeira virtudade, e tudo onde sem ilusão ou desenvoltura estão preservados e descansando.' - Sir Francis Bacon"
+		Estonian:"Raamatukogud on pühamud, kus säilitatakse kõik iidsete pühakute säilmed, mis on täis tõelist voorust ja kõik ilma pettekujutlusteta ega pealetükkimata.' - Sir Francis Bacon"
 }
 
 	"Circus":{
@@ -290,6 +308,7 @@
 		Ukrainian:"Цирк"
                 Malay:"Sarkus"
 		Korean:"서커스"
+		Estonian:"Tsirkus"
 }
 
 	"Walls":{
@@ -307,6 +326,7 @@
 		Ukrainian:"Мури"
                 Malay:"Dinding"
 		Korean:"성벽"
+		Estonian:"Müürdid"
 }
 
 	"Walls of Babylon":{
@@ -322,6 +342,7 @@
                 Malay:"Dinding Babylon"
 		Korean:"바빌론 성벽"
                 Portuguese:"Muralhas da Babilônia"
+		Estonian:"Babüloonia müürid"
 }
 
 	"The Pyramids":{
@@ -338,6 +359,7 @@
 		Czech:"Pyramidy"
 		Ukrainian:"Піраміди"
 		Korean:"피라미드"
+		Estonian:"Püramiidid"
 }
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
@@ -351,6 +373,7 @@
 		Ukrainian:"«О, нехай болі смерті, які приходять від тебе, не увійдуть в моє тіло. Я бог Тем, і я передова частина неба, і сила, яка захищає мене, - це те, що є з усіма богами назавжди.» — Книга мертвих, перекладена сером Ернестом Альфредом Воллісом Буджем"
 		Korean:"'오, 그대에게 찾아온 죽음의 고통이 나의 육체에 들지 않기를. 나는 템 신으로서, 하늘 꼭대기에 거하며, 영원히 모든 신과 함께 하는 힘이 나를 보호할지니.' - 사자의 서, E.A. 월리스 버지 경 역"
 		Portuguese:"'Ó, que as dores da morte que caem sobre você não entrem em meu corpo. Eu sou o deus Tem, e sou a parte principal do céu, e o poder que me protege é o que está com os deuses para sempre.' - O Livro da Morte, traduzido por Sir Ernest Alfred Wallis Budge"
+		Estonian:"'Oo, ärge laske surma valudel siseneda minu kehasse. Ma olen jumal Tem ja ma olen taeva kõige olulisem osa ning mind kaitsev jõud on see, mis on kõigi jumalatega igavesti.' - Surnute raamat, tõlkinud sir Ernest Alfred Wallis Budge
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -369,6 +392,7 @@
 		Ukrainian:"Швидкість будівництва +25%"
                 Malay:"Pekerja buruh meningkat 25%"
 		Korean:"타일의 시설 건설 속도 + 25%"
+		Estonian:"Töötajate ehitamine suurendatud 25% võrra"
 }
 
 	"Provides 2 free workers":{
@@ -387,6 +411,7 @@
 		Ukrainian:"Безоплатно надає 2 робітників"
                 Malay:"bagi 2 pekerja secara percuma"
 		Korean:"일꾼 두 명이 도시 근처에 무료로 출현"
+		Estonian:"Annab 2 tasuta töötajat"
 }
 
 	"Barracks":{
@@ -403,6 +428,7 @@
 		Czech:"Kasárny"
 		Ukrainian:"Казарми"
 		Korean:"병영"
+		Estonian:"Kasarmud"
 }
 
 	"Krepost":{ // russian uique, transliterate this probably, this is a russian word
@@ -419,6 +445,7 @@
 		Ukrainian:"Крєпость"
 		Korean:"크리아포스츠"
 		Portuguese:"Fortaleza"
+		Estonian:"Kindlus"
 }
 
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
@@ -435,6 +462,7 @@
 		Ukrainian:"У цьому місті вартість освоєння нових клітинок у культурі і золоті -25%"
 		Korean:"새로운 타일을 획득하기 위한 문화와 타일 구매 비용 -25%"
 		Portuguese:"Custos de cultura e ouro para adquirir novas regiões reduzidos por 25% nessa cidade"
+		Estonian:"Selles linnas vähenesid uute plaatide soetamise kultuuri- ja kuldkulud 25% võrra"
 }
 
 	"Colossus":{
@@ -449,6 +477,7 @@
 		Ukrainian:"Колос Родоський"
 		Korean:"로도스의 거상"
                 Portuguese:"Colossos"
+		Estonian:"Koloss"
 }
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -461,6 +490,7 @@
 		Ukrainian:"«Так, мій друже. Він мов Колос, піднявсь над бідним світом, А ми, маленькі, ходим під тяжкими Його ногами й виглядаєм місця, Де б у ганебній опочіть могилі.» — Вільям Шекспір. Юлій Цезар"
 		Korean:"'그는 그 좁은 세상에 거신상처럼 우뚝 서 있고, 우리 하찮은 자들은 그 거대한 다리 사이를 지나다니며 부끄러운 무덤자리를 봐두려고 주변을 힐끔거리지.'-윌리엄 셰익스피어, 줄리어스 시저 1막 2장"
 		Portuguese:"'Ora, homem, ele supera o mundo estreito como um colosso, e nós, homens mesquinhos andamos embaixo das suas grandes pernas, e espiamos para encontrar-nos túmulos desonrosos.' - William Shakespeare, Júlio César"
+		Estonian:"'Miks, inimene, jätab ta kitsa maailma mööda nagu koloss ja meie, väikesed inimesed, kõnnime tema tohutute jalgade all ja piilume, et leida endale ebaausad hauad.' - William Shakespeare, Julius Caesar"
 }
 
 	"+1 gold from worked water tiles in city":{
@@ -475,6 +505,7 @@
 		Ukrainian:"Одна робоча клітинка у цьому місті дає золота +1"
 		Korean:"물 타일에 시민을 배치했을 때 얻는 금 +1"
                 Portuguese:"+1 Ouro do trabalho da região  da água  na cidade"
+		Estonian:"+1 kuld töödeldud veeplaatidelt linnas"
 }
 
 	"Temple":{
@@ -492,6 +523,7 @@
 		Ukrainian:"Храм"
                 Malay:"Kuil"
 		Korean:"사원"
+		Estonian:"Tempel"
 }
 
 	"Burial Tomb":{
@@ -509,6 +541,7 @@
                 Malay:"Tempat Persemadian"
 		Korean:"왕릉"
 		Portuguese:"Tumba de Enterr"
+		Estonian:"Matmishaud"
 }
 
 	/*
@@ -520,6 +553,7 @@
 		Ukrainian:"Могила Аскіа"
                 Malay:Masjid Piramid Lumpur"
 		Korean:"진흙 피라미드 모스크"
+		Estonian:"Mudast Püramiidi Mošee"
 }
 	*/
 
@@ -537,6 +571,8 @@
 		Czech:"Věštírna"
 		Ukrainian:"Оракул"
 		Korean:"오라클"
+		Estonian:"Oraakel"
+		
 }
 
 	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
@@ -549,6 +585,7 @@
 		Ukrainian:"«Давній оракул сказав, що я наймудріший з греків. Бо я єдиний, хто знає, що нічого не знає.» - Сократ"
 		Korean:"'고대 오라클은 내가 그리스에서 가장 현명하다 하였다. 그것은, 모든 그리스인 중 나만이, 내가 아무것도 모른다는 사실을 알기 때문이다.' - 소크라테스"
 		Portuguese:"'Oráculo ancião falou que Eu era o mais sábio de todos os Gregos. Isso porque eu sou solitário, de todos os gregos, Só sei que nada Sei' - Sócrates"
+		Estonian:"'Iidne Oraakkel ütles, et olin targem kõigist kreeklastest. Selle põhjuseks on see, et ma üksi, kõigist kreeklastest, tean, et ma ei tea midagi' - Sokrates"
 }
 
 	"Free Social Policy":{
@@ -566,6 +603,7 @@
 		Czech:"Sociální politika zdarma"
 		Ukrainian:"Безкоштовна соціальна політика"
 		Korean:"사회 정책 1가지 무료로 획득"
+		Estonian:"Vaba sotsiaalpoliitika"
 }
 
 	"National College":{
@@ -583,6 +621,7 @@
 		Ukrainian:"Державна академія"
                 Malay:"Kolej Kebangsaan"
 		Korean:"국립대학"
+		Estonian:"Riiklik kolledž"
 }
 
 	"Manhattan Project":{
@@ -595,6 +634,7 @@
                 Malay:"Projek Manhattan"
 		Korean:"맨해튼 프로젝트"
     Portuguese:"Projeto Manhattan"
+		Estonain:"Manhattani projekt"
 				
 }
 
@@ -612,6 +652,7 @@
 		Czech:"Chichén Itzá"
 		Ukrainian:"Чічен-Іца"
 		Korean:"치첸 이트사"
+		Estonian:"Chichen Itza"
 }
 
 	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
@@ -624,6 +665,7 @@
 		Ukrainian:"«Катун почався в Чічен-Іці. Поселення Іца розміщене тут. Кетцаль прийде, зелений птах прийде. А-Кантенал прийде. Це слово Бога. Іца прийде.» - Чилам-Балам"
 		Korean:"'치첸 이트사에 카툰이 서리라. 이트사가 그곳에 정착하리라. 케살이 오리라, 푸른 새가 오리라. 아 칸테날이 오리라. 이는 신의 말씀이라. 이트사가 오리라.' - 칠람 발람의 서"
 		Portuguese:"'O Katun está estabilizado em Chichen Itza. O Assentamento do Itza ocorrerá lá. O Quetzal virá, o passáro verde virá. Ah Kantenal virá. É a palavra de Deus. O Itza virá.' - Os Livros de Chilam Balam"
+		Estonian:"'Katun on asutatud Chichen Itzas. Itza asustus toimub seal. Kvetal tuleb, roheline lind tuleb. Ah Kantenal tuleb. See on Jumala sõna. Itza tuleb.' - Chilam Balami raamatud"
 }
 
 	"Golden Age length increases +50%":{
@@ -641,6 +683,7 @@
 		Czech:"Délka Zlatého věku se prodloužila o 50%"
 		Ukrainian:"Тривалість золотого віку +50%"
 		Korean:"황금기 지속 시간 + 50%"
+		Estonian:"Kuldse ajastu pikkus suureneb +50% võrra"
 }
 
 	"Enables nuclear weapon":{
@@ -652,6 +695,7 @@
 		Polish:"Umożliwia broń nuklearną"
 		Korean:"원자 폭탄과 핵미사일 생산 가능"
 		Portuguese:"Habilita armas nucleares"
+		Estonian:"Võimaldab tuumarelva"
 }
 
 	"Lighthouse":{
@@ -669,6 +713,7 @@
 		Ukrainian:"Маяк"
                 Malay:"Rumah Api"
 		Korean:"등대"
+		Estonian:"Majakas"
 }
 
 	"Can only be built in coastal cities":{
@@ -684,6 +729,7 @@
 		Czech:"Lze budovat pouze ve městech na pobřeží"
 		Ukrainian:"Можна збудувати тільки в набережних містах"
 		Korean:"해안에 인접한 도시에만 건설 가능"
+		Estonian:"Saab ehitada ainult rannikulinnadesse"
 }
 
 	"+1 food from Ocean and Coast tiles":{
@@ -699,6 +745,7 @@
 		Ukrainian:"З океанських і берегових клітинок їжа +1"
 		Korean:"연안과 대양 타일에 식량 +1"
 		Portuguese:"+1 de comida do Oceano e regiões Costeiras"
+		Estonian:"+1 toit ookeani ja ranniku plaatidelt"
 }
 
 	"The Great Lighthouse":{
@@ -715,6 +762,8 @@
 		Czech:"Maják na ostrově Faru"
 		Ukrainian:"Александрійський маяк"
 		Korean:"알렉산드리아 등대"
+		Estonian:"Aleksandria tuletorn"
+		
 }
 
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
@@ -727,6 +776,7 @@
 		Ukrainian:"«Ті, хто по морю пливе кораблями, хто чинить зайняття своє на великій воді; вони бачили чини Господні та чуда Його в глибині!» — Біблія, Псалом 107:23-34"
 		Korean:"'배들을 바다에 띄우며 큰 물에서 일을 하는 자는 여호와께서 행하신 일들과 그의 기이한 일들을 깊은 바다에서 보나니.' - 성경, 시편 107:23-24"
 		Portuguese:"'Os navios que descem no mar, negociam em grandes águas; estes vêem as obras do Senhor, e suas maravilhas nas profundezas.' - A Bíblia, Salmos 107:23-24"
+		Estonian:"'Need, kes lähevad laevadega mere äärde, teevad äritegevust suurtes vetes; need näevad Issanda tegusid ja tema imesid sügaval.' - Piibel, Psalmid 107: 23-24"
 }
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -743,6 +793,7 @@
 		Czech:"Všechny vojenské námořní jednotky získají +1 pohyb a +1 větší rozhled"
 		Ukrainian:"Усі військові морські підрозділи отримують рух +1 і огляд +1"
 		Korean:"모든 해양 군사 유닛의 행동력 +1, 시야 +1"
+		Estonian:"Kõik sõjaväe mereväeüksused saavad +1 liikumise ja +1 nähtavuse"
 }
 
 	"Courthouse":{
@@ -758,6 +809,7 @@
                 Malay:"Makamah"
 		Korean:"법원"
 		Portuguese:"Tribunal"
+		Estonian:"Kohtumaja"
 }
 
 	"Remove extra unhappiness from annexed cities":{
@@ -772,6 +824,7 @@
 		Ukrainian:"Видаляє надмірне нещастя з анексованих міст"
 		Korean:"점령 후 합병한 도시에서 발생하는 추가 불행 제거"
 		Portuguese:"Remove infelicidade extra das cidades anexadas"
+		Estonian:"Eemaldab annekteeritud linnadest ekstra kurbuse"
 }
 
 	"Can only be built in annexed cities":{
@@ -785,6 +838,7 @@
 		Ukrainian:"Можна збудувати тільки в анексованих містах"
 		Korean:"점령한 도시에만 건설 가능"
 		Portuguese:"Somente pode ser construído em cidades anexadas"
+		Estonian:"Saab ehitada ainult annekteeritud linnades"
 
 }
 
@@ -803,6 +857,7 @@
 		Ukrainian:"Стайня"
                 Malay:"Stabil"
 		Korean:"마구간"
+		Estonian:"Tall"
 }
 
 	"+15% Production when building Mounted Units in this city":{
@@ -817,6 +872,7 @@
 		Ukrainian:"Для будівництва вершників у цьому місті виробництво +15%"
 		Korean:"기마 유닛을 생산할 때 생산력 +15%"
 		Portuguese:"+15% de Produção quando constrói unidades montadas nessa cidade"
+		Estonian:"+ 15% toodangut selles linnas ratsaüksuste ehitamisel"
 }
 
 	"Circus Maximus":{
@@ -833,6 +889,7 @@
 		Czech:"Circus Maximus"
 		Ukrainian:"Великий цирк"
 		Korean:"원형 경기장"
+		Estonian:"Tsirkus Maximus"
 }
 
 	"Hanging Gardens":{
@@ -850,6 +907,7 @@
 		Ukrainian:"Висячі Сади Семіраміди"
                 Malay:"Taman Tergantung"
 		Korean:"공중 정원"
+		Estonian:"Rippaiad"
 }
 
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
@@ -863,7 +921,7 @@
 		Ukrainian:"«Гадаю, якщо смертний почує слово Бога, це буде в садку надвечір.» - Френк Франкфурт Мур"
 		Korean:"'만에 하나 인간이 신의 말씀을 듣게 된다면, 그것은 서늘한 아침 정원에서일 것이다.' - F. 프랭크포트 무어"
 		Portuguese:"'Eu penso que se todo mortal escutasse as palavras de Deus, séria um jardim no frescor do dia.' - F. Frankfort Moore"
-}
+}		Estonian:"'Ma arvan, et kui surelik kuuleks Jumala sõna, oleks see aias jahedal päeval.' - F. Frankfort Moore"
 
 	/*
 	//New Wonder: Statue of Zeus! Suggested by Smashfanful
@@ -878,6 +936,7 @@
 		Ukrainian:"Статуя Зевса"
 		Korean:"제우스 상"
 		Portuguese:"Estátua de Zeus"
+		Estonian:"Zeusi kuju"
 }
 
 	"+15% Combat Strength when attacking Cities":{
