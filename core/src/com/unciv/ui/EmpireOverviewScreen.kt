@@ -44,6 +44,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
         val setStatsInfoButton = TextButton("Stats".tr(),skin)
         setStatsInfoButton.onClick {
+            game.settings.addCompletedTutorialTask("See your stats breakdown")
             centerTable.clear()
             centerTable.add(ScrollPane(Table().apply {
                 defaults().pad(40f)

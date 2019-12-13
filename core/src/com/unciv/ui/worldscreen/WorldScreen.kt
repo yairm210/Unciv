@@ -252,6 +252,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(viewingCiv.getCivUnits().any { it.type.isAirUnit() } && !completedTasks.contains("Move an air unit"))
             return "Move an air unit!\nSelect an air unit > select another city withing range > " +
                     "\nMove the unit to the other city"
+        if(!completedTasks.contains("See your stats breakdown"))
+            return "See your stats breakdown!\nEnter the Overview screen (top right corner) >" +
+                    "\nClick on 'Stats'"
 
         return ""
     }

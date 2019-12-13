@@ -17,7 +17,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         val baseUnitCost = 0.5f
         val freeUnits = 3
         var unitsToPayFor = civInfo.getCivUnits()
-        if(civInfo.policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
+        if(civInfo.policies.isAdopted("Oligarchy"))
+            unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
         if(civInfo.nation.unique=="67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."){
