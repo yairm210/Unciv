@@ -14,6 +14,7 @@ import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.DropBox
 import com.unciv.ui.worldscreen.optionstable.PopupTable
+import kotlin.concurrent.thread
 
 class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
     init{
@@ -64,22 +65,23 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
 
         val uploadMapButton = TextButton("Upload map".tr(), skin)
         uploadMapButton.onClick {
-            try {
-                val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
-                DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
+            thread {
+                try {
+                    val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
+                    DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
 
-                remove()
-                val uploadedSuccessfully = PopupTable(screen)
-                uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
-                uploadedSuccessfully.addCloseButton()
-                uploadedSuccessfully.open()
-            }
-            catch(ex:Exception){
-                remove()
-                val couldNotUpload = PopupTable(screen)
-                couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
-                couldNotUpload.addCloseButton()
-                couldNotUpload.open()
+                    remove()
+                    val uploadedSuccessfully = PopupTable(screen)
+                    uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
+                    uploadedSuccessfully.addCloseButton()
+                    uploadedSuccessfully.open()
+                } catch (ex: Exception) {
+                    remove()
+                    val couldNotUpload = PopupTable(screen)
+                    couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
+                    couldNotUpload.addCloseButton()
+                    couldNotUpload.open()
+                }
             }
         }
         add(uploadMapButton).row()
