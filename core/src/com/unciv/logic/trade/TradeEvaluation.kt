@@ -5,7 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.ruleset.tile.ResourceType
 import kotlin.math.min
 import kotlin.math.sqrt
 

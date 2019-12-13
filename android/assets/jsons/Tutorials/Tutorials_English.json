@@ -45,7 +45,7 @@
 	],
 
 
-	Slow_Start: [
+	_Slow_Start: [
 		[
 			"In your first couple of turns,",
 			"  you will have very little options,",

@@ -15,8 +15,8 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.gamebasics.tile.ResourceSupplyList
-import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.ruleset.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.min
@@ -119,7 +119,7 @@ class CityInfo {
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
-    fun getGameBasics() = civInfo.gameInfo.ruleSet
+    fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
@@ -134,7 +134,7 @@ class CityInfo {
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
-            val resource = getGameBasics().TileResources[building.requiredResource]!!
+            val resource = getRuleset().TileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")
         }
 
@@ -161,7 +161,7 @@ class CityInfo {
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
         if (resource.improvement!=null){
-            val improvement = getGameBasics().TileImprovements[resource.improvement!!]!!
+            val improvement = getRuleset().TileImprovements[resource.improvement!!]!!
             if(improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
         }
 
@@ -472,15 +472,15 @@ class CityInfo {
 
     private fun tryUpdateRoadStatus(){
         if(getCenterTile().roadStatus==RoadStatus.None
-                && getGameBasics().TileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
+                && getRuleset().TileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus=RoadStatus.Road
 
         else if(getCenterTile().roadStatus!=RoadStatus.Railroad
-                && getGameBasics().TileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
+                && getRuleset().TileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus=RoadStatus.Railroad
     }
 
-    fun getGoldForSellingBuilding(buildingName:String) = getGameBasics().Buildings[buildingName]!!.cost / 10
+    fun getGoldForSellingBuilding(buildingName:String) = getRuleset().Buildings[buildingName]!!.cost / 10
 
     fun sellBuilding(buildingName:String){
         cityConstructions.builtBuildings.remove(buildingName)

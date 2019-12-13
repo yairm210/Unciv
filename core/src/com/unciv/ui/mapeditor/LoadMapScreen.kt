@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*

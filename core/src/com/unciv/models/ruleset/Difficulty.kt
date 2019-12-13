@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.ruleset
 
 import com.unciv.models.stats.INamed
 import java.util.*

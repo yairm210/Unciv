@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.gamebasics.tech.Technology
-import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -43,10 +43,10 @@ class TechManager {
         return toReturn
     }
 
-    fun getGameBasics() = civInfo.gameInfo.ruleSet
+    fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun costOfTech(techName: String): Int {
-        var techCost = getGameBasics().Technologies[techName]!!.cost.toFloat()
+        var techCost = getRuleset().Technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
@@ -69,7 +69,7 @@ class TechManager {
     fun currentTechnology(): Technology? {
         val currentTechnologyName = currentTechnologyName()
         if (currentTechnologyName == null) return null
-        return getGameBasics().Technologies[currentTechnologyName]
+        return getRuleset().Technologies[currentTechnologyName]
     }
 
     fun currentTechnologyName(): String? {
@@ -89,7 +89,7 @@ class TechManager {
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
 
     fun canBeResearched(TechName: String): Boolean {
-        return getGameBasics().Technologies[TechName]!!.prerequisites.all { isResearched(it) }
+        return getRuleset().Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
 
     fun getTechUniques() = researchedTechUniques
@@ -110,7 +110,7 @@ class TechManager {
                     (isResearched(techToCheck.name) || prerequisites.contains(techToCheck)) )
                 continue //no need to add or check prerequisites
             for (prerequisite in techToCheck.prerequisites)
-                checkPrerequisites.add(getGameBasics().Technologies[prerequisite]!!)
+                checkPrerequisites.add(getRuleset().Technologies[prerequisite]!!)
             prerequisites.add(techToCheck)
         }
 
@@ -132,8 +132,8 @@ class TechManager {
         // We finished it!
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
         overflowScience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
-        if(overflowScience > max(scienceForNewTurn * 5, getGameBasics().Technologies[currentTechnology]!!.cost))
-            overflowScience = max(scienceForNewTurn * 5, getGameBasics().Technologies[currentTechnology]!!.cost)
+        if(overflowScience > max(scienceForNewTurn * 5, getRuleset().Technologies[currentTechnology]!!.cost))
+            overflowScience = max(scienceForNewTurn * 5, getRuleset().Technologies[currentTechnology]!!.cost)
         addTechnology(currentTechnology)
     }
 
@@ -151,7 +151,7 @@ class TechManager {
         techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
-        val newTech = getGameBasics().Technologies[techName]!!
+        val newTech = getRuleset().Technologies[techName]!!
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         for(unique in newTech.uniques)
             researchedTechUniques = researchedTechUniques.withItem(unique)
@@ -163,11 +163,11 @@ class TechManager {
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
             civInfo.addNotification("You have entered the [$currentEra era]!", null, Color.GOLD)
-            getGameBasics().PolicyBranches.values.filter { it.era == currentEra }
+            getRuleset().PolicyBranches.values.filter { it.era == currentEra }
                     .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE) }
         }
 
-        for(revealedResource in getGameBasics().TileResources.values.filter{ techName == it.revealedBy }){
+        for(revealedResource in getRuleset().TileResources.values.filter{ techName == it.revealedBy }){
             for (tileInfo in civInfo.gameInfo.tileMap.values
                     .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
@@ -181,7 +181,7 @@ class TechManager {
             }
         }
 
-        val obsoleteUnits = getGameBasics().Units.values.filter { it.obsoleteTech == techName }
+        val obsoleteUnits = getRuleset().Units.values.filter { it.obsoleteTech == techName }
         for (city in civInfo.cities)
             if (city.cityConstructions.getCurrentConstruction() in obsoleteUnits) {
                 val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
@@ -217,7 +217,7 @@ class TechManager {
             techsToResearch = newTechToReseach
         }
 
-        researchedTechnologies.addAll(techsResearched.map { getGameBasics().Technologies[it]!! })
+        researchedTechnologies.addAll(techsResearched.map { getRuleset().Technologies[it]!! })
         researchedTechUniques.addAll(researchedTechnologies.flatMap { it.uniques })
         updateTransientBooleans()
     }
@@ -235,9 +235,9 @@ class TechManager {
     }
 
     fun getBestRoadAvailable(): RoadStatus {
-        if (!isResearched(RoadStatus.Road.improvement(getGameBasics())!!.techRequired!!)) return RoadStatus.None
+        if (!isResearched(RoadStatus.Road.improvement(getRuleset())!!.techRequired!!)) return RoadStatus.None
 
-        val techEnablingRailroad = RoadStatus.Railroad.improvement(getGameBasics())!!.techRequired!!
+        val techEnablingRailroad = RoadStatus.Railroad.improvement(getRuleset())!!.techRequired!!
         val canBuildRailroad = isResearched(techEnablingRailroad)
 
         return if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road

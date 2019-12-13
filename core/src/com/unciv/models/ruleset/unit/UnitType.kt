@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics.unit
+package com.unciv.models.ruleset.unit
 
 enum class UnitType{
     City,

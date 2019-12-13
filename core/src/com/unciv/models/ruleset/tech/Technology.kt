@@ -1,11 +1,11 @@
-package com.unciv.models.gamebasics.tech
+package com.unciv.models.ruleset.tech
 
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.tr
-import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tr
+import com.unciv.models.ruleset.unit.BaseUnit
 import java.util.*
 
 class Technology {

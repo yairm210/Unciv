@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable

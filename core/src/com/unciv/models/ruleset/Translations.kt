@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.ruleset
 
 import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UncivGame
@@ -29,6 +29,8 @@ class Translations : HashMap<String, TranslationEntry>(){
             }
             currentEntry = currentEntry.next
         }
+
+
     }
 
     fun get(text:String,language:String): String {

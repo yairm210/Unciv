@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.VictoryType
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen

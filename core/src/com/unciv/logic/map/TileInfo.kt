@@ -5,9 +5,9 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.tile.*
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.*
+import com.unciv.models.ruleset.tr
 import com.unciv.models.stats.Stats
 import kotlin.math.abs
 

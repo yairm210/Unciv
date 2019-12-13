@@ -5,7 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
-import com.unciv.models.gamebasics.Ruleset
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.metadata.GameParameters
 import java.util.*
 import kotlin.collections.ArrayList

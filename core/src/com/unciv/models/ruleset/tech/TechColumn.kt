@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics.tech
+package com.unciv.models.ruleset.tech
 
 import java.util.*
 

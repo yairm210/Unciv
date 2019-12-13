@@ -10,7 +10,7 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.gamebasics.Difficulty
+import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.metadata.GameParameters
 import java.util.*
 

@@ -9,9 +9,9 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.tr
-import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tr
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
@@ -94,7 +94,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.background = ImageGetter.getBackground(Color.BLACK)
 
         val units = ArrayList<Table>()
-        for (unit in city.getGameBasics().Units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
+        for (unit in city.getRuleset().Units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name)
             units += getProductionButton(unit.name,
                     unit.name.tr() + "\r\n" + turnsToUnit + (if(turnsToUnit>1) " {turns}".tr() else " {turn}".tr()),
@@ -107,7 +107,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val buildableNationalWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
 
-        for (building in city.getGameBasics().Buildings.values) {
+        for (building in city.getRuleset().Buildings.values) {
             if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             val productionTextButton = getProductionButton(building.name,

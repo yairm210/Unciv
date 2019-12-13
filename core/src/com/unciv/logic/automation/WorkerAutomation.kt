@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
 

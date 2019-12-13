@@ -8,9 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.Translations
-import com.unciv.models.gamebasics.tr
-import com.unciv.models.gamebasics.unit.Promotion
+import com.unciv.models.ruleset.Translations
+import com.unciv.models.ruleset.tr
+import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.ui.utils.*
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {

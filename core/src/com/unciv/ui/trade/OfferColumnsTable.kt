@@ -6,7 +6,7 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addSeparator
 

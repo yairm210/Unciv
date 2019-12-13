@@ -14,9 +14,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tr
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tr
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
@@ -479,7 +479,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun showTutorialsOnNextTurn(){
         val shownTutorials = UncivGame.Current.settings.tutorialsShown
-        displayTutorials("Slow_Start")
+        displayTutorials("_Slow_Start")
         if("_BarbarianEncountered" !in shownTutorials
                 && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } })
             displayTutorials("_BarbarianEncountered")

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
 import kotlin.collections.ArrayList

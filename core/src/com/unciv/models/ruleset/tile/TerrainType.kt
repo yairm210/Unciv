@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics.tile
+package com.unciv.models.ruleset.tile
 
 enum class TerrainType {
     Land,

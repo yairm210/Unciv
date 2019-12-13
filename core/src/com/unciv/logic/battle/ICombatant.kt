@@ -2,7 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.unit.UnitType
 
 interface ICombatant{
     fun getName(): String

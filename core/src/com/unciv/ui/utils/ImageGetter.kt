@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.Nation
-import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.tile.ResourceType
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"

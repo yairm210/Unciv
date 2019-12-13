@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.mapeditor.MapEditorScreen

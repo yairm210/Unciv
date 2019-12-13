@@ -2,7 +2,7 @@ package com.unciv.logic.map
 
 import com.unciv.logic.map.RoadStatus.Railroad
 import com.unciv.logic.map.RoadStatus.Road
-import com.unciv.models.gamebasics.Ruleset
+import com.unciv.models.ruleset.Ruleset
 
 /**
  * You can use RoadStatus.name to identify [Road] and [Railroad]

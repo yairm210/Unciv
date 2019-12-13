@@ -3,10 +3,10 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.models.gamebasics.Nation
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.Translations
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Translations
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel

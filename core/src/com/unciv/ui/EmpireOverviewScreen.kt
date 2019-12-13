@@ -11,8 +11,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
-import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat

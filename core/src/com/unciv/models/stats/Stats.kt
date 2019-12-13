@@ -1,6 +1,6 @@
 package com.unciv.models.stats
 
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 
 
 open class Stats() {

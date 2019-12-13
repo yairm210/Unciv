@@ -9,9 +9,10 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import java.io.File
 import kotlin.concurrent.thread
+
 
 internal object DesktopLauncher {
     @JvmStatic
@@ -27,6 +28,7 @@ internal object DesktopLauncher {
         config.useHDPI = true
 
         val game = UncivGame("Desktop")
+
 
         tryActivateDiscord(game)
 

@@ -3,7 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set

@@ -7,8 +7,8 @@ import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 

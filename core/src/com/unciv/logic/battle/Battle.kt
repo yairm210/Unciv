@@ -11,7 +11,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.math.max
 

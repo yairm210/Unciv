@@ -3,7 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.unit.UnitType
 
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
