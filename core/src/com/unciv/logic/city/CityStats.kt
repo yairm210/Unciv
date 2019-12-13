@@ -6,9 +6,9 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.unit.BaseUnit
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 
@@ -74,7 +74,7 @@ class CityStats {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        val techEnablingRailroad = cityInfo.getGameBasics().TileImprovements["Railroad"]!!.techRequired!!
+        val techEnablingRailroad = cityInfo.getRuleset().TileImprovements["Railroad"]!!.techRequired!!
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
         // we shouldn't get bonuses, it's as if the tracks aare layed out but we can't operate them.
         if (cityInfo.civInfo.tech.isResearched(techEnablingRailroad)

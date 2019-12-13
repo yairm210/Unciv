@@ -10,11 +10,11 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.tile.Terrain
-import com.unciv.models.gamebasics.tile.TerrainType
-import com.unciv.models.gamebasics.tile.TileImprovement
-import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*

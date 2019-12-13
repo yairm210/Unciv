@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics.unit
+package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -6,9 +6,9 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.Translations
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Translations
+import com.unciv.models.ruleset.tr
 import com.unciv.models.stats.INamed
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up

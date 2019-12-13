@@ -1,7 +1,7 @@
 package com.unciv.logic.map
 
-import com.unciv.models.gamebasics.unit.Promotion
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.ruleset.unit.UnitType
 
 class UnitPromotions{
     @Transient lateinit var unit:MapUnit

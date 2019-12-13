@@ -1,8 +1,7 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 

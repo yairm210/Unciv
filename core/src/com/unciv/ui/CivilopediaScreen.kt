@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.*
 import java.util.*
 
@@ -21,7 +21,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             this.image = image
         }
 
-        constructor() : this("","") // Needed for GameBAsics json deserializing
+        constructor() : this("","") // Needed for GameBasics json deserializing
     }
 
     val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
@@ -112,7 +112,9 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         sp.setupOverscroll(5f, 1f, 200f)
         entryTable.add(sp).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))
-        entryTable.add(description).colspan(4).width(Value.percentWidth(0.65f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
+        entryTable.add(ScrollPane(description)).colspan(4)
+                .width(Value.percentWidth(0.65f, entryTable))
+                .height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))
         // Simply changing these to x*width, y*height won't work
 

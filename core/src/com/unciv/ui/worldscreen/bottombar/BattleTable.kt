@@ -11,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
-import com.unciv.models.gamebasics.tr
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.tr
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.PopupTable

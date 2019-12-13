@@ -1,14 +1,14 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
-import com.unciv.models.gamebasics.tech.TechColumn
-import com.unciv.models.gamebasics.tech.Technology
-import com.unciv.models.gamebasics.tile.Terrain
-import com.unciv.models.gamebasics.tile.TileImprovement
-import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.gamebasics.unit.BaseUnit
-import com.unciv.models.gamebasics.unit.Promotion
+import com.unciv.models.ruleset.tech.TechColumn
+import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
@@ -118,6 +118,25 @@ class Ruleset {
                 Translations.add(file.readString(Charsets.UTF_8.name()))
             }
         }
+        for(language in Translations.getLanguages()){
+            val translationsOfLanguage = HashMap<String,String>()
+            val stringBuilder=StringBuilder()
+            for(translation in Translations.values) {
+
+                stringBuilder.append(translation.entry)
+                stringBuilder.append('=')
+
+
+                if (translation.containsKey(language))
+                    stringBuilder.append(translation[language]!!)
+                stringBuilder.appendln()
+            }
+
+            val finalFile = stringBuilder.toString()
+            Gdx.files.local("jsons/Translations/$language.json")
+                    .writeString(finalFile,false,Charsets.UTF_8.name())
+        }
+
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading translation files - "+translationFilesTime+"ms")
     }

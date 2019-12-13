@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set

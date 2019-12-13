@@ -11,7 +11,7 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen

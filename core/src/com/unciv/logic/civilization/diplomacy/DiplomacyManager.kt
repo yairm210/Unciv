@@ -8,7 +8,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.gamebasics.tile.ResourceSupplyList
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 
 enum class RelationshipLevel{
     Unforgivable,

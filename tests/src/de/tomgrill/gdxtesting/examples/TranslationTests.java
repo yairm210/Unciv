@@ -5,8 +5,8 @@ package de.tomgrill.gdxtesting.examples;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
-import com.unciv.models.gamebasics.Nation;
-import com.unciv.models.gamebasics.Ruleset;
+import com.unciv.models.ruleset.Nation;
+import com.unciv.models.ruleset.Ruleset;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

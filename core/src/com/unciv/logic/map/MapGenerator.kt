@@ -4,9 +4,9 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.models.Counter
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.TerrainType
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TerrainType
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.*

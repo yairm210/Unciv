@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tr
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable

@@ -2,7 +2,7 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {

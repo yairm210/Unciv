@@ -211,7 +211,7 @@
 		]
 	],
 
-	Slow_Start: [
+	_Slow_Start: [
 		[
 			"Lors de vos premiers tours,",
 			" vous aurez peu de choix.",

@@ -7,8 +7,8 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.gamebasics.Building
-import com.unciv.models.gamebasics.VictoryType
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
 import kotlin.math.sqrt

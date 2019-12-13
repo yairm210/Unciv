@@ -1,6 +1,6 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.ruleset
 
-import com.unciv.models.gamebasics.tech.TechEra
+import com.unciv.models.ruleset.tech.TechEra
 
 class PolicyBranch : Policy() {
     var policies: ArrayList<Policy> = arrayListOf()

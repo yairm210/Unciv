@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.gamebasics.Policy
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 

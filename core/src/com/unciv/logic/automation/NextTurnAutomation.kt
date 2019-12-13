@@ -10,9 +10,9 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.models.gamebasics.VictoryType
-import com.unciv.models.gamebasics.tech.Technology
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.tr
 import kotlin.math.min
 
 class NextTurnAutomation{

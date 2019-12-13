@@ -11,7 +11,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX

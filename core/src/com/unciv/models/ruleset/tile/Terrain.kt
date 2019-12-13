@@ -1,8 +1,8 @@
-package com.unciv.models.gamebasics.tile
+package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.utils.colorFromRGB
 

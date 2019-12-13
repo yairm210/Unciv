@@ -18,7 +18,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import kotlin.math.roundToInt

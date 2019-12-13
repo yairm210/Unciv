@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 

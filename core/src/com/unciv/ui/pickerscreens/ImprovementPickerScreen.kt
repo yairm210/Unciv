@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.tile.TileImprovement
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.addSeparatorVertical
 import com.unciv.ui.utils.onClick

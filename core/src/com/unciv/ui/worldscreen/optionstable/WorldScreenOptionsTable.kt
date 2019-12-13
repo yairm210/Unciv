@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.gamebasics.Ruleset
-import com.unciv.models.gamebasics.tr
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread

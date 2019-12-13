@@ -1,6 +1,6 @@
-package com.unciv.models.gamebasics.unit
+package com.unciv.models.ruleset.unit
 
-import com.unciv.models.gamebasics.ICivilopedia
+import com.unciv.models.ruleset.ICivilopedia
 import com.unciv.models.stats.INamed
 
 class Promotion : ICivilopedia, INamed{

@@ -9,9 +9,9 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
-import com.unciv.models.gamebasics.Ruleset
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
