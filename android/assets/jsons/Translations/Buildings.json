@@ -171,7 +171,7 @@
         Malay:"+10% pertumbuhan di semua bandar"
 		Korean:"모든 도시의 식량 생산량 +10%"
                 Portuguese:"+10% De crescimento em todas as cidades."
-		Estonian:"+ 10% kasvu kõigis linnades"
+		Estonian:"+10% kasvu kõigis linnades"
 
 	}
 
@@ -184,7 +184,7 @@
 		Korean:"이 도시에서 원거리 유닛 생산 시 생산력 + 15%"
 		French:"+15% de production pour les unités à distance"
                 Portuguese:"+15% De produção  para Unidades à  distância."
-		Estonain:"+ 15% toodangut kaugründajatele"
+		Estonain:"+15% toodangut kaugründajatele"
 	}
 
 	*/
@@ -274,7 +274,7 @@
 		Ukrainian:"Технологія безкоштово"
 		Korean:"기술 하나를 무료로 획득"
     Portuguese:"Tecnologia gratuita"
-		Estonian:"TAsuta tehnoloogia"
+		Estonian:"Tasuta tehnoloogia"
 
 
 }
@@ -373,7 +373,7 @@
 		Ukrainian:"«О, нехай болі смерті, які приходять від тебе, не увійдуть в моє тіло. Я бог Тем, і я передова частина неба, і сила, яка захищає мене, - це те, що є з усіма богами назавжди.» — Книга мертвих, перекладена сером Ернестом Альфредом Воллісом Буджем"
 		Korean:"'오, 그대에게 찾아온 죽음의 고통이 나의 육체에 들지 않기를. 나는 템 신으로서, 하늘 꼭대기에 거하며, 영원히 모든 신과 함께 하는 힘이 나를 보호할지니.' - 사자의 서, E.A. 월리스 버지 경 역"
 		Portuguese:"'Ó, que as dores da morte que caem sobre você não entrem em meu corpo. Eu sou o deus Tem, e sou a parte principal do céu, e o poder que me protege é o que está com os deuses para sempre.' - O Livro da Morte, traduzido por Sir Ernest Alfred Wallis Budge"
-		Estonian:"'Oo, ärge laske surma valudel siseneda minu kehasse. Ma olen jumal Tem ja ma olen taeva kõige olulisem osa ning mind kaitsev jõud on see, mis on kõigi jumalatega igavesti.' - Surnute raamat, tõlkinud sir Ernest Alfred Wallis Budge
+		Estonian:"'Oo, ärge laske surma valudel siseneda minu kehasse. Ma olen jumal Tem ja ma olen taeva kõige olulisem osa ning mind kaitsev jõud on see, mis on kõigi jumalatega igavesti.' - Surnute raamat, tõlkinud sir Ernest Alfred Wallis Budge"
 }
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
