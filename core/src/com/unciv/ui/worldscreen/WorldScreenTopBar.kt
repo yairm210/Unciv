@@ -19,7 +19,7 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 
-class WorldScreenTopBar(val screen: WorldScreen) : Table() {
+class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
     private val turnsLabel = "Turns: 0/400".toLabel()
     private val goldLabel = "Gold:".toLabel(colorFromRGB(225, 217, 71) )
@@ -48,16 +48,16 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         val overviewButton = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
         overviewButton.labelCell.pad(10f)
         overviewButton.pack()
-        overviewButton.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen()) }
+        overviewButton.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv)) }
         overviewButton.center(this)
-        overviewButton.x = screen.stage.width-overviewButton.width-10
+        overviewButton.x = worldScreen.stage.width-overviewButton.width-10
         addActor(overviewButton)
     }
 
     private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
-        val revealedStrategicResources = screen.gameInfo.ruleSet.TileResources.values
+        val revealedStrategicResources = worldScreen.gameInfo.ruleSet.TileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
             val resourceImage = ImageGetter.getResourceImage(resource.name,20f)
@@ -86,7 +86,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
         statsTable.add(ImageGetter.getStatIcon("Culture")).size(20f)
         statsTable.pack()
-        statsTable.width = screen.stage.width - 20
+        statsTable.width = worldScreen.stage.width - 20
         return statsTable
     }
 
@@ -95,8 +95,8 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.onClick {
-            if(screen.stage.actors.none { it is WorldScreenMenuTable })
-                WorldScreenMenuTable(screen)
+            if(worldScreen.stage.actors.none { it is WorldScreenMenuTable })
+                WorldScreenMenuTable(worldScreen)
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y

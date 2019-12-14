@@ -2,7 +2,6 @@ package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -70,11 +69,6 @@ class LanguagePickerScreen: PickerScreen(){
             it.onClick {
                 chosenLanguage = it.language
                 rightSideButton.enable()
-                rightSideButton.clearActions()
-                rightSideButton.addAction(Actions.forever(Actions.sequence(
-                        Actions.color(Color.GREEN,0.5f),
-                        Actions.color(Color.WHITE,0.5f)
-                )))
                 update()
             }
             topTable.add(it).pad(10f).row()
