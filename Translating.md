@@ -6,6 +6,8 @@ If you're adding a new language, you'll need to create a new file ('Create a new
 
 If you're adding stuff to an existing language, simply start editing the file!
 
+Each untranslated phrase will have a " " requires translation" lone before it, so you can quickly find them. You don't need to remove them yourself if you don't want to - they will be automatically removed the next time we rebuild the file.
+
 When you feel that you're ready to add your translation to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
 
 Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
