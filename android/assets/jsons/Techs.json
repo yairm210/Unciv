@@ -128,7 +128,7 @@
 				name:"Construction",
 				row:9,
 				prerequisites:["Masonry","The Wheel"],
-				quote:"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfulyl executed.' - Johann Wolfgang von Goethe"
+				quote:"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfully executed.' - Johann Wolfgang von Goethe"
 			}
 		]	
 	},
