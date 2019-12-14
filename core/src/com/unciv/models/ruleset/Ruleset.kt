@@ -115,7 +115,7 @@ class Ruleset {
 
         readTranslationsFromProperties()
 //        readTranslationsFromJson()
-//        writeNewTranslationFiles()
+        writeNewTranslationFiles()
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading translation files - "+translationFilesTime+"ms")
