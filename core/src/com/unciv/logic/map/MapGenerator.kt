@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.*
 
@@ -48,6 +49,9 @@ class MapGenerator {
         for (tile in map.values) randomizeTile(tile, mapParameters, ruleset)
 
         randomizeResources(map, mapRadius, ruleset)
+
+        if (!mapParameters.noNaturalWonders)
+            spawnNaturalWonders(map, mapRadius, ruleset)
 
         return map
     }
@@ -211,6 +215,23 @@ class MapGenerator {
         spreadResource(mapToReturn, distance, ResourceType.Luxury, ruleset)
         spreadResource(mapToReturn, distance, ResourceType.Bonus, ruleset)
     }
+
+    // TODO: https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
+    fun spawnNaturalWonders(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
+        val wonders = ruleset.NaturalWonders.values
+        val wondersLocation = ArrayList<TileInfo>()
+
+        for (wonder in wonders) {
+            val suitableTiles = mapToReturn.values
+                    .filter { it.resource == null && it.naturalWonder == null && wonder.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+            if (suitableTiles.isNotEmpty()) {
+                val location = suitableTiles.random()
+                wondersLocation += location
+                location.naturalWonder = wonder.name
+            }
+        }
+    }
+
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
     private fun spreadStrategicResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {

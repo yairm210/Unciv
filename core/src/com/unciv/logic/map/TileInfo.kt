@@ -29,6 +29,7 @@ open class TileInfo {
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
     var terrainFeature: String? = null
+    var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
     var improvementInProgress: String? = null
@@ -48,6 +49,7 @@ open class TileInfo {
         toReturn.position=position.cpy()
         toReturn.baseTerrain=baseTerrain
         toReturn.terrainFeature=terrainFeature
+        toReturn.naturalWonder=naturalWonder
         toReturn.resource=resource
         toReturn.improvement=improvement
         toReturn.improvementInProgress=improvementInProgress
@@ -86,6 +88,10 @@ open class TileInfo {
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.TileResources[resource!!]!!
+
+    fun getNaturalWonder() : NaturalWonder =
+            if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
+            else ruleset.NaturalWonders[naturalWonder!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
 
@@ -155,6 +161,11 @@ open class TileInfo {
                 stats.production += 1
         }
 
+        if (naturalWonder != null) {
+            val wonder = getNaturalWonder()
+            stats.add(getNaturalWonder())
+        }
+
         if (hasViewableResource(observingCiv)) {
             val resource = getTileResource()
             stats.add(getTileResource()) // resource base
@@ -217,6 +228,7 @@ open class TileInfo {
 
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         if (isCityCenter() || improvement.name == this.improvement) return false
+        if (naturalWonder != null) return false
         if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
 
@@ -284,6 +296,7 @@ open class TileInfo {
         lineList += baseTerrain.tr()
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
         if (hasViewableResource(tileMap.gameInfo.getCurrentPlayerCivilization())) lineList += resource!!.tr()
+        if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)

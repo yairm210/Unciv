@@ -288,6 +288,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(tile.isOcean && unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !unit.civInfo.tech.isResearched("Astronomy"))
             return false
+        if (tile.naturalWonder != null) return false
 
         val tileOwner = tile.getOwner()
         if(tileOwner!=null && tileOwner.civName!=unit.owner) {

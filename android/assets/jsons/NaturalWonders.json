@@ -1,0 +1,63 @@
+[
+	{
+		"name": "Barringer Crater",
+		"gold": 2,
+		"science": 3,
+		"terrainsCanBeFoundOn": ["Desert","Tundra","Mountain"]
+	},
+	{
+		"name": "Grand Mesa",
+		"production": 2,
+		"gold": 3,
+		"terrainsCanBeFoundOn": ["Plains","Desert","Tundra","Mountain"]
+	},
+	{
+		"name": "Great Barrier Reef",
+		"food": 2,
+		"production": 1,
+		"gold": 1,
+		"science": 2,
+		"terrainsCanBeFoundOn": ["Coast"],
+		"size" : 2 //TODO: currently it is spawned on a single tile
+	},
+	{
+		"name": "Krakatoa",
+		"science": 5,
+		"terrainsCanBeFoundOn": ["Grassland","Mountain"]
+	},
+	{
+		"name": "Mt. Fuji",
+		"gold": 1,
+		"culture": 5,
+		"terrainsCanBeFoundOn": ["Grassland","Mountain"]
+	},
+	{
+		"name": "Old Faithful",
+		"science": 2,
+		"happiness": 3,
+		"terrainsCanBeFoundOn": ["Grassland","Plains","Tundra","Mountain"]
+	},
+	{
+		"name": "Rock of Gibraltar",
+		"food": 2,
+		"gold": 5,
+		"terrainsCanBeFoundOn": ["Grassland"]
+	},
+	{
+		"name": "Cerro de Potosi",
+		"gold": 10,
+		"terrainsCanBeFoundOn": ["Plains","Mountain"]
+	},
+	{
+		"name": "El Dorado",
+		"culture": 5,
+		"terrainsCanBeFoundOn": ["Plains"]
+		//TODO: 500 gold reward to first discoverer
+	},
+	{
+		"name": "Fountain of Youth",
+		"happiness": 10, //TODO: bonus is granted even if tile not worked
+		"terrainsCanBeFoundOn": ["Plains"]
+		//TODO: Adjacent military land units heal at double rate for the rest of the game
+	}
+]

@@ -17,6 +17,7 @@ class MapParametersTable(val mapParameters: MapParameters): Table(){
         addMapTypeSelectBox()
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
+        addNoNaturalWondersCheckbox()
     }
 
     private fun addMapTypeSelectBox() {
@@ -67,5 +68,16 @@ class MapParametersTable(val mapParameters: MapParameters): Table(){
             }
         })
         add(noRuinsCheckbox).colspan(2).row()
+    }
+
+    private fun addNoNaturalWondersCheckbox() {
+        val noNaturalWondersCheckbox = CheckBox("No Natural Wonders".tr(), CameraStageBaseScreen.skin)
+        noNaturalWondersCheckbox.isChecked = mapParameters.noNaturalWonders
+        noNaturalWondersCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
+            }
+        })
+        add(noNaturalWondersCheckbox).colspan(2).row()
     }
 }
