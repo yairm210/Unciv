@@ -137,7 +137,6 @@ class Ruleset {
     private fun readTranslationsFromProperties() {
 
         val languages = ArrayList<String>()
-//        languages.add("templates") // first off,
         languages.addAll(Locale.getAvailableLocales()
                 .map { it.displayName })
 
