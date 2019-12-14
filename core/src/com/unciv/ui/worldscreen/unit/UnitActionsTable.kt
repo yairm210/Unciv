@@ -33,7 +33,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
             "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
             "Found city" -> return ImageGetter.getUnitIcon(Constants.settler)
-            "Discover Technology" -> return ImageGetter.getUnitIcon("Great Scientist")
+            "Hurry Research" -> return ImageGetter.getUnitIcon("Great Scientist")
             "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
             "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
             "Construct Landmark" -> return ImageGetter.getImprovementIcon("Landmark")

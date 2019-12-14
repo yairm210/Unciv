@@ -12,7 +12,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
-import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
@@ -196,11 +195,11 @@ class UnitActions {
 
 
         if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
-            actionList += UnitAction("Discover Technology", unit.currentMovement >0
+            actionList += UnitAction("Hurry Research", unit.civInfo.tech.currentTechnologyName() != null
+                    && unit.currentMovement >0
             ) {
-                unit.civInfo.tech.freeTechs += 1
+                unit.civInfo.tech.hurryResearch()
                 unit.destroy()
-                worldScreen.game.setScreen(TechPickerScreen(true, unit.civInfo))
             }.sound("chimes")
         }
 

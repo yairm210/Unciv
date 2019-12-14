@@ -1996,7 +1996,9 @@
 		Czech:"Atomová bomba"
 		German:"Atombombe"
 		French:"Bombardier Atomique"
-		Polish:"Bomba atomowa"
+		Simplified_Chinese:"原子弹"
+		Traditional_Chinese:"原子彈"
+        Polish:"Bomba atomowa"
 		Ukrainian:"Ядерна бомба"
 		Korean:"원자폭탄"
 	}
@@ -2145,20 +2147,9 @@
 		
 	}
 
-	"Can discover a technology":{
-		Spanish:"Puede descubrir una tecnologia"
-		Italian:"Può scoprire una tecnologia"
-		French:"Peut découvrir une technologie"
-		Romanian:"Poate descoperi o tehnologie"
-		Simplified_Chinese:"可以发现1项科技",
-		Traditional_Chinese:"可以發現1項科技",
-		Portuguese:"Pode descobrir uma tecnologia"
-		German:"Kann eine Technologie entdecken"
-		Russian:"Может открыть технологию"
-		Czech:"Může vyzkoumat technologii"
-		Polish:"Może odkryć technologię"
-		Ukrainian:"Може відкрити технологію"
-		Korean:"기술 하나를 무료로 발견 가능"
+	"Can gain a large sum of science immediately to hurry technology research":{
+		Simplified_Chinese:"可以立即获得大量科研以加速科技研究",
+		Traditional_Chinese:"可以立即獲得大量科研以加速科技研究",
 	}
 
 	"Can build improvement: Academy":{
