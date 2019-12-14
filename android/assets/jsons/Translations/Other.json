@@ -33,6 +33,7 @@
 		Czech:"Počítám..."
 		Ukrainian:"Обробка…"
 		Korean:"로딩 중..."
+		Polish:"W toku..."
 }
 
 	"Waiting for other players...":{ // Displayed when next turn is being...turned
@@ -45,6 +46,7 @@
 		German:"Warte auf andere SpielerInnen..."
 		French:"En attente des autres joueurs..."
 		Korean:"다른 플레이어를 기다리는 중..."
+		Polish:"Oczekiwanie na innych graczy..."
 }
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -62,6 +64,7 @@
 		Czech:"za"
 		Ukrainian:"через"
 		Korean:"의 완성까지"
+		Polish:"za"
 }
 
 /////// Turn
@@ -82,6 +85,7 @@
 		Czech:"Další tah"
 		Ukrainian:"Наступний хід"
 		Korean:"다음 턴"
+		Polish:"Następna tura"
 }
 
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -99,6 +103,7 @@
 		Czech:"Tah"
 		Ukrainian:"Хід"
 		Korean:"턴"
+		Polish:"Tura"
 }
 
 
@@ -117,6 +122,7 @@
 		Czech:"tah(y/ů)"
 		Ukrainian:"ходів"
 		Korean:"턴"
+		Polish:"Tury"
 }
 
 	"turn":{ // for e.g. "1 turn" to technology
@@ -130,6 +136,7 @@
 		Ukrainian:"ходів"
 		German:"Runde"
 		Korean:"턴"
+		Polish:"Tura"
 }
 
 	"Next unit":{
@@ -143,6 +150,7 @@
 		Ukrainian:"Наступний підрозділ"
 		German:"Nächste Einheit"
 		Korean:"다음 유닛"
+		Polish:"Następna jednostka"
 }
 
 	"Pick a policy":{
@@ -156,6 +164,7 @@
 		Ukrainian:"Вибрати політику"
 		German:"Wähle einen Grundsatz"
 		Korean:"정책 선택"
+		Polish:"Wybierz politykę"
 }
 
 /////// Unit
@@ -175,6 +184,7 @@
 		Czech:"Pohyb"
 		Ukrainian:"Рух"
 		Korean:"행동력"
+		Polish:"Ruch"
 }
 
 	"Strength":{
@@ -192,6 +202,7 @@
 		Czech:"Síla"
 		Ukrainian:"Сила"
 		Korean:"전투력"
+		Polish:"Siła"
 }
 
 	"Ranged strength":{
@@ -209,6 +220,7 @@
 		Czech:"Síla na dálku"
 		Ukrainian:"Сила в дальному бою"
 		Korean:"원거리 전투력"
+		Polish:"Siła rażenia"
 }
 
 	"Bombard strength":{ // for displaying city info
@@ -226,6 +238,7 @@
 		Czech:"Bombardovací síla"
 		Ukrainian:"Сила обстрілу"
 		Korean:"공격력"
+		Polish:"Siła bombardowania"
 }
 
 	"Range":{
@@ -237,7 +250,8 @@
     		Ukrainian:"Дальність"
 		German:"Reichweite"
 		French:"Portée"
-			Korean:"공격 범위"
+		Korean:"공격 범위"
+		Polish:"Zasięg"
 }
 
 /////// Unit actions
@@ -257,6 +271,7 @@
 		Czech:"Pohnout jednotkou"
 		Ukrainian:"Перемістити підрозділ"
 		Korean:"유닛 이동"
+		Polish:"Rusz jednostkę"
 }
 
 	"Stop movement":{
@@ -274,6 +289,7 @@
 		Czech:"Zastavit pohyb"
 		Ukrainian:"Скасувати переміщення"
 		Korean:"이동 중지"
+		Polish:"Zatrzymaj ruch"
 }
 
 	"Construct improvement":{
@@ -291,6 +307,7 @@
 		Czech:"Vybudovat vylepšení"
 		Ukrainian:"Удосконалити"
 		Korean:"시설 건설"
+		Polish:"Zbuduj ulepszenie"
 }
 
 	"Automate":{
@@ -308,6 +325,7 @@
 		Czech:"Automatizovat"
 		Ukrainian:"Автоматизувати"
 		Korean:"자동화"
+		Polish:"Zautomatyzuj"
 }
 
 	"Stop automation":{
@@ -325,6 +343,7 @@
 		Czech:"Konec automatizace"
 		Ukrainian:"Зупинити автоматизацію"
 		Korean:"자동화 중지"
+		Polish:"Wyłącz automatyzację"
 }
 
 	"Construct road": {
@@ -337,6 +356,7 @@
 		Czech:"Postavit cestu"
 		Ukrainian:"Побудувати дорогу"
 		Korean:"도로 건설"
+		Polish:"Zbuduj drogę"
 }
 
 	"Fortify":{
@@ -354,6 +374,7 @@
 		Czech:"Opevnit se"
 		Ukrainian:"Укріпити"
 		Korean:"요새화"
+		Polish:"Fortyfikuj"
 }
 
 	"Fortification":{ // as in "+40% Fortification"
@@ -371,6 +392,7 @@
 		Czech:"Opevnění"
 		Ukrainian:"Фортифікація"
 		Korean:"방어"
+		Polish:"Fortyfikacja"
 }
 
 	"Sleep":{
@@ -388,6 +410,7 @@
 		Czech:"Spánek"
 		Ukrainian:"Спати"
 		Korean:"대기"
+		Polish:"Uśpij"
 }
 
 	"Moving": { //sample would be appreciated
@@ -400,6 +423,7 @@
 		Czech:"Pohyb "
 		Ukrainian:"У русі"
 		Korean:"이동 중"
+		Polish:"W ruchu"
 }
 
 	"Set up":{ // For siege units
@@ -417,6 +441,7 @@
 		Czech:"Nastavení"
 		Ukrainian:"Підготуватися"
 		Korean:"설치"
+		Polish:"Rozstaw"
 }
 
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
@@ -433,6 +458,7 @@
 		Czech:"Přestavba na jednotku [unitType] ([goldCost] zlata)"
 		Ukrainian:"Удосконалити до [unitType] ([goldCost] золота)"
 		Korean:"[unitType]으로 업그레이드 (금 [goldCost] 소모)"
+		Polish:"Ulepsz do [unitType] ([goldCost] złota)"
 }
 
 	"Found city":{
@@ -450,6 +476,7 @@
 		Czech:"Založit město"
 		Ukrainian:"Заснувати місто"
 		Korean:"도시 설립"
+		Polish:"Załóż miasto"
 }
 
 	"Promote":{
@@ -467,6 +494,7 @@
 		Czech:"Povýšit"
 		Ukrainian:"Підвищити"
 		Korean:"승급"
+		Polish:"Awansuj"
 }
 
 	"Health":{
@@ -484,6 +512,7 @@
 		Czech:"Zdraví"
 		Ukrainian:"Здоров’я"
 		Korean:"체력"
+		Polish:"Zdrowie"
 }
 
 	"Disband unit":{
@@ -501,6 +530,7 @@
 		Czech:"Propustit jednotku"
 		Ukrainian:"Розформувати підрозділ"
 		Korean:"유닛 삭제"
+		Polish:"Rozwiąż jednostkę"
 }
 
 	"Explore":{
@@ -518,6 +548,7 @@
 		Czech:"Prozkoumat"
 		Ukrainian:"Розвідувати"
 		Korean:"자동 탐색"
+		Polish:"Eksploruj"
 }
 
 	"Stop exploration":{
@@ -531,6 +562,7 @@
 		Ukrainian:"Зупинити розвідку"
 		German:"Erkundung stoppen"
 		Korean:"탐색 중단"
+		Polish:"Przestań eksplorować"
 }
 
 	"Pillage":{
@@ -548,6 +580,7 @@
 		Czech:"Rabování"
 		Ukrainian:"Пограбувати"
 		Korean:"약탈"
+		Polish:"Złup"
 }
 
 	"Do you really want to disband this unit?":{
@@ -565,6 +598,7 @@
 		Czech:"Opravdu chcete propustit tuto jednotku?"
 		Ukrainian:"Ви дійсно хочете розформувати цей підрозділ?"
 		Korean:"이 유닛을 정말 삭제하겠습니까?"
+		Polish:"Na pewno chcesz rozwiązać tę jednostkę?"
 }
 	"Disband this unit for [goldAmount] gold?":{
 		Italian:"Vuoi sciogliere questa unità per [goldAmount] Oro?"
@@ -581,6 +615,7 @@
 		Czech:"Propustit tuto jednotku - dostaneme [goldAmount] zlata?"
 		Ukrainian:"Розформувати цей підрозділ за [goldAmount] золота?"
 		Korean:"이 유닛을 삭제하면 금 [goldAmount]을 얻습니다. 삭제하겠습니까?"
+		Polish:"Rozwiązać tę jednostkę za [goldAmount] złota?"
 }
 
 	"Create [improvement]":{ // for great units, fishing boats, etc.
@@ -593,6 +628,7 @@
 		Ukrainian:"Створити [improvement]"
 		German:"Erzeuge [improvement]"
 		Korean:"[improvement] 건설"
+		Polish:"Zbuduj [improvement]"
 }
 
 	"Start Golden Age":{
@@ -605,6 +641,7 @@
 		Ukrainian:"Почати золотий вік"
 		German:"Goldenes Zeitalter starten"
 		Korean:"황금기 시작"
+		Polish:"Rozpocznij Złotą Erę"
 }
 
 	"Yes":{
@@ -622,6 +659,7 @@
 		Czech:"Ano"
 		Ukrainian:"Так"
 		Korean:"네"
+		Polish:"Tak"
 }
 	"No":{
 		Italian:"No"
@@ -638,6 +676,7 @@
 		Czech:"Ne"
 		Ukrainian:"Ні"
 		Korean:"아니오"
+		Polish:"Nie"
 }
 
 	"Acquire":{
@@ -650,6 +689,7 @@
 		Ukrainian:"Отримати"
 		German:"Erwerben"
 		Korean:"획득"
+		Polish:"Zdobądź"
 }
 
 /////// Stats / Basics ressources
@@ -669,6 +709,7 @@
 		Czech:"Zlato"
 		Ukrainian:"Золото"
 		Korean:"금"
+		Polish:"Złoto"
 }
 
 	"Science":{
@@ -686,6 +727,7 @@
 		Czech:"Výzkum"
 		Ukrainian:"Наука"
 		Korean:"과학"
+		Polish:"Nauka"
 }
 
 	"Happiness":{
@@ -703,6 +745,7 @@
 		Czech:"Spokojenost"
 		Ukrainian:"Щастя"
 		Korean:"행복도"
+		Polish:"Zadowolenie"
 }
 
 	"Production":{
@@ -720,6 +763,7 @@
 		Czech:"Produkce"
 		Ukrainian:"Виробництво"
 		Korean:"생산력"
+		Polish:"Produkcja"
 }
 
 	"Culture":{
@@ -737,6 +781,7 @@
 		Czech:"Kultura"
 		Ukrainian:"Культура"
 		Korean:"문화"
+		Polish:"Kultura"
 }
 
 	"Food":{
@@ -754,6 +799,7 @@
 		Czech:"Jídlo"
 		Ukrainian:"Їжа"
 		Korean:"식량"
+		Polish:"Żywność"
 }
 
 	"GOLDEN AGE":{
@@ -771,6 +817,7 @@
 		Czech:"ZLATÝ VĚK"
 		Ukrainian:"ЗОЛОТИЙ ВІК"
 		Korean:"황금기"
+		Polish:"ZŁOTA ERA"
 }
 
 	"Golden Age":{
@@ -783,6 +830,7 @@
 		German:"Goldenes Zeitalter"
 		French:"Age d'or"
 		Korean:"황금기"
+		Polish:"Złota Era"
 }
 
 	// You don't have to translate this is it's good for your language, but some languages have their own display
@@ -796,6 +844,7 @@
 		German:"[year] v. Chr."
 		French:"[year] avant J.C."
 		Korean:"기원전 [year]년"
+		Polish:"[year] p.n.e."
 }
 
 	"[year] AD":{ // Anno Domini
@@ -808,6 +857,7 @@
 		German:"[year] n. Chr."
 		French:"[year] après J.C"
 		Korean:"기원후 [year]년"
+		Polish:"[year] n.e."
 }
 
 /////// Menu table
@@ -826,6 +876,7 @@
 		Czech:"Civilopedie"
 		Ukrainian:"Цивілопедія"
 		Korean:"문명 백과사전"
+		Polish:"Civilopedia"
 }
 
 	"Start new game":{
@@ -843,6 +894,7 @@
 		Czech:"Začít novou hru"
 		Ukrainian:"Розпочати нову гру"
 		Korean:"새 게임 시작"
+		Polish:"Zacznij nową grę"
 }
 
 	"Save game":{
@@ -860,6 +912,7 @@
 		Czech:"Uložit hru"
 		Ukrainian:"Зберегти гру"
 		Korean:"게임 저장하기"
+		Polish:"Zapisz stan gry"
 }
 
 	"Load game":{
@@ -877,6 +930,7 @@
 		Czech:"Načíst hru"
 		Ukrainian:"Завантажити гру"
 		Korean:"게임 불러오기"
+		Polish:"Wczytaj stan gry"
 }
 
 
@@ -895,6 +949,7 @@
 		Czech:"Cesta k vítězství"
 		Ukrainian:"Статус перемоги"
 		Korean:"승리 조건 확인"
+		Polish:"Status zwycięstwa"
 }
 
 	"Social policies":{
@@ -912,6 +967,7 @@
 		Czech:"Sociální politika"
 		Ukrainian:"Соціальні політики"
 		Korean:"사회 정책"
+		Polish:"Polityki socjalne"
 }
 
 	"Community":{
@@ -924,6 +980,7 @@
 		German:"Gemeinschaft"
 		French:"Communauté"
 		Korean:"커뮤니티"
+		Polish:"Społeczność"
 }
 
 
@@ -942,6 +999,7 @@
 		Czech:"Zavřít"
 		Ukrainian:"Закрити"
 		Korean:"닫기"
+		Polish:"Zamknij"
 }
 
 /////// City screen
@@ -961,6 +1019,7 @@
 		Czech:"Opustit město"
 		Ukrainian:"Залишити місто"
 		Korean:"도시 나가기"
+		Polish:"Wyjdź z widoku miasta"
 }
 
 	"Raze city":{
@@ -978,6 +1037,7 @@
 		Czech:"Srovnat město se zemí"
 		Ukrainian:"Зруйнувати місто"
 		Korean:"도시 파괴"
+		Polish:"Zburz miasto"
 }
 
 	"Stop razing city":{
@@ -995,6 +1055,7 @@
 		Czech:"Ukončit vyhlazování města"
 		Ukrainian:"Зупинити руйнування міста"
 		Korean:"파괴 중단"
+		Polish:"Przestań burzyć miasto"
 }
 
 	"Buy for [amount] gold":{
@@ -1012,6 +1073,7 @@
 		Czech:"Koupit za [amount] zlata"
 		Ukrainian:"Купити за [amount] золота"
 		Korean:"금 [amount]에 구매"
+		Polish:"Kup za [amount] złota"
 }
 
 	"Buy":{ // for when the construction is a wonder/special and can't be bought, the button is disabled but still displays text
@@ -1029,6 +1091,7 @@
 		Czech:"Koupit"
 		Ukrainian:"Купити"
 		Korean:"구매"
+		Polish:"Kup"
 }
 
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
@@ -1046,6 +1109,7 @@
 		Czech:"Přejete si zakoupit [constructionName] za [buildingGoldCost] zlata?"
 		Ukrainian:"Чи хотіли б ви придбати [ConstructionName] за [buildingGoldCost]?"
 		Korean:"금 [buildingGoldCost]을 지불하여 [constructionName]을 구매할까요?"
+		Polish:"Czy chcesz kupić [constructionName] za [buildingGoldCost] złota?"
 }
 
 	"Maintenance cost":{
@@ -1063,6 +1127,7 @@
 		Czech:"Náklady na údržbu (žold)"
 		Ukrainian:"Вартість обслуговування"
 		Korean:"유지 비용"
+		Polish:"Koszty utrzymania"
 }
 
 	"Pick construction":{
@@ -1080,6 +1145,7 @@
 		Czech:"Zvolte konstrukci"
 		Ukrainian:"Вибрати споруду"
 		Korean:"생산 선택"
+		Polish:"Wybierz budowlę"
 }
 
 	"Pick improvement":{
@@ -1093,6 +1159,7 @@
 		Ukrainian:"Вибрати вдосконалення"
 		German:"Verbesserung auswählen"
 		Korean:"시설 선택"
+		Polish:"Wybierz ulepszenie"
 }
 
 	"Provides [resource]":{
@@ -1105,6 +1172,7 @@
 		German:"Stellt [resource] zur Verfügung"
 		French:"Fournit [resource]"
 		Korean:"[resource]을(를) 제공합니다"
+		Polish:"Zapewnia [resource]"
 }
 
 	"Replaces [improvement]":{
@@ -1116,7 +1184,8 @@
 		Ukrainian:"Замінити [improvement]"
 		German:"Ersetzt [improvement]"
 		French:"Remplace [improvement]"
-			Korean:"[improvement]을(를) 교체합니다"
+		Korean:"[improvement]을(를) 교체합니다"
+		Polish:"Zamienia [improvement]"
 }
 
 	"Pick now!": { //sample needed
@@ -1130,6 +1199,7 @@
 		Ukrainian:"Вибрати зараз!"
 		German:"Wähle jetzt!"
 		Korean:"선택"
+		Polish:"Wybierz teraz!"
 }
 
 	"Build [building]":{ // eg Build Granary
@@ -1146,6 +1216,7 @@
 		Czech:"Postavit [building]"
 		Ukrainian:"Побудувати [building]"
 		Korean:"[building] 건설"
+		Polish:"Zbuduj [building]"
 }
 
 	"Train [unit]":{ // eg Train Scout
@@ -1163,6 +1234,7 @@
 		Czech:"Vycvičit [unit]"
 		Ukrainian:"Обучити"
 		Korean:"[unit] 훈련"
+		Polish:"Wyszkol [unit]"
 }
 
 	"Produce [thingToProduce]":{ // eg Produce gold
@@ -1180,6 +1252,7 @@
 		Czech:"Produkovat [thingToProduce]"
 		Ukrainian:"Виробляє [thingToProduce]"
 		Korean:"[thingToProduce] 생산"
+		Polish:"Wyprodukuj [thingToProduce]"
 }
 
 	"Nothing":{ // A city can choose to "idle" and produce nothing
@@ -1197,6 +1270,7 @@
 		Czech:"Nic"
 		Ukrainian:"Нічого"
 		Korean:"대기"
+		Polish:"Nic"
 }
 
 	"Annex city":{ // For a puppetted city
@@ -1209,6 +1283,7 @@
 		German:"Stadt annektieren"
 		French:"Cité annexée"
 		Korean:"도시 합병"
+		Polish:"Anektuj miasto"
 }
 
 	"Specialist Buildings":{ // !!!!! DUPLICATE KEY !!!!!
@@ -1226,6 +1301,7 @@
 		Czech:"Specializované budovy"
 		Ukrainian:"Спеціалізовані будівлі"
 		Korean:"전문가 건물"
+		Polish:"Budynki specjalistów"
 }
 
 	"Specialist Allocation":{
@@ -1243,6 +1319,7 @@
 		Czech:"Přidělit specialistu"
 		Ukrainian:"Розподіл спеціалістів"
 		Korean:"전문가 할당"
+		Polish:"Pzydział specjalisty"
 }
 
 	"Specialists":{
@@ -1256,6 +1333,7 @@
 		Ukrainian:"Спеціалісти"
 		German:"SpezialistInnen"
 		Korean:"전문가"
+		Polish:"Specjaliści"
 }
 
 	"Food eaten":{
@@ -1269,6 +1347,7 @@
 		Ukrainian:"Їжі з’їдено"
 		German:"Nahrung verbraucht"
 		Korean:"식량 소모"
+		Polish:"Żywność zjedzona"
 }
 
 	"Growth bonus":{
@@ -1282,6 +1361,7 @@
 		Ukrainian:"Бонус до зростання"
 		German:"Wachstumsbonus"
 		Korean:"성장률"
+		Polish:"Bonus do wzrostu"
 }
 
 	"Unassigned population":{ // as in "Unassigned population: 2/13
@@ -1299,6 +1379,7 @@
 		Czech:"Nezaměstnaní obyvatelé"
 		Ukrainian:"Непризначене населення"
 		Korean:"실업자 수"
+		Polish:"Nieprzydzielona populacja"
 }
 
 	"[turnsToExpansion] turns to expansion":{
@@ -1316,6 +1397,7 @@
 		Czech:"[turnsToExpansion] tah(y/ů) do rozšíření města"
 		Ukrainian:"[turnsToExpansion] ходів до розширення"
 		Korean:"영토 확장까지 [turnsToExpansion] 턴"
+		Polish:"[turnsToExpansion] tur do ekspansji"
 }
 
 	"Stopped expansion":{ // if culture is 0
@@ -1333,6 +1415,7 @@
 		Czech:"Rozšiřování zastaveno"
 		Ukrainian:"Розширення зупинено"
 		Korean:"영토 확장 정지"
+		Polish:"Ekspansja zatrzymana"
 }
 
 	"[turnsToPopulation] turns to new population":{
@@ -1350,6 +1433,7 @@
 		Czech:"[turnsToPopulation] tah(y/ů) do přírůstku populace"
 		Ukrainian:"[turnsToPopulation] ходів до зростання населення"
 		Korean:"새로운 인구 출생까지 [turnsToPopulation] 턴"
+		Polish:"[turnsToPopulation] tur do nowej populacji"
 }
 
 	"Food converts to production":{
@@ -1362,6 +1446,7 @@
 		German:"Nahrung in Produktion verwandeln"
 		French:"Nourriture convertie en production"
 		Korean:"식량이 생산력으로 전환됨"
+		Polish:"Zamiana żywności na produkcję"
 }
 
 	"[turnsToStarvation] turns to lose population":{
@@ -1379,6 +1464,7 @@
 		Czech:"[turnsToStarvation] tah(y/ů) do ztráty populace"
 		Ukrainian:"[turnsToStarvation] ходів до зменшення населення"
 		Korean:"인구 감소까지 [turnsToStarvation]턴"
+		Polish:"[turnsToStarvation] tur do utraty populacji"
 }
 
 	"Stopped population growth":{
@@ -1396,6 +1482,7 @@
 		Czech:"Zastavený populační růst"
 		Ukrainian:"Приріст населення призупинено"
 		Korean:"인구 성장이 멈춤"
+		Polish:"Zatrzymano wzrost populacji"
 }
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
@@ -1410,6 +1497,7 @@
 		Ukrainian:"Опір на [numberOfTurns] ходів"
 		German:"Im Widerstand für weitere [numberOfTurns] Runden"
 		Korean:"[numberOfTurns]턴 동안 저항 상태"
+		Polish:"Stawiające opór przez następne [numberOfTurns] tur"
 }
 
 	"Sell for [sellAmount] gold":{ // when selling a building
@@ -1426,6 +1514,7 @@
 		Czech:"Prodat za [sellAmount] zlata"
 		Ukrainian:"Продати за [sellAmount] золота"
 		Korean:"금 [sellAmount]에 판매"
+		Polish:"Sprzedaj za [sellAmount] złota"
 }
 
 	"Are you sure you want to sell this [building]?":{
@@ -1442,6 +1531,8 @@
 		Czech:"Jste si jistý(á), že chcete prodat budovu [building]?"
 		Ukrainian:"Ви дійсно хочете продати [building]?"
 		Korean:"[building]을(를) 정말로 파시겠습니까?"
+		Polish:"Jesteś pewien sprzedania tego budynku [building]?"
+
 }
 
     	"[greatPerson] points":{ // e.g "Great Scientist points"
@@ -1456,6 +1547,8 @@
 		Ukrainian:"[greatPerson] очків"
 		German:"Punkte für [greatPerson]"
 		Korean:"[greatPerson] 위인 포인트"
+		Polish:"punkty [greatPerson]"
+
 }
 
 	"Great person points":{ // e.g ?
@@ -1469,6 +1562,7 @@
 		Ukrainian:"Очки великих людей"
 		German:"Punkte für Große Persönlichkeit"
 		Korean:"위인 포인트"
+		Polish:"Punkty Wielkiego Człowieka"
 }
 
 	"Current points":{
@@ -1482,6 +1576,7 @@
 		Ukrainian:"Поточні очки"
 		German:"Aktuelle Punkte"
 		Korean:"현재 포인트"
+		Polish:"Obecne punkty"
 }
 
 	"Points per turn":{
@@ -1495,6 +1590,7 @@
 		Ukrainian:"Очки за хід"
 		German:"Punkte pro Runde"
 		Korean:"턴당 포인트"
+		Polish:"Punkty na turę"
 }
 
 	"Convert production to gold at a rate of 4 to 1":{
@@ -1506,6 +1602,7 @@
 		Ukrainian:"Перетворити виробництво на золото з курсом 4 до 1"
 		German:"Verwandel Produktion zu Gold (4:1)"
 		Korean:"생산력의 1/4에 해당하는 양의 금 생산"
+		Polish:"Przekonwertuj produkcję na złoto 4 do 1"
 }
 
 	"Convert production to science at a rate of 4 to 1":{
@@ -1518,6 +1615,7 @@
 		German:"Verwandel Produktion zu Wissenschaft (4:1)"
 		French:"Convertie la production en science au taux de 4 pour 1"
 		Korean:"생산력의 1/4에 해당하는 양의 과학 생산"
+		Polish:"Przekonwertuj produkcję na naukę 4 do 1"
 }
 
 	"The city will not produce anything.":{
@@ -1530,6 +1628,7 @@
 		German:"Die Stadt produziert nichts."
 		French:"La cité ne produira plus rien"
 		Korean:"도시 생산 중단하기"
+		Polish:"To miasto nie będzie niczego produkować"
 }
 
 ////// Tech picker
@@ -1549,6 +1648,7 @@
 		Czech:"Vybrat technologii"
 		Ukrainian:"Вибрати технологію"
 		Korean:"기술 선택"
+		Polish:"Wybierz technologię"
 }
 
 	"Pick a free tech":{
@@ -1566,6 +1666,7 @@
 		Czech:"Vybrat technologii zdarma"
 		Ukrainian:"Вибрати безкоштовную технологію"
 		Korean:"무료 기술 선택"
+		Polish:"Wybierz darmową technologię"
 }
 
 	"Research [technology]":{ // eg "Research Pottery"
@@ -1583,6 +1684,7 @@
 		Czech:"Vyzkoumat [technology]"
 		Ukrainian:"Дослідити [technology]"
 		Korean:"[technology] 연구"
+		Polish:"Zbadaj [technology]"
 }
 
 	"Pick [technology] as free tech":{
@@ -1600,6 +1702,7 @@
 		Czech:"Získat [technology] jako technologii zdarma"
 		Ukrainian:"Вибрати [technology] як безкоштовну технологію"
 		Korean:"[technology]을(를) 무료로 연구"
+		Polish:"Wybierz [technology] za darmo"
 }
 
 	"Units enabled":{
@@ -1617,6 +1720,7 @@
 		Czech:"Lze stavět jednotky"
 		Ukrainian:"Нові підрозділи"
 		Korean:"해제되는 유닛"
+		Polish:"Jednostki aktywowane"
 }
 
 	"Buildings enabled":{
@@ -1634,6 +1738,7 @@
 		Czech:"Lze stavět budovy"
 		Ukrainian:"Нові будівлі"
 		Korean:"해제되는 건물"
+		Polish:"Bydnki aktywne"
 }
 
 	"Wonder":{
@@ -1651,6 +1756,7 @@
 		Czech:"Div"
 		Ukrainian:"Диво"
 		Korean:"불가사의"
+		Polish:"Cud"
 }
 
 	"National Wonder":{
@@ -1663,6 +1769,7 @@
 		Ukrainian:"Національне диво"
 		German:"Nationales Wunder"
 		Korean:"국가 불가사의"
+		Polish:"Cud narodowy"
 }
 
 	"National Wonders":{
@@ -1675,6 +1782,7 @@
 		German:"Nationale Wunder"
 		French:"Merveilles Nationales"
 		Korean:"국가 불가사의들"
+		Polish:"Cudy narodowe"
 }
 
 	"Wonders enabled":{
@@ -1692,6 +1800,7 @@
 		Czech:"Odemknuté Divy"
 		Ukrainian:"Нові дива"
 		Korean:"해제되는 불가사의"
+		Polish:"Cudy aktywne"
 }
 
 	"Tile improvements enabled":{
