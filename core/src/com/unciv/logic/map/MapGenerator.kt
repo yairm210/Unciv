@@ -223,7 +223,7 @@ class MapGenerator {
 
         for (wonder in wonders) {
             val suitableTiles = mapToReturn.values
-                    .filter { it.resource == null && it.naturalWonder == null && wonder.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+                    .filter { it.resource == null && it.naturalWonder == null && it.improvement == null && wonder.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
             if (suitableTiles.isNotEmpty()) {
                 val location = suitableTiles.random()
                 wondersLocation += location

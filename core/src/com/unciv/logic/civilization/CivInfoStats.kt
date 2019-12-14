@@ -126,6 +126,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                     civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
         }
 
+        statMap["Natural Wonders"] = 1f * civInfo.naturalWonders.size
+
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile

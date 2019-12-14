@@ -7,6 +7,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.collections.set
 
 /** CivInfo class was getting too crowded */
@@ -52,18 +53,28 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
 
         val viewedCivs = HashSet<CivilizationInfo>()
+        val viewedNaturalWonders = HashSet<TileInfo>()
         for(tile in civInfo.viewableTiles){
             val tileOwner = tile.getOwner()
             if(tileOwner!=null) viewedCivs+=tileOwner
             for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
+            if (tile.naturalWonder != null) viewedNaturalWonders += tile
         }
 
         if(!civInfo.isBarbarian()) {
-            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() })
+            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() }) {
                 if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
                     civInfo.meetCivilization(otherCiv)
                     civInfo.addNotification("We have encountered ["+otherCiv.civName+"]!", null, Color.GOLD)
                 }
+            }
+
+            for (tile in viewedNaturalWonders) {
+                if (!civInfo.naturalWonders.contains(tile.naturalWonder)) {
+                    civInfo.discoveryNaturalWonder(tile.naturalWonder!!)
+                    civInfo.addNotification("We have discovered ["+tile.naturalWonder+"]!", tile.position, Color.GOLD)
+                }
+            }
         }
     }
 

@@ -59,6 +59,7 @@ class CivilizationInfo {
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
     var allyCivName = ""
+    var naturalWonders = ArrayList<String>()
 
     //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
@@ -101,6 +102,7 @@ class CivilizationInfo {
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
+        toReturn.naturalWonders.addAll(naturalWonders)
         return toReturn
     }
 
@@ -256,6 +258,11 @@ class CivilizationInfo {
         popupAlerts.add(PopupAlert(AlertType.FirstContact,otherCiv.civName))
         if(isCurrentPlayer() || otherCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
+    }
+
+    fun discoveryNaturalWonder(naturalWonderName: String)
+    {
+        naturalWonders.add(naturalWonderName)
     }
 
     override fun toString(): String {return civName} // for debug
