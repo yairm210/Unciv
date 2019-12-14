@@ -89,7 +89,7 @@ class TranslationFileReader(){
     }
 
     fun writeByTemplate(language:String, translations: HashMap<String,String>){
-        val templateFile = Gdx.files.internal("jsons/translationsByLanguage/templates.properties")
+        val templateFile = Gdx.files.internal("jsons/translationsByLanguage/template.properties")
         val stringBuilder = StringBuilder()
         for(line in templateFile.reader().readLines()){
             if(!line.contains(" = ")){ // copy as-is
