@@ -45,7 +45,7 @@
 		// preferredVictoryType:"Diplomatic",
 
 		startIntroPart1: "Нехай вас благославлять боги, о великий царю Олександре! Ви правитель могутньої грецької нації. Ваш народ стільки років жив в ізольованих містах-державах — легендарних містах, таких як Афіни, Спарта, Фіви. Вони дали світові багато чудових речей, таких як демократія, філософія, рагедія, мистецтво та архітектура, тобто сам фундамент західної цивілізації. Хоча їх кількість чимала і вони часто ворожували між собою, у V столітті до нашої ери вони змогли перемогти свого значно більшого сусіда Персію на суші та морі."
-		startIntroPart2: "AОлександре, ваш народ готовий піти на війну, поширити велику грецьку культуру на мільйони і мільйони людей, та принести вам вічну славу. Чи готові ви прийняти свою долю, короле Олександре? Чи приведете ви своїх людей до тріумфу та величі?  Чи побудуєте ви цивілізацію, що витримає виробовування часом?
+		startIntroPart2: "Олександре, ваш народ готовий піти на війну, поширити велику грецьку культуру на мільйони і мільйони людей, та принести вам вічну славу. Чи готові ви прийняти свою долю, короле Олександре? Чи приведете ви своїх людей до тріумфу та величі? Чи побудуєте ви цивілізацію, що витримає виробовування часом?
 
 		declaringWar:"Ти на моєму шляху, ти повинен бути знищений."
 		attacked:"Власне кажучи, я занадто втомився від миру."
@@ -75,39 +75,39 @@
 	},
 	{
 		name:"China",
-    translatedName:"",
+    	translatedName:"Китай",
 		leaderName:"Wu Zetian",
-		adjective:["Chinese"],
+		adjective:["Китайський"],
 		preferredVictoryType:"Scientific",
 
-		startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
-		startIntroPart2: "You, great Queen, who, with cunning and beauty, rose from the position of lowly concubine to that of Divine Empress - your people call out to you to lead them! Great China is once again beset on all sides by barbarians. Can you defeat all your many foes and return your country to greatness? Can you build a civilization to stand the test of time?"
+		startIntroPart1: "Вас благословили Боги. Імператриця У Цзетянь, ви — найкрасивіший правитель Китаю! О велика імператриця, тінь якої змушує квіти розквітати і ріки текти! Ви лідер китайської, найдавнішої і найбільшої цивілізації, яку людство коли-небудь створювало. Історія Китаю тягнеться назад у далекі часи, його люди досягають багатьох великих речей задовго до того, як інші цивілізації навіть були задумані. Внесок Китаю в мистецтво та науки занадто великий і занадто дивний, щоб судити: друкарня, порох, твори Конфуція — це лише декілька подарунків, які Китай подарував незаслуженному світу!"
+		startIntroPart2: "Ви, велика Королева, що з хитрістю і красою піднялася з позиції наймолодшої дружини на позицію Божественної імператриці — ваш народ закликає вас очолити їх! Великий Китай знову оточений з усіх боків варварами. Чи можете ви перемогти всіх своїх численних ворогів і повернути країну до минулої величі? Чи побудуєте ви цивілізацію, що витримає виробовування часом?"
 
-		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
-		attacked:"Fool! I will disembowel you all!"
-		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
-		introduction:"Greetings, I am Empress Wu Zetian. China desires peace and development. You leave us alone, we'll leave you alone."
+		declaringWar:"Ви більше ніколи не зможете мене турбувати. Іди назустріч Ямі."
+		attacked:"Дурні! Я всіх вас вб’ю!"
+		defeated:"Ви виявили себе хитрим і грамотним противником. Вітаю вас з перемогою."
+		introduction:"Вітаю, я імператриця У Цзетянь. Китай бажає миру та розвитку. Ви залишите нас у спокої, а ми залишимо ви в спокої."
 
-		neutralHello:"How are you today?"
-		neutralLetsHearIt:["Continue.","What?","Keep going."]
-		neutralNo:["Nope.","Of course not.","Definitely not."]
-		neutralYes:["Of course.","I agree.","Excellent!"]
+		neutralHello:"Як ви?"
+		neutralLetsHearIt:["Продовжуйте.","Що?","Продовжуймо."]
+		neutralNo:["Ні.","Звичайно, що ні.","Точно ні."]
+		neutralYes:["Звичайно.,"Я згодний.","Чудово!"]
 
-		hateHello:"Oh. It's you?"
-		hateLetsHearIt:["And what else?","Keep talking."]
-		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
-		hateYes:["I suppose I must accept.","Ah. Very good."]
+		hateHello:"Ой. Це ти?"
+		hateLetsHearIt:["І що ще?","Продовжуйте говорити."]
+		hateNo:["Я не можу цього прийняти.","Вибачте, скажіть це ще раз.","Досить вже!"]
+		hateYes:["На жаль, я повинен погодитися.","Ах, дуже добре.","Це даремна трата часу."]
 
-		afterPeace:"The Blessings of Heaven be upon you."
-		tradeRequest:"My friend, do you think you can accept this request?"
+		afterPeace:"Благословення Небесне на вас."
+		tradeRequest:"Друже мій, ти думаєш, ти можеш прийняти цей запит?"
 
 		outerColor:[9, 112, 84],
 		innerColor:[255,255,255],
 		uniqueName:"Art of War",
 		unique:"Great general provides double combat bonus, and spawns 50% faster"
-		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
-			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+		cities:["Пекін","Шанхай","Гуанчжоу","Нанкін","Сіань","Ченду","Ханчжоу","Тяньцзінь","Макао","Шаньдун",
+			"Кайфен","Нінбо","Баодін","Янчжоу","Харбін","Чунцін","Лоян","Куньмін","Тайбей","Шеньян",
+			"Тайюань","Тайнань","Далянь","Ліцзяь","Усі","Сучжоу","Маомін","Шаогуань","Янцзян","Хеюань"]
 	},
 	{
 		name:"Egypt",
