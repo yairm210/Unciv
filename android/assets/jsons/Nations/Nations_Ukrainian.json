@@ -2,7 +2,7 @@
 	{
 		//nations
 		name:"Babylon",
-    translatedName:"Вавилон",
+    	translatedName:"Вавилон",
 		leaderName:"Навуходоносор II",
 		adjective:["Вавилонський"],
 		startBias:["Avoid Tundra"],
@@ -1101,14 +1101,14 @@
 	//City states
 	{
 		name:"Milan",
-    translatedName:"",
-		adjective:["Milan"],
+    	translatedName:"Мілан",
+		adjective:["Міланський"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"You fiend! History shall remember this!"
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Ти знайдеш! Історія пам'ятає це!"
 
 
 		outerColor:[0, 0, 0],
@@ -1117,170 +1117,170 @@
 	},
 	{
 		name:"Florence",
-    translatedName:"",
-		adjective:["Florence"],
+    	translatedName:"Флоренція",
+		adjective:["Флоренський"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"And so the flower of Florence falls to barbaric hands..."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"І так квітка Флоренції потрапляє до варварських рук ..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[62,197,252],
-		cities:["Florence"]
+		cities:["Флоренція"]
 	},
 	{
 		name:"Rio de Janeiro",
-    translatedName:"",
-		adjective:["Rio de Janeiro"],
+    	translatedName:"Ріо-де-Жанейро",
+		adjective:["Ріо-де-Жанейро"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We shall have our revenge."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Ми помстимось."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211, 220, 103],
-		cities:["Rio de Janeiro"]
+		cities:["Ріо-де-Жанейро"]
 	},
 	{
 		name:"Antwerp",
-    translatedName:"",
-		adjective:["Antwerp"],
+    	translatedName:"Антверпен",
+		adjective:["Антверпенський"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"They will write songs of this.... pray that they shall be in your favor."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Вони напишуть пісні цієї .... молитви, щоб вони були на вашу користь."
 
 		outerColor:[0, 0, 0],
 		innerColor:[194,97,255],
-		cities:["Antwerp"]
+		cities:["Антверпен"]
 	},
 	{
 		name:"Dublin",
-    translatedName:"",
-		adjective:["Dublin"],
+    	translatedName:"Дублін",
+		adjective:["Дублінський"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Hah! A fine victory."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Хах! Прекрасна перемога."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211,180,113],
-		cities:["Dublin"]
+		cities:["Дублін"]
 	},
 	{
 		name:"Tyre",
-    translatedName:"",
-		adjective:["Tyre"],
+    	translatedName:"Сур (Ліван)",
+		adjective:["Сунський"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We never fully trusted you from the start."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Ми ніколи повністю не довіряли вам із самого початку."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,97,255],
-		cities:["Tyre"]
+		cities:["Сур (Ліван)"]
 	},
 	{
 		name:"Ur",
-    translatedName:"",
+    	translatedName:"Ур",
 		adjective:["Ur"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Why must you do such a thing?"
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Чому ти повинен робити таке?"
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
-		cities:["Ur"]
+		cities:["Ур"]
 	},
 	{
 		name:"Genoa",
-    translatedName:"",
-		adjective:["Genoa"],
+    	translatedName:"Генуя",
+		adjective:["Генуйський"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"How barbaric. Those who live by the sword shall perish by the sword."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Як по-варварськи. Живі мечем загинуть від меча."
 
 		outerColor:[0, 0, 0],
 		innerColor:[45,255,86],
-		cities:["Genoa"]
+		cities:["Генуя"]
 	},
 	{
 		name:"Venice",
-    translatedName:"",
-		adjective:["Venice"],
+    	translatedName:"Венеція",
+		adjective:["Венеційський"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"If our legacy continues, you will never have truly won."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Якщо наша спадщина продовжиться, ви ніколи не переможете по-справжньому."
 
 		outerColor:[0, 0, 0],
 		innerColor:[153,204,255],
-		cities:["Venice"]
+		cities:["Венеція"]
 	},
 	{
 		name:"Brussels",
-    translatedName:"",
-		adjective:["Brussels"],
+    	translatedName:"Брюссель",
+		adjective:["Брюссельский"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"I guess you weren't here for the sprouts after all..."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Я думаю, ви не бувли тут за паростками ..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[153,255,51],
-		cities:["Brussels"]
+		cities:["Брюссель"]
 	},
 	{
 		name:"Kabul",
-    translatedName:"",
-		adjective:["Kabul"],
+    	translatedName:"Кабул",
+		adjective:["Кабулський"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Unacceptable!"
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Неприпустимо!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[153,0,76],
-		cities:["Kabul"]
+		cities:["Кабул"]
 	},
 	{
 		name:"Sidon",
-    translatedName:"",
-		adjective:["Sidon"],
+    	translatedName:"Сайда (місто)",
+		adjective:["Сайдонський"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"What a fine battle! Sidon is willing to serve you!"
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Який прекрасний бій! Сидон готовий вам служити!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[250,128,114],
@@ -1288,14 +1288,14 @@
 	},
 	{
 		name:"Almaty",
-    translatedName:"",
-		adjective:["Almaty"],
+    	translatedName:"Алмати",
+		adjective:["Алматський"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"How could we fall to the likes of you?!"
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Як могли впасти так низько?!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[102,0,51],
@@ -1303,44 +1303,44 @@
 	},
 	{
 		name:"Edinburgh",
-    translatedName:"",
-		adjective:["Edinburgh"],
+    translatedName:"Единбург",
+		adjective:["Единбурзький"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"There is no dishonor in losing to a worthier foe."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Немає безчестя в програші гідному ворогу."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
-		cities:["Edinburgh"]
+		cities:["Единбург"]
 	},
 	{
 		name:"Singapore",
-    translatedName:"",
-		adjective:["Singapore"],
+    	translatedName:"Сингапур",
+		adjective:["Сингапурський"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Perhaps, in another world, we could have been friends..."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Можливо, в іншому світі ми могли бути друзями ..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,255,0],
-		cities:["Singapore"]
+		cities:["Сингапур"]
 	},
 	{
-		name:"Zanzibar",
-    translatedName:"",
-		adjective:["Zanzibar"],
+		name:"Занзібар",
+    	translatedName:"",
+		adjective:["Занзібарський"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"May the Heavens forgive you for inflicting this humiliation to our people."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Нехай небеса пробачать вас за те, що ви заподіяли приниження нашому народові."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,255],
@@ -1348,59 +1348,59 @@
 	},
 	{
 		name:"Sydney",
-    translatedName:"",
-		adjective:["Sydney"],
+    	translatedName:"Сидней",
+		adjective:["Сиднейський"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"The principles for which we have fought will survive longer than any nation you could ever build."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Принципи, за які ми боролися, виживуть довше, ніж будь-яка нація, яку ви коли-небудь могли побудувати."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,204,204],
-		cities:["Sydney"]
+		cities:["Сидней"]
 	},
 	{
 		name:"Cape Town",
-    translatedName:"",
-		adjective:["Cape Town"],
+    	translatedName:"Кейптаун",
+		adjective:["Кейптаунський"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"I have failed. May you, at least, know compassion towards our people."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Я зазнав невдачі. Нехай ви, принаймні,  відчуєте співчуття до моєго народу."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,153],
-		cities:["Cape Town"]
+		cities:["Кейптаун"]
 	},
 	{
 		name:"Kathmandu",
-    translatedName:"",
-		adjective:["Kathmandu"],
+    	translatedName:"Катманду",
+		adjective:["Катмандинський"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We... defeated? No... we had so much work to do!"
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Ми... програли? Ні... у нас було стільки роботи!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,25,0],
-		cities:["Kathmandu"]
+		cities:["Катманду"]
 	},
 	{
 		name:"Hanoi",
-    translatedName:"",
-		adjective:["Hanoi"],
+    translatedName:"Ханой",
+		adjective:["Ханойський"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"So this is how does it feel to die..."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Отже, я почуваю себе тим, хто вмирає..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,0,255],
@@ -1408,33 +1408,33 @@
 	},
 	{
 		name:"Quebec City",
-    translatedName:"",
-		adjective:["Quebec City"],
+    	translatedName:"Квебек (місто)",
+		adjective:["Квебекський"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We were too weak to protect ourselves..."
+		declaringWar:"Ви не залишаєте нам вибору. Війна повинна бути.",
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Ми були занадто слабкі, щоб захистити себе ..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,102,0],
-		cities:["Quebec City"]
+		cities:["Квебек"]
 	},
 	{
 		name:"Helsinki",
-    translatedName:"",
-		adjective:["Helsinki"],
+    	translatedName:"Гельсінкі",
+		adjective:["Гельсінський"],
 		cityStateType:"Maritime",
 
 		declaringWar:"Ви не залишаєте нам вибору. Війна тут має бути.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"The day of judgement has come to us. But rest assured, the same will go for you!"
+		attacked:"Дуже добре, це не забудеться.",
+		afterPeace:"Хай мир назавжди благословить наші землі.",
+		defeated:"Судний день прийшов до нас. Але будьте впевнені, те саме прийде і для вас!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
-		cities:["Helsinki"]
+		cities:["Гельсінкі"]
 	},
 
 
@@ -1442,7 +1442,7 @@
 	//Barbarian
 	{
 		name:"Barbarians",
-    translatedName:"Варвари",
+    	translatedName:"Варвари",
 		outerColor:[0,0,0],
 		innerColor:[182,0,0]
 	}
