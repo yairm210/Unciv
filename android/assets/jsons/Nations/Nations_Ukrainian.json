@@ -1332,8 +1332,8 @@
 		cities:["Сингапур"]
 	},
 	{
-		name:"Занзібар",
-    	translatedName:"",
+		name:"Zanzibar",
+    	translatedName:"Занзібар",
 		adjective:["Занзібарський"],
 		cityStateType:"Mercantile",
 
