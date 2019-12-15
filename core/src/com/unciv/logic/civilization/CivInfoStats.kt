@@ -126,7 +126,11 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                     civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
         }
 
-        statMap["Natural Wonders"] = 1f * civInfo.naturalWonders.size
+        var happinessPerNaturalWonder = 1f
+        if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.")
+            happinessPerNaturalWonder *= 2
+
+        statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
 
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
