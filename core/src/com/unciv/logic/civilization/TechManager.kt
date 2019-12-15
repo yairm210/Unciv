@@ -13,6 +13,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.min
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -27,8 +28,10 @@ class TechManager {
     @Transient var movementSpeedOnRoadsImproved=false
 
     var freeTechs = 0
+    /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
+    var scienceOfLast8Turns = IntArray(8){0}
     var techsResearched = HashSet<String>()
-    /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
+    /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
     private var techsInProgress = HashMap<String, Int>()
     var overflowScience = 0
@@ -40,6 +43,8 @@ class TechManager {
         toReturn.freeTechs=freeTechs
         toReturn.techsInProgress.putAll(techsInProgress)
         toReturn.techsToResearch.addAll(techsToResearch)
+        toReturn.scienceOfLast8Turns=scienceOfLast8Turns.clone()
+        toReturn.overflowScience=overflowScience
         return toReturn
     }
 
@@ -117,7 +122,43 @@ class TechManager {
         return prerequisites.sortedBy { it.column!!.columnNumber }.map { it.name }
     }
 
+    fun getScienceFromGreatScientist(): Int {
+        // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
+        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+    }
+
+    fun addCurrentScienceToScienceOfLast8Turns() {
+        // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City States.
+        var allCitiesScience = 0f
+        civInfo.cities.forEach{ it ->
+            val totalBaseScience= it.cityStats.baseStatList.values.map { it.science }.sum()
+            val totalBonusPercents= it.cityStats.statPercentBonusList.filter { it.key!="Policies" }.values.map { it.science }.sum()
+            allCitiesScience += totalBaseScience*(1+totalBonusPercents/100)
+        }
+        scienceOfLast8Turns[civInfo.gameInfo.turns%8] = allCitiesScience.toInt()
+    }
+
+    fun hurryResearch() {
+        val currentTechnology = currentTechnologyName()
+        if (currentTechnology == null) return
+        techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + getScienceFromGreatScientist()
+        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
+            return
+
+        // We finished it!
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        val extraScienceLeftOver = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
+        overflowScience += limitOverflowScience(extraScienceLeftOver)
+        addTechnology(currentTechnology)
+    }
+
+    fun limitOverflowScience(overflowscience: Int): Int {
+        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
+        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5, costOfTech(currentTechnologyName()!!)))
+    }
+
     fun nextTurn(scienceForNewTurn: Int) {
+        addCurrentScienceToScienceOfLast8Turns()
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
@@ -125,15 +166,14 @@ class TechManager {
             val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
             val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
             techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f)* overflowScience).toInt()
+            overflowScience = 0
         }
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
 
         // We finished it!
-        // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        overflowScience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
-        if(overflowScience > max(scienceForNewTurn * 5, getRuleset().Technologies[currentTechnology]!!.cost))
-            overflowScience = max(scienceForNewTurn * 5, getRuleset().Technologies[currentTechnology]!!.cost)
+        val overflowscience = techsInProgress[currentTechnology]!! - costOfTech(currentTechnology)
+        overflowScience = limitOverflowScience(overflowscience)
         addTechnology(currentTechnology)
     }
 

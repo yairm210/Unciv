@@ -29,8 +29,6 @@ class Fonts {
         charSet.addAll(defaultText.asIterable())
 
         if (language != "") {
-            if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())
-                charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").readString().asIterable())
             if (Gdx.files.internal("jsons/Nations/Nations_$language.json").exists())
                 charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_$language.json").readString().asIterable())
             if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())

@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
 import com.unciv.models.ruleset.tech.TechColumn
@@ -115,7 +116,8 @@ class Ruleset {
 
         readTranslationsFromProperties()
 //        readTranslationsFromJson()
-        writeNewTranslationFiles()
+        if(Gdx.app.type==Application.ApplicationType.Desktop) // Yes, also when running from the Jar. Sue me.
+            writeNewTranslationFiles()
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading translation files - "+translationFilesTime+"ms")
@@ -137,14 +139,22 @@ class Ruleset {
     private fun readTranslationsFromProperties() {
 
         val languages = ArrayList<String>()
-        languages.addAll(Locale.getAvailableLocales()
+        // So apparently the Locales don't work for everyone, which is horrendous
+        // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
+        try{
+            for(file in Gdx.files.internal("jsons/translationsByLanguage").list())
+                languages.add(file.nameWithoutExtension())
+        }
+        catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
+
+        languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
                 .map { it.displayName })
 
         // These should probably ve renamed
         languages.add("Simplified_Chinese")
         languages.add("Traditional_Chinese")
 
-        for (language in languages) {
+        for (language in languages.distinct()) {
             val translationFileName = "jsons/translationsByLanguage/$language.properties"
             if (!Gdx.files.internal(translationFileName).exists()) continue
             val languageTranslations = TranslationFileReader().read(translationFileName)
