@@ -1,15 +1,21 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UncivGame
-import java.util.*
 
-class TranslationEntry(val entry:String) : HashMap<String, String>(){
+class TranslationEntry(val entry: String) : HashMap<String, String>() {
+
     /** For memory performance on .tr(), which was atrociously memory-expensive */
     var entryWithShortenedSquareBrackets =""
+
+    init {
+        if(entry.contains('['))
+            entryWithShortenedSquareBrackets=entry.replace(squareBraceRegex,"[]")
+    }
 }
 
-class Translations : HashMap<String, TranslationEntry>(){
+class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     fun add(json:String){
         val jsonValue = JsonReader().parse(json)!!
@@ -19,8 +25,6 @@ class Translations : HashMap<String, TranslationEntry>(){
             val currentEntryName = currentEntry.name!!
             val translationEntry = TranslationEntry(currentEntryName)
             this[currentEntryName]=translationEntry
-            if(currentEntryName.contains('['))
-                translationEntry.entryWithShortenedSquareBrackets=currentEntryName.replace(squareBraceRegex,"[]")
 
             var currentLanguage = currentEntry.child
             while(currentLanguage!=null){
@@ -66,6 +70,42 @@ class Translations : HashMap<String, TranslationEntry>(){
                 return translatedUnique
             }
         }
+    }
+}
+
+class TranslationFileReader(){
+    fun read(translationFile:String): LinkedHashMap<String, String> {
+        val translations = LinkedHashMap<String,String>()
+        val text = Gdx.files.internal(translationFile)
+        for(line in text.reader().readLines()){
+            if(!line.contains(" = ")) continue
+            val splitLine = line.split(" = ")
+            val key = splitLine[0].replace("\\n","\n")
+            val value = splitLine[1].replace("\\n","\n")
+            if(value!="") // this means this wasn't translated yet
+                translations[key] = value
+        }
+        return translations
+    }
+
+    fun writeByTemplate(language:String, translations: HashMap<String,String>){
+        val templateFile = Gdx.files.internal("jsons/translationsByLanguage/template.properties")
+        val stringBuilder = StringBuilder()
+        for(line in templateFile.reader().readLines()){
+            if(!line.contains(" = ")){ // copy as-is
+                stringBuilder.appendln(line)
+                continue
+            }
+            val translationKey = line.split(" = ")[0].replace("\\n","\n")
+            var translationValue = ""
+            if(translations.containsKey(translationKey)) translationValue = translations[translationKey]!!
+            else stringBuilder.appendln(" # Requires translation!")
+            val lineToWrite = translationKey.replace("\n","\\n") +
+                    " = "+ translationValue.replace("\n","\\n")
+            stringBuilder.appendln(lineToWrite)
+        }
+        Gdx.files.local("jsons/translationsByLanguage/$language.properties")
+                .writeString(stringBuilder.toString(),false,Charsets.UTF_8.name())
     }
 }
 

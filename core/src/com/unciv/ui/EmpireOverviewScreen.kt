@@ -18,9 +18,8 @@ import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-class EmpireOverviewScreen : CameraStageBaseScreen(){
+class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
 
-    val currentPlayerCivInfo = UncivGame.Current.gameInfo.getCurrentPlayerCivilization()
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
@@ -64,7 +63,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.pack()
         }
         topTable.add(setCurrentTradesButton)
-        if(currentPlayerCivInfo.diplomacy.values.all { it.trades.isEmpty() })
+        if(viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
             setCurrentTradesButton.disable()
 
         val setUnitsButton = TextButton("Units".tr(),skin)
@@ -91,7 +90,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.pack()
         }
         topTable.add(setResourcesButton)
-        if(currentPlayerCivInfo.detailedCivResources.isEmpty())
+        if(viewingPlayer.detailedCivResources.isEmpty())
             setResourcesButton.disable()
 
         topTable.pack()
@@ -107,7 +106,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
-        for(diplomacy in currentPlayerCivInfo.diplomacy.values)
+        for(diplomacy in viewingPlayer.diplomacy.values)
             for(trade in diplomacy.trades)
                 tradesTable.add(createTradeTable(trade,diplomacy.otherCiv())).row()
 
@@ -116,7 +115,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size)).fillY()
+        generalTable.add(createOffersTable(viewingPlayer,trade.ourOffers, trade.theirOffers.size)).fillY()
         generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).fillY()
         return generalTable
     }
@@ -144,7 +143,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         happinessTable.add("Happiness".toLabel(fontSize = 24)).colspan(2).row()
         happinessTable.addSeparator()
 
-        val happinessBreakdown = currentPlayerCivInfo.stats().getHappinessBreakdown()
+        val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
 
         for (entry in happinessBreakdown.filterNot { it.value.roundToInt()==0 }) {
             happinessTable.add(entry.key.tr())
@@ -162,7 +161,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.add("Gold".toLabel(fontSize = 24)).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
-        for (entry in currentPlayerCivInfo.stats().getStatMapForNextTurn()) {
+        for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
             goldTable.add(entry.value.gold.roundToInt().toString()).row()
@@ -180,7 +179,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         scienceTable.defaults().pad(5f)
         scienceTable.add("Science".toLabel(fontSize = 24)).colspan(2).row()
         scienceTable.addSeparator()
-        val scienceStats = currentPlayerCivInfo.stats().getStatMapForNextTurn()
+        val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
                 .filter { it.value.science!=0f }
         for (entry in scienceStats) {
             scienceTable.add(entry.key.tr())
@@ -196,9 +195,9 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getGreatPeopleTable(): Table {
         val greatPeopleTable = Table(skin)
 
-        val greatPersonPoints = currentPlayerCivInfo.greatPeople.greatPersonPoints.toHashMap()
-        val greatPersonPointsPerTurn = currentPlayerCivInfo.getGreatPersonPointsForNextTurn().toHashMap()
-        val pointsToGreatPerson = currentPlayerCivInfo.greatPeople.pointsForNextGreatPerson
+        val greatPersonPoints = viewingPlayer.greatPeople.greatPersonPoints.toHashMap()
+        val greatPersonPointsPerTurn = viewingPlayer.getGreatPersonPointsForNextTurn().toHashMap()
+        val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
         greatPeopleTable.add("Great person points".toLabel(fontSize = 24)).colspan(3).row()
@@ -207,14 +206,14 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         greatPeopleTable.add("Current points".tr())
         greatPeopleTable.add("Points per turn".tr()).row()
 
-        val mapping = currentPlayerCivInfo.greatPeople.statToGreatPersonMapping
+        val mapping = viewingPlayer.greatPeople.statToGreatPersonMapping
         for(entry in mapping){
             greatPeopleTable.add(entry.value.tr())
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
             greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
         }
-        val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toString()
-        val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toString()
+        val pointsForGreatGeneral = viewingPlayer.greatPeople.greatGeneralPoints.toString()
+        val pointsForNextGreatGeneral = viewingPlayer.greatPeople.pointsForNextGreatGeneral.toString()
         greatPeopleTable.add("Great General".tr())
         greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
         greatPeopleTable.pack()
@@ -244,7 +243,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableDetails = Table(skin)
         cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
 
-        for (city in currentPlayerCivInfo.cities.sortedBy { it.name }) {
+        for (city in viewingPlayer.cities.sortedBy { it.name }) {
             val button = Button(Label(city.name, skin), skin)
             button.onClick {
                 UncivGame.Current.setScreen(CityScreen(city))
@@ -270,13 +269,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
 
         cityInfoTableTotal.add("Total".tr())
-        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.population.population }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.population.population }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString()).actor!!.setAlignment(Align.center)
-        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toString()).actor!!.setAlignment(Align.center)
-        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy {  it.cityStats.currentCityStats.happiness.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(viewingPlayer.cities.sumBy {  it.cityStats.currentCityStats.happiness.toInt() }.toString()).actor!!.setAlignment(Align.center)
 
         cityInfoTableTotal.pack()
 
@@ -305,7 +304,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.row()
         table.addSeparator()
 
-        for(unit in currentPlayerCivInfo.getCivUnits().sortedBy { it.name }){
+        for(unit in viewingPlayer.getCivUnits().sortedBy { it.name }){
             val baseUnit = unit.baseUnit()
             val button = TextButton(unit.name.tr(), skin)
             button.onClick {
@@ -327,11 +326,11 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     }
 
 
-    fun playerKnows(civ:CivilizationInfo) = civ==currentPlayerCivInfo ||
-            currentPlayerCivInfo.diplomacy.containsKey(civ.civName)
+    fun playerKnows(civ:CivilizationInfo) = civ==viewingPlayer ||
+            viewingPlayer.diplomacy.containsKey(civ.civName)
 
     fun getDiplomacyGroup(): Group {
-        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
+        val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val groupSize = 500f
         val group = Group()
         group.setSize(groupSize,groupSize)
@@ -339,7 +338,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         for(i in 0..relevantCivs.lastIndex){
             val civ = relevantCivs[i]
 
-            val civGroup = getCivGroup(civ, "", currentPlayerCivInfo)
+            val civGroup = getCivGroup(civ, "", viewingPlayer)
 
             val vector = HexMath().getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
@@ -372,7 +371,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun getResourcesTable(): Table {
         val resourcesTable=Table().apply { defaults().pad(10f) }
-        val resourceDrilldown = currentPlayerCivInfo.detailedCivResources
+        val resourceDrilldown = viewingPlayer.detailedCivResources
 
         // First row of table has all the icons
         resourcesTable.add()

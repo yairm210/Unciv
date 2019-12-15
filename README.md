@@ -40,29 +40,15 @@ Is this order:
 
 ## How can I help?
 
-If you're a programmer, get started at [the Wiki!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+If you're a programmer, get started at [here!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+
+If you want to help with the translation, get started [here!](https://github.com/yairm210/Unciv/wiki/Translating)
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
 If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
-
-## How can I translate to {language}?
-
-Awesome!
-
-Like most open-source projects, Unciv is developed at Github
-
-The translation files are at https://github.com/yairm210/UnCiv/tree/master/android/assets/jsons/Translations
-
-When you feel that you're ready to add your translation to the game, you'll need to create a merge request, which takes your changes and puts them into the main version of the game - it's pretty straightforward once you do it
-
-Do as much as you're comfortable with - it's a big game with a lot of named objects, so don't feel pressured into doing everything =)
-
-You don't need to download anything, all translation work can be done on the Github website :)
-
-Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
         
 
 ## [Adding a new Civ](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization)
