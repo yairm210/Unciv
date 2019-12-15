@@ -170,7 +170,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         tutorialTaskTable.clear()
         val tutorialTask = getCurrentTutorialTask()
-        if (tutorialTask == "") {
+        if (tutorialTask == "" || !game.settings.showTutorials) {
             tutorialTaskTable.isVisible = false
         } else {
             tutorialTaskTable.add(tutorialTask.toLabel()
