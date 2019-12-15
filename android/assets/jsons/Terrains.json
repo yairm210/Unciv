@@ -180,7 +180,7 @@
 		unbuildable: true
 	},
 	{
-		name: "Mt. Fuji",
+		name: "Mount Fuji",
 		type: "NaturalWonder",
 		gold: 1,
 		culture: 5,
