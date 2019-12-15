@@ -1268,7 +1268,7 @@
 		name:"Great Scientist",
 		unbuildable:true,
 		unitType:"Civilian",
-		uniques:["Can gain a large sum of science immediately to hurry technology research","Can build improvement: Academy"]
+		uniques:["Can hurry technology research","Can build improvement: Academy"]
 		movement:2
 	},
 	{

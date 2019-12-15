@@ -1,6 +1,5 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
@@ -71,18 +70,6 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         description.setWrap(true)
 
-
-
-
-        val language = UncivGame.Current.settings.language.replace(" ","_")
-        val languageBasicHelpLocation = "jsons/BasicHelp/BasicHelp_$language.json"
-        val generalBasicHelpLocation = "jsons/BasicHelp/BasicHelp.json"
-        val basicHelpFileName =
-                if(Gdx.files.internal(languageBasicHelpLocation).exists())
-                    languageBasicHelpLocation
-        else generalBasicHelpLocation
-
-        categoryToEntries["Basics"] = ruleset.getFromJson(Array<CivilopediaEntry>::class.java, basicHelpFileName).toList()
         categoryToEntries["Buildings"] = ruleset.Buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name)) }

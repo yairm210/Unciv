@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
 import com.unciv.models.ruleset.tech.TechColumn
@@ -115,7 +116,10 @@ class Ruleset {
 
         readTranslationsFromProperties()
 //        readTranslationsFromJson()
-        writeNewTranslationFiles()
+        val codeSourceFilePath = this.javaClass.protectionDomain.codeSource.location.path
+        if(Gdx.app.type==Application.ApplicationType.Desktop// we're running if from Android Studio or whatnot
+                && !codeSourceFilePath.endsWith(".jar"))
+            writeNewTranslationFiles()
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading translation files - "+translationFilesTime+"ms")
