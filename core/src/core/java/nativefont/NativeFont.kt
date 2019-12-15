@@ -29,14 +29,19 @@ class NativeFont @JvmOverloads constructor(paint: NativeFontPaint = NativeFontPa
 
     private fun createListener() {
         var className = "core.java.nativefont.NativeFont"
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            className += "Desktop"
-        } else if (Gdx.app.type == Application.ApplicationType.Android) {
-            className += "Android"
-        } else if (Gdx.app.type == Application.ApplicationType.iOS) {
-            className += if (robovm) "IOS" else "IOSMoe"
-        } else if (Gdx.app.type == Application.ApplicationType.WebGL) {
-            className += "Html"
+        when (Gdx.app.type) {
+            Application.ApplicationType.Desktop -> {
+                className += "Desktop"
+            }
+            Application.ApplicationType.Android -> {
+                className += "Android"
+            }
+            Application.ApplicationType.iOS -> {
+                className += if (robovm) "IOS" else "IOSMoe"
+            }
+            Application.ApplicationType.WebGL -> {
+                className += "Html"
+            }
         }
         listener = try {
             val claz = Gdx.app.javaClass.classLoader.loadClass(className) as Class<out NativeFontListener>
@@ -163,7 +168,7 @@ class NativeFont @JvmOverloads constructor(paint: NativeFontPaint = NativeFontPa
                 val date = emojiSet[css]
                 appendEmoji(c2.toString() + "", date!!.path, date.size)
             } else {
-                putGlyph(c2, listener!!.getFontPixmap(txt, paint))
+                putGlyph(c2, listener!!.getFontPixmap(txt, paint!!))
             }
         }
 
