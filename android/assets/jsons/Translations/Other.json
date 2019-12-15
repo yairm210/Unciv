@@ -1818,7 +1818,7 @@
 		Czech:"Odemknuté vylepšení políček"
 		Ukrainian:"Нові вдосконалення клітинок"
 		Korean:"타일 시설 건설 가능"
-		Polish:"Ulepszenia kratek aktywowane"
+		Polish:"Ulepszenia pól aktywowane"
 }
 
 	"Reveals [resource] on the map":{ // As in "Reveals Coal on the map"
@@ -2703,6 +2703,7 @@
 		Czech:"Vybudováním všech šesti části vesmírné lodi\n dosáhneme vítězství!"
 		Ukrainian:"Побудуйте усі частини космічного корабля\n, щоб виграти!"
 		Korean:"가장 먼저 모든 우주선 부품을 완성한 문명이 승리합니다!"
+		Polish:"Ukończ wszystkie elementy statku kosmicznego\n aby wygrać!"
 }
 
 	"Complete 4 policy branches\n to win!":{
@@ -2716,6 +2717,7 @@
 		Czech:"Zkompletováním 4 větví Sociální politiky\n dosáhneme vítězství!"
 		Ukrainian:"Завершіть 4 галузі політики\n,щоб виграти!"
 		Korean:"가장 먼저 정책 트리를 4개 완성한 문명이 승리합니다!"
+		Polish:"Zbadaj 4 drzewka polityki\n aby wygrać!"
 }
 
 	"Destroy all enemies\n to win!":{
@@ -2729,6 +2731,7 @@
 		Czech:"Zničením všech ostatních civilizací\n dosáhneme vítězství!"
 		Ukrainian:"Знищь всіх ворогів\n, щоб виграти!"
 		Korean:"모든 적을 제거한 문명이 승리합니다!"
+		Polish:"Podbij wszystkich wrogów\n aby wygrać!"
 }
 
 	"You have won a scientific victory!":{
@@ -2742,6 +2745,7 @@
 		Czech:"Dosáhli jste vítězství ve hře díky Výzkumu!"
 		Ukrainian:"Ви здобули научну перемогу!"
 		Korean:"과학 승리를 이루어냈습니다!"
+		Polish:"Wygrałeś poprzez zwycięstwo naukowe!"
 }
 
 	"You have won a cultural victory!":{
@@ -2755,6 +2759,7 @@
 		Czech:"Dosáhli jste vítězství ve hře díky Kulturní vyspělosti!"
 		Ukrainian:"Ви здобули культурну перемогу!"
 		Korean:"문화 승리를 이루어냈습니다!"
+		Polish:"Wygrałeś poprzez zwycięstwo kulturowe"
 }
 
 	"You have won a domination victory!":{
@@ -2768,6 +2773,7 @@
 		Czech:"Dosáhli jsme vítězství ve hře zničením všech ostatních civilizací!"
 		Ukrainian:"Ви знищили усіх!"
 		Korean:"정복 승리를 이루어냈습니다!"
+		Polish:"Wygrałeś poprzez zdominowanie świata!"
 }
 // TODO (4)
 	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
@@ -2779,6 +2785,7 @@
 		German:"Du hast den Sieg durch die unglaubliche Kraft deiner Kultur errungen. Die Größe deiner Zivilisation - die Pracht ihrer Denkmäler und die Macht ihrer Künstler - haben die Welt verblüfft! Dichter werden dich ehren, solange Schönheit einem müden Herzen Freude bereitet."
 		French:"Vous êtes victorieux grâce au pouvoir impressionnant de votre Culture. La grandeur de votre civilisation - la beauté de ses monuments et le talent de ses artistes - ont étonnés le monde ! Les poètes vous loueront tant que la beauté apportera de la joie à un coeur fatigué"
 		Korean:"당신은 막강한 문화의 힘으로 승리를 거두었습니다. 당신 문명의 위대함, 그 기념비의 장엄함과 예술가의 힘에 전 세계가 경탄했습니다! 아름다움이 지친 마음에 기쁨을 주는 한, 시인들은 당신을 기릴 것입니다."
+		Polish:"Wygrałeś dzięki niezwykłej sile swojej Kultury. Potęga Twojej cywilazcji - okazałość jej monumentów i siła jej artystów - oniemiała cały świat! Poeci będą Cię wychwalać tak długo, jak piękno wnoszące pociechę do utrudzonego serca."
 }
 
 	"The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
@@ -2790,6 +2797,7 @@
 		German:"Die Welt wurde vom Krieg erschüttert. Mögen große und mächtige Zivilisationen gefallen sein, aber du hast überlebt - und bist siegreich geworden! Die Welt wird sich lange an deinen glorreichen Triumph erinnern!"
 		French:"Le monde a été boulversé par la guerre. De grandes et puissantes civilisations sont tombées mais vous avez survécu - et ressorti victorieux ! Le monde se rappelera longtemps de votre glorieux triomphe !"
 		Korean:"세계는 전쟁으로 고통받았습니다. 여러 위대한 문명이 몰락했으나, 당신은 살아남아 승리했습니다! 세상은 당신의 영광스러운 승리를 오래오래 기억할 것입니다!"
+		Polish:"Światem zatrząsła wojna. Wiele świetnych i potężnych cywilizacji poległo, ale Tobie udało się przetrwać - i wyjść z chaosu niezwyciężonym. Świat jeszcze długo będzie wspominał twój zwycięski triumf!"
 }
 
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
@@ -2801,6 +2809,7 @@
 		German:"Du hast den Sieg durch die Beherrschung der Wissenschaft errungen! Du hast die Geheimnisse der Natur erobert und dein Volk auf eine Reise in eine schöne neue Welt geführt! Dein Triumph wird in Erinnerung bleiben, solange die Sterne am Nachthimmel brennen!"
 		French:"Vous êtes victorieux grâce à votre maîtrise de la Science ! Vous avez compris les mystères de la nature et conduit votre peuple vers un nouveau monde ! On se rappelera de votre triomphe aussi longtemps que les étoiles brillent dans la nuit !"
 		Korean:"과학 기술을 통해 승리했습니다! 당신은 자연의 신비를 밝혀냈고 새로운 세상을 향해 인류를 이끌었습니다. 당신의 승리는 밤하늘에 빛나는 별처럼 영원토록 기억될 것입니다."
+		Polish:"Zwyciężyłeś poprzez zbadanie całej znanej nauki. Zgłębiłeś wszystkie tajemnice natury i sprowadziłeś swoich ludzi na drogę do Nowego Wspaniałego Świata! Twój triumf będzie pamiętany tak długo, jak świecą gwiazdy na nocnym niebie!"
 }
 
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
@@ -2812,6 +2821,7 @@
 		German:"Du wurdest besiegt. Deine Zivilisation wurde von ihren vielen Feinden überwältigt. Aber dein Volk verzweifelt nicht, denn es weiß, dass du eines Tages zurückkehren wirst - und es zum Sieg führen werdet!"
 		French:"Vous êtes vaincu. Votre civilisation a été submergée par de nombreux ennemis. Mais votre peuple n'est pas desespéré car ils savent que, un jour, vous reviendrez - et les conduirez à la victoire !"
 		Korean:"당신은 패배했습니다. 당신의 문명은 적에게 제압당했습니다. 그러나 국민은 절망하지 않습니다. 당신이 언젠가 다시 돌아와 자신들을 승리의 길로 이끌어줄 것을 알기 때문입니다!"
+		Polish:"Zostałeś pokonany. Twoja cywilizacja poległa pod naporem jej wrogów. Ale Twoi ludzie jeszcze nie porzucili nadziei, bo wiedzą że pewnego dnia powrócisz - i zaprowadzisz ich prosto ku zwycięstwu!"
 }
 
 	"One more turn...!":{
@@ -2825,6 +2835,7 @@
 		Czech:"Ještě jedno kolo..."
 		Ukrainian:"Ще один хід..."
 		Korean:"한 턴만 더...!"
+		Polish:"Jeszcze jedna tura...!"
 }
 
 	"Built Apollo Program":{ // Menu -> Victory status -> Science victory -> Built Apollo Program (header)
@@ -2838,6 +2849,7 @@
 		Czech:"Hotový Apollo Program"
 		Ukrainian:"Здійснити Програму Аполлон"
 		Korean:"아폴로 프로그램 완성"
+		Polish:"Zbudowano Program Apollo"
 }
 
 	"Destroy [civName]":{ // Menu -> Victory status -> Conquest victory -> Destroy [civName] (column)
@@ -2851,6 +2863,7 @@
 		Czech:"Zničit [civName]"
 		Ukrainian:"Знищити [civName]"
 		Korean:"[civName] 정복"
+		Polish:"Zniszcz [civName]"
 }
 
 	"Our status":{
@@ -2863,6 +2876,7 @@
 		Ukrainian:"Наш стан"
 		German:"Unser Status"
 		Korean:"우리의 상태"
+		Polish:"Nasz status"
 }
 
 	"Global status":{
@@ -2875,6 +2889,7 @@
 		Ukrainian:"Глобальний стан"
 		German:"Globaler Status"
 		Korean:"세계 상태"
+		Polish:"Status globalny" //not sure
 }
 
 	"Spaceship parts remaining":{
@@ -2887,6 +2902,7 @@
 		Ukrainian:"Залишилось частин космічного корабля"
 		German:"Übrige Raumschiffteile"
 		Korean:"남은 우주선 부품"
+		Polish:"Pozostałe części statku kosmicznego"
 }
 
 	"Branches completed":{
@@ -2899,6 +2915,7 @@
 		Ukrainian:"Галузей завершено"
 		German:"Vollständige Zweige"
 		Korean:"완성한 정책 트리 수"
+		Polish:"Ukończone gałęzie drzewka"
 }
 
 	"Undefeated civs":{
@@ -2911,6 +2928,7 @@
 		Ukrainian:"Непереможені цивілазації"
 		German:"Unbesiegte Zivilisationen"
 		Korean:"정복되지 않은 문명"
+		Polish:"Niepodbite cywilizacje"
 }
 
 
@@ -2926,6 +2944,7 @@
 		Ukrainian:"Що ви хочете зробити з цим містом?"
 		German:"Was möchste du mit dieser Stadt machen?"
 		Korean:"점령한 도시를 어떻게 하겠습니까?"
+		Polish:"Co chcesz zrobić z miastem?"
 }
 
 	"Annex":{
@@ -2938,6 +2957,7 @@
 		Ukrainian:"Анексувати"
 		German:"Annektieren"
 		Korean:"합병"
+		Polish:"Zaanektuj"
 }
 
 	"Annexed cities become part of your regular empire.":{
@@ -2949,6 +2969,7 @@
 		German:"Annektierte Städte werden Teil deines Imperiums"
 		French:"Les cités annexées sont intégrées à votre empire"
 		Korean:"합병된 도시는 당신의 왕국의 일부가 됩니다."
+		Polish:"Zaanektowane miasta tworzą integralną część Twojego imperium"
 }
 
 	"Their citizens generate 2x the unhappiness, unless you build a courthouse.":{
@@ -2960,6 +2981,7 @@
 		German:"Deren Bevölkerung generieren 2x Unzufriedenheit solange bis du ein Gerichtsgebäude gebaut hast."
 		French:"x2 au mécontentement de leurs citoyens tant que vous n'aurez pas construit un tribunal" 
 		Korean:"점령된 도시의 시민들은 법원이 지어지기 전까지 불행을 두 배로 생성합니다."
+		Polish:"Ich obywatele bedą generować 2x więcej niezadowolenia, dopóki nie wybudujesz sądu."
 }
 
 	"Puppet":{
@@ -2971,6 +2993,7 @@
 		German:"Marionette"
 		French:"Fantoche"
 		Korean:"괴뢰 정부"
+		Polish:"Marionetka"
 }
 
 	"Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness.":{
@@ -2982,6 +3005,7 @@
 		German:"Marionettenstädte erhöhen nicht die Kosten für Technologie oder Grundsätze. Ihre EinwohnerInnen generieren 1,5 mal so viel Unzufriedenheit wie normal."
 		French:"Les cités fantoches n'augmentent pas vos coûts en technologies ou culture mais x1,5 au mécontentement de leurs citoyens."
 		Korean:"괴뢰 정부는 기술 연구에 필요한 과학량이나 정책 채택에 필요한 문화량을 증가시키지는 않지만, 불행을 1.5배로 생성합니다."
+		Polish:"Miasta marionetkowe nie podnoszą Twojego kosztu technologicznego czy politycznego, ale ich obywatele generują 1.5 raza więcej nieszczęścia"
 }
 
 	"You have no control over the the production of puppeted cities.":{
@@ -2993,6 +3017,7 @@
 		German:"Du hast keine Kontrolle über die Produktion von Marionettenstädten."
 		French:"Vous ne contrôlez pas la production des cités fantoches."
 		Korean:"괴뢰 정부가 된 도시에서는 어떤 것을 생산할 지 선택할 수 없습니다."
+		Polish:"Nie masz kontroli nad produkcją w miastach marionetkowych"
 }
 
 	"Puppeted cities also generate 25% less Gold and Science.":{
@@ -3004,6 +3029,7 @@
 		German:"Marionettenstädte generieren 25% weniger Gold und Wissenschaft."
 		French:"Les cités fantoches produisent -25% en Or et Science."
 		Korean:"괴뢰 정부는 또한 금과 과학을 25% 적게 생성합니다."
+		Polish:"Miasta marionetkowe generują również 25% mniej Złota i Nauki."
 }
 
 	"A puppeted city can be annexed at any time.":{
@@ -3015,6 +3041,7 @@
 		German:"Eine Marionettenstadt kann jederzeit annektiert werden."
 		French:"Une cité fantoche peut être annexée à n'importe quel moment."
 		Korean:"괴뢰 정부로 만들면 원하는 때에 합병할 수 있습니다."
+		Polish:"Miasto marionetkowe może zostać anektowane w każdym momencie."
 }
 
 	"Liberate":{
@@ -3026,6 +3053,7 @@
 		German:"Befreien"
 		French:"Libérer"
 		Korean:"해방"
+		Polish:"Wyzwól"
 }
 
 	"Liberating a city returns it to its original owner, giving you a massive relationship boost with them!":{
@@ -3037,6 +3065,7 @@
 		German:"Befreite Städte gehen wieder in den Besitz der vorherigen besitzenden Person über. Eure Beziehung wird sich dadurch massiv verbessern!"
 		French:"Libérer une cité la renvoie à son propriétaire initial, vous donnant un bonus massif dans la relation que vous entretenez avec lui !"
 		Korean:"해방된 도시는 원래 통치자에게 돌아가고, 그들과의 관계가 크게 향상됩니다!"
+		Polish:"Wyzwolone miasto wraca w ręce jego pierwotnego właściciela, tym samym bardzo polepszając Twoje realacje z nim!"
 }
 
 	"Raze":{
@@ -3049,6 +3078,7 @@
 		Ukrainian:"Зруйнувати"
 		German:"Niederreißen"
 		Korean:"불태우기"
+		Polish:"Zrównaj z ziemią powoli"
 }
 
 	"Razing the city annexes it, and starts razing the city to the ground.":{
@@ -3060,6 +3090,7 @@
 		German:"Niederreißen annektiert die Stadt zunächst und macht sie dem Erdboden gleich."
 		French:"Raser une ville l'annexe puis la rase jusqu'au sol."//not sure
 		Korean:"도시를 합병한 후, 서서히 파괴시킵니다."
+		Polish:"Rozbiórka miasta oznacza jego aneksję i zaczęcie jego wyburzania"
 }
 
 	"The population will gradually dwindle until the city is destroyed.":{
@@ -3071,6 +3102,7 @@
 		German:"Die Bevölkerung wird allmählich schrumpfen, bis die Stadt zerstört ist."
 		French:"La population de la ville diminuera progressivement jusqu'à sa destruction."
 		Korean:"도시가 파괴되기 전까지, 인구가 점점 줄어듭니다."
+		Polish:"Populacja będzie stopniowo maleć aż miasto nie zostanie zniszczone"
 }
 
 	"Destroy":{
@@ -3082,6 +3114,7 @@
 		French:"Détruire"
 		Korean:"파괴"
 		Ukrainian:"Зруйнувати"
+		Polish:"Zniszcz od razu"
 }
 
 	"Destroying the city instantly razes the city to the ground.":{
@@ -3093,6 +3126,7 @@
 		French:"Détruire la ville, la rase instantanément jusqu'au sol."
 		Korean:"도시를 파괴하면, 즉시 도시가 파괴됩니다."
 		Ukrainian:"Руйнування миттєво зрівняє місто із землею"
+		Polish:"Zniszczenie miasta oznacza natychmiastowe zrównanie go z ziemią"
 }
 
 
@@ -3108,6 +3142,7 @@
 		Ukrainian:"Негайно приберіть свої війська від нашого кордону!"
 		German:"Entferne sofort deine Truppen aus unserem Gebiet!"
 		Korean:"우리 영토를 지나가는 군대를 치워 주십시오!"
+		Polish:"Wycofaj swoje jednostki za naszą granicę natychmiast!"
 }
 
 	"Sorry.":{
@@ -3120,6 +3155,7 @@
 		Ukrainian:"Приносимо свої вибачення."
 		German:"Entschuldigung."
 		Korean:"그러겠소."
+		Polish:"Przepraszam."
 }
 
 	"Never!":{
@@ -3132,6 +3168,7 @@
 		Ukrainian:"Ніколи!"
 		German:"Vergiss es!"
 		Korean:"싫소!"
+		Polish:"Po moim trupie!"
 }
 
 ////// Civilopedia texts
@@ -3143,10 +3180,11 @@
 		Simplified_Chinese:"基础"
 		Traditional_Chinese:"基礎"
 		Portuguese:"Básicos"
-                Russian:"Основы"
+        Russian:"Основы"
 		Czech:"Základy"
 		Ukrainian:"Основи"
 		Korean:"기본"
+		Polish:"Podstawy"
 }
 
 	"Resources":{
@@ -3156,10 +3194,11 @@
 		Simplified_Chinese:"资源"
 		Traditional_Chinese:"資源"
 		Portuguese:"Recursos"
-                Russian:"Ресурсы"
+        Russian:"Ресурсы"
 		Czech:"Zdroje"
 		Ukrainian:"Ресурси"
 		Korean:"자원"
+		Polish:"Surowce"
 }
 
 	"Terrains":{
@@ -3173,6 +3212,7 @@
 		Czech:"Druhy terénu"
 		Ukrainian:"Місцевість"		
 		Korean:"지형"
+		Polish:"Tereny"
 }
 
 	"Tile Improvements":{
@@ -3185,6 +3225,7 @@
 		Czech:"Vylepšení políček"
 		Ukrainian:"Удосконалення клітин"
 		Korean:"타일 시설"
+		Polish:"Ulepszenia pól"
 }
 
 	"Unique to [civName], replaces [unitName]":{
@@ -3200,6 +3241,7 @@
 		Czech:"Unikátní pro [civName], nahrazuje [unitName]"
 		Ukrainian:"Унікальний для [civName], замінює [unitName]"
 		Korean:"[civName]의 고유 유닛으로, [unitName]을(를) 대체합니다."
+		Polish:"Unikatowe dla [civName], zastępuje [unitName]"
 }
 
 	"Tutorials": {
@@ -3207,11 +3249,12 @@
 		Czech:"Návody"
 		Simplified_Chinese:"教程"
 		Traditional_Chinese:"教學"
-    		Ukrainian:"Навчальні посібники"
+    	Ukrainian:"Навчальні посібники"
 		Russian:"Советы"
 		German:"Tutorials"
 		French:"Didacticiels"
 		Korean:"튜토리얼"
+		Polish:"Samouczki"
 }
 
 	"Cost":{
@@ -3225,6 +3268,7 @@
 		Ukrainian:"Вартість"
 		German:"Kosten"
 		Korean:"비용"
+		Polish:"Koszt"
 }
 
 
@@ -3239,6 +3283,7 @@
 		Ukrainian:"Може містити [listOfResources]"
 		German:"kann [listOfResources] enthalten"
 		Korean:"[listOfResources] 자원을 포함할 수 있음"
+		Polish:"Może zawierać [listOfResources]" //and trace amounts of arachid nuts
 }
 
 
@@ -3253,9 +3298,10 @@
 		Ukrainian:"Удосконалюється до [upgradedUnit]"
 		German:"Verbessert sich zu [upgradedUnit]"
 		Korean:"[upgradedUnit](으)로 업그레이드 가능"
+		Polish:"Ulepszane do [upgradedUnit]"
 }
 
-	"Obsolete with [obsoleteTech]":{
+	"Obsolete with [obsoleteTech]":{ //example?
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
 		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
@@ -3266,6 +3312,7 @@
 		Ukrainian:"Застарілий після [obsoleteTech]"
 		German:"Überflüssig mit [obsoleteTech]"
 		Korean:"[obsoleteTech] 연구 후 생산 불가"
+		Polish:"Staje się przestarzały po [obsoleteTech]" //Not sure
 }
 
 	"Occurs on [listOfTerrains]":{ //For civilopedia again
@@ -3279,6 +3326,7 @@
 		Ukrainian:"З’являється на [listOfTerrains]"
 		German:"Kommt vor in [listOfTerrains]"
 		Korean:"[listOfTerrains]에서 생길 수 있음"
+		Polish:"Występuje na [listOfTerrains]"
 }
 
 	"Can be found on ":{ // For resources in civilopedia: Can be found on Forest, Hills, Jungle
@@ -3292,6 +3340,7 @@
 		Ukrainian:"Може бути знайдений в"
 		German:"Kann gefunden werden in"
 		Korean:"발견 가능한 지형 : "
+		Polish:"Może zostać znalezione na: "
 }
 
 	"Improved by [improvement]":{
@@ -3305,6 +3354,7 @@
 		Ukrainian:"Удосконалив [improvement]"
 		German:"Wird verbessert durch [improvement]"
 		Korean:"[improvement]로 개발 가능"
+		Polish:"Ulepszane przez [improvement]"
 }
 
 	"Bonus stats for improvement: ":{
@@ -3318,6 +3368,7 @@
 		Ukrainian:"Бонусні характеристики за удосконалення"
 		German:"Boni für Verbesserung: "
 		Korean:"개발할 경우 추가로 "
+		Polish:"Bonusowe statystyki dla ulepszenia: "
 }
 
 	"Can be built on ":{
@@ -3331,6 +3382,7 @@
 		Ukrainian:"Може бути побудований на"
 		German:"Kann gebaut werden auf"
 		Korean:"개발 가능한 지형 : "
+		Polish:"Może zostać zbudowane na: "
 }
 
 	"Defence bonus":{
@@ -3344,6 +3396,7 @@
 		Ukrainian:"Бонус до захисту"
 		German:"Verteidigungsbonus"
 		Korean:"방어력 추가 "
+		Polish:"Bonus do obrony"
 }
 
 	"Movement cost":{
@@ -3357,6 +3410,7 @@
 		Ukrainian:"Вартість руху"
 		German:"Bewegungskosten"
 		Korean:"이동 비용"
+		Polish:"Koszt ruchu"
 }
 
 	"Rough Terrain":{
@@ -3369,6 +3423,7 @@
 		Czech:"Obtížný terén"
 		Ukrainian:"Нерівна місцевість"
 		Korean:"험지"
+		Polish:"Nieprzyjazny teren"
 }
 
 	" for ":{ //for example:+1 Gold for Gems,Gold,Silver
@@ -3382,6 +3437,7 @@
 		Ukrainian:"за"
 		German:" für "
 		Korean:"다음 자원 하나마다 획득 : "
+		Polish:"za " //not sure
 }
 
 
@@ -3396,6 +3452,7 @@
 		Ukrainian:"Відсутні переклади"
 		German:"Fehlende Übersetzung"
 		Korean:"미완성 번역 목록:"
+		Polish:"Brakujące tłumaczenia:"
 }
 
 	"Version":{
@@ -3409,6 +3466,7 @@
 		Ukrainian:"Версія"
 		German:"Version"
 		Korean:"버전"
+		Polish:"Wersja"
 }
 
 	"Resolution":{ // screen resolution meant?
@@ -3422,6 +3480,7 @@
 		Ukrainian:"Роздільність"
 		German:"Auflösung"
 		Korean:"해상도"
+		Polish:"Rozdzielczość"
 }
 
 	"Tileset":{
@@ -3435,6 +3494,7 @@
 		Ukrainian:"Палітра клітинок"
 		German:"Felderset"
 		Korean:"타일셋"
+		Polish:"Mapa pól"
 }
 
 	"Map editor":{
@@ -3448,6 +3508,7 @@
 		Ukrainian:"Редактор мап"
 		German:"Karteneditor"
 		Korean:"지도 편집기"
+		Polish:"Edytor mapy"
 }
 
 	"Language":{
@@ -3461,6 +3522,7 @@
 		Ukrainian:"Мова"
 		German:"Sprache"
 		Korean:"언어"
+		Polish:"Język"
 }
 
 	// Map editor
@@ -3476,6 +3538,7 @@
 		German:"Gelände & Ressourcen"
 		French:"Terrains & Ressources"
 		Korean:"지형 & 자원"
+		Polish:"Tereny & surowce"
 }
 
 	"Improvements":{
@@ -3488,6 +3551,7 @@
 		German:"Verbesserungen"
 		French:"Améliorations"
 		Korean:"시설"
+		Polish:"Ulepszenia"
 }
 
 	"Clear current map":{
@@ -3500,6 +3564,7 @@
 		German:"Lösche aktuelle Karte"
 		French:"Efface la carte actuelle"
 		Korean:"현재 지도 제거"
+		Polish:"Wyczyść obecną mapę"
 }
 
 	"Save map":{
@@ -3512,6 +3577,7 @@
 		German:"Karte speichern"
 		French:"Sauvegarder la carte"
 		Korean:"지도 저장"
+		Polish:"Zapisz mapę"
 }
 
 	"Load map":{
@@ -3524,6 +3590,7 @@
 		German:"Karte laden"
 		French:"Charger une carte"
 		Korean:"지도 불러오기"
+		Polish:"Wczytaj mapę"
 }
 
 	"Download map":{
@@ -3536,6 +3603,7 @@
 		German:"Karte herunterladen"
 		French:"Télécharger une carte"
 		Korean:"지도 다운로드"
+		Polish:"Pobierz mapę"
 }
 
 	"Exit map editor":{
@@ -3548,6 +3616,7 @@
 		German:"Karteneditor verlassen"
 		French:"Quitter l'éditeur de cartes"
 		Korean:"지도 편집기 나가기"
+		Polish:"Wyjdź z edytora map"
 }
 
 	"[nation] starting location":{
@@ -3560,6 +3629,7 @@
 		German:"Startposition von [nation] "
 		French:"[nation] position de départ"
 		Korean:"[nation] 시작 지점"
+		Polish:"Startowa lokacja [nation]"
 }
 
 	"Clear terrain features":{
@@ -3571,6 +3641,7 @@
 		German:"Lösche Geländemerkmale"
 		French:"Effacer les caractéristiques des terrains"
 		Korean:"지형 요소 지우기"
+		Polish:"Usuń właściwości terenu"
 }
 
 	"Clear improvements":{
@@ -3583,6 +3654,7 @@
 		German:"Lösche Verbesserungen"
 		French:"Effacer les améliorations"
 		Korean:"시설 지우기"
+		Polish:"Usuń ulepszenia" 
 }
 
 	"Clear resource":{
@@ -3595,6 +3667,7 @@
 		German:"Lösche Ressource"
 		French:"Effacer les ressources"
 		Korean:"자원 지우기"
+		Polish:"Usuń surowiec"
 }
 
 }
