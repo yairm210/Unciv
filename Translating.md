@@ -1,4 +1,4 @@
-Like most open-source projects, Unciv is developed at Github
+Like most open-source projects, Unciv is developed at Github, so if you don't have a user you'll first have to create one.
 
 The translation files are at https://github.com/yairm210/UnCiv/tree/master/android/assets/jsons/translationsByLanguage
 
