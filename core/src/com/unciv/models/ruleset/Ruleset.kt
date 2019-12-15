@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
-import com.unciv.models.ruleset.tile.NaturalWonder
 import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -16,7 +15,6 @@ import kotlin.collections.set
 class Ruleset {
     val Buildings = LinkedHashMap<String, Building>()
     val Terrains = LinkedHashMap<String, Terrain>()
-    val NaturalWonders = LinkedHashMap<String, NaturalWonder>()
     val TileResources = LinkedHashMap<String, TileResource>()
     val TileImprovements = LinkedHashMap<String, TileImprovement>()
     val Technologies = LinkedHashMap<String, Technology>()
@@ -48,7 +46,6 @@ class Ruleset {
         newRuleset.Technologies.putAll(Technologies)
         newRuleset.Buildings.putAll(Buildings)
         newRuleset.Terrains.putAll(Terrains)
-        newRuleset.NaturalWonders.putAll(NaturalWonders)
         newRuleset.TileImprovements.putAll(TileImprovements)
         newRuleset.TileResources.putAll(TileResources)
         newRuleset.Translations.putAll(Translations)
@@ -82,7 +79,6 @@ class Ruleset {
         }
 
         Terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "$folderPath/Terrains.json"))
-        NaturalWonders += createHashmap(getFromJson(Array<NaturalWonder>::class.java, "$folderPath/NaturalWonders.json"))
         TileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "$folderPath/TileResources.json"))
         TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "$folderPath/TileImprovements.json"))
         Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "$folderPath/Units.json"))

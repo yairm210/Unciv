@@ -408,4 +408,9 @@
 		name:"Haka War Dance", // only for Maori Warrior and subsequent upgrades
 		effect:"-10% combat strength for adjacent enemy units"
 	}
+	{
+		name:"Rejuvenation", // only for Units that have been close to Natural Wonder Fountain of Youth
+		effect:"All healing effects doubled"
+	}
+
 ]

@@ -17,10 +17,6 @@ class Terrain : NamedStats() {
         if (resourcesFound.isNotEmpty()) {
             sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
         }
-        val naturalWondersFound = ruleset.NaturalWonders.values.filter { it.terrainsCanBeFoundOn.contains(name) }
-        if (naturalWondersFound.isNotEmpty()) {
-            sb.appendln("May contain [${naturalWondersFound.joinToString(", ") { it.name.tr() }}]".tr())
-        }
         sb.appendln("{Movement cost}: $movementCost".tr())
         if (defenceBonus != 0f) {
             sb.appendln("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")

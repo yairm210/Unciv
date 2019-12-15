@@ -83,15 +83,15 @@ open class TileInfo {
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
+    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if(naturalWonder != null) getNaturalWonder() else getBaseTerrain()
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.TileResources[resource!!]!!
 
-    fun getNaturalWonder() : NaturalWonder =
+    fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
-            else ruleset.NaturalWonders[naturalWonder!!]!!
+            else ruleset.Terrains[naturalWonder!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
 
@@ -163,11 +163,11 @@ open class TileInfo {
 
         if (naturalWonder != null) {
             val wonder = getNaturalWonder()
-            stats.add(getNaturalWonder())
+            stats.add(wonder)
 
             // Spain doubles tile yield
             if (city != null && city.civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.") {
-                stats.add(getNaturalWonder())
+                stats.add(wonder)
             }
         }
 
@@ -233,12 +233,11 @@ open class TileInfo {
 
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
         if (isCityCenter() || improvement.name == this.improvement) return false
-        if (naturalWonder != null) return false
         if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
 
-        val topTerrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()
-        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain!!.name)) return true
+        val topTerrain = getLastTerrain()
+        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true
 
         if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
         if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true

@@ -218,12 +218,12 @@ class MapGenerator {
 
     // TODO: https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
     fun spawnNaturalWonders(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
-        val wonders = ruleset.NaturalWonders.values
+        val wonders = ruleset.Terrains.values.filter { it.type == TerrainType.NaturalWonder }
         val wondersLocation = ArrayList<TileInfo>()
 
         for (wonder in wonders) {
             val suitableTiles = mapToReturn.values
-                    .filter { it.resource == null && it.naturalWonder == null && it.improvement == null && wonder.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+                    .filter { it.resource == null && it.naturalWonder == null && it.improvement == null && wonder.occursOn!!.contains(it.getLastTerrain().name) }
             if (suitableTiles.isNotEmpty()) {
                 val location = suitableTiles.random()
                 wondersLocation += location

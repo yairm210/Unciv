@@ -138,5 +138,97 @@
 		movementCost:1,
 		defenceBonus: -0.1,
 		occursOn:["Desert"]
+	},
+
+	// Natural Wonders
+	{
+		name: "Barringer Crater",
+		type: "NaturalWonder",
+		gold: 2,
+		science: 3,
+		occursOn: ["Desert","Tundra","Mountain"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Grand Mesa",
+		type: "NaturalWonder",
+		production: 2,
+		gold: 3,
+		occursOn: ["Plains","Desert","Tundra","Mountain"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Great Barrier Reef",
+		type: "NaturalWonder",
+		food: 2,
+		production: 1,
+		gold: 1,
+		science: 2,
+		occursOn: ["Coast"],
+		impassable : true,
+		unbuildable: true,
+		// size : 2 //TODO: currently it is spawned on a single tile
+	},
+	{
+		name: "Krakatoa",
+		type: "NaturalWonder",
+		science: 5,
+		occursOn: ["Grassland","Mountain"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Mt. Fuji",
+		type: "NaturalWonder",
+		gold: 1,
+		culture: 5,
+		occursOn: ["Grassland","Mountain"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Old Faithful",
+		type: "NaturalWonder",
+		science: 2,
+		happiness: 3,
+		occursOn: ["Grassland","Plains","Tundra","Mountain"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Rock of Gibraltar",
+		type: "NaturalWonder",
+		food: 2,
+		gold: 5,
+		occursOn: ["Grassland"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Cerro de Potosi",
+		type: "NaturalWonder",
+		gold: 10,
+		occursOn: ["Plains","Mountain"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "El Dorado",
+		type: "NaturalWonder",
+		culture: 5,
+		occursOn: ["Plains"],
+		impassable : true,
+		unbuildable: true
+	},
+	{
+		name: "Fountain of Youth",
+		type: "NaturalWonder",
+		happiness: 10,
+		occursOn: ["Plains"],
+		impassable : true,
+		unbuildable: true
+		//TODO: Adjacent military land units heal at double rate for the rest of the game
 	}
 ]	
