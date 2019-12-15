@@ -148,7 +148,8 @@ class Ruleset {
         catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
 
         languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
-                .map { it.displayName })
+                .map { it.getDisplayName(Locale.ENGLISH) }) // Maybe THIS is the problem, that the DISPLAY locale wasn't english
+        // and then languages were displayed according to the player's locale... *sweatdrop*
 
         // These should probably ve renamed
         languages.add("Simplified_Chinese")
