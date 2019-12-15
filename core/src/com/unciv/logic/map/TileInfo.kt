@@ -164,6 +164,11 @@ open class TileInfo {
         if (naturalWonder != null) {
             val wonder = getNaturalWonder()
             stats.add(getNaturalWonder())
+
+            // Spain doubles tile yield
+            if (city != null && city.civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.") {
+                stats.add(getNaturalWonder())
+            }
         }
 
         if (hasViewableResource(observingCiv)) {
