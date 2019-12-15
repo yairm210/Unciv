@@ -94,6 +94,7 @@ open class TileInfo {
             else ruleset.Terrains[naturalWonder!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
+    fun isNaturalWonder() : Boolean = naturalWonder != null
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.TileImprovements[improvement!!]
 

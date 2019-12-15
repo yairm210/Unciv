@@ -48,6 +48,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature: String? = null
     protected var cityImage: Image? = null
+    protected var naturalWonderImage: Image? = null
 
     protected var pixelMilitaryUnitImageLocation = ""
     protected var pixelMilitaryUnitImage: Image? = null
@@ -140,6 +141,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
                 return listOf(tileSetStrings.cityTile)
         }
+        if (tileInfo.isNaturalWonder())
+        {
+            val naturalWonder = tileSetStrings.getTile(tileInfo.naturalWonder!!)
+            if (ImageGetter.imageExists(naturalWonder))
+                return listOf(naturalWonder)
+        }
+
         val shouldShowImprovement = tileInfo.improvement!=null && UncivGame.Current.settings.showPixelImprovements
         val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain)
         if (tileInfo.terrainFeature != null) {
@@ -233,6 +241,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         icons.update(showResourcesAndImprovements, tileIsViewable, showMilitaryUnit)
 
         updateCityImage()
+        updateNaturalWonderImage()
         updateTileColor(tileIsViewable)
 
         updateRoadImages()
@@ -278,6 +287,28 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (cityImage != null && !tileInfo.isCityCenter()) {
             cityImage!!.remove()
             cityImage = null
+        }
+    }
+
+    private fun updateNaturalWonderImage() {
+        if (naturalWonderImage == null && tileInfo.isNaturalWonder()) {
+            val naturalWonderOverlay = tileSetStrings.naturalWonderOverlay
+            if (!ImageGetter.imageExists(naturalWonderOverlay)) // Assume no natural wonder overlay = dedicated tile image
+                return
+
+            naturalWonderImage = ImageGetter.getImage(naturalWonderOverlay)
+            terrainFeatureLayerGroup.addActor(naturalWonderImage)
+            naturalWonderImage!!.run {
+                color.a = 0.25f
+                setSize(40f, 40f)
+                center(this@TileGroup)
+            }
+        }
+
+        // Is this possible?
+        if (naturalWonderImage != null && !tileInfo.isNaturalWonder()) {
+            naturalWonderImage!!.remove()
+            naturalWonderImage = null
         }
     }
 
