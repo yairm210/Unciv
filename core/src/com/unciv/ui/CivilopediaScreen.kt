@@ -101,7 +101,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             button.onClick { select(category) }
             buttonTable.add(button)
         }
-        select("Basics")
+        select("Tutorials")
         val sp = ScrollPane(entrySelectTable)
         sp.setupOverscroll(5f, 1f, 200f)
         entryTable.add(sp).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
