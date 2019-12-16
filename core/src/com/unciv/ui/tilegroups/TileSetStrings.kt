@@ -11,6 +11,7 @@ class TileSetStrings {
     val crosshatchHexagon = tileSetLocation+"CrosshatchHexagon"
     val cityOverlay = tileSetLocation+"CityOverlay"
     val railroad = tileSetLocation+"Railroad"
+    val naturalWonderOverlay = tileSetLocation+"NaturalWonderOverlay"
 
     val tilesLocation = tileSetLocation+"Tiles/"
     val cityTile = tilesLocation+"City"

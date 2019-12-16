@@ -29,6 +29,7 @@ open class TileInfo {
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
     var terrainFeature: String? = null
+    var naturalWonder: String? = null
     var resource: String? = null
     var improvement: String? = null
     var improvementInProgress: String? = null
@@ -48,6 +49,7 @@ open class TileInfo {
         toReturn.position=position.cpy()
         toReturn.baseTerrain=baseTerrain
         toReturn.terrainFeature=terrainFeature
+        toReturn.naturalWonder=naturalWonder
         toReturn.resource=resource
         toReturn.improvement=improvement
         toReturn.improvementInProgress=improvementInProgress
@@ -81,13 +83,18 @@ open class TileInfo {
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
+    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if(naturalWonder != null) getNaturalWonder() else getBaseTerrain()
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.TileResources[resource!!]!!
 
+    fun getNaturalWonder() : Terrain =
+            if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
+            else ruleset.Terrains[naturalWonder!!]!!
+
     fun isCityCenter(): Boolean = getCity()?.location == position
+    fun isNaturalWonder() : Boolean = naturalWonder != null
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.TileImprovements[improvement!!]
 
@@ -155,6 +162,16 @@ open class TileInfo {
                 stats.production += 1
         }
 
+        if (naturalWonder != null) {
+            val wonder = getNaturalWonder()
+            stats.add(wonder)
+
+            // Spain doubles tile yield
+            if (city != null && city.civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.") {
+                stats.add(wonder)
+            }
+        }
+
         if (hasViewableResource(observingCiv)) {
             val resource = getTileResource()
             stats.add(getTileResource()) // resource base
@@ -220,8 +237,8 @@ open class TileInfo {
         if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
 
-        val topTerrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()
-        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain!!.name)) return true
+        val topTerrain = getLastTerrain()
+        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true
 
         if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
         if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
@@ -284,6 +301,7 @@ open class TileInfo {
         lineList += baseTerrain.tr()
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
         if (hasViewableResource(tileMap.gameInfo.getCurrentPlayerCivilization())) lineList += resource!!.tr()
+        if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)

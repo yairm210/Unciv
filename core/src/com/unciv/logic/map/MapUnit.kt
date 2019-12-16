@@ -356,6 +356,8 @@ class MapUnit {
         val adjacentUnits = currentTile.getTilesInDistance(1).flatMap { it.getUnits() }
         if (adjacentUnits.isNotEmpty())
             amountToHealBy += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
+        if (hasUnique("All healing effects doubled"))
+            amountToHealBy *= 2
         healBy(amountToHealBy)
     }
 
@@ -422,7 +424,16 @@ class MapUnit {
         if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
+        // addPromotion requires currentTile to be valid because it accesses ruleset through it
         currentTile = tile
+
+        if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary())
+        {
+            val gainDoubleHealPromotion = tile.neighbors.filter{it.naturalWonder == "Fountain of Youth"}.any()
+            if (gainDoubleHealPromotion)
+                promotions.addPromotion("Rejuvenation", true)
+        }
+
         updateVisibleTiles()
     }
 

@@ -7,6 +7,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.collections.set
 
 /** CivInfo class was getting too crowded */
@@ -52,18 +53,46 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
 
         val viewedCivs = HashSet<CivilizationInfo>()
+        val viewedNaturalWonders = HashSet<TileInfo>()
         for(tile in civInfo.viewableTiles){
             val tileOwner = tile.getOwner()
             if(tileOwner!=null) viewedCivs+=tileOwner
             for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
+            if (tile.naturalWonder != null) viewedNaturalWonders += tile
         }
 
         if(!civInfo.isBarbarian()) {
-            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() })
+            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() }) {
                 if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
                     civInfo.meetCivilization(otherCiv)
                     civInfo.addNotification("We have encountered ["+otherCiv.civName+"]!", null, Color.GOLD)
                 }
+            }
+
+            for (tile in viewedNaturalWonders) {
+                if (!civInfo.naturalWonders.contains(tile.naturalWonder)) {
+                    civInfo.discoveryNaturalWonder(tile.naturalWonder!!)
+                    civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
+
+                    var goldGained = 0
+                    val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }.flatMap { it.naturalWonders }
+                    if (tile.naturalWonder == "El Dorado" && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+                        goldGained += 500
+                    }
+
+                    if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.") {
+                        if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
+                            goldGained += 500
+                        else
+                            goldGained += 100
+                    }
+
+                    if (goldGained > 0) {
+                        civInfo.gold += goldGained
+                        civInfo.addNotification("We have received " + goldGained + " Gold for discovering [" + tile.naturalWonder + "]", null, Color.GOLD)
+                    }
+                }
+            }
         }
     }
 

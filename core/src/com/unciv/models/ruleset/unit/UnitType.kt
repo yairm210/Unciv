@@ -50,6 +50,11 @@ enum class UnitType{
             || this == WaterCivilian
     }
 
+    fun isMilitary(): Boolean {
+        return this != Civilian
+                && this != WaterCivilian
+    }
+
     fun isWaterUnit(): Boolean {
         return this==WaterSubmarine
                 || this==WaterRanged

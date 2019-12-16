@@ -6,8 +6,10 @@ import com.unciv.logic.HexMath
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.*
 
@@ -48,6 +50,9 @@ class MapGenerator {
         for (tile in map.values) randomizeTile(tile, mapParameters, ruleset)
 
         randomizeResources(map, mapRadius, ruleset)
+
+        if (!mapParameters.noNaturalWonders)
+            spawnNaturalWonders(map, mapRadius, ruleset)
 
         return map
     }
@@ -210,6 +215,312 @@ class MapGenerator {
         spreadStrategicResources(mapToReturn, distance, ruleset)
         spreadResource(mapToReturn, distance, ResourceType.Luxury, ruleset)
         spreadResource(mapToReturn, distance, ResourceType.Bonus, ruleset)
+    }
+
+    /*
+    https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
+    https://www.reddit.com/r/civ/comments/1jae5j/information_on_the_occurrence_of_natural_wonders/
+    */
+    fun spawnNaturalWonders(mapToReturn: TileMap, mapRadius: Int, ruleset: Ruleset) {
+        // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
+        val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()
+
+        val toBeSpawned = ArrayList<Terrain>()
+        val allNaturalWonders = ruleset.Terrains.values.filter { it.type == TerrainType.NaturalWonder }.toMutableList()
+
+        while (allNaturalWonders.isNotEmpty() && toBeSpawned.size < numberToSpawn) {
+            val totalWeight = allNaturalWonders.map { it.weight }.sum().toFloat()
+            val x = Random().nextDouble()
+            var cum = 0f
+            for (wonder in allNaturalWonders) {
+                cum += wonder.weight/totalWeight
+                if (x <= cum) {
+                    toBeSpawned.add(wonder)
+                    allNaturalWonders.remove(wonder)
+                    break
+                }
+            }
+        }
+
+        println("Natural Wonders for this game: ${toBeSpawned.toString()}")
+
+        for (wonder in toBeSpawned) {
+            when (wonder.name) {
+                Constants.BarringerCrater -> spawnBarringerCrater(mapToReturn, ruleset)
+                Constants.MountFuji -> spawnMountFuji(mapToReturn, ruleset)
+                Constants.GrandMesa -> spawnGrandMesa(mapToReturn, ruleset)
+                Constants.GreatBarrierReef -> spawnGreatBarrierReef(mapToReturn, ruleset)
+                Constants.Krakatoa -> spawnKrakatoa(mapToReturn, ruleset)
+                Constants.RockOfGibraltar -> spawnRockOfGibraltar(mapToReturn, ruleset)
+                Constants.OldFaithful -> spawnOldFaithful(mapToReturn, ruleset)
+                Constants.CerroDePotosi -> spawnCerroDePotosi(mapToReturn, ruleset)
+                Constants.ElDorado -> spawnElDorado(mapToReturn, ruleset)
+                Constants.FountainOfYouth -> spawnFountainOfYouth(mapToReturn, ruleset)
+            }
+        }
+    }
+
+    /*
+    Must be in tundra or desert; cannot be adjacent to grassland; can be adjacent to a maximum
+    of 2 mountains and a maximum of 4 hills and mountains; avoids oceans; becomes mountain
+    */
+    private fun spawnBarringerCrater(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.BarringerCrater]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.grassland }
+                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 2
+                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.mountain || neighbor.getBaseTerrain().name == Constants.hill} <= 4
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Mt. Fuji: Must be in grass or plains; cannot be adjacent to tundra, desert, marsh, or mountains;
+    can be adjacent to a maximum of 2 hills; becomes mountain
+    */
+    private fun spawnMountFuji(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.MountFuji]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.tundra }
+                && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.desert }
+                && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain }
+                && it.neighbors.none { neighbor -> neighbor.getLastTerrain().name == Constants.marsh }
+                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.hill } <= 2
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Grand Mesa: Must be in plains, desert, or tundra, and must be adjacent to at least 2 hills;
+    cannot be adjacent to grass; can be adjacent to a maximum of 2 mountains; avoids oceans; becomes mountain
+    */
+    private fun spawnGrandMesa(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.GrandMesa]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.hill } >= 2
+                && it.neighbors.none { neighbor -> neighbor.getBaseTerrain().name == Constants.grassland }
+                && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 2
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Great Barrier Reef: Specifics currently unknown;
+    Assumption: at least 1 neighbour not water; no tundra; at least 1 neighbour coast; becomes coast
+    TODO: investigate Great Barrier Reef placement requirements
+    */
+    private fun spawnGreatBarrierReef(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.GreatBarrierReef]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.none{ neighbor -> neighbor.getBaseTerrain().name != Constants.tundra}
+                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name != Constants.ocean
+                                                && neighbor.getBaseTerrain().name != Constants.coast }
+                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.coast
+                                                && neighbor.resource == null && neighbor.improvement == null}
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.coast
+            location.terrainFeature = null
+
+            val location2 = location.neighbors
+                    .filter { it.getBaseTerrain().name == Constants.coast && it.resource == null && it.improvement == null }
+                    .random()
+
+            location2.naturalWonder = wonder.name
+            location2.baseTerrain = Constants.coast
+            location2.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Krakatoa: Must spawn in the ocean next to at least 1 shallow water tile; cannot be adjacent
+    to ice; changes tiles around it to shallow water; mountain
+    TODO: cannot be adjacent to ice
+    */
+    private fun spawnKrakatoa(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.Krakatoa]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.coast }
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+
+            for (tile in location.neighbors) {
+                if (tile.baseTerrain == Constants.coast) continue
+                tile.baseTerrain = Constants.coast
+                tile.terrainFeature = null
+                tile.resource = null
+                tile.improvement = null
+            }
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Rock of Gibraltar: Specifics currently unknown
+    Assumption: spawn on grassland, at least 1 coast and 1 mountain adjacent;
+    turn neighbours into coast)
+    TODO: investigate Rock of Gibraltar placement requirements
+    */
+    private fun spawnRockOfGibraltar(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.RockOfGibraltar]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.coast }
+                && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } == 1
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+
+            for (tile in location.neighbors) {
+                if (tile.baseTerrain == Constants.coast) continue
+                if (tile.baseTerrain == Constants.mountain) continue
+
+                tile.baseTerrain = Constants.coast
+                tile.terrainFeature = null
+                tile.resource = null
+                tile.improvement = null
+            }
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Old Faithful: Must be adjacent to at least 3 hills and mountains; cannot be adjacent to
+    more than 4 mountains, and cannot be adjacent to more than 3 desert or 3 tundra tiles;
+    avoids oceans; becomes mountain
+    */
+    private fun spawnOldFaithful(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.OldFaithful]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 4
+                && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain ||
+                                                    neighbor.getBaseTerrain().name == Constants.hill} >= 3
+                && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.desert } <= 3
+                && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.tundra } <= 3
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Cerro de Potosi: Must be adjacent to at least 1 hill; avoids oceans; becomes mountain
+    */
+    private fun spawnCerroDePotosi(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.CerroDePotosi]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.hill }
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.mountain
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    El Dorado: Must be next to at least 1 jungle tile; avoids oceans; becomes flatland plains
+    */
+    private fun spawnElDorado(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.ElDorado]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                && it.neighbors.any { neighbor -> neighbor.getLastTerrain().name == Constants.jungle }
+        }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.plains
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
+    }
+
+    /*
+    Fountain of Youth: Avoids oceans; becomes flatland plains
+    */
+    private fun spawnFountainOfYouth(mapToReturn: TileMap, ruleset: Ruleset) {
+        val wonder = ruleset.Terrains[Constants.FountainOfYouth]!!
+        val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
+                && wonder.occursOn!!.contains(it.getLastTerrain().name) }
+
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = Constants.plains
+            location.terrainFeature = null
+        }
+        else {
+            println("No suitable location for ${wonder.name}")
+        }
     }
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other

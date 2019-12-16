@@ -209,7 +209,6 @@ class CityConstructions {
                     civ.addNotification("[$currentConstruction] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
                 else
                     civ.addNotification("[$currentConstruction] has been built in a faraway land",null,Color.BROWN)
-
             }
         } else
             cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)

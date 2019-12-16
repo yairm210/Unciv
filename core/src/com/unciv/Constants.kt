@@ -17,6 +17,18 @@ class Constants{
         const val grassland = "Grassland"
         const val tundra = "Tundra"
 
+        const val marsh = "Marsh"
+
+        const val BarringerCrater = "Barringer Crater"
+        const val GrandMesa = "Grand Mesa"
+        const val GreatBarrierReef = "Great Barrier Reef"
+        const val Krakatoa = "Krakatoa"
+        const val MountFuji = "Mount Fuji"
+        const val OldFaithful = "Old Faithful"
+        const val RockOfGibraltar = "Rock of Gibraltar"
+        const val CerroDePotosi = "Cerro de Potosi"
+        const val ElDorado = "El Dorado"
+        const val FountainOfYouth = "Fountain of Youth"
 
         const val barbarianEncampment = "Barbarian encampment"
         const val ancientRuins = "Ancient ruins"
