@@ -450,8 +450,12 @@ class CityStats {
         totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate because of previous change
 
         // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
-        val foodFromGrowthBonuses = getGrowthBonusFromPolicies() * totalFood
-        newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
+        if(totalFood>0) {
+            val foodFromGrowthBonuses = getGrowthBonusFromPolicies() * totalFood
+            newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
+            totalFood = newFinalStatList.values.map { it.food }.sum() // recalculate again
+        }
+
 
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
@@ -459,6 +463,12 @@ class CityStats {
             buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
+
+
+        if (cityInfo.cityConstructions.currentConstruction == Constants.settler && totalFood > 0) {
+            newFinalStatList["Excess food to production"] =
+                    Stats().apply { production=totalFood; food=-totalFood }
+        }
 
         if (cityInfo.resistanceCounter > 0)
             newFinalStatList.clear()  // NOPE

@@ -276,10 +276,6 @@ class CityInfo {
 
     fun endTurn() {
         val stats = cityStats.currentCityStats
-        if (cityConstructions.currentConstruction == Constants.settler && stats.food > 0) {
-            stats.production += stats.food
-            stats.food = 0f
-        }
 
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
