@@ -77,7 +77,7 @@ class TranslationFileReader(){
     fun read(translationFile:String): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String,String>()
         val text = Gdx.files.internal(translationFile)
-        for(line in text.reader().readLines()){
+        for(line in text.reader(Charsets.UTF_8.toString()).readLines()){
             if(!line.contains(" = ")) continue
             val splitLine = line.split(" = ")
             val key = splitLine[0].replace("\\n","\n")
