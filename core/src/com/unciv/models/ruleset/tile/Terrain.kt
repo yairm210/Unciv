@@ -47,6 +47,11 @@ class Terrain : NamedStats() {
      */
     val occursOn: Collection<String>? = null
 
+    /*
+     * Natural Wonder weight: probability to be picked
+     */
+    var weight = 10
+
     /**
      * RGB color of base terrain
      */
