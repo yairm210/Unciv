@@ -1,7 +1,6 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.logic.HexMath
 import com.unciv.models.Counter
