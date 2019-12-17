@@ -86,15 +86,15 @@
 			"Co turę każde Miasto generuje Kulturę, która jest wspólna",
 			" dla całej cywilizacji.",
 			"Kiedy osiągniesz określony poziom, będziesz mógł",
-			" wybrać nową Politykę Społeczną, a co za tym idze otrzymasz bonus."
+			" wybrać nowy Ustrój Społeczny, a co za tym idze otrzymasz bonus."
 		],
 		[
-			"Polityki są podzielone na drzewka, a każdo z nich dodaje dodatkową",
+			"Ustroje są podzielone na drzewka, a każdo z nich dodaje dodatkową",
 			" zdolność którą otrzymasz po odblokowaniu całego drzewka."
 		],
 		[
-			"Z każdą nową Polityką i z każdym nowym powstałym miastem",
-			" koszt nowej Polityki rośnie więc wybieraj rozsądnie!"
+			"Z każdym nowym Ustrojem i z każdym nowym powstałym miastem",
+			" koszt nowego Ustroju rośnie więc wybieraj rozsądnie!"
 		]
 	],
 
@@ -229,12 +229,11 @@
 		],
 		[
 			"Są 3 sposoby na wygraną w Unciv, a mianowicie:",
-			" - Zwycięstwo Kulturowe: Zakończ 4 drzewa Społecznych Polityk",
+			" - Zwycięstwo Kulturowe: Zakończ 4 drzewa Ustrojów Społecznych",
 			" - Dominacja: Zostań ostatnią cywilizacją na mapie",
 			" - Zwycięstwo Naukowe: Bądź pierwszą cywilizacją która zbuduje statek kosmiczny na Alfa Centaurie"
 		],
 		[
-			"So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness,",
 			"Podsumowując, to są podstawy gry w Unciv:",
 			" - Załóż pierwsze miasto",
 			" - Powoli powiększaj swoje granice mając na uwadze Zadowolenie",
@@ -291,7 +290,7 @@
 		],
 		[
 			"Uczynienie z Miasta marionetki oznacza tyle co czerpanie z niego korzyści ale brak kontroli nad produkcją.",
-			"Samo Miasto nie zwiększy kosztów Technologii czy Polityki, ale jego mieszkańcy będą generować 1.5x podstawowego Niezadowolenia.",
+			"Samo Miasto nie zwiększy kosztów Technologii czy Ustroi Społecznych, ale jego mieszkańcy będą generować 1.5x podstawowego Niezadowolenia.",
 			"Zaanektowanie Miasta da Ci kontrolę nad produkcją, ale tym samym zwiększy przyrost Niezadowolenia Cywili dwukrotnie!",
 			"Złagodzić to może zbudowanie Sądu w mieście, co przywróci Niezadowolenie Cywili do normy.",
 			"Miasta-marionetki mogą zostać zaanektowane, ale w drugą stronę to już nie zadziała!"
@@ -354,7 +353,6 @@
 
 	Siege_Units:[
 		[
-			"Siege units are extremely powerful against cities, but need to be Set Up before they can attack.",
 			"Jednostki przystosowane do oblężeń są niezwykle potężne przeciwko Miastom, ale wymagają wcześniejszego",
 			" przygotowania zanim mogą być użyte.",
 			"Po przygotowaniu takiej jednostki, może ona atakować z tego pola. Jeżeli jednak przeniesiesz jednostkę",
@@ -364,9 +362,8 @@
 
 	Embarking:[
 		[
-			"Once a certain tech is researched, your land units can embark, allowing them to traverse water tiles.",
 			"Po odblokowaniu pewnych technologi, twoje lądowe jednostki będą mogły wsiąść na pokład statku i ",
-			" poruszać się po wodzie",
+			" przemieszczać się po wodzie",
 			"Wejście i zejście z pokładu trwa całą turę.",
 			"Jednostki na czas wchodzenia lub zchodzenia ze statku są bezbronni, więc uważaj!"
 		]
