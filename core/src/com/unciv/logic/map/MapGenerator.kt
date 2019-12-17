@@ -343,7 +343,7 @@ class MapGenerator {
         val wonder = ruleset.Terrains[Constants.GreatBarrierReef]!!
         val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
-                && it.neighbors.none{ neighbor -> neighbor.getBaseTerrain().name != Constants.tundra}
+                && it.neighbors.none{ neighbor -> neighbor.getBaseTerrain().name == Constants.tundra }
                 && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name != Constants.ocean
                                                 && neighbor.getBaseTerrain().name != Constants.coast }
                 && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.coast

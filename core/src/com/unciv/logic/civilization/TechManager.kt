@@ -154,7 +154,10 @@ class TechManager {
 
     fun limitOverflowScience(overflowscience: Int): Int {
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5, costOfTech(currentTechnologyName()!!)))
+        // Apparently yes, we care about the absolute tech cost, not the actual calculated-for-this-player tech cost,
+        //  so don't change to costOfTech()
+        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5,
+                getRuleset().Technologies[currentTechnologyName()]!!.cost))
     }
 
     fun nextTurn(scienceForNewTurn: Int) {

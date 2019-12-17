@@ -139,8 +139,51 @@
 		defenceBonus: -0.1,
 		occursOn:["Desert"]
 	},
-
+ 
 	// Natural Wonders
+	{
+		name: "Great Barrier Reef",
+		type: "NaturalWonder",
+		food: 2,
+		production: 1,
+		gold: 1,
+		science: 2,
+		occursOn: ["Coast"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	/** Yukky tile images
+	{
+		name: "Krakatoa",
+		type: "NaturalWonder",
+		science: 5,
+		occursOn: ["Ocean"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	{
+		name: "Mount Fuji",
+		type: "NaturalWonder",
+		gold: 1,
+		culture: 5,
+		occursOn: ["Grassland","Plains"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	{
+		name: "Rock of Gibraltar",
+		type: "NaturalWonder",
+		food: 2,
+		gold: 5,
+		occursOn: ["Grassland"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	*/
 	{
 		name: "Barringer Crater",
 		type: "NaturalWonder",
@@ -162,52 +205,11 @@
 		weight: 10
 	},
 	{
-		name: "Great Barrier Reef",
-		type: "NaturalWonder",
-		food: 2,
-		production: 1,
-		gold: 1,
-		science: 2,
-		occursOn: ["Coast"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Krakatoa",
-		type: "NaturalWonder",
-		science: 5,
-		occursOn: ["Ocean"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Mount Fuji",
-		type: "NaturalWonder",
-		gold: 1,
-		culture: 5,
-		occursOn: ["Grassland","Plains"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
 		name: "Old Faithful",
 		type: "NaturalWonder",
 		science: 2,
 		happiness: 3,
 		occursOn: ["Grassland","Plains","Tundra","Mountain"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Rock of Gibraltar",
-		type: "NaturalWonder",
-		food: 2,
-		gold: 5,
-		occursOn: ["Grassland"],
 		impassable: true,
 		unbuildable: true,
 		weight: 10
