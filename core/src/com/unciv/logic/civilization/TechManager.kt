@@ -154,7 +154,7 @@ class TechManager {
 
     fun limitOverflowScience(overflowscience: Int): Int {
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5, costOfTech(currentTechnologyName()!!)))
+        return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5, getRuleset().Technologies[currentTechnologyName()]!!.cost))
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
