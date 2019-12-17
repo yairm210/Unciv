@@ -1,5 +1,6 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -10,6 +11,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.DropBox
 import com.unciv.ui.worldscreen.optionstable.PopupTable
+import kotlin.concurrent.thread
 
 class MapDownloadTable(loadMapScreen: LoadMapScreen): PopupTable(loadMapScreen) {
     init {
@@ -20,17 +22,25 @@ class MapDownloadTable(loadMapScreen: LoadMapScreen): PopupTable(loadMapScreen) 
             for (downloadableMap in folderList.entries) {
                 val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
                 downloadMapButton.onClick {
-                    try{
-                        val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
-                        val decodedMapJson = Gzip.unzip(mapJsonGzipped)
-                        val mapObject = MapSaver().mapFromJson(decodedMapJson)
-                        MapSaver().saveMap(downloadableMap.name, mapObject)
-                        UncivGame.Current.setScreen(MapEditorScreen(mapObject))
-                    }
-                    catch(ex:Exception){
-                        val couldNotDownloadMapPopup = PopupTable(screen)
-                        couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
-                        couldNotDownloadMapPopup.addCloseButton()
+                    thread {
+                        try {
+                            val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
+                            val decodedMapJson = Gzip.unzip(mapJsonGzipped)
+                            val mapObject = MapSaver().mapFromJson(decodedMapJson)
+                            MapSaver().saveMap(downloadableMap.name, mapObject)
+
+                            // creating a screen is a GL task
+                            Gdx.app.postRunnable { UncivGame.Current.setScreen(MapEditorScreen(mapObject)) }
+                        } catch (ex: Exception) {
+                            print(ex)
+
+                            // Yes, even creating popups.
+                            Gdx.app.postRunnable {
+                                val couldNotDownloadMapPopup = PopupTable(screen)
+                                couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
+                                couldNotDownloadMapPopup.addCloseButton()
+                            }
+                        }
                     }
                 }
                 scrollableMapTable.add(downloadMapButton).row()
