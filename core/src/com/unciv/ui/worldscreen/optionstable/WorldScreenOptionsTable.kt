@@ -44,6 +44,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         val innerTable = PopupTable(screen) // cheating, to get the old code to fit inside a Scroll =)
         innerTable.background = null
 
+        innerTable.add("Display options".toLabel(fontSize = 24)).colspan(2).row()
+
         innerTable.add("Show worked tiles".toLabel())
         innerTable.addButton(if (settings.showWorkedTiles) "Yes".tr() else "No".tr()) {
             settings.showWorkedTiles= !settings.showWorkedTiles
@@ -56,34 +58,10 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
-        innerTable.add("Check for idle units".toLabel())
-        innerTable.addButton(if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
-            settings.checkForDueUnits = !settings.checkForDueUnits
-            update()
-        }
-
-        innerTable.add("Move units with a single tap".toLabel())
-        innerTable.addButton(if (settings.singleTapMove) "Yes".tr() else "No".tr()) {
-            settings.singleTapMove = !settings.singleTapMove
-            update()
-        }
 
         innerTable.add("Show tutorials".toLabel())
         innerTable.addButton(if (settings.showTutorials) "Yes".tr() else "No".tr()) {
             settings.showTutorials = !settings.showTutorials
-            update()
-        }
-
-
-        innerTable.add("Auto-assign city production".toLabel())
-        innerTable.addButton(if (settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
-            settings.autoAssignCityProduction = !settings.autoAssignCityProduction
-            update()
-        }
-
-        innerTable.add("Auto-build roads".toLabel())
-        innerTable.addButton(if (settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
-            settings.autoBuildingRoads = !settings.autoBuildingRoads
             update()
         }
 
@@ -105,19 +83,50 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
+        addLanguageSelectBox(innerTable)
+
+        addResolutionSelectBox(innerTable)
+
+        addTileSetSelectBox(innerTable)
+
+        innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).row()
+
+
+        innerTable.add("Check for idle units".toLabel())
+        innerTable.addButton(if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
+            settings.checkForDueUnits = !settings.checkForDueUnits
+            update()
+        }
+
+        innerTable.add("Move units with a single tap".toLabel())
+        innerTable.addButton(if (settings.singleTapMove) "Yes".tr() else "No".tr()) {
+            settings.singleTapMove = !settings.singleTapMove
+            update()
+        }
+
+        innerTable.add("Auto-assign city production".toLabel())
+        innerTable.addButton(if (settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
+            settings.autoAssignCityProduction = !settings.autoAssignCityProduction
+            update()
+        }
+
+        innerTable.add("Auto-build roads".toLabel())
+        innerTable.addButton(if (settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
+            settings.autoBuildingRoads = !settings.autoBuildingRoads
+            update()
+        }
+
+
         innerTable.add("Enable nuclear weapons".toLabel())
         innerTable.addButton(if (settings.nuclearWeaponEnabled) "Yes".tr() else "No".tr()) {
             settings.nuclearWeaponEnabled = !settings.nuclearWeaponEnabled
             update()
         }
 
-        addLanguageSelectBox(innerTable)
-
-        addResolutionSelectBox(innerTable)
-
         addAutosaveTurnsSelectBox(innerTable)
 
-        addTileSetSelectBox(innerTable)
+        innerTable.add("Other options".toLabel(fontSize = 24)).colspan(2).row()
+
 
         addSoundEffectsVolumeSlider(innerTable)
         addMusicVolumeSlider(innerTable)
