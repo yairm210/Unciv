@@ -5,12 +5,17 @@ package de.tomgrill.gdxtesting.examples;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
+import com.unciv.models.ruleset.Building;
 import com.unciv.models.ruleset.Nation;
 import com.unciv.models.ruleset.Ruleset;
+import com.unciv.models.ruleset.tech.Technology;
+import com.unciv.models.ruleset.tile.TileImprovement;
+import com.unciv.models.ruleset.unit.BaseUnit;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import de.tomgrill.gdxtesting.GdxTestRunner;
@@ -37,12 +42,51 @@ public class TranslationTests {
 					allUnitsHaveTranslation);
 	}
 
+
+	@Test
+	public void allUnitUniquesHaveTranslation() {
+		Set<String> strings = new HashSet<String>();
+		for (BaseUnit unit : ruleSet.getUnits().values())
+			for (String unique : unit.getUniques())
+				if (!unique.startsWith("Bonus")
+						&& !unique.startsWith("Penalty")
+						&& !unique.contains("[")) // templates
+					strings.add(unique);
+
+		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
+		assertTrue(allStringsHaveTranslation);
+	}
+
+
 	@Test
 	public void allBuildingsHaveTranslation() {
 		Boolean allBuildingsHaveTranslation = allStringAreTranslated(ruleSet.getBuildings().keySet());
 		assertTrue("This test will only pass when there is a translation for all buildings",
 				allBuildingsHaveTranslation);
 	}
+
+	@Test
+	public void allBuildingUniquesHaveTranslation() {
+		Set<String> strings = new HashSet<String>();
+		for(Building building: ruleSet.getBuildings().values()){
+			strings.addAll(building.getUniques());
+		}
+		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
+		assertTrue(allStringsHaveTranslation);
+	}
+
+
+	@Test
+	public void allBuildingQuotesHaveTranslation() {
+		Set<String> strings = new HashSet<String>();
+		for(Building building: ruleSet.getBuildings().values()){
+			if(building.getQuote().equals("")) continue;
+			strings.add(building.getQuote());
+		}
+		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
+		assertTrue(allStringsHaveTranslation);
+	}
+
 
 	@Test
 	public void allTerrainsHaveTranslation() {
@@ -60,6 +104,18 @@ public class TranslationTests {
 				allStringsHaveTranslation);
 	}
 
+
+	@Test
+	public void allImprovementUniquesHaveTranslation() {
+		Set<String> strings = new HashSet<String>();
+		for(TileImprovement improvement: ruleSet.getTileImprovements().values()){
+			strings.addAll(improvement.getUniques());
+		}
+		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
+		assertTrue(allStringsHaveTranslation);
+	}
+
+
 	@Test
 	public void allTechnologiesHaveTranslation() {
 		Set<String> strings = ruleSet.getTechnologies().keySet();
@@ -67,6 +123,18 @@ public class TranslationTests {
 		assertTrue("This test will only pass when there is a translation for all technologies",
 				allStringsHaveTranslation);
 	}
+
+	@Test
+	public void allTechnologiesQuotesHaveTranslation() {
+		Set<String> strings = new HashSet<String>();
+		for(Technology tech : ruleSet.getTechnologies().values()){
+			strings.add(tech.getQuote());
+		}
+		Boolean allStringsHaveTranslation = allStringAreTranslated(strings);
+		assertTrue("This test will only pass when there is a translation for all technologies",
+				allStringsHaveTranslation);
+	}
+
 
 	@Test
 	public void allPromotionsHaveTranslation() {

@@ -15,6 +15,45 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
     // This is a big performance
     fun updateViewableTiles() {
+        setNewViewableTiles()
+
+        val newViewableInvisibleTiles = HashSet<TileInfo>()
+        newViewableInvisibleTiles.addAll(civInfo.getCivUnits().asSequence()
+                .filter { it.hasUnique("Can attack submarines") }
+                .flatMap { it.viewableTiles.asSequence() })
+        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
+
+
+        // updating the viewable tiles also affects the explored tiles, obvs
+        // So why don't we play switcharoo with the explored tiles as well?
+        // Well, because it gets REALLY LARGE so it's a lot of memory space,
+        // and we never actually iterate on the explored tiles (only check contains()),
+        // so there's no fear of concurrency problems.
+        val newlyExploredTiles = civInfo.viewableTiles.asSequence().map { it.position }
+                .filterNot { civInfo.exploredTiles.contains(it) }
+        civInfo.exploredTiles.addAll(newlyExploredTiles)
+
+
+        val viewedCivs = HashSet<CivilizationInfo>()
+        for (tile in civInfo.viewableTiles) {
+            val tileOwner = tile.getOwner()
+            if (tileOwner != null) viewedCivs += tileOwner
+            for (unit in tile.getUnits()) viewedCivs += unit.civInfo
+        }
+
+        if (!civInfo.isBarbarian()) {
+            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() }) {
+                if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
+                    civInfo.meetCivilization(otherCiv)
+                    civInfo.addNotification("We have encountered [" + otherCiv.civName + "]!", null, Color.GOLD)
+                }
+            }
+
+            discoverNaturalWonders()
+        }
+    }
+
+    private fun setNewViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
 
         // There are a LOT of tiles usually.
@@ -22,9 +61,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         // Ans so, sequences to the rescue!
         val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles().asSequence() }
         newViewableTiles.addAll(ownedTiles)
-        val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner()!=civInfo } }
+        val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner() != civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
-        newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence()})
+        newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence() })
 
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs()) {
@@ -35,64 +74,37 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         }
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
+    }
 
-        val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(civInfo.getCivUnits().asSequence()
-                .filter {it.hasUnique("Can attack submarines")}
-                .flatMap {it.viewableTiles.asSequence()})
-        civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
-        // updating the viewable tiles also affects the explored tiles, obvs
-
-        // So why don't we play switcharoo with the explored tiles as well?
-        // Well, because it gets REALLY LARGE so it's a lot of memory space,
-        // and we never actually iterate on the explored tiles (only check contains()),
-        // so there's no fear of concurrency problems.
-        val newlyExploredTiles = newViewableTiles.asSequence().map { it.position }
-                .filterNot { civInfo.exploredTiles.contains(it) }
-        civInfo.exploredTiles.addAll(newlyExploredTiles)
-
-
-        val viewedCivs = HashSet<CivilizationInfo>()
-        val viewedNaturalWonders = HashSet<TileInfo>()
-        for(tile in civInfo.viewableTiles){
-            val tileOwner = tile.getOwner()
-            if(tileOwner!=null) viewedCivs+=tileOwner
-            for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
-            if (tile.naturalWonder != null) viewedNaturalWonders += tile
+    private fun discoverNaturalWonders() {
+        val newlyViewedNaturalWonders = HashSet<TileInfo>()
+        for (tile in civInfo.viewableTiles) {
+            if (tile.naturalWonder != null && !civInfo.naturalWonders.contains(tile.naturalWonder!!))
+                newlyViewedNaturalWonders += tile
         }
 
-        if(!civInfo.isBarbarian()) {
-            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() }) {
-                if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
-                    civInfo.meetCivilization(otherCiv)
-                    civInfo.addNotification("We have encountered ["+otherCiv.civName+"]!", null, Color.GOLD)
-                }
+        for (tile in newlyViewedNaturalWonders) {
+            civInfo.discoverNaturalWonder(tile.naturalWonder!!)
+            civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
+
+            var goldGained = 0
+            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }
+                    .flatMap { it.naturalWonders }
+            if (tile.naturalWonder == "El Dorado" && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+                goldGained += 500
             }
 
-            for (tile in viewedNaturalWonders) {
-                if (!civInfo.naturalWonders.contains(tile.naturalWonder)) {
-                    civInfo.discoverNaturalWonder(tile.naturalWonder!!)
-                    civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
-
-                    var goldGained = 0
-                    val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }.flatMap { it.naturalWonders }
-                    if (tile.naturalWonder == "El Dorado" && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
-                        goldGained += 500
-                    }
-
-                    if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.") {
-                        if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
-                            goldGained += 500
-                        else
-                            goldGained += 100
-                    }
-
-                    if (goldGained > 0) {
-                        civInfo.gold += goldGained
-                        civInfo.addNotification("We have received " + goldGained + " Gold for discovering [" + tile.naturalWonder + "]", null, Color.GOLD)
-                    }
-                }
+            if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.") {
+                if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
+                    goldGained += 500
+                else goldGained += 100
             }
+
+            if (goldGained > 0) {
+                civInfo.gold += goldGained
+                civInfo.addNotification("We have received " + goldGained + " Gold for discovering [" + tile.naturalWonder + "]", null, Color.GOLD)
+            }
+
         }
     }
 
