@@ -769,7 +769,7 @@
 			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor",
 			"Har-Ayrag","Nalayh","Tes"]
-	},*/
+	},
 	{
 		/////NEEDS NATURAL WONDERS
 		name:"Spanish",
@@ -808,7 +808,6 @@
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
 			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
 	},
-	/*
 	{
 		name:"Incan",
 		leaderName:"Pachacuti",

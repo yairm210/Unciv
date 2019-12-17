@@ -71,7 +71,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
             for (tile in viewedNaturalWonders) {
                 if (!civInfo.naturalWonders.contains(tile.naturalWonder)) {
-                    civInfo.discoveryNaturalWonder(tile.naturalWonder!!)
+                    civInfo.discoverNaturalWonder(tile.naturalWonder!!)
                     civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
 
                     var goldGained = 0
