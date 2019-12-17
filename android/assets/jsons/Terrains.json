@@ -153,6 +153,34 @@
 		unbuildable: true,
 		weight: 10
 	},
+	{
+		name: "Old Faithful",
+		type: "NaturalWonder",
+		science: 2,
+		happiness: 3,
+		occursOn: ["Grassland","Plains","Tundra","Mountain"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	{
+		name: "El Dorado",
+		type: "NaturalWonder",
+		culture: 5,
+		occursOn: ["Plains"],
+		impassable: true,
+		unbuildable: true,
+		weight: 2
+	},
+	{
+		name: "Fountain of Youth",
+		type: "NaturalWonder",
+		happiness: 10,
+		occursOn: ["Plains"],
+		impassable: true,
+		unbuildable: true,
+		weight: 1
+	}
 	/** Yukky tile images
 	{
 		name: "Krakatoa",
@@ -183,7 +211,15 @@
 		unbuildable: true,
 		weight: 10
 	},
-	*/
+	{
+		name: "Cerro de Potosi",
+		type: "NaturalWonder",
+		gold: 10,
+		occursOn: ["Plains","Mountain"],
+		impassable: true,
+		unbuildable: true,
+		weight: 5
+	},
 	{
 		name: "Barringer Crater",
 		type: "NaturalWonder",
@@ -204,41 +240,5 @@
 		unbuildable: true,
 		weight: 10
 	},
-	{
-		name: "Old Faithful",
-		type: "NaturalWonder",
-		science: 2,
-		happiness: 3,
-		occursOn: ["Grassland","Plains","Tundra","Mountain"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Cerro de Potosi",
-		type: "NaturalWonder",
-		gold: 10,
-		occursOn: ["Plains","Mountain"],
-		impassable: true,
-		unbuildable: true,
-		weight: 5
-	},
-	{
-		name: "El Dorado",
-		type: "NaturalWonder",
-		culture: 5,
-		occursOn: ["Plains"],
-		impassable: true,
-		unbuildable: true,
-		weight: 2
-	},
-	{
-		name: "Fountain of Youth",
-		type: "NaturalWonder",
-		happiness: 10,
-		occursOn: ["Plains"],
-		impassable: true,
-		unbuildable: true,
-		weight: 1
-	}
+	*/
 ]	
