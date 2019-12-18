@@ -53,7 +53,7 @@ class NextTurnAutomation{
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
             }
             else{
-                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD) // todo translation
+                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD)
             }
         }
         civInfo.tradeRequests.clear()

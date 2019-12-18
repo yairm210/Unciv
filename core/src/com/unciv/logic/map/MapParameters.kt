@@ -5,5 +5,5 @@ class MapParameters {
     var type = MapType.pangaea
     var radius = 20
     var noRuins = false
-    var noNaturalWonders = false
+    var noNaturalWonders = true
 }

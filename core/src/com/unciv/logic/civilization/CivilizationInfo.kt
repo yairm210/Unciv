@@ -260,7 +260,7 @@ class CivilizationInfo {
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
     }
 
-    fun discoveryNaturalWonder(naturalWonderName: String)
+    fun discoverNaturalWonder(naturalWonderName: String)
     {
         naturalWonders.add(naturalWonderName)
     }

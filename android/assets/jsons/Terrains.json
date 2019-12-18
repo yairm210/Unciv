@@ -139,28 +139,8 @@
 		defenceBonus: -0.1,
 		occursOn:["Desert"]
 	},
-
+ 
 	// Natural Wonders
-	{
-		name: "Barringer Crater",
-		type: "NaturalWonder",
-		gold: 2,
-		science: 3,
-		occursOn: ["Desert","Tundra"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Grand Mesa",
-		type: "NaturalWonder",
-		production: 2,
-		gold: 3,
-		occursOn: ["Plains","Desert","Tundra"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
 	{
 		name: "Great Barrier Reef",
 		type: "NaturalWonder",
@@ -173,6 +153,35 @@
 		unbuildable: true,
 		weight: 10
 	},
+	{
+		name: "Old Faithful",
+		type: "NaturalWonder",
+		science: 2,
+		happiness: 3,
+		occursOn: ["Grassland","Plains","Tundra","Mountain"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	{
+		name: "El Dorado",
+		type: "NaturalWonder",
+		culture: 5,
+		occursOn: ["Plains"],
+		impassable: true,
+		unbuildable: true,
+		weight: 2
+	},
+	{
+		name: "Fountain of Youth",
+		type: "NaturalWonder",
+		happiness: 10,
+		occursOn: ["Plains"],
+		impassable: true,
+		unbuildable: true,
+		weight: 1
+	}
+	/** Yukky tile images
 	{
 		name: "Krakatoa",
 		type: "NaturalWonder",
@@ -188,16 +197,6 @@
 		gold: 1,
 		culture: 5,
 		occursOn: ["Grassland","Plains"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Old Faithful",
-		type: "NaturalWonder",
-		science: 2,
-		happiness: 3,
-		occursOn: ["Grassland","Plains","Tundra","Mountain"],
 		impassable: true,
 		unbuildable: true,
 		weight: 10
@@ -222,21 +221,24 @@
 		weight: 5
 	},
 	{
-		name: "El Dorado",
+		name: "Barringer Crater",
 		type: "NaturalWonder",
-		culture: 5,
-		occursOn: ["Plains"],
+		gold: 2,
+		science: 3,
+		occursOn: ["Desert","Tundra"],
 		impassable: true,
 		unbuildable: true,
-		weight: 2
+		weight: 10
 	},
 	{
-		name: "Fountain of Youth",
+		name: "Grand Mesa",
 		type: "NaturalWonder",
-		happiness: 10,
-		occursOn: ["Plains"],
+		production: 2,
+		gold: 3,
+		occursOn: ["Plains","Desert","Tundra"],
 		impassable: true,
 		unbuildable: true,
-		weight: 1
-	}
+		weight: 10
+	},
+	*/
 ]	
