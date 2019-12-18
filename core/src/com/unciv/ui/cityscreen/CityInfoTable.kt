@@ -6,17 +6,22 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.Building
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.text.DecimalFormat
-
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.round
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     val pad = 5f
@@ -29,10 +34,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         clear()
         val cityInfo = cityScreen.city
 
+        addCityStats(cityInfo)
         addBuildingsInfo(cityInfo)
-
         addStatInfo()
-
         addGreatPersonPointInfo(cityInfo)
 
         pack()
@@ -89,6 +93,65 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 }
                 wonderDetailsTable.addSeparator()
             }
+        }
+    }
+
+    private fun addCityStats(cityInfo: CityInfo) {
+        val statsTable = Table().align(Align.center)
+        addCategory("Stats", statsTable)
+
+
+        val columns = Stats().toHashMap().size
+        statsTable.add(Label("{Unassigned population}:".tr()
+                +" "+cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population, skin))
+                .pad(5f).row()
+
+        val turnsToExpansionString : String
+        if (cityInfo.cityStats.currentCityStats.culture > 0) {
+            var turnsToExpansion = ceil((cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored)
+                    / cityInfo.cityStats.currentCityStats.culture).toInt()
+            if (turnsToExpansion < 1) turnsToExpansion = 1
+            turnsToExpansionString = "[$turnsToExpansion] turns to expansion".tr()
+        } else {
+            turnsToExpansionString = "Stopped expansion".tr()
+        }
+
+        statsTable.add(Label(turnsToExpansionString + " (" + cityInfo.expansion.cultureStored + "/" + cityInfo.expansion.getCultureToNextTile() + ")",
+                skin)).pad(5f).row()
+
+        val turnsToPopString : String
+        if (cityInfo.cityStats.currentCityStats.food > 0) {
+            if (cityInfo.cityConstructions.currentConstruction == Constants.settler) {
+                turnsToPopString = "Food converts to production".tr()
+            } else {
+                var turnsToPopulation = ceil((cityInfo.population.getFoodToNextPopulation()-cityInfo.population.foodStored)
+                        / cityInfo.cityStats.currentCityStats.food).toInt()
+                if (turnsToPopulation < 1) turnsToPopulation = 1
+                turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
+            }
+        } else if (cityInfo.cityStats.currentCityStats.food < 0) {
+            val turnsToStarvation = floor(cityInfo.population.foodStored / -cityInfo.cityStats.currentCityStats.food).toInt() + 1
+            turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
+        } else {
+            turnsToPopString = "Stopped population growth".tr()
+        }
+        statsTable.add(Label(turnsToPopString + " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
+                ,skin)).pad(5f).row()
+
+        if (cityInfo.resistanceCounter > 0) {
+            statsTable.add(Label("In resistance for another [${cityInfo.resistanceCounter}] turns".tr(),skin)).pad(5f).row()
+        }
+
+        statsTable.addSeparator()
+
+        val ministatsTable = Table().pad(5f)
+        ministatsTable.defaults()
+        statsTable.add(ministatsTable)
+
+        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
+            if(stat.key == Stat.Happiness) continue
+            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
+            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
         }
     }
 
