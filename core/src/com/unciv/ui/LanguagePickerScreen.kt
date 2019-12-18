@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.Translations
+import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.enable
@@ -14,21 +14,15 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
 
-class LanguageTable(val language:String, ruleset: Ruleset):Table(){
+class LanguageTable(val language:String, val percentComplete: Int):Table(){
     private val blue = ImageGetter.getBlue()
     private val darkBlue = blue.cpy().lerp(Color.BLACK,0.5f)!!
-    val percentComplete: Int
 
     init{
         pad(10f)
         defaults().pad(10f)
         if(ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
-        val translations = ruleset.Translations
-        val availableTranslations = translations.filter { it.value.containsKey(language) }
-
-        if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / translations.size) - 1 //-1 so if the user encounters anything not translated he'll be like "OK that's the 1% missing"
 
         val spaceSplitLang = language.replace("_"," ")
         add("$spaceSplitLang ($percentComplete%)".toLabel())
@@ -61,9 +55,10 @@ class LanguagePickerScreen: PickerScreen(){
                     "If you want to help translating the game into your language, \n"+
                     "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
-        val ruleSet = UncivGame.Current.ruleset
-        languageTables.addAll(ruleSet.Translations.getLanguages().map { LanguageTable(it,ruleSet) }
-                .sortedByDescending { it.percentComplete } )
+        val languageCompletionPercentage = Translations().getPercentageCompleteOfLanguages()
+        languageTables.addAll(languageCompletionPercentage
+                .map { LanguageTable(it.key,if(it.key=="English") 100 else it.value) }
+                .sortedByDescending { it.percentComplete} )
 
         languageTables.forEach {
             it.onClick {
@@ -85,6 +80,8 @@ class LanguagePickerScreen: PickerScreen(){
     fun pickLanguage(){
         UncivGame.Current.settings.language = chosenLanguage
         UncivGame.Current.settings.save()
+
+        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
         resetFonts()
         UncivGame.Current.startNewGame()
         dispose()

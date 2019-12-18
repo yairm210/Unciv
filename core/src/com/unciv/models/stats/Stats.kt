@@ -1,6 +1,6 @@
 package com.unciv.models.stats
 
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 
 
 open class Stats() {

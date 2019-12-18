@@ -11,7 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.tilegroups.TileSetStrings

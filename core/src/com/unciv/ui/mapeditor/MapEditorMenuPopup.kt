@@ -9,7 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.DropBox

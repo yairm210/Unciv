@@ -1,6 +1,6 @@
 package com.unciv.logic.trade
 
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 
 data class TradeOffer(var name:String, var type: TradeType,
                       /** 0 for offers that are immediate (e.g. gold transfer) */ var duration:Int, var amount:Int=1) {

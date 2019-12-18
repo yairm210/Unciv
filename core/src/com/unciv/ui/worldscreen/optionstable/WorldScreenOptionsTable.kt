@@ -7,19 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.Translations
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
-class Language(val language:String, ruleset: Ruleset){
-    val percentComplete:Int
-    init{
-        val availableTranslations = ruleset.Translations.count { it.value.containsKey(language) }
-        if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations*100 / ruleset.Translations.size)
-    }
+class Language(val language:String, val percentComplete:Int){
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
         return "$spaceSplitLang- $percentComplete%"
@@ -275,7 +269,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         val ruleSet = worldScreen.gameInfo.ruleSet
-        ruleSet.Translations.getLanguages().map { Language(it, ruleSet) }
+        Translations().getPercentageCompleteOfLanguages()
+                .map { Language(it.key, if(it.key=="English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray
@@ -298,7 +293,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             val missingTextSelectBox = SelectBox<String>(skin)
             val missingTextArray = Array<String>()
             val currentLanguage = UncivGame.Current.settings.language
-            ruleSet.Translations.filter { !it.value.containsKey(currentLanguage) }
+            UncivGame.Current.translations.filter { !it.value.containsKey(currentLanguage) }
                     .forEach { missingTextArray.add(it.key) }
             missingTextSelectBox.items = missingTextArray
             missingTextSelectBox.selected = "Untranslated texts"
@@ -310,6 +305,8 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
     fun selectLanguage(){
         UncivGame.Current.settings.language = selectedLanguage
         UncivGame.Current.settings.save()
+
+        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UncivGame.Current.setWorldScreen()

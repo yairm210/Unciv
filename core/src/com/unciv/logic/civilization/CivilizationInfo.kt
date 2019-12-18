@@ -19,6 +19,7 @@ import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap

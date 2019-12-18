@@ -1,6 +1,5 @@
 package com.unciv.models.ruleset
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
 import com.unciv.models.ruleset.tech.TechColumn
@@ -11,9 +10,6 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
 import kotlin.collections.set
 
 class Ruleset {
@@ -27,7 +23,6 @@ class Ruleset {
     val Nations = LinkedHashMap<String, Nation>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Difficulties = LinkedHashMap<String, Difficulty>()
-    val Translations = Translations()
 
     fun <T> getFromJson(tClass: Class<T>, filePath:String): T {
         val jsonText = Gdx.files.internal(filePath).readString(Charsets.UTF_8.name())
@@ -52,7 +47,6 @@ class Ruleset {
         newRuleset.Terrains.putAll(Terrains)
         newRuleset.TileImprovements.putAll(TileImprovements)
         newRuleset.TileResources.putAll(TileResources)
-        newRuleset.Translations.putAll(Translations)
         newRuleset.UnitPromotions.putAll(UnitPromotions)
         newRuleset.Units.putAll(Units)
         return newRuleset
@@ -107,79 +101,7 @@ class Ruleset {
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         println("Loading game basics - "+gameBasicsLoadTime+"ms")
 
-        // Apparently you can't iterate over the files in a directory when running out of a .jar...
-        // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
-        // which means we need to list everything manually =/
-
-        val translationStart = System.currentTimeMillis()
-
-
-        readTranslationsFromProperties()
-//        readTranslationsFromJson()
-        if(Gdx.app.type==Application.ApplicationType.Desktop) // Yes, also when running from the Jar. Sue me.
-            writeNewTranslationFiles()
-
-        val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading translation files - "+translationFilesTime+"ms")
     }
 
-    private fun writeNewTranslationFiles() {
-        for (language in Translations.getLanguages()) {
-            val languageHashmap = HashMap<String, String>()
-
-            for (translation in Translations.values) {
-                if (translation.containsKey(language))
-                    languageHashmap[translation.entry] = translation[language]!!
-            }
-            TranslationFileReader().writeByTemplate(language, languageHashmap)
-        }
-
-    }
-
-    private fun readTranslationsFromProperties() {
-
-        val languages = ArrayList<String>()
-        // So apparently the Locales don't work for everyone, which is horrendous
-        // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
-        try{
-            for(file in Gdx.files.internal("jsons/translationsByLanguage").list())
-                languages.add(file.nameWithoutExtension())
-        }
-        catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
-
-        languages.addAll(Locale.getAvailableLocales() // And this should work for Desktop, meaning from a .jar
-                .map { it.getDisplayName(Locale.ENGLISH) }) // Maybe THIS is the problem, that the DISPLAY locale wasn't english
-        // and then languages were displayed according to the player's locale... *sweatdrop*
-
-        // These should probably ve renamed
-        languages.add("Simplified_Chinese")
-        languages.add("Traditional_Chinese")
-
-        for (language in languages.distinct()) {
-            val translationFileName = "jsons/translationsByLanguage/$language.properties"
-            if (!Gdx.files.internal(translationFileName).exists()) continue
-            val languageTranslations = TranslationFileReader().read(translationFileName,Translations.keys)
-
-            for (translation in languageTranslations) {
-                if (!Translations.containsKey(translation.key))
-                    Translations[translation.key] = TranslationEntry(translation.key)
-                Translations[translation.key]!![language] = translation.value
-            }
-        }
-    }
-
-    private fun readTranslationsFromJson() {
-
-        val translationFileNames = listOf("Buildings","Diplomacy,Trade,Nations",
-                "NewGame,SaveGame,LoadGame,Options", "Notifications","Other","Policies","Techs",
-                "Terrains,Resources,Improvements","Units,Promotions")
-
-        for (fileName in translationFileNames) {
-            val file = Gdx.files.internal("jsons/Translations/$fileName.json")
-            if (file.exists()) {
-                Translations.add(file.readString(Charsets.UTF_8.name()))
-            }
-        }
-    }
 }
 

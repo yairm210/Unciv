@@ -12,7 +12,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 import kotlin.math.min
 
 class NextTurnAutomation{

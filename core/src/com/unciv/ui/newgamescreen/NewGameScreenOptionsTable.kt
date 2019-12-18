@@ -11,7 +11,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel

@@ -7,7 +7,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel

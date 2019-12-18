@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -38,9 +39,12 @@ class UncivGame(val version: String) : Game() {
 
     var music : Music? =null
     val musicLocation = "music/thatched-villagers.mp3"
-    var isInitialized=false
+    var isInitialized = false
+    var rewriteTranslationFiles = false
 
     lateinit var ruleset:Ruleset
+
+    val translations = Translations()
 
     override fun create() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
@@ -57,6 +61,14 @@ class UncivGame(val version: String) : Game() {
         screen=LoadingScreen()
         thread {
             ruleset = Ruleset(true)
+
+            if(rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
+                translations.readAllLanguagesTranslation()
+                translations.writeNewTranslationFiles()
+            }
+            else{
+                translations.tryReadTranslationForCurrentLanguage()
+            }
 
             if (settings.userId == "") { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()

@@ -34,7 +34,7 @@ class Fonts {
             if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())
                 charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").readString().asIterable())
 
-            for (entry in UncivGame.Current.ruleset.Translations.entries) {
+            for (entry in UncivGame.Current.translations.entries) {
                 for (lang in entry.value) {
                     if (lang.key == language) charSet.addAll(lang.value.asIterable())
                 }

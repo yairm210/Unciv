@@ -15,7 +15,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.ruleset.tr
+import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.cityscreen.CityScreen
