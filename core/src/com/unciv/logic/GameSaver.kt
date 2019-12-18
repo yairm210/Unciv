@@ -50,7 +50,8 @@ class GameSaver {
         if(!settingsFile.exists()) return GameSettings()
         val settings = json().fromJson(GameSettings::class.java, settingsFile)
 
-        val currentTileSets = ImageGetter.atlas.regions.filter { it.name.startsWith("TileSets") }
+        val currentTileSets = ImageGetter.atlas.regions.asSequence()
+                .filter { it.name.startsWith("TileSets") }
                 .map { it.name.split("/")[1] }.distinct()
         if(settings.tileSet !in currentTileSets) settings.tileSet = "Default"
         return settings

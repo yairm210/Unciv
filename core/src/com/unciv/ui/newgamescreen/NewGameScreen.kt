@@ -10,7 +10,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
@@ -26,7 +25,7 @@ class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UncivGame.Current.gameInfo.gameParameters
     val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
-    val ruleSet = Ruleset(true)
+    val ruleSet = UncivGame.Current.ruleset
 
     init {
         setDefaultCloseAction()

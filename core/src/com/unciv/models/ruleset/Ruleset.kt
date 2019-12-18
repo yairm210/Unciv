@@ -158,7 +158,7 @@ class Ruleset {
         for (language in languages.distinct()) {
             val translationFileName = "jsons/translationsByLanguage/$language.properties"
             if (!Gdx.files.internal(translationFileName).exists()) continue
-            val languageTranslations = TranslationFileReader().read(translationFileName)
+            val languageTranslations = TranslationFileReader().read(translationFileName,Translations.keys)
 
             for (translation in languageTranslations) {
                 if (!Translations.containsKey(translation.key))

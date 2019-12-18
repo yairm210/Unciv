@@ -74,16 +74,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 }
 
 class TranslationFileReader(){
-    fun read(translationFile:String): LinkedHashMap<String, String> {
+    fun read(translationFile: String, possibleTranslationValues: MutableSet<String>): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String,String>()
         val text = Gdx.files.internal(translationFile)
-        for(line in text.reader(Charsets.UTF_8.toString()).readLines()){
-            if(!line.contains(" = ")) continue
+        text.reader(Charsets.UTF_8.toString()).forEachLine {
+            val line=it
+            if(!line.contains(" = ")) return@forEachLine
             val splitLine = line.split(" = ")
-            val key = splitLine[0].replace("\\n","\n")
-            val value = splitLine[1].replace("\\n","\n")
-            if(value!="") // this means this wasn't translated yet
+            if(splitLine[1]!="") { // the value is empty, this means this wasn't translated yet
+                val value = splitLine[1].replace("\\n","\n")
+                val key = splitLine[0].replace("\\n","\n")
                 translations[key] = value
+            }
         }
         return translations
     }

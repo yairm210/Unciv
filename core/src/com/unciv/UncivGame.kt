@@ -5,6 +5,8 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -15,6 +17,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
@@ -40,33 +43,38 @@ class UncivGame(val version: String) : Game() {
     lateinit var ruleset:Ruleset
 
     override fun create() {
+        Gdx.input.setCatchKey(Input.Keys.BACK, true)
+        if (Gdx.app.type != Application.ApplicationType.Desktop)
+            viewEntireMapForDebug = false
+        Current = this
+
+
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
         // We probably could make this better by moving stuff that we can to another thread but ehhhhhhh
-
-        Current = this
-        Gdx.app.postRunnable {
+        settings = GameSaver().getGeneralSettings() // needed for the screen
+        screen=LoadingScreen()
+        thread {
             ruleset = Ruleset(true)
 
-            if (Gdx.app.type != Application.ApplicationType.Desktop)
-                viewEntireMapForDebug = false
-            Gdx.input.setCatchKey(Input.Keys.BACK, true)
-            settings = GameSaver().getGeneralSettings()
             if (settings.userId == "") { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
                 settings.save()
             }
-            if (GameSaver().getSave("Autosave").exists()) {
-                try {
-                    loadGame("Autosave")
-                } catch (ex: Exception) { // silent fail if we can't read the autosave
-                    startNewGame()
-                }
-            } else setScreen(LanguagePickerScreen())
+            Gdx.app.postRunnable {
+                CameraStageBaseScreen.resetFonts()
+                if (GameSaver().getSave("Autosave").exists()) {
+                    try {
+                        loadGame("Autosave")
+                    } catch (ex: Exception) { // silent fail if we can't read the autosave
+                        startNewGame()
+                    }
+                } else setScreen(LanguagePickerScreen())
 
-            thread { startMusic() }
-            isInitialized = true
+                thread { startMusic() }
+                isInitialized = true
+            }
         }
     }
 
@@ -112,7 +120,7 @@ class UncivGame(val version: String) : Game() {
         super.resume()
         ImageGetter.refreshAltas()
 
-        // This is to solve a rare problem that I still on't understand its cause -
+        // This is to solve a rare problem that I still don't understand its cause -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
         // My guess is that resume() was called but create() wasn't, or perhaps was aborted too early,
         // and the original (and empty) initial GameInfo remained.
@@ -136,4 +144,17 @@ class UncivGame(val version: String) : Game() {
     companion object {
         lateinit var Current: UncivGame
     }
+}
+
+class LoadingScreen:CameraStageBaseScreen(){
+    init{
+        val happinessImage = ImageGetter.getImage("StatIcons/Happiness")
+        happinessImage.center(stage)
+        happinessImage.setOrigin(Align.center)
+        happinessImage.addAction(Actions.sequence(
+                Actions.delay(1f),
+                Actions.rotateBy(360f,0.5f)))
+        stage.addActor(happinessImage)
+    }
+
 }

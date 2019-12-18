@@ -68,10 +68,6 @@ open class CameraStageBaseScreen : Screen {
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
 
-        init{
-            resetFonts()
-        }
-
         fun resetFonts(){
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(45).apply { data.setScale(20/45f) }
