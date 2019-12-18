@@ -11,17 +11,25 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
-import kotlin.collections.ArrayList
 
-
+/**
+ * City constructions manager.
+ *
+ * @property cityInfo the city it refers to
+ * @property currentConstruction the name of the construction is currently worked, default = "Monument"
+ * @property currentConstructionIsUserSet a flag indicating if the [currentConstruction] has been set by the user or by the AI
+ * @property constructionQueue a list of constructions names enqueued
+ */
 class CityConstructions {
     @Transient lateinit var cityInfo: CityInfo
-    @Transient private var builtBuildingObjects=ArrayList<Building>()
+    @Transient private var builtBuildingObjects = ArrayList<Building>()
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
-    var currentConstruction: String = "Monument" // default starting building!
+    var currentConstruction: String = "Monument"
     var currentConstructionIsUserSet = false
+    var constructionQueue = mutableListOf<String>()
+    val queueMaxSize = 10
 
     //region pure functions
     fun clone(): CityConstructions {
@@ -30,6 +38,7 @@ class CityConstructions {
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
         toReturn.currentConstruction=currentConstruction
         toReturn.currentConstructionIsUserSet=currentConstructionIsUserSet
+        toReturn.constructionQueue.addAll(constructionQueue)
         return toReturn
     }
 
@@ -39,6 +48,9 @@ class CityConstructions {
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
             .asSequence().filter { it.isBuildable(this) }
 
+    /**
+     * @return [Stats] provided by all built buildings in city plus the bonus from Library
+     */
     fun getStats(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
@@ -47,8 +59,14 @@ class CityConstructions {
         return stats
     }
 
+    /**
+     * @return Maintenance cost of all built buildings
+     */
     fun getMaintenanceCosts(): Int = getBuiltBuildings().sumBy { it.maintenance }
 
+    /**
+     * @return Bonus (%) [Stats] provided by all built buildings in city
+     */
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
@@ -69,7 +87,9 @@ class CityConstructions {
     }
 
     fun getProductionForTileInfo(): String {
-        val currentConstructionSnapshot = currentConstruction // this is because there were rare errors tht I assume were caused because currentContruction changed on another thread
+        /* this is because there were rare errors tht I assume were caused because
+           currentContruction changed on another thread */
+        val currentConstructionSnapshot = currentConstruction
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
                 && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot }) {
@@ -80,17 +100,17 @@ class CityConstructions {
     }
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstruction)
+    fun getIConstructionQueue(): List<IConstruction> = constructionQueue.map{ getConstruction(it) }
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
-
     fun isBeingConstructed(constructionName: String): Boolean = currentConstruction == constructionName
+    fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
+
+    fun isQueueFull(): Boolean = constructionQueue.size == queueMaxSize
 
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
-        if (currentConstruction is Building) {
-            return currentConstruction.isWonder
-        }
-        return false
+        return currentConstruction is Building && currentConstruction.isWonder
     }
 
     internal fun getConstruction(constructionName: String): IConstruction {
@@ -179,6 +199,7 @@ class CityConstructions {
 
     fun endTurn(cityStats: Stats) {
         stopUnbuildableConstruction()
+        validateConstructionQueue()
 
         if(getConstruction(currentConstruction) !is SpecialConstruction)
             addProductionPoints(Math.round(cityStats.production))
@@ -198,7 +219,17 @@ class CityConstructions {
             currentConstruction = saveCurrentConstruction
     }
 
-    fun constructionComplete(construction: IConstruction) {
+    private fun validateConstructionQueue() {
+        val queueSnapshot = mutableListOf<String>().apply { addAll(constructionQueue) }
+        constructionQueue.clear()
+
+        for (construction in queueSnapshot) {
+            if (getConstruction(construction).isBuildable(this))
+                constructionQueue.add(construction)
+        }
+    }
+
+    private fun constructionComplete(construction: IConstruction) {
         construction.postBuildEvent(this)
         inProgressConstructions.remove(currentConstruction)
 
@@ -252,16 +283,66 @@ class CityConstructions {
             cancelCurrentConstruction()
     }
 
-    fun cancelCurrentConstruction(){
-        currentConstructionIsUserSet=false
-        currentConstruction=""
+    private fun cancelCurrentConstruction() {
+        currentConstructionIsUserSet = false
+        currentConstruction = ""
         chooseNextConstruction()
     }
 
     fun chooseNextConstruction() {
         if(currentConstructionIsUserSet) return
+
+        if (constructionQueue.isNotEmpty()) {
+
+            currentConstructionIsUserSet = true
+            currentConstruction = constructionQueue.removeAt(0)
+            stopUnbuildableConstruction()
+
+            if (currentConstruction != "") return
+        }
+
         ConstructionAutomation(this).chooseNextConstruction()
     }
-    //endregion
 
+    fun isEnqueuable(constructionName: String): Boolean {
+        return true
+    }
+
+    fun addToQueue(constructionName: String) {
+        if (!isQueueFull())
+            constructionQueue.add(constructionName)
+    }
+
+    fun removeFromQueue(idx: Int) {
+        // idx -1 is the current construction
+        if (idx < 0) {
+            // To prevent Construction Automation
+            if (constructionQueue.isEmpty()) constructionQueue.add("Nothing")
+            cancelCurrentConstruction()
+        } else
+            constructionQueue.removeAt(idx)
+    }
+
+    fun higherPrio(idx: Int) {
+        // change current construction
+        if(idx == 0) {
+            // Add current construction to queue after the first element
+            constructionQueue.add(1, currentConstruction)
+            cancelCurrentConstruction()
+        }
+        else
+            constructionQueue.swap(idx-1, idx)
+    }
+
+    // Lowering == Highering next element in queue
+    fun lowerPrio(idx: Int) {
+        higherPrio(idx+1)
+    }
+
+    //endregion
+    private fun MutableList<String>.swap(idx1: Int, idx2: Int) {
+        val tmp = this[idx1]
+        this[idx1] = this[idx2]
+        this[idx2] = tmp
+    }
 } // for json parsing, we need to have a default constructor
