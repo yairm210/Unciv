@@ -11,7 +11,9 @@ import com.unciv.models.ruleset.Ruleset;
 import com.unciv.models.ruleset.tech.Technology;
 import com.unciv.models.ruleset.tile.TileImprovement;
 import com.unciv.models.ruleset.unit.BaseUnit;
+import com.unciv.models.translations.Translations;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,12 +29,17 @@ import static org.junit.Assert.assertTrue;
 @RunWith(GdxTestRunner.class)
 public class TranslationTests {
 	
+	Translations translations = new Translations();
 	Ruleset ruleSet = new Ruleset(true);
+	@Before
+	public void loadTranslations(){
+		translations.readAllLanguagesTranslation();
+	}
 
 	@Test
 	public void translationsLoad() {
 		assertTrue("This test will only pass there are translations",
-				ruleSet.getTranslations().size() > 0);
+				translations.size() > 0);
 	}
 
 	@Test
@@ -147,7 +154,7 @@ public class TranslationTests {
 	private Boolean allStringAreTranslated(Set<String> strings) {
 		boolean allBuildingsHaveTranslation = true;
 		for (String unitName : strings) {
-			if (!ruleSet.getTranslations().containsKey(unitName)) {
+			if (!translations.containsKey(unitName)) {
 				allBuildingsHaveTranslation = false;
 				System.out.println(unitName);
 			}
