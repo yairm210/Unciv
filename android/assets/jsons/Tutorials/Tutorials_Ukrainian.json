@@ -141,9 +141,9 @@
 		],
 		[
 			"У грі є 3 способи перемогти, а саме:",
-			" - Культурна перемога: завершіть 4 політичних дерева",
-			" - Загарбання: виживіть як остання цивілізація",
-			" - Научна перемога: будьте першими, хто зконструює космічний корабель до Альфи Центраври"
+			" — Культурна перемога: завершіть 4 політичних дерева",
+			" — Загарбання: виживіть як остання цивілізація",
+			" — Научна перемога: будьте першими, хто зконструює космічний корабель до Альфи Центраври"
 		],
 		[
 			"Отже, підводячи підсумок, основи Unciv — засновувати процвітаюче перше місто, повільно розширятись, щоб керувати рівнем щастя,",
@@ -154,25 +154,25 @@
 
 	Enemy_City:  [
 		[
-			"Cities can be conquered by reducing their health to 1,",
-			"  and entering the city with a melee unit.",
-			"Since cities heal each turn, it is best to attack with ranged units"
-			"  and use your melee units to defend them until the city has been defeated!"
+			"Міста можна завоювати, зменшивши своє здоров'я до 1,",
+			"  і ввійношовши в місто з ближньобійником.",
+			"Оскільки міста відновлюються кожного ходу, найкраще атакувати з одиницями дальності"
+			"  і використовуйте свої ближьобійні підрозділи, щоб захищати їх, поки місто не буде розгромлено!"
 		]
 	]
 
 	Luxury_Resource:  [
 		[
-			"Luxury resources within your domain and with their specific improvement are connected to your trade network.",
-			"Each unique Luxury resource you have adds 5 happiness to your civilization, but extra resources of the same type don't add anything, so use them for trading with other civilizations!"
+			"Ресурси розкоші у вашому володінні та з їх конкретним удосконаленням під’єднані до вашої торгової мережі.",
+			"Кожен унікальний ресурс Розкоші додає вашій цивілізації 5 щастя, але додаткові ресурси одного типу нічого не додають, тому використовуйте їх для торгівлі з іншими цивілізаціями!"
 		]
 	]
 
 	Strategic_Resource:  [
 		[
-			"Strategic resources within your domain and with their specific improvement are connected to your trade network.",
-			"Strategic resources allow you to train units and construct buildings that require those specific resources, for example the Horseman requires Horses."
-			"The top bar keeps count of how many unused strategic resources you own."
+			"Стратегічні ресурси у вашому володінні та з їх конкретним удосконаленням під’єднані до вашої торгової мережі.",
+			"Стратегічні ресурси дозволяють тренувати підрозділи та споруджувати будівлі, які потребують конкретних ресурсів, наприклад, Вершник вимагає Коней."
+			"На верхній панелі відображається кількість невикористаних стратегічних ресурсів."
 		]
 	]
 
@@ -185,15 +185,15 @@
 
 	After_Conquering: [
 		[
-			"When conquering a city, you can now choose to either  or raze, puppet, or annex the city.",
-			"Razing the city will lower its population by 1 each turn until the city is destroyed."
+			"Підкорюючи місто, тепер ви можете обрати що ви хочете зробити з ним: зруйнувати, зробити з нього маріонетку чи анексувати.",
+			"Зруйнування міста зменшить чисельність населення на 1 раз, поки місто не буде знищене."
 		],
 		[
-			"Puppeting the city will mean that you have no control on the city's production.",
-			"The city will not increase your tech or policy cost, but its citizens will generate 1.5x the regular unhappiness.",
-			"Annexing the city will give you control over the production, but will increase the citizen's unhappiness to 2x!",
-			"This can be mitigated by building a courthouse in the city, returning the citizen's unhappiness to normal.",
-			"A puppeted city can be annexed at any time, but annexed cities cannot be returned to a puppeted state!"
+			"Зробити місто «маріонеткою» означатє, що ви не маєте контролю над виробництвом міста.",
+			"Місто не збільшуватиме ваші витрати на техніку чи політику, але його громадяни породжуватимуть у 1,5 рази більше нещастя.",
+			"Анексія міста надасть вам контроль над виробництвом, але збільшить нещастя громадян до 2х!",
+			"Це можна зменшити, побудувавши будинок суду у місті, повернувши нещастя громадян у нормальний стан.",
+			"Маріонеткове місто можна будь-коли анексувати, але анексувати міста не можна повернути до маріонеткового стану!"
 		]
 	],
 
