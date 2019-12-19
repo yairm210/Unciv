@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -64,7 +65,7 @@ class UncivGame(val version: String) : Game() {
 
             if(rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
-                translations.writeNewTranslationFiles()
+                TranslationFileReader().writeNewTranslationFiles(translations)
             }
             else{
                 translations.tryReadTranslationForCurrentLanguage()

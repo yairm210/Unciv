@@ -1,11 +1,9 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
-import java.util.*
-import kotlin.collections.LinkedHashMap
 import kotlin.collections.set
 
-class TranslationFileReader(){
+class TranslationFileReader{
     fun read(translationFile: String): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
         val text = Gdx.files.internal(translationFile)
@@ -41,4 +39,42 @@ class TranslationFileReader(){
         Gdx.files.local("jsons/translationsByLanguage/$language.properties")
                 .writeString(stringBuilder.toString(),false,Charsets.UTF_8.name())
     }
+
+
+    fun writeNewTranslationFiles(translations: Translations) {
+        for (language in translations.getLanguages()) {
+            val languageHashmap = HashMap<String, String>()
+
+            for (translation in translations.values) {
+                if (translation.containsKey(language))
+                    languageHashmap[translation.entry] = translation[language]!!
+            }
+            writeByTemplate(language, languageHashmap)
+        }
+        writeLanguagePercentages(translations)
+    }
+
+    val percentagesFileLocation = "jsons/translationsByLanguage/completionPercentages.properties"
+    fun writeLanguagePercentages(translations: Translations){
+        val percentages = translations.calculatePercentageCompleteOfLanguages()
+        val stringBuilder = StringBuilder()
+        for(entry in percentages){
+            stringBuilder.appendln(entry.key+" = "+entry.value)
+        }
+        Gdx.files.local(percentagesFileLocation).writeString(stringBuilder.toString(),false)
+    }
+
+    fun readLanguagePercentages():HashMap<String,Int>{
+
+
+        val hashmap = HashMap<String,Int>()
+        val percentageFile = Gdx.files.local(percentagesFileLocation)
+        if(!percentageFile.exists()) return hashmap
+        for(line in Gdx.files.local(percentagesFileLocation).reader().readLines()){
+            val splitLine = line.split(" = ")
+            hashmap[splitLine[0]]=splitLine[1].toInt()
+        }
+        return hashmap
+    }
+
 }

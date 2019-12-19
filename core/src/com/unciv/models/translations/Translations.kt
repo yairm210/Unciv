@@ -8,7 +8,7 @@ import kotlin.collections.HashMap
 
 class Translations : LinkedHashMap<String, TranslationEntry>(){
 
-    val percentCompleteOfLanguages = HashMap<String,Int>()
+    var percentCompleteOfLanguages = HashMap<String,Int>()
 
     fun get(text:String,language:String): String {
         if(!hasTranslation(text,language)) return text
@@ -26,24 +26,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             for(languageName in entry.keys)
                 if(!toReturn.contains(languageName)) toReturn.add(languageName)
 
-        toReturn.remove("Japanese") // These were for tests but were never actually seriously translated
-        toReturn.remove("Thai")
         return toReturn
     }
 
-    companion object {
-        fun translateBonusOrPenalty(unique:String): String {
-            val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
-            if(regexResult==null) return unique.tr()
-            else{
-                var separatorCharacter = " "
-                if (UncivGame.Current.settings.language=="Simplified_Chinese") separatorCharacter = ""
-                val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
-                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
-                return translatedUnique
-            }
-        }
-    }
 
     fun tryReadTranslationForLanguage(language: String){
         val translationStart = System.currentTimeMillis()
@@ -91,13 +76,14 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         languages.add("Traditional_Chinese")
 
         languages.remove("template")
+        languages.remove("completionPercentages")
+        languages.remove("Thai") // Until we figure out what to do with it
 
         return languages.distinct()
                 .filter { Gdx.files.internal("jsons/translationsByLanguage/$it.properties").exists() }
     }
 
     fun readAllLanguagesTranslation() {
-
         // Apparently you can't iterate over the files in a directory when running out of a .jar...
         // https://www.badlogicgames.com/forum/viewtopic.php?f=11&t=27250
         // which means we need to list everything manually =/
@@ -112,21 +98,17 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         println("Loading translation files - "+translationFilesTime+"ms")
     }
 
+    fun loadPercentageCompleteOfLanguages(){
+        val startTime = System.currentTimeMillis()
 
-    fun writeNewTranslationFiles() {
-        for (language in getLanguages()) {
-            val languageHashmap = HashMap<String, String>()
+        percentCompleteOfLanguages = TranslationFileReader().readLanguagePercentages()
 
-            for (translation in values) {
-                if (translation.containsKey(language))
-                    languageHashmap[translation.entry] = translation[language]!!
-            }
-            TranslationFileReader().writeByTemplate(language, languageHashmap)
-        }
+        val translationFilesTime = System.currentTimeMillis() - startTime
+        println("Loading percent complete of languages - "+translationFilesTime+"ms")
     }
 
-    fun loadPercentageCompleteOfLanguages() {
-
+    fun calculatePercentageCompleteOfLanguages():HashMap<String,Int> {
+        val percentComplete = HashMap<String,Int>()
         val translationStart = System.currentTimeMillis()
 
         var allTranslations = 0
@@ -139,12 +121,28 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
-            percentCompleteOfLanguages[language] = translationsOfThisLanguage*100/allTranslations
+            percentComplete[language] = translationsOfThisLanguage*100/allTranslations
         }
 
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading percentage complete of languages - "+translationFilesTime+"ms")
+        println("Calculating percentage complete of languages - "+translationFilesTime+"ms")
+        return percentComplete
+    }
+
+
+    companion object {
+        fun translateBonusOrPenalty(unique:String): String {
+            val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
+            if(regexResult==null) return unique.tr()
+            else{
+                var separatorCharacter = " "
+                if (UncivGame.Current.settings.language=="Simplified_Chinese") separatorCharacter = ""
+                val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
+                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
+                return translatedUnique
+            }
+        }
     }
 }
 
