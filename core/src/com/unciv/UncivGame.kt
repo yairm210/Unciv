@@ -49,8 +49,10 @@ class UncivGame(val version: String) : Game() {
 
     override fun create() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
-        if (Gdx.app.type != Application.ApplicationType.Desktop)
+        if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
+            rewriteTranslationFiles=false
+        }
         Current = this
 
 
@@ -140,12 +142,11 @@ class UncivGame(val version: String) : Game() {
         if(!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
         ImageGetter.refreshAltas()
 
-        // This is to solve a rare problem that I still don't understand its cause -
+        // This is to solve a rare problem -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
-        // My guess is that resume() was called but create() wasn't, or perhaps was aborted too early,
-        // and the original (and empty) initial GameInfo remained.
-//            if(!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
-//                return autoLoadGame()
+        // Can happen if you resume to the language picker screen for instance.
+        if(!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
+            return autoLoadGame()
 
         if(::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
         loadGame(gameInfo)

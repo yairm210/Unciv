@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -288,18 +287,6 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             }
         })
 
-        if (languageSelectBox.selected.percentComplete != 100) {
-            innerTable.add("Missing translations:".toLabel()).pad(5f).colspan(2).row()
-            val missingTextSelectBox = SelectBox<String>(skin)
-            val missingTextArray = Array<String>()
-            val currentLanguage = UncivGame.Current.settings.language
-            UncivGame.Current.translations.filter { !it.value.containsKey(currentLanguage) }
-                    .forEach { missingTextArray.add(it.key) }
-            missingTextSelectBox.items = missingTextArray
-            missingTextSelectBox.selected = "Untranslated texts"
-            innerTable.add(missingTextSelectBox).pad(10f)
-                    .width(screen.stage.width / 2).colspan(2).row()
-        }
     }
 
     fun selectLanguage(){

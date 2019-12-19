@@ -80,7 +80,8 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         languages.remove("Thai") // Until we figure out what to do with it
 
         return languages.distinct()
-                .filter { Gdx.files.internal("jsons/translationsByLanguage/$it.properties").exists() }
+                .filter { it!="Thai" &&
+                        Gdx.files.internal("jsons/translationsByLanguage/$it.properties").exists() }
     }
 
     fun readAllLanguagesTranslation() {
