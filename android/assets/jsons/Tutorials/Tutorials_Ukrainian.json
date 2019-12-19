@@ -1,207 +1,122 @@
 {
 	// Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
 	// Entries starting with a _ will NOT be shown in Civilopedia.
+	
+	Introduction: [
+		[
+			"Ласкаво просимо до Unciv!",
+			"Bоскільки це складна гра, є основні завдання, які допоможуть ознайомити вас з грою.",
+			"Вони абсолютно необов’язкові, і ви можете самостійно вивчити гру!",
+		]
+	],
 
-
+	// Civilopedia only, because players said this was too wall-of-text
 	New_Game: [
 		[
-			"Привіт, і ласкаво просимо до Unciv!",
-			"Ігри про цивілізацію можуть бути складними, тому ми будемо вести вас покроково.",
-			"Ваша перша місія — заснувати свою столицю.",
+			"Ваша перша місія — це знайти свою столицю.",
 			"Це насправді важливе завдання, адже саме ваша столиця буде, мабуть, найбільш процвітаючою.",
-			"Багато бонусів стосуються лише вашої столиці, і, ймовірно, вона буде центром вашої імперії."
+			"Багато ігрових бонусів стосуються лише вашої столиці, і, ймовірно, вона буде центром вашої імперії."
 		],
 		[
 			"Як дізнатися, що це місце підходить для заснування міста?",
 			"На це питання складно відповісти, але шукайте і засновуйте місто біля ресурсів розкоші.",
-			"Luxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)",
-			"These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron."
+			"Ресурси розкоші — це клітини, на яких є речі, такі як дорогоцінні камені, бавовна або шовк (позначені посмішкою поруч із значком ресурсу)",
+			"Ці ресурси роблять вашу цивілізацію щасливіше. Ви також повинні стежити за ресурсами, які потребуються для створення підрозділів, такі як залізо."
 		],
 		[
-			"However, cities don’t have a set area that they can work - more on that later!"
-			"This means you don’t have to settle cities right next to resources.",
-			"Let’s say, for example, that you want access to some iron – but the resource is right next to a desert."
-			"You don’t have to settle your city next to the desert. You can settle a few tiles away in more prosperous lands.",
-			"Your city will grow and eventually gain access to the resource.",
-			"You only need to settle right next to resources if you need them immediately – ",
-			"   which might be the case now and then, but you’ll usually have the luxury of time."
+			"Однак у містах немає визначеної площі, на якій вони можуть працювати — про це пізніше!"
+			"Тобто ви не повинні засновувати міста прямо поруч з ресурсами.",
+			"Скажімо, наприклад, що ви хочете отримати доступ до заліза — проте ресурс поруч з пустелею."
+			"Ви не повинні селитися поруч з пустелею. Ви можете оселитися кілька клітин подалі в процвітаючишіх містах.",
+			"Ваше місто буде здростати і врешті-решт отримає доступ до ресурсу.",
+			"Якщо ви хочете поселитися поруч з ресурсом негайно, то оселіться біля нього, ",
+			"   це може бути знадобитися, щоб отримати ресурс якнайшвидше, але у вас зазвичай багато часу."
+		],
+		[
+			"Перше, що вийде з вашого міста, повинен бути або розвідником, або воїном."
+			"Я, як правило, віддаю перевагу Воїну, оскільки його можна використовувати для оборони і тому, що його можна вдосконалити",
+			"  до мечника в пізній стадії гри за відносно скромну суму золота.",
+			"Однак Розвідники можуть бути ефективними, якщо вам здається, що ви знаходитесь в районі густого лісу та пагорбів.",
+			"Розвідники не отримують штраф до руху на цій місцевості."
+			"Якщо ви знавець жанру глобальних стратегій, то виберіть першим Воїна чи Розвідника, які будуть супроводжати Поселенця.",
+			"Швидке розширення є абсолютно необхідним у більшості ігор цього типу.",
 		],
 
 	],
 
-
-	_City_Founded : [
-		[
-			"You have founded a city!",
-			"Cities are the lifeblood of your empire, providing gold and science empire-wide,",
-			"  which are displayed on the top bar.",
-			"You can click the city name to enter  the city screen to assign population,",
-			"  choose production, and see information on the city"
-		],
-	]
-
-	First_Steps : [
-		[
-			"Once you have your first city up and running you’ll be able to start production of a new unit",
-			"  and you’ll be able to begin your research.",
-			"I’m not going to delve too deeply into the research element of the game yet – that will be handled later in the guide –",
-			"  so let’s just talk about production."
-		],
-		[
-			"The first thing coming out of your city should be either a Scout or Warrior."
-			"I generally prefer the Warrior because it can be used for defense and because it can be upgraded",
-			"  to the Swordsman unit later in the game for a relatively modest sum of gold.",
-			"Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.",
-			"Scouts don’t suffer a movement penalty in this terrain."
-			"If you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.",
-			"Fast expanding is absolutely critical in most games of this type.",
-		],
-	],
-
-
-	Next_Turn : [
-		[
-			"Once you've done everything you can in this turn, ",
-			"  click the next turn button on the top right to continue."
-		],
-		[
-			"Each turn, science, culture and gold are added",
-			"  to your civilization, your cities' construction",
-			"  continues, and they may grow in population or area."
-		]
-	],
 
 	_Slow_Start: [
 		[
-			"In your first couple of turns,",
-			"  you will have very little options,",
-			"  but as your civilization grows, so do the ",
-			"  number of things requiring your attention"
+			"У ваші перші пару ходів,",
+			"  ви буде дуже мало можливостей,",
+			"  але як зростатиме ваша цивілізація, так і зростатиме ",
+			"  кількість речей, що потребують вашої уваги"
 		]
 	],
 
 	Culture_and_Policies: [ // Activated when entering policy picker screen
 		[
-			"Each turn, the culture you gain from all your ",
-			"  cities is added to your Civilization's culture.",
-			"When you have enough culture, you may pick a ",
-			"  Social Policy, each one giving you a certain bonus."
+			"Кожний хід, культура культуру, яку ви отримуєте від усіх своїх",
+			"  міст, додається до культури вашої Цивілізації.",
+			"Коли у вас буде достатньо культури, ви можете вибрати ",
+			"  Соціальну політику, кожна з яких дає певний бонус."
 		],
 		[
-			"The policies are organized into branches, with each",
-			"  branch providing a bonus ability when all policies ",
-			"  in the branch have been adopted."
+			"Політика організована у гілки,",
+			"  при цьому кожна гілка надає можливість бонусу,",
+			"  коли всі політики у цій галузі були прийняті."
 		],
 		[
-			"With each policy adopted, and with each city built,",
-			"  the cost of adopting another policy rises - so choose wisely!"
+			"Із кожною прийнятою політикою, з кожним побудованим містом,",
+			"  вартість прийняття політики зростає, тому вибирайте з розумом!"
 		]
 	],
-
-	Cities: [
-		[
-			"Each population in your city can work a single tile, providing the city with that tile's yields.",
-			"Population can be assigned and unassigned by clicking on the tiles - ",
-			"  but of course, you can only assign population if you have idle population to spare!"
-		],
-		[
-			"The center tile of a city is always worked, and doesn't require population,",
-			"  but it cannot be improved by tile improvements."
-			"The city's production always goes towards the current construction - ",
-			"  you can pick the city's construction by clicking on the construction button on the bottom-left"
-		]
-		[
-			"Cities grow in population when you amass enough surplus food.",
-			"Similarly, your city's borders grow when you amass enough culture,",
-			"  which is not generated by tiles but rather by buildings."
-		],
-	],
-
-	Technology: [
-		[
-			"Technology is central to your civilization,",
-			" as technological progress brings with it",
-			" more construction options, improvements, and abilities"
-		],
-		[
-			"Most technologies are dependent on other technologies being researched - ",
-			"  but you can choose a technology to aspire to,",
-			"  and your civilization will research the necessary technologies to get there"
-		]
-	],
-
 
 
 
 	Happiness:[
 		[
-			"As cities grow in size and influence, you have to deal with a happiness mechanic that is no longer tied to each individual city.",
-			"Instead, your entire empire shares the same level of satisfaction.",
-			"As your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."
+			"У міру того, як міста зростають у чисельності населення та впливі, вам доведеться мати справу із механікою щастя, яка вже не прив’язана до кожного окремого міста.",
+			"Натомість уся ваша імперія має однаковий рівень задоволення.",
+			"По мірі зростання чисельності ваших міст ви побачите, що підтримувати свою імперію все складніше і складніше."
 		],
 		[
-			"In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.",
-			"If your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.",
-			"If your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)",
-			"  your armies will have a big penalty slapped on to their overall combat effectiveness."
-		],
+			"Inкрім того, ви навіть не можете побудувати будь-які покращення міста, які збільшують щастя, поки ви не зробите відповідне дослідження.",
+			"Якщо щастя вашої імперії коли-небудь опуститься нижче нуля, темп зростання ваших міст буде знижено.",
+			"Якщо ваша імперія стає сильно нещасною (на що вказує значок усміхненого обличчя у верхній частині інтерфейсу)",
+			"  ваші армії матимуть велику штрафну санкцію у загальній ефективності бою".
+],
 		[
-			"This means that it is very difficult to expand quickly in Unciv."
-			"It isn’t impossible, but as a new player you probably shouldn’t do it."
-			"So what should you do? Chill out, scout, and improve the land that you do have by building Workers.",
-			"Only build new cities once you have found a spot that you believe is appropriate."
+			"Це означає, що в Unciv швидко розширитись дуже важко."
+			"Це неможливо, але, як новий гравець, ви, мабуть, не повинні цього робити."
+			"То що ж робити? Охолоньте, розвідайте та покращуйте землю, яку ви маєте, будуючи Робітників.",
+			"Будуйте нові міста лише після того, як знайдете місце, яке вважаєте за потрібне."
 		],
 
 	]
 
 
-	World_Map: [
-		[
-			"Карта світу складається з багатьох плиток.",
-			"Кожна плитка може містити одиниці, ресурси та вдосконалення, про які ми буде написано згодом.",
-			"Положення іконки говорить про те, що вона означає.",
-			"Щоб отримати детальнішу інформацію, ви можете натиснути на плитку та переглянути її інформацію."
-		]
-	],
-
-
-	Tile_Clicked : [
-		[
-			"Clicking on a tile selects that tile,",
-			"  and displays information on that tile on the bottom-right.",
-			"If the tile contains a unit, that will become the selected unit,"
-			"  and its info and actions will be displayed on the bottom left."
-		]
-	],
-
-	Unit_Selected : [
-		[
-			"When a unit is selected, its information will be displayed on the bottom-left corner.",
-			"The available actions of that unit will appear above the tile information."
-		]
-	],
-
 
 	Unhappiness:  [
 		[
-			"It seems that your citizens are unhappy!",
-			"While unhappy, cities  will grow at 1/4 the speed,",
-			"  and your units will suffer a 2% penalty for each unhappiness"
+			"Схоже, що мешканці нещасливі!",
+			"Поки вони нещасливі, міста будуть зростати з 1/4 швидкості від початкової,",
+			"  і ваші підрозділи будуть отримувати 2% штрафу за кожну одиницю нещастя"
 		],
 		[
-			"Unhappiness has two main causes: Population and cities",
-			"  Each city causes 3 unhappiness, and each population, 1"
+			"Нещастя має дві основні причини: Населення та міста",
+			"  Кожне місто викликає 3 одиниці нещастя, а кожне населення — 1"
 		],
 		[
-			"There are 2 main ways to combat unhappiness:",
-			"  by building happiness buildings for your population",
-			"  or by having improved luxury resources within your borders"
+			"Є два основні способи боротьби з нещастям:",
+			"  будуючи будинки щастя для свого населення",
+			"  або покращивши ресурси розкоші у ваших межах."
 		]
 	],
 
 	Golden_Age:  [
 		[
-			"Ви вступили в золотий вік!",
+			"You have entered a golden age!",
 			"Golden age points are accumulated each turn by the total happiness ",
 			"  of your civilization",
 			"When in a golden age, culture and production generation increases +20%,",
@@ -249,27 +164,22 @@
 	Luxury_Resource:  [
 		[
 			"Luxury resources within your domain and with their specific improvement are connected to your trade network.",
-			"Each unique Luxury resource you have adds 5 happiness to your civilization,",
-			"  but extra resources of the same type don't add anything, ",
-			"  so use them for trading with other civilizations!"
+			"Each unique Luxury resource you have adds 5 happiness to your civilization, but extra resources of the same type don't add anything, so use them for trading with other civilizations!"
 		]
 	]
 
 	Strategic_Resource:  [
 		[
 			"Strategic resources within your domain and with their specific improvement are connected to your trade network.",
-			"Strategic resources allow you to train units and construct buildings that",
-			"  require those specific resources, for example the Horseman requires Horses."
-			"Each unit 'consumes' a copy of that resource, but if the unit is killed you can ",
-			"  construct a new unit wth your now-unused resource.",
+			"Strategic resources allow you to train units and construct buildings that require those specific resources, for example the Horseman requires Horses."
 			"The top bar keeps count of how many unused strategic resources you own."
 		]
 	]
 
 	_EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
-			"The city can no longer put up any resistance!",
-			"However, to conquer it, you must enter the city with a melee unit"
+			"Місто вже не може чинити будь-який опір!",
+			"Однак, щоб його завоювати, ви повинні увійти до міста з ближньобійником."
 		]
 	],
 
@@ -305,34 +215,33 @@
 
 	_GameCrashed:  [
 		[
-			"Oh no! It looks like something went DISASTROUSLY wrong!",
-			"This is ABSOLUTELY not supposed to happen!",
-			"Please send me (yairm210@hotmail.com) an email with the game information",
-			"   (menu -> save game -> copy game info -> paste into email)",
-			"   and I'll try to fix it as fast as I can!"
+			"Трясця! Схоже щось пішло КАТАСТРОФІЧНО неправильно!",
+			"Цього АБСОЛЮТНО НЕ ПОВИННО БУЛО СТАТИСЯ!",
+			"Будь ласка, надішліть мені (yairm210@hotmail.com) електронний лист з ігровою інформацією",
+			"   (меню -> зберегти гру -> копіювати інформацію про гру -> вставити до email)",
+			"   і я спробую виправити якнайшвидше!"
 		]
 	]
 
 	Apollo_Program:  [
 		[
-			"Once you have completed the Apollo Program, you can start constructing spaceship parts in your cities",
-			" (with the relevant technologies) to win a scientific victory!"
+			"Як тільки ви завершите прогрраму «Аполон», ви можете розпочати проектування частин космічного корабля в ваших містах,",
+			" (з відповідними технологіями) щоб здобути научну перемогу!"
 		]
 	]
 
 	Injured_Units:[
 		[
-			"Injured units deal less damage, but recover after turns that they have been inactive",
-			"Units heal 5 health per turn in enemy territory, 10 in neutral land,"
-			"  15 inside your territory and 20 in your cities"
+			"Травмовані підрозділи завдають меншої шкоди, але відновлюються після ходів, якщо вони були неактивними",
+			"Підрозділи відновлюють 5 здоров’я за хід на ворожій території, 10 на нейтральній,"
+			"  15 на вашій території і 20 у ваших містах"
 		]
 	]
 
 	Workers:[
 		[
-			"Workers are vital to your cities' growth, since only they can onstruct improvements on tiles",
-			"Improvements raise the yield of your tiles, allowing your city to produce more and grow faster",
-			"  while working the same amount of tiles!"
+			"Робітники життєво важливі для зростання ваших міст, оскільки тільки вони можуть будувати вдосконалення на плитці",
+			"Вдосконалення підвищують прибуток від вашої клітини, дозволяючи вашому місту виробляти більше і рости швидше, працюючи на тій же кількості клітин!"
 		]
 	]
 
@@ -346,17 +255,17 @@
 
 	Embarking:[
 		[
-			"Once a certain tech is researched, your land units can embark, allowing them to traverse water tiles.",
-			"Entering or leaving water takes the entire turn.",
-			"Units are defenseless while embarked, so be careful!"
+			"Після того, як певна технологія буде досліджена, ваші наземні підрозділи будуть сідати на судна, дозволяючи їм переходити плитки води.",
+			"Вхід або вихід з води займає весь хід.",
+			"Підрозділи беззахисні під час входу чи виходу, тому будьте обережні!"
 		]
 	]
 
 	City_Range:[
 		[
-			"Your citizens can work 3 tiles away from city center.",
-			"The city border will keep expanding,",
-			"   but citizens cannot be assigned to faraway tiles."
+			"Ваші мешканці можуть працювати на відстані трьох клітин від центра міста",
+			"Кордон міста продовже розширюватися,",
+			"   але громадяни не можуть бути назначені до далеких клітинок."
 		]
 	]
 
@@ -366,26 +275,26 @@
 			"Якщо ви не хочете, щоб підрозділ рухався на цьому ході, то ви можете пропустити хід натиснувши на «Наступний підрозділ» знову",
 			"Якщо ви деякий час не будете переміщувати його, ви можете ввімкнути режим «Укріпити» або «Спати». ",
 			"Підрозділи у цих режимах не вважаються не активними",
-			"If you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units",
+			"Якщо ви хочете вимкнути «Наступний підрозділ» повністю, то ви можете відключити це в Меню -> Перевіряти неробочі підрозділи",
 		]
 	]
 
 
 	Contact_Me:  [
 		[
-			"Hi there! If you've played this far, you've probably",
-			"  seen that the game is currently incomplete.",
-			"UnCiv is meant to be open-source and free, forever.",
-			"  That means no ads or any other nonsense.",
+			"Привіт! Якщо ви зайшли так далеко,",
+			"  ви, напевно, бачили, що гра наразі незавершена",
+			"UnCiv — це гра безкоштовна та з відкритим вихідним кодом. Це буде завжди,",
+			"  тобто це означає, що не буде реклами чи іншої якоїсь нісенітниці.",
 		],
 		[
-			"What motivates me to keep working on it, ",
-			"  besides the fact I think it's amazingly cool that I can,"
-			"  is the support from the players - you guys are the best!"
+			"Що мотивує мене продовжувати працювати над цим, ",
+			"  крім того, що я думаю, що це дивовижно здорово, що я можу,"
+			"  це підтримка від гравців — ви, хлопці та дівчата найкращі!"
 		],
 		[
 			"Кожна оцінка та відгуки, які я отримую, викликають посмішку на моєму обличчі =).",
-			"  Тож зв’яжіться зі мною! Надішліть мені електронний лист, огляд, issue на Github"
+			"  Тож зв’яжіться зі мною! Надішліть мені електронний лист, відгук, issue на Github"
 			"  або поштового голуба для того, щоб розібратися, як зробити гру ",
 			"  ще більш чудовою!"
 			"(Контактна інформація знаходиться в Google Play)"
@@ -394,9 +303,9 @@
 
 	_Pillaging:[
 		[
-			"Військові підрозділи можуть розкрадати поліпшення, що оздоровляє їх 25 здоров'я і руйнує поліпшення.",
-			"The tile can still be worked, but advantages from the improvement - stat bonuses and resources - will be lost.",
-			"Workers can repair these improvements, which takes less time than building the improvement from scratch.",
+			"Військові підрозділи можуть розкрадати вдосконалення, яке оздоровляє їх на 25 здоров’я і зруйновує це вдосконалення.",
+			"На клітині все ще можна працювати, проте переваги від удосконалення (бонуси до характеристики і бонусні ресурси) буде втрачено.",
+			"Робітники можуть відновити ці вдосконалення, що займає менше часу, ніж будувати поліпшення з нуля.",
 		]
 	]
 
