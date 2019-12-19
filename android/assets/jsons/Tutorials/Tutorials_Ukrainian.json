@@ -116,39 +116,39 @@
 
 	Golden_Age:  [
 		[
-			"You have entered a golden age!",
-			"Golden age points are accumulated each turn by the total happiness ",
-			"  of your civilization",
-			"When in a golden age, culture and production generation increases +20%,",
-			"  and every tile already providing at least one gold will provide an extra gold."
+			"Ви вступили в золотий вік!",
+			"Золоті вікові бали накопичуються на кожному кроці загальним щастям ",
+			"  вашої цивілізації",
+			"В Золотий вік культура і виробництво збільшується на 20%,",
+			"  і кожна клітина, яка вже містить хоча б одне золото, надасть додаткове золото."
 		]
 	],
 
 	Roads_and_Railroads:  [
 		[
-			"Connecting your cities to the capital by roads",
-			"  will generate gold via the trade route.",
-			"Note that each road costs 1 gold Maintenance per turn, and each Railroad costs 2 gold,"
-			"  so it may be more economical to wait until the cities grow!"
+			"Підключення ваших міст до столиці дорогами ",
+			"  призведе до отримання золота через торговий шлях.",
+			".Зауважте, що кожна дорога коштує 1 золото технічного обслуговування за хід, а кожна колія коштує 2 золота,"
+			"  тому ви має бути більше економними, або чекати пока якесь місто зросте!"
 		]
 
 	]
 
 	Victory_Types:[
 		[
-			"Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.",
-			"Now is a good time to start thinking about how, exactly, you want to win – if you haven’t already."
+			"Колись ви зробите свої перші два-три міста, (від 100 до 150 ходів).",
+			"Зараз настав час почати думати про те, як саме ви хочете виграти, якщо ви ще цього не зробили."
 		],
 		[
-			"There are three ways to win in Unciv. They are:",
-			" - Cultural Victory: Complete 4 Social Policy Trees",
-			" - Domination Victory: Survive as the last civilization",
-			" - Science Victory: Be the first to construct a spaceship to Alpha Centauri"
+			"У грі є 3 способи перемогти, а саме:",
+			" - Культурна перемога: завершіть 4 політичних дерева",
+			" - Загарбання: виживіть як остання цивілізація",
+			" - Научна перемога: будьте першими, хто зконструює космічний корабель до Альфи Центраври"
 		],
 		[
-			"So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness,",
-			"   and set yourself up for the victory condition you wish to pursue.",
-			"Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim.",
+			"Отже, підводячи підсумок, основи Unciv — засновувати процвітаюче перше місто, повільно розширятись, щоб керувати рівнем щастя,",
+			"   і налаштуйте себе на перемогу, яку хочете досягти.",
+			"Очевидно, що є ще багато чого іншого, ніж це, але важливо не стрибати в глибокий кінець, перш ніж ви не навчитеся плавати.",
 		]
 	]
 
