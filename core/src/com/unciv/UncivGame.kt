@@ -69,24 +69,29 @@ class UncivGame(val version: String) : Game() {
             else{
                 translations.tryReadTranslationForCurrentLanguage()
             }
+            translations.loadPercentageCompleteOfLanguages()
 
             if (settings.userId == "") { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
                 settings.save()
             }
+
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
-                if (GameSaver().getSave("Autosave").exists()) {
-                    try {
-                        loadGame("Autosave")
-                    } catch (ex: Exception) { // silent fail if we can't read the autosave
-                        startNewGame()
-                    }
-                } else setScreen(LanguagePickerScreen())
-
+                autoLoadGame()
                 thread { startMusic() }
                 isInitialized = true
             }
+        }
+    }
+
+    fun autoLoadGame(){
+        if (!GameSaver().getSave("Autosave").exists())
+            return setScreen(LanguagePickerScreen())
+        try {
+            loadGame("Autosave")
+        } catch (ex: Exception) { // silent fail if we can't read the autosave
+            startNewGame()
         }
     }
 
@@ -128,16 +133,18 @@ class UncivGame(val version: String) : Game() {
         worldScreen.shouldUpdate=true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
     }
 
+    // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
+        if(!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
         ImageGetter.refreshAltas()
 
         // This is to solve a rare problem that I still don't understand its cause -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
         // My guess is that resume() was called but create() wasn't, or perhaps was aborted too early,
         // and the original (and empty) initial GameInfo remained.
-        if(!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
-            return create()
+//            if(!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
+//                return autoLoadGame()
 
         if(::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
         loadGame(gameInfo)

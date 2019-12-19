@@ -269,7 +269,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         val ruleSet = worldScreen.gameInfo.ruleSet
-        Translations().getPercentageCompleteOfLanguages()
+        UncivGame.Current.translations.percentCompleteOfLanguages
                 .map { Language(it.key, if(it.key=="English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }

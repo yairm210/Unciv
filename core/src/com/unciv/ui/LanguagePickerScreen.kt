@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
-import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
@@ -55,7 +54,8 @@ class LanguagePickerScreen: PickerScreen(){
                     "If you want to help translating the game into your language, \n"+
                     "  instructions are in the Github readme! (Menu > Community > Github)",skin)).pad(10f).row()
 
-        val languageCompletionPercentage = Translations().getPercentageCompleteOfLanguages()
+        val languageCompletionPercentage = UncivGame.Current.translations
+                .percentCompleteOfLanguages
         languageTables.addAll(languageCompletionPercentage
                 .map { LanguageTable(it.key,if(it.key=="English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete} )

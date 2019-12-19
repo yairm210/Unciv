@@ -8,6 +8,8 @@ import kotlin.collections.HashMap
 
 class Translations : LinkedHashMap<String, TranslationEntry>(){
 
+    val percentCompleteOfLanguages = HashMap<String,Int>()
+
     fun get(text:String,language:String): String {
         if(!hasTranslation(text,language)) return text
         return get(text)!![language]!!
@@ -54,7 +56,11 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         for (translation in languageTranslations) {
             if (!containsKey(translation.key))
                 this[translation.key] = TranslationEntry(translation.key)
-            this[translation.key]!![language] = translation.value
+
+            // why not in one line, Because there were actual crashes.
+            // I'm pretty sure I solved this already, but hey double-checking doesn't cost anything.
+            val entry = this[translation.key]
+            if(entry!=null) entry[language] = translation.value
         }
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
@@ -119,7 +125,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
     }
 
-    fun getPercentageCompleteOfLanguages(): HashMap<String, Int> {
+    fun loadPercentageCompleteOfLanguages() {
 
         val translationStart = System.currentTimeMillis()
 
@@ -127,21 +133,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         Gdx.files.internal("jsons/translationsByLanguage/template.properties")
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
-        val languageToPercentCompleted = HashMap<String,Int>()
         for(language in getLanguagesWithTranslationFile()){
             val translationFileName = "jsons/translationsByLanguage/$language.properties"
             var translationsOfThisLanguage=0
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
-            languageToPercentCompleted[language] = translationsOfThisLanguage*100/allTranslations
+            percentCompleteOfLanguages[language] = translationsOfThisLanguage*100/allTranslations
         }
 
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading percentage complete of languages - "+translationFilesTime+"ms")
-
-        return languageToPercentCompleted
     }
 }
 
