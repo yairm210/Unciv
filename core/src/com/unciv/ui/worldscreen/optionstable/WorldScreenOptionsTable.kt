@@ -264,14 +264,14 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
     }
 
     private fun addLanguageSelectBox(innerTable: PopupTable) {
-        innerTable.add("Language".toLabel())
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        val ruleSet = worldScreen.gameInfo.ruleSet
         UncivGame.Current.translations.percentCompleteOfLanguages
                 .map { Language(it.key, if(it.key=="English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
+        if(languageArray.size==0) return
+        innerTable.add("Language".toLabel())
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == UncivGame.Current.settings.language }
         languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()

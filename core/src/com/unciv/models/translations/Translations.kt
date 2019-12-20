@@ -9,6 +9,7 @@ import kotlin.collections.HashMap
 class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     var percentCompleteOfLanguages = HashMap<String,Int>()
+            .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
     fun get(text:String,language:String): String {
         if(!hasTranslation(text,language)) return text
@@ -35,8 +36,15 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         val translationFileName = "jsons/translationsByLanguage/$language.properties"
         if (!Gdx.files.internal(translationFileName).exists()) return
-        val languageTranslations = TranslationFileReader()
-                .read(translationFileName)
+
+        val languageTranslations:HashMap<String,String>
+        try { // On some devices we get a weird UnsupportedEncodingException
+            // which is super odd because everyone should support UTF-8
+             languageTranslations = TranslationFileReader()
+                    .read(translationFileName)
+        }catch (ex:Exception){
+            return
+        }
 
         for (translation in languageTranslations) {
             if (!containsKey(translation.key))
