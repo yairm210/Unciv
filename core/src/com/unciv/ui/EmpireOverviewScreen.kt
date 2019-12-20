@@ -99,7 +99,6 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
         table.add(centerTable).expand().row()
         table.setFillParent(true)
         stage.addActor(table)
-        stage.setDebugTableUnderMouse(true)
     }
 
 
