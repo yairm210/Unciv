@@ -79,6 +79,9 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         categoryToEntries["Technologies"] = ruleset.Technologies.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
+        categoryToEntries["Promotions"] = ruleset.UnitPromotions.values
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.UnitPromotions.values, true),
+                        Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
         categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
                 .filter { !it.startsWith("_") }
