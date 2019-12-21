@@ -27,21 +27,23 @@ import kotlin.concurrent.thread
 class UncivGame(val version: String) : Game() {
     lateinit var gameInfo: GameInfo
     lateinit var settings : GameSettings
+
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
     var viewEntireMapForDebug = false
-
     /** For when you need to test something in an advanced game and don't have time to faff around */
     val superchargedForDebug = false
+
+    var rewriteTranslationFiles = false
+
 
     lateinit var worldScreen: WorldScreen
 
     var music : Music? =null
     val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
-    var rewriteTranslationFiles = false
 
     lateinit var ruleset:Ruleset
 
@@ -59,11 +61,12 @@ class UncivGame(val version: String) : Game() {
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
-        // We probably could make this better by moving stuff that we can to another thread but ehhhhhhh
         settings = GameSaver().getGeneralSettings() // needed for the screen
         screen=LoadingScreen()
+
         thread {
             ruleset = Ruleset(true)
+            settings.hasCrashedRecently=true // for test
 
             if(rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
@@ -79,6 +82,7 @@ class UncivGame(val version: String) : Game() {
                 settings.save()
             }
 
+            // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
                 autoLoadGame()
