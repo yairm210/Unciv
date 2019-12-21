@@ -66,7 +66,6 @@ class UncivGame(val version: String) : Game() {
 
         thread {
             ruleset = Ruleset(true)
-            settings.hasCrashedRecently=true // for test
 
             if(rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
