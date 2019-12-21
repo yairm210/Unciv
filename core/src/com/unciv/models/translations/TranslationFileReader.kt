@@ -1,14 +1,18 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import java.nio.charset.Charset
 import kotlin.collections.set
 
 class TranslationFileReader{
+
+    private val percentagesFileLocation = "jsons/translationsByLanguage/completionPercentages.properties"
+    private val charset = Charset.forName("UTF-8").name()
+
     fun read(translationFile: String): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
         val text = Gdx.files.internal(translationFile)
-        text.reader(Charsets.UTF_8.toString()).forEachLine {
-            val line=it
+        text.reader(charset).forEachLine { line ->
             if(!line.contains(" = ")) return@forEachLine
             val splitLine = line.split(" = ")
             if(splitLine[1]!="") { // the value is empty, this means this wasn't translated yet
@@ -20,7 +24,7 @@ class TranslationFileReader{
         return translations
     }
 
-    fun writeByTemplate(language:String, translations: HashMap<String, String>){
+    private fun writeByTemplate(language:String, translations: HashMap<String, String>){
         val templateFile = Gdx.files.internal("jsons/translationsByLanguage/template.properties")
         val stringBuilder = StringBuilder()
         for(line in templateFile.reader().readLines()){
@@ -37,7 +41,7 @@ class TranslationFileReader{
             stringBuilder.appendln(lineToWrite)
         }
         Gdx.files.local("jsons/translationsByLanguage/$language.properties")
-                .writeString(stringBuilder.toString(),false,Charsets.UTF_8.name())
+                .writeString(stringBuilder.toString(),false,charset)
     }
 
 
@@ -54,8 +58,7 @@ class TranslationFileReader{
         writeLanguagePercentages(translations)
     }
 
-    val percentagesFileLocation = "jsons/translationsByLanguage/completionPercentages.properties"
-    fun writeLanguagePercentages(translations: Translations){
+    private fun writeLanguagePercentages(translations: Translations){
         val percentages = translations.calculatePercentageCompleteOfLanguages()
         val stringBuilder = StringBuilder()
         for(entry in percentages){
