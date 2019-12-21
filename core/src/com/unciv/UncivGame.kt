@@ -53,7 +53,7 @@ class UncivGame(val version: String) : Game() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
-            rewriteTranslationFiles=false
+            rewriteTranslationFiles = false
         }
         Current = this
 
@@ -62,16 +62,15 @@ class UncivGame(val version: String) : Game() {
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
         settings = GameSaver().getGeneralSettings() // needed for the screen
-        screen=LoadingScreen()
+        screen = LoadingScreen()
 
         thread {
             ruleset = Ruleset(true)
 
-            if(rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
+            if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
                 TranslationFileReader().writeNewTranslationFiles(translations)
-            }
-            else{
+            } else {
                 translations.tryReadTranslationForCurrentLanguage()
             }
             translations.loadPercentageCompleteOfLanguages()

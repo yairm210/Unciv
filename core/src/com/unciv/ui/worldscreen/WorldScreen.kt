@@ -239,8 +239,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return "Open the options table!\nClick the menu button (top left) > click 'Options'"
         if(!completedTasks.contains("Construct an improvement"))
             return "Construct an improvement!\nConstruct a Worker unit > Move to a Plains or Grassland tile > " +
-                    "\n Choose 'Create improvement' > Choose the farm > " +
-                    "\n Leave the worker there until it's finished"
+                    "\n Click 'Create improvement' (above the unit table, bottom left)" +
+                    "\n > Choose the farm > \n Leave the worker there until it's finished"
         if(!completedTasks.contains("Create a trade route")
                 && viewingCiv.citiesConnectedToCapital.any { it.civInfo==viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
@@ -514,3 +514,4 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
 }
+
