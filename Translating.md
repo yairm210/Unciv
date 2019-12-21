@@ -15,3 +15,7 @@ Do as much as you're comfortable with - it's a big game with a lot of named obje
 You don't need to download anything, all translation work can be done on the Github website :)
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
+
+Beyond the regular translations, there are 2 more files that contain special translations: the [Tutorials](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials) and the [Nations](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Nations) json files.
+
+Both of these are much more rigorous in their type-checking, but the basic instructions are the same - copy the base file (Nations, Tutorials_English) to a new file with your language.
