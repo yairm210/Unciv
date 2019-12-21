@@ -15,8 +15,8 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.translations.tr
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
@@ -262,8 +262,13 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun displayTutorialsOnUpdate() {
         if (UncivGame.Current.settings.hasCrashedRecently) {
-            displayTutorials("_GameCrashed")
-            UncivGame.Current.settings.tutorialsShown.remove("_GameCrashed")
+            val crashPopup = PopupTable(this)
+            crashPopup.addGoodSizedLabel("Oh no! It looks like something went DISASTROUSLY wrong!" +
+                    " This is ABSOLUTELY not supposed to happen! Please send me (yairm210@hotmail.com)" +
+                    " an email with the game information (menu -> save game -> copy game info -> paste into email)" +
+                    " and I'll try to fix it as fast as I can!").row()
+            crashPopup.addCloseButton()
+            crashPopup.open()
             UncivGame.Current.settings.hasCrashedRecently = false
             UncivGame.Current.settings.save()
         }

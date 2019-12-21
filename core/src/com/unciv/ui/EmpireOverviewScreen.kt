@@ -19,12 +19,11 @@ import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
-
+    private val topTable = Table().apply { defaults().pad(10f) }
+    private val centerTable = Table().apply {  defaults().pad(20f) }
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val topTable = Table().apply { defaults().pad(10f) }
-        val centerTable=Table().apply {  defaults().pad(20f) }
 
         val closeButton = TextButton("Close".tr(), skin)
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
@@ -100,7 +99,6 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
         table.add(centerTable).expand().row()
         table.setFillParent(true)
         stage.addActor(table)
-
     }
 
 
@@ -331,7 +329,9 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
 
     fun getDiplomacyGroup(): Group {
         val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
-        val groupSize = 500f
+        val freeWidth = stage.width
+        val freeHeight = stage.height - topTable.height
+        val groupSize = if (freeWidth > freeHeight) freeHeight else freeWidth
         val group = Group()
         group.setSize(groupSize,groupSize)
         val civGroups = HashMap<String, Actor>()
