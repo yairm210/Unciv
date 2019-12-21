@@ -330,16 +330,7 @@
 			" et vous pouvez échanger avec elles, mais elles pourront vous déclarer la guerre si l'envie leur prend."
 		]
 	]
-	
-	_GameCrashed:  [
-		[
-			"Oh non ! On dirait que quelque chose ne s'est ABSOLUMENT pas passé comme prévu !",
-			" Ce n'est pas censé arriver !",
-			" S'il vous plaît, envoyez un mail à yairm210@hotmail.com avec les informations de la partie",
-			" (Menu (en haut à gauche) -> Charger une partie -> Copy saved game to clipboard -> Copier dans le mail)",
-			" et j'essayerai de régler cela aussi vite que possible !"
-		]
-	]
+
 	
 	Apollo_Program:  [
 		[

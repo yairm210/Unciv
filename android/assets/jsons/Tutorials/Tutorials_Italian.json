@@ -287,16 +287,7 @@
 			"Le altre civiltà cominciamo come pacifiche, e tu potrai commerciare con loro, ma spesso possono anche dichiararti guerra!"
 		]
 	],
-	
-	_GameCrashed:  [
-		[
-			"Santi numi! Pare che qualcosa sia andato disastrosamente storto!",
-			"Quello che è successo non era assolutamente previsto!",
-			"Mandami un'email all'indirizzo yairm210@hotmail.com con l'info della partita",
-			"(menu -> salva partita -> copia info partita -> incolla su email)",
-			"e proverò a riparare il guasto il più in fretta possibile!"
-		]
-	],
+
 	
 	Apollo_Program:  [
 		[

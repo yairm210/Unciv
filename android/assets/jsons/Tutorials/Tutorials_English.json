@@ -213,15 +213,6 @@
 		]
 	]
 
-	_GameCrashed:  [
-		[
-			"Oh no! It looks like something went DISASTROUSLY wrong!",
-			"This is ABSOLUTELY not supposed to happen!",
-			"Please send me (yairm210@hotmail.com) an email with the game information",
-			"   (menu -> save game -> copy game info -> paste into email)",
-			"   and I'll try to fix it as fast as I can!"
-		]
-	]
 
 	Apollo_Program:  [
 		[
