@@ -307,8 +307,10 @@ class CityInfo {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
+        // The relinquish ownership MUST come before removing the city,
+        // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
         getTiles().forEach { expansion.relinquishOwnership(it) }
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getCenterTile().improvement="City ruins"
 
         if (isCapital() && civInfo.cities.isNotEmpty()) // Move the capital if destroyed (by a nuke or by razing)
@@ -354,6 +356,12 @@ class CityInfo {
         val currentPopulation = population.population
         val percentageOfCivPopulationInThatCity = currentPopulation * 100f / civInfo.cities.sumBy { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
+
+        // How can you conquer a city but not know the civ you conquered it from?!
+        // I don't know either, but some of our players have managed this, and crashed their game!
+        if(!conqueringCiv.knows(oldCiv))
+            conqueringCiv.meetCivilization(oldCiv)
+
         oldCiv.getDiplomacyManager(conqueringCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
@@ -397,6 +405,11 @@ class CityInfo {
         val percentageOfCivPopulationInThatCity = population.population *
                 100f / (foundingCiv.cities.sumBy { it.population.population } + population.population)
         val respecForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
+
+        // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
+        if(!conqueringCiv.knows(foundingCiv))
+            conqueringCiv.meetCivilization(foundingCiv)
+
         if(foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respecForLiberatingOurCity)
