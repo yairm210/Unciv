@@ -307,8 +307,10 @@ class CityInfo {
                 unit.movement.teleportToClosestMoveableTile()
         }
 
-        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
+        // The relinquish ownership MUST come before removing the city,
+        // because it updates the city stats which assumes there is a capilat, so if you remove the capital it crashes
         getTiles().forEach { expansion.relinquishOwnership(it) }
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getCenterTile().improvement="City ruins"
 
         if (isCapital() && civInfo.cities.isNotEmpty()) // Move the capital if destroyed (by a nuke or by razing)
