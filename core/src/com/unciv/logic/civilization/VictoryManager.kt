@@ -34,7 +34,7 @@ class VictoryManager {
             && spaceshipPartsRemaining()==0
 
     fun hasWonCulturalVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)
-            && civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3
+            && civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 4
 
     fun hasWonDominationVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Domination)
             && civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() || it.isCityState() }

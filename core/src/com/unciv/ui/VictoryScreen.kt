@@ -109,7 +109,7 @@ class VictoryScreen : PickerScreen() {
         if(dominationVictoryEnabled) myVictoryStatusTable.add(conquestVictoryColumn())
         myVictoryStatusTable.row()
         if(scientificVictoryEnabled) myVictoryStatusTable.add("Complete all the spaceship parts\n to win!".toLabel())
-        if(culturalVictoryEnabled) myVictoryStatusTable.add("Complete 4 policy branches\n to win!".toLabel())
+        if(culturalVictoryEnabled) myVictoryStatusTable.add("Complete 5 policy branches\n to win!".toLabel())
         if(dominationVictoryEnabled) myVictoryStatusTable.add("Destroy all enemies\n to win!".toLabel())
 
         contentsTable.clear()
