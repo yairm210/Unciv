@@ -354,6 +354,12 @@ class CityInfo {
         val currentPopulation = population.population
         val percentageOfCivPopulationInThatCity = currentPopulation * 100f / civInfo.cities.sumBy { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
+
+        // How can you conquer a city but not know the civ you conquered it from?!
+        // I don't know either, but some of our players have managed this, and crashed their game!
+        if(!conqueringCiv.knows(oldCiv))
+            conqueringCiv.meetCivilization(oldCiv)
+
         oldCiv.getDiplomacyManager(conqueringCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
 
