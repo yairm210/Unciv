@@ -240,7 +240,8 @@ class UnitActions {
                 if (unit.civInfo.policies.isAdopted("Commerce Complete"))
                     goldEarned *= 2
                 unit.civInfo.gold += goldEarned.toInt()
-                val influenceEarned=Regex("\\d+").find(unit.getUniques()[0])!!.value.toInt()
+                val relevantUnique = unit.getUniques().first { it.startsWith("Can undertake") }
+                val influenceEarned=Regex("\\d+").find(relevantUnique)!!.value.toInt()
                 tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                 unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned.toInt()}] gold and [$influenceEarned] influence!",null, Color.GOLD)
                 unit.destroy()
