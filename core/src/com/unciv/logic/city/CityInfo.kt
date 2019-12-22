@@ -397,6 +397,11 @@ class CityInfo {
         val percentageOfCivPopulationInThatCity = population.population *
                 100f / (foundingCiv.cities.sumBy { it.population.population } + population.population)
         val respecForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
+
+        // In order to get "plus points" in Diplomacy, you have to establish diplomatic relations if you haven't yet
+        if(!conqueringCiv.knows(foundingCiv))
+            conqueringCiv.meetCivilization(foundingCiv)
+
         if(foundingCiv.isMajorCiv()) {
             foundingCiv.getDiplomacyManager(conqueringCiv)
                     .addModifier(DiplomaticModifiers.CapturedOurCities, respecForLiberatingOurCity)
