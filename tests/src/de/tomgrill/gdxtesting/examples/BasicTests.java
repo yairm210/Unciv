@@ -33,8 +33,8 @@ public class BasicTests {
 	@Test
 	public void gameIsNotRunWithDebugModes() {
 		assertTrue("This test will only pass if the game is not run with debug modes",
-				!new UncivGame("").getSuperchargedForDebug()
-						&& !new UncivGame("").getViewEntireMapForDebug());
+				!new UncivGame("", null).getSuperchargedForDebug()
+						&& !new UncivGame("", null).getViewEntireMapForDebug());
 	}
 
 

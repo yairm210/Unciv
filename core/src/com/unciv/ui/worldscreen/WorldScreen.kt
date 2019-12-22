@@ -47,7 +47,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val battleTable = BattleTable(this)
     val unitActionsTable = UnitActionsTable(this)
 
-    private val techPolicyandVictoryHolder = Table()
+    private val techPolicyAndVictoryHolder = Table()
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
@@ -73,21 +73,21 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techButtonHolder.onClick("paper") {
             game.setScreen(TechPickerScreen(viewingCiv))
         }
-        techPolicyandVictoryHolder.add(techButtonHolder)
+        techPolicyAndVictoryHolder.add(techButtonHolder)
 
         // Don't show policies until they become relevant
         if(viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
             val policyScreenButton = Button(skin)
             policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
             policyScreenButton.onClick { game.setScreen(PolicyPickerScreen(this)) }
-            techPolicyandVictoryHolder.add(policyScreenButton).pad(10f)
+            techPolicyAndVictoryHolder.add(policyScreenButton).pad(10f)
         }
 
         stage.addActor(tileMapHolder)
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
-        stage.addActor(techPolicyandVictoryHolder)
+        stage.addActor(techPolicyAndVictoryHolder)
         stage.addActor(notificationsScroll)
         stage.addActor(tutorialTaskTable)
 
@@ -193,8 +193,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         topBar.update(viewingCiv)
 
         updateTechButton()
-        techPolicyandVictoryHolder.pack()
-        techPolicyandVictoryHolder.setPosition(10f, topBar.y - techPolicyandVictoryHolder.height - 5f)
+        techPolicyAndVictoryHolder.pack()
+        techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
 
@@ -261,17 +261,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun displayTutorialsOnUpdate() {
-        if (UncivGame.Current.settings.hasCrashedRecently) {
-            val crashPopup = PopupTable(this)
-            crashPopup.addGoodSizedLabel("Oh no! It looks like something went DISASTROUSLY wrong!" +
-                    " This is ABSOLUTELY not supposed to happen! Please send me (yairm210@hotmail.com)" +
-                    " an email with the game information (menu -> save game -> copy game info -> paste into email)" +
-                    " and I'll try to fix it as fast as I can!").row()
-            crashPopup.addCloseButton()
-            crashPopup.open()
-            UncivGame.Current.settings.hasCrashedRecently = false
-            UncivGame.Current.settings.save()
-        }
+        UncivGame.Current.crashController.showDialogIfNeeded()
 
         displayTutorials("Introduction")
         if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
@@ -305,7 +295,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             diplomacyButtonWrapper.add(btn)
         }
         diplomacyButtonWrapper.pack()
-        diplomacyButtonWrapper.y = techPolicyandVictoryHolder.y -20 - diplomacyButtonWrapper.height
+        diplomacyButtonWrapper.y = techPolicyAndVictoryHolder.y - 20 - diplomacyButtonWrapper.height
     }
 
     private fun updateTechButton() {
@@ -402,8 +392,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     }
                 }
             } catch (ex: Exception) {
-                game.settings.hasCrashedRecently = true
-                game.settings.save()
+                UncivGame.Current.crashController.crashOccurred()
                 throw ex
             }
 

@@ -18,16 +18,21 @@ import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.CrashController
+import com.unciv.ui.utils.CrashReportSender
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
-import java.util.*
+import java.util.UUID
 import kotlin.concurrent.thread
 
-class UncivGame(val version: String) : Game() {
+class UncivGame(
+        val version: String,
+        private val crashReportSender: CrashReportSender? = null
+) : Game() {
     lateinit var gameInfo: GameInfo
     lateinit var settings : GameSettings
-
+    lateinit var crashController: CrashController
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
@@ -66,7 +71,6 @@ class UncivGame(val version: String) : Game() {
 
         thread {
             ruleset = Ruleset(true)
-            settings.hasCrashedRecently=true // for test
 
             if(rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
@@ -90,6 +94,7 @@ class UncivGame(val version: String) : Game() {
                 isInitialized = true
             }
         }
+        crashController = CrashController.Impl(crashReportSender)
     }
 
     fun autoLoadGame(){

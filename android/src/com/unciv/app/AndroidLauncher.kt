@@ -8,9 +8,8 @@ import com.unciv.UncivGame
 class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val config = AndroidApplicationConfiguration()
-        val version = BuildConfig.VERSION_NAME
-        config.useImmersiveMode = true
-        initialize(UncivGame(version), config)
+        val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
+        val game = UncivGame(BuildConfig.VERSION_NAME, UncivCrashReportSender(this))
+        initialize(game, config)
     }
 }
