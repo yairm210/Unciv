@@ -154,12 +154,14 @@ class GameInfo {
         val viableTiles = tileMap.values.filter {
             !it.getBaseTerrain().impassable && it.isLand
                     && it.terrainFeature==null
+                    && it.naturalWonder==null
                     && it !in tilesWithin3ofExistingEncampment
                     && it !in allViewableTiles
         }
         if (viableTiles.isEmpty()) return null // no place for more barbs =(
         val tile = viableTiles.random()
         tile.improvement = Constants.barbarianEncampment
+        notifyCivsOfBarbarianEncampment(tile)
         return tile
     }
 
@@ -185,6 +187,16 @@ class GameInfo {
         else unit = landUnits.random().name
 
         tileMap.placeUnitNearTile(tileToPlace.position, unit, getBarbarianCivilization())
+    }
+
+    /**
+     * [CivilizationInfo.addNotification][Add a notification] to every civilization that have
+     * adopted Honor policy and have explored the [tile] where the Barbarian Encampent has spawned.
+     */
+    fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
+        civilizations.filter { it.policies.isAdopted("Honor")
+                && it.exploredTiles.contains(tile.position) }
+                .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
