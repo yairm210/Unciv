@@ -17,6 +17,7 @@ import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
 
@@ -117,13 +118,18 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 badGameIdLabel.isVisible = true
                 return@addButton
             }
-            try {
-                val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
-                UncivGame.Current.loadGame(game)
-            } catch (ex: Exception) {
-                badGameIdLabel.setText("Could not download game!".tr())
-                badGameIdLabel.isVisible = true
-                return@addButton
+            thread {
+                try {
+                    // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
+                    // we need to run it in a different thread.
+                    val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
+                    // The loadGame creates a screen, so it's a UI action,
+                    // therefore it needs to run on the main thread so it has a GL context
+                    Gdx.app.postRunnable { UncivGame.Current.loadGame(game) }
+                } catch (ex: Exception) {
+                    badGameIdLabel.setText("Could not download game!".tr())
+                    badGameIdLabel.isVisible = true
+                }
             }
         }.row()
         multiplayerPopup.add(badGameIdLabel).row()

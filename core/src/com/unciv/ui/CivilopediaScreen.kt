@@ -9,19 +9,7 @@ import com.unciv.ui.utils.*
 import java.util.*
 
 class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
-    class CivilopediaEntry {
-        var name: String
-        var description: String
-        var image: Actor?=null
-
-        constructor(name: String, description: String, image: Actor?=null) {
-            this.name = name
-            this.description = description
-            this.image = image
-        }
-
-        constructor() : this("","") // Needed for GameBasics json deserializing
-    }
+    class CivilopediaEntry(var name: String, var description: String, var image: Actor? = null)
 
     val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
     val categoryToButtons = LinkedHashMap<String, Button>()
@@ -84,9 +72,16 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         categoryToEntries["Units"] = ruleset.Units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name)) }
+        categoryToEntries["Nations"] = ruleset.Nations.values
+                .filter { it.isMajorCiv() }
+                .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset),
+                        ImageGetter.getNationIndicator(it,50f)) }
         categoryToEntries["Technologies"] = ruleset.Technologies.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
+        categoryToEntries["Promotions"] = ruleset.UnitPromotions.values
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.UnitPromotions.values, true),
+                        Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
         categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
                 .filter { !it.startsWith("_") }

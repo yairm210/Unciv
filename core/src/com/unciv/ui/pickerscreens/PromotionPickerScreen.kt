@@ -8,9 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.translations.Translations
-import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
@@ -42,7 +41,9 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         availablePromotionsGroup.space(10f)
 
         val unitType = unit.type
-        val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.UnitPromotions.values.filter { it.unitTypes.contains(unitType.toString()) }
+        val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.UnitPromotions.values.filter {
+            it.unitTypes.contains(unitType.toString())
+                    || unit.promotions.promotions.contains(it.name) }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
 
         for (promotion in promotionsForUnitType) {
@@ -61,17 +62,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                     rightSideButton.enable()
                 else rightSideButton.disable()
 
-                // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city
-                var descriptionText = Translations.translateBonusOrPenalty(promotion.effect.tr())
 
-                if(promotion.prerequisites.isNotEmpty()) {
-                    val prerequisitesString:ArrayList<String> = arrayListOf()
-                    for (i in promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
-                        prerequisitesString.add(i.tr())
-                    }
-                    descriptionText +="\n{Requires}: ".tr()+prerequisitesString.joinToString(" OR ".tr())
-                }
-                descriptionLabel.setText(descriptionText)
+                descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
             }
 
             val promotionTable = Table()

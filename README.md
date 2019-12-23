@@ -29,10 +29,10 @@ Is this order:
     * Better automation, AI etc. in-game
 * Development and distribution cycle
    * Automated tests - done!
-   * Automated F-droid and Google Play version deployment
-   * Standalone Desktop executables
+   * Automated F-droid and Google Play version deployment - done!
+   * Standalone Desktop executables - done!
    * Maybe Itch.io?
-* Missing features from Vanilla - Natural wonders, city-state quests, missing civs etc.
+* Missing features from Vanilla - Natural wonders (done!), city-state quests, missing civs etc.
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
 
