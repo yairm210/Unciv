@@ -84,6 +84,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         }
 
         for (tile in newlyViewedNaturalWonders) {
+            // GBR could be discovered twice otherwise!
+            if (civInfo.naturalWonders.contains(tile.naturalWonder))
+                continue
             civInfo.discoverNaturalWonder(tile.naturalWonder!!)
             civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
 
