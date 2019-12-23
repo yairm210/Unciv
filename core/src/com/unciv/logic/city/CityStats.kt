@@ -222,6 +222,9 @@ class CityStats {
         if (civInfo.containsBuildingUnique("+1 happiness in each city"))
             newHappinessList["Wonders"] = 1f
 
+        if (baseStatList.containsKey("Tile yields"))
+            newHappinessList["Tile yields"] = baseStatList["Tile yields"]!!.happiness
+        
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList = newHappinessList
@@ -390,8 +393,9 @@ class CityStats {
     }
 
     fun update() {
-        updateCityHappiness()
+        // We need to compute Tile yields before happiness
         updateBaseStatList()
+        updateCityHappiness()
         updateStatPercentBonusList()
 
         updateFinalStatList() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
