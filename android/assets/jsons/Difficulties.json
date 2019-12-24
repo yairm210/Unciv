@@ -18,7 +18,8 @@
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
-		aisExchangeTechs:false
+		aisExchangeTechs:false,
+		turnBarbariansCanEnterPlayerTiles:10000
 	},
 	{
 		name:"Chieftain",
@@ -39,7 +40,8 @@
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
-		aisExchangeTechs:false
+		aisExchangeTechs:false,
+		turnBarbariansCanEnterPlayerTiles:60
 	},
 	{
 		name:"Warlord",
@@ -60,7 +62,8 @@
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
-		aisExchangeTechs:false
+		aisExchangeTechs:false,
+		turnBarbariansCanEnterPlayerTiles:20
 	},
 	{
 		name:"Prince",
@@ -81,7 +84,8 @@
 		aiFreeTechs:[],
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
-		aisExchangeTechs:true
+		aisExchangeTechs:true,
+		turnBarbariansCanEnterPlayerTiles:0
 	},
 	{
 		name:"King",
@@ -102,7 +106,8 @@
 		aiFreeTechs:["Pottery"],
 		aiFreeUnits:["Warrior"],
 		aiUnhappinessModifier:0.9,
-		aisExchangeTechs:true
+		aisExchangeTechs:true,
+		turnBarbariansCanEnterPlayerTiles:0
 	},
 	{
 		name:"Emperor",
@@ -123,7 +128,8 @@
 		aiFreeTechs:["Pottery","Animal Husbandry"],
 		aiFreeUnits:["Warrior", "Scout"],
 		aiUnhappinessModifier:0.85,
-		aisExchangeTechs:true
+		aisExchangeTechs:true,
+		turnBarbariansCanEnterPlayerTiles:0
 	},
 	{
 		name:"Immortal",
@@ -144,7 +150,8 @@
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining"],
 		aiFreeUnits:["Warrior", "Warrior", "Worker", "Scout"],
 		aiUnhappinessModifier:0.75,
-		aisExchangeTechs:true
+		aisExchangeTechs:true,
+		turnBarbariansCanEnterPlayerTiles:0
 	},
 	{
 		name:"Deity",
@@ -165,6 +172,7 @@
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining","The Wheel"],
 		aiFreeUnits:["Settler", "Warrior", "Warrior", "Worker", "Worker", "Scout"],
 		aiUnhappinessModifier:0.6,
-		aisExchangeTechs:true
+		aisExchangeTechs:true,
+		turnBarbariansCanEnterPlayerTiles:0
 	}
 ]
