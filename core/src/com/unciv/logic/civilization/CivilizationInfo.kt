@@ -421,8 +421,8 @@ class CivilizationInfo {
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
-        if(nation.isBarbarian()) return true
         if(otherCiv==this) return true
+        if(nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles) return true
         if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
         if(isAtWarWith(otherCiv)) return true
