@@ -284,10 +284,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             if(tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if(tile.isOcean && unit.baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
-        if(tile.isOcean && unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+        if (tile.isOcean && unit.civInfo.nation.unique != "Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.") {
+            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
+            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !unit.civInfo.tech.isResearched("Astronomy"))
-            return false
+                return false
+        }
         if (tile.naturalWonder != null) return false
 
         val tileOwner = tile.getOwner()
