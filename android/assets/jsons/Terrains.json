@@ -180,7 +180,17 @@
 		impassable: true,
 		unbuildable: true,
 		weight: 1
-	}
+	},
+	{
+		name: "Grand Mesa",
+		type: "NaturalWonder",
+		production: 2,
+		gold: 3,
+		occursOn: ["Plains","Desert","Tundra"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
 	/** Yukky tile images
 	{
 		name: "Krakatoa",
@@ -226,16 +236,6 @@
 		gold: 2,
 		science: 3,
 		occursOn: ["Desert","Tundra"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
-	{
-		name: "Grand Mesa",
-		type: "NaturalWonder",
-		production: 2,
-		gold: 3,
-		occursOn: ["Plains","Desert","Tundra"],
 		impassable: true,
 		unbuildable: true,
 		weight: 10

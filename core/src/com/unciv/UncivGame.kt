@@ -17,13 +17,9 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.CrashController
-import com.unciv.ui.utils.CrashReportSender
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
-import java.util.UUID
+import java.util.*
 import kotlin.concurrent.thread
 
 class UncivGame(
