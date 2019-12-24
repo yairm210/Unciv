@@ -10,7 +10,7 @@
 		startIntroPart2:"O Nabucodonosor, il tuo impero non durò molto dopo la tua dipartita, cadendo preda dei potenti Persiani prima e dei Greci dopo, finché la tua grande città non venne distrutta nel 141 a.C. Ma davvero Babilonia è sparita per sempre, o grande Nabucodonosor? Il tuo popolo desidera che tu riporti in vita l'impero ancora una volta! Accetterai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Il demone della guerra vuole il sangue dei soldati!"
-		attacked:"Oh, bene... sono certo che tu sappia cosa stai facendo... spero."
+		attacked:"Ah, bene... sono certo che tu sappia cosa stai facendo... spero."
 		defeated:"È finita. Forse ora almeno io avrò la mia pace."
 		introduction:"Io sono Nabucodonosor, re di Babilonia. Quegli sciocchi là fuori dicono che sono un dio, ma la cosa mi pare improbabile. E tu cosa sei?"
 		
@@ -57,7 +57,7 @@
 
 		hateHello:"Come osi venire davanti al mio cospetto?"
 		hateLetsHearIt:["Dimmi.","Dunque?","Avanti."]
-		hateNo:["Ciò non è gradito!","Niente da fare!","Scusami?"]
+		hateNo:["E perché dovrei?","Niente da fare!","Scusami?"]
 		hateYes:["Oh, benissimo.","Se proprio devo.","Affare fatto."]
 		
 		afterPeace:"Devo congratularmi con te per la tua vittoria sbalorditiva. Forse mio padre Zeus non era dalla mia parte..."
@@ -92,7 +92,7 @@
 
 		hateHello:" Oh, sei tu. Che vuoi?"
 		hateLetsHearIt:["C'è altro?","Continua a parlare."]
-		hateNo:["Non posso accettarlo.","Scusami, non basta.","Sparisci dal mio volto!"]
+		hateNo:["Non posso accettarlo.","Niente da fare.","Sparisci dal mio volto!"]
 		hateYes:["Credo dovrò accettare.","Ah. Molto bene."]
 		
 		afterPeace:"Che le benedizioni del Cielo scendano su di te e sul tuo popolo."
@@ -188,7 +188,7 @@
 		startIntroPart1:"Lunga vita e trionfi a te, primo console e imperatore di Francia, Napoleone I, capo del popolo francese. La Francia giace nel cuore dell'Europa. Per lungo tempo Parigi è stata al centro del mondo in fatto di cultura, arti e letteratura. Anche se circondata da nazioni concorrenti, e spesso nemiche, la Francia è sempre emersa a testa alta. I suoi eserciti hanno marciati trionfalmente da un capo all'altro del mondo e i suoi soldati e i suoi generali si sono rivelati tra i migliori della storia."
 		startIntroPart2:"Napoleone Bonaparte, la Francia vuole che ti ricostruisca il tuo impero, che la guidi nuovamente verso la gloria e la grandezza, facendola tornare ad essere il centro della cultura e della raffinatezza. Imperatore, tornerai a cavalcare contro i tuoi nemici? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Come osi disturbare la tranquillità del mio impero? Preparati a morire!",
+		declaringWar:"Temo proprio che la gloria spetti a me, e a me soltanto. Non c'è posto per i perdenti in questo mondo.",
 		attacked:"Sei caduto dritto nella mia trappola. Preparati a essere seppellito!",
 		defeated:"Mi congratulo per la tua vittoria. Sei riuscito a superarmi, impresa in cui altri avevano fallito."
 		introduction:"Benvenuto, straniero. Sono Napoleone, Imperatore di Francia. Sono leale con gli amici, ma mortale con i nemici. Voi cosa vi dichiarate?"
@@ -265,12 +265,12 @@
 		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
 		introduction:"Ave. Sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei il benvenuto, ma sappi che Roma è mortale contro i suoi nemici."
 		
-		neutralHello:"Saluti."
+		neutralHello:"Salutatio."
 		neutralLetsHearIt:["Comincia pure.","Continua."]
 		neutralNo:["No.","Certo che no!"]
 		neutralYes:["Bene.","D'accordo."]
 
-		hateHello:"Che cosa vuoi?"
+		hateHello:"Fai in fretta..."
 		hateLetsHearIt:["E...?","Continua."]
 		hateNo:["Spiacente.","Stai scherzando, spero!"]
 		hateYes:["Bene.","Oh. Bene."]
@@ -725,6 +725,45 @@
 			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
 			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
+	{
+		name:"Spanish",
+		translatedName:"Spagna",
+		leaderName:"Isabella",
+		adjective:["spagnolo"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Blessed Isabella, servant of God, holy queen of Castille and Leòn! Your people greet and welcome you. You are the ruler of Spain, a beautiful and ancient country at the crossroads of the world between Europe and Africa, one shor on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish are a multicultural people with roots in the Muslim and Christian worlds. A seafaring race, Spanish explorers found and conquered much of the New World, and, for many centuries, its gold and silver brought Spain unrivalled wealth and power, making the Spanish court the  envy of the world."
+		startIntroPart2: "O fair and virtuous Isabella! Will you rebuld the Spanish empire and show the world again the greatness of your people? Will your take up the mantle of the holy monarchy, and vanquish your foes under heaven's watchful eyes? Your adoring subjects await your command! Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"Forse Dio ti perdonerà... ma io no. Preparati a combattere."
+		attacked:"Lacché ripugnante del demonio! Pagherai carola tua insolenza!"
+		defeated:"Se la mia sconfitta è l'indubbio volere di Dio, ebbene lo accetto."
+		introduction:"Dio benedice coloro che si meritano il suo amore. Io sono Isabella, regina di Spagna."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Procedi","Sono tutta orecchi.","Sì?"]
+		neutralNo:["Mi rifiuto.","Dio me ne scampi.","Impossibile."]
+		neutralYes:["Molto bene.","Eccellente.","Accetto, con la benedizione di Dio."]
+
+		hateHello:"Ebbene?"
+		hateLetsHearIt:["Va' avanti","Cosa proponi?","Continua."]
+		hateNo:["Non lo accetto.","Certo che no.","Sei fuori di testa?"]
+		hateYes:["D'accordo.","Va bene.","Mi sento obbligata ad accettare."]
+		
+		afterPeace:"Possa Dio benedirti per la tua clemenza verso il nemico sconfitto."
+		tradeRequest:"Mi auguro che questo affare sia di tuo gradimento."
+				
+		outerColor:[102,0,0],
+		innerColor:[255,102,102],
+		uniqueName:"Sette Città d'Oro"
+		unique:"Bonus in Oro per la scoperta di una Meraviglia Naturale (maggiorato se la scopri per primo), le cui caselle fruttano doppia Cultura, Felicità e resa generale.",
+		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
+			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
+			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
+			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
+	},
+	
 	
 	/*
 	{
@@ -801,45 +840,6 @@
 			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
 			"Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec",
 			"Itzapalapa","Ayotzinco","Iztapam"]
-	},
-	{
-		/////NEEDS NATURAL WONDERS
-		name:"Spanish",
-		translatedName:"Spagna",
-		leaderName:"Isabella",
-		adjective:["spagnolo"],
-		startBias:["Coast"],
-		preferredVictoryType:"Domination",
-		
-		startIntroPart1: "Blessed Isabella, servant of God, holy queen of Castille and Leòn! Your people greet and welcome you. You are the ruler of Spain, a beautiful and ancient country at the crossroads of the world between Europe and Africa, one shor on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish are a multicultural people with roots in the Muslim and Christian worlds. A seafaring race, Spanish explorers found and conquered much of the New World, and, for many centuries, its gold and silver brought Spain unrivalled wealth and power, making the Spanish court the  envy of the world."
-		startIntroPart2: "O fair and virtuous Isabella! Will you rebuld the Spanish empire and show the world again the greatness of your people? Will your take up the mantle of the holy monarchy, and vanquish your foes under heaven's watchful eyes? Your adoring subjects await your command! Will you build a civilization that stands the test of time?"
-		
-		declaringWar:"Forse Dio ti perdonerà... ma io no. Preparati a combattere."
-		attacked:"Lacché ripugnante del demonio! Pagherai carola tua insolenza!"
-		defeated:"Se la mia sconfitta è l'indubbio volere di Dio, ebbene lo accetto."
-		introduction:"Dio benedice coloro che si meritano il suo amore. Io sono Isabella, regina di Spagna."
-		
-		neutralHello:"Saluti."
-		neutralLetsHearIt:["Procedi","Sono tutta orecchi.","Sì?"]
-		neutralNo:["Mi rifiuto.","Dio me ne scampi.","Impossibile."]
-		neutralYes:["Molto bene.","Eccellente.","Accetto, con la benedizione di Dio."]
-
-		hateHello:"Ebbene?"
-		hateLetsHearIt:["Va' avanti","Cosa proponi?","Continua."]
-		hateNo:["Non lo accetto.","Certo che no.","Sei fuori di testa?"]
-		hateYes:["D'accordo.","Va bene.","Mi sento obbligata ad accettare."]
-		
-		afterPeace:"Possa Dio benedirti per la tua clemenza verso il nemico sconfitto."
-		tradeRequest:"Mi auguro che questo affare sia di tuo gradimento."
-				
-		outerColor:[102,0,0],
-		innerColor:[255,102,102],
-		uniqueName:"Sette Città d'Oro"
-		unique:"Bonus in Oro per la scoperta di una Meraviglia Naturale (maggiorato se la scopri per primo), le cui caselle fruttano doppia Cultura, Felicità e resa generale.",
-		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
-			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
-			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
-			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
 	},
 	{
 		name:"Incan",
