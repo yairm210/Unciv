@@ -12,15 +12,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
+import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
+import com.unciv.ui.tutorials.TutorialController
+import com.unciv.ui.tutorials.TutorialMiner
+import com.unciv.ui.tutorials.TutorialRender
+import com.unciv.ui.worldscreen.TradePopup
 import kotlin.concurrent.thread
 
 open class CameraStageBaseScreen : Screen {
 
     var game: UncivGame = UncivGame.Current
     var stage: Stage
-    var tutorials = Tutorials()
     var hasPopupOpen = false
+
+    private var tutorialController: TutorialController? = null
 
     init {
         val width:Float
@@ -60,10 +66,15 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun displayTutorials(name: String) {
-        tutorials.displayTutorials(name,this)
+    fun displayTutorial(tutorial: Tutorial) {
+        if (tutorialController == null) {
+            tutorialController = TutorialController(TutorialMiner(), TutorialRender(this))
+        }
+        tutorialController?.showTutorial(tutorial)
     }
 
+    fun hasVisibleDialogs(): Boolean =
+            tutorialController?.isTutorialShowing() == true || stage.actors.any { it is TradePopup } || hasPopupOpen
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))

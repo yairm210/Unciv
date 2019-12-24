@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.tutorials.TutorialMiner
 import com.unciv.ui.utils.*
 import java.util.*
 
@@ -16,6 +17,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
     val entrySelectTable = Table().apply { defaults().pad(5f) }
     val description = "".toLabel()
+
+    val tutorialMiner = TutorialMiner()
 
     fun select(category: String) {
         entrySelectTable.clear()
@@ -83,11 +86,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset.UnitPromotions.values, true),
                         Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
-        categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
-                .filter { !it.startsWith("_") }
-                .map { CivilopediaEntry(it.replace("_"," "),
-                        Tutorials().getTutorials(it, UncivGame.Current.settings.language)
-                                .joinToString("\n\n")) }
+        categoryToEntries["Tutorials"] = tutorialMiner.getCivilopediaTutorials(UncivGame.Current.settings.language)
+                .map { CivilopediaEntry(it.key.value.replace("_"," "), it.value.joinToString("\n\n")) }
 
         for (category in categoryToEntries.keys) {
             val button = TextButton(category.tr(), skin)

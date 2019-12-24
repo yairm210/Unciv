@@ -127,6 +127,7 @@ project(":core") {
     // Taken from https://github.com/TomGrill/gdx-testing
     project(":tests") {
         apply plugin: "java"
+        apply plugin: "kotlin"
 
         test{
             workingDir= file("../android/assets")
@@ -147,6 +148,8 @@ project(":core") {
 
             implementation project(":core")
 
+            implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
             implementation "junit:junit:4.12"
             implementation "org.mockito:mockito-all:1.9.5"
 
@@ -157,8 +160,8 @@ project(":core") {
             testImplementation "org.mockito:mockito-all:1.9.5"
 
             testImplementation "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
-            testCompile "com.badlogicgames.gdx:gdx:$gdxVersion"
-            testCompile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+            testImplementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+            testImplementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         }
     }}
 
