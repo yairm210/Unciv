@@ -47,7 +47,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val nationTable = getNationTable(player)
         playerTable.add(nationTable)
 
-        val playerTypeTextbutton = TextButton(player.playerType.name, CameraStageBaseScreen.skin)
+        val playerTypeTextbutton = TextButton(player.playerType.name.tr(), CameraStageBaseScreen.skin)
         playerTypeTextbutton.onClick {
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
