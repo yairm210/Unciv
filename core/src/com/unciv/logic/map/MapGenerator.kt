@@ -49,7 +49,10 @@ class MapGenerator {
 
         for (tile in map.values) randomizeTile(tile, mapParameters, ruleset)
 
-        randomizeResources(map, mapRadius, ruleset)
+        spreadResources(map, mapRadius, ruleset)
+
+        if(!mapParameters.noRuins)
+            spreadAncientRuins(map)
 
         if (!mapParameters.noNaturalWonders)
             spawnNaturalWonders(map, mapRadius, ruleset)
@@ -105,8 +108,6 @@ class MapGenerator {
             tileInfo.setTransients()
         }
         addRandomTerrainFeature(tileInfo, ruleset)
-        if(!mapParameters.noRuins)
-            maybeAddAncientRuins(tileInfo)
     }
 
     fun getLatitude(vector: Vector2): Float {
@@ -200,14 +201,16 @@ class MapGenerator {
     }
 
 
-    fun maybeAddAncientRuins(tile: TileInfo) {
-        val baseTerrain = tile.getBaseTerrain()
-        if (baseTerrain.type != TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f / 100)
-            tile.improvement = Constants.ancientRuins
+    fun spreadAncientRuins(map: TileMap) {
+        val suitableTiles = map.values.filter { it.isLand && !it.getBaseTerrain().impassable }
+        val locations = chooseSpreadOutLocations(suitableTiles.size/100,
+                suitableTiles, 10)
+        for(tile in locations)
+            tile.improvement =Constants.ancientRuins
     }
 
 
-    fun randomizeResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
+    fun spreadResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
         for (tile in mapToReturn.values)
             if (tile.resource != null)
                 tile.resource = null
