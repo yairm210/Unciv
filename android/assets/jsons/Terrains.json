@@ -191,22 +191,22 @@
 		unbuildable: true,
 		weight: 10
 	},
-	/** Yukky tile images
-	{
-		name: "Krakatoa",
-		type: "NaturalWonder",
-		science: 5,
-		occursOn: ["Ocean"],
-		impassable: true,
-		unbuildable: true,
-		weight: 10
-	},
 	{
 		name: "Mount Fuji",
 		type: "NaturalWonder",
 		gold: 1,
 		culture: 5,
 		occursOn: ["Grassland","Plains"],
+		impassable: true,
+		unbuildable: true,
+		weight: 10
+	},
+	/** Yukky tile images
+	{
+		name: "Krakatoa",
+		type: "NaturalWonder",
+		science: 5,
+		occursOn: ["Ocean"],
 		impassable: true,
 		unbuildable: true,
 		weight: 10
