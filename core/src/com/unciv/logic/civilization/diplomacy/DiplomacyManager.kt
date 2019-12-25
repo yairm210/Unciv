@@ -9,9 +9,9 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.ceil
 
 enum class RelationshipLevel{
     Unforgivable,
@@ -395,6 +395,7 @@ class DiplomacyManager() {
         if (!otherCiv.isCityState()) {
             for (thirdCiv in otherCiv.getKnownCivs()) {
                 if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
+                        && !thirdCiv.isDefeated()
                         && thirdCiv.knows(civInfo)
                         && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
                     thirdCiv.getDiplomacyManager(civInfo).declareWar()
