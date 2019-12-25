@@ -195,9 +195,13 @@ class UnitAutomation{
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
-    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): ArrayList<AttackableTile> {
-        val tilesWithEnemies = unit.civInfo.viewableTiles
-                .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
+    fun getAttackableEnemies(
+            unit: MapUnit,
+            unitDistanceToTiles: PathsToTilesWithinTurn,
+            tiles: List<TileInfo>? = null
+    ): ArrayList<AttackableTile> {
+        val tilesWithEnemies = (tiles ?: unit.civInfo.viewableTiles)
+            .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
         val rangeOfAttack = unit.getRange()
 
@@ -240,15 +244,25 @@ class UnitAutomation{
 
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
-        var closeEnemies = unit.getTile().getTilesInDistance(5)
-                .filter{ containsAttackableEnemy(it, MapUnitCombatant(unit)) && unit.movement.canReach(it)}
-        if(unit.type.isRanged())
-            closeEnemies = closeEnemies.filterNot { it.isCityCenter() && it.getCity()!!.health==1 }
+        var closeEnemies = getAttackableEnemies(
+            unit,
+            unit.movement.getDistanceToTilesWithinTurn(
+                unit.getTile().position,
+                unit.getMaxMovement() * 3f
+            ),
+            tiles = unit.getTile().getTilesInDistance(5)
+        ).filter {
+            BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+        }
 
-        val closestEnemy = closeEnemies.minBy { it.arialDistanceTo(unit.getTile()) }
+        if(unit.type.isRanged())
+            closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health==1 }
+
+        val closestEnemy = closeEnemies.minBy { it.tileToAttack.arialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
-            unit.movement.headTowards(closestEnemy)
+            unit.movement.headTowards(closestEnemy.tileToAttack)
             return true
         }
         return false
