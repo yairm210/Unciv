@@ -161,7 +161,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
                         && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent(harbor)){
                     val seaBfs = BFS(cityToConnectFrom.getCenterTile()) { it.isWater || it.isCityCenter() }
                     seaBfs.stepToEnd()
-                    val reachedCities = allCivCities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
+                    val reachedCities = allCivCities.filter {
+                        seaBfs.tilesReached.containsKey(it.getCenterTile())
+                                && it.cityConstructions.containsBuildingOrEquivalent(harbor)
+                    }
                     for(reachedCity in reachedCities){
                         if(!citiesReachedToMediums.containsKey(reachedCity)){
                             newCitiesToCheck.add(reachedCity)
