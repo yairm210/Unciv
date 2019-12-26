@@ -16,10 +16,11 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultiplayerToggled:()->Unit)
+class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:()->Unit)
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.newGameParameters
     val mapParameters = newGameScreen.mapParameters
+    val baseRuleset = newGameScreen.ruleSet.clone()
     val ruleset = newGameScreen.ruleSet
 
     init {
@@ -133,7 +134,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultipla
         isOnlineMultiplayerCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.isOnlineMultiplayer = isOnlineMultiplayerCheckbox.isChecked
-                onMultiplayerToggled()
+                updatePlayerPickerTable()
             }
         })
         add(isOnlineMultiplayerCheckbox).colspan(2).row()
@@ -225,18 +226,42 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultipla
 
         val modCheckboxTable = Table().apply { defaults().pad(10f) }
 
-        val mods = Gdx.files.local("mods")
+        val modFolders = Gdx.files.local("mods")
+        val loadableMods = ArrayList<Ruleset>()
 
-        for (modFolder in mods.list()) {
+        for (modFolder in modFolders.list()) {
             if (modFolder.list().any { it.name() == "jsons" }) {
                 val ruleSet = Ruleset(false)
 
                 try {
-                    val modRuleset = ruleSet.load(modFolder.path() + "/jsons")
-
+                    ruleSet.load(modFolder.path() + "/jsons")
+                    ruleSet.name = modFolder.nameWithoutExtension()
+                    loadableMods.add(ruleset)
                 } catch (ex: Exception) {
+                    print(ex.message)
                 }
             }
+        }
+
+        fun reloadMods(){
+            ruleset.clearExceptModNames()
+            ruleset.add(baseRuleset)
+            for(modName in ruleset.mods){
+                val correspondingMod = loadableMods.first { it.name==modName }
+                ruleset.add(correspondingMod)
+            }
+        }
+
+        for(mod in loadableMods){
+            val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
+            checkBox.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    if(checkBox.isChecked) ruleset.mods.add(mod.name)
+                    else ruleset.mods.remove(mod.name)
+                    reloadMods()
+                    updatePlayerPickerTable()
+                }
+            })
         }
 
         add(modCheckboxTable).colspan(2).row()

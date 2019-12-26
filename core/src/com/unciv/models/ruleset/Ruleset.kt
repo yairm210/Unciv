@@ -13,7 +13,8 @@ import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
 class Ruleset {
-    val mods = ArrayList<String>()
+    var name=""
+    val mods = LinkedHashSet<String>()
     val buildings = LinkedHashMap<String, Building>()
     val terrains = LinkedHashMap<String, Terrain>()
     val tileResources = LinkedHashMap<String, TileResource>()
@@ -25,7 +26,20 @@ class Ruleset {
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
 
+    fun clone(): Ruleset{
+        val newRuleset = Ruleset(false)
+        newRuleset.add(this)
+        return newRuleset
+    }
+
+    constructor(load:Boolean=true){
+        if(load) load()
+    }
+
+
     fun <T> getFromJson(tClass: Class<T>, filePath:String): T {
+        val file = Gdx.files.internal(filePath)
+        if(!file.exists()) return tClass Array<>().first()
         val jsonText = Gdx.files.internal(filePath).readString(Charsets.UTF_8.name())
         return Json().apply { ignoreUnknownFields = true }.fromJson(tClass, jsonText)
     }
@@ -37,24 +51,32 @@ class Ruleset {
         return hashMap
     }
 
-    fun clone(): Ruleset{
-        val newRuleset = Ruleset(false)
-        newRuleset.buildings.putAll(buildings)
-        newRuleset.difficulties.putAll(difficulties)
-        newRuleset.nations .putAll(nations)
-        newRuleset.policyBranches.putAll(policyBranches)
-        newRuleset.technologies.putAll(technologies)
-        newRuleset.buildings.putAll(buildings)
-        newRuleset.terrains.putAll(terrains)
-        newRuleset.tileImprovements.putAll(tileImprovements)
-        newRuleset.tileResources.putAll(tileResources)
-        newRuleset.unitPromotions.putAll(unitPromotions)
-        newRuleset.units.putAll(units)
-        return newRuleset
+    fun add(ruleset: Ruleset){
+        buildings.putAll(ruleset.buildings)
+        difficulties.putAll(ruleset.difficulties)
+        nations .putAll(ruleset.nations)
+        policyBranches.putAll(ruleset.policyBranches)
+        technologies.putAll(ruleset.technologies)
+        buildings.putAll(ruleset.buildings)
+        terrains.putAll(ruleset.terrains)
+        tileImprovements.putAll(ruleset.tileImprovements)
+        tileResources.putAll(ruleset.tileResources)
+        unitPromotions.putAll(ruleset.unitPromotions)
+        units.putAll(ruleset.units)
     }
 
-    constructor(load:Boolean=true){
-        if(load) load()
+    fun clearExceptModNames(){
+        buildings.clear()
+        difficulties.clear()
+        nations.clear()
+        policyBranches.clear()
+        technologies.clear()
+        buildings.clear()
+        terrains.clear()
+        tileImprovements.clear()
+        tileResources.clear()
+        unitPromotions.clear()
+        units.clear()
     }
 
     fun load(folderPath: String="jsons") {

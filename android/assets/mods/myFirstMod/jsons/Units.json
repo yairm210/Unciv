@@ -1,13 +1,16 @@
 [
 	{
-		name:"Warrior",
+		name:"Maori Warrior",
 		unitType:"Melee",
+		uniqueTo:"Polynesia",
+		replaces:"Warrior",
 		movement:2,
-		strength:12,
+		strength:80,
 		cost: 40,
 		hurryCostModifier:20,
 		obsoleteTech:"Metal Casting",
+		promotions:["Haka War Dance"],
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
-	}
+	},
 ]
