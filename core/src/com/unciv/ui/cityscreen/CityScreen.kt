@@ -11,6 +11,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
@@ -93,7 +94,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         constructionsTable.setPosition(5f, stage.height-5-topCityStatsTable.height, Align.topLeft)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
-            displayTutorials("City_Range")
+            displayTutorial(Tutorial.CityRange)
         }
     }
 

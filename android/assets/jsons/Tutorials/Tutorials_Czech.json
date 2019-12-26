@@ -2,6 +2,13 @@
   // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
   // Entries starting with a _ will NOT be shown in Civilopedia.
 
+  Introduction: [
+    [
+      "Welcome to Unciv!",
+      "Because this is a complex game, there are basic tasks to help familiarize you with the game.",
+      "These are completely optional, and you're welcome to explore the game on your own!"
+    ]
+  ],
   New_Game: [
     [
       "Zdravíčko, vítejte v UnCiv!",
@@ -26,47 +33,6 @@
       "   což se někdy může stát, ale většinou budeme mít dostatek času."
     ]
   ],
-
-  _City_Founded : [
-    [
-      "Jupí! Právě jsme založili město!",
-      "Města jsou základním stavebním kamenem naší civilizace, poskytují zlato a výzkum pro celou říši,",
-      "  které se zobrazují v horním řádku.",
-      "Pro vstup do města klikněme ne jeho jméno, otevře se nám obrazovka pro přidělení práce obyvatelům,",
-      "  výběr produkce a uvidíme podrobné informace o městě."
-    ]
-  ],
-
-  First_Steps : [
-    [
-      "Jakmile bude naše první město připravené, budeme moci zahájit výrobu nových jednotek",
-      "  a také se můžeme pustit do výzkumu pokročilejších technologií.",
-      "Nebudeme se zde pouštět do podrobného popisu výzkumné stránky hry, ten bude v průvodci představen později,",
-      "  raději se řekněme něco o produkci."
-    ],
-    [
-      "První věcí, která opustí naše městské brány by měl být průzkumník nebo válečník.",
-      "Obecně se preferuje válečník, protože může být použit k obraně a zároveň později ve hře",
-      "  vylepšen na šermíře za relativně skromnou část zlata.",
-      "Průzkumníci můžou být efektivní obzvláště tehdy, pokud se nachází v oblasti hustého lesa nebo kopců..",
-      "Průzkumníci nejsou v tomto náročném terénu jakkoliv penalizování na pohybu."
-      "Pokud patříte mezi ostřílené veterány strategického žánru, bude naší další jednotkou bezesporu osadník.",
-      "Blesková expanze bývá v hrách tohoto typu zcela zásadní.",
-    ]
-  ],
-
-  Next_Turn : [
-    [
-      "Ve chvíli, kdy jsme vyčerpali všechny možnosti co udělat, ",
-      "  klikněte na tlačítko 'Další tah' v pravém horním roku."
-    ],
-    [
-      "Během každého tahu získáme výzkum, kulturní body a zlato",
-      "  pro naši civilizaci, ve městech se bude postubně stavět",
-      "  a budovat, a může vzrůst počet obyvatel, nebo se rozšíří území města."
-    ]
-  ],
-
   _Slow_Start: [
     [
       "Během prvních pár tahů,",
@@ -75,8 +41,8 @@
       "  objeví se řada věcí vyžadujících naši pozornost."
     ]
   ],
-
-  Culture_and_Policies: [ // Activated when entering policy picker screen
+  Culture_and_Policies: [
+    // Activated when entering policy picker screen
     [
       "V každém tahu, kulturní body které získáme ze všech našich měst,",
       "  jsou přidány do společného kulturního banku cené říše.",
@@ -93,40 +59,7 @@
       "  cena za výběr další sociální politiky významně vzrůstá. Vybírejte tedy s rozvahou!"
     ]
   ],
-
-  Cities: [
-    [
-      "Každý obyvatel města může pracovat na jednom políčku a získat tak pro město vše co políčko nabízí.",
-      "Obyvatel může být přiřazen na neobsazené políčko pomocí kliknutí. Toto lze provést, pokud máte nezaměstnaného obyvatele,",
-      "ale také lze stejným způsobem přemisťovat obyvatele z jednoho políčka na druhé."
-    ],
-    [
-      "Středové pole města je vždy obhospodařováno a nevyžaduje žádného obyvatele,",
-      "  na druhou stranu jej nelze vylepšit pomocí valepšení políčka."
-      "Veškerá městská produkce vždy směřuje k aktuální výstavbě,",
-      "  v levém dolním rohu si můžeme vybrat libovolnou dostupnou stavbu nebo jednotku"
-    ]
-    [
-      "Město se rozroste vy chvíli, kdy nashromáždíme dostatečné množství přebytečného jídla.",
-      "Stejným způsobem se město rozrůstá, když nashromáždíme dostatek kulturních bodů,",
-      "  které jsou generovány políčky, ale hlavně kulturními budovami ve městě."
-    ]
-  ],
-
-  Technology: [
-    [
-      "Technologie je pro naši civilizaci klíčovou,",
-      " každý pokrok nám přinese nové možnosti v konstrukci budov,",
-      " stavby vylepšení a v neposlední řadě i silnější bojové jednotky."
-    ],
-    [
-      "Většina technologií je závislá na ostatních již vyzkoumaných technologiích,",
-      "  přesto se můžete podívat na všechny dostupné technologie a zaměřit se i na ty nejvyspělejší,",
-      "  jen je potřeba se k nim probádat krůček po krůčku. Cesta k nim nám bude vždy naznačena."
-    ]
-  ],
-
-  Happiness:[
+  Happiness: [
     [
       "Jak města rostou a vzkvétají, budeme se muset vypořádat s mechanismem Spokojenosti,",
       "  který již není nadále vypočítáván individuálně pro každé město.",
@@ -137,7 +70,7 @@
       "Aby toho nebylo málo, tak budovy zlepšující spokojenost obyvatel nelze stavět bez dokončení příslušného výzkumu.",
       "V případě že spokojenost v naší říši klesne pod nulu, tak se ve všech městech významně zpomalí přírůstek nových obyvatel.",
       "Pokud bude naše říše velmi nespokojená (jak ukazuje ikona smajlíku v horní liště)",
-      "  celá naše armáda (bojové jednotky) obdrží významnou penalizaci a dojde k výraznému oslabení v boji.",
+      "  celá naše armáda (bojové jednotky) obdrží významnou penalizaci a dojde k výraznému oslabení v boji."
     ],
     [
       "To znamená, že ve hře UnCiv je poměrně obtížné rychle expandovat.",
@@ -146,33 +79,7 @@
       "Nové města budujme až poté, co pro ně najdeme vhodné místo."
     ]
   ],
-
-  World_Map: [
-    [
-      "Mapa světa se skládá ze spousty políček.",
-      "Každé políčko může obsahovat jednotky, zdroje a vylepšení, o těch si něco povíme později.",
-      "Všechny tyto informace o políčku jsou prezentovány pomocí ikon na něm umístěných.",
-      "Pro více podrobností můžete na plíčko kliknout a zobrazí se vám podrobné informace o něm."
-    ]
-  ],
-
-  Tile_Clicked : [
-    [
-      "Kliknutím na libovolné políčko toto políčko označíte,",
-      "  a v pravém dolním rohu se zobrazí veškeré informace o něm.",
-      "Pokud políčko obsahuje nějakou jednotku, bude tato jednotka okamžitě označena"
-      "  a veškeré informace o ní se zobrazí v levém dolním rohu."
-    ]
-  ],
-
-  Unit_Selected : [
-    [
-      "Kdykoliv je jednotka označena, veškeré informace o ní se zobrazí v levém dolním rohu.",
-      "Dostupné akce této jednotky se zobrazí hned nad těmito informacemi."
-    ]
-  ],
-
-  Unhappiness:  [
+  Unhappiness: [
     [
       "Zdá se, že jsou naši obyvatelé nešťastní!",
       "Dokud bude nespokojenost trvat, města porostou pouze 1/4 rychlostí,",
@@ -188,8 +95,7 @@
       "  nebo vylepšením Luxusních zdrojů, které se nachází na území našich měst."
     ]
   ],
-
-  Golden_Age:  [
+  Golden_Age: [
     [
       "Vstoupili jsme do Zlatého věku!",
       "Zlatý věk představují body, které se získávají každé kolo jako celková Spokojenost celé naší civilizace",
@@ -197,8 +103,7 @@
       "  na víc každé políčko, ze kterého získáváme alespoň jedno zlato nám poskytne další jedno extra zlato navíc."
     ]
   ],
-
-  Roads_and_Railroads:  [
+  Roads_and_Railroads: [
     [
       "Propojení našich měst pomocí cest",
       "  přináší zisky z obchodních cest.",
@@ -206,8 +111,7 @@
       "  takže může být ekonomicky výhodnější s výstavbou počkat, až se města rozrostou!"
     ]
   ],
-
-  Victory_Types:[
+  Victory_Types: [
     [
       "Poté se se nám podaří založit první dvě nebo tři města, máme obvykle za sebou kolem 100 až 150 tahů ve hře. ",
       "Nyní je vhodná chvíli popřemýšlet o tom, jakým způsobem chceme naši říši k vítězství."
@@ -227,8 +131,7 @@
       "Obvykle je toho mnohem více než je zde zmíněno. Je potřeba postupovat pomalu a s rozvahou, a krok po kroku pochopit herní principy."
     ]
   ],
-
-  Enemy_City:  [
+  Enemy_City: [
     [
       "Města lze dobýt tak, že snížíte jejich zdraví na 1,",
       "  a poté do něj vstoupíme s jednotkou určenou na boj zblízka.",
@@ -236,8 +139,7 @@
       "  přičemž jednotky pro boj zblízka používáme k jejich ochraně a poté na finální útok na město!"
     ]
   ],
-
-  Luxury_Resource:  [
+  Luxury_Resource: [
     [
       "Luxusní zdroje na území říše včetně jejich vylepšení jsou připojeny do naší obchodní sítě.",
       "Každý unikátní Luxusní zdroj přidá 5 bodů spokojenosti pro naši říši,",
@@ -245,8 +147,7 @@
       "  takže je můžeme použít jako obchovní artikl pro výměnu s jinou ciivilizací!"
     ]
   ],
-
-  Strategic_Resource:  [
+  Strategic_Resource: [
     [
       "Strategiické zdroje na území říše včetně jejich vylepšení jsou připojeny do naší obchodní sítě.",
       "Strategické zdroje nám umožňují vycvičit některé jednotky a postavit určiité budovy,",
@@ -256,14 +157,12 @@
       "Nevyužité strategické zdroje máme neustále na očích - v horní liště."
     ]
   ],
-
-  _EnemyCityNeedsConqueringWithMeleeUnit:  [
+  _EnemyCityNeedsConqueringWithMeleeUnit: [
     [
       "Město už není nadále schopné bojovat a bránit se!",
       "Ovšem pokud ho chceme dobýt, je potřeba do něj vstoupiit s jednotkou určenou pro boj zblízka."
     ]
   ],
-
   After_Conquering: [
     [
       "Ihned po obsazení města si můžeme vybrat, jaký bude jeho další osud Na výběr máme z vyhlazení, anektování a nebo loutkové vlády.",
@@ -277,72 +176,62 @@
       "Město s Loutkovou vládou lze kdykoliv anektovat, ovšem v anektovaných městech již není možné znovu zavést loutkovou vládu!"
     ]
   ],
-
-  _BarbarianEncountered:  [
+  _BarbarianEncountered: [
     [
       "Setkali jsme se s barbarskou jednotkou!",
       "Barbaři útočí na každého bez rozdílu, takže nenechávajme naše",
       "  civilní jednotky v jejich blízkosti a dávejme také pozor na naše průzkumníky!"
     ]
   ],
-
-  _OtherCivEncountered:  [
+  _OtherCivEncountered: [
     [
       "Setkali jsme se s jinou civilizací!",
       "Ostatní civilizace začínají vyjednávat mírumilovně a lze s nimi obchodovat,",
       "  v budoucnu ovšem můžou změnit svůj názor a klidně nám vyhlásí válku."
     ]
   ],
-
-
-  Apollo_Program:  [
+  Apollo_Program: [
     [
       "Ve chvíli kdy jsme dokončili Apollo Program, můžeme začít ve městech stavět části vesmírné lodi (SS z anglického SpaceShip),",
       "  samozřejmě s použitím vyzkoumaných relevantních technologií, a dosáhnout tak vítězství Vědeckou cestou!"
     ]
   ],
-
-  Injured_Units:[
+  Injured_Units: [
     [
       "Zraněné jednotky způsobují menší poškození, pokud s nimi během tahu nebudeme provádět žádnou akci, budou se pomalu uzdravovat.",
       "Jednotce se obnoví 5 bodů zdraví na území nepřítele, 10 bodů zdraví na neutrální půdě,",
       "  15 bodů zdraví na území naší říše a 20 bodů zdraví pokud jsou umístěny v jednom z našich měst."
     ]
   ],
-
-  Workers:[
+  Workers: [
     [
       "Dělníci jsou stavebními kameny pro naše města, přestože dokáží pouze stavět vylepšení na jednotlivých políčkách",
       "Tyto vylepšení zvyšují zisky z jednotlivých políček, což umožňuje městu větší a rychlejší produkci",
       "  při hospodaření na stejném množství políček!"
     ]
   ],
-
-  Siege_Units:[
+  Siege_Units: [
     [
       "Obléhací stroje (jednotky) jsou extrémně silné při útoku na město, ale nejprve potřebují provést Přípravu na útok",
       "Ve chvíli kdy je naše obléhací jednotka připravena na boj, může útočit z políčka na kterém právě stojí,",
       "  po pohybu na jiné políčko je potřeba provést další Přípravu na útok."
     ]
   ],
-
-  Embarking:[
+  Embarking: [
     [
       "Po vyzkoumání příslušné technologie se naše pozemní jednotky můžou nalodit a začít pohybovat v pobřežních vodách.",
       "Nalodění či vylodění stojí každou jednotku jeden celý tah.",
       "Při tomto procesu je jednotka zcela bezbranná, tak pozor na to!"
     ]
   ],
-
-  City_Range:[
+  City_Range: [
     [
       "Obyvatelé města můžou pracovat do vzdálensoti 3 políčka od centra města.",
       "Městské hranice můžou expandovat mnohem dále,",
       "  ale občané města na tyto vzdálená políčka již nelze přiřadit."
     ]
   ],
-
-  Idle_Units:[
+  Idle_Units: [
     [
       "Pokud tento tah nechceme s jednotkou vykonávat žádnou činnost, můžem ji přeskočit kliknutím na tlačítko 'Další jednotka'.",
       "Pokud s jednotkou nechceme hýbat po delší dobu, můžeme ji buď opevnit a nebo uspat,",
@@ -350,8 +239,7 @@
       "Pokud chcete funkci 'Další jednotka' úplně zakázat, lze to provést v Menu -> Kontrolovat zahálející jednotky"
     ]
   ],
-
-  Contact_Me:  [
+  Contact_Me: [
     [
       "Zdravíčko, pokud jste se dostali až sem, pravděpodobně vidíte,",
       "  že hra ještě stále není zcela dokončená.",
@@ -371,8 +259,7 @@
       "(Kontaktní údaje naleznete na Play Storu)"
     ]
   ],
-
-  _Pillaging:[
+  _Pillaging: [
     [
       "Vojenské jednotky můžou drancovat vylepšení, což jim přidá 25 zdraví a zároveň zničí vylepšení.",
       "Políčko lze i nadále obhospodařovávat, ale výhody z vylepšení zmízí. Bonusy a zdroje budou zničeny.",

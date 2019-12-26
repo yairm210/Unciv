@@ -180,12 +180,12 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
         }
         open()
-        worldScreen.alertPopupIsOpen = true
+        worldScreen.hasPopupOpen = true
     }
 
     override fun close(){
         worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
-        worldScreen.alertPopupIsOpen = false
+        worldScreen.hasPopupOpen = false
         super.close()
     }
 }
