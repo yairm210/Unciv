@@ -1,4 +1,4 @@
-package de.tomgrill.gdxtesting
+package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
@@ -23,7 +23,7 @@ class TutorialTranslationTests {
     )
 
     @Test
-    fun testValidNumberOfTranslations() {
+    fun testValidNumberOfTranslationTutorials() {
         languages.forEach { language ->
             val keys = getKeysForLanguage(language)
             assertTrue("$language tutorial does not match", keys.size == tutorialCount)
@@ -31,10 +31,10 @@ class TutorialTranslationTests {
     }
 
     @Test
-    fun testKeyValidity() {
-        languages.forEach { language ->
+    fun testTutorialKeyValidity() {
+        for (language in languages) {
             val keys = getKeysForLanguage(language)
-            tutorialKeyNames.forEach { key ->
+            for (key in tutorialKeyNames) {
                 assertTrue("$language tutorial does not have $key", keys.contains(key))
             }
         }

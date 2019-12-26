@@ -14,8 +14,8 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
-const val CLOSE_TURNS_AWAY_LIMIT = 3f
-const val CLOSE_TILES_AWAY_LIMIT = 5
+const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
+const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
 
 class UnitAutomation{
 
@@ -247,19 +247,19 @@ class UnitAutomation{
 
     /** Move towards the closest attackable enemy of the [unit].
      *
-     *  Limited by [CLOSE_TURNS_AWAY_LIMIT] and [CLOSE_TILES_AWAY_LIMIT].
+     *  Limited by [CLOSE_ENEMY_TURNS_AWAY_LIMIT] and [CLOSE_ENEMY_TILES_AWAY_LIMIT].
      *  Tiles attack from which would result in instant death of the [unit] are ignored. */
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
         val unitDistanceToTiles = unit.movement.getDistanceToTilesWithinTurn(
             unit.getTile().position,
-            unit.getMaxMovement() * CLOSE_TURNS_AWAY_LIMIT
+            unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
         var closeEnemies = getAttackableEnemies(
             unit,
             unitDistanceToTiles,
-            tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_TILES_AWAY_LIMIT)
-        ).filter {
+            tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT)
+        ).filter {  // Ignore units that would 1-shot you if you attacked
             BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
                 Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
         }
