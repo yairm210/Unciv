@@ -133,7 +133,7 @@ class VictoryScreen : PickerScreen() {
     fun culturalVictoryColumn():Table{
         val t=Table()
         t.defaults().pad(5f)
-        for(branch in playerCivInfo.gameInfo.ruleSet.PolicyBranches.values) {
+        for(branch in playerCivInfo.gameInfo.ruleSet.policyBranches.values) {
             val finisher = branch.policies.last().name
             t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }

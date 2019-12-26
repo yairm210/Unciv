@@ -20,7 +20,7 @@ class BasicTests {
     @Test
     fun loadRuleset() {
         Assert.assertTrue("This test will only pass when the jsons can be loaded",
-                Ruleset(true).Buildings.size > 0)
+                Ruleset(true).buildings.size > 0)
     }
 
     @Test
@@ -34,7 +34,7 @@ class BasicTests {
 // and we try to work on its upgrade, we'll get an exception - see techManager
     @Test
     fun allObsoletingUnitsHaveUpgrades() {
-        val units: Collection<BaseUnit> = Ruleset(true).Units.values
+        val units: Collection<BaseUnit> = Ruleset(true).units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
             if (unit.obsoleteTech != null && unit.upgradesTo == null) {

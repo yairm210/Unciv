@@ -110,7 +110,7 @@ class CivilizationInfo {
     //region pure functions
     fun getDifficulty():Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return gameInfo.ruleSet.Difficulties["Chieftain"]!!
+        return gameInfo.ruleSet.difficulties["Chieftain"]!!
     }
 
     fun getTranslatedNation(): Nation {
@@ -174,7 +174,7 @@ class CivilizationInfo {
      */
     fun getCivResourcesByName():HashMap<String,Int>{
         val hashMap = HashMap<String,Int>()
-        for(resource in gameInfo.ruleSet.TileResources.keys) hashMap[resource]=0
+        for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
         return hashMap
@@ -232,19 +232,19 @@ class CivilizationInfo {
 
 
     fun getEquivalentBuilding(buildingName:String): Building {
-        val baseBuilding = gameInfo.ruleSet.Buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
+        val baseBuilding = gameInfo.ruleSet.buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
 
-        for(building in gameInfo.ruleSet.Buildings.values)
+        for(building in gameInfo.ruleSet.buildings.values)
             if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
                 return building
         return baseBuilding
     }
 
     fun getEquivalentUnit(baseUnitName:String):BaseUnit {
-        for (unit in gameInfo.ruleSet.Units.values)
+        for (unit in gameInfo.ruleSet.units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        return gameInfo.ruleSet.Units[baseUnitName]!!
+        return gameInfo.ruleSet.units[baseUnitName]!!
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
@@ -306,7 +306,7 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.ruleSet.Nations[civName]!!
+        nation = gameInfo.ruleSet.nations[civName]!!
     }
 
     fun setTransients() {

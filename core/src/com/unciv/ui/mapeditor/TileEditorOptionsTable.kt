@@ -74,7 +74,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }).row()
 
-        for(improvement in ruleSet.TileImprovements.values){
+        for(improvement in ruleSet.tileImprovements.values){
             if(improvement.name.startsWith("Remove")) continue
             val improvementImage = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
             improvementImage.onClick {
@@ -88,7 +88,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.add(ScrollPane(improvementsTable)).height(mapEditorScreen.stage.height*0.7f)
 
         val nationsTable = Table()
-        for(nation in ruleSet.Nations.values){
+        for(nation in ruleSet.nations.values){
             val nationImage = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
             nationImage.onClick {
                 clearSelection()
@@ -151,7 +151,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         })
 
-        for (resource in ruleSet.TileResources.values) {
+        for (resource in ruleSet.tileResources.values) {
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
                 clearSelection()
@@ -160,7 +160,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 tileInfo.ruleset = mapEditorScreen.ruleSet
 
                 val terrain = resource.terrainsCanBeFoundOn.first()
-                val terrainObject = ruleSet.Terrains[terrain]!!
+                val terrainObject = ruleSet.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain = when {
                         terrainObject.occursOn == null -> terrainObject.occursOn!!.first()
@@ -179,7 +179,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
-        for (terrain in ruleSet.Terrains.values) {
+        for (terrain in ruleSet.terrains.values) {
             val tileInfo = TileInfo()
             tileInfo.ruleset = mapEditorScreen.ruleSet
             if (terrain.type == TerrainType.TerrainFeature) {

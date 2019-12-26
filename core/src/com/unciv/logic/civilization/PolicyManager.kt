@@ -53,7 +53,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.PolicyBranches.values
+        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
                 .flatMap { it.policies.union(listOf(it)) }
                 .any { civInfo.policies.isAdoptable(it) }
         return hasAdoptablePolicies
@@ -100,7 +100,7 @@ class PolicyManager {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"
                         VictoryType.Domination,VictoryType.Neutral ->
-                            civInfo.gameInfo.ruleSet.Units.keys.filter { it.startsWith("Great") }.random()
+                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
                     }
                     civInfo.addGreatPerson(greatPerson)
                 }

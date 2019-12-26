@@ -13,7 +13,7 @@ class Terrain : NamedStats() {
         if (occursOn != null) {
             sb.appendln("Occurs on [${occursOn.joinToString(", ")}]".tr())
         }
-        val resourcesFound = ruleset.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
+        val resourcesFound = ruleset.tileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
         if (resourcesFound.isNotEmpty()) {
             sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
         }

@@ -53,7 +53,7 @@ class Building : NamedStats(), IConstruction{
         for(stat in getStatPercentageBonuses(null).toHashMap())
             if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key.toString().tr()}"
 
-        val improvedResources = ruleset.TileResources.values.filter { it.building==name }.map { it.name.tr() }
+        val improvedResources = ruleset.tileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
@@ -103,7 +103,7 @@ class Building : NamedStats(), IConstruction{
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
         if (resourceBonusStats != null) {
-            val resources = ruleset.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
+            val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
         }
 
@@ -251,7 +251,7 @@ class Building : NamedStats(), IConstruction{
 
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
+        if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         // Regular wonders
@@ -329,7 +329,7 @@ class Building : NamedStats(), IConstruction{
         if (providesFreeBuilding != null && !construction.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
-            for(building in civInfo.gameInfo.ruleSet.Buildings.values)
+            for(building in civInfo.gameInfo.ruleSet.buildings.values)
                 if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
                     buildingToAdd = building.name
 
@@ -351,7 +351,7 @@ class Building : NamedStats(), IConstruction{
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
             if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-            else civInfo.addGreatPerson(civInfo.gameInfo.ruleSet.Units.keys.filter { it.startsWith("Great") }.random())
+            else civInfo.addGreatPerson(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
         }
         if ("+1 population in each city" in uniques) {
             for(city in civInfo.cities){
@@ -375,6 +375,6 @@ class Building : NamedStats(), IConstruction{
 
     fun getBaseBuilding(ruleset: Ruleset): Building {
         if(replaces==null) return this
-        else return ruleset.Buildings[replaces!!]!!
+        else return ruleset.buildings[replaces!!]!!
     }
 }

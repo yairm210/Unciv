@@ -38,7 +38,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
         val regularImprovements = VerticalGroup()
         regularImprovements.space(10f)
 
-        for (improvement in tileInfo.tileMap.gameInfo.ruleSet.TileImprovements.values) {
+        for (improvement in tileInfo.tileMap.gameInfo.ruleSet.tileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
             if(improvement.name == tileInfo.improvement) continue
             if(improvement.name==tileInfo.improvementInProgress) continue

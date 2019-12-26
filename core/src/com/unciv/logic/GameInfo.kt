@@ -168,13 +168,13 @@ class GameInfo {
     fun placeBarbarianUnit(tileToPlace: TileInfo) {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
-        val allResearchedTechs = ruleSet.Technologies.keys.toMutableList()
+        val allResearchedTechs = ruleSet.technologies.keys.toMutableList()
         for (civ in civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
         val barbarianCiv = getBarbarianCivilization()
         barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
-        val unitList = ruleSet.Units.values
+        val unitList = ruleSet.units.values
                 .filter { !it.unitType.isCivilian()}
                 .filter { it.isBuildable(barbarianCiv) }
 
@@ -230,7 +230,7 @@ class GameInfo {
             getCurrentPlayerCivilization().playerType=PlayerType.Human
         if(getCurrentPlayerCivilization().difficulty!="Chieftain")
             difficulty= getCurrentPlayerCivilization().difficulty
-        difficultyObject = ruleSet.Difficulties[difficulty]!!
+        difficultyObject = ruleSet.difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
         // because updating leads to getting the building uniques from the civ info,

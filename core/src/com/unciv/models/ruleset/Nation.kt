@@ -97,9 +97,9 @@ class Nation : INamed {
     }
 
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        for (building in ruleset.Buildings.values
+        for (building in ruleset.buildings.values
                 .filter { it.uniqueTo == name }) {
-            val originalBuilding = ruleset.Buildings[building.replaces!!]!!
+            val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
             textList += building.name.tr() + " - {replaces} " + originalBuilding.name.tr()
             val originalBuildingStatMap = originalBuilding.toHashMap()
@@ -122,9 +122,9 @@ class Nation : INamed {
     }
 
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        for (unit in ruleset.Units.values
+        for (unit in ruleset.units.values
                 .filter { it.uniqueTo == name }) {
-            val originalUnit = ruleset.Units[unit.replaces!!]!!
+            val originalUnit = ruleset.units[unit.replaces!!]!!
 
             textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
             if (unit.cost != originalUnit.cost)
@@ -144,14 +144,14 @@ class Nation : INamed {
             for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
                 textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
             for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.UnitPromotions[promotion]!!.effect) + ")"
+                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
 
             textList += ""
         }
     }
 
     private fun addUniqueImprovementsText(textList: ArrayList<String>, ruleset: Ruleset) {
-        for (improvement in ruleset.TileImprovements.values
+        for (improvement in ruleset.tileImprovements.values
                 .filter { it.uniqueTo == name }) {
 
             textList += improvement.name.tr()

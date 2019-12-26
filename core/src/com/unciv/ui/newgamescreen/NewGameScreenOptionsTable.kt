@@ -8,11 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.translations.tr
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
@@ -144,7 +144,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultipla
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
         val cityStatesArray = Array<Int>()
 
-        (0..ruleset.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        (0..ruleset.nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
         add(cityStatesSelectBox).pad(10f).row()
@@ -157,7 +157,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultipla
 
     private fun addDifficultySelectBox() {
         add("{Difficulty}:".tr())
-        val difficultySelectBox = TranslatedSelectBox(ruleset.Difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
+        val difficultySelectBox = TranslatedSelectBox(ruleset.difficulties.keys, newGameParameters.difficulty, CameraStageBaseScreen.skin)
         difficultySelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.difficulty = difficultySelectBox.selected.value
@@ -221,9 +221,8 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val onMultipla
 
     fun addModCheckboxes() {
 
-        add("{Victory conditions}:".tr()).colspan(2).row()
+        add("{Mods}:".tr()).colspan(2).row()
 
-        // Create a checkbox for each VictoryType existing
         val modCheckboxTable = Table().apply { defaults().pad(10f) }
 
         val mods = Gdx.files.local("mods")

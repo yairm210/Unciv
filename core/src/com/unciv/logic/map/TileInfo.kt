@@ -87,16 +87,16 @@ open class TileInfo {
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
-            else ruleset.TileResources[resource!!]!!
+            else ruleset.tileResources[resource!!]!!
 
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
-            else ruleset.Terrains[naturalWonder!!]!!
+            else ruleset.terrains[naturalWonder!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
     fun isNaturalWonder() : Boolean = naturalWonder != null
 
-    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.TileImprovements[improvement!!]
+    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
@@ -125,7 +125,7 @@ open class TileInfo {
     }
 
     fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else ruleset.Terrains[terrainFeature!!]
+        return if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
     }
 
     fun isWorked(): Boolean {
@@ -176,7 +176,7 @@ open class TileInfo {
             val resource = getTileResource()
             stats.add(getTileResource()) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
-                val resourceBuilding = tileMap.gameInfo.ruleSet.Buildings[resource.building!!]!!
+                val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]!!
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic
@@ -328,7 +328,7 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients(){
-        baseTerrainObject = ruleset.Terrains[baseTerrain]!! // This is a HACK.
+        baseTerrainObject = ruleset.terrains[baseTerrain]!! // This is a HACK.
         isWater = getBaseTerrain().type==TerrainType.Water
         isLand = getBaseTerrain().type==TerrainType.Land
         isOcean = baseTerrain == Constants.ocean

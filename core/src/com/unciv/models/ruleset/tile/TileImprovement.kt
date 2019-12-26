@@ -41,7 +41,7 @@ class TileImprovement : NamedStats() {
             stringBuilder.appendln("Can be built on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))//language can be changed when setting changes.
         }
         val statsToResourceNames = HashMap<String, ArrayList<String>>()
-        for (tr: TileResource in ruleset.TileResources.values.filter { it.improvement == name }) {
+        for (tr: TileResource in ruleset.tileResources.values.filter { it.improvement == name }) {
             val statsString = tr.improvementStats.toString()
             if (!statsToResourceNames.containsKey(statsString))
                 statsToResourceNames[statsString] = ArrayList()

@@ -202,7 +202,7 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
         if (improvementString == null) return null
-        return unit.civInfo.gameInfo.ruleSet.TileImprovements[improvementString]!!
+        return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
     }
 
 }

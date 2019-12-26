@@ -41,7 +41,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         availablePromotionsGroup.space(10f)
 
         val unitType = unit.type
-        val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.UnitPromotions.values.filter {
+        val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
             it.unitTypes.contains(unitType.toString())
                     || unit.promotions.promotions.contains(it.name) }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()

@@ -61,29 +61,29 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         description.setWrap(true)
 
-        categoryToEntries["Buildings"] = ruleset.Buildings.values
+        categoryToEntries["Buildings"] = ruleset.buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name)) }
-        categoryToEntries["Resources"] = ruleset.TileResources.values
+        categoryToEntries["Resources"] = ruleset.tileResources.values
                 .map { CivilopediaEntry(it.name,it.getDescription(),
                         ImageGetter.getResourceImage(it.name,50f)) }
-        categoryToEntries["Terrains"] = ruleset.Terrains.values
+        categoryToEntries["Terrains"] = ruleset.terrains.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset)) }
-        categoryToEntries["Tile Improvements"] = ruleset.TileImprovements.values
+        categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
-        categoryToEntries["Units"] = ruleset.Units.values
+        categoryToEntries["Units"] = ruleset.units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name)) }
-        categoryToEntries["Nations"] = ruleset.Nations.values
+        categoryToEntries["Nations"] = ruleset.nations.values
                 .filter { it.isMajorCiv() }
                 .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset),
                         ImageGetter.getNationIndicator(it,50f)) }
-        categoryToEntries["Technologies"] = ruleset.Technologies.values
+        categoryToEntries["Technologies"] = ruleset.technologies.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
-        categoryToEntries["Promotions"] = ruleset.UnitPromotions.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.UnitPromotions.values, true),
+        categoryToEntries["Promotions"] = ruleset.unitPromotions.values
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.unitPromotions.values, true),
                         Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
         categoryToEntries["Tutorials"] = tutorialMiner.getCivilopediaTutorials(UncivGame.Current.settings.language)

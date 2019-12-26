@@ -65,7 +65,7 @@ class TileMap {
     }
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
-        val unit = gameInfo.ruleSet.Units[unitName]!!.getMapUnit(gameInfo.ruleSet)
+        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
         fun isTileMovePotential(tileInfo:TileInfo): Boolean {
             if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()

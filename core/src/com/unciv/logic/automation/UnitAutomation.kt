@@ -291,7 +291,7 @@ class UnitAutomation{
 
     private fun tryUpgradeUnit(unit: MapUnit, unitActions: List<UnitAction>): Boolean {
         if (unit.baseUnit().upgradesTo != null) {
-            val upgradedUnit = unit.civInfo.gameInfo.ruleSet.Units[unit.baseUnit().upgradesTo!!]!!
+            val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units[unit.baseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
                 if (upgradeAction != null && upgradeAction.canAct) {

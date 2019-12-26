@@ -30,7 +30,7 @@ class TranslationTests {
 
     @Test
     fun allUnitsHaveTranslation() {
-        val allUnitsHaveTranslation = allStringAreTranslated(ruleSet.Units.keys)
+        val allUnitsHaveTranslation = allStringAreTranslated(ruleSet.units.keys)
         Assert.assertTrue("This test will only pass when there is a translation for all units",
                 allUnitsHaveTranslation)
     }
@@ -38,7 +38,7 @@ class TranslationTests {
     @Test
     fun allUnitUniquesHaveTranslation() {
         val strings: MutableSet<String> = HashSet()
-        for (unit in ruleSet.Units.values) for (unique in unit.uniques) if (!unique.startsWith("Bonus")
+        for (unit in ruleSet.units.values) for (unique in unit.uniques) if (!unique.startsWith("Bonus")
                 && !unique.startsWith("Penalty")
                 && !unique.contains("[")) // templates
             strings.add(unique)
@@ -48,7 +48,7 @@ class TranslationTests {
 
     @Test
     fun allBuildingsHaveTranslation() {
-        val allBuildingsHaveTranslation = allStringAreTranslated(ruleSet.Buildings.keys)
+        val allBuildingsHaveTranslation = allStringAreTranslated(ruleSet.buildings.keys)
         Assert.assertTrue("This test will only pass when there is a translation for all buildings",
                 allBuildingsHaveTranslation)
     }
@@ -56,7 +56,7 @@ class TranslationTests {
     @Test
     fun allBuildingUniquesHaveTranslation() {
         val strings: MutableSet<String> = HashSet()
-        for (building in ruleSet.Buildings.values) {
+        for (building in ruleSet.buildings.values) {
             strings.addAll(building.uniques)
         }
         val allStringsHaveTranslation = allStringAreTranslated(strings)
@@ -66,7 +66,7 @@ class TranslationTests {
     @Test
     fun allBuildingQuotesHaveTranslation() {
         val strings: MutableSet<String> = HashSet()
-        for (building in ruleSet.Buildings.values) {
+        for (building in ruleSet.buildings.values) {
             if (building.quote == "") continue
             strings.add(building.quote)
         }
@@ -76,7 +76,7 @@ class TranslationTests {
 
     @Test
     fun allTerrainsHaveTranslation() {
-        val strings: Set<String> = ruleSet.Terrains.keys
+        val strings: Set<String> = ruleSet.terrains.keys
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue("This test will only pass when there is a translation for all buildings",
                 allStringsHaveTranslation)
@@ -84,7 +84,7 @@ class TranslationTests {
 
     @Test
     fun allImprovementsHaveTranslation() {
-        val strings: Set<String> = ruleSet.TileImprovements.keys
+        val strings: Set<String> = ruleSet.tileImprovements.keys
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue("This test will only pass when there is a translation for all improvements",
                 allStringsHaveTranslation)
@@ -93,7 +93,7 @@ class TranslationTests {
     @Test
     fun allImprovementUniquesHaveTranslation() {
         val strings: MutableSet<String> = HashSet()
-        for (improvement in ruleSet.TileImprovements.values) {
+        for (improvement in ruleSet.tileImprovements.values) {
             strings.addAll(improvement.uniques)
         }
         val allStringsHaveTranslation = allStringAreTranslated(strings)
@@ -102,7 +102,7 @@ class TranslationTests {
 
     @Test
     fun allTechnologiesHaveTranslation() {
-        val strings: Set<String> = ruleSet.Technologies.keys
+        val strings: Set<String> = ruleSet.technologies.keys
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue("This test will only pass when there is a translation for all technologies",
                 allStringsHaveTranslation)
@@ -111,7 +111,7 @@ class TranslationTests {
     @Test
     fun allTechnologiesQuotesHaveTranslation() {
         val strings: MutableSet<String> = HashSet()
-        for (tech in ruleSet.Technologies.values) {
+        for (tech in ruleSet.technologies.values) {
             strings.add(tech.quote)
         }
         val allStringsHaveTranslation = allStringAreTranslated(strings)
@@ -121,7 +121,7 @@ class TranslationTests {
 
     @Test
     fun allPromotionsHaveTranslation() {
-        val strings: Set<String> = ruleSet.UnitPromotions.keys
+        val strings: Set<String> = ruleSet.unitPromotions.keys
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue("This test will only pass when there is a translation for all promotions",
                 allStringsHaveTranslation)

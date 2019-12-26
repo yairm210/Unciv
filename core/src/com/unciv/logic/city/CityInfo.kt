@@ -139,7 +139,7 @@ class CityInfo {
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
-            val resource = getRuleset().TileResources[building.requiredResource]!!
+            val resource = getRuleset().tileResources[building.requiredResource]!!
             cityResources.add(resource, -1, "Buildings")
         }
 
@@ -166,7 +166,7 @@ class CityInfo {
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
         if (resource.improvement!=null){
-            val improvement = getRuleset().TileImprovements[resource.improvement!!]!!
+            val improvement = getRuleset().tileImprovements[resource.improvement!!]!!
             if(improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
         }
 
@@ -483,15 +483,15 @@ class CityInfo {
 
     private fun tryUpdateRoadStatus(){
         if(getCenterTile().roadStatus==RoadStatus.None
-                && getRuleset().TileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
+                && getRuleset().tileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus=RoadStatus.Road
 
         else if(getCenterTile().roadStatus!=RoadStatus.Railroad
-                && getRuleset().TileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
+                && getRuleset().tileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus=RoadStatus.Railroad
     }
 
-    fun getGoldForSellingBuilding(buildingName:String) = getRuleset().Buildings[buildingName]!!.cost / 10
+    fun getGoldForSellingBuilding(buildingName:String) = getRuleset().buildings[buildingName]!!.cost / 10
 
     fun sellBuilding(buildingName:String){
         cityConstructions.builtBuildings.remove(buildingName)

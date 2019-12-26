@@ -24,7 +24,7 @@ class Technology {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
-        val improvedImprovements = ruleset.TileImprovements.values
+        val improvedImprovements = ruleset.tileImprovements.values
                 .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
         for (improvement in improvedImprovements) {
             val impimpString = improvement.value.joinToString { it.name.tr() } +
@@ -56,10 +56,10 @@ class Technology {
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        val revealedResource = ruleset.TileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
+        val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
         if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
 
-        val tileImprovements = ruleset.TileImprovements.values.filter { it.techRequired == name }
+        val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
         if (tileImprovements.isNotEmpty())
             lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 
@@ -67,7 +67,7 @@ class Technology {
     }
 
     fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
-        var enabledBuildings = civInfo.gameInfo.ruleSet.Buildings.values.filter {
+        var enabledBuildings = civInfo.gameInfo.ruleSet.buildings.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
@@ -81,7 +81,7 @@ class Technology {
     }
 
     fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
-        var enabledUnits = civInfo.gameInfo.ruleSet.Units.values.filter {
+        var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }

@@ -33,10 +33,10 @@ class CityConstructions {
         return toReturn
     }
 
-    internal fun getBuildableBuildings(): List<Building> = cityInfo.getRuleset().Buildings.values
+    internal fun getBuildableBuildings(): List<Building> = cityInfo.getRuleset().buildings.values
             .filter { it.isBuildable(this) }
 
-    fun getConstructableUnits() = cityInfo.getRuleset().Units.values
+    fun getConstructableUnits() = cityInfo.getRuleset().units.values
             .filter { it.isBuildable(this) }
 
     fun getStats(): Stats {
@@ -95,10 +95,10 @@ class CityConstructions {
 
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
-        if (gameBasics.Buildings.containsKey(constructionName))
-            return gameBasics.Buildings[constructionName]!!
-        else if (gameBasics.Units.containsKey(constructionName))
-            return gameBasics.Units[constructionName]!!
+        if (gameBasics.buildings.containsKey(constructionName))
+            return gameBasics.buildings[constructionName]!!
+        else if (gameBasics.units.containsKey(constructionName))
+            return gameBasics.units[constructionName]!!
         else{
             if(constructionName=="") return getConstruction("Nothing")
             val special = SpecialConstruction.getSpecialConstructions().firstOrNull{it.name==constructionName}
@@ -155,7 +155,7 @@ class CityConstructions {
 
     //region state changing functions
     fun setTransients(){
-        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().Buildings[it]!! })
+        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]!! })
     }
 
     fun addProductionPoints(productionToAdd: Int) {
@@ -217,13 +217,13 @@ class CityConstructions {
     }
 
     fun addBuilding(buildingName:String){
-        val buildingObject = cityInfo.getRuleset().Buildings[buildingName]!!
+        val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
         builtBuildings.add(buildingName)
     }
 
     fun removeBuilding(buildingName:String){
-        val buildingObject = cityInfo.getRuleset().Buildings[buildingName]!!
+        val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         builtBuildings.remove(buildingName)
     }

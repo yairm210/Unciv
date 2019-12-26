@@ -13,16 +13,17 @@ import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
 class Ruleset {
-    val Buildings = LinkedHashMap<String, Building>()
-    val Terrains = LinkedHashMap<String, Terrain>()
-    val TileResources = LinkedHashMap<String, TileResource>()
-    val TileImprovements = LinkedHashMap<String, TileImprovement>()
-    val Technologies = LinkedHashMap<String, Technology>()
-    val Units = LinkedHashMap<String, BaseUnit>()
-    val UnitPromotions = LinkedHashMap<String, Promotion>()
-    val Nations = LinkedHashMap<String, Nation>()
-    val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
-    val Difficulties = LinkedHashMap<String, Difficulty>()
+    val mods = ArrayList<String>()
+    val buildings = LinkedHashMap<String, Building>()
+    val terrains = LinkedHashMap<String, Terrain>()
+    val tileResources = LinkedHashMap<String, TileResource>()
+    val tileImprovements = LinkedHashMap<String, TileImprovement>()
+    val technologies = LinkedHashMap<String, Technology>()
+    val units = LinkedHashMap<String, BaseUnit>()
+    val unitPromotions = LinkedHashMap<String, Promotion>()
+    val nations = LinkedHashMap<String, Nation>()
+    val policyBranches = LinkedHashMap<String, PolicyBranch>()
+    val difficulties = LinkedHashMap<String, Difficulty>()
 
     fun <T> getFromJson(tClass: Class<T>, filePath:String): T {
         val jsonText = Gdx.files.internal(filePath).readString(Charsets.UTF_8.name())
@@ -38,17 +39,17 @@ class Ruleset {
 
     fun clone(): Ruleset{
         val newRuleset = Ruleset(false)
-        newRuleset.Buildings.putAll(Buildings)
-        newRuleset.Difficulties.putAll(Difficulties)
-        newRuleset.Nations .putAll(Nations)
-        newRuleset.PolicyBranches.putAll(PolicyBranches)
-        newRuleset.Technologies.putAll(Technologies)
-        newRuleset.Buildings.putAll(Buildings)
-        newRuleset.Terrains.putAll(Terrains)
-        newRuleset.TileImprovements.putAll(TileImprovements)
-        newRuleset.TileResources.putAll(TileResources)
-        newRuleset.UnitPromotions.putAll(UnitPromotions)
-        newRuleset.Units.putAll(Units)
+        newRuleset.buildings.putAll(buildings)
+        newRuleset.difficulties.putAll(difficulties)
+        newRuleset.nations .putAll(nations)
+        newRuleset.policyBranches.putAll(policyBranches)
+        newRuleset.technologies.putAll(technologies)
+        newRuleset.buildings.putAll(buildings)
+        newRuleset.terrains.putAll(terrains)
+        newRuleset.tileImprovements.putAll(tileImprovements)
+        newRuleset.tileResources.putAll(tileResources)
+        newRuleset.unitPromotions.putAll(unitPromotions)
+        newRuleset.units.putAll(units)
         return newRuleset
     }
 
@@ -64,26 +65,26 @@ class Ruleset {
             for (tech in techColumn.techs) {
                 if (tech.cost==0) tech.cost = techColumn.techCost
                 tech.column = techColumn
-                Technologies[tech.name] = tech
+                technologies[tech.name] = tech
             }
         }
 
-        Buildings += createHashmap(getFromJson(Array<Building>::class.java, "$folderPath/Buildings.json"))
-        for (building in Buildings.values) {
+        buildings += createHashmap(getFromJson(Array<Building>::class.java, "$folderPath/Buildings.json"))
+        for (building in buildings.values) {
             if (building.requiredTech == null) continue
-            val column = Technologies[building.requiredTech!!]!!.column
+            val column = technologies[building.requiredTech!!]!!.column
             if (building.cost == 0)
                 building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
         }
 
-        Terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "$folderPath/Terrains.json"))
-        TileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "$folderPath/TileResources.json"))
-        TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "$folderPath/TileImprovements.json"))
-        Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "$folderPath/Units.json"))
-        UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "$folderPath/UnitPromotions.json"))
+        terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "$folderPath/Terrains.json"))
+        tileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "$folderPath/TileResources.json"))
+        tileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "$folderPath/TileImprovements.json"))
+        units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "$folderPath/Units.json"))
+        unitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "$folderPath/UnitPromotions.json"))
 
-        PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "$folderPath/Policies.json"))
-        for (branch in PolicyBranches.values) {
+        policyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "$folderPath/Policies.json"))
+        for (branch in policyBranches.values) {
             branch.requires = ArrayList()
             branch.branch = branch
             for (policy in branch.policies) {
@@ -93,10 +94,10 @@ class Ruleset {
             branch.policies.last().name = branch.name + " Complete"
         }
 
-        Nations += createHashmap(getFromJson(Array<Nation>::class.java, "$folderPath/Nations/Nations.json"))
-        for(nation in Nations.values) nation.setTransients()
+        nations += createHashmap(getFromJson(Array<Nation>::class.java, "$folderPath/Nations/Nations.json"))
+        for(nation in nations.values) nation.setTransients()
 
-        Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "$folderPath/Difficulties.json"))
+        difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "$folderPath/Difficulties.json"))
 
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         println("Loading game basics - "+gameBasicsLoadTime+"ms")

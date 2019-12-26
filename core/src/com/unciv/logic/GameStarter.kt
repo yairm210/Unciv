@@ -41,7 +41,7 @@ class GameStarter{
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
-            for (tech in gameBasics.Technologies.values
+            for (tech in gameBasics.technologies.values
                     .filter { it.era() < newGameParameters.startingEra })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
@@ -57,7 +57,7 @@ class GameStarter{
 
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
         val availableCivNames = Stack<String>()
-        availableCivNames.addAll(ruleset.Nations.filter { !it.value.isCityState() }.keys.shuffled())
+        availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove("Barbarians")
 
@@ -83,7 +83,7 @@ class GameStarter{
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the city states with starting tiles first in a random order,
         //   and then all the other city states in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll(ruleset.Nations.filter { it.value.isCityState() }.keys
+        availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
@@ -100,7 +100,7 @@ class GameStarter{
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
-            val availableMilitaryUnits = gameInfo.ruleSet.Units.values.filter {
+            val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {
                 it.isBuildable(civ)
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
