@@ -126,7 +126,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
             val unitsInTile = selectedTile!!.getUnits()
             if(previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
-                    && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.ccenterTile)
+                    && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
                     && unitsInTile.isNotEmpty()
                     && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)){
                 // try to select the closest city to bombard this guy

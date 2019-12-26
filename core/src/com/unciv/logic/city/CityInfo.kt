@@ -24,7 +24,7 @@ import kotlin.math.roundToInt
 
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
-    @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
+    @Transient lateinit private var centerTileInfo:TileInfo  // cached for better performance
     @Transient val range = 2
     @Transient lateinit var tileMap: TileMap
     @Transient lateinit var tilesInRange:HashSet<TileInfo>
@@ -115,7 +115,7 @@ class CityInfo {
 
 
 
-    fun getCenterTile(): TileInfo = ccenterTile
+    fun getCenterTile(): TileInfo = centerTileInfo
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
@@ -239,7 +239,7 @@ class CityInfo {
     //region state-changing functions
     fun setTransients() {
         tileMap = civInfo.gameInfo.tileMap
-        ccenterTile = tileMap[location]
+        centerTileInfo = tileMap[location]
         tilesInRange = getCenterTile().getTilesInDistance( 3).toHashSet()
         population.cityInfo = this
         expansion.cityInfo = this

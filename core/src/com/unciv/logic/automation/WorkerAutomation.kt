@@ -53,9 +53,9 @@ class WorkerAutomation(val unit: MapUnit) {
         val mostUndevelopedCity = unit.civInfo.cities
                 .filter { citiesToNumberOfUnimprovedTiles[it.name]!! > 0 }
                 .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.name] }
-                .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undeveloped city
+                .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
         if (mostUndevelopedCity != null && mostUndevelopedCity != unit.currentTile.owningCity) {
-            val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
+            val reachedTile = unit.movement.headTowards(mostUndevelopedCity.getCenterTile())
             if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
             return
         }
