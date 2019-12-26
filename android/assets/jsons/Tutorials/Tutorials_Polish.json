@@ -4,15 +4,13 @@
 
   Introduction: [
     [
-      "Welcome to Unciv!",
-      "Because this is a complex game, there are basic tasks to help familiarize you with the game.",
-      "These are completely optional, and you're welcome to explore the game on your own!"
+      "Witaj w grze Unciv!",
+      "Ponieważ jest to złożona gra, podane będą zadania krok po kroku, które pomogą Ci zapoznać się z grą.",
+      "Są one całkowicie opcjonalne, więc możesz odkrywać grę na własną ręke! (Wyłączane w Ustawieniach)"
     ]
   ],
   New_Game: [
     [
-      "Witaj w grze Unciv!",
-      "Gry cywilizacyjne mogą być złożone, więc poprowadzę Cię krok po kroku.",
       "Twoim pierwszym zadaniem jest założenie stolicy.",
       "To jest dosyć istotne zadanie gdyż Twoja stolica będzie przynosiła dużo korzyści jeżeli będzie leżała w dobrym miejscu.",
       "Wiele bonusów będzie nadawanych właśnie Twojej stolicy, a poza tym to stolica będzie prawdopodobnie w centrum Twojego imperium."
@@ -52,8 +50,8 @@
       " wybrać nowy Ustrój Społeczny, a co za tym idze otrzymasz bonus."
     ],
     [
-      "Ustroje są podzielone na drzewka, a każdo z nich dodaje dodatkową",
-      " zdolność którą otrzymasz po odblokowaniu całego drzewka."
+      "Ustroje są podzielone na gałęzie, a każdo z nich dodaje dodatkową",
+      " zdolność którą otrzymasz po odblokowaniu całej gałęzi."
     ],
     [
       "Z każdym nowym Ustrojem i z każdym nowym powstałym miastem",
@@ -99,9 +97,9 @@
   Golden_Age: [
     [
       "Brawo !",
-      "Twoje imperium wkroczyło w Złoty Wiek!",
-      "Punkty Złotego Wieku gromadzone są co ture bazując na Zadowoleniu Twojej cywilizacji",
-      "Podczas Złotego Wieku ilość zdobywanej Kultury i Produkcj wzrasta o 20%,",
+      "Twoje imperium wkroczyło w Złotą Erę!",
+      "Punkty Złotej Ery gromadzone są co ture bazując na Zadowoleniu Twojej cywilizacji",
+      "Podczas Złotej Ery ilość zdobywanej Kultury i Produkcj wzrasta o 20%,",
       " a każde pole które w tym momencie generuje co najmniej 1 Złoto, dodatkowo będzie dodawało jedno więcej."
     ]
   ],
@@ -148,7 +146,7 @@
   ],
   Luxury_Resource: [
     [
-      "Luksusowe Zasoby to nic innego jak droga do zysku z handlu.",
+      "Zasoby Luksusowe to nic innego jak droga do zysku z handlu.",
       "Każdy unikatowy Luksusowy Zasób dodaje 5 Zadowolenia Twojej cywilizacji,",
       " ale dodatkowe Zasoby tego samego typu nie dodają nic,",
       " więc można je dobrze spożytkować handlując nimi z innymi!"
