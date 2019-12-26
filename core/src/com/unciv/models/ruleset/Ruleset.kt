@@ -38,8 +38,6 @@ class Ruleset {
 
 
     fun <T> getFromJson(tClass: Class<T>, filePath:String): T {
-        val file = Gdx.files.internal(filePath)
-        if(!file.exists()) return tClass Array<>().first()
         val jsonText = Gdx.files.internal(filePath).readString(Charsets.UTF_8.name())
         return Json().apply { ignoreUnknownFields = true }.fromJson(tClass, jsonText)
     }
