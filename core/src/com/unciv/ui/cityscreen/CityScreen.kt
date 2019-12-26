@@ -12,9 +12,9 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Tutorial
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
@@ -151,7 +151,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         table.add(Label(turnsToPopString + " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
                 ,skin)).colspan(columns).row()
 
-        if (city.resistanceCounter > 0) {
+        if (city.isInResistance()) {
             table.add(Label("In resistance for another [${city.resistanceCounter}] turns".tr(),skin)).colspan(columns).row()
         }
 

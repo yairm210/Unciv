@@ -119,6 +119,11 @@ class CityInfo {
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
+    fun isCapital() = cityConstructions.isBuilt("Palace")
+    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
+    fun isInResistance() = resistanceCounter>0
+
+
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun getCityResources(): ResourceSupplyList {
@@ -224,9 +229,6 @@ class CityInfo {
         return stats
     }
 
-    fun isCapital() = cityConstructions.isBuilt("Palace")
-    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
-
     internal fun getMaxHealth(): Int {
         return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
     }
@@ -254,7 +256,7 @@ class CityInfo {
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
-        if (resistanceCounter > 0) resistanceCounter--
+        if (isInResistance()) resistanceCounter--
 
         if (isPuppet) reassignWorkers()
     }

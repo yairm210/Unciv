@@ -46,7 +46,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         }
 
 
-        if (city.resistanceCounter > 0) {
+        if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
         }

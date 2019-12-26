@@ -10,8 +10,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.ruleset.Building
-import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
@@ -152,7 +152,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         row()
         val purchaseConstructionButton: TextButton
-        if (construction.canBePurchased() && !city.isPuppet) {
+        if (!city.isPuppet && !city.isInResistance() && construction.canBePurchased()) {
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
             purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {

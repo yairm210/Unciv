@@ -474,7 +474,7 @@ class CityStats {
                     Stats().apply { production=totalFood; food=-totalFood }
         }
 
-        if (cityInfo.resistanceCounter > 0)
+        if (cityInfo.isInResistance())
             newFinalStatList.clear()  // NOPE
 
         if (newFinalStatList.values.map { it.production }.sum() < 1)  // Minimum production for things to progress
