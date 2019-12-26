@@ -18,7 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.tomgrill.gdxtesting.GdxTestRunner;
 
@@ -169,6 +172,27 @@ public class TranslationTests {
 		}
 		assertTrue("This test will only pass when there is a translation for all promotions",
 				true);
+	}
+
+	/** For every translatable string find its placeholders and check if all translations have them */
+	@Test
+	public void allTranslationsHaveCorrectPlaceholders() {
+	    boolean allTranslationsHaveCorrectPlaceholders = true;
+		Pattern placeholderPattern = Pattern.compile("\\[[^]]*\\]");
+		List<String> languages = translations.getLanguages();
+		for(String key: translations.keySet()) {
+			Matcher placeholdersMatcher = placeholderPattern.matcher(key);
+			while (placeholdersMatcher.find()) {
+				String placeholder = placeholdersMatcher.group();
+				for(String language : languages) {
+					if (!translations.get(key, language).contains(placeholder)) {
+					    allTranslationsHaveCorrectPlaceholders = false;
+					    System.out.println(String.format("Placeholder `%s` not found in `%s` language for key `%s`", placeholder, language, key));
+                    }
+				}
+			}
+		}
+		assertTrue(allTranslationsHaveCorrectPlaceholders);
 	}
 
 }
