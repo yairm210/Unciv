@@ -14,6 +14,9 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
+const val CLOSE_TURNS_AWAY_LIMIT = 3f
+const val CLOSE_TILES_AWAY_LIMIT = 5
+
 class UnitAutomation{
 
     fun automateUnitMoves(unit: MapUnit) {
@@ -80,7 +83,7 @@ class UnitAutomation{
 
         if (unit.health < 80 && tryHealUnit(unit, unitDistanceToTiles)) return
 
-        // find the closest enemy unit that we know of within 5 spaces and advance towards it
+        // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (unit.health < 100 && tryHealUnit(unit, unitDistanceToTiles)) return
@@ -198,9 +201,9 @@ class UnitAutomation{
     fun getAttackableEnemies(
             unit: MapUnit,
             unitDistanceToTiles: PathsToTilesWithinTurn,
-            tiles: List<TileInfo>? = null
+            tilesToCheck: List<TileInfo>? = null
     ): ArrayList<AttackableTile> {
-        val tilesWithEnemies = (tiles ?: unit.civInfo.viewableTiles)
+        val tilesWithEnemies = (tilesToCheck ?: unit.civInfo.viewableTiles)
             .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
         val rangeOfAttack = unit.getRange()
@@ -242,15 +245,20 @@ class UnitAutomation{
                 .filter { containsAttackableEnemy(it, CityCombatant(city)) }
     }
 
+    /** Move towards the closest attackable enemy of the [unit].
+     *
+     *  Limited by [CLOSE_TURNS_AWAY_LIMIT] and [CLOSE_TILES_AWAY_LIMIT].
+     *  Tiles attack from which would result in instant death of the [unit] are ignored. */
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
+        val unitDistanceToTiles = unit.movement.getDistanceToTilesWithinTurn(
+            unit.getTile().position,
+            unit.getMaxMovement() * CLOSE_TURNS_AWAY_LIMIT
+        )
         var closeEnemies = getAttackableEnemies(
             unit,
-            unit.movement.getDistanceToTilesWithinTurn(
-                unit.getTile().position,
-                unit.getMaxMovement() * 3f
-            ),
-            tiles = unit.getTile().getTilesInDistance(5)
+            unitDistanceToTiles,
+            tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_TILES_AWAY_LIMIT)
         ).filter {
             BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
                 Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
