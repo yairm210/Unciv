@@ -14,10 +14,13 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
-const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
-const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
 
 class UnitAutomation{
+
+    companion object {
+        const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
+        const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
+    }
 
     fun automateUnitMoves(unit: MapUnit) {
 
