@@ -550,42 +550,42 @@ BuildingIcons/Statue of Liberty
   orig: 100, 100
   offset: 0, 0
   index: -1
-FlagIcons/Bahasa_Indonesia
+FlagIcons/Czech
   rotate: false
   xy: 1868, 1728
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Czech
+FlagIcons/Dutch
   rotate: false
   xy: 1262, 1706
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/Dutch
+FlagIcons/English
   rotate: false
   xy: 1392, 1706
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/English
+FlagIcons/French
   rotate: false
   xy: 1522, 1706
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/French
+FlagIcons/German
   rotate: false
   xy: 1652, 1706
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
-FlagIcons/German
+FlagIcons/Indonesian
   rotate: false
   xy: 583, 1670
   size: 128, 128
