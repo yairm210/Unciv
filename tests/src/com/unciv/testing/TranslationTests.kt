@@ -146,4 +146,29 @@ class TranslationTests {
         Assert.assertTrue("This test will only pass when there is a translation for all promotions",
                 true)
     }
+
+    /** For every translatable string find its placeholders and check if all translations have them */
+    @Test
+    fun allTranslationsHaveCorrectPlaceholders() {
+        val placeholderPattern = """\[[^]]*]""".toRegex()
+        var allTranslationsHaveCorrectPlaceholders = true
+        val languages = translations.getLanguages()
+        for (key in translations.keys) {
+            val placeholders = placeholderPattern.findAll(key).map { it.value }.toList()
+            for (language in languages) {
+                placeholders.forEach { placeholder ->
+                    if(!translations.get(key, language).contains(placeholder)) {
+                        allTranslationsHaveCorrectPlaceholders = false
+                        println("Placeholder `$placeholder` not found in `$language` for key `$key`")
+                    }
+                }
+
+            }
+        }
+        Assert.assertTrue(
+            "This test will only pass when all translations' placeholders match those of the key",
+            allTranslationsHaveCorrectPlaceholders
+        )
+    }
+
 }
