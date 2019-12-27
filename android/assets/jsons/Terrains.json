@@ -240,5 +240,15 @@
 		unbuildable: true,
 		weight: 10
 	},
+	{
+		name: "El Dorado",
+		type: "NaturalWonder",
+		culture: 5,
+		occursOn: ["Plains"],
+		impassable: true,
+		unbuildable: true,
+		unique:["Grants 500 Gold to the first player that discovers it"],
+		weight: 10
+	},
 	*/
 ]	
