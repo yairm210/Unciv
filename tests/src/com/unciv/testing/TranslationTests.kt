@@ -3,6 +3,7 @@ package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
+import com.unciv.JsonParser
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.Translations
@@ -10,12 +11,13 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
+import java.util.HashSet
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
-    var translations = Translations()
-    var ruleSet = Ruleset(true)
+    private var translations = Translations()
+    private var ruleSet = Ruleset(true)
+    private val jsonParser = JsonParser()
 
     @Before
     fun loadTranslations() {
@@ -39,8 +41,8 @@ class TranslationTests {
     fun allUnitUniquesHaveTranslation() {
         val strings: MutableSet<String> = HashSet()
         for (unit in ruleSet.units.values) for (unique in unit.uniques) if (!unique.startsWith("Bonus")
-                && !unique.startsWith("Penalty")
-                && !unique.contains("[")) // templates
+                                                                            && !unique.startsWith("Penalty")
+                                                                            && !unique.contains("[")) // templates
             strings.add(unique)
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue(allStringsHaveTranslation)
@@ -141,7 +143,7 @@ class TranslationTests {
     @Test
     fun allTranslatedNationsFilesAreSerializable() {
         for (file in Gdx.files.internal("jsons/Nations").list()) {
-            ruleSet.getFromJson(Array<Nation>().javaClass, file.path())
+            jsonParser.getFromJson(Array<Nation>().javaClass, file.path())
         }
         Assert.assertTrue("This test will only pass when there is a translation for all promotions",
                 true)
@@ -157,18 +159,16 @@ class TranslationTests {
             val placeholders = placeholderPattern.findAll(key).map { it.value }.toList()
             for (language in languages) {
                 placeholders.forEach { placeholder ->
-                    if(!translations.get(key, language).contains(placeholder)) {
+                    if (!translations.get(key, language).contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
                         println("Placeholder `$placeholder` not found in `$language` for key `$key`")
                     }
                 }
-
             }
         }
         Assert.assertTrue(
-            "This test will only pass when all translations' placeholders match those of the key",
-            allTranslationsHaveCorrectPlaceholders
+                "This test will only pass when all translations' placeholders match those of the key",
+                allTranslationsHaveCorrectPlaceholders
         )
     }
-
 }

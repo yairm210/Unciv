@@ -25,7 +25,15 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.centerX
+import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
@@ -121,12 +129,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             }, Actions.delay(10f)))) // delay is in seconds
         }
 
+        tutorialController.allTutorialsShowedCallback = {
+            shouldUpdate = true
+        }
+
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
-        shouldUpdate=true
+        shouldUpdate = true
     }
 
-    fun loadLatestMultiplayerState(){
+    private fun loadLatestMultiplayerState(){
         val loadingGamePopup = PopupTable(this)
         loadingGamePopup.add("Loading latest game state...")
         loadingGamePopup.open()
@@ -430,7 +442,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    fun updateNextTurnButton(isSomethingOpen: Boolean) {
+    private fun updateNextTurnButton(isSomethingOpen: Boolean) {
         val text = when {
             !isPlayersTurn -> "Waiting for other players..."
             viewingCiv.shouldGoToDueUnit() -> "Next unit"

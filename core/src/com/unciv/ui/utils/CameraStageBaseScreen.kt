@@ -7,10 +7,24 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
@@ -26,7 +40,9 @@ open class CameraStageBaseScreen : Screen {
     var stage: Stage
     var hasPopupOpen = false
 
-    private var tutorialController: TutorialController? = null
+    val tutorialController by lazy {
+        TutorialController(TutorialMiner(JsonParser()), TutorialRender(this))
+    }
 
     init {
         val width:Float
@@ -40,9 +56,7 @@ open class CameraStageBaseScreen : Screen {
         height = resolutions[1]
 
         stage = Stage(ExtendViewport(width, height), batch)
-
     }
-
 
     override fun show() {}
 
@@ -67,14 +81,11 @@ open class CameraStageBaseScreen : Screen {
     override fun dispose() {}
 
     fun displayTutorial(tutorial: Tutorial) {
-        if (tutorialController == null) {
-            tutorialController = TutorialController(TutorialMiner(), TutorialRender(this))
-        }
-        tutorialController?.showTutorial(tutorial)
+        tutorialController.showTutorial(tutorial)
     }
 
     fun hasVisibleDialogs(): Boolean =
-            tutorialController?.isTutorialShowing() == true || stage.actors.any { it is TradePopup } || hasPopupOpen
+            tutorialController.isTutorialShowing() || stage.actors.any { it is TradePopup } || hasPopupOpen
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))

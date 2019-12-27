@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.NextTurnAutomation
@@ -26,6 +27,9 @@ import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 
 class CivilizationInfo {
+
+    private val jsonParser = JsonParser()
+
     @Transient lateinit var gameInfo: GameInfo
     @Transient lateinit var nation:Nation
     /**
@@ -117,7 +121,7 @@ class CivilizationInfo {
         val language = UncivGame.Current.settings.language.replace(" ","_")
         val filePath = "jsons/Nations/Nations_$language.json"
         if(!Gdx.files.internal(filePath).exists()) return nation
-        val translatedNation = gameInfo.ruleSet.getFromJson(Array<Nation>::class.java, filePath)
+        val translatedNation = jsonParser.getFromJson(Array<Nation>::class.java, filePath)
                 .firstOrNull { it.name==civName}
         if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
             return nation      // default to english
