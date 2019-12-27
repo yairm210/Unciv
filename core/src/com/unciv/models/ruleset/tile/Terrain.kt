@@ -10,19 +10,26 @@ class Terrain : NamedStats() {
     fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
         sb.appendln(this.clone().toString())
-        if (occursOn != null) {
+        if (occursOn != null)
             sb.appendln("Occurs on [${occursOn.joinToString(", ")}]".tr())
-        }
-        val resourcesFound = ruleset.tileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
-        if (resourcesFound.isNotEmpty()) {
-            sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
-        }
-        sb.appendln("{Movement cost}: $movementCost".tr())
-        if (defenceBonus != 0f) {
-            sb.appendln("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
-        }
 
-        if (rough)  sb.appendln("Rough Terrain".tr())
+        if (turnsInto != null)
+            sb.appendln("Placed on [${turnsInto.tr()}]".tr())
+
+        val resourcesFound = ruleset.tileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
+        if (resourcesFound.isNotEmpty())
+            sb.appendln("May contain [${resourcesFound.joinToString(", ") { it.name.tr() }}]".tr())
+
+        if(uniques.isNotEmpty())
+            sb.appendln(uniques.joinToString { it.tr() })
+
+        sb.appendln("{Movement cost}: $movementCost".tr())
+
+        if (defenceBonus != 0f)
+            sb.appendln("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
+
+        if (rough)
+            sb.appendln("Rough Terrain".tr())
 
         return sb.toString()
     }
@@ -46,6 +53,16 @@ class Terrain : NamedStats() {
      * For terrain features
      */
     val occursOn: Collection<String>? = null
+
+    /***
+     * Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed
+     */
+    val turnsInto: String? = null
+
+    /**
+     * Uniques (currently used only for Natural Wonders)
+     */
+    val uniques = ArrayList<String>()
 
     /*
      * Natural Wonder weight: probability to be picked

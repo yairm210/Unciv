@@ -280,7 +280,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -306,7 +306,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -330,7 +330,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -357,7 +357,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.coast
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
 
             val location2 = location.neighbors
@@ -365,7 +365,7 @@ class MapGenerator {
                     .random()
 
             location2.naturalWonder = wonder.name
-            location2.baseTerrain = Constants.coast
+            location2.baseTerrain = wonder.turnsInto!!
             location2.terrainFeature = null
         }
         else {
@@ -388,7 +388,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
 
             for (tile in location.neighbors) {
@@ -421,7 +421,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
 
             for (tile in location.neighbors) {
@@ -458,7 +458,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -479,7 +479,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -500,7 +500,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.plains
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -519,7 +519,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.plains
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
