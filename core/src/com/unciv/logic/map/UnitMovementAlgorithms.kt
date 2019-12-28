@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 class UnitMovementAlgorithms(val unit:MapUnit) {
 
     // This function is called ALL THE TIME and should be as time-optimal as possible!
-    private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
+     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
 
         if ((from.isLand != to.isLand) && unit.type.isLandUnit())
             return 100f // this is embarkment or disembarkment, and will take the entire turn

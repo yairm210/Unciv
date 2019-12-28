@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -244,7 +245,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
         else {
-            val tiles = UnitAutomation().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
+            val tiles = BattleHelper().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
             tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         }
 
