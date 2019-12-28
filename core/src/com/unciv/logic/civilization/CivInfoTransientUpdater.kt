@@ -183,7 +183,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
         if(!initialSetup){ // In the initial setup we're loading an old game state, so it doesn't really count
             for(city in citiesReachedToMediums.keys)
-                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo)
+                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo && city != civInfo.getCapital())
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",city.location, Color.GOLD)
 
             for(city in civInfo.citiesConnectedToCapital)
