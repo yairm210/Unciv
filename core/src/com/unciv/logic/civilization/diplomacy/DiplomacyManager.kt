@@ -415,8 +415,14 @@ class DiplomacyManager() {
     fun makePeace(){
         diplomaticStatus= DiplomaticStatus.Peace
 
-        getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!", null, Color.WHITE)
+        if (otherCiv().isAtWarWith(civInfo)) {
+            getCommonKnownCivs().forEach {
+                it.addNotification(
+                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
+                    null,
+                    Color.WHITE
+                )
+            }
         }
 
         val otherCiv = otherCiv()
@@ -477,7 +483,7 @@ class DiplomacyManager() {
             }
         }
     }
-    
+
     fun denounce(){
         setModifier(DiplomaticModifiers.Denunciation,-35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation,-35f)
