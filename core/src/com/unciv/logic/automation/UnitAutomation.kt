@@ -273,7 +273,7 @@ class UnitAutomation{
         val closestEnemy = closeEnemies.minBy { it.tileToAttack.arialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
-            unit.movement.headTowards(closestEnemy.tileToAttack)
+            unit.movement.headTowards(closestEnemy.tileToAttackFrom)
             return true
         }
         return false
