@@ -93,7 +93,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }
                     .flatMap { it.naturalWonders }
-            if (tile.naturalWonder == "El Dorado" && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+            if (tile.containsUnique("Grants 500 Gold to the first civilization to discover it")
+                    && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
                 goldGained += 500
             }
 

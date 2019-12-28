@@ -83,6 +83,16 @@ class TranslationTests {
     }
 
     @Test
+    fun allTerrainUniquesHaveTranslation() {
+        val strings: MutableSet<String> = HashSet()
+        for (terrain in ruleSet.terrains.values) {
+            strings.addAll(terrain.uniques)
+        }
+        val allStringsHaveTranslation = allStringAreTranslated(strings)
+        Assert.assertTrue("This test will only pass when there is a translation for all terrain uniques", allStringsHaveTranslation)
+    }
+
+    @Test
     fun allImprovementsHaveTranslation() {
         val strings: Set<String> = ruleSet.tileImprovements.keys
         val allStringsHaveTranslation = allStringAreTranslated(strings)
