@@ -584,6 +584,23 @@
 		//Camel Archer should have no penalty attacking cities
 	},
 	{
+		name:"Conquistador",
+		replaces:"Knight",
+		uniqueTo:"Spain",
+		unitType:"Mounted",
+		movement:4,
+		strength:20,
+		cost: 135,
+		requiredTech:"Chivalry",
+		requiredResource:"Horses",
+		upgradesTo:"Cavalry",
+		obsoleteTech:"Military Science",
+		uniques:["Can move after attacking","No defensive terrain bonus", "Founds a new city", "+2 Visibility Range", "Defense bonus when embarked"],
+		hurryCostModifier:20,
+		attackSound:"horse"
+		//Conquistador should have no penalty attacking cities
+	},
+	{
 		name:"Naresuan's Elephant",
 		unitType:"Mounted",
 		replaces:"Knight",
@@ -732,6 +749,21 @@
 		obsoleteTech:"Rifling",
 		uniques:["Ignores terrain cost"]
 		promotions:["Drill I"],
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	{
+		name:"Tercio",
+		unitType:"Melee",
+		replaces:"Musketman",
+		uniqueTo:"Spain",
+		movement:2,
+		strength:26,
+		cost: 160,
+		requiredTech:"Gunpowder",
+		upgradesTo:"Rifleman",
+		obsoleteTech:"Rifling",
+		uniques:["Bonus vs Mounted 50%"],
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},

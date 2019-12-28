@@ -136,6 +136,7 @@ class MapUnit {
         else {
             var visibilityRange = 2
             visibilityRange += getUniques().count { it == "+1 Visibility Range" }
+            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
             if (civInfo.nation.unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
                 visibilityRange += 1
