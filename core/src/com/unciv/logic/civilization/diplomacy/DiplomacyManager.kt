@@ -466,12 +466,8 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
 
-        getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
-        }
-
-        for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
-            if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
+        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
+            thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when(thirdCivRelationshipWithOtherCiv){
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,-15f)
@@ -489,13 +485,10 @@ class DiplomacyManager() {
         otherCivDiplomacy().setFlag(DiplomacyFlags.Denunceation,30)
 
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
-        getCommonKnownCivs().forEach {
-            it.addNotification("[${civInfo.civName}] has denounced [${otherCiv().civName}]!", null, Color.RED)
-        }
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
-            if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
+        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
+            thirdCiv.addNotification("[${civInfo.civName}] has denounced [${otherCiv().civName}]!", null, Color.RED)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when(thirdCivRelationshipWithOtherCiv){
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DenouncedOurEnemies,15f)
