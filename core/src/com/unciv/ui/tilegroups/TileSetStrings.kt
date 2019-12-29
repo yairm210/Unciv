@@ -24,6 +24,7 @@ class TileSetStrings {
     val waterUnit = unitsLocation+"WaterUnit"
 
     private val baseTerrainToTile = HashMap<String,String>()
+
     fun getTile(baseTerrain:String): String {
         if(!baseTerrainToTile.containsKey(baseTerrain))
             baseTerrainToTile[baseTerrain] = "$tilesLocation$baseTerrain"
