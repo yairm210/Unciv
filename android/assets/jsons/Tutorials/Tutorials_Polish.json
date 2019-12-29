@@ -50,7 +50,7 @@
       " wybrać nowy Ustrój Społeczny, a co za tym idze otrzymasz bonus."
     ],
     [
-      "Ustroje są podzielone na gałęzie, a każdo z nich dodaje dodatkową",
+      "Ustroje są podzielone na gałęzie, a każda z nich dodaje dodatkową",
       " zdolność którą otrzymasz po odblokowaniu całej gałęzi."
     ],
     [
@@ -85,12 +85,12 @@
       " Twoje jednostki będą słabsze o 2% za każde Niezadowolenie"
     ],
     [
-      "Niezadowolenie ma 2 przyczyny: Cywile i Miasta.",
-      " Każde miasto odbiera 3 Zadowolenia a każdy Cywil 1."
+      "Niezadowolenie ma 2 przyczyny: Obywatele i Miasta.",
+      " Każde miasto odbiera 3 Zadowolenia a każdy Obywatel 1."
     ],
     [
       "Są 2 główne sposoby na radzenie sobie z Niezadowoleniem:",
-      " - budowanie konstrukcji przynoszących Zadowolenie Cywilom",
+      " - budowanie konstrukcji przynoszących Zadowolenie Obywatelom",
       " - pozyskanie lepszych Luksusowych Zasobów."
     ]
   ],
@@ -176,8 +176,8 @@
     [
       "Uczynienie z Miasta marionetki oznacza tyle co czerpanie z niego korzyści ale brak kontroli nad produkcją.",
       "Samo Miasto nie zwiększy kosztów Technologii czy Ustroi Społecznych, ale jego mieszkańcy będą generować 1.5x podstawowego Niezadowolenia.",
-      "Zaanektowanie Miasta da Ci kontrolę nad produkcją, ale tym samym zwiększy przyrost Niezadowolenia Cywili dwukrotnie!",
-      "Złagodzić to może zbudowanie Sądu w mieście, co przywróci Niezadowolenie Cywili do normy.",
+      "Zaanektowanie Miasta da Ci kontrolę nad produkcją, ale tym samym zwiększy przyrost Niezadowolenia Obywateli dwukrotnie!",
+      "Złagodzić to może zbudowanie Sądu w mieście, co przywróci Niezadowolenie Obywateli do normy.",
       "Miasta-marionetki mogą zostać zaanektowane, ale w drugą stronę to już nie zadziała!"
     ]
   ],
@@ -239,7 +239,7 @@
     [
       "Twoi mieszkańcy mogą pracować do 3 pól od centrum Miasta.",
       "Nawet jeżeli granice miasta się poszerzą, to dystans",
-      " dla Cywili pozostaje ten sam."
+      " dla Obywateli pozostaje ten sam."
     ]
   ],
   Idle_Units: [
