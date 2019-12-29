@@ -106,6 +106,7 @@ class UnitAutomation{
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if(unit.civInfo.isBarbarian()) return false
+        if(unit.type==UnitType.Missile) return false // don't use missiles against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement==Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
@@ -273,7 +274,7 @@ class UnitAutomation{
         val closestEnemy = closeEnemies.minBy { it.tileToAttack.arialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
-            unit.movement.headTowards(closestEnemy.tileToAttack)
+            unit.movement.headTowards(closestEnemy.tileToAttackFrom)
             return true
         }
         return false

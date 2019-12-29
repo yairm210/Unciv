@@ -68,6 +68,9 @@ open class TileInfo {
         return false
     }
 
+    fun containsUnique(unique: String): Boolean {
+        return isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
+    }
     //region pure functions
 
     /** Returns military, civilian and air units in tile */

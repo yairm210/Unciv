@@ -429,7 +429,7 @@ class MapUnit {
 
         if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary())
         {
-            val gainDoubleHealPromotion = tile.neighbors.filter{it.naturalWonder == "Fountain of Youth"}.any()
+            val gainDoubleHealPromotion = tile.neighbors.any{it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game")}
             if (gainDoubleHealPromotion)
                 promotions.addPromotion("Rejuvenation", true)
         }
