@@ -209,7 +209,6 @@
 		unbuildable: true,
 		weight: 10
 	},
-	/** Yukky tile images
 	{
 		name: "Krakatoa",
 		type: "NaturalWonder",
@@ -252,5 +251,4 @@
 		unbuildable: true,
 		weight: 10
 	},
-	*/
 ]	
