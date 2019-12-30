@@ -416,8 +416,8 @@ class DiplomacyManager() {
         diplomaticStatus= DiplomaticStatus.Peace
 
         if (otherCiv().isAtWarWith(civInfo)) {
-            getCommonKnownCivs().forEach {
-                it.addNotification(
+            for (civ in getCommonKnownCivs()) {
+                civ.addNotification(
                     "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
                     null,
                     Color.WHITE
@@ -472,7 +472,7 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
 
-        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when(thirdCivRelationshipWithOtherCiv){
