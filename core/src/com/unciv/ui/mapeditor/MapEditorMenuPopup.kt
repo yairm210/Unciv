@@ -24,7 +24,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
         
         val clearCurrentMapButton = TextButton("Clear current map".tr(),skin)
         clearCurrentMapButton.onClick {
-            for(tileGroup in mapEditorScreen.mapHolder.tileGroups)
+            for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values)
             {
                 val tile = tileGroup.tileInfo
                 tile.baseTerrain=Constants.ocean

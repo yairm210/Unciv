@@ -307,7 +307,7 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
             val button = TextButton(unit.name.tr(), skin)
             button.onClick {
                 UncivGame.Current.setWorldScreen()
-                UncivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
+                UncivGame.Current.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
             }
             table.add(button).left()
             val mapUnitAction = unit.mapUnitAction

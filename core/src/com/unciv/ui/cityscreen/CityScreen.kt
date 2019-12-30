@@ -17,7 +17,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.TileGroupMap
+import com.unciv.ui.map.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor

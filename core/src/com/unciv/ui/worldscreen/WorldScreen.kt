@@ -48,8 +48,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
     var waitingForAutosave = false
 
-    val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
-    val minimapWrapper = MinimapHolder(tileMapHolder)
+    val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
+    val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
@@ -76,7 +76,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        tileMapHolder.addTiles()
+        mapHolder.addTiles()
 
         techButtonHolder.touchable=Touchable.enabled
         techButtonHolder.onClick(UncivSound.Paper) {
@@ -92,7 +92,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             techPolicyAndVictoryHolder.add(policyScreenButton).pad(10f)
         }
 
-        stage.addActor(tileMapHolder)
+        stage.addActor(mapHolder)
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
@@ -119,7 +119,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     viewingCiv.getCivUnits().isNotEmpty() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
-        tileMapHolder.setCenterPosition(tileToCenterOn,true)
+        mapHolder.setCenterPosition(tileToCenterOn,true)
 
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
@@ -173,7 +173,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
+        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile!!)
         bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
         bottomTileInfoTable.y = if (UncivGame.Current.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
@@ -198,7 +198,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
-        tileMapHolder.updateTiles(viewingCiv)
+        mapHolder.updateTiles(viewingCiv)
 
         topBar.update(viewingCiv)
 
@@ -344,7 +344,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             if (viewingCiv.shouldGoToDueUnit()) {
                 val nextDueUnit = viewingCiv.getNextDueUnit()
                 if(nextDueUnit!=null) {
-                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
                     bottomUnitTable.selectedUnit = nextDueUnit
                     shouldUpdate=true
                 }
@@ -413,11 +413,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 fun createNewWorldScreen(){
                     val newWorldScreen = WorldScreen(gameInfoClone.getPlayerToViewAs())
-                    newWorldScreen.tileMapHolder.scrollX = tileMapHolder.scrollX
-                    newWorldScreen.tileMapHolder.scrollY = tileMapHolder.scrollY
-                    newWorldScreen.tileMapHolder.scaleX = tileMapHolder.scaleX
-                    newWorldScreen.tileMapHolder.scaleY = tileMapHolder.scaleY
-                    newWorldScreen.tileMapHolder.updateVisualScroll()
+                    newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
+                    newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
+                    newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
+                    newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
+                    newWorldScreen.mapHolder.updateVisualScroll()
                     game.worldScreen = newWorldScreen
                     game.setWorldScreen()
                 }

@@ -7,11 +7,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.TileMapHolder
+import com.unciv.ui.worldscreen.WorldMapHolder
 
 class IdleUnitButton (
         internal val unitTable: UnitTable,
-        val tileMapHolder: TileMapHolder,
+        val tileMapHolder: WorldMapHolder,
         val previous:Boolean
 ) : Table() {
 

@@ -61,8 +61,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun tryGetDefender(): ICombatant? {
         val attackerCiv = worldScreen.viewingCiv
-        if (worldScreen.tileMapHolder.selectedTile == null) return null // no selected tile
-        val selectedTile = worldScreen.tileMapHolder.selectedTile!!
+        if (worldScreen.mapHolder.selectedTile == null) return null // no selected tile
+        val selectedTile = worldScreen.mapHolder.selectedTile!!
 
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
@@ -197,7 +197,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.onClick {
                 try {
                     battle.moveAndAttack(attacker, attackableEnemy)
-                    worldScreen.tileMapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                    worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
