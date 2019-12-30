@@ -32,10 +32,10 @@
 		outerColor:[27,53,63],
 		innerColor:[213,249,255],
 		uniqueName:"Винахідливість",
-		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
-		cities:["Вавилон","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
-			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+		unique:"Отримайте безкоштовно Великого вченого, коли відкриєте для себе Письмо, народження Великих Вчених на 50% швидше",
+		cities:["Вавилон","Аккад","Дур-Курігальзу","Ніппур","Борсіппа","Сіппар","Opis","Марі","Сузи","Ешнунна",
+			"Ellasar","Урук","Кута","Sirpurla","Neribtum","Ашшур","Ніневія","Німруд","Ербіль","Nuzi",
+			"Аррапха","Tutub","Шадуппум","Rapiqum","Машкан-Шапір","Туттуль","Ramad","Ана","Haradum","Agrab"]
 	},
 	{
 		name:"Greece",
@@ -68,7 +68,7 @@
 
 		outerColor:[181, 232, 232],
 		innerColor:[68,142,249],
-		uniqueName:"Hellenic League",
+		uniqueName:"Грецька ліга",
 		unique:"City-State Influence degrades at half and recovers at twice the normal rate",
 		cities:["Афіни","Спарта","Коринф","Аргос","Kносс","Мікени","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Еретрія","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
@@ -76,44 +76,44 @@
 	},
 	{
 		name:"China",
-    translatedName:"",
-		leaderName:"Wu Zetian",
+    translatedName:"Китай",
+		leaderName:"У Цзетянь",
 		adjective:["Chinese"],
 		preferredVictoryType:"Scientific",
 
 		startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
 		startIntroPart2: "You, great Queen, who, with cunning and beauty, rose from the position of lowly concubine to that of Divine Empress - your people call out to you to lead them! Great China is once again beset on all sides by barbarians. Can you defeat all your many foes and return your country to greatness? Can you build a civilization to stand the test of time?"
 
-		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
-		attacked:"Fool! I will disembowel you all!"
-		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
-		introduction:"Greetings, I am Empress Wu Zetian. China desires peace and development. You leave us alone, we'll leave you alone."
+		declaringWar:"Ви більше ніколи не зможете мене потурбувати. Іди назустріч Ямі."
+		attacked:"Дурень! Я вас знищу!"
+		defeated:"Ви зарекомендували себе як хитрий та грамотний противник. Вітаю вас з перемогою."
+		introduction:"Вітаю, я імператриця У Цзетянь. Китай бажає миру та розвитку. Не турбуйте нас, і ми не турбуватимемо вас."
 
-		neutralHello:"How are you today?"
-		neutralLetsHearIt:["Continue.","What?","Keep going."]
-		neutralNo:["Nope.","Of course not.","Definitely not."]
-		neutralYes:["Of course.","I agree.","Excellent!"]
+		neutralHello:"Як справи?"
+		neutralLetsHearIt:["Продовжуй.","Що?","Не зупиняйся."]
+		neutralNo:["Ні.","Звісно, ні.","Точно ні."]
+		neutralYes:["Звісно.","Я підтверджую.","Чудово!"]
 
-		hateHello:"Oh. It's you?"
-		hateLetsHearIt:["And what else?","Keep talking."]
-		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
-		hateYes:["I suppose I must accept.","Ah. Very good."]
+		hateHello:"Ох, знову ти?"
+		hateLetsHearIt:["І що ще?","Продовжуй."]
+		hateNo:["Я не можу прийняти це.","Вибач, повтори знову.","Забирайся з очей моїх!"]
+		hateYes:["Здається, у мене немає вибору.","Ах. Чудово."]
 
 		afterPeace:"The Blessings of Heaven be upon you."
-		tradeRequest:"My friend, do you think you can accept this request?"
+		tradeRequest:"Друже, чи не міг би ти прийняти це?"
 
 		outerColor:[9, 112, 84],
 		innerColor:[255,255,255],
-		uniqueName:"Art of War",
-		unique:"Great general provides double combat bonus, and spawns 50% faster"
-		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
-			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+		uniqueName:"Мистецтво війни",
+		unique:"Бонус сили видатних генералів подвоюється. Видатні генерали народжуються на 50% швидше"
+		cities:["Пекін","Шанхай","Гуанчжоу","Нанкін","Сіань","Ченду","Ханчжоу","Тяньцзінь","Макао","Шаньдун",
+			"Кайфенг","Нінбо","Баодінг","Янчжоу","Харбін","Чунцін","Лоян","Куньмін","Тайбей","Шеньян",
+			"Тайюань","Тайнань","Далянь","Ліцзян","Усі","Сучжоу","Маомін","Шаогуань","Янцзян","Хеюань"]
 	},
 	{
 		name:"Egypt",
-    translatedName:"",
-		leaderName:"Ramesses II",
+    translatedName:"Єгипет",
+		leaderName:"Рамсес II",
 		adjective:["Egyptian"],
 		startBias:["Avoid Jungle","Avoid Forest"],
 		preferredVictoryType:"Cultural",
@@ -121,36 +121,36 @@
 		startIntroPart1: "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud.",
 		startIntroPart2: "Oh, Ramesses, for uncounted years your people endured, as other petty nations around them have risen and then fallen into dust. They look to you to lead them once more into greatness. Can you honor the gods and bring Egypt back to her rightful place at the very center of the world? Can you build a civilization that will stand the test of time?",
 
-		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
-		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
+		declaringWar:"Ви — шкідник на цій планеті! Приготуйтесь до знищення!",
+		attacked:"Ти дурень, який викликає лише жалість. Вам, та вашій гидкій цивілізації скоро прийде кінець!",
 		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
-		introduction:"Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
+		introduction:"Вітаю, Я - бог Рамсес. Я живе втілення Єгипту, мати і батько всіх цивілізацій.",
 
-		neutralHello:"Good day.",
-		neutralLetsHearIt:["Go on.","Speak.","I am all ears."],
-		neutralNo:["No.","Definitely not."],
-		neutralYes:["Okay.","Very well."],
+		neutralHello:"Доброго дня.",
+		neutralLetsHearIt:["Продовжуй.","Не зупиняйся.","Я слухаю."],
+		neutralNo:["Ні.","Звісно ні."],
+		neutralYes:["Добре.","Чудово."],
 
-		hateHello:"Oh, it's you.",
-		hateLetsHearIt:["Then?","Finish your speech."],
-		hateNo:["This is unacceptable.","You cannot be serious about your request."],
-		hateYes:["Oh, very well.","I think I should agree."],
+		hateHello:"Ох, це ти.",
+		hateLetsHearIt:["І?","Завершуй."],
+		hateNo:["Це неприпустимо.","Ти можеш більш серйозно ставитись до свого запиту?"],
+		hateYes:["Ох, чудово.","Я змушений прийняти це."],
 
-		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today.",
-		tradeRequest:"Generous Egypt makes you this offer.",
+		afterPeace:"Ви знаєте, що я міг знищити вас, але сьогодні щедрість переповнює мене.",
+		tradeRequest:"Щедрий Єгипет пропонує вам цю пропозицію.",
 
 		outerColor:[ 231, 213, 0],
 		innerColor:[98,10,210],
-		uniqueName:"Monument Builders",
+		uniqueName:"Будівництво пам'ятників",
 		unique:"+20% production towards Wonder construction",
-		cities:["Тибет","Мемфіс","Heliopolis","Elephantine","Александрія","Pi-Ramesses","Гіза","Бібл","Akhetaten","Hieraconpolis",
-			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
-			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+		cities:["Тибет","Мемфіс","Геліополь","Елефантина","Александрія","Пер-Рамсес","Гіза","Бібл","Амарна","Ієраконполіс",
+			"Абідос","Асьют","Аваріс","Лішт","Буто","Едфу","Піфом","Бусиріс","Кахун","Атрибіс",
+			"Мендес","Elashmunein","Таніст","Бубастіс","Орикс","Себенніт","Ахмім","Карнак","Луксор","Ель Каб"]
 	},
 	{
 		name:"England",
-    translatedName:"",
-		leaderName:"Elizabeth",
+    translatedName:"Англія",
+		leaderName:"Єлизавета I",
 		adjective:["English"],
 		startBias:["Coast"],
 		//preferredVictoryType:"Diplomatic",
@@ -158,36 +158,36 @@
 		startIntroPart1: "Praises upon her serene highness, Queen Elizabeth Gloriana. You lead and protect the celebrated maritime nation of England. England is an ancient land, settled as early as 35,000 years ago. The island has seen countless waves of invaders, each in turn becoming a part of the fabric of the people. Although England is a small island, for many years your people dominated the world stage. Their matchless navy, brilliant artists and shrewd merchants, giving them power and influence far in excess of their mere numbers."
 		startIntroPart2: "Queen Elizabeth, will you bring about a new golden age for the English people? They look to you once more to return peace and prosperity to the nation. Will you take up the mantle of greatness? Can you build a civilization that will stand the test of time?"
 
-		declaringWar:"By the grace of God, your days are numbered."
-		attacked:"We shall never surrender."
-		defeated:"You have triumphed over us. The day is yours."
-		introduction:"We are pleased to meet you."
+		declaringWar:"Боги благословили мене, твої дні злічені."
+		attacked:"Ми ніколи не здамося."
+		defeated:"Ви здобули перемогу над нами. Це твій день."
+		introduction:"Ми раді зустріти вас."
 
-		neutralHello:"Hello, again."
-		neutralLetsHearIt:["Go on.","Go ahead."]
-		neutralNo:["I beg your pardon?","That's unacceptable!"]
-		neutralYes:["Certainly!","Very well!"]
+		neutralHello:"Привіт, знову."
+		neutralLetsHearIt:["Продовжуй.","Не зупиняйся."]
+		neutralNo:["Перепрошую?","Це неприпустимо!"]
+		neutralYes:["Абсолютно!","Чудово!"]
 
-		hateHello:"Oh, it's you!"
-		hateLetsHearIt:["I'm listening.","You were saying?"]
-		hateNo:["You cannot be serious.","Of course not!"]
-		hateYes:["Oh, very well!","I suppose I must!"]
+		hateHello:"О, ти!"
+		hateLetsHearIt:["Я слухаю.","Ви щось сказали?"]
+		hateNo:["Ти можеш бути серйозним?.","Звісно що ні!"]
+		hateYes:["Ох, чудово!","Схоже, я змушена!"]
 
-		afterPeace:"Well then, that's settled."
-		tradeRequest:"Would you be interested in a trade agreement with England?"
+		afterPeace:"Ну, тоді все врегульовано."
+		tradeRequest:"Ви зацікавлені в підписанні торгівельної угоди з Англією?"
 
 		outerColor:[ 114, 0, 0],
 		innerColor:[255,255,255],
-		uniqueName:"Sun Never Sets"
-		unique:"+2 movement for all naval units"
-		cities:["Лондон","Йорк","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Оксфорд","Ліверпуль",
+		uniqueName:"Сонце ніколи не заходить"
+		unique:"+2 пересування для кожного морського підрозділу"
+		cities:["Лондон","Йорк","Ноттінгем","Гастінгс","Кентербері","Ковентрі","Ворвік","Ньюкасл-апон-Тайн","Оксфорд","Ліверпуль",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Кембрідж","Gloucester",
 			"Манчестер","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
 	},
 	{
 		name:"France",
-    translatedName:"",
-		leaderName:"Napoleon",
+    translatedName:"Франція",
+		leaderName:"Наполеон",
 		adjective:["French"],
 		preferredVictoryType:"Cultural",
 
@@ -222,8 +222,8 @@
 	},
 	{
 		name:"Russia",
-    translatedName:"",
-		leaderName:"Catherine",
+    translatedName:"Росія",
+		leaderName:"Катерина",
 		adjective:["Russian"],
 		startBias:["Tundra"],
 		preferredVictoryType:"Scientific",
@@ -259,8 +259,8 @@
 	},
 	{
 		name:"Rome",
-    translatedName:"",
-		leaderName:"Augustus Caesar",
+    translatedName:"Рим",
+		leaderName:"Октавіан Август",
 		adjective:["Roman"],
 		preferredVictoryType:"Scientific",
 
@@ -295,7 +295,7 @@
 	},
 	{
 		name:"Arabia",
-    translatedName:"",
+    translatedName:"Аравія",
 		leaderName:"Harun al-Rashid",
 		adjective:["Arabian"],
 		startBias:["Desert"],
@@ -368,7 +368,7 @@
 	},
 	{
 		name:"Japan",
-    translatedName:"",
+    translatedName:"Японія",
 		leaderName:"Oda Nobunaga",
 		adjective:["Japanese"],
 		startBias:["Coast"],
@@ -406,8 +406,8 @@
 	},
 	{
 		name:"India",
-    translatedName:"",
-		leaderName:"Gandhi",
+    translatedName:"Індія",
+		leaderName:"Ганді",
 		adjective:["Indian"],
 		startBias:["Grassland"],
 		preferredVictoryType:"Cultural",
@@ -443,7 +443,7 @@
 	{
 		name:"Germany",
     translatedName:"Німеччина",
-		leaderName:"Otto von Bismark",
+		leaderName:"Отто фон Бісмарк",
 		adjective:["German"],
 		preferredVictoryType:"Scientific",
 
@@ -483,8 +483,8 @@
 
 	{
 		name:"The Ottomans",
-    translatedName:"",
-		leaderName:"Suleiman I",
+    translatedName:"Османська Імперія",
+		leaderName:"Сулейман I",
 		adjective:["Ottoman"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
@@ -521,7 +521,7 @@
 	},
 	{
 		name:"Korea",
-    translatedName:"",
+    translatedName:"Корея",
 		leaderName:"Sejong",
 		adjective:["Korean"],
 		startBias:["Coast"],
@@ -552,7 +552,7 @@
 		innerColor:[187,33,51],
 		uniqueName:"Scholars of the Jade Hall"
 		unique:"+2 Science for all specialists and Great Person tile improvements",
-		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
+		cities:["Сеул","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
@@ -597,8 +597,8 @@
 	},
 	{
 		name:"Persia",
-    translatedName:"",
-		leaderName:"Darius I",
+    translatedName:"Персія",
+		leaderName:"Дарій I",
 		adjective:["Persian"],
 		preferredVictoryType:"Scientific",
 
@@ -627,7 +627,7 @@
 		innerColor:[244,232,54],
 		uniqueName:"Achaemenid Legacy"
 		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength",
-		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
+		cities:["Персеполіс","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
 			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
@@ -1102,340 +1102,340 @@
 	//City states
 	{
 		name:"Milan",
-    translatedName:"",
+    translatedName:"Мілан",
 		adjective:["Milan"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
 		afterPeace:"May peace forever bless our lands.",
-		defeated:"You fiend! History shall remember this!"
+		defeated:"Ти божевільний! Історія пам'ятатиме це!"
 
 
 		outerColor:[0, 0, 0],
 		innerColor:[185,132,66],
-		cities:["Milan"]
+		cities:["Мілан"]
 	},
 	{
 		name:"Florence",
-    translatedName:"",
+    translatedName:"Флоренція",
 		adjective:["Florence"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"And so the flower of Florence falls to barbaric hands..."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Що ж, квітучі землі Флоренції потрапили до рук варварів..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[62,197,252],
-		cities:["Florence"]
+		cities:["Флоренція"]
 	},
 	{
 		name:"Rio de Janeiro",
-    translatedName:"",
+    translatedName:"Ріо-де-Жанейро",
 		adjective:["Rio de Janeiro"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We shall have our revenge."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Ми помстимось."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211, 220, 103],
-		cities:["Rio de Janeiro"]
+		cities:["Ріо-де-Жанейро"]
 	},
 	{
 		name:"Antwerp",
-    translatedName:"",
+    translatedName:"Антверпен",
 		adjective:["Antwerp"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"They will write songs of this.... pray that they shall be in your favor."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Цю подію оспівуватимуть в піснях.... моліться щоб на вашу користь."
 
 		outerColor:[0, 0, 0],
 		innerColor:[194,97,255],
-		cities:["Antwerp"]
+		cities:["Антверпен"]
 	},
 	{
 		name:"Dublin",
-    translatedName:"",
+    translatedName:"Дублін",
 		adjective:["Dublin"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Hah! A fine victory."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Хех! Хороша перемога."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211,180,113],
-		cities:["Dublin"]
+		cities:["Дублін"]
 	},
 	{
 		name:"Tyre",
-    translatedName:"",
+    translatedName:"Сур",
 		adjective:["Tyre"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We never fully trusted you from the start."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Ми ніколи не довіряли тобі."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,97,255],
-		cities:["Tyre"]
+		cities:["Сур"]
 	},
 	{
 		name:"Ur",
-    translatedName:"",
+    translatedName:"Ур",
 		adjective:["Ur"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Why must you do such a thing?"
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Чому ти зробив це?"
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
-		cities:["Ur"]
+		cities:["Ур"]
 	},
 	{
 		name:"Genoa",
-    translatedName:"",
+    translatedName:"Генуя",
 		adjective:["Genoa"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"How barbaric. Those who live by the sword shall perish by the sword."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Як низько. Той, хто живе мечем, від меча й загине."
 
 		outerColor:[0, 0, 0],
 		innerColor:[45,255,86],
-		cities:["Genoa"]
+		cities:["Генуя"]
 	},
 	{
 		name:"Venice",
-    translatedName:"",
+    translatedName:"Венеція",
 		adjective:["Venice"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"If our legacy continues, you will never have truly won."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Якщо нас пам'ятатимуть, ви ніколи не переможете."
 
 		outerColor:[0, 0, 0],
 		innerColor:[153,204,255],
-		cities:["Venice"]
+		cities:["Венеція"]
 	},
 	{
 		name:"Brussels",
-    translatedName:"",
+    translatedName:"Брюссель",
 		adjective:["Brussels"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
 		defeated:"I guess you weren't here for the sprouts after all..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[153,255,51],
-		cities:["Brussels"]
+		cities:["Брюссель"]
 	},
 	{
 		name:"Kabul",
-    translatedName:"",
+    translatedName:"Кабул",
 		adjective:["Kabul"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Unacceptable!"
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Неприпустимо!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[153,0,76],
-		cities:["Kabul"]
+		cities:["Кабул"]
 	},
 	{
 		name:"Sidon",
-    translatedName:"",
+    translatedName:"Сидон",
 		adjective:["Sidon"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"What a fine battle! Sidon is willing to serve you!"
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Що за прекрасна битва! Сидон готовий вам служити!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[250,128,114],
-		cities:["Sidon"]
+		cities:["Сидон"]
 	},
 	{
 		name:"Almaty",
-    translatedName:"",
+    translatedName:"Алмати",
 		adjective:["Almaty"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"How could we fall to the likes of you?!"
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Як ми могли пасти перед такими як ви?!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[102,0,51],
-		cities:["Almaty"]
+		cities:["Алмати"]
 	},
 	{
 		name:"Edinburgh",
-    translatedName:"",
+    translatedName:"Единбург",
 		adjective:["Edinburgh"],
 		cityStateType:"Militaristic",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"There is no dishonor in losing to a worthier foe."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Немає безчестя в програші гідному ворогу."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
-		cities:["Edinburgh"]
+		cities:["Единбург"]
 	},
 	{
 		name:"Singapore",
-    translatedName:"",
+    translatedName:"Сінгапур",
 		adjective:["Singapore"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"Perhaps, in another world, we could have been friends..."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Можливо, в іншому світі ми будемо друзями..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,255,0],
-		cities:["Singapore"]
+		cities:["Сінгапур"]
 	},
 	{
 		name:"Zanzibar",
-    translatedName:"",
+    translatedName:"Занзібар",
 		adjective:["Zanzibar"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"May the Heavens forgive you for inflicting this humiliation to our people."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Нехай небеса пробачать вас за те, що ви принизили наш народ."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,255],
-		cities:["Zanzibar"]
+		cities:["Занзібар"]
 	},
 	{
 		name:"Sydney",
-    translatedName:"",
+    translatedName:"Сідней",
 		adjective:["Sydney"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"The principles for which we have fought will survive longer than any nation you could ever build."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Цілі, за які ми боролися, житимуть довше, ніж будь-яка нація, яку ви коли-небудь побудували."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,204,204],
-		cities:["Sydney"]
+		cities:["Сідней"]
 	},
 	{
 		name:"Cape Town",
-    translatedName:"",
+    translatedName:"Кейптаун",
 		adjective:["Cape Town"],
 		cityStateType:"Maritime",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"I have failed. May you, at least, know compassion towards our people."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Я програв. Сподіваємось, ви співчуватимете нашому народові."
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,153,153],
-		cities:["Cape Town"]
+		cities:["Кейптаун"]
 	},
 	{
 		name:"Kathmandu",
-    translatedName:"",
+    translatedName:"Катманду",
 		adjective:["Kathmandu"],
 		cityStateType:"Mercantile",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We... defeated? No... we had so much work to do!"
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Ми.... програли? Ні... у нас ще стільки роботи!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,25,0],
-		cities:["Kathmandu"]
+		cities:["Катманду"]
 	},
 	{
 		name:"Hanoi",
-    translatedName:"",
+    translatedName:"Ханой",
 		adjective:["Hanoi"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"So this is how does it feel to die..."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Що ж, ось як це, померти..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,0,255],
-		cities:["Hanoi"]
+		cities:["Ханой"]
 	},
 	{
 		name:"Quebec City",
-    translatedName:"",
+    translatedName:"Квебек",
 		adjective:["Quebec City"],
 		cityStateType:"Cultured",
 
-		declaringWar:"You leave us no choice. War it must be.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"We were too weak to protect ourselves..."
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Ми були занадто слабкі щоб захищатись..."
 
 		outerColor:[0, 0, 0],
 		innerColor:[51,102,0],
-		cities:["Quebec City"]
+		cities:["Квебек"]
 	},
 	{
 		name:"Helsinki",
-    translatedName:"",
+    translatedName:"Хельсінкі",
 		adjective:["Helsinki"],
 		cityStateType:"Maritime",
 
-		declaringWar:"Ви не залишаєте нам вибору. Війна тут має бути.",
-		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless our lands.",
-		defeated:"The day of judgement has come to us. But rest assured, the same will go for you!"
+		declaringWar:"Ви не залишили нам вибору. Війні бути.",
+		attacked:"Прекрасно, ми цього не забудем.",
+		afterPeace:"Нехай панує мир над цими землями.",
+		defeated:"Це наш судний день. Але, це ж саме чекає і тебе!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[255,178,102],
-		cities:["Helsinki"]
+		cities:["Хельсінки"]
 	},
 
 
