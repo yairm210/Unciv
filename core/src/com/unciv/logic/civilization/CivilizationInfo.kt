@@ -15,7 +15,10 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -28,7 +31,7 @@ import kotlin.math.roundToInt
 
 class CivilizationInfo {
 
-    private val jsonParser = JsonParser()
+    @Transient private val jsonParser = JsonParser()
 
     @Transient lateinit var gameInfo: GameInfo
     @Transient lateinit var nation:Nation
