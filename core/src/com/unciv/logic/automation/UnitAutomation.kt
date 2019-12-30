@@ -123,7 +123,7 @@ class UnitAutomation{
     fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
         if(unitDistanceToTiles.isEmpty()) return true // can't move, so...
-        val unitTile = unit.getTile()
+        val currentUnitTile = unit.getTile()
 
         if (tryPillageImprovement(unit, unitDistanceToTiles)) return true
 
@@ -139,12 +139,12 @@ class UnitAutomation{
         }
 
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
-        // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
+        // within the tiles with best healing rate (say 15), we'll prefer one which has the highest defensive bonuses
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
-        if(bestTileForHealingRank == 0) return false // can't actually heal here...
 
-        if(unitTile!=bestTileForHealing && bestTileForHealingRank > unit.rankTileForHealing(unitTile))
+        if(currentUnitTile!=bestTileForHealing
+                && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile))
             unit.movement.moveToTile(bestTileForHealing)
 
         if(unit.currentMovement>0 && unit.canFortify()) unit.fortify()
