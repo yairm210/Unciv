@@ -132,8 +132,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
 
-    fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String>{
-        if (viewingCiv==null) return listOf(tileSetStrings.hexagon)
+    fun getTileBaseImageLocations(viewingCiv: CivilizationInfo?): List<String> {
+        if (viewingCiv == null && !showEntireMap)
+            return listOf(tileSetStrings.hexagon)
+
+        val shouldShowImprovement = tileInfo.improvement != null && UncivGame.Current.settings.showPixelImprovements
+        val shouldShowResource = tileInfo.resource != null && UncivGame.Current.settings.showPixelImprovements
+                && (showEntireMap || tileInfo.hasViewableResource(viewingCiv!!))
 
         if (tileInfo.isCityCenter()) {
             val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain)
@@ -150,10 +155,6 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 return listOf(naturalWonder)
         }
 
-
-        val shouldShowImprovement = tileInfo.improvement!=null && UncivGame.Current.settings.showPixelImprovements
-        val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
-                && ((tileInfo.resource!=null && UncivGame.Current.viewEntireMapForDebug) || tileInfo.hasViewableResource(viewingCiv))
         val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain) // e.g. Grassland
 
         if (tileInfo.terrainFeature != null) {
