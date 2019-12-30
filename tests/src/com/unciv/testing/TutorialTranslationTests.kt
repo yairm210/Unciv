@@ -24,7 +24,7 @@ class TutorialTranslationTests {
 
     @Test
     fun testValidNumberOfTranslationTutorials() {
-        languages.forEach { language ->
+        for (language in languages) {
             val keys = getKeysForLanguage(language)
             assertTrue("$language tutorial does not match", keys.size == tutorialCount)
         }

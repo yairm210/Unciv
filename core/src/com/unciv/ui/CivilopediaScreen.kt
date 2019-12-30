@@ -2,6 +2,7 @@ package com.unciv.ui
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
@@ -12,13 +13,13 @@ import java.util.*
 class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     class CivilopediaEntry(var name: String, var description: String, var image: Actor? = null)
 
-    val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
-    val categoryToButtons = LinkedHashMap<String, Button>()
+    private val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
+    private val categoryToButtons = LinkedHashMap<String, Button>()
 
-    val entrySelectTable = Table().apply { defaults().pad(5f) }
+    private val entrySelectTable = Table().apply { defaults().pad(5f) }
     val description = "".toLabel()
 
-    val tutorialMiner = TutorialMiner()
+    private val tutorialMiner = TutorialMiner(JsonParser())
 
     fun select(category: String) {
         entrySelectTable.clear()

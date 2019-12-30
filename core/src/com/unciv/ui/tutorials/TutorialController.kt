@@ -10,6 +10,7 @@ class TutorialController(
 
     private val tutorialQueue = mutableSetOf<Tutorial>()
     private var isTutorialShowing = false
+    var allTutorialsShowedCallback: (() -> Unit)? = null
 
     fun showTutorial(tutorial: Tutorial) {
         if (!UncivGame.Current.settings.showTutorials) return
@@ -23,7 +24,9 @@ class TutorialController(
 
     private fun showTutorialIfNeeded() {
         val tutorial = tutorialQueue.firstOrNull()
-        if (tutorial != null && !isTutorialShowing) {
+        if (tutorial == null) {
+            allTutorialsShowedCallback?.invoke()
+        } else if (!isTutorialShowing) {
             isTutorialShowing = true
             val texts = tutorialMiner.getTutorial(tutorial, UncivGame.Current.settings.language)
             tutorialRender.showTutorial(TutorialForRender(tutorial, texts)) {
