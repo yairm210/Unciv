@@ -136,6 +136,7 @@ class MapUnit {
         else {
             var visibilityRange = 2
             visibilityRange += getUniques().count { it == "+1 Visibility Range" }
+            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
             if (civInfo.nation.unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
                 visibilityRange += 1
@@ -429,7 +430,7 @@ class MapUnit {
 
         if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary())
         {
-            val gainDoubleHealPromotion = tile.neighbors.filter{it.naturalWonder == "Fountain of Youth"}.any()
+            val gainDoubleHealPromotion = tile.neighbors.any{it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game")}
             if (gainDoubleHealPromotion)
                 promotions.addPromotion("Rejuvenation", true)
         }

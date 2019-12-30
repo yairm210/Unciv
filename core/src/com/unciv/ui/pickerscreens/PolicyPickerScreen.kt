@@ -13,8 +13,8 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv,
-                         switchfromWorldScreen: Boolean = true) : PickerScreen() {
+class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
+    : PickerScreen() {
     internal val viewingCiv: CivilizationInfo = civInfo
     private var pickedPolicy: Policy? = null
 
@@ -43,12 +43,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         }
         if(!UncivGame.Current.worldScreen.isPlayersTurn)
             rightSideButton.disable()
-        if (!switchfromWorldScreen){
-            rightSideButton.apply {
-                disable()
-                setText("Policy Tree Of [${viewingCiv.civName}]".tr())
-            }
-        }
+        
 
 
         topTable.row().pad(30f)

@@ -253,7 +253,7 @@ class MapGenerator {
                 Constants.barringerCrater -> spawnBarringerCrater(mapToReturn, ruleset)
                 Constants.mountFuji -> spawnMountFuji(mapToReturn, ruleset)
                 Constants.grandMesa -> spawnGrandMesa(mapToReturn, ruleset)
-                Constants.greatBarrierReef -> spawnGreatBarrierReef(mapToReturn, ruleset)
+                Constants.greatBarrierReef -> spawnGreatBarrierReef(mapToReturn, ruleset, mapRadius)
                 Constants.krakatoa -> spawnKrakatoa(mapToReturn, ruleset)
                 Constants.rockOfGibraltar -> spawnRockOfGibraltar(mapToReturn, ruleset)
                 Constants.oldFaithful -> spawnOldFaithful(mapToReturn, ruleset)
@@ -280,7 +280,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -306,7 +306,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -330,7 +330,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -343,29 +343,34 @@ class MapGenerator {
     Assumption: at least 1 neighbour not water; no tundra; at least 1 neighbour coast; becomes coast
     TODO: investigate Great Barrier Reef placement requirements
     */
-    private fun spawnGreatBarrierReef(mapToReturn: TileMap, ruleset: Ruleset) {
+    private fun spawnGreatBarrierReef(mapToReturn: TileMap, ruleset: Ruleset, mapRadius: Int) {
         val wonder = ruleset.terrains[Constants.greatBarrierReef]!!
+        val maxLatitude = abs(getLatitude(Vector2(mapRadius.toFloat(), mapRadius.toFloat())))
         val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
-                && it.neighbors.none{ neighbor -> neighbor.getBaseTerrain().name == Constants.tundra }
-                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name != Constants.ocean
-                                                && neighbor.getBaseTerrain().name != Constants.coast }
-                && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.coast
-                                                && neighbor.resource == null && neighbor.improvement == null}
+                && abs(getLatitude(it.position)) > maxLatitude * 0.1
+                && abs(getLatitude(it.position)) < maxLatitude * 0.7
+                && it.neighbors.all {neighbor -> neighbor.isWater}
+                && it.neighbors.any {neighbor ->
+                    neighbor.resource == null && neighbor.improvement == null
+                            && wonder.occursOn!!.contains(neighbor.getLastTerrain().name)
+                            && neighbor.neighbors.all{ it.isWater } }
         }
 
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.coast
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
 
             val location2 = location.neighbors
-                    .filter { it.getBaseTerrain().name == Constants.coast && it.resource == null && it.improvement == null }
+                    .filter { it.resource == null && it.improvement == null
+                            && wonder.occursOn!!.contains(it.getLastTerrain().name)
+                            && it.neighbors.all{ it.isWater } }
                     .random()
 
             location2.naturalWonder = wonder.name
-            location2.baseTerrain = Constants.coast
+            location2.baseTerrain = wonder.turnsInto!!
             location2.terrainFeature = null
         }
         else {
@@ -388,7 +393,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
 
             for (tile in location.neighbors) {
@@ -421,7 +426,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
 
             for (tile in location.neighbors) {
@@ -458,7 +463,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -479,7 +484,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.mountain
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -500,7 +505,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.plains
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {
@@ -519,7 +524,7 @@ class MapGenerator {
         if (suitableLocations.isNotEmpty()) {
             val location = suitableLocations.random()
             location.naturalWonder = wonder.name
-            location.baseTerrain = Constants.plains
+            location.baseTerrain = wonder.turnsInto!!
             location.terrainFeature = null
         }
         else {

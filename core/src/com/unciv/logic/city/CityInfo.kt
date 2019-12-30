@@ -448,12 +448,17 @@ class CityInfo {
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.removeBuilding(building.name)
 
-        // Remove/relocate palace
+        // Remove/relocate palace for old Civ
         if(cityConstructions.isBuilt("Palace")){
             cityConstructions.removeBuilding("Palace")
             if(oldCiv.cities.isNotEmpty()){
                 oldCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
             }
+        }
+
+        // Locate palace for newCiv if this is the only city they have
+        if (newCivInfo.cities.count() == 1) {
+            cityConstructions.addBuilding("Palace")
         }
 
         isBeingRazed=false

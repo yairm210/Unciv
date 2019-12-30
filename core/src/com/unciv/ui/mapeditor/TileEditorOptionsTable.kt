@@ -293,13 +293,19 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     fun updateTileWhenClicked(tileInfo: TileInfo) {
         when {
-            clearTerrainFeature -> tileInfo.terrainFeature = null
+            clearTerrainFeature -> {
+                tileInfo.terrainFeature = null
+                tileInfo.naturalWonder = null
+            }
             clearResource -> tileInfo.resource = null
             selectedResource != null -> tileInfo.resource = selectedResource!!.name
             selectedTerrain != null -> {
                 if (selectedTerrain!!.type == TerrainType.TerrainFeature)
                     tileInfo.terrainFeature = selectedTerrain!!.name
-                else tileInfo.baseTerrain = selectedTerrain!!.name
+                else if (selectedTerrain!!.type == TerrainType.NaturalWonder)
+                    tileInfo.naturalWonder = selectedTerrain!!.name
+                else
+                    tileInfo.baseTerrain = selectedTerrain!!.name
             }
             clearImprovement -> {
                 tileInfo.improvement = null
@@ -330,6 +336,15 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     fun normalizeTile(tileInfo: TileInfo){
+        /*Natural Wonder superpowers! */
+        if (tileInfo.naturalWonder != null) {
+            val naturalWonder = tileInfo.getNaturalWonder()
+            tileInfo.baseTerrain = naturalWonder.turnsInto!!
+            tileInfo.terrainFeature = null
+            tileInfo.resource = null
+            tileInfo.improvement = null
+        }
+
         if(tileInfo.terrainFeature!=null){
             val terrainFeature = tileInfo.getTerrainFeature()!!
             if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))

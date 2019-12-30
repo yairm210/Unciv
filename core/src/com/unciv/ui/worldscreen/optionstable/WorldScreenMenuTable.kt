@@ -151,7 +151,7 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
         }
 
         addButton("Patreon"){
-            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            Gdx.net.openURI("https://www.patreon.com/yairm210")
             remove()
         }
 
