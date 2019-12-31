@@ -38,7 +38,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         addOneCityChallengeCheckbox()
         addIsOnlineMultiplayerCheckbox()
 
-        // addModCheckboxes()
+         addModCheckboxes()
 
         pack()
     }
@@ -222,21 +222,18 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
 
     fun addModCheckboxes() {
 
-        add("{Mods}:".tr()).colspan(2).row()
-
-        val modCheckboxTable = Table().apply { defaults().pad(10f) }
-
         val modFolders = Gdx.files.local("mods")
         val loadableMods = ArrayList<Ruleset>()
 
         for (modFolder in modFolders.list()) {
             if (modFolder.list().any { it.name() == "jsons" }) {
-                val ruleSet = Ruleset(false)
+                val modRuleset = Ruleset(false)
 
                 try {
-                    ruleSet.load(modFolder.path() + "/jsons")
-                    ruleSet.name = modFolder.nameWithoutExtension()
-                    loadableMods.add(ruleset)
+                    modRuleset.load(modFolder.child("jsons"))
+                    modRuleset.name = modFolder.nameWithoutExtension()
+                    loadableMods.add(modRuleset)
+
                 } catch (ex: Exception) {
                     print(ex.message)
                 }
@@ -252,6 +249,11 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
             }
         }
 
+        if(loadableMods.isEmpty()) return
+
+
+        add("{Mods}:".tr()).colspan(2).row()
+        val modCheckboxTable = Table().apply { defaults().pad(10f) }
         for(mod in loadableMods){
             val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
             checkBox.addListener(object : ChangeListener() {
@@ -262,21 +264,10 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                     updatePlayerPickerTable()
                 }
             })
+            modCheckboxTable.add(checkBox)
         }
 
         add(modCheckboxTable).colspan(2).row()
     }
 
 }
-
-//
-//class Mod(val name:String){
-//    val ruleSet=Ruleset(false)
-//
-//    fun tryLoadRuleset(){
-//        val folderPath="mods/$name"
-//        val jsonsFolderLocation = folderPath+"/jsons"
-//        if(Gdx.files.local(jsonsFolderLocation).exists())
-//
-//    }
-//}

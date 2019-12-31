@@ -51,8 +51,8 @@ for(platform in PackrConfig.Platform.values()) {
         PackrConfig config = new PackrConfig()
         config.platform = platform
 
-        // For Travis
-        if(true) { // change to false for local build
+        def forTravis = true // change to false for local build
+        if(forTravis) {
             if (platform == PackrConfig.Platform.Linux32 || platform == PackrConfig.Platform.Linux64)
                 config.jdk = System.env.'JAVA_HOME'
             // take the jdk straight from the building linux computer

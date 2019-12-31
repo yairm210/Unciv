@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
@@ -36,7 +38,7 @@ class Ruleset(load: Boolean = true) {
 
     init {
         if (load) {
-            load()
+            load(Gdx.files.internal("jsons"))
         }
     }
 
@@ -75,46 +77,69 @@ class Ruleset(load: Boolean = true) {
         units.clear()
     }
 
-    fun load(folderPath: String = "jsons") {
+    fun load(folderHandle :FileHandle ) {
         val gameBasicsStartTime = System.currentTimeMillis()
-        val techColumns = jsonParser.getFromJson(Array<TechColumn>::class.java, "$folderPath/Techs.json")
-        for (techColumn in techColumns) {
-            for (tech in techColumn.techs) {
-                if (tech.cost == 0) tech.cost = techColumn.techCost
-                tech.column = techColumn
-                technologies[tech.name] = tech
+
+        val techFile =folderHandle.child("Techs.json")
+        if(techFile.exists()) {
+            val techColumns = jsonParser.getFromJson(Array<TechColumn>::class.java, techFile)
+            for (techColumn in techColumns) {
+                for (tech in techColumn.techs) {
+                    if (tech.cost == 0) tech.cost = techColumn.techCost
+                    tech.column = techColumn
+                    technologies[tech.name] = tech
+                }
             }
         }
 
-        buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, "$folderPath/Buildings.json"))
-        for (building in buildings.values) {
-            if (building.requiredTech == null) continue
-            val column = technologies[building.requiredTech!!]!!.column
-            if (building.cost == 0)
-                building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
-        }
-
-        terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, "$folderPath/Terrains.json"))
-        tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, "$folderPath/TileResources.json"))
-        tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, "$folderPath/TileImprovements.json"))
-        units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, "$folderPath/Units.json"))
-        unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, "$folderPath/UnitPromotions.json"))
-
-        policyBranches += createHashmap(jsonParser.getFromJson(Array<PolicyBranch>::class.java, "$folderPath/Policies.json"))
-        for (branch in policyBranches.values) {
-            branch.requires = ArrayList()
-            branch.branch = branch
-            for (policy in branch.policies) {
-                policy.branch = branch
-                if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+        val buildingsFile = folderHandle.child("Buildings.json")
+        if(buildingsFile.exists()) {
+            buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
+            for (building in buildings.values) {
+                if (building.requiredTech == null) continue
+                val column = technologies[building.requiredTech!!]!!.column
+                if (building.cost == 0)
+                    building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
             }
-            branch.policies.last().name = branch.name + " Complete"
         }
 
-        nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, "$folderPath/Nations/Nations.json"))
-        for (nation in nations.values) nation.setTransients()
+        val terrainsFile = folderHandle.child("Terrains.json")
+        if(terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
 
-        difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, "$folderPath/Difficulties.json"))
+        val resourcesFile = folderHandle.child("TileResources.json")
+        if(resourcesFile.exists()) tileResources += createHashmap(jsonParser.getFromJson(Array<TileResource>::class.java, resourcesFile))
+
+        val improvementsFile = folderHandle.child("TileImprovements.json")
+        if(improvementsFile.exists()) tileImprovements += createHashmap(jsonParser.getFromJson(Array<TileImprovement>::class.java, improvementsFile))
+
+        val unitsFile = folderHandle.child("Units.json")
+        if(unitsFile.exists()) units += createHashmap(jsonParser.getFromJson(Array<BaseUnit>::class.java, unitsFile))
+
+        val promotionsFile = folderHandle.child("UnitPromotions.json")
+        if(promotionsFile.exists()) unitPromotions += createHashmap(jsonParser.getFromJson(Array<Promotion>::class.java, promotionsFile))
+
+        val policiesFile = folderHandle.child("Policies.json")
+        if(policiesFile.exists()) {
+            policyBranches += createHashmap(jsonParser.getFromJson(Array<PolicyBranch>::class.java, policiesFile))
+            for (branch in policyBranches.values) {
+                branch.requires = ArrayList()
+                branch.branch = branch
+                for (policy in branch.policies) {
+                    policy.branch = branch
+                    if (policy.requires == null) policy.requires = arrayListOf(branch.name)
+                }
+                branch.policies.last().name = branch.name + " Complete"
+            }
+        }
+
+        val nationsFile = folderHandle.child("Nations/Nations.json")
+        if(nationsFile.exists()) {
+            nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
+            for (nation in nations.values) nation.setTransients()
+        }
+
+        val difficultiesFile = folderHandle.child("Difficulties.json")
+        if(difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         println("Loading game basics - " + gameBasicsLoadTime + "ms")
