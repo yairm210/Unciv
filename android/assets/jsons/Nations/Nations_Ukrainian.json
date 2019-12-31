@@ -194,28 +194,28 @@
 		startIntroPart1: "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to the other, its soldiers and generals among the best in history."
 		startIntroPart2: "Napoleon Bonaparte, France yearns for you to rebuild your empire, to lead her once more to glory and greatness, to make France once more the epicenter of culture and refinement. Emperor, will you ride once more against your foes? Can you build a civilization that will stand the test of time?"
 
-		declaringWar:"You're disturbing us, prepare for war.",
-		attacked:"You've fallen into my trap. I'll bury you.",
-		defeated:"I congratulate you for your victory."
-		introduction:"Welcome. I'm Napoleon, of France; the smartest military man in world history."
+		declaringWar:"Ти нам заважаєш, готуйся до війни.",
+		attacked:"Ти потрапив в мою пастку. Я поховаю тебе.",
+		defeated:"Вітаю з перемогою."
+		introduction:"Вітаю. Я Наполеон, імператор Франції; найрозумніший воїн в історії."
 
-		neutralHello:"Hello."
-		neutralLetsHearIt:["Continue.","I'm listening.","Go on.","You were saying?"]
-		neutralNo:["We refuse.","Of course not.","No."]
-		neutralYes:["Excellent.","Very well.","I heard."]
+		neutralHello:"Привіт."
+		neutralLetsHearIt:["Продовжуй.","Я слухаю.","Продовжуй.","Ти щось сказав?"]
+		neutralNo:["Ми відмовляємось.","Звісно що ні.","Ні."]
+		neutralYes:["Чудово.","Дуже добре.","Я почув."]
 
-		hateHello:"It's you."
-		hateLetsHearIt:["Speak."]
-		hateNo:["You cannot be serious.","Certainly not.","That's unacceptable."]
-		hateYes:["All right.","I guess I've no choice.","Certainly.","It's all right."]
+		hateHello:"Це ти."
+		hateLetsHearIt:["Говори."]
+		hateNo:["Ти не вмієш бути серйозним.","Аж ніяк.","Це неприйнятно."]
+		hateYes:["Все правильно.","Я гадаю у мене немає вибору.","Звичайно.","Все добре."]
 
-		afterPeace:"It seems I underestimated you. I won't make the same mistake again, I promise you."
-		tradeRequest:"France offers you this exceptional proposition."
+		afterPeace:"Схоже, я недооцінив ваші можливості. Я більше не натраплю на ці ж граблі, обіцяю."
+		tradeRequest:"Франція пропонує вам прийняти цю пропозицію."
 
 		outerColor:[ 38, 98, 255],
 		innerColor:[239,236,148],
 		uniqueName:"Ancien Régime"
-		unique:"+2 Culture per turn from cities before discovering Steam Power",
+		unique:"+2 культури з міст після відкриття Парової енергії",
 		cities:["Париж","Орлеан","Ліон","Troyes","Tours","Марсель","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Нансі","Lille","Caen"]
@@ -231,20 +231,20 @@
 		startIntroPart1: "Greetings upon thee, Your Imperial Majesty Catherine, wondrous Empress of all the Russias. At your command lies the largest country in the world. Mighty Russia stretches from the Pacific Ocean in the east to the Baltic Sea in the west. Despite wars, droughts, and every manner of disaster the heroic Russian people survive and prosper, their artists and scientists among the best in the world. The Empire today remains one of the strongest ever seen in human history - a true superpower, with the greatest destructive force ever devised at her command."
 		startIntroPart2: "Catherine, your people look to you to bring forth glorious days for Russia and her people, to revitalize the land and recapture the wonder of the Enlightenment. Will you lead your people once more into greatness? Can you build a civilization that will stand the test of time?"
 
-		declaringWar:"You've behaved yourself very badly, you know it. Now it's payback time.",
-		attacked:"You've mistaken my passion for a weakness, you'll regret about this."
-		defeated:"We were defeated, so this makes me your prisoner. I suppose there are worse fates."
-		introduction:"I greet you, stranger! If you are as intelligent and tactful as you are attractive, we'll get along just fine."
+		declaringWar:"Ви поводили себе дуже погано, вам це відомо. Тепер настав час відповідати за свої гріхи.",
+		attacked:"Ви помилилися моєю пристрастю до слабкості, ви пошкодуєте про це."
+		defeated:"Ми зазнали поразки, тому це робить мене твоїм в'язнем. Я думаю, є гірші долі."
+		introduction:"Вітаю тебе, незнайомець! Якщо ви настільки розумні і тактовні, наскільки ви привабливі, ми будемо чудово ладити."
 
-		neutralHello:"Hello!"
-		neutralLetsHearIt:["Go on.","Speak."]
-		neutralNo:["We decline.","Ha! Of course not!","Certainly not."]
-		neutralYes:["Of course.","I agree.","Excellent!"]
+		neutralHello:"Привіт!"
+		neutralLetsHearIt:["Продовжуй.","Говори."]
+		neutralNo:["Ми відхиляємо.","Хах! Звісно ні.","Звичайно що ні."]
+		neutralYes:["Звісно.","Я підтверджую.","Чудово!"]
 
-		hateHello:"What do you need?!"
-		hateLetsHearIt:["And?","Forward.","Go on."]
-		hateNo:["Are you joking?!","I beg your pardon?!","This is unacceptable."]
-		hateYes:["I think...I shall agree.","Oh... Very good.","Deal."]
+		hateHello:"Що тобі потрібно?!"
+		hateLetsHearIt:["І?","Давай, кажи.","Продовжуй."]
+		hateNo:["Ти глузуєш?!","Вибачаюсь?!","Це неприпустимо."]
+		hateYes:["Я думаю...Я мушу прийняти.","Ох... дуже добре.","Згода."]
 
 		afterPeace:"Now it's the time to enjoy the fruits of peace."
 		tradeRequest:"How would you like it if I propose this kind of exchange?"
