@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.UnitAction
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -67,10 +68,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
-        val fontColor = if(unitAction.currentAction) Color.YELLOW else Color.WHITE
-        actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
+        val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
+        actionButton.add(unitAction.name.toLabel(fontColor)).pad(5f)
         actionButton.pack()
-        actionButton.onClick(unitAction.sound) { unitAction.action(); UncivGame.Current.worldScreen.shouldUpdate=true }
+        actionButton.onClick(unitAction.uncivSound) { unitAction.action?.invoke(); UncivGame.Current.worldScreen.shouldUpdate=true }
         if (!unitAction.canAct) actionButton.disable()
         return actionButton
     }

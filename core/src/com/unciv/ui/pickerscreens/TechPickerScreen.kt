@@ -8,6 +8,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -50,7 +51,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         setButtonsInfo()
         rightSideButton.setText("Pick a tech".tr())
-        rightSideButton.onClick("paper") {
+        rightSideButton.onClick(UncivSound.Paper) {
             game.settings.addCompletedTutorialTask("Pick technology")
             if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
             else civTech.techsToResearch = tempTechsToResearch

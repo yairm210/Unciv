@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -49,7 +50,7 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
 
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
-            buyTileButton.onClick("coin") {
+            buyTileButton.onClick(UncivSound.Coin) {
                 city.expansion.buyTile(selectedTile)
                 UncivGame.Current.setScreen(CityScreen(city))
             }

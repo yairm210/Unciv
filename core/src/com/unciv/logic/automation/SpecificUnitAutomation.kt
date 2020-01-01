@@ -28,9 +28,9 @@ class SpecificUnitAutomation{
             unit.movement.headTowards(closestReachableResource)
             if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
                 val createImprovementAction = UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                        .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
+                        .firstOrNull { it.name.startsWith("Create") }?.action // could be either fishing boats or oil well
                 if (createImprovementAction != null)
-                    return createImprovementAction.action() // unit is already gone, can't "Explore"
+                    return createImprovementAction() // unit is already gone, can't "Explore"
             }
         }
         else UnitAutomation().tryExplore(unit, unit.movement.getDistanceToTiles())
@@ -133,11 +133,11 @@ class SpecificUnitAutomation{
             throw Exception("City within distance")
 
         if (unit.getTile() == bestCityLocation)
-            UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action()
+            UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action?.invoke()
         else {
             unit.movement.headTowards(bestCityLocation)
             if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
-                UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action()
+                UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action?.invoke()
         }
     }
 
@@ -170,9 +170,9 @@ class SpecificUnitAutomation{
             if(chosenTile==null) continue // to another city
 
             unit.movement.headTowards(chosenTile)
-            if(unit.currentTile==chosenTile && unit.currentMovement>0)
+            if(unit.currentTile==chosenTile && unit.currentMovement > 0)
                 UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                        .first { it.name.startsWith("Create") }.action()
+                        .first { it.name.startsWith("Create") }.action?.invoke()
             return
         }
 

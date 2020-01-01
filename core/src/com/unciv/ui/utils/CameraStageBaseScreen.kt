@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
+import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.tutorials.TutorialMiner
@@ -144,22 +145,22 @@ fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 
 
 /** same as [onClick], but sends the [InputEvent] and coordinates along */
-fun Actor.onClickEvent(sound: String = "click", function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
+fun Actor.onClickEvent(sound: UncivSound = UncivSound.Click, function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if (sound != "") thread{Sounds.play(sound)}
+            thread { Sounds.play(sound) }
             function(event, x, y)
         }
     })
 }
 
 // If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
-fun Actor.onClick(sound: String = "click", function: () -> Unit) {
+fun Actor.onClick(sound: UncivSound = UncivSound.Click, function: () -> Unit) {
     onClickEvent(sound) { _, _, _ -> function() }
 }
 
 fun Actor.onClick(function: () -> Unit): Actor {
-    onClick("click", function)
+    onClick(UncivSound.Click, function)
     return this
 }
 

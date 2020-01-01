@@ -10,8 +10,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitAction
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 
@@ -163,7 +163,7 @@ class UnitAutomation{
             unit.movement.moveToTile(tileToPillage)
 
         UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                .first { it.name == "Pillage" }.action()
+                .first { it.name == "Pillage" }.action?.invoke()
         return true
     }
 
@@ -296,7 +296,7 @@ class UnitAutomation{
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
                 if (upgradeAction != null && upgradeAction.canAct) {
-                    upgradeAction.action()
+                    upgradeAction.action?.invoke()
                     return true
                 }
             }
