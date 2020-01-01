@@ -4,7 +4,7 @@
 		name:"Babylon",
     translatedName:"Вавилон",
 		leaderName:"Навуходоносор II",
-		adjective:["Babylonian"],
+		adjective:["Вавилонська"],
 		startBias:["Avoid Tundra"],
 		preferredVictoryType:"Scientific",
 
@@ -41,7 +41,7 @@
 		name:"Greece",
     translatedName:"Греція",
 		leaderName:"Олександр",
-		adjective:["Greek"],
+		adjective:["Грецька"],
 		startBias:["Coast"],
 		// preferredVictoryType:"Diplomatic",
 
@@ -78,7 +78,7 @@
 		name:"China",
     translatedName:"Китай",
 		leaderName:"У Цзетянь",
-		adjective:["Chinese"],
+		adjective:["Китайська"],
 		preferredVictoryType:"Scientific",
 
 		startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
@@ -114,7 +114,7 @@
 		name:"Egypt",
     translatedName:"Єгипет",
 		leaderName:"Рамсес II",
-		adjective:["Egyptian"],
+		adjective:["Єгипетьска"],
 		startBias:["Avoid Jungle","Avoid Forest"],
 		preferredVictoryType:"Cultural",
 
@@ -151,7 +151,7 @@
 		name:"England",
     translatedName:"Англія",
 		leaderName:"Єлизавета I",
-		adjective:["English"],
+		adjective:["Англійська"],
 		startBias:["Coast"],
 		//preferredVictoryType:"Diplomatic",
 
@@ -188,7 +188,7 @@
 		name:"France",
     translatedName:"Франція",
 		leaderName:"Наполеон",
-		adjective:["French"],
+		adjective:["Французька"],
 		preferredVictoryType:"Cultural",
 
 		startIntroPart1: "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to the other, its soldiers and generals among the best in history."
@@ -224,7 +224,7 @@
 		name:"Russia",
     translatedName:"Росія",
 		leaderName:"Катерина",
-		adjective:["Russian"],
+		adjective:["Російська"],
 		startBias:["Tundra"],
 		preferredVictoryType:"Scientific",
 
@@ -261,7 +261,7 @@
 		name:"Rome",
     translatedName:"Рим",
 		leaderName:"Октавіан Август",
-		adjective:["Roman"],
+		adjective:["Римська"],
 		preferredVictoryType:"Scientific",
 
 		startIntroPart1: "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed."
@@ -297,7 +297,7 @@
 		name:"Arabia",
     translatedName:"Аравія",
 		leaderName:"Гарун ар-Рашид",
-		adjective:["Arabian"],
+		adjective:["Аравійська"],
 		startBias:["Desert"],
 		preferredVictoryType:"Scientific",
 
@@ -370,37 +370,37 @@
 		name:"Japan",
     translatedName:"Японія",
 		leaderName:"Ода Нобунаґа",
-		adjective:["Japanese"],
+		adjective:["Японська"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
 
 		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the field of battle, your people are also immensely industrious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
 		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
 
-		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
-		attacked:"Pitiful fool! Now we shall destroy you!"
-		defeated:"You were much wiser than I thought."
-		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
+		declaringWar:"Цим я повідомляю вам про намір зтерти вашу цивілізацію з цього світу."
+		attacked:"Жалюгідний дурень! Тепер ми повинні знищити тебе!"
+		defeated:"Ви виявились мудрішими, аніж я думав."
+		introduction:"Ми сподіваємось на чудові відносини між нашими цивілізаціями, які славляться військовою хоробрістю."
 
-		neutralHello:"Hello."
-		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
-		neutralNo:["Sorry.","No.","Maybe another time."]
-		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
+		neutralHello:"Привіт."
+		neutralLetsHearIt:["Говоріть.","Продовжуйте.","Я слухаю."]
+		neutralNo:["Вибач.","Ні.","Можливо, наступного разу."]
+		neutralYes:["Дуже добре.","Підтверджую.","はい. (Так)"]
 
-		hateHello:"Oh, it's you..."
-		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
-		hateNo:["Ie. (No)","Excuse me?","Maybe another time"]
-		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
+		hateHello:"Ох, це ти..."
+		hateLetsHearIt:["Дайте мені послухати.","Говори.","Продовжуй"]
+		hateNo:["いや. (Ні)","Вибачаюсь?","Можливо наступного разу."]
+		hateYes:["Я підтримую.","Ох... чудово.","Схоже це єдиний шлях."]
 
-		afterPeace:"It was an honor to fight you."
-		tradeRequest:"I would be grateful if you agreed on the following proposal."
+		afterPeace:"Це було честю, битися з тобою."
+		tradeRequest:"Було б чудово, якби ви прийняли цю угоду."
 
 		outerColor:[215,225,225],
 		innerColor:[185,0,0],
 		uniqueName:"Bushido"
-		unique: "Units fight as though they were at full strength even when damaged",
-		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
-			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
+		unique: "Підрозділи воюють на повну, навіть тоді, коли вони пошкоджені.",
+		cities:["Кіото","Осака","Токіо","Сацума","Каґосіма","Нара","Нагоя","Ідзумо","Нагасакі","Yokohama",
+			"Сімоносекі","Мацуяма","Саппоро","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
 			"Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
 	},
@@ -408,25 +408,25 @@
 		name:"India",
     translatedName:"Індія",
 		leaderName:"Ганді",
-		adjective:["Indian"],
+		adjective:["Індійська"],
 		startBias:["Grassland"],
 		preferredVictoryType:"Cultural",
 
 		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
 		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
 
-		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
-		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
-		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
-		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
+		declaringWar:"Щойно я отримав повідомлення про те, що велика кількість моїх військ перетнула ваші кордони."
+		attacked:"Мої спроби уникнути насильства зазнали невдачі. Око за око робить світ сліпим."
+		defeated:"Ви можете зв'язати мене ланцюгом, можете катувати мене, ви навіть можете зруйнувати моє тіло, але ви ніколи не ув'язнете мій розум. "
+		introduction:"Привіт, я - Мохандас Ганді. Мої люди називають мене Бапу, але, будь ласка, називайте мене другом."
 
-		neutralHello:"I wish you peace."
-		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
-		neutralNo:["Absolutely not.","No.","This is unacceptable"]
-		neutralYes:["Okay.","We agree.","Fine."]
+		neutralHello:"Я бажаю тобі миру."
+		neutralLetsHearIt:["Не зупиняйся.","Так?","Я слухаю."]
+		neutralNo:["Абсолютно ні.","Ні.","Це неприйнятно."]
+		neutralYes:["Добре.","Ми згодні.","Чудово."]
 
-		hateHello:"What do you want?"
-		hateLetsHearIt:["Continue.","And?","Go on."]
+		hateHello:"Що ти хочеш?"
+		hateLetsHearIt:["Продовжуй.","І?","Кажи."]
 		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
 		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
 
@@ -444,7 +444,7 @@
 		name:"Germany",
     translatedName:"Німеччина",
 		leaderName:"Отто фон Бісмарк",
-		adjective:["German"],
+		adjective:["Німецька"],
 		preferredVictoryType:"Scientific",
 
 		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
@@ -673,9 +673,6 @@
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
 			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
-
-	/*
-
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
     translatedName:"Ацтеки",
@@ -1095,7 +1092,6 @@
 		//Nubians should have Pitati Archer as their unique unit, which replaces Archer and it's stronger. Can also move three tiles.
 		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
 	},
-	*/
 
 
 
