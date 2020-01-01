@@ -246,13 +246,13 @@
 		hateNo:["Ти глузуєш?!","Вибачаюсь?!","Це неприпустимо."]
 		hateYes:["Я думаю...Я мушу прийняти.","Ох... дуже добре.","Згода."]
 
-		afterPeace:"Now it's the time to enjoy the fruits of peace."
-		tradeRequest:"How would you like it if I propose this kind of exchange?"
+		afterPeace:"Настав час спробувати на смак фрукти миру."
+		tradeRequest:"Ви б могли прийняти наш запит на обмін?"
 
 		outerColor:[ 236, 178, 0],
 		innerColor:[0,0,0],
-		uniqueName:"Siberian Riches"
-		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
+		uniqueName:"Сибірське багатство"
+		unique:"Стратегічні ресурси забезпечують виробництво +1, а коні, залізні та уранові ресурси забезпечують подвійну кількість",
 		cities:["Москва","Ст. Петербург","Новгород","Ростов","Ярославль","Єкатеринбург","Якутськ","Владивосток","Смоленськ","Оренбург",
 			"Красноярськ","Хабаровськ","Брянськ","Твер","Новосибірськ","Магадан","Мурманьк","Іркутськ","Chita","Самара",
 			"Архангельск","Челябинськ","Tobolsk","Vologda","Омськ","Астрахань","Курськ","Саратов","Tula","Vladimir"]
@@ -267,36 +267,36 @@
 		startIntroPart1: "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed."
 		startIntroPart2: "O mighty emperor, your people turn to you to once more reclaim the glory of Rome! Will you see to it that your empire rises again, bringing peace and order to all? Will you make Rome once again center of the world? Can you build a civilization that will stand the test of time?"
 
-		declaringWar:"My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die."
-		attacked:"So brave, yet so stupid! If only you had a brain similar to your courage."
-		defeated:"The gods have deprived Rome of their favour. We have been defeated."
-		introduction:"I greet you. I am Augustus, Imperator and Pontifex Maximus of Rome. If you are a friend of Rome, you are welcome."
+		declaringWar:"Моя скарбниця зменшується, а мої солдати вже не можуть дочекатись... <зітхає> ...тому ти мусиш померти."
+		attacked:"Такий сміливий поступок, але такий дурний! Якби ж ваш мозок був таким же великим як і ваша мужність."
+		defeated:"Боги покинули нас. Ми програли."
+		introduction:"Вітаю тебе. Я Август, імператор та Великий понтифік риму. Якщо ви друг Риму, ми готові дружити з вами."
 
-		neutralHello:"Hail."
-		neutralLetsHearIt:["Begin.","Continue."]
-		neutralNo:["No.","Certainly not!"]
-		neutralYes:["Good.","I agree."]
+		neutralHello:"Привіт!"
+		neutralLetsHearIt:["Починай.","Продовжуй."]
+		neutralNo:["Ні.","Звісно ні!"]
+		neutralYes:["Добре.","Я підтверджую."]
 
-		hateHello:"What do you want?"
-		hateLetsHearIt:["And?","Continue."]
-		hateNo:["That is unpleasant.","You can't be serious!"]
-		hateYes:["Good.","Oh. Good."]
+		hateHello:"Що ти хочеш?"
+		hateLetsHearIt:["І?","Продовжуй."]
+		hateNo:["Це непрйнятно.","Ти не вмієш бути серйозним!"]
+		hateYes:["Чудово.","Ах. Добре."]
 
-		afterPeace:"Your soldiers fought well. I congratulate you on your victory."
-		tradeRequest:"I offer this, for your consideration."
+		afterPeace:"Ваші воїни хоробро бились. Вітаю вас з вашою перемогою."
+		tradeRequest:"Прийміть цю угоду, якщо ви згодні."
 
 		outerColor:[ 53,0,87],
 		innerColor:[238,201,9],
-		uniqueName:"The Glory of Rome"
-		unique:"+25% Production towards any buildings that already exist in the Capital",
-		cities:["Рим","Antium","Cumae","Неаполіс","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
+		uniqueName:"Слава Риму"
+		unique:"+25% Виробництва для всіх будівель що вже існують в столиці",
+		cities:["Рим","Антиум","Куми","Неаполіс","Равенна","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
 	},
 	{
 		name:"Arabia",
     translatedName:"Аравія",
-		leaderName:"Harun al-Rashid",
+		leaderName:"Гарун ар-Рашид",
 		adjective:["Arabian"],
 		startBias:["Desert"],
 		preferredVictoryType:"Scientific",
@@ -304,29 +304,29 @@
 		startIntroPart1: "Blessings of God be upon you oh great caliph Harun al-Rashid, leader of the pious Arabian people! The Muslim empire, the Caliphate was born in the turbulent years after the death of the prophet Muhammad in 632 AD, as his followers sought to extend the rule of God to all of the people of the earth. The caliphate grew mighty indeed at the height of its power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia. An empire as great as or even greater than that of Rome. The arts and sciences flourished in Arabia during the Middle Ages, even as the countries of Europe descended into ignorance and chaos. The Caliphate survived for six hundred years, until finally succumbing to attack from the Mongols, those destroyers of Empires."
 		startIntroPart2: "Great Caliph Harun al Rashid, your people look to you to return them to greatness! To make Arabia once again an enlightened land of arts and knowledge, a powerful nation who needs fear no enemy! Oh Caliph, will you take up the challenge? Can you build a civilization that will stand the test of time?"
 
-		declaringWar:"The world will be more beautiful without you. Prepare for war."
-		attacked:"Fool! You will soon regret dearly! I swear it!"
-		defeated:"You have won, congratulations. My palace is now in your possession, and I beg that you care well for the peacock."
-		introduction:"Welcome foreigner, I am Harun Al-Rashid, Caliph of the Arabs. Come and tell me about your empire."
+		declaringWar:"Світ буде кращим без вас. Готуйтесь до війни."
+		attacked:"Дурень! Ви пошкодуєте! Я обіцяю вам!"
+		defeated:"Ви перемогли, мої вітання. Зараз мій палац у твоїх володіннях, і я благаю, щоб ти добре піклувався про павича."
+		introduction:"Привіт, іноземцю, я Гарун ар-Рашид, Халіф арабів. Підійди і розкажи мені про свою імперію."
 
-		neutralHello:"Peace be upon you."
-		neutralLetsHearIt:["What is this?","What were you saying?"]
-		neutralNo:["Of course not.","Certainly not."]
-		neutralYes:["Okay.","Excellent."]
+		neutralHello:"Мир вам."
+		neutralLetsHearIt:["Що це?","Що ти сказав?"]
+		neutralNo:["Звісно що ні.","Аж ніяк."]
+		neutralYes:["Добре.","Прекрасно."]
 
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["What's this?!","Finish your speech."]
-		hateNo:["This matter is unacceptable.","You can't be serious about this request."]
-		hateYes:["Very well.","If I must."]
+		hateHello:"Ах, це ти."
+		hateLetsHearIt:["Що це?!","Завершуй."]
+		hateNo:["Це неприйнятно.","Ти міг би бути більш серйозним на рахунок цього запиту?"]
+		hateYes:["Дуже добре.","Якщо я мушу."]
 
-		afterPeace:"We thank you for your generous terms, we will not forget the favor you show us."
-		tradeRequest:"Come forth, let's do business."
+		afterPeace:"Ми дякуємо вам за ваші щедрі умови, ми не забудемо прихильність, яку ви нам виявляєте."
+		tradeRequest:"Підійди, давай поторгуємось."
 
 		outerColor:[ 41,83,42],
 		innerColor:[146,221,9],
-		uniqueName:"Trade Caravans",
-		unique:"+1 Gold from each Trade Route, Oil resources provide double quantity"
-		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
+		uniqueName:"Торговельні каравани",
+		unique:"+1 Золото з кожного торгового шляху, Oil resources provide double quantity"
+		cities:["Мекка","Медіна","Дамаск","Багдад","Найран","Куфа","Басра","Хорасан","Анджар","Фустат",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
 	},
@@ -343,7 +343,7 @@
 		declaringWar:"Ваша безглузда агресія не залишає нам іншого вибору. Готуйся до війни!"
 		attacked:"You have mistaken our love of peace for weakness. You shall regret this!"
 		defeated:"День... твій. Сподіваюсь, ви будете милосердними у своєму торжестві."
-		introduction:"Люди Сполучених Штатів Америки вітають вас."
+		introduction:"Народ Сполучених Штатів Америки вітає вас."
 
 		neutralHello:"Гарного дня."
 		neutralLetsHearIt:["Продовжуйте!","Не затримуйся.","Я слухаю."]
@@ -363,13 +363,13 @@
 		uniqueName:"Явне призначення"
 		unique:"Усі наземні підрозділи отримують +1 до зору, а також ви маєте знижку при купівлі тайлів",
 		cities:["Вашингтон","Нью-Йорк","Бостон","Філадельфія","Атланта","Чикаго","Сіетл","Сан-Франциско","Лос-Анджелес","Х’юстон",
-			"Портленд","Сент-Луїс","Маямі","Ба́ффало","Детройт","Новий Орлеан","Ба́лтимор ","Денвер","Цінціннаті","Даллас","Мемфіс",
+			"Портленд","Сент-Луїс","Маямі","Баффало","Детройт","Новий Орлеан","Ба́лтимор ","Денвер","Цінціннаті","Даллас","Мемфіс",
 			"Клівленд","Канзас-Сіті","Сан-Діеґо","Річмонд","Лас-Веґас","Фінікс","Альбукерке","Міннеаполіс","Піттсбурґ"]
 	},
 	{
 		name:"Japan",
     translatedName:"Японія",
-		leaderName:"Oda Nobunaga",
+		leaderName:"Ода Нобунаґа",
 		adjective:["Japanese"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
@@ -522,7 +522,7 @@
 	{
 		name:"Korea",
     translatedName:"Корея",
-		leaderName:"Sejong",
+		leaderName:"Седжон",
 		adjective:["Korean"],
 		startBias:["Coast"],
 		preferredVictoryType:"Scientific",
@@ -559,8 +559,8 @@
 
 	{
 		name:"Iroquois",
-    translatedName:"",
-		leaderName:"Hiawatha",
+    translatedName:"Ірокези",
+		leaderName:"Гайавата",
 		adjective:["Irochese"],
 		startBias:["Forest"],
 		preferredVictoryType:"Scientific",
@@ -637,8 +637,8 @@
 	},
 	{
 		name:"Polynesia",
-    translatedName:"",
-		leaderName:"Kamehameha I",
+    translatedName:"Полінезія",
+		leaderName:"Камегамега I",
 		adjective:["Polynesia"],
 		startBias:["Coast"],
 		preferredVictoryType:"Cultural",
@@ -678,8 +678,8 @@
 
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
-    translatedName:"",
-		leaderName:"Montezuma I",
+    translatedName:"Ацтеки",
+		leaderName:"Монтесума I",
 		adjective:["Aztec"],
 		startBias:["Jungle"],
 		preferredVictoryType:"Domination",
@@ -717,8 +717,8 @@
 	},
 	{
 		name:"Mongolia",
-		leaderName:"Genghis Khan",
-    translatedName:"",
+    translatedName:"Монголія",
+		leaderName:"Чингісхан",
 		adjective:["Mongolian"],
 		startBias:["Plains"],
 		preferredVictoryType:"Domination",
@@ -756,8 +756,8 @@
 	{
 		/////NEEDS NATURAL WONDERS
 		name:"Spanish",
-    translatedName:"",
-		leaderName:"Isabella",
+    translatedName:"Іспанія",
+		leaderName:"Ізабелла",
 		adjective:["Spanish"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
@@ -794,8 +794,8 @@
 	},
 	{
 		name:"Incan",
-    translatedName:"",
-		leaderName:"Pachacuti",
+    translatedName:"Інки",
+		leaderName:"Пачакутек",
 		adjective:["Incan"],
 		startBias:["Hill"],
 		preferredVictoryType:"Cultural",
@@ -832,8 +832,8 @@
 	}
 	{
 		name:"Songhai",
-    translatedName:"",
-		leaderName:"Askia",
+    translatedName:"Сонгаї",
+		leaderName:"Аскія",
 		adjective:["Songhai"],
 		startBias:["Avoid Tundra"],
 		preferredVictoryType:"Domination",
@@ -869,8 +869,8 @@
 	},
 	{
 		name:"Siam",
-    translatedName:"",
-		leaderName:"Ramkhamhaeng",
+    translatedName:"Таїланд",
+		leaderName:"Рамакхамхаенг",
 		adjective:["Siamese"],
 		startBias:["Avoid Forest"],
 		//preferredVictoryType:"Diplomatic",
@@ -908,8 +908,8 @@
 	{
 		//NEEDS SNOW AND ICE
 		name:"Denmark",
-    translatedName:"",
-		leaderName:"Harald Bluetooth",
+    translatedName:"Данія",
+		leaderName:"Гаральд I Синьозубий",
 		adjective:["Danish"],
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
@@ -947,8 +947,8 @@
 	},
 	{
 	    name:"Sweden",
-      translatedName:"",
-		leaderName:"Gustavus Adolphus",
+      translatedName:"Швеція",
+		leaderName:"Густав II Адольф",
 		adjective:["Swedish"],
 		startBias:["Tundra"],
 		preferredVictoryType:"Diplomatic",
@@ -983,8 +983,8 @@
 	},
 	{    // THIS IS A FROM A MOD and so is the least important!
 	    name:"Philippines",
-      translatedName:"",
-		leaderName:"Jose Rizal",
+      translatedName:"Філіпіни",
+		leaderName:"Хосе Рісаль",
 		adjective:["Filipinos"],
 		startBias:["Coastal"],
 		prefferedVictoryType:"Cultural",
@@ -1017,8 +1017,8 @@
 	},
 	{   /// MOD CIV
 		name:"Australia",
-    translatedName:"",
-		leaderName:"John Curtin",
+    translatedName:"Австралія",
+		leaderName:"Джон Кертін",
 		adjective:["Australian"],
 		startBias:["Avoid Tundra"],
 		preferredVictoryType:"Scientific",
@@ -1058,8 +1058,8 @@
 	},
 	{   /// MOD CIV
 		name:"Nubia",
-    translatedName:"",
-		leaderName:"Amanitore",
+    translatedName:"Нубія",
+		leaderName:"Аманітор",
 		adjective:["Nubian"],
 		startBias:["Desert"],
 		preferredVictoryType:"Domination",
