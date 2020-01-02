@@ -45,6 +45,9 @@ class UnitAutomation{
         if(unit.type==UnitType.Bomber)
             return SpecificUnitAutomation().automateBomber(unit)
 
+        if(unit.type==UnitType.Missile)
+            return SpecificUnitAutomation().automateMissile(unit)
+
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)

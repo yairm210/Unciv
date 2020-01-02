@@ -252,4 +252,28 @@ class SpecificUnitAutomation{
         airUnit.movement.moveToTile(firstStepInPath)
     }
 
+
+
+    // This really needs to be changed, to have better targetting for missiles
+    fun automateMissile(unit: MapUnit) {
+        if (UnitAutomation().tryAttackNearbyEnemy(unit)) return
+
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+
+        val immediatelyReachableCities = tilesInRange
+                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
+
+        for (city in immediatelyReachableCities) {
+            if (city.getTilesInDistance(unit.getRange())
+                            .any { UnitAutomation().containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                unit.movement.moveToTile(city)
+                return
+            }
+        }
+
+        val pathsToCities = unit.movement.getArialPathsToCities()
+        if (pathsToCities.isEmpty()) return // can't actually move anywhere else
+        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+    }
+
 }
