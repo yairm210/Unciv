@@ -17,6 +17,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
@@ -52,7 +53,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
         for(tileGroup in tileGroups.values){
-            tileGroup.cityButtonLayerGroup.onClick("") {
+            tileGroup.cityButtonLayerGroup.onClick(UncivSound.Silent) {
                 onTileClicked(tileGroup.tileInfo)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tileInfo) }
@@ -204,7 +205,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         moveHereButton.addActor(unitIcon)
 
         if (dto.unit.currentMovement > 0)
-            moveHereButton.onClick(""){
+            moveHereButton.onClick(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
                 if(dto.unit.type.isAirUnit())
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")

@@ -8,6 +8,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.action.BuildLongRoadAction
 import com.unciv.logic.map.action.MapUnitAction
+import com.unciv.models.UncivSound
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.Sounds
@@ -74,7 +75,7 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     selectedUnit.movement.moveToTile(tileToMoveTo)
-                    Sounds.play("whoosh")
+                    Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
                     if (selectedUnit.currentMovement > 0) {
