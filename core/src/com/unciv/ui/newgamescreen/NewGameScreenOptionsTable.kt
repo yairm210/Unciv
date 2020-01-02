@@ -223,6 +223,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     fun addModCheckboxes() {
 
         val modFolders = Gdx.files.local("mods")
+        if(!modFolders.exists()) return
         val loadableMods = ArrayList<Ruleset>()
 
         for (modFolder in modFolders.list()) {

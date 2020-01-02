@@ -25,6 +25,7 @@ class TileMap {
     fun clone(): TileMap {
         val toReturn = TileMap()
         toReturn.tileList.addAll(tileList.map { it.clone() })
+        toReturn.mapParameters = mapParameters
         return toReturn
     }
 
