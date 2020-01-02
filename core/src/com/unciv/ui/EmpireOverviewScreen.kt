@@ -340,7 +340,7 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
 
             val civGroup = getCivGroup(civ, "", viewingPlayer)
 
-            val vector = HexMath().getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
+            val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
             civGroup.moveBy(vector.x*groupSize/3, vector.y*groupSize/3)
 

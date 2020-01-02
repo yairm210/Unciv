@@ -191,7 +191,7 @@ class GameStarter{
         // edge is checking the distance to the CENTER POINT
         // Can't believe we used a dumb way of calculating this before!
         val hexagonalRadius = -tileMap.leftX
-        val distanceFromCenter = HexMath().getDistance(vector, Vector2.Zero)
+        val distanceFromCenter = HexMath.getDistance(vector, Vector2.Zero)
         return hexagonalRadius-distanceFromCenter >= n
     }
 }

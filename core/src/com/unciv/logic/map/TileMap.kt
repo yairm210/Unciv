@@ -35,7 +35,7 @@ class TileMap {
 
 
     constructor(radius:Int, ruleset: Ruleset){
-        for(vector in HexMath().getVectorsInDistance(Vector2.Zero, radius))
+        for(vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
             tileList.add(TileInfo().apply { position = vector; baseTerrain= Constants.grassland })
         setTransients(ruleset)
     }
@@ -56,12 +56,12 @@ class TileMap {
     }
 
     fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath().getVectorsInDistance(origin, distance).asSequence()
+        return HexMath.getVectorsInDistance(origin, distance).asSequence()
                 .filter {contains(it)}.map { get(it) }.toList()
     }
 
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath().getVectorsAtDistance(origin, distance).asSequence()
+        return HexMath.getVectorsAtDistance(origin, distance).asSequence()
                 .filter {contains(it)}.map { get(it) }.toList()
     }
 

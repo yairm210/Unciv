@@ -623,7 +623,7 @@ class MapLandmassGenerator {
 
         for (loop in 0..numSmooth) {
             for (tileInfo in tileMap.values) {
-                if (HexMath().getDistance(Vector2.Zero, tileInfo.position) < mapRadius) {
+                if (HexMath.getDistance(Vector2.Zero, tileInfo.position) < mapRadius) {
                     val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == grassland }
                     if (tileInfo.baseTerrain == grassland) { // land tile
                         if (numberOfLandNeighbors < 3)
@@ -652,7 +652,7 @@ class MapLandmassGenerator {
         val landProbability = 0.55f
 
         if (mapType == MapType.pangaea) {
-            val distanceFactor = (HexMath().getDistance(Vector2.Zero, tileInfo.position) * 1.8 / mapRadius).toFloat()
+            val distanceFactor = (HexMath.getDistance(Vector2.Zero, tileInfo.position) * 1.8 / mapRadius).toFloat()
             if (Random().nextDouble() < landProbability.pow(distanceFactor)) return TerrainType.Land
             else return TerrainType.Water
         }
@@ -666,10 +666,10 @@ class MapLandmassGenerator {
         }
 
         // default
-        if (HexMath().getDistance(Vector2.Zero, tileInfo.position) > 0.9f * mapRadius) {
+        if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.9f * mapRadius) {
             if (Random().nextDouble() < 0.1) return TerrainType.Land else return TerrainType.Water
         }
-        if (HexMath().getDistance(Vector2.Zero, tileInfo.position) > 0.85f * mapRadius) {
+        if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.85f * mapRadius) {
             if (Random().nextDouble() < 0.2) return TerrainType.Land else return TerrainType.Water
         }
         if (Random().nextDouble() < landProbability) return TerrainType.Land else return TerrainType.Water

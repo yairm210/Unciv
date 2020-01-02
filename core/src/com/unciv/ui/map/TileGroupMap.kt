@@ -13,7 +13,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
     val groupSize = 50
     init{
         for(tileGroup in tileGroups){
-            val positionalVector = HexMath().hex2WorldCoords(tileGroup.tileInfo.position)
+            val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
 
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                     positionalVector.y * 0.8f * groupSize.toFloat())
