@@ -57,6 +57,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera for Pikeman
 * [Halberd](https://thenounproject.com/naripuru/uploads/?i=440128) parkjisun for Landsknecht
 * [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
+* [Horse](https://thenounproject.com/term/horse/2191914/) By RIZCA, ID for Mandekalu Cavalry
 
 ### Renaissance Era
 
@@ -183,6 +184,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck for Mint
 * [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
 * [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
+* [food pyramid](https://thenounproject.com/term/food-pyramid/1750948/) By suib icon for Mud Pyramid Mosque
  
 ### Medieval Era
 
