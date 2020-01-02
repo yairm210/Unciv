@@ -16,8 +16,8 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
-    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,true)
-    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,false)
+    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,true)
+    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.mapHolder,false)
     private val unitIconHolder=Table()
     private val unitNameLabel = "".toLabel()
     private val promotionsTable = Table()
@@ -64,7 +64,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             touchable = Touchable.enabled
             onClick {
                 selectedUnit?.currentTile?.position?.let {
-                    worldScreen.tileMapHolder.setCenterPosition(it, false, false)
+                    worldScreen.mapHolder.setCenterPosition(it, false, false)
                 }
             }
         }).expand()
