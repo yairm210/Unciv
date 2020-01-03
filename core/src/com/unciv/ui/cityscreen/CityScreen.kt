@@ -228,7 +228,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
             tileGroups.add(tileGroup)
 
-            val positionalVector = HexMath().hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
+            val positionalVector = HexMath.hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
             val groupSize = 50
             tileGroup.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())

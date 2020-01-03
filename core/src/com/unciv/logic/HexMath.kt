@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import kotlin.math.*
 
-class HexMath {
+object HexMath {
 
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())
@@ -15,13 +15,14 @@ class HexMath {
     }
 
     fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
-        val vectors = ArrayList<Vector2>()
-        vectors += Vector2(1f, 0f)
-        vectors += Vector2(1f, 1f)
-        vectors += Vector2(0f, 1f)
-        vectors += Vector2(-1f, 0f)
-        vectors += Vector2(-1f, -1f)
-        vectors += Vector2(0f, -1f)
+        val vectors = arrayListOf(
+                Vector2(1f, 0f),
+                Vector2(1f, 1f),
+                Vector2(0f, 1f),
+                Vector2(-1f, 0f),
+                Vector2(-1f, -1f),
+                Vector2(0f, -1f)
+        )
         for (vector in vectors) vector.add(origin)
         return vectors
     }

@@ -62,8 +62,8 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
 
     fun getClosestTileTo(stageCoords: Vector2): TileInfo? {
         val positionalCoords = tileGroupMap.getPositionalVector(stageCoords)
-        val hexPosition = HexMath().world2HexCoords(positionalCoords)
-        val rounded = HexMath().roundHexCoords(hexPosition)
+        val hexPosition = HexMath.world2HexCoords(positionalCoords)
+        val rounded = HexMath.roundHexCoords(hexPosition)
 
         if (tileMap.contains(rounded))
             return tileMap.get(rounded)
