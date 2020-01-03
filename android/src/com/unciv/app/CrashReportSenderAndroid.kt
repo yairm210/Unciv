@@ -8,7 +8,7 @@ import android.widget.Toast
 import com.unciv.models.CrashReport
 import com.unciv.ui.utils.CrashReportSender
 
-class UncivCrashReportSender(private val activity: Activity) : CrashReportSender {
+class CrashReportSenderAndroid(private val activity: Activity) : CrashReportSender {
 
     companion object {
         private const val EMAIL_TO = "yairm210@hotmail.com"
@@ -19,8 +19,7 @@ class UncivCrashReportSender(private val activity: Activity) : CrashReportSender
                                        "Game version: %s\n" +
                                        "OS version: %s\n" +
                                        "Device model: %s\n" +
-                                       "Game data: %s\n" +
-                                       "Game settings: %s"
+                                       "Game data: %s\n"
     }
 
     override fun sendReport(report: CrashReport) {
@@ -42,5 +41,5 @@ class UncivCrashReportSender(private val activity: Activity) : CrashReportSender
     }
 
     private fun buildEmailBody(report: CrashReport): String =
-            EMAIL_BODY.format(report.version, Build.VERSION.SDK_INT, Build.MODEL, report.gameInfo, report.gameSettings)
+            EMAIL_BODY.format(report.version, Build.VERSION.SDK_INT, Build.MODEL, report.gameInfo)
 }
