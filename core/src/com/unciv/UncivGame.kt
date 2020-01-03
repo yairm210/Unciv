@@ -65,7 +65,7 @@ class UncivGame(
         settings = GameSaver().getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
 
-        thread {
+        thread(name="LoadJSON") {
             ruleset = Ruleset(true)
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.

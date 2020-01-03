@@ -66,7 +66,7 @@ class NewGameScreen: PickerScreen(){
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            thread {
+            thread(name="NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 try {
                     newGame = GameStarter().startNewGame(newGameParameters,mapParameters)

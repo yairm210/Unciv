@@ -143,7 +143,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val loadingGamePopup = PopupTable(this)
         loadingGamePopup.add("Loading latest game state...")
         loadingGamePopup.open()
-        thread {
+        thread(name="MultiplayerLoad") {
             try {
                 val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
                 if(gameInfo.isUpToDate && gameInfo.currentPlayer==latestGame.currentPlayer) { // we were trying to download this to see when it's our turn...nothing changed
@@ -379,7 +379,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         shouldUpdate = true
 
 
-        thread { // on a separate thread so the user can explore their world while we're passing the turn
+        thread(name="NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
             val gameInfoClone = gameInfo.clone()
             gameInfoClone.setTransients()
             try {

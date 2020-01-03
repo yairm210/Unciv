@@ -182,7 +182,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
             downloadMusicButton.onClick {
                 // So the whole game doesn't get stuck while downloading the file
-                thread {
+                thread(name="Music") {
                     try {
                         downloadMusicButton.disable()
                         errorTable.clear()

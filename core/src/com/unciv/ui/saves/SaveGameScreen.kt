@@ -57,7 +57,7 @@ class SaveGameScreen : PickerScreen() {
         rightSideButton.setText("Save game".tr())
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
-            thread{ 
+            thread(name="SaveGame"){
                 GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
                 UncivGame.Current.setWorldScreen()
             }

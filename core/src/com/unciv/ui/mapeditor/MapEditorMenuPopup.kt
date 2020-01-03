@@ -65,7 +65,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
 
         val uploadMapButton = TextButton("Upload map".tr(), skin)
         uploadMapButton.onClick {
-            thread {
+            thread(name="MapUpload") {
                 try {
                     val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
                     DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
