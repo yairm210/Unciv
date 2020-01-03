@@ -29,6 +29,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
                 val tile = tileGroup.tileInfo
                 tile.baseTerrain=Constants.ocean
                 tile.terrainFeature=null
+                tile.naturalWonder=null
                 tile.resource=null
                 tile.improvement=null
                 tile.improvementInProgress=null
