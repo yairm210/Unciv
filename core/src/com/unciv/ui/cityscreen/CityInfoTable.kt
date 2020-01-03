@@ -83,8 +83,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                 cityScreen.update()
                             }, cityScreen)
                     }
-                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold
-                            || !UncivGame.Current.worldScreen.isPlayersTurn)
+                    if (cityScreen.city.hasSoldBuildingThisTurn || !UncivGame.Current.worldScreen.isPlayersTurn)
                         sellBuildingButton.disable()
                 }
                 wonderDetailsTable.addSeparator()
