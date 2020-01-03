@@ -70,7 +70,12 @@ class UnitActions {
                             unit.action = Constants.unitActionExplore
                         })
             } else {
-                actionList += UnitAction(name = "Stop exploration", canAct = true)
+                actionList += UnitAction(
+                        name = "Stop exploration",
+                        canAct = true,
+                        action = {
+                            unit.action = null
+                        })
             }
         }
 
