@@ -51,6 +51,7 @@ class UncivGame(
     val translations = Translations()
 
     override fun create() {
+        Gdx.graphics.setContinuousRendering(false)
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
