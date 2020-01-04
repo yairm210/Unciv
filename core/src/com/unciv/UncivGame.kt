@@ -51,6 +51,7 @@ class UncivGame(
     val translations = Translations()
 
     override fun create() {
+        // This is for battery saving, we don't have any animation which means we don't need to update the screen every ms
         Gdx.graphics.setContinuousRendering(false)
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
