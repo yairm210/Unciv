@@ -22,7 +22,7 @@ class MapDownloadTable(loadMapScreen: LoadMapScreen): PopupTable(loadMapScreen) 
             for (downloadableMap in folderList.entries) {
                 val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
                 downloadMapButton.onClick {
-                    thread {
+                    thread(name="MapDownload") {
                         try {
                             val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
                             val decodedMapJson = Gzip.unzip(mapJsonGzipped)

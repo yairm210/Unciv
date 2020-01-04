@@ -58,7 +58,7 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
 
     fun onMoveButtonClick() {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-        thread {
+        thread(name="TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it

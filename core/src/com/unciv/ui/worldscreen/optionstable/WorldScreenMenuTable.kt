@@ -118,7 +118,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 badGameIdLabel.isVisible = true
                 return@addButton
             }
-            thread {
+            thread(name="MultiplayerDownload") {
                 try {
                     // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                     // we need to run it in a different thread.
