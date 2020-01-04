@@ -25,7 +25,11 @@ class UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         if (unit.action != null && unit.action!!.startsWith("moveTo")) {
-            actionList += UnitAction(name = "Stop movement", canAct = true)
+            actionList += UnitAction(
+                    name = "Stop movement",
+                    canAct = true,
+                    action = { unit.action = null }
+            )
         }
 
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
@@ -70,7 +74,11 @@ class UnitActions {
                             unit.action = Constants.unitActionExplore
                         })
             } else {
-                actionList += UnitAction(name = "Stop exploration", canAct = true)
+                actionList += UnitAction(
+                        name = "Stop exploration",
+                        canAct = true,
+                        action = { unit.action = null }
+                )
             }
         }
 
@@ -167,7 +175,11 @@ class UnitActions {
                     })
 
             if (Constants.unitActionAutomation == unit.action) {
-                actionList += UnitAction(name = "Stop automation", canAct = true)
+                actionList += UnitAction(
+                        name = "Stop automation", 
+                        canAct = true,
+                        action = { unit.action = null }
+                )
             } else {
                 actionList += UnitAction(
                         name = "Automate",
