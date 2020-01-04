@@ -733,11 +733,11 @@
 		startBias:["Coast"],
 		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "Blessed Isabella, servant of God, holy queen of Castille and Leòn! Your people greet and welcome you. You are the ruler of Spain, a beautiful and ancient country at the crossroads of the world between Europe and Africa, one shor on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish are a multicultural people with roots in the Muslim and Christian worlds. A seafaring race, Spanish explorers found and conquered much of the New World, and, for many centuries, its gold and silver brought Spain unrivalled wealth and power, making the Spanish court the  envy of the world."
-		startIntroPart2: "O fair and virtuous Isabella! Will you rebuld the Spanish empire and show the world again the greatness of your people? Will your take up the mantle of the holy monarchy, and vanquish your foes under heaven's watchful eyes? Your adoring subjects await your command! Will you build a civilization that stands the test of time?"
+		startIntroPart1: "Benedetta Isabella, serva di Dio, santa regina di Castiglia e León, il tuo popolo ti saluta e ti accoglie! Tu sei la sovrana di Spagna, una bella e antichissima terra, crocevia di mondi, collegamento tra Europa e Africa, una costa sul Mediterraneo e l'altra sull'imponente Oceano Atlantico. Gli spagnoli sono un popolo multiculturale, con radici che affondano sia nel mondo islamico sia in quello cristiano. Terra di navigatori, con i suoi esploratori la Spagna scoprì e conquistò gran parte del Nuovo Mondo e poer molti secoli l'oro e l'argento prelevati le conferirono ricchezza e potenza impareggiabili, facendo della corte spagnola l'invidia del mondo."
+		startIntroPart2: "Oh bella e virtuosa Isabella, ricostruirai l'impero spagnolo mostrando ancora una volta al mondo la grandezza del tuo popolo? Indosserai nuovamente il manto della pia monarchia e sconfiggerai i nemici sotto i vigili occhi del cielo? I tuoi adoranti sudditi attendono un tuo cenno. Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Forse Dio ti perdonerà... ma io no. Preparati a combattere."
-		attacked:"Lacché ripugnante del demonio! Pagherai carola tua insolenza!"
+		attacked:"Lacché ripugnante del demonio! Pagherai caro la tua insolenza!"
 		defeated:"Se la mia sconfitta è l'indubbio volere di Dio, ebbene lo accetto."
 		introduction:"Dio benedice coloro che si meritano il suo amore. Io sono Isabella, regina di Spagna."
 		
@@ -758,8 +758,8 @@
 		innerColor:[255,102,102],
 		uniqueName:"Sette Città d'Oro"
 		unique:"Bonus in Oro per la scoperta di una Meraviglia Naturale (maggiorato se la scopri per primo), le cui caselle fruttano doppia Cultura, Felicità e resa generale.",
-		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
-			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
+		cities:["Madrid","Barcellona","Siviglia","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
+			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","León","Zamora","Mida",
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
 			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
 	},
