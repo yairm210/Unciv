@@ -95,6 +95,11 @@ class NewGameScreen: PickerScreen(){
         }
     }
 
+    fun setNewGameButtonEnabled(bool:Boolean){
+        if(bool) rightSideButton.enable()
+        else rightSideButton.disable()
+    }
+
 
     var newGame:GameInfo?=null
 

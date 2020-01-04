@@ -10,10 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.translations.tr
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
@@ -37,6 +37,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             playerListTable.add("+".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
         }
+        newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size>1)
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
