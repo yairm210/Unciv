@@ -148,3 +148,15 @@ Notable parts:
 * the City Stats table - should definitely be its own class come to think of it
 * The construction list and current construction (bottom left) - `ConstructionsTable`
 * Existing buildings, specialists and stats drilldown - `CityInfoTable`
+
+# Others
+
+A few words need to be said about the NextTurn process, but there isn't really a good place for it so I'll put it here.
+
+We clone the GameInfo and use a "new" GameInfo for each turn because of 2 reasons.
+
+The first is multithreading and thread safety, and the second is multiplayer reproducibility.
+
+The first point is pretty basic. The NextTurn needs to happen in a separate thread so that the user can still have a responsive game when it's off doing stuff. Stuff in the GameInfo changes on NextTurn, so if you're rendering that same GameInfo, this could cause conflicts. Also, after NextTurn we generally autosave, and if stuff changes in the state while we're trying to serialize it to put it in the save file, that's Not Fun. A single clone solves both of these problems at once.
+
+The second point is less obvious. If we use our mutable state, changing stuff in place, then what happens when we're playing in Multiplayer? Multiplayer is based upon the fact that you can receive an entire game state and go from there, and in fact the move to multiplayer was what made the whole "clone" thing necessary (on the way it also solved the aforementioned threading problems)
