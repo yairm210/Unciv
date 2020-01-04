@@ -492,7 +492,7 @@ class CivilizationInfo {
         val city = NextTurnAutomation().getClosestCities(this, otherCiv).city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
-                .random()
+                .toList().random()
         placeUnitNearTile(city.location, militaryUnit.name)
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }

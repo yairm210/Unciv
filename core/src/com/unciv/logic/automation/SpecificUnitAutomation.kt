@@ -19,7 +19,7 @@ class SpecificUnitAutomation{
     }
 
     fun automateWorkBoats(unit: MapUnit) {
-        val seaResourcesInCities = unit.civInfo.cities.flatMap { city -> city.getWorkableTiles() }
+        val seaResourcesInCities = unit.civInfo.cities.asSequence().flatMap { city -> city.getWorkableTiles() }
                 .filter { hasWorkableSeaResource(it, unit.civInfo) && (unit.movement.canMoveTo(it) || unit.currentTile == it) }
         val closestReachableResource = seaResourcesInCities.sortedBy { it.arialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }

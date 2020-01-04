@@ -116,7 +116,7 @@ class CityInfo {
 
 
     fun getCenterTile(): TileInfo = centerTileInfo
-    fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
+    fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
@@ -192,7 +192,7 @@ class CityInfo {
         return 0
     }
 
-    fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
+    fun getBuildingUniques(): Sequence<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques.asSequence() }
     fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun getGreatPersonMap():HashMap<String,Stats>{
