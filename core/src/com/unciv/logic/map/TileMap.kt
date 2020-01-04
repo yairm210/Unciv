@@ -42,27 +42,71 @@ class TileMap {
 
 
     operator fun contains(vector: Vector2): Boolean {
-        val arrayXIndex = vector.x.toInt()-leftX
+        return contains(vector.x.toInt(), vector.y.toInt())
+    }
+
+    fun contains(x:Int, y:Int): Boolean {
+        val arrayXIndex = x-leftX
         if(arrayXIndex<0 || arrayXIndex>=tileMatrix.size) return false
-        val arrayYIndex = vector.y.toInt()-bottomY
+        val arrayYIndex = y-bottomY
         if(arrayYIndex<0 || arrayYIndex>=tileMatrix[arrayXIndex].size) return false
         return tileMatrix[arrayXIndex][arrayYIndex] != null
     }
 
-    operator fun get(vector: Vector2): TileInfo {
-        val arrayXIndex = vector.x.toInt()-leftX
-        val arrayYIndex = vector.y.toInt()-bottomY
+    operator fun get(x:Int, y:Int):TileInfo{
+        val arrayXIndex = x-leftX
+        val arrayYIndex = y-bottomY
         return tileMatrix[arrayXIndex][arrayYIndex]!!
     }
 
+    operator fun get(vector: Vector2): TileInfo {
+        return get(vector.x.toInt(), vector.y.toInt())
+    }
+
     fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath.getVectorsInDistance(origin, distance).asSequence()
-                .filter {contains(it)}.map { get(it) }.toList()
+        val tilesToReturn = mutableListOf<TileInfo>()
+        for (i in 0 .. distance) {
+            tilesToReturn += getTilesAtDistance(origin, i)
+        }
+        return tilesToReturn
     }
 
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath.getVectorsAtDistance(origin, distance).asSequence()
-                .filter {contains(it)}.map { get(it) }.toList()
+        if(distance==0) return listOf(get(origin))
+        val tilesToReturn = ArrayList<TileInfo>()
+
+        fun addIfTileExists(x:Int,y:Int){
+            if(contains(x,y))
+                tilesToReturn += get(x,y)
+        }
+
+        val centerX = origin.x.toInt()
+        val centerY = origin.y.toInt()
+
+        // Start from 6 O'clock point which means (-distance, -distance) away from the center point
+        var currentX = centerX - distance
+        var currentY = centerY - distance
+
+        for (i in 0 until distance) { // From 6 to 8
+            addIfTileExists(currentX,currentY)
+            // We want to get the tile on the other side of the clock,
+            // so if we're at current = origin-delta we want to get to origin+delta.
+            // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
+            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
+            currentX += 1 // we're going upwards to the left, towards 8 o'clock
+        }
+        for (i in 0 until distance) { // 8 to 10
+            addIfTileExists(currentX,currentY)
+            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
+            currentX += 1
+            currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
+        }
+        for (i in 0 until distance) { // 10 to 12
+            addIfTileExists(currentX,currentY)
+            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
+            currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
+        }
+        return tilesToReturn
     }
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
@@ -170,6 +214,8 @@ class TileMap {
             tileInfo.setTransients()
         }
     }
+
+
 
 }
 
