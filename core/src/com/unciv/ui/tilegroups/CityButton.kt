@@ -124,7 +124,20 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
         }
 
-        val cityButtonText = city.population.population.toString() + " | " + city.name
+        val growthString : String
+        if (belongsToViewingCiv()) {
+            if (city.isGrowing()) {
+                growthString = "(" + city.getNumTurnsToNewPopulation().toString() + ")"
+            } else if (city.isStarving()) {
+                growthString = "(" + (-city.getNumTurnsToStarvation()).toString() + ")"
+            } else {
+                growthString = "(-)"
+            }
+        } else {
+            growthString = ""
+        }
+
+        val cityButtonText = city.population.population.toString() + growthString + " | " + city.name
         val label = cityButtonText.toLabel(secondaryColor)
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
