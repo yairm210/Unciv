@@ -1,0 +1,41 @@
+[
+
+	{
+		name:"Inca",
+		leaderName:"Pachacuti",
+		adjective:["Incan"],
+		startBias:["Hill"],
+		preferredVictoryType:"Cultural",
+		
+		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
+		startIntroPart2: "Oh King Pachacuti, truly are you called 'Earth Shaker'! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Resistance is futile! You cannot hope to stand against the mighty Incan empire. If you will not surrender immediately, then prepare for war!"
+		attacked:"Declare war on me?!? You can't, because I declare war on you first!"
+		defeated:"How did you darken the sun? I ruled with diligence and mercy—see that you do so as well."
+		introduction:"How are you? You stand before Pachacuti Inca Yupanqui."
+		
+		neutralHello:"How are you doing?"
+		neutralLetsHearIt:["Go on.","What do you say?","You may begin."]
+		neutralNo:["We absolutely refuse.","No!","I refuse."]
+		neutralYes:["Very good.","Of course, yes","That is very good."]
+
+		hateHello:"What do you want now?"
+		hateLetsHearIt:["Speak!","What do you say?","Go on."]
+		hateNo:["That is not possible!","We are not agreeing to that!","I beg your pardon?"]
+		hateYes:["That is fine.","That is good enough.","Very well..."]
+		
+		afterPeace:"Viracocha has frowned upon our war, and has agreed to our peace agreements."
+		tradeRequest:"The Incan people offer this fair trade."
+				
+		outerColor:[255,255,51],
+		innerColor:[0,204,102],
+		uniqueName:"Great Andean Road"
+		unique:"",
+		//unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
+		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos",
+			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
+			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
+			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
+	}
+]

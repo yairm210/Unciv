@@ -1,0 +1,16 @@
+[
+	{
+		name:"Slinger",
+		unitType:"Melee",
+		uniqueTo:"Inca",
+		replaces:"Archer",
+		movement:2,
+		strength:4,
+		rangedStrength:7,
+		requiredTech:"Archery",
+		obsoleteTech:"Machinery",
+		upgradesTo:"Crossbowman",
+		uniques:["Can move after attacking"],
+		attackSound:"arrow",
+	},
+]

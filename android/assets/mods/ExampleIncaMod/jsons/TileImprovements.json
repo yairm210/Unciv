@@ -1,0 +1,11 @@
+[
+	{
+		name:"Terrace farm",
+		uniqueTo:"Inca",
+		food:2,
+		turnsToBuild:4,
+		improvingTech:"Construction",
+		improvingTechStats:{food:1}
+		terrainsCanBeBuiltOn:["Hills"],
+	},
+]

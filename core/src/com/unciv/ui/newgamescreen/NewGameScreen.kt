@@ -25,7 +25,7 @@ class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UncivGame.Current.gameInfo.gameParameters
     val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
-    val ruleSet = RulesetCache.getComplexRuleset(newGameParameters.mods)
+    val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
         setDefaultCloseAction()

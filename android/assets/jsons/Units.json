@@ -81,7 +81,6 @@
 		obsoleteTech:"Metal Casting",
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
-		//Barbarian unique unit
 	},
 	{
 		name:"Archer",
@@ -92,8 +91,8 @@
 		cost: 40,
 		hurryCostModifier:20,
 		requiredTech:"Archery",
-		obsoleteTech:"Machinery",//Should be Construction
-		upgradesTo:"Crossbowman",//Should be Composite Bowman
+		obsoleteTech:"Machinery",
+		upgradesTo:"Crossbowman"
 		attackSound:"arrow"
 	},
 	{

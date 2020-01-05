@@ -30,9 +30,12 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
     fun update() {
         playerListTable.clear()
-        val gameBasics = newGameScreen.ruleSet // when we add mods, this will need to change
-        for (player in newGameParameters.players)
-            playerListTable.add(getPlayerTable(player,gameBasics)).pad(10f).row()
+        val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
+        for (player in newGameParameters.players) {
+            if(!newGameScreen.ruleset.nations.containsKey(player.chosenCiv)) // this was in a mod we disabled
+                player.chosenCiv="Random"
+            playerListTable.add(getPlayerTable(player, gameBasics)).pad(10f).row()
+        }
         if(newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
             playerListTable.add("+".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
@@ -108,7 +111,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.BLACK,30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(50f)
-        else ImageGetter.getNationIndicator(newGameScreen.ruleSet.nations[player.chosenCiv]!!, 50f)
+        else ImageGetter.getNationIndicator(newGameScreen.ruleset.nations[player.chosenCiv]!!, 50f)
         nationTable.add(nationImage)
         nationTable.add(player.chosenCiv.toLabel()).pad(20f)
         nationTable.touchable = Touchable.enabled
@@ -138,11 +141,11 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
 
-        for (nation in newGameScreen.ruleSet.nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
+        for (nation in newGameScreen.ruleset.nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth,newGameScreen.ruleSet).onClick {
+            nationListTable.add(NationTable(nation, nationsPopupWidth,newGameScreen.ruleset).onClick {
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()

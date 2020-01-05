@@ -13,13 +13,14 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
 class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:()->Unit)
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.newGameParameters
     val mapParameters = newGameScreen.mapParameters
-    val ruleset = newGameScreen.ruleSet
+    val ruleset = newGameScreen.ruleset
 
     init {
         pad(10f)
@@ -225,6 +226,10 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         fun reloadMods(){
             ruleset.clear()
             ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
+            ruleset.mods+=newGameParameters.mods
+
+            ImageGetter.ruleset=ruleset
+            ImageGetter.setTextureRegionDrawables()
         }
 
         add("{Mods}:".tr()).colspan(2).row()
