@@ -6,22 +6,25 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.Translations
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.HashSet
+import java.util.*
 
 @RunWith(GdxTestRunner::class)
 class TranslationTests {
     private var translations = Translations()
-    private var ruleSet = Ruleset(true)
+    private var ruleSet = Ruleset()
     private val jsonParser = JsonParser()
 
     @Before
     fun loadTranslations() {
         translations.readAllLanguagesTranslation()
+        RulesetCache.loadRulesets()
+        ruleSet = RulesetCache.getBaseRuleset()
     }
 
     @Test
