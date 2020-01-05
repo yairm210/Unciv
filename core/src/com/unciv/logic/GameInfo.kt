@@ -10,8 +10,10 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import java.util.*
 
 class GameInfo {
@@ -20,7 +22,7 @@ class GameInfo {
     /** This is used in multiplayer games, where I may have a saved game state on my phone
      * that is inconsistent with the saved game on the cloud */
     @Transient var isUpToDate=false
-    @Transient var ruleSet = UncivGame.Current.ruleset
+    @Transient lateinit var ruleSet:Ruleset
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -203,7 +205,7 @@ class GameInfo {
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
-
+        ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
 
         // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
         // Needs to be BEFORE tileMap.setTransients, because the units' setTransients is called from there

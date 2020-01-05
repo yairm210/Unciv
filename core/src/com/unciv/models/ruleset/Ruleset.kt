@@ -13,12 +13,11 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
-class Ruleset(load: Boolean = true) {
+class Ruleset() {
 
     private val jsonParser = JsonParser()
 
     var name = ""
-    val mods = LinkedHashSet<String>()
     val buildings = LinkedHashMap<String, Building>()
     val terrains = LinkedHashMap<String, Terrain>()
     val tileResources = LinkedHashMap<String, TileResource>()
@@ -29,17 +28,12 @@ class Ruleset(load: Boolean = true) {
     val nations = LinkedHashMap<String, Nation>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
+    val mods = HashSet<String>()
 
     fun clone(): Ruleset {
-        val newRuleset = Ruleset(false)
+        val newRuleset = Ruleset()
         newRuleset.add(this)
         return newRuleset
-    }
-
-    init {
-        if (load) {
-            load(Gdx.files.internal("jsons"))
-        }
     }
 
     private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
@@ -63,7 +57,7 @@ class Ruleset(load: Boolean = true) {
         units.putAll(ruleset.units)
     }
 
-    fun clearExceptModNames() {
+    fun clear() {
         buildings.clear()
         difficulties.clear()
         nations.clear()
@@ -75,6 +69,7 @@ class Ruleset(load: Boolean = true) {
         tileResources.clear()
         unitPromotions.clear()
         units.clear()
+        mods.clear()
     }
 
     fun load(folderHandle :FileHandle ) {
@@ -146,3 +141,34 @@ class Ruleset(load: Boolean = true) {
     }
 }
 
+/** Loading mods is expensive, so let's only do it once and
+ * save all of the loaded rulesets somewhere for later use
+ *  */
+object RulesetCache :HashMap<String,Ruleset>(){
+    fun loadRulesets(){
+        this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
+
+        for(modFolder in Gdx.files.local("mods").list()){
+            try{
+                val modRuleset = Ruleset()
+                modRuleset.load(modFolder.child("jsons"))
+                modRuleset.name = modFolder.name()
+                this[modRuleset.name] = modRuleset
+            }
+            catch (ex:Exception){}
+        }
+    }
+
+    fun getBaseRuleset() = this[""]!!
+
+    fun getComplexRuleset(mods:Collection<String>): Ruleset {
+        val newRuleset = Ruleset()
+        newRuleset.add(getBaseRuleset())
+        for(mod in mods)
+            if(containsKey(mod)) {
+                newRuleset.add(this[mod]!!)
+                newRuleset.mods+=mod
+            }
+        return newRuleset
+    }
+}

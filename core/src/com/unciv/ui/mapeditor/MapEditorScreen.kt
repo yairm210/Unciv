@@ -6,16 +6,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontSize
 
 class MapEditorScreen(): CameraStageBaseScreen() {
-    val ruleset = UncivGame.Current.ruleset
+    val ruleset = RulesetCache.getBaseRuleset()
     var mapName = "My first map"
 
     var tileMap = TileMap()

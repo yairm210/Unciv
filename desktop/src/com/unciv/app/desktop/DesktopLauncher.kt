@@ -53,6 +53,14 @@ internal object DesktopLauncher {
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
         TexturePacker.process(settings, "../Images", ".", "game")
 
+        // pack for mods as well
+        val modDirectory = File("../assets/mods")
+        if(modDirectory.exists()) {
+            for (mod in modDirectory.listFiles()!!){
+                TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
+            }
+        }
+
         val texturePackingTime = System.currentTimeMillis() - startTime
         println("Packing textures - "+texturePackingTime+"ms")
     }

@@ -1,6 +1,5 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -9,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.models.metadata.GameSpeed
-import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.translations.tr
@@ -20,7 +19,6 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.newGameParameters
     val mapParameters = newGameScreen.mapParameters
-    val baseRuleset = newGameScreen.ruleSet.clone()
     val ruleset = newGameScreen.ruleSet
 
     init {
@@ -221,46 +219,22 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
 
 
     fun addModCheckboxes() {
-
-        val modFolders = Gdx.files.local("mods")
-        if(!modFolders.exists()) return
-        val loadableMods = ArrayList<Ruleset>()
-
-        for (modFolder in modFolders.list()) {
-            if (modFolder.list().any { it.name() == "jsons" }) {
-                val modRuleset = Ruleset(false)
-
-                try {
-                    modRuleset.load(modFolder.child("jsons"))
-                    modRuleset.name = modFolder.nameWithoutExtension()
-                    loadableMods.add(modRuleset)
-
-                } catch (ex: Exception) {
-                    print(ex.message)
-                }
-            }
-        }
+        val modRulesets = RulesetCache.filter { it.key!="" }.values
+        if(modRulesets.isEmpty()) return
 
         fun reloadMods(){
-            ruleset.clearExceptModNames()
-            ruleset.add(baseRuleset)
-            for(modName in ruleset.mods){
-                val correspondingMod = loadableMods.first { it.name==modName }
-                ruleset.add(correspondingMod)
-            }
+            ruleset.clear()
+            ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
         }
-
-        if(loadableMods.isEmpty()) return
-
 
         add("{Mods}:".tr()).colspan(2).row()
         val modCheckboxTable = Table().apply { defaults().pad(10f) }
-        for(mod in loadableMods){
+        for(mod in modRulesets){
             val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
             checkBox.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    if(checkBox.isChecked) ruleset.mods.add(mod.name)
-                    else ruleset.mods.remove(mod.name)
+                    if(checkBox.isChecked) newGameParameters.mods.add(mod.name)
+                    else newGameParameters.mods.remove(mod.name)
                     reloadMods()
                     updatePlayerPickerTable()
                 }
