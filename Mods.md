@@ -18,4 +18,4 @@ Mods have 2 subfolders:
 - Images - here you should put game images, as in https://github.com/yairm210/Unciv/tree/master/android/Images
 These images will need to be built into a single image with an 'altas' - if running from Android Studio, this should hapen automatically
 
-For an example, you can refer to https://github.com/yairm210/Unciv-mod-example
+For an example, you can refer to https://github.com/yairm210/Unciv-mod-example - just download the ExampleIncaMod and put it in a /mods folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Inca as a playable civilization!
