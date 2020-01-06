@@ -171,7 +171,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
         val groupHeight = 25f
         var groupWidth = populationLabel.width
-        if (showGrowth) groupWidth += 10f
+        if (showGrowth) groupWidth += 20f
         group.setSize(groupWidth, groupHeight)
 
         if (showGrowth) {
