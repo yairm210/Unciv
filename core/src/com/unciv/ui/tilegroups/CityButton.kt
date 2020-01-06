@@ -198,7 +198,6 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 } else {
                     turnLabel = "∞".toLabel()
                 }
-                turnLabel.color = growthGreen
             } else if (city.isStarving()) {
                 val turnsToStarvation = city.getNumTurnsToStarvation()
                 if (turnsToStarvation != null) {
@@ -210,11 +209,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 } else {
                     turnLabel = "∞".toLabel()
                 }
-                turnLabel.color = Color.RED
             } else {
                 turnLabel = "∞".toLabel()
-                turnLabel.color = Color.WHITE
             }
+            turnLabel.color = city.civInfo.nation.getInnerColor()
             turnLabel.setFontSize(14)
             turnLabel.pack()
 
