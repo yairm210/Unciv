@@ -57,8 +57,8 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         spinningCircle.center(this)
         spinningCircle.x += whiteHaloSize / 2 // to edge of white halo
         spinningCircle.setOrigin(spinningCircle.width / 2 - whiteHaloSize / 2, spinningCircle.height / 2)
-        //addActor(spinningCircle)
-        //spinningCircle.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(90f, 1f)))
+        addActor(spinningCircle)
+        spinningCircle.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(90f, 1f)))
         blackSpinningCircle = spinningCircle
     }
 }
