@@ -160,9 +160,12 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     private fun getPopulationGroup(showGrowth: Boolean): Group {
+        val growthGreen = Color(0.0f, 0.5f, 0.0f, 1.0f)
+
         val group = Group()
 
         val populationLabel = city.population.population.toString().toLabel()
+        populationLabel.color = city.civInfo.nation.getInnerColor()
 
         group.addActor(populationLabel)
 
@@ -175,8 +178,9 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             var growthPercentage = city.population.foodStored / city.population.getFoodToNextPopulation().toFloat()
             if (growthPercentage < 0) growthPercentage = 0.0f
 
-            val growthBar = ImageGetter.getProgressBarVertical(2f, groupHeight, growthPercentage,
-                    if (city.isStarving()) Color.RED else Color.GREEN, Color.BLACK)
+            val growthBar = ImageGetter.getProgressBarVertical(2f, groupHeight,
+                    if (city.isStarving()) 1.0f else growthPercentage,
+                    if (city.isStarving()) Color.RED else growthGreen, Color.BLACK)
             growthBar.x = populationLabel.width + 3
             growthBar.centerY(group)
 
@@ -184,10 +188,20 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
             val turnLabel : Label
             if (city.isGrowing()) {
-                turnLabel = city.getNumTurnsToNewPopulation().toString().toLabel()
-                turnLabel.color = Color.GREEN
+                val turnsToGrowth = city.getNumTurnsToNewPopulation()
+                if (turnsToGrowth < 100) {
+                    turnLabel = turnsToGrowth.toString().toLabel()
+                } else {
+                    turnLabel = "-".toLabel()
+                }
+                turnLabel.color = growthGreen
             } else if (city.isStarving()) {
-                turnLabel = (-city.getNumTurnsToStarvation()).toString().toLabel()
+                val turnsToStarvation = city.getNumTurnsToStarvation()
+                if (turnsToStarvation < 100) {
+                    turnLabel = turnsToStarvation.toString().toLabel()
+                } else {
+                    turnLabel = "-".toLabel()
+                }
                 turnLabel.color = Color.RED
             } else {
                 turnLabel = "-".toLabel()
