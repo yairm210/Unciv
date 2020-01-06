@@ -18,8 +18,7 @@ internal object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
 
-        if (File("../Images").exists()) // So we don't run this from within a fat JAR
-            packImages()
+        packImages()
 
         val config = LwjglApplicationConfiguration()
         // Don't activate GL 3.0 because it causes problems for MacOS computers
@@ -51,10 +50,12 @@ internal object DesktopLauncher {
         // This is so they don't look all pixelated
         settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-        TexturePacker.process(settings, "../Images", ".", "game")
+
+        if (File("../Images").exists()) // So we don't run this from within a fat JAR
+            TexturePacker.process(settings, "../Images", ".", "game")
 
         // pack for mods as well
-        val modDirectory = File("../assets/mods")
+        val modDirectory = File("mods")
         if(modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!){
                 TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
