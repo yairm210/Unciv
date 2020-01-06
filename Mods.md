@@ -16,6 +16,6 @@ Each folder in the /mods directory is a different mod.
 Mods have 2 subfolders:
 - jsons - here you should put files that alter the data of game objects, the order of the files is as in https://github.com/yairm210/Unciv/tree/master/android/assets/jsons
 - Images - here you should put game images, as in https://github.com/yairm210/Unciv/tree/master/android/Images
-These images will need to be built into a single image with an 'altas' - if running from Android Studio, this should hapen automatically
+These images are built (at runtime) into a single image with an 'altas', so if you see "game.atlas" and "game.png" files being generated, now you know what for
 
 For an example, you can refer to https://github.com/yairm210/Unciv-mod-example - just download the ExampleIncaMod and put it in a /mods folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Inca as a playable civilization!
