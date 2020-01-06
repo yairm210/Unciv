@@ -202,8 +202,8 @@ class CityInfo {
         return cityStats.currentCityStats.food < 0
     }
 
-    /** Take -1 to mean infinity. */
-    fun getNumTurnsToNewPopulation(): Int {
+    /** Take null to mean infinity. */
+    fun getNumTurnsToNewPopulation(): Int? {
         if (isGrowing()) {
             var turnsToGrowth = ceil((population.getFoodToNextPopulation() - population.foodStored)
                     / cityStats.currentCityStats.food).toInt()
@@ -211,16 +211,16 @@ class CityInfo {
             return turnsToGrowth
         }
 
-        return -1
+        return null
     }
 
-    /** Take -1 to mean infinity. */
-    fun getNumTurnsToStarvation(): Int {
+    /** Take null to mean infinity. */
+    fun getNumTurnsToStarvation(): Int? {
         if (isStarving()) {
             return floor(population.foodStored / -cityStats.currentCityStats.food).toInt() + 1
         }
 
-        return -1
+        return null
     }
 
     fun getBuildingUniques(): Sequence<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques.asSequence() }
