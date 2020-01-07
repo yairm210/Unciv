@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -124,7 +125,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
         }
 
-        val cityButtonText = city.population.population.toString() + " | " + city.name
+        iconTable.add(getPopulationGroup(UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()))
+                .padLeft(10f)
+
+        val cityButtonText = city.name
         val label = cityButtonText.toLabel(secondaryColor)
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
@@ -153,6 +157,72 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 Actions.run {isButtonMoved=false}
         )
         parent.addAction(floatAction)
+    }
+
+    private fun getPopulationGroup(showGrowth: Boolean): Group {
+        val growthGreen = Color(0.0f, 0.5f, 0.0f, 1.0f)
+
+        val group = Group()
+
+        val populationLabel = city.population.population.toString().toLabel()
+        populationLabel.color = city.civInfo.nation.getInnerColor()
+
+        group.addActor(populationLabel)
+
+        val groupHeight = 25f
+        var groupWidth = populationLabel.width
+        if (showGrowth) groupWidth += 20f
+        group.setSize(groupWidth, groupHeight)
+
+        if (showGrowth) {
+            var growthPercentage = city.population.foodStored / city.population.getFoodToNextPopulation().toFloat()
+            if (growthPercentage < 0) growthPercentage = 0.0f
+
+            val growthBar = ImageGetter.getProgressBarVertical(2f, groupHeight,
+                    if (city.isStarving()) 1.0f else growthPercentage,
+                    if (city.isStarving()) Color.RED else growthGreen, Color.BLACK)
+            growthBar.x = populationLabel.width + 3
+            growthBar.centerY(group)
+
+            group.addActor(growthBar)
+
+            val turnLabel : Label
+            if (city.isGrowing()) {
+                val turnsToGrowth = city.getNumTurnsToNewPopulation()
+                if (turnsToGrowth != null) {
+                    if (turnsToGrowth < 100) {
+                        turnLabel = turnsToGrowth.toString().toLabel()
+                    } else {
+                        turnLabel = "∞".toLabel()
+                    }
+                } else {
+                    turnLabel = "∞".toLabel()
+                }
+            } else if (city.isStarving()) {
+                val turnsToStarvation = city.getNumTurnsToStarvation()
+                if (turnsToStarvation != null) {
+                    if (turnsToStarvation < 100) {
+                        turnLabel = turnsToStarvation.toString().toLabel()
+                    } else {
+                        turnLabel = "∞".toLabel()
+                    }
+                } else {
+                    turnLabel = "∞".toLabel()
+                }
+            } else {
+                turnLabel = "∞".toLabel()
+            }
+            turnLabel.color = city.civInfo.nation.getInnerColor()
+            turnLabel.setFontSize(14)
+            turnLabel.pack()
+
+            group.addActor(turnLabel)
+            turnLabel.x = growthBar.x + growthBar.width + 1
+        }
+
+        populationLabel.centerY(group)
+
+        return group
     }
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {

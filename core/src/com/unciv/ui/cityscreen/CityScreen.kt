@@ -133,18 +133,14 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 skin)).colspan(columns).row()
 
         val turnsToPopString : String
-        if (city.cityStats.currentCityStats.food > 0) {
-            if (city.cityConstructions.currentConstruction == Constants.settler) {
-                turnsToPopString = "Food converts to production".tr()
-            } else {
-                var turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
-                        / city.cityStats.currentCityStats.food).toInt()
-                if (turnsToPopulation < 1) turnsToPopulation = 1
-                turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
-            }
-        } else if (city.cityStats.currentCityStats.food < 0) {
-            val turnsToStarvation = floor(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt() + 1
+        if (city.isGrowing()) {
+            var turnsToGrowth = city.getNumTurnsToNewPopulation()
+            turnsToPopString = "[$turnsToGrowth] turns to new population".tr()
+        } else if (city.isStarving()) {
+            var turnsToStarvation = city.getNumTurnsToStarvation()
             turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
+        } else if (city.cityConstructions.currentConstruction == Constants.settler) {
+            turnsToPopString = "Food converts to production".tr()
         } else {
             turnsToPopString = "Stopped population growth".tr()
         }

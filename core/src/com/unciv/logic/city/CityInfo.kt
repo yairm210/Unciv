@@ -19,6 +19,8 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -190,6 +192,35 @@ class CityInfo {
             return amountToAdd
         }
         return 0
+    }
+
+    fun isGrowing(): Boolean {
+        return cityStats.currentCityStats.food > 0 && cityConstructions.currentConstruction != Constants.settler
+    }
+
+    fun isStarving(): Boolean {
+        return cityStats.currentCityStats.food < 0
+    }
+
+    /** Take null to mean infinity. */
+    fun getNumTurnsToNewPopulation(): Int? {
+        if (isGrowing()) {
+            var turnsToGrowth = ceil((population.getFoodToNextPopulation() - population.foodStored)
+                    / cityStats.currentCityStats.food).toInt()
+            if (turnsToGrowth < 1) turnsToGrowth = 1
+            return turnsToGrowth
+        }
+
+        return null
+    }
+
+    /** Take null to mean infinity. */
+    fun getNumTurnsToStarvation(): Int? {
+        if (isStarving()) {
+            return floor(population.foodStored / -cityStats.currentCityStats.food).toInt() + 1
+        }
+
+        return null
     }
 
     fun getBuildingUniques(): Sequence<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques.asSequence() }
