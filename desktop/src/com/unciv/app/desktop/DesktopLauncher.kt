@@ -29,7 +29,8 @@ internal object DesktopLauncher {
         val game = UncivGame("Desktop")
 
 
-        tryActivateDiscord(game)
+        if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
+            tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
@@ -67,6 +68,7 @@ internal object DesktopLauncher {
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
+
         try {
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
