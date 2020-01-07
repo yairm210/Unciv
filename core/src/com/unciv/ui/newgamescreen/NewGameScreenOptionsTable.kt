@@ -244,7 +244,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                     updatePlayerPickerTable()
                 }
             })
-            modCheckboxTable.add(checkBox)
+            modCheckboxTable.add(checkBox).row()
         }
 
         add(modCheckboxTable).colspan(2).row()
