@@ -11,6 +11,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -166,7 +167,7 @@ class UnitAutomation{
             unit.movement.moveToTile(tileToPillage)
 
         UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                .first { it.name == "Pillage" }.action?.invoke()
+                .first { it.type == UnitActionType.Pillage }.action?.invoke()
         return true
     }
 
@@ -297,7 +298,7 @@ class UnitAutomation{
         if (unit.baseUnit().upgradesTo != null) {
             val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units[unit.baseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
-                val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
+                val upgradeAction = unitActions.firstOrNull { it.type == UnitActionType.Upgrade }
                 if (upgradeAction != null && upgradeAction.canAct) {
                     upgradeAction.action?.invoke()
                     return true
