@@ -19,3 +19,5 @@ Mods have 2 subfolders:
 These images are built (at runtime) into a single image with an 'altas', so if you see "game.atlas" and "game.png" files being generated, now you know what for
 
 For an example, you can refer to https://github.com/yairm210/Unciv-mod-example - just download the ExampleIncaMod and put it in a /mods folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Inca as a playable civilization!
+
+If you want to add a new civilization as a mod, you should check out https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization to see what's required, or see the example Inca mod =)
