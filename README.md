@@ -77,21 +77,23 @@ There are standalone zip files for each operating system in [Releases](https://g
 
 If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
 
-Be aware that the game will generate files inside the for where the Jar is located!
+Be aware that the game will generate files inside the folder where the Jar is located!
 
 If you also have JDK 8 installed, you can compile Unciv on your own by cloning (or downloading and unzipping) the project, opening a terminal in the Unciv folder and run the following commands:
 
 ### Windows
 
 Running: `gradlew desktop:run`
+
 Building: `gradlew desktop:dist`
 
 ### Linux/Mac OS
 
 Running: `./gradlew desktop:run`
+
 Building: `./gradlew desktop:dist`
 
-If the terminal returns Permission denied or Command not found on Mac/Linux, run `chmod +x ./gradlew` before running `./gradlew`. *This is a one-time procedure.*
+If the terminal returns `Permission denied` or `Command not found` on Mac/Linux, run `chmod +x ./gradlew` first. *This is a one-time procedure.*
 
 Gradle may take up to several minutes to download files. Be patient.
 After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
