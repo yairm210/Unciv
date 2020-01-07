@@ -4,9 +4,10 @@
 
   Introduction: [
     [
-      "Welcome to Unciv!",
-      "Because this is a complex game, there are basic tasks to help familiarize you with the game.",
-      "These are completely optional, and you're welcome to explore the game on your own!"
+      "Benvenuto su Unciv!",
+      "Lascia che ti avverta: questo è un gioco complesso, e quindi vi sono dei compiti base che"
+      "ti aiuteranno a familiarizzarti con il gioco e tutte le sue funzioni.",
+      "Sono completamente funzionali, e puoi anche esplorare il gioco da solo!"
     ]
   ],
   Culture_and_Policies: [
@@ -127,7 +128,7 @@
     ],
     [
       "Tre sono i modi per vincere una partita qualsiasi in Unciv:",
-      "Culturale: Completa 4 Rami delle Politiche Sociali",
+      "Culturale: Completa 5 Rami delle Politiche Sociali",
       "Dominazione: Sopravvivi come l'ultima civiltà distruggendo tutte le altre",
       "Scientifica: Costruisci per primo un'astronave per Alpha Centauri riunendone tutte le parti dell'astronave"
     ],
@@ -237,33 +238,33 @@
   Idle_Units: [
     [
       "Se non vuoi muovere un'unità per questo turno, puoi saltarla cliccando di nuovo su 'Prossima unità'.",
-      "Se non vuoi muoverla per un poco, puoi ordinarle col comando Fortifica o Dormi.",
-      "Le unità in tali posizioni non sono considerate unità non utilizzate.",
+      "Se non vuoi muoverla per alcuni turni, puoi ordinarle col comando Fortifica o Dormi.",
+      "Le unità in tali posizioni non sono considerate unità non utilizzate, perché stanno compiendo un'azione.",
       "Se vuoi disabilitare del tutto la caratteristica 'Prossima unità', vai su Menu -> Controlla unità non usate"
     ]
   ],
   Victory_Types: [
     [
-      "Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.",
-      "Now is a good time to start thinking about how, exactly, you want to win – if you haven’t already."
+      "Una volta fondate le tue prime due7tre città, saranno passati meno di 100, forse 150 turni.",
+      "Ora dovresti pensare a come, esattamente, vincere il gioco - se non l'hai già fatto."
     ],
     [
-      "There are three ways to win in Unciv. They are:",
-      " - Cultural Victory: Complete 4 Social Policy Trees",
-      " - Domination Victory: Survive as the last civilization",
-      " - Science Victory: Be the first to construct a spaceship to Alpha Centauri"
+      "Tre sono le condizioni di vittoria in Unciv. Eccole:",
+      " - Vittoria Culturale: Completa 5 rami delle Politiche Sociali",
+      " - Vittoria per Dominazione: Sopravvivi come l'ultima civiltà in gioco conquistando tutte le altre",
+      " - Vittoria Scientifica: Costruisci per primo l'astronave che verrà lanciata verso Alpha Centauri"
     ],
     [
-      "So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness,",
-      "   and set yourself up for the victory condition you wish to pursue.",
-      "Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim."
+      "Queste sono, in breve, le basi di Unciv – fonda una capitale prospera, espanditi lentamente per gestire la felicità,",
+      " e impostati una condizione di vittoria che desideri conseguire.",
+      "Ovviamente, vi è molto altro ancora, ma è importante fare un passo alla volta: per imparare a nuotare devi prima andare in acqua."
     ]
   ],
   _Pillaging: [
     [
-      "Military units can pillage improvements, which heals them 25 health and ruins the improvement.",
-      "The tile can still be worked, but advantages from the improvement - stat bonuses and resources - will be lost.",
-      "Workers can repair these improvements, which takes less time than building the improvement from scratch."
+      "Le unità militari, che siano marittime o terrestri, possono saccheggiare qualsiasi miglioramento, guarendo di 25 punti vita.",
+      "La casella sarà ancora sfruttata, ma perderà i vantaggi che ricavava dal miglioramento.",
+      "Ricostruire tali miglioramenti, in compenso, impiega meno tempo che edificarli da zero."
     ]
   ]
 }
