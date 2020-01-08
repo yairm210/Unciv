@@ -22,7 +22,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 29
         versionCode 360
-        versionName "3.4.9"
+        versionName "3.5.0"
 
         archivesBaseName = "Unciv"
     }
