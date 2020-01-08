@@ -19,6 +19,9 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.min
@@ -33,6 +36,7 @@ class CityInfo {
     @Transient var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
 
     var location: Vector2 = Vector2.Zero
+    var id: String = ""
     var name: String = ""
     var foundingCiv = ""
     var health = 200
@@ -66,6 +70,7 @@ class CityInfo {
         else if(cityNameRounds==1) "New "
         else "Neo "
 
+        id = UUID.randomUUID().toString()
         name = cityNamePrefix + cityName
 
         civInfo.citiesCreated++
@@ -99,15 +104,16 @@ class CityInfo {
     //region pure functions
     fun clone(): CityInfo {
         val toReturn = CityInfo()
-        toReturn.location=location
-        toReturn.name=name
-        toReturn.health=health
+        toReturn.location = location
+        toReturn.id = id
+        toReturn.name = name
+        toReturn.health = health
         toReturn.population = population.clone()
-        toReturn.cityConstructions=cityConstructions.clone()
+        toReturn.cityConstructions = cityConstructions.clone()
         toReturn.expansion = expansion.clone()
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
-        toReturn.isBeingRazed=isBeingRazed
+        toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter
         toReturn.foundingCiv = foundingCiv
