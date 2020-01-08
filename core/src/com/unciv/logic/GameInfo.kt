@@ -262,9 +262,6 @@ class GameInfo {
                 changeBuildingName(cityConstructions, "Machu Pichu", "Machu Picchu")
                 // As of 2.16.1, changed Colloseum to Colosseum
                 changeBuildingName(cityConstructions, "Colloseum", "Colosseum")
-
-                // As of 3.4.9 cities have a unique identifier
-                if (cityInfo.id == "") cityInfo.id = UUID.randomUUID().toString()
             }
 
             // This doesn't HAVE to go here, but why not.

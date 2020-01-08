@@ -36,7 +36,7 @@ class CityInfo {
     @Transient var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
 
     var location: Vector2 = Vector2.Zero
-    var id: String = ""
+    var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
     var health = 200
@@ -70,7 +70,6 @@ class CityInfo {
         else if(cityNameRounds==1) "New "
         else "Neo "
 
-        id = UUID.randomUUID().toString()
         name = cityNamePrefix + cityName
 
         civInfo.citiesCreated++
