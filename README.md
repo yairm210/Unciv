@@ -50,8 +50,7 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 
 If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
         
-
-## [Adding a new Civ](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization)
+If you want to mod, see [here!](https://github.com/yairm210/Unciv/wiki/Mods)
 
 # FAQ
 
