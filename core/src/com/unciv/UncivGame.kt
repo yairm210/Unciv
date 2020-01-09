@@ -25,7 +25,7 @@ import kotlin.concurrent.thread
 class UncivGame(
         val version: String,
         private val crashReportSender: CrashReportSender? = null,
-        val exitEvent: ()->Unit = {}
+        val exitEvent: (()->Unit)? = null
 ) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(version, null)
