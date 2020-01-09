@@ -1,7 +1,6 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
@@ -9,10 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
 class CityScreenTileTable(val city: CityInfo): Table(){
     val innerTable = Table()
@@ -34,14 +30,14 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         val stats = selectedTile.getTileStats(city, city.civInfo)
         innerTable.pad(20f)
 
-        innerTable.add(Label(selectedTile.toString(), CameraStageBaseScreen.skin)).colspan(2)
+        innerTable.add(selectedTile.toString().toLabel()).colspan(2)
         innerTable.row()
 
         val statsTable = Table()
         statsTable.defaults().pad(2f)
         for (entry in stats.toHashMap().filterNot { it.value==0f }) {
             statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(Label(Math.round(entry.value).toString(), CameraStageBaseScreen.skin))
+            statsTable.add(Math.round(entry.value).toString().toLabel())
             statsTable.row()
         }
         innerTable.add(statsTable).row()

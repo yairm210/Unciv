@@ -259,6 +259,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 && UncivGame.Current.worldScreen.isPlayersTurn
                 && !city.isPuppet
                 && !city.isInResistance()) {
+
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
             button.setText("Buy".tr() + " " + constructionGoldCost)
             button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)

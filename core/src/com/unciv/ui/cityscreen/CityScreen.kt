@@ -12,9 +12,9 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import com.unciv.ui.map.TileGroupMap
 import java.util.*
 
 class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
@@ -59,6 +59,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         buildingsTableContainer = buildingsTableContainer.addBorder(2f, Color.WHITE)
         buildingsTableContainer.setPosition( stage.width - 5f, stage.height - 5f, Align.topRight)
 
+        //stage.setDebugTableUnderMouse(true)
         stage.addActor(constructionsTable)
         stage.addActor(tileTable)
         stage.addActor(selectedConstructionTable)

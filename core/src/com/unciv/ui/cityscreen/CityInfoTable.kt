@@ -99,7 +99,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private fun addCityStats(cityInfo: CityInfo) {
         val statsTable = Table().align(Align.center)
         addCategory("Stats", statsTable)
-
+      
         statsTable.add(Label("{Unassigned population}:".tr()
                 +" "+cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population, skin))
                 .pad(5f).row()
