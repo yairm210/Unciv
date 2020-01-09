@@ -46,7 +46,8 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         }
         innerTable.add(statsTable).row()
 
-        if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}){
+        if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}
+            && selectedTile in city.tilesInRange){
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
 
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
