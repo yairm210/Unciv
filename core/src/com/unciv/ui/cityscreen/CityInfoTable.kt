@@ -87,7 +87,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                 cityScreen.update()
                             }, cityScreen)
                     }
-                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold
+                    if (cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.isPuppet
                             || !UncivGame.Current.worldScreen.isPlayersTurn)
                         sellBuildingButton.disable()
                 }

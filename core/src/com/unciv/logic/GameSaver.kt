@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.ImageGetter
 import java.io.File
+import kotlin.concurrent.thread
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
@@ -69,7 +70,7 @@ class GameSaver {
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
         val gameInfoClone = gameInfo.clone()
-        kotlin.concurrent.thread {
+        thread(name="Autosave") {
             saveGame(gameInfoClone, "Autosave")
 
             // keep auto-saves for the last 10 turns for debugging purposes

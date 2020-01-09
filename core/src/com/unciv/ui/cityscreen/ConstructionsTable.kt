@@ -8,6 +8,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.SpecialConstruction
+import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
@@ -258,10 +261,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 && UncivGame.Current.worldScreen.isPlayersTurn
                 && !city.isPuppet) {
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
-            button.setText("Buy".tr() + " " + constructionGoldCost)
-            button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
-
-            button.onClick("coin") {
+            purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+            purchaseConstructionButton.onClick(UncivSound.Coin) {
                 YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
                     cityConstructions.purchaseConstruction(construction.name)
                     if (isSelectedQueueEntry()) {

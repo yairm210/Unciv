@@ -9,7 +9,7 @@ class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
-        val game = UncivGame(BuildConfig.VERSION_NAME, UncivCrashReportSender(this))
+        val game = UncivGame(BuildConfig.VERSION_NAME, CrashReportSenderAndroid(this))
         initialize(game, config)
     }
 }

@@ -16,14 +16,14 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 
-class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
+class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     val allTiles = Group()
     val tileImages = HashMap<TileInfo, Image>()
 
 
-    fun setScrollToTileMapHolder(){
-        scrollPercentX = tileMapHolder.scrollPercentX
-        scrollPercentY = tileMapHolder.scrollPercentY
+    fun setScrollTomapHolder(){
+        scrollPercentX = mapHolder.scrollPercentX
+        scrollPercentY = mapHolder.scrollPercentY
     }
 
     init{
@@ -32,17 +32,17 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
         var bottomX = 0f
         var bottomY = 0f
 
-        for (tileInfo in tileMapHolder.tileMap.values) {
+        for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
-            val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
+            val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
             val groupSize = 10f
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
             hex.onClick {
-                tileMapHolder.setCenterPosition(tileInfo.position)
-                setScrollToTileMapHolder()
+                mapHolder.setCenterPosition(tileInfo.position)
+                setScrollTomapHolder()
             }
             allTiles.addActor(hex)
             tileImages[tileInfo] = hex
@@ -61,19 +61,19 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(10 + topX - bottomX, 10 + topY - bottomY)
 
-        widget = allTiles
+        actor = allTiles
         layout()
         updateVisualScroll()
-        tileMapHolder.addListener(object : InputListener(){
+        mapHolder.addListener(object : InputListener(){
             override fun handle(e: Event?): Boolean {
-                setScrollToTileMapHolder()
+                setScrollTomapHolder()
                 return true
             }
         })
     }
 
     fun update(cloneCivilization: CivilizationInfo) {
-        for(tileInfo in tileMapHolder.tileMap.values) {
+        for(tileInfo in mapHolder.tileMap.values) {
             val hex = tileImages[tileInfo]!!
             if (!(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)))
                 hex.color = Color.DARK_GRAY
@@ -86,9 +86,9 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
     }
 }
 
-class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
-    val minimap = Minimap(tileMapHolder)
-    val worldScreen = tileMapHolder.worldScreen
+class MinimapHolder(mapHolder: WorldMapHolder): Table(){
+    val minimap = Minimap(mapHolder)
+    val worldScreen = mapHolder.worldScreen
 
     init{
         add(getToggleIcons()).align(Align.bottom)

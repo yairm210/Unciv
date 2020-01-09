@@ -6,9 +6,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
@@ -17,28 +15,21 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
 import kotlin.concurrent.thread
-import kotlin.math.sqrt
 
 
-
-class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap) : ScrollPane(null) {
+class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
     var unitActionOverlay :Actor?=null
-
-    init{
-        // Remove the existing inputListener
-        // which defines that mouse scroll = vertical movement
-        val zoomListener = listeners.last { it is InputListener && it !in captureListeners }
-        removeListener (zoomListener)
-    }
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
@@ -52,7 +43,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
         for(tileGroup in tileGroups.values){
-            tileGroup.cityButtonLayerGroup.onClick("") {
+            tileGroup.cityButtonLayerGroup.onClick(UncivSound.Silent) {
                 onTileClicked(tileGroup.tileInfo)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tileInfo) }
@@ -64,44 +55,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         setOrigin(width/2,height/2)
         center(worldScreen.stage)
 
-        addGestureListener()
-        
-        addListener(object :InputListener(){
-            override fun scrolled(event: InputEvent?, x: Float, y: Float, amount: Int): Boolean {
-                if(amount>0) zoom(scaleX*0.8f)
-                else zoom(scaleX/0.8f)
-                return false
-            }
-        })
-
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
-    }
-
-    fun zoom(zoomScale:Float){
-        if (zoomScale < 0.5f) return
-        setScale(zoomScale)
-        for (tilegroup in tileGroups.values.filter { it.cityButton != null })
-            tilegroup.cityButton!!.setScale(1 / zoomScale)
-    }
-
-    private fun addGestureListener() {
-        addListener(object : ActorGestureListener() {
-            var lastScale = 1f
-            var lastInitialDistance = 0f
-
-            override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
-                // deselect any unit, as zooming occasionally forwards clicks on to the map
-                worldScreen.bottomUnitTable.selectedUnit = null
-                worldScreen.shouldUpdate = true
-                if (lastInitialDistance != initialDistance) {
-                    lastInitialDistance = initialDistance
-                    lastScale = scaleX
-                }
-                val scale: Float = sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-                zoom(scale)
-            }
-
-        })
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
@@ -138,7 +92,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnit: MapUnit, tileInfo: TileInfo) {
-        thread {
+        thread(name="TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
@@ -204,7 +158,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         moveHereButton.addActor(unitIcon)
 
         if (dto.unit.currentMovement > 0)
-            moveHereButton.onClick(""){
+            moveHereButton.onClick(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
                 if(dto.unit.type.isAirUnit())
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
@@ -356,5 +310,4 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         worldScreen.shouldUpdate=true
     }
-
 }

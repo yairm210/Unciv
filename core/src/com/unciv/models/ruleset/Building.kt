@@ -258,7 +258,7 @@ class Building : NamedStats(), IConstruction{
 
         // Regular wonders
         if (isWonder){
-            if(civInfo.gameInfo.civilizations.flatMap { it.cities }
+            if(civInfo.gameInfo.getCities()
                             .any {it.cityConstructions.isBuilt(name)})
                 return "Wonder is already built"
 

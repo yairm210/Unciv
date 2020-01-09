@@ -1,32 +1,32 @@
 package com.unciv.models
 
-enum class Tutorial(val value: String) {
+enum class Tutorial(val value: String, val isCivilopedia: Boolean) {
 
-    Introduction("Introduction"),
-    NewGame("New_Game"),
-    SlowStart("_Slow_Start"),
-    CultureAndPolicies("Culture_and_Policies"),
-    Happiness("Happiness"),
-    Unhappiness("Unhappiness"),
-    GoldenAge("Golden_Age"),
-    RoadsAndRailroads("Roads_and_Railroads"),
-    VictoryTypes("Victory_Types"),
-    EnemyCity("Enemy_City"),
-    LuxuryResource("Luxury_Resource"),
-    StrategicResource("Strategic_Resource"),
-    EnemyCityNeedsConqueringWithMeleeUnit("_EnemyCityNeedsConqueringWithMeleeUnit"),
-    AfterConquering("After_Conquering"),
-    BarbarianEncountered("_BarbarianEncountered"),
-    OtherCivEncountered("_OtherCivEncountered"),
-    ApolloProgram("Apollo_Program"),
-    InjuredUnits("Injured_Units"),
-    Workers("Workers"),
-    SiegeUnits("Siege_Units"),
-    Embarking("Embarking"),
-    CityRange("City_Range"),
-    IdleUnits("Idle_Units"),
-    ContactMe("Contact_Me"),
-    Pillaging("_Pillaging");
+    Introduction("Introduction", true),
+    NewGame("New_Game", true),
+    SlowStart("_Slow_Start", false),
+    CultureAndPolicies("Culture_and_Policies", true),
+    Happiness("Happiness", true),
+    Unhappiness("Unhappiness", true),
+    GoldenAge("Golden_Age", true),
+    RoadsAndRailroads("Roads_and_Railroads", true),
+    VictoryTypes("Victory_Types", true),
+    EnemyCity("Enemy_City", true),
+    LuxuryResource("Luxury_Resource", true),
+    StrategicResource("Strategic_Resource", true),
+    EnemyCityNeedsConqueringWithMeleeUnit("_EnemyCityNeedsConqueringWithMeleeUnit", false),
+    AfterConquering("After_Conquering", true),
+    BarbarianEncountered("_BarbarianEncountered", false),
+    OtherCivEncountered("_OtherCivEncountered", false),
+    ApolloProgram("Apollo_Program", true),
+    InjuredUnits("Injured_Units", true),
+    Workers("Workers", true),
+    SiegeUnits("Siege_Units", true),
+    Embarking("Embarking", true),
+    CityRange("City_Range", true),
+    IdleUnits("Idle_Units", true),
+    ContactMe("Contact_Me", true),
+    Pillaging("_Pillaging", false);
 
     companion object {
         fun findByName(name: String): Tutorial? = values().find { it.value == name }

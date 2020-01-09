@@ -1,5 +1,6 @@
 package com.unciv.logic.trade
 
+import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 
 data class TradeOffer(var name:String, var type: TradeType,
@@ -18,6 +19,7 @@ data class TradeOffer(var name:String, var type: TradeType,
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
+            TradeType.City -> UncivGame.Current.gameInfo.getCities().first{ it.id == name }.name
             else -> name
         }.tr()
         if (type !in tradesToNotHaveNumbers) offerText += " ($amount)"

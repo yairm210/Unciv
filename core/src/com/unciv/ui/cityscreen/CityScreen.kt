@@ -12,10 +12,12 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     var selectedTile: TileInfo? = null
@@ -164,7 +166,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
             tileGroups.add(tileGroup)
 
-            val positionalVector = HexMath().hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
+            val positionalVector = HexMath.hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
             val groupSize = 50
             tileGroup.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())

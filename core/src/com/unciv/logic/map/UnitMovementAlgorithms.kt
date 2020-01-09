@@ -214,7 +214,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(destination))
-            throw CantEnterThisTileException("$this can't enter $destination")
+            throw CantEnterThisTileException("$unit can't enter $destination")
 
         if(unit.type.isAirUnit()){ // they move differently from all other units
             unit.action=null

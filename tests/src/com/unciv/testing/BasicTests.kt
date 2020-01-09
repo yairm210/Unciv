@@ -4,13 +4,23 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unit.BaseUnit
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
 class BasicTests {
+
+    var ruleset = Ruleset()
+    @Before
+    fun loadTranslations() {
+        RulesetCache.loadRulesets()
+        ruleset = RulesetCache.getBaseRuleset()
+    }
+
     @Test
     fun gamePngExists() {
         Assert.assertTrue("This test will only pass when the game.png exists",
@@ -20,7 +30,7 @@ class BasicTests {
     @Test
     fun loadRuleset() {
         Assert.assertTrue("This test will only pass when the jsons can be loaded",
-                Ruleset(true).buildings.size > 0)
+                ruleset.buildings.size > 0)
     }
 
     @Test
@@ -34,7 +44,7 @@ class BasicTests {
 // and we try to work on its upgrade, we'll get an exception - see techManager
     @Test
     fun allObsoletingUnitsHaveUpgrades() {
-        val units: Collection<BaseUnit> = Ruleset(true).units.values
+        val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
             if (unit.obsoleteTech != null && unit.upgradesTo == null) {

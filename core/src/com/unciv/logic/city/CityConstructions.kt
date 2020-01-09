@@ -6,8 +6,8 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -42,11 +42,11 @@ class CityConstructions {
         return toReturn
     }
 
-    internal fun getBuildableBuildings(): List<Building> = cityInfo.getRuleset().buildings.values
-            .filter { it.isBuildable(this) }
+    internal fun getBuildableBuildings(): Sequence<Building> = cityInfo.getRuleset().buildings.values
+            .asSequence().filter { it.isBuildable(this) }
 
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
-            .filter { it.isBuildable(this) }
+            .asSequence().filter { it.isBuildable(this) }
 
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
@@ -129,7 +129,7 @@ class CityConstructions {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    internal fun getBuiltBuildings(): List<Building> = builtBuildingObjects
+    internal fun getBuiltBuildings(): Sequence<Building> = builtBuildingObjects.asSequence()
 
     fun containsBuildingOrEquivalent(building: String): Boolean =
             isBuilt(building) || getBuiltBuildings().any{it.replaces==building}

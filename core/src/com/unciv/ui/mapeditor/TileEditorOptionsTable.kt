@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
@@ -18,6 +20,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
+
 
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
     val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
@@ -37,13 +40,14 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     val editorPickTable = Table()
 
+    var brushSize = 1
     private var currentHex: Actor = Group()
 
-    val ruleSet = mapEditorScreen.ruleSet
+    val ruleset = mapEditorScreen.ruleset
 
     init{
-        height=mapEditorScreen.stage.height
-        width=mapEditorScreen.stage.width/3
+        height = mapEditorScreen.stage.height
+        width = mapEditorScreen.stage.width/3
 
         setTerrainsAndResources()
 
@@ -52,10 +56,28 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .onClick { setTerrainsAndResources() }
         tabPickerTable.add(terrainsAndResourcesTabButton)
 
-        val civLocationsButton = TextButton("Improvements".tr(),skin)
+        val civLocationsButton = TextButton("Improvements".tr(), skin)
                 .onClick { setImprovements() }
         tabPickerTable.add(civLocationsButton)
         tabPickerTable.pack()
+
+        val sliderTab = Table()
+
+        val slider = Slider(1f,5f,1f, false, skin)
+        val sliderLabel = "{Brush Size} $brushSize".toLabel()
+
+        slider.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                brushSize = slider.getValue().toInt()
+                sliderLabel.setText("{Brush Size} $brushSize".tr())
+            }
+        })
+
+        sliderTab.defaults().pad(5f)
+        sliderTab.add(sliderLabel)
+        sliderTab.add(slider)
+
+        add(sliderTab).row()
         add(ScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
 
         add(editorPickTable).row()
@@ -74,7 +96,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }).row()
 
-        for(improvement in ruleSet.tileImprovements.values){
+        for(improvement in ruleset.tileImprovements.values){
             if(improvement.name.startsWith("Remove")) continue
             val improvementImage = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
             improvementImage.onClick {
@@ -88,7 +110,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.add(ScrollPane(improvementsTable)).height(mapEditorScreen.stage.height*0.7f)
 
         val nationsTable = Table()
-        for(nation in ruleSet.nations.values){
+        for(nation in ruleset.nations.values){
             val nationImage = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
             nationImage.onClick {
                 clearSelection()
@@ -151,16 +173,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         })
 
-        for (resource in ruleSet.tileResources.values) {
+        for (resource in ruleset.tileResources.values) {
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
                 clearSelection()
                 selectedResource = resource
                 val tileInfo = TileInfo()
-                tileInfo.ruleset = mapEditorScreen.ruleSet
+                tileInfo.ruleset = mapEditorScreen.ruleset
 
                 val terrain = resource.terrainsCanBeFoundOn.first()
-                val terrainObject = ruleSet.terrains[terrain]!!
+                val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain = when {
                         terrainObject.occursOn == null -> terrainObject.occursOn!!.first()
@@ -179,9 +201,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
-        for (terrain in ruleSet.terrains.values) {
+        for (terrain in ruleset.terrains.values) {
             val tileInfo = TileInfo()
-            tileInfo.ruleset = mapEditorScreen.ruleSet
+            tileInfo.ruleset = mapEditorScreen.ruleset
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn != null -> terrain.occursOn.first()
@@ -293,13 +315,19 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     fun updateTileWhenClicked(tileInfo: TileInfo) {
         when {
-            clearTerrainFeature -> tileInfo.terrainFeature = null
+            clearTerrainFeature -> {
+                tileInfo.terrainFeature = null
+                tileInfo.naturalWonder = null
+            }
             clearResource -> tileInfo.resource = null
             selectedResource != null -> tileInfo.resource = selectedResource!!.name
             selectedTerrain != null -> {
                 if (selectedTerrain!!.type == TerrainType.TerrainFeature)
                     tileInfo.terrainFeature = selectedTerrain!!.name
-                else tileInfo.baseTerrain = selectedTerrain!!.name
+                else if (selectedTerrain!!.type == TerrainType.NaturalWonder)
+                    tileInfo.naturalWonder = selectedTerrain!!.name
+                else
+                    tileInfo.baseTerrain = selectedTerrain!!.name
             }
             clearImprovement -> {
                 tileInfo.improvement = null
@@ -312,7 +340,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 else tileInfo.improvement = improvement.name
 
                 if(improvement.name.startsWith("StartingLocation"))
-                    for(tileGroup in mapEditorScreen.mapHolder.tileGroups){
+                    for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values){
                         val tile = tileGroup.tileInfo
                         if(tile.improvement==improvement.name && tile!=tileInfo)
                             tile.improvement=null
@@ -326,10 +354,18 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
 
         normalizeTile(tileInfo)
-        tileInfo.setTransients()
     }
 
     fun normalizeTile(tileInfo: TileInfo){
+        /*Natural Wonder superpowers! */
+        if (tileInfo.naturalWonder != null) {
+            val naturalWonder = tileInfo.getNaturalWonder()
+            tileInfo.baseTerrain = naturalWonder.turnsInto!!
+            tileInfo.terrainFeature = null
+            tileInfo.resource = null
+            tileInfo.improvement = null
+        }
+
         if(tileInfo.terrainFeature!=null){
             val terrainFeature = tileInfo.getTerrainFeature()!!
             if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))

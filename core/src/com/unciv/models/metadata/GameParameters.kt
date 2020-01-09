@@ -20,4 +20,5 @@ class GameParameters { // Default values are the default new game
     var startingEra = TechEra.Ancient
 
     var isOnlineMultiplayer = false
+    var mods = HashSet<String>()
 }

@@ -2,11 +2,11 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
@@ -17,20 +17,20 @@ class GameStarter{
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
-        val gameBasics = UncivGame.Current.ruleset
+        val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
         if(mapParameters.name!="")
             gameInfo.tileMap = MapSaver().loadMap(mapParameters.name)
-        else gameInfo.tileMap = MapGenerator().generateMap(mapParameters, gameBasics)
+        else gameInfo.tileMap = MapGenerator().generateMap(mapParameters, ruleset)
         gameInfo.tileMap.mapParameters = mapParameters
 
-        gameInfo.tileMap.setTransients(gameBasics)
+        gameInfo.tileMap.setTransients(ruleset)
 
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         gameInfo.difficulty = newGameParameters.difficulty
 
 
-        addCivilizations(newGameParameters, gameInfo, gameBasics) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
+        addCivilizations(newGameParameters, gameInfo, ruleset) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
@@ -41,7 +41,7 @@ class GameStarter{
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
-            for (tech in gameBasics.technologies.values
+            for (tech in ruleset.technologies.values
                     .filter { it.era() < newGameParameters.startingEra })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
@@ -191,7 +191,7 @@ class GameStarter{
         // edge is checking the distance to the CENTER POINT
         // Can't believe we used a dumb way of calculating this before!
         val hexagonalRadius = -tileMap.leftX
-        val distanceFromCenter = HexMath().getDistance(vector, Vector2.Zero)
+        val distanceFromCenter = HexMath.getDistance(vector, Vector2.Zero)
         return hexagonalRadius-distanceFromCenter >= n
     }
 }

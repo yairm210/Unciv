@@ -10,12 +10,12 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
@@ -25,7 +25,7 @@ class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UncivGame.Current.gameInfo.gameParameters
     val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
-    val ruleSet = UncivGame.Current.ruleset
+    val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
         setDefaultCloseAction()
@@ -66,7 +66,7 @@ class NewGameScreen: PickerScreen(){
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            thread {
+            thread(name="NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 try {
                     newGame = GameStarter().startNewGame(newGameParameters,mapParameters)
@@ -95,14 +95,17 @@ class NewGameScreen: PickerScreen(){
         }
     }
 
+    fun setNewGameButtonEnabled(bool:Boolean){
+        if(bool) rightSideButton.enable()
+        else rightSideButton.disable()
+    }
+
 
     var newGame:GameInfo?=null
 
     override fun render(delta: Float) {
         if(newGame!=null){
-            game.gameInfo=newGame!!
-            game.worldScreen = WorldScreen(newGame!!.currentPlayerCiv)
-            game.setWorldScreen()
+            game.loadGame(newGame!!)
         }
         super.render(delta)
     }

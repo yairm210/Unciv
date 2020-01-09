@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
+import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -151,7 +152,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UncivGame.Current.settings.soundEffectsVolume = soundEffectsVolumeSlider.value
                 UncivGame.Current.settings.save()
-                Sounds.play("click")
+                Sounds.play(UncivSound.Click)
             }
         })
         innerTable.add(soundEffectsVolumeSlider).row()
@@ -181,7 +182,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
             downloadMusicButton.onClick {
                 // So the whole game doesn't get stuck while downloading the file
-                thread {
+                thread(name="Music") {
                     try {
                         downloadMusicButton.disable()
                         errorTable.clear()

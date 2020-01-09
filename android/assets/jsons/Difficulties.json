@@ -19,7 +19,8 @@
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:false,
-		turnBarbariansCanEnterPlayerTiles:10000
+		turnBarbariansCanEnterPlayerTiles:10000,
+		clearBarbarianCampReward: 50
 	},
 	{
 		name:"Chieftain",
@@ -41,7 +42,8 @@
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:false,
-		turnBarbariansCanEnterPlayerTiles:60
+		turnBarbariansCanEnterPlayerTiles:60,
+		clearBarbarianCampReward: 40
 	},
 	{
 		name:"Warlord",
@@ -63,7 +65,8 @@
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:false,
-		turnBarbariansCanEnterPlayerTiles:20
+		turnBarbariansCanEnterPlayerTiles:20,
+		clearBarbarianCampReward: 30
 	},
 	{
 		name:"Prince",
@@ -85,7 +88,8 @@
 		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:true,
-		turnBarbariansCanEnterPlayerTiles:0
+		turnBarbariansCanEnterPlayerTiles:0,
+		clearBarbarianCampReward: 25
 	},
 	{
 		name:"King",
@@ -107,7 +111,8 @@
 		aiFreeUnits:["Warrior"],
 		aiUnhappinessModifier:0.9,
 		aisExchangeTechs:true,
-		turnBarbariansCanEnterPlayerTiles:0
+		turnBarbariansCanEnterPlayerTiles:0,
+		clearBarbarianCampReward: 25
 	},
 	{
 		name:"Emperor",
@@ -129,7 +134,8 @@
 		aiFreeUnits:["Warrior", "Scout"],
 		aiUnhappinessModifier:0.85,
 		aisExchangeTechs:true,
-		turnBarbariansCanEnterPlayerTiles:0
+		turnBarbariansCanEnterPlayerTiles:0,
+		clearBarbarianCampReward: 25
 	},
 	{
 		name:"Immortal",
@@ -151,7 +157,8 @@
 		aiFreeUnits:["Warrior", "Warrior", "Worker", "Scout"],
 		aiUnhappinessModifier:0.75,
 		aisExchangeTechs:true,
-		turnBarbariansCanEnterPlayerTiles:0
+		turnBarbariansCanEnterPlayerTiles:0,
+		clearBarbarianCampReward: 25
 	},
 	{
 		name:"Deity",
@@ -173,6 +180,7 @@
 		aiFreeUnits:["Settler", "Warrior", "Warrior", "Worker", "Worker", "Scout"],
 		aiUnhappinessModifier:0.6,
 		aisExchangeTechs:true,
-		turnBarbariansCanEnterPlayerTiles:0
+		turnBarbariansCanEnterPlayerTiles:0,
+		clearBarbarianCampReward: 25
 	}
 ]

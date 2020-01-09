@@ -13,7 +13,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
@@ -37,7 +37,7 @@ class UncivGame(
     /** For when you need to test something in an advanced game and don't have time to faff around */
     val superchargedForDebug = false
 
-    var rewriteTranslationFiles = false
+    var rewriteTranslationFiles = true
 
 
     lateinit var worldScreen: WorldScreen
@@ -46,7 +46,6 @@ class UncivGame(
     val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
 
-    lateinit var ruleset:Ruleset
 
     val translations = Translations()
 
@@ -65,8 +64,8 @@ class UncivGame(
         settings = GameSaver().getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
 
-        thread {
-            ruleset = Ruleset(true)
+        thread(name="LoadJSON") {
+            RulesetCache.loadRulesets()
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
@@ -120,7 +119,8 @@ class UncivGame(
 
     fun loadGame(gameInfo:GameInfo){
         this.gameInfo = gameInfo
-
+        ImageGetter.ruleset = gameInfo.ruleSet
+        ImageGetter.refreshAtlas()
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }
@@ -144,7 +144,7 @@ class UncivGame(
     override fun resume() {
         super.resume()
         if(!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        ImageGetter.refreshAltas()
+        ImageGetter.refreshAtlas()
 
         // This is to solve a rare problem -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.

@@ -19,8 +19,10 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
-import kotlin.math.min
-import kotlin.math.roundToInt
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.math.*
 
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -31,8 +33,10 @@ class CityInfo {
     @Transient var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
 
     var location: Vector2 = Vector2.Zero
+    var id: String = UUID.randomUUID().toString()
     var name: String = ""
     var foundingCiv = ""
+    var turnAcquired = 0
     var health = 200
     var resistanceCounter = 0
 
@@ -52,6 +56,7 @@ class CityInfo {
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
         foundingCiv = civInfo.civName
+        turnAcquired = civInfo.gameInfo.turns
         this.location = cityLocation
         setTransients()
 
@@ -97,18 +102,20 @@ class CityInfo {
     //region pure functions
     fun clone(): CityInfo {
         val toReturn = CityInfo()
-        toReturn.location=location
-        toReturn.name=name
-        toReturn.health=health
+        toReturn.location = location
+        toReturn.id = id
+        toReturn.name = name
+        toReturn.health = health
         toReturn.population = population.clone()
-        toReturn.cityConstructions=cityConstructions.clone()
+        toReturn.cityConstructions = cityConstructions.clone()
         toReturn.expansion = expansion.clone()
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
-        toReturn.isBeingRazed=isBeingRazed
+        toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter
         toReturn.foundingCiv = foundingCiv
+        toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
         return toReturn
     }
@@ -116,7 +123,7 @@ class CityInfo {
 
 
     fun getCenterTile(): TileInfo = centerTileInfo
-    fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
+    fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
@@ -192,7 +199,36 @@ class CityInfo {
         return 0
     }
 
-    fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
+    fun isGrowing(): Boolean {
+        return cityStats.currentCityStats.food > 0 && cityConstructions.currentConstruction != Constants.settler
+    }
+
+    fun isStarving(): Boolean {
+        return cityStats.currentCityStats.food < 0
+    }
+
+    /** Take null to mean infinity. */
+    fun getNumTurnsToNewPopulation(): Int? {
+        if (isGrowing()) {
+            var turnsToGrowth = ceil((population.getFoodToNextPopulation() - population.foodStored)
+                    / cityStats.currentCityStats.food).toInt()
+            if (turnsToGrowth < 1) turnsToGrowth = 1
+            return turnsToGrowth
+        }
+
+        return null
+    }
+
+    /** Take null to mean infinity. */
+    fun getNumTurnsToStarvation(): Int? {
+        if (isStarving()) {
+            return floor(population.foodStored / -cityStats.currentCityStats.food).toInt() + 1
+        }
+
+        return null
+    }
+
+    fun getBuildingUniques(): Sequence<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques.asSequence() }
     fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun getGreatPersonMap():HashMap<String,Stats>{
@@ -335,6 +371,11 @@ class CityInfo {
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
     fun puppetCity(conqueringCiv: CivilizationInfo) {
 
+        // Gain gold for plundering city
+        val goldPlundered = getGoldForCapturingCity(conqueringCiv)
+        conqueringCiv.gold += goldPlundered
+        conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, Color.GOLD)
+
         val oldCiv = civInfo
         moveToCiv(conqueringCiv)
         if(oldCiv.isDefeated()) {
@@ -441,7 +482,8 @@ class CityInfo {
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo = newCivInfo
-        hasJustBeenConquered=false
+        hasJustBeenConquered = false
+        turnAcquired = civInfo.gameInfo.turns
 
         // now that the tiles have changed, we need to reassign population
         workedTiles.filterNot { tiles.contains(it) }
@@ -451,12 +493,17 @@ class CityInfo {
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.removeBuilding(building.name)
 
-        // Remove/relocate palace
+        // Remove/relocate palace for old Civ
         if(cityConstructions.isBuilt("Palace")){
             cityConstructions.removeBuilding("Palace")
             if(oldCiv.cities.isNotEmpty()){
                 oldCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
             }
+        }
+
+        // Locate palace for newCiv if this is the only city they have
+        if (newCivInfo.cities.count() == 1) {
+            cityConstructions.addBuilding("Palace")
         }
 
         isBeingRazed=false
@@ -506,6 +553,15 @@ class CityInfo {
         civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
     }
 
+    fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {
+        val baseGold = 20 + 10 * population.population + Random().nextInt(40)
+        val turnModifier = max(0, min(50, civInfo.gameInfo.turns - turnAcquired)) / 50f
+        val cityModifier = if (containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
+        val conqueringCivModifier = if (conqueringCiv.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.") 3f else 1f
+
+        val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
+        return goldPlundered.toInt()
+    }
 
     /*
      When someone settles a city within 6 tiles of another civ,

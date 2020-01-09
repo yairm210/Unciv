@@ -93,7 +93,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
             var goldGained = 0
             val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }
                     .flatMap { it.naturalWonders }
-            if (tile.naturalWonder == "El Dorado" && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
+            if (tile.containsUnique("Grants 500 Gold to the first civilization to discover it")
+                    && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
                 goldGained += 500
             }
 
@@ -127,7 +128,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         val citiesReachedToMediums = HashMap<CityInfo, ArrayList<String>>()
         var citiesToCheck = mutableListOf(civInfo.getCapital())
         citiesReachedToMediums[civInfo.getCapital()] = arrayListOf("Start")
-        val allCivCities = civInfo.gameInfo.civilizations.flatMap { it.cities }
+        val allCivCities = civInfo.gameInfo.getCities()
 
         val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
 
@@ -182,7 +183,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
         if(!initialSetup){ // In the initial setup we're loading an old game state, so it doesn't really count
             for(city in citiesReachedToMediums.keys)
-                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo)
+                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo && city != civInfo.getCapital())
                     civInfo.addNotification("[${city.name}] has been connected to your capital!",city.location, Color.GOLD)
 
             for(city in civInfo.citiesConnectedToCapital)

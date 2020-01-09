@@ -15,6 +15,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.Tutorial
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
@@ -25,7 +26,15 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.centerX
+import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
@@ -39,8 +48,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
     var waitingForAutosave = false
 
-    val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
-    val minimapWrapper = MinimapHolder(tileMapHolder)
+    val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
+    val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
@@ -67,10 +76,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
-        tileMapHolder.addTiles()
+        mapHolder.addTiles()
 
         techButtonHolder.touchable=Touchable.enabled
-        techButtonHolder.onClick("paper") {
+        techButtonHolder.onClick(UncivSound.Paper) {
             game.setScreen(TechPickerScreen(viewingCiv))
         }
         techPolicyAndVictoryHolder.add(techButtonHolder)
@@ -83,7 +92,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             techPolicyAndVictoryHolder.add(policyScreenButton).pad(10f)
         }
 
-        stage.addActor(tileMapHolder)
+        stage.addActor(mapHolder)
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
@@ -110,7 +119,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     viewingCiv.getCivUnits().isNotEmpty() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
-        tileMapHolder.setCenterPosition(tileToCenterOn,true)
+        mapHolder.setCenterPosition(tileToCenterOn,true)
 
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
@@ -121,16 +130,20 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             }, Actions.delay(10f)))) // delay is in seconds
         }
 
+        tutorialController.allTutorialsShowedCallback = {
+            shouldUpdate = true
+        }
+
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
-        shouldUpdate=true
+        shouldUpdate = true
     }
 
-    fun loadLatestMultiplayerState(){
+    private fun loadLatestMultiplayerState(){
         val loadingGamePopup = PopupTable(this)
         loadingGamePopup.add("Loading latest game state...")
         loadingGamePopup.open()
-        thread {
+        thread(name="MultiplayerLoad") {
             try {
                 val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
                 if(gameInfo.isUpToDate && gameInfo.currentPlayer==latestGame.currentPlayer) { // we were trying to download this to see when it's our turn...nothing changed
@@ -160,7 +173,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
+        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile!!)
         bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
         bottomTileInfoTable.y = if (UncivGame.Current.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
@@ -185,7 +198,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
-        tileMapHolder.updateTiles(viewingCiv)
+        mapHolder.updateTiles(viewingCiv)
 
         topBar.update(viewingCiv)
 
@@ -331,7 +344,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             if (viewingCiv.shouldGoToDueUnit()) {
                 val nextDueUnit = viewingCiv.getNextDueUnit()
                 if(nextDueUnit!=null) {
-                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
                     bottomUnitTable.selectedUnit = nextDueUnit
                     shouldUpdate=true
                 }
@@ -366,7 +379,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         shouldUpdate = true
 
 
-        thread { // on a separate thread so the user can explore their world while we're passing the turn
+        thread(name="NextTurn") { // on a separate thread so the user can explore their world while we're passing the turn
             val gameInfoClone = gameInfo.clone()
             gameInfoClone.setTransients()
             try {
@@ -400,11 +413,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 fun createNewWorldScreen(){
                     val newWorldScreen = WorldScreen(gameInfoClone.getPlayerToViewAs())
-                    newWorldScreen.tileMapHolder.scrollX = tileMapHolder.scrollX
-                    newWorldScreen.tileMapHolder.scrollY = tileMapHolder.scrollY
-                    newWorldScreen.tileMapHolder.scaleX = tileMapHolder.scaleX
-                    newWorldScreen.tileMapHolder.scaleY = tileMapHolder.scaleY
-                    newWorldScreen.tileMapHolder.updateVisualScroll()
+                    newWorldScreen.mapHolder.scrollX = mapHolder.scrollX
+                    newWorldScreen.mapHolder.scrollY = mapHolder.scrollY
+                    newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
+                    newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
+                    newWorldScreen.mapHolder.updateVisualScroll()
                     game.worldScreen = newWorldScreen
                     game.setWorldScreen()
                 }
@@ -430,7 +443,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    fun updateNextTurnButton(isSomethingOpen: Boolean) {
+    private fun updateNextTurnButton(isSomethingOpen: Boolean) {
         val text = when {
             !isPlayersTurn -> "Waiting for other players..."
             viewingCiv.shouldGoToDueUnit() -> "Next unit"

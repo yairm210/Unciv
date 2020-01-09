@@ -1,5 +1,6 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
@@ -11,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 
 object ImageGetter {
@@ -24,6 +25,7 @@ object ImageGetter {
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
     var atlas = TextureAtlas("game.atlas")
+    var ruleset = Ruleset()
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
@@ -33,17 +35,29 @@ object ImageGetter {
         setTextureRegionDrawables()
     }
 
-    fun getRuleSet() = UncivGame.Current.ruleset
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
+        // These are the drawables from the base game
         for(region in atlas.regions){
             val drawable =TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
+
+        // These are from the mods
+        for(mod in ruleset.mods){
+            val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
+            if (modAtlasFile.exists()) {
+                val modAtlas = TextureAtlas(modAtlasFile)
+                for (region in modAtlas.regions) {
+                    val drawable = TextureRegionDrawable(region)
+                    textureRegionDrawables[region.name] = drawable
+                }
+            }
+        }
     }
 
-    fun refreshAltas() {
+    fun refreshAtlas() {
         atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
         setTextureRegionDrawables()
@@ -112,13 +126,13 @@ object ImageGetter {
             return getImage("OtherIcons/Stop")
         if(improvementName.startsWith("StartingLocation ")){
             val nationName = improvementName.removePrefix("StartingLocation ")
-            val nation = getRuleSet().nations[nationName]!!
+            val nation = ruleset.nations[nationName]!!
             return getNationIndicator(nation,size)
         }
 
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
-        val improvement = getRuleSet().tileImprovements[improvementName]!!
+        val improvement = ruleset.tileImprovements[improvementName]!!
         when {
             improvement.food>0 -> iconGroup.circle.color= foodCircleColor
             improvement.production>0 -> iconGroup.circle.color= productionCircleColor
@@ -131,8 +145,8 @@ object ImageGetter {
     }
 
     fun getConstructionImage(construction: String): Image {
-        if(getRuleSet().buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
-        if(getRuleSet().units.containsKey(construction)) return getUnitIcon(construction)
+        if(ruleset.buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
+        if(ruleset.units.containsKey(construction)) return getUnitIcon(construction)
         if(construction=="Nothing") return getImage("OtherIcons/Stop")
         return getStatIcon(construction)
     }
@@ -180,7 +194,7 @@ object ImageGetter {
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = getRuleSet().tileResources[resourceName]!!
+        val resource = ruleset.tileResources[resourceName]!!
         when {
             resource.food>0 -> iconGroup.circle.color= foodCircleColor
             resource.production>0 -> iconGroup.circle.color= productionCircleColor
@@ -204,7 +218,7 @@ object ImageGetter {
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
         var techIconColor = Color.WHITE
-        when (getRuleSet().technologies[techName]!!.era().name) {
+        when (ruleset.technologies[techName]!!.era().name) {
             "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
             "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
             "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)

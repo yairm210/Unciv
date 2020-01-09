@@ -1,19 +1,20 @@
-package com.unciv.ui.worldscreen
+package com.unciv.ui.map
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
 import com.unciv.ui.tilegroups.TileGroup
 
-class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): Group(){
+class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float): Group(){
+    var topX = -Float.MAX_VALUE
+    var topY = -Float.MAX_VALUE
+    var bottomX = Float.MAX_VALUE
+    var bottomY = Float.MAX_VALUE
+    val groupSize = 50
     init{
-        var topX = -Float.MAX_VALUE
-        var topY = -Float.MAX_VALUE
-        var bottomX = Float.MAX_VALUE
-        var bottomY = Float.MAX_VALUE
-
         for(tileGroup in tileGroups){
-            val positionalVector = HexMath().hex2WorldCoords(tileGroup.tileInfo.position)
-            val groupSize = 50
+            val positionalVector = HexMath.hex2WorldCoords(tileGroup.tileInfo.position)
+
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                     positionalVector.y * 0.8f * groupSize.toFloat())
 
@@ -56,6 +57,16 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
         setSize(topX - bottomX + padding*2, topY - bottomY + padding*2)
+    }
 
+    /**
+     * Returns the positional coordinates of the TileGroupMap center.
+     */
+    fun getPositionalVector(stageCoords: Vector2): Vector2 {
+        val trueGroupSize = 0.8f * groupSize.toFloat()
+        return Vector2(bottomX - padding, bottomY - padding)
+                .add(stageCoords)
+                .sub(groupSize.toFloat() / 2f, groupSize.toFloat() / 2f)
+                .scl(1f / trueGroupSize)
     }
 }

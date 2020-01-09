@@ -10,8 +10,9 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitAction
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 
@@ -44,6 +45,9 @@ class UnitAutomation{
 
         if(unit.type==UnitType.Bomber)
             return SpecificUnitAutomation().automateBomber(unit)
+
+        if(unit.type==UnitType.Missile)
+            return SpecificUnitAutomation().automateMissile(unit)
 
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
@@ -106,6 +110,7 @@ class UnitAutomation{
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if(unit.civInfo.isBarbarian()) return false
+        if(unit.type==UnitType.Missile) return false // don't use missiles against barbarians...
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement==Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
@@ -122,7 +127,7 @@ class UnitAutomation{
     fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
         if(unitDistanceToTiles.isEmpty()) return true // can't move, so...
-        val unitTile = unit.getTile()
+        val currentUnitTile = unit.getTile()
 
         if (tryPillageImprovement(unit, unitDistanceToTiles)) return true
 
@@ -138,12 +143,12 @@ class UnitAutomation{
         }
 
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
-        // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
+        // within the tiles with best healing rate (say 15), we'll prefer one which has the highest defensive bonuses
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
-        if(bestTileForHealingRank == 0) return false // can't actually heal here...
 
-        if(unitTile!=bestTileForHealing && bestTileForHealingRank > unit.rankTileForHealing(unitTile))
+        if(currentUnitTile!=bestTileForHealing
+                && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile))
             unit.movement.moveToTile(bestTileForHealing)
 
         if(unit.currentMovement>0 && unit.canFortify()) unit.fortify()
@@ -162,7 +167,7 @@ class UnitAutomation{
             unit.movement.moveToTile(tileToPillage)
 
         UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                .first { it.name == "Pillage" }.action()
+                .first { it.type == UnitActionType.Pillage }.action?.invoke()
         return true
     }
 
@@ -273,7 +278,7 @@ class UnitAutomation{
         val closestEnemy = closeEnemies.minBy { it.tileToAttack.arialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
-            unit.movement.headTowards(closestEnemy.tileToAttack)
+            unit.movement.headTowards(closestEnemy.tileToAttackFrom)
             return true
         }
         return false
@@ -293,9 +298,9 @@ class UnitAutomation{
         if (unit.baseUnit().upgradesTo != null) {
             val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units[unit.baseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
-                val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
+                val upgradeAction = unitActions.firstOrNull { it.type == UnitActionType.Upgrade }
                 if (upgradeAction != null && upgradeAction.canAct) {
-                    upgradeAction.action()
+                    upgradeAction.action?.invoke()
                     return true
                 }
             }

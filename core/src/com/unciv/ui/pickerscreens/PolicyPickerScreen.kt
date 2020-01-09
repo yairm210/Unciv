@@ -7,14 +7,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Tutorial
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv,
-                         switchfromWorldScreen: Boolean = true) : PickerScreen() {
+class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
+    : PickerScreen() {
     internal val viewingCiv: CivilizationInfo = civInfo
     private var pickedPolicy: Policy? = null
 
@@ -31,7 +32,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         }
         else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        rightSideButton.onClick("policy") {
+        rightSideButton.onClick(UncivSound.Policy) {
             viewingCiv.policies.adopt(pickedPolicy!!)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
@@ -43,12 +44,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         }
         if(!UncivGame.Current.worldScreen.isPlayersTurn)
             rightSideButton.disable()
-        if (!switchfromWorldScreen){
-            rightSideButton.apply {
-                disable()
-                setText("Policy Tree Of [${viewingCiv.civName}]".tr())
-            }
-        }
+        
 
 
         topTable.row().pad(30f)

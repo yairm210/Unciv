@@ -202,11 +202,6 @@ class VictoryScreen : PickerScreen() {
         for (entry in civsToBranchesCompleted) {
             val civToBranchesHaveCompleted=EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
-            civToBranchesHaveCompleted.touchable= Touchable.enabled
-            civToBranchesHaveCompleted.onClick {
-                game.setScreen(PolicyPickerScreen(UncivGame.Current.worldScreen,entry.civ, false))
-                dispose()
-            }
         }
         return policyVictoryColumn
     }

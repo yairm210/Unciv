@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
@@ -30,7 +31,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
 
         rightSideButton.setText("Pick promotion".tr())
-        rightSideButton.onClick("promote") {
+        rightSideButton.onClick(UncivSound.Promote) {
           acceptPromotion(selectedPromotion)
         }
         val canBePromoted = unit.promotions.canBePromoted()
