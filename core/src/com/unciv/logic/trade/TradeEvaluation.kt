@@ -38,7 +38,7 @@ class TradeEvaluation{
             TradeType.Technology -> return true
             TradeType.Introduction -> return true
             TradeType.WarDeclaration -> return true
-            TradeType.City -> return offerer.cities.any { it.name==tradeOffer.name }
+            TradeType.City -> return offerer.cities.any { it.id == tradeOffer.name }
         }
     }
 
@@ -136,7 +136,7 @@ class TradeEvaluation{
                 else return 0 // why should we pay you to go fight someone...?
             }
             TradeType.City -> {
-                val city = tradePartner.cities.first { it.name==offer.name }
+                val city = tradePartner.cities.first { it.id==offer.name }
                 val stats = city.cityStats.currentCityStats
                 if(civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
                     return 0 // we can't really afford to go into negative happiness because of buying a city
@@ -204,7 +204,7 @@ class TradeEvaluation{
             }
 
             TradeType.City -> {
-                val city = civInfo.cities.first { it.name==offer.name }
+                val city = civInfo.cities.first { it.id == offer.name }
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats = stats.culture+stats.gold+stats.science+stats.production+stats.happiness+stats.food
                 return sumOfStats.toInt() * 100

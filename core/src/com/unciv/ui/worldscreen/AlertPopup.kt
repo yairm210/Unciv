@@ -58,7 +58,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }
             }
             AlertType.CityConquered -> {
-                val city = worldScreen.gameInfo.civilizations.flatMap { it.cities }.first { it.name == popupAlert.value}
+                val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addGoodSizedLabel("What would you like to do with the city?",24)
                         .padBottom(20f).row()
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
