@@ -256,7 +256,7 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         if (attackerCiv.isPlayerCivilization()) {
-            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
+            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.id))
             UncivGame.Current.settings.addCompletedTutorialTask("Conquer a city")
         }
         else {

@@ -128,7 +128,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         val citiesReachedToMediums = HashMap<CityInfo, ArrayList<String>>()
         var citiesToCheck = mutableListOf(civInfo.getCapital())
         citiesReachedToMediums[civInfo.getCapital()] = arrayListOf("Start")
-        val allCivCities = civInfo.gameInfo.civilizations.flatMap { it.cities }
+        val allCivCities = civInfo.gameInfo.getCities()
 
         val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
 
