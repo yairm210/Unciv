@@ -1,7 +1,6 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -15,12 +14,11 @@ import com.unciv.models.Tutorial
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
-import com.unciv.ui.map.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -116,39 +114,34 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         table.defaults().pad(5f)
         table.background=ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
         val columns = Stats().toHashMap().size
-        table.add(Label("{Unassigned population}:".tr()
-                +city.population.getFreePopulation().toString() + "/" + city.population.population,skin))
-                .colspan(columns).row()
+        val unassignedPopText = "{Unassigned population}:".tr()+
+                city.population.getFreePopulation().toString() + "/" + city.population.population
+        table.add(unassignedPopText.toLabel()).colspan(columns).row()
 
-        val turnsToExpansionString : String
-        if (city.cityStats.currentCityStats.culture > 0) {
-            var turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
-                    / city.cityStats.currentCityStats.culture).toInt()
-            if (turnsToExpansion < 1) turnsToExpansion = 1
-            turnsToExpansionString = "[$turnsToExpansion] turns to expansion".tr()
-        } else {
-            turnsToExpansionString = "Stopped expansion".tr()
+        var turnsToExpansionString = when {
+            city.cityStats.currentCityStats.culture > 0 -> {
+                var turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
+                        / city.cityStats.currentCityStats.culture).toInt()
+                if (turnsToExpansion < 1) turnsToExpansion = 1
+                "[$turnsToExpansion] turns to expansion".tr()
+            }
+            else -> "Stopped expansion".tr()
         }
-        table.add(Label(turnsToExpansionString + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")",
-                skin)).colspan(columns).row()
+        turnsToExpansionString += " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")"
+        table.add(turnsToExpansionString.toLabel()).colspan(columns).row()
 
-        val turnsToPopString : String
-        if (city.isGrowing()) {
-            var turnsToGrowth = city.getNumTurnsToNewPopulation()
-            turnsToPopString = "[$turnsToGrowth] turns to new population".tr()
-        } else if (city.isStarving()) {
-            var turnsToStarvation = city.getNumTurnsToStarvation()
-            turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
-        } else if (city.cityConstructions.currentConstruction == Constants.settler) {
-            turnsToPopString = "Food converts to production".tr()
-        } else {
-            turnsToPopString = "Stopped population growth".tr()
-        }
-        table.add(Label(turnsToPopString + " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
-                ,skin)).colspan(columns).row()
+
+        var turnsToPopString = when {
+            city.isGrowing() -> "[${city.getNumTurnsToNewPopulation()}] turns to new population"
+            city.isStarving() -> "[${city.getNumTurnsToStarvation()}] turns to lose population"
+            city.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production"
+            else -> "Stopped population growth"
+        }.tr()
+        turnsToPopString += " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
+        table.add(turnsToPopString.toLabel()).colspan(columns).row()
 
         if (city.isInResistance()) {
-            table.add(Label("In resistance for another [${city.resistanceCounter}] turns".tr(),skin)).colspan(columns).row()
+            table.add("In resistance for another [${city.resistanceCounter}] turns".toLabel()).colspan(columns).row()
         }
 
         table.addSeparator()
