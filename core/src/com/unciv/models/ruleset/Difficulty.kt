@@ -24,4 +24,5 @@ class Difficulty: INamed {
     var aiUnhappinessModifier = 1f
     var aisExchangeTechs = false
     var turnBarbariansCanEnterPlayerTiles = 0
+    var clearBarbarianCampReward = 25
 }

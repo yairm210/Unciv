@@ -449,10 +449,14 @@ class MapUnit {
     }
 
     private fun clearEncampment(tile: TileInfo) {
-        tile.improvement=null
-        val goldToAdd = 25 // game-speed-dependant
-        civInfo.gold+=goldToAdd
-        civInfo.addNotification("We have captured a barbarian encampment and recovered [$goldToAdd] gold!", tile.position, Color.RED)
+        tile.improvement = null
+
+        var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        if (civInfo.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
+            goldGained *= 3f
+
+        civInfo.gold += goldGained.toInt()
+        civInfo.addNotification("We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!", tile.position, Color.RED)
     }
 
     fun disband(){
