@@ -64,6 +64,12 @@ class MapUnit {
     var promotions = UnitPromotions()
     var due: Boolean = true
 
+    companion object {
+        private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
+        private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
+        private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
+    }
+
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
@@ -506,10 +512,10 @@ class MapUnit {
 
         // Map of the surrounding area
         actions.add {
-            val revealCenter = tile.getTilesAtDistance(4).random()
+            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).random()
             val tilesToReveal = revealCenter
-                .getTilesInDistance(4)
-                .filter { Random.nextFloat() < 0.8 }
+                .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
+                .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
                 .map { it.position }
             civInfo.exploredTiles.addAll(tilesToReveal)
             civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
