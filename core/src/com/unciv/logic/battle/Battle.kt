@@ -3,7 +3,6 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
@@ -18,7 +17,7 @@ import kotlin.math.max
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
  */
-class Battle(val gameInfo:GameInfo) {
+object Battle {
 
     fun moveAndAttack(attacker: ICombatant, attackableTile: UnitAutomation.AttackableTile){
         if (attacker is MapUnitCombatant) {
@@ -286,7 +285,7 @@ class Battle(val gameInfo:GameInfo) {
             defender.getCivInfo().destroy()
             attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,defender.getCivInfo().civName))
         }
-        
+
         val capturedUnit = (defender as MapUnitCombatant).unit
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
