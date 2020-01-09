@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.random.Random
 
 class MapUnit {
 
@@ -501,6 +502,17 @@ class MapUnit {
             val amount = listOf(25,60,100).random()
             civInfo.gold+=amount
             civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
+        }
+
+        // Map of the surrounding area
+        actions.add {
+            val revealCenter = tile.getTilesAtDistance(4).random()
+            val tilesToReveal = revealCenter
+                .getTilesInDistance(4)
+                .filter { Random.nextFloat() < 0.8 }
+                .map { it.position }
+            civInfo.exploredTiles.addAll(tilesToReveal)
+            civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
         }
 
         (actions.random())()
