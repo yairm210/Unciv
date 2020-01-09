@@ -24,8 +24,12 @@ import kotlin.concurrent.thread
 
 class UncivGame(
         val version: String,
-        private val crashReportSender: CrashReportSender? = null
+        private val crashReportSender: CrashReportSender? = null,
+        val exitEvent: ()->Unit = {}
 ) : Game() {
+    // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
+    constructor(version: String) : this(version, null)
+
     lateinit var gameInfo: GameInfo
     lateinit var settings : GameSettings
     lateinit var crashController: CrashController
@@ -38,7 +42,6 @@ class UncivGame(
     val superchargedForDebug = false
 
     var rewriteTranslationFiles = false
-
 
     lateinit var worldScreen: WorldScreen
 
