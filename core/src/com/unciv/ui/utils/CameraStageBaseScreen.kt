@@ -168,11 +168,13 @@ fun Actor.surroundWithCircle(size:Float,resizeActor:Boolean=true): IconCircleGro
     return IconCircleGroup(size,this,resizeActor)
 }
 
-fun Actor.addBorder(size:Float,color:Color):Table{
+fun Actor.addBorder(size:Float,color:Color,expandCell:Boolean=false):Table{
     val table = Table()
     table.pad(size)
     table.background = ImageGetter.getBackground(color)
-    table.add(this).fill()
+    val cell = table.add(this)
+    if (expandCell) cell.expand()
+    cell.fill()
     table.pack()
     return table
 }
