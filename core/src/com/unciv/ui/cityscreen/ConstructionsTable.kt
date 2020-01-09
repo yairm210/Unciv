@@ -208,7 +208,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         } else {
             pickProductionButton.color = Color.GRAY
             pickProductionButton.row()
-            pickProductionButton.add(rejectionReason.toLabel(Color.RED)).colspan(pickProductionButton.columns).fillX().left().padTop(2f)
+            pickProductionButton.add(rejectionReason.toLabel(Color.RED).apply{ setWrap(true)} )
+                    .colspan(pickProductionButton.columns).fillX().left().padTop(2f)
         }
 
         return pickProductionButton
