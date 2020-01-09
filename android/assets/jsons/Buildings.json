@@ -245,6 +245,7 @@
 		name:"Burial Tomb",
 		replaces:"Temple",
 		uniqueTo:"Egypt",
+		uniques:["Doubles Gold given to enemy if city is captured"],
 		culture:3,
 		happiness:1,
 		specialistSlots:{culture:1},
@@ -252,18 +253,16 @@
 		hurryCostModifier:25,
 		requiredTech:"Philosophy"
 	},
-	/*
 	{
 		name:"Mud Pyramid Mosque",
 		replaces:"Temple",
 		uniqueTo:"Songhai",
-		//No manteinance
+		maintenance:0,
 		hurryCostModifier:15,
 		culture:4,
 		requiredBuilding:"Monument",
 		requiredTech:"Philosophy"
 	},
-	*/
 	{
 		name:"The Oracle",
 		culture:3,
