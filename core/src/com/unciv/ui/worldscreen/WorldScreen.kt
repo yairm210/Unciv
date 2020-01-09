@@ -134,6 +134,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             shouldUpdate = true
         }
 
+        onBackButtonClicked { exitGame() }
+
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
@@ -509,5 +511,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             displayTutorial(Tutorial.Embarking)
     }
 
+    private fun exitGame() {
+        game.exitEvent()
+    }
 }
 

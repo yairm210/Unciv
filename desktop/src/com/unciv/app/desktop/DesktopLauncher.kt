@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import java.io.File
 import kotlin.concurrent.thread
+import kotlin.system.exitProcess
 
 
 internal object DesktopLauncher {
@@ -26,8 +27,7 @@ internal object DesktopLauncher {
         config.title = "Unciv"
         config.useHDPI = true
 
-        val game = UncivGame("Desktop")
-
+        val game = UncivGame("Desktop"){exitProcess(0)}
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)

@@ -24,7 +24,8 @@ import kotlin.concurrent.thread
 
 class UncivGame(
         val version: String,
-        private val crashReportSender: CrashReportSender? = null
+        private val crashReportSender: CrashReportSender? = null,
+        exitEventCallback: ()->Unit
 ) : Game() {
     lateinit var gameInfo: GameInfo
     lateinit var settings : GameSettings
@@ -39,6 +40,7 @@ class UncivGame(
 
     var rewriteTranslationFiles = true
 
+    var exitEvent = exitEventCallback
 
     lateinit var worldScreen: WorldScreen
 
