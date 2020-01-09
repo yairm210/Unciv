@@ -38,7 +38,7 @@ object ImageGetter {
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
-        // These are the srawables from the base game
+        // These are the drawables from the base game
         for(region in atlas.regions){
             val drawable =TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
@@ -46,9 +46,9 @@ object ImageGetter {
 
         // These are from the mods
         for(mod in ruleset.mods){
-            val modAltasFile = Gdx.files.local("mods/$mod/game.atlas")
-            if (modAltasFile.exists()) {
-                val modAtlas = TextureAtlas(modAltasFile)
+            val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
+            if (modAtlasFile.exists()) {
+                val modAtlas = TextureAtlas(modAtlasFile)
                 for (region in modAtlas.regions) {
                     val drawable = TextureRegionDrawable(region)
                     textureRegionDrawables[region.name] = drawable
@@ -57,7 +57,7 @@ object ImageGetter {
         }
     }
 
-    fun refreshAltas() {
+    fun refreshAtlas() {
         atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
         setTextureRegionDrawables()
