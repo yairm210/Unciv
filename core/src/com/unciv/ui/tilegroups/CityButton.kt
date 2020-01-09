@@ -178,6 +178,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             var growthPercentage = city.population.foodStored / city.population.getFoodToNextPopulation().toFloat()
             if (growthPercentage < 0) growthPercentage = 0.0f
 
+            // This can happen if the city was just taken, and there was excess food stored.
+            // Without it, it caused the growth bar's height to exceed that of the group's.
+            if (growthPercentage > 1) growthPercentage = 1.0f
+
             val growthBar = ImageGetter.getProgressBarVertical(2f, groupHeight,
                     if (city.isStarving()) 1.0f else growthPercentage,
                     if (city.isStarving()) Color.RED else growthGreen, Color.BLACK)
