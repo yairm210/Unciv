@@ -261,7 +261,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 && UncivGame.Current.worldScreen.isPlayersTurn
                 && !city.isPuppet) {
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
-            purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+            val purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick(UncivSound.Coin) {
                 YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
                     cityConstructions.purchaseConstruction(construction.name)
