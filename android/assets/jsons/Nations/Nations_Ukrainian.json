@@ -69,10 +69,10 @@
 		outerColor:[181, 232, 232],
 		innerColor:[68,142,249],
 		uniqueName:"Грецька ліга",
-		unique:"City-State Influence degrades at half and recovers at twice the normal rate",
-		cities:["Афіни","Спарта","Коринф","Аргос","Kносс","Мікени","Pharsalos","Ephesus","Halicarnassus","Rhodes",
-			"Еретрія","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
-			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
+		unique:"Вплив на міста-держави погіршується вдвійчі повільніше та відновлюється вдвійчі швидше ніж зазвичай.",
+		cities:["Афіни","Спарта","Коринф","Аргос","Kносс","Мікени","Pharsalos","Ephesus","Halicarnassus","Родос",
+			"Еретрія","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Самос","Mytilene","Chios",
+			"Парос","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Пілос","Pella","Naxos"]
 	},
 	{
 		name:"China",
@@ -99,7 +99,7 @@
 		hateNo:["Я не можу прийняти це.","Вибач, повтори знову.","Забирайся з очей моїх!"]
 		hateYes:["Здається, у мене немає вибору.","Ах. Чудово."]
 
-		afterPeace:"The Blessings of Heaven be upon you."
+		afterPeace:"Благословення Небесам над тобою."
 		tradeRequest:"Друже, чи не міг би ти прийняти це?"
 
 		outerColor:[9, 112, 84],
@@ -142,7 +142,7 @@
 		outerColor:[ 231, 213, 0],
 		innerColor:[98,10,210],
 		uniqueName:"Будівництво пам'ятників",
-		unique:"+20% production towards Wonder construction",
+		unique:"Чудеса Світу будуються на +20% швидше",
 		cities:["Тибет","Мемфіс","Геліополь","Елефантина","Александрія","Пер-Рамсес","Гіза","Бібл","Амарна","Ієраконполіс",
 			"Абідос","Асьют","Аваріс","Лішт","Буто","Едфу","Піфом","Бусиріс","Кахун","Атрибіс",
 			"Мендес","Аль-Ашмунін","Таніст","Бубастіс","Орикс","Себенніт","Ахмім","Карнак","Луксор","Ель Каб"]
@@ -170,7 +170,7 @@
 
 		hateHello:"О, ти!"
 		hateLetsHearIt:["Я слухаю.","Ви щось сказали?"]
-		hateNo:["Ти можеш бути серйозним?.","Звісно що ні!"]
+		hateNo:["Ти це несерйозно.","Звісно що ні!"]
 		hateYes:["Ох, чудово!","Схоже, я змушена!"]
 
 		afterPeace:"Ну, тоді все врегульовано."
@@ -214,8 +214,8 @@
 
 		outerColor:[ 38, 98, 255],
 		innerColor:[239,236,148],
-		uniqueName:"Ancien Régime"
-		unique:"+2 культури з міст після відкриття Парової енергії",
+		uniqueName:"Старий порядок"
+		unique:"+2 культури з міст до відкриття Парової енергії",
 		cities:["Париж","Орлеан","Ліон","Труа","Турс","Марсель","Шартр","Авіньйон","Руан","Ґренобль",
 			"Діжон","Ам'єн","Шербур","Пуатьє","Тулуза","Байонна","Страсбург","Брест","Бордо","Ренн",
 			"Ніцца","Сент-Етьен","Нант","Реймс","Ле-Ман","Монпельє","Лімож","Нансі","Лілль","Кан"]
@@ -252,8 +252,8 @@
 		outerColor:[ 236, 178, 0],
 		innerColor:[0,0,0],
 		uniqueName:"Сибірське багатство"
-		unique:"Стратегічні ресурси забезпечують виробництво +1, а коні, залізні та уранові ресурси забезпечують подвійну кількість",
-		cities:["Москва","Ст. Петербург","Новгород","Ростов","Ярославль","Єкатеринбург","Якутськ","Владивосток","Смоленськ","Оренбург",
+		unique:"Стратегічні ресурси забезпечують виробництво +1, а коні, залізні та уранові ресурси забезпечуються в подвійній кількості",
+		cities:["Москва","Санкт-Петербург","Новгород","Ростов","Ярославль","Єкатеринбург","Якутськ","Владивосток","Смоленськ","Оренбург",
 			"Красноярськ","Хабаровськ","Брянськ","Тверь","Новосибірськ","Магадан","Мурманськ","Іркутськ","Чита","Самара",
 			"Архангельск","Челябінськ","Тобольск","Вологда","Омськ","Астрахань","Курськ","Саратов","Тула","Володимир"]
 	},
@@ -325,7 +325,7 @@
 		outerColor:[ 41,83,42],
 		innerColor:[146,221,9],
 		uniqueName:"Торговельні каравани",
-		unique:"+1 Золото з кожного торгового шляху, Oil resources provide double quantity"
+		unique:"+1 Золото з кожного торгового шляху, та нафтові ресурси у подвійній кількості"
 		cities:["Мекка","Медіна","Дамаск","Багдад","Найран","Куфа","Басра","Хорасан","Анджар","Фустат",
 			"Аден","Ямама","Маска́т","Мансура","Бухара","Фес","Шираз","Мерв","Балх","Мосул",
 			"Айджаб","Байт","Сухар","Таїф","Хама","Табук","Сана","Шихр","Тріполі","Туніс"]
@@ -361,7 +361,7 @@
 		outerColor:[ 28,51,119],
 		innerColor:[255,255,255],
 		uniqueName:"Явне призначення"
-		unique:"Усі наземні підрозділи отримують +1 до зору, а також ви маєте знижку при купівлі тайлів",
+		unique:"Усі наземні підрозділи отримують +1 до зору, а також купівля клітинок за півціни",
 		cities:["Вашингтон","Нью-Йорк","Бостон","Філадельфія","Атланта","Чикаго","Сіетл","Сан-Франциско","Лос-Анджелес","Х’юстон",
 			"Портленд","Сент-Луїс","Маямі","Баффало","Детройт","Новий Орлеан","Ба́лтимор ","Денвер","Цінціннаті","Даллас","Мемфіс",
 			"Клівленд","Канзас-Сіті","Сан-Діеґо","Річмонд","Лас-Веґас","Фінікс","Альбукерке","Міннеаполіс","Піттсбурґ"]
@@ -377,28 +377,28 @@
 		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the field of battle, your people are also immensely industrious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
 		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
 
-		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
-		attacked:"Pitiful fool! Now we shall destroy you!"
-		defeated:"You were much wiser than I thought."
+		declaringWar:"Я тут для того, щоб поінформувати вас про наші наміри винищити вашу цивізілацію з цього світу."
+		attacked:"Жалюгідний дурень! Тепер ми тебе знищимо!"
+		defeated:"Ти був мудрішим, аніж я ґадав."
 		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
 
-		neutralHello:"Hello."
-		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
-		neutralNo:["Sorry.","No.","Maybe another time."]
-		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
+		neutralHello:"Привіт."
+		neutralLetsHearIt:["Давай далі.","Продовжуй.","Я слухаю."]
+		neutralNo:["Вибач.","Ні.","Мабуть, наступного разу."]
+		neutralYes:["Дуже добре.","Згоден.","Хай. (Так)"]
 
-		hateHello:"Oh, it's you..."
-		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
-		hateNo:["Ie. (No)","Excuse me?","Maybe another time"]
-		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
+		hateHello:"Ох, це ти..."
+		hateLetsHearIt:["Давай я послухаю.","Давай далі.","Продовжуй."]
+		hateNo:["Ее. (Ні)","Перепрошую?","Мабуть, наступного разу."]
+		hateYes:["Я згоден.","Ох... дуже добре.","Мабуть, у мене немає вибору."]
 
-		afterPeace:"It was an honor to fight you."
-		tradeRequest:"I would be grateful if you agreed on the following proposal."
+		afterPeace:"Це було за честь битись з тобою."
+		tradeRequest:"Я буду вдячний, якщо ви погодитесь на наступну пропозицію."
 
 		outerColor:[215,225,225],
 		innerColor:[185,0,0],
-		uniqueName:"Bushido"
-		unique: "Units fight as though they were at full strength even when damaged",
+		uniqueName:"Бусідо"
+		unique: "Підрозділи б'ються у повну силу, навіть коли поранені.",
 		cities:["Кіото","Осак","Токіо","Сацума","Каґосіма","Нара","Нагоя","Ідзумо","Нагасакі","Йокогама",
 			"Сімоносекі","Мацуяма","Саппоро","Хакодате","Ісе","Тояма","Фукусіма","Суо","Бідзен","Етідзен",
 			"Ідзумі","Омі","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
