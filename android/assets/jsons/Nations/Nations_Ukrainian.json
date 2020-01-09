@@ -181,8 +181,8 @@
 		uniqueName:"Сонце ніколи не заходить"
 		unique:"+2 пересування для кожного морського підрозділу"
 		cities:["Лондон","Йорк","Ноттінгем","Гастінгс","Кентербері","Ковентрі","Ворвік","Ньюкасл-апон-Тайн","Оксфорд","Ліверпуль",
-			"Dover","Brighton","Норвік","Лідс","Reading","Birmingham","Richmond","Exeter","Кембрідж","Gloucester",
-			"Манчестер","Брістоль","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+			"Дувр","Брайтон","Норвіч","Лідс","Редінґ","Бірмінґем","Ричмонд","Ексетер","Кембрідж","Глостер",
+			"Манчестер","Бристоль","Лестер","Карлайл","Іпсвіч","Портсмут","Бервік","Бат","Мамблз","Саутгемптон"]
 	},
 	{
 		name:"France",
@@ -216,9 +216,9 @@
 		innerColor:[239,236,148],
 		uniqueName:"Ancien Régime"
 		unique:"+2 культури з міст після відкриття Парової енергії",
-		cities:["Париж","Орлеан","Ліон","Troyes","Tours","Марсель","Chartres","Avignon","Rouen","Grenoble",
-			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
-			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Нансі","Lille","Caen"]
+		cities:["Париж","Орлеан","Ліон","Труа","Турс","Марсель","Шартр","Авіньйон","Руан","Ґренобль",
+			"Діжон","Ам'єн","Шербур","Пуатьє","Тулуза","Байонна","Страсбург","Брест","Бордо","Ренн",
+			"Ніцца","Сент-Етьен","Нант","Реймс","Ле-Ман","Монпельє","Лімож","Нансі","Лілль","Кан"]
 	},
 	{
 		name:"Russia",
@@ -289,7 +289,7 @@
 		innerColor:[238,201,9],
 		uniqueName:"Слава Риму"
 		unique:"+25% Виробництва для всіх будівель що вже існують в столиці",
-		cities:["Рим","Антиум","Куми","Неаполіс","Равенна","Arretium","Mediolanum","Arpinum","Circei","Setia",
+		cities:["Рим","Антиум","Куми","Неаполіс","Равенна","Ареццо","Мілан","Арпіно","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
 	},
@@ -327,8 +327,8 @@
 		uniqueName:"Торговельні каравани",
 		unique:"+1 Золото з кожного торгового шляху, Oil resources provide double quantity"
 		cities:["Мекка","Медіна","Дамаск","Багдад","Найран","Куфа","Басра","Хорасан","Анджар","Фустат",
-			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
-			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+			"Аден","Ямама","Маска́т","Мансура","Бухара","Фес","Шираз","Мерв","Балх","Мосул",
+			"Айджаб","Байт","Сухар","Таїф","Хама","Табук","Сана","Шихр","Тріполі","Туніс"]
 	},
 	{
 		name:"America",
@@ -399,9 +399,9 @@
 		innerColor:[185,0,0],
 		uniqueName:"Bushido"
 		unique: "Units fight as though they were at full strength even when damaged",
-		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
-			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
-			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
+		cities:["Кіото","Осак","Токіо","Сацума","Каґосіма","Нара","Нагоя","Ідзумо","Нагасакі","Йокогама",
+			"Сімоносекі","Мацуяма","Саппоро","Хакодате","Ісе","Тояма","Фукусіма","Суо","Бідзен","Етідзен",
+			"Ідзумі","Омі","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
 			"Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
 	},
 	{
@@ -436,8 +436,8 @@
 		outerColor:[16,126,5],
 		innerColor:[255,153,51],
 		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
-		cities:["Делі","Мумаї","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
-			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
+		cities:["Делі","Мумбаї","Віджаянагара","Патна","Варанасі","Агра","Колката","Лахо́р","Бенґалуру","Гайдарабад","Мадурай","Ахмедабад",
+			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Тіручірапаллі","Тханджавур",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
 	},
 	{
@@ -472,12 +472,12 @@
 		innerColor:[60,60,60],
 		uniqueName:"Furor Teutonicus"
 		unique:"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.",
-		cities:["Берлін","Гамбург","Мюніх","Cologne","Франкфурт","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
-			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
-			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
-			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrucken","Krefeld","Pirmasens","Potsdam","Solingen",
-			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
-			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
+		cities:["Берлін","Гамбург","Мюнхен","Кельн","Франкфурт","Ессен","Дортмунд","Штутґарт","Дюссельдорф","Бремен",
+			"Ґановер","Дуйсбурґ","Лейпціг","Дрезден","Бонн","Бохум","Білефельд","Карлсруе","Ґельзенкірхен","Вісбаден",
+			"Мюнстер","Росток","Хемніц","Брауншвайґ","Галле","Менхенгладбах","Кіль","Вупперталь","Фрайбурґ","Гаген",
+			"Ерфурт","Кайзерслаутерн","Кассель","Обергаузен","Хамм","Саарбрюккен","Крефельд","Пірмазенс","Потсдам","Золінґен",
+			"Оснабрюк","Людвіґсгафен","Леверкузен","Ольденбурґ","Нойс","Мюльгайм","Дармштадт","Херне","Вюрцбург",
+			"Реклінггаузен","Ґетінґен","Вольфсбурґ","Кобленц","Хільдесхайм","Ерланґен"]
 	},
 
 
@@ -514,10 +514,10 @@
 		innerColor:[245,248,185],
 		uniqueName:"Barbary Corsairs"
 		unique:"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.",
-		cities:["Стамбул","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
-			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
-			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
-			"Bitlis","Yalova"]
+		cities:["Стамбул","Едірне","Анкара","Бурса","Конья","Самсун","Ґазіантеп","Діярбакир","Ізмир","Кайсері","Малатья",
+			"Мерсін","Анталья","Зонгулдак","Денізлі","Орду","Mugia","Ескішехір","Інеболу","Сіноп","Адана","Artuin",
+			"Бодрум","Ереглі","Сіліфке","Сівас","Амасья","Мармарис","Трабзон","Ерзурум","Урфа","Ізміт","Афьон-Карахісар",
+			"Бітліс","Ялова"]
 	},
 	{
 		name:"Korea",
@@ -552,9 +552,9 @@
 		innerColor:[187,33,51],
 		uniqueName:"Scholars of the Jade Hall"
 		unique:"+2 Science for all specialists and Great Person tile improvements",
-		cities:["Сеул","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
-			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
-			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+		cities:["Сеул","Бусан","Чонджу","Теґу","Пхеньян","Кесон","Сувон","Кванджу","Каннин","Хамхин","Вонджу","Ульсан",
+			"Чханвон","Андон","Конджу","Хеджу","Чхонджу","Мокпо","Тондучхон","Кодже","Сунчхон","Джиньу","Санчжу",
+			"Расон","Кьонджу","Chungju","Sacheon","Gimje","Anju"]
 	},
 
 	{
@@ -590,7 +590,7 @@
 		innerColor:[246,205,137],
 		uniqueName:"The Great Warpath"
 		unique: "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.",
-		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
+		cities:["Онондага","Осінінка","Ґранд","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
 			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
@@ -627,7 +627,7 @@
 		innerColor:[244,232,54],
 		uniqueName:"Achaemenid Legacy"
 		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength",
-		cities:["Персеполіс","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
+		cities:["Персеполіс","Пасаргади","Сузи","Екбатана","Тарсус","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
 			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
@@ -668,10 +668,10 @@
 		innerColor:[255,255,78],
 		uniqueName:"Wayfinding"
 		unique:"Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.",
-		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
-			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
-			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
-			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+		cities:["Гонолулу","Самоа","Тонґа","Нуку-Хіва","Раїатеа","Аотеароа","Таїті","Гіло","Те Ваї Поунаму","Рапа Нуї",
+			"Туамоту","Раротонга","Тувалу","Тубуаї","Мангарева","Оаху","Кіритіматі","Онтонг-Ява","Ніуе","Чатем",
+			"Ракаханга","Бора-Бора","Каїлуа","Увеа","Футуна","Ротума","Токелау","Лагаїна","Беллона","Мунгава","Тікопіа",
+			"Ема","Капінгамарангі","Тауу","Нукуоро","Сікаїана","Анута","Нукурія","Пілені","Нукуману"]
 	},
 
 	/*
@@ -709,7 +709,7 @@
 		innerColor:[153,255,255],
 		uniqueName:"Sacrificial Captives"
 		unique:"Gain Culture for the empire from each enemy unit killed.",
-		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
+		cities:["Теночтітлан","Теотіуакан","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
 			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
 			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
 			"Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec",
@@ -748,7 +748,7 @@
 		innerColor:[0,204,102],
 		uniqueName:"Mongol Terror"
 		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
-		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
+		cities:["Каракорум","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor",
 			"Har-Ayrag","Nalayh","Tes"]
@@ -787,10 +787,10 @@
 		innerColor:[255,102,102],
 		uniqueName:"Seven Cities of Gold"
 		unique:"Gold nous for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.",
-		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
-			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
-			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
-			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
+		cities:["Мадрид","Барселона","Севілья","Кордова","Толедо","Сантьяго","Саламанка","Мурсія","Валенсія","Сарагоса","Памплона",
+			"Віторія","Сантандер","Ов'єдо","Хаен","Логроньйо","Вальядолід","Пальма","Теруель","Альмерія","Леон","Самора","Mida",
+			"Луго","Аліканте","Кадіс","Eiche","Алькоркон","Бургос","Віґо","Бадахоз","Ла-Корунья","Гвадалківір","Більбао",
+			"Сан-Себастьян","Ґранада","Меріда","Уельва","Ібіса","Лас-Пальмас","Тенеріфе"]
 	},
 	{
 		name:"Incan",
@@ -825,7 +825,7 @@
 		innerColor:[0,204,102],
 		uniqueName:"Great Andean Road"
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
-		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos",
+		cities:["Куско","Тіаванако","Мачу","Ольянтайтамбо","Коривайрачина","Айякучо","Vilcas","Vilcabamba","Vitcos",
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
 			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
@@ -900,7 +900,7 @@
 		innerColor:[255,255,102],
 		uniqueName:"Father Governs Children"
 		unique:"Food and Culture from Friendly City-States are increased by 50%",
-		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
+		cities:["Сукхотхай","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
 			"Ban Phai","Loci","Khan Kaen","Surin"]
@@ -939,11 +939,11 @@
 		innerColor:[255,255,102],
 		uniqueName:"Viking Fury"
 		unique:"+1 Movement to all embarked units, units pay only 1 movement point to embark and disembark. Melee units pay no movement cost to pillage.",
-		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
-			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
-			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
-			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
-			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
+		cities:["Копенгаген","Орхус","Kaupang","Рібе","Віборг","Тенсберг","Роскілле","Хедебю","Осло","Jelling","Truso",
+			"Берген","Фарери","Рейк’явік","Тронгейм","Готгоб","Хеллуланд","Ліллегаммер","Маркланд","Хельсінгер",
+			"Сарпсборг","Оденсе","Ольборґ","Ставангер","Vorbasse","Шлезвіг","Крістіансанн","Холугаланд","Рандерс",
+			"Фредрікстад","Колдінг","Горсенс","Тромсе","Вайле","Koge","Саннес","Хольстебро","Слагельсе","Драммен",
+			"Гіллеред","Сеннерборг","Шієн","Svendborg","Гольбек","Йоррінг","Фредеріксгавн","Гадерслев","Ringsted","Skrive"]
 	},
 	{
 	    name:"Sweden",
@@ -977,9 +977,9 @@
 		innerColor:[194,97,255]
 		uniqueName:"The Lion of the North,"
 		unique:"Gain 90 Influence with a Great Person gift to a City-State,When declaring friendship, Sweden and their friend gain a +10% boost to Great Person generation"
-		cities:["StockHolm","Malmo","Gothenburg","Visby","Upssala","Umea","Lund","Kiruna","Helsingborg",
-		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
-		"Copenhagen","Jonkoping",Boras",]
+		cities:["Стокгольм","Мальме","Гетеборг","Вісбю","Уппсала","Умео","Лунд","Кіруна","Хельсінгборг",
+		"Еребру","Вестерос","Лінчепінг","Норрчепінг","Євле","Карлскруна","Хальмстад","Карлстад","Векше",
+		"Копенгаген","Єнчепінг","Бурос"]
 	},
 	{    // THIS IS A FROM A MOD and so is the least important!
 	    name:"Philippines",
@@ -1012,8 +1012,8 @@
 		innerColor:[185,132,66]
 		uniqueName:"Pearl Of The Orient"
 		unique:"Upon signing OpenBorders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
-		cities:["Manila","Quezon","Cebu",Pasig","Makati","Cagayan de Oro","Baguio","Davao City","Bacolod","Taguig","Pasay",
-		"Bataan","Angeles","Marikina"]
+		cities:["Маніла","Quezon","Себу",Пасіґ","Макаті","Cagayan de Oro","Баґйо","Давао","Баколод","Тагіг","Pasay",
+		"Батаан","Angeles","Marikina"]
 	},
 	{   /// MOD CIV
 		name:"Australia",
@@ -1048,11 +1048,11 @@
 		innerColor:[255,255,0],
 		uniqueName:"Land Down Under",
 		unique:"+1 Food in coastal Cities. +1 Culture from Pastures",
-		cities:["Sydney", "Launceston", "Ballaarat", "Perth", "Brisbane", "Melbourne", "Townsville", "Geelong", "Adelaide",
-			"Hobart", "Bendigo", "Broken Hill", "Cairns", "Newcastle", "Maitland", "Rockhampton", "Wagga Wagga",
-			"Wollongong", "Albury", "Alice Springs", "Bathurst", "Queanbeyan", "Bundaberg", "Coffs Harbor", "Darwin",
+		cities:["Сідней", "Лонсестон", "Балларат", "Перт", "Брисбен", "Мельбурн", "Таунсвіль", "Джилонг", "Аделаїда",
+			"Гобарт", "Bendigo", "Брокен-Гілл", "Кернс", "Ньюкасл", "Мейтленд", "Рокгемптон", "Вогга-Вогга",
+			"Вуллонгонг", "Олбері", "Аліс-Спрінгс", "Батерст", "Queanbeyan", "Бандаберг", "Коффс-Гарбор", "Дарвін",
 			"Fremantle", "Gladstone", "Goulburn", "Hervey Bay", "Kalgoorlie", "Lismore", "Lithgow", "Maryborough",
-			"Orange", "Port Macquarie", "Port Pirie", "Boomahnoomoonah", "Tweed Heads"]
+			"Орандж", "Port Macquarie", "Порт-Пірі", "Boomahnoomoonah", "Твід-Гедс"]
 	///Unique unit: Digger (replaces Infantry, and has +10% Strenght against anti-cavalry units, +10% Strenght on coastal tiles)
 	///Unique building: Outback Station (replaces Windmill, adds +1 Food)
 	},
