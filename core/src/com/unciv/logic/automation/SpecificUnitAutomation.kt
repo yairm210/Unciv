@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
@@ -29,7 +30,7 @@ class SpecificUnitAutomation{
             unit.movement.headTowards(closestReachableResource)
             if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
                 val createImprovementAction = UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                        .firstOrNull { it.name.startsWith("Create") }?.action // could be either fishing boats or oil well
+                        .firstOrNull { it.type == UnitActionType.Create }?.action // could be either fishing boats or oil well
                 if (createImprovementAction != null)  // If it's null, then unit is already gone
                     return createImprovementAction()
             }
@@ -93,7 +94,7 @@ class SpecificUnitAutomation{
     fun automateSettlerActions(unit: MapUnit) {
         if(unit.getTile().militaryUnit==null) return // Don't move until you're accompanied by a military unit
 
-        val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
+        val tilesNearCities = unit.civInfo.gameInfo.getCities()
                 .flatMap {
                     val distanceAwayFromCity =
                             if (unit.civInfo.knows(it.civInfo)
@@ -134,11 +135,11 @@ class SpecificUnitAutomation{
             throw Exception("City within distance")
 
         if (unit.getTile() == bestCityLocation)
-            UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action?.invoke()
+            UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.type == UnitActionType.FoundCity }.action?.invoke()
         else {
             unit.movement.headTowards(bestCityLocation)
             if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
-                UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.name == "Found city" }.action?.invoke()
+                UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen).first { it.type == UnitActionType.FoundCity }.action?.invoke()
         }
     }
 
@@ -173,7 +174,7 @@ class SpecificUnitAutomation{
             unit.movement.headTowards(chosenTile)
             if(unit.currentTile==chosenTile && unit.currentMovement > 0)
                 UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-                        .first { it.name.startsWith("Create") }.action?.invoke()
+                        .first { it.type == UnitActionType.Create }.action?.invoke()
             return
         }
 

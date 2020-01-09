@@ -729,6 +729,43 @@
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
 			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
 	},
+	{
+		name:"Songhai",
+		leaderName:"Askia",
+		adjective:["Songhai"],
+		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Domination",
+
+		startIntroPart1: "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen."
+		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
+
+		declaringWar:"You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!"
+		attacked:"Fool! You have doomed your people to fire and destruction!"
+		defeated:"We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!"
+		introduction:"I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past."
+
+		neutralHello:"Greetings."
+		neutralLetsHearIt:["Yes?","Proceed."]
+		neutralNo:["No","Of course not."]
+		neutralYes:["Very well.","Yes.","Fine."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["And?","Continue."]
+		hateNo:["You cannot be serious!","That's unacceptable!","We decline."]
+		hateYes:["Oh, very well.","Alright."]
+
+		afterPeace:"We thank you for bringing an end to this pointless war."
+		tradeRequest:"Can I interest you in this deal?"
+
+		outerColor:[214,145,19],
+		innerColor:[90,0,10],
+		uniqueName:"River Warlord",
+		// Vanilla unique: triple gold and embarked defense
+		unique:"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.",
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
+			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+	},
 	/*
 	
 	{   // REQUIRES RIVERS
@@ -842,42 +879,6 @@
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
 			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
-	}
-	{
-		name:"Songhai",
-		leaderName:"Askia",
-		adjective:["Songhai"],
-		startBias:["Avoid Tundra"],
-		preferredVictoryType:"Domination",
-		
-		startIntroPart1: "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen."
-		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!"
-		attacked:"Fool! You have doomed your people to fire and destruction!"
-		defeated:"We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!"
-		introduction:"I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past."
-		
-		neutralHello:"Greetings."
-		neutralLetsHearIt:["Yes?","Proceed."]
-		neutralNo:["No","Of course not."]
-		neutralYes:["Very well.","Yes.","Fine."]
-
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["And?","Continue."]
-		hateNo:["You cannot be serious!","That's unacceptable!","We decline."]
-		hateYes:["Oh, very well.","Alright."]
-		
-		afterPeace:"We thank you for bringing an end to this pointless war."
-		tradeRequest:"Can I interest you in this deal?"
-				
-		outerColor:[204,102,0],
-		innerColor:[255,0,0],
-		uniqueName:"River Warlord"
-		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
-		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
-			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
-			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
 	{
 		//NEEDS SNOW AND ICE

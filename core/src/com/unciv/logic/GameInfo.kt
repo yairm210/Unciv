@@ -5,16 +5,17 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.LocationAction
-import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import java.util.*
+import kotlin.collections.ArrayList
 
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
@@ -58,6 +59,7 @@ class GameInfo {
     fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getBarbarianCivilization() = getCivilization("Barbarians")
     fun getDifficulty() = difficultyObject
+    fun getCities() = civilizations.flatMap { it.cities }
     //endregion
 
     fun nextTurn() {
@@ -265,11 +267,62 @@ class GameInfo {
             // This doesn't HAVE to go here, but why not.
             // As of version 3.1.3, trade offers of "Declare war on X" and "Introduction to X" were changed to X,
             //   with the extra text being added only on UI display (solved a couple of problems).
-            for(trade in civInfo.tradeRequests.map { it.trade })
-                for(offer in trade.theirOffers.union(trade.ourOffers)){
+            for(trade in civInfo.tradeRequests.map { it.trade }) {
+                for (offer in trade.theirOffers.union(trade.ourOffers)) {
                     offer.name = offer.name.removePrefix("Declare war on ")
                     offer.name = offer.name.removePrefix("Introduction to ")
                 }
+            }
+
+            // As of 3.4.9 cities are referenced by id, not by name
+            // So try to update every tradeRequest (if there are no conflicting names)
+            for(tradeRequest in civInfo.tradeRequests) {
+                val trade = tradeRequest.trade
+                val toRemove = ArrayList<TradeOffer>()
+                for (offer in trade.ourOffers) {
+                    if (offer.type == TradeType.City) {
+                        val countNames = civInfo.cities.count { it.name == offer.name}
+
+                        if (countNames == 1)
+                            offer.name = civInfo.cities.first { it.name == offer.name}.id
+                        // There are conflicting names: we can't guess what city was being offered
+                        else if (countNames > 1)
+                            toRemove.add(offer)
+                    }
+                }
+
+                trade.ourOffers.removeAll(toRemove)
+                toRemove.clear()
+
+                val themCivInfo = getCivilization(tradeRequest.requestingCiv)
+                for (offer in trade.theirOffers) {
+                    if (offer.type == TradeType.City) {
+                        val countNames = themCivInfo.cities.count { it.name == offer.name}
+
+                        if (countNames == 1)
+                            offer.name = themCivInfo.cities.first { it.name == offer.name}.id
+                        // There are conflicting names: we can't guess what city was being offered
+                        else if (countNames > 1)
+                            toRemove.add(offer)
+                    }
+                }
+
+                trade.theirOffers.removeAll(toRemove)
+            }
+
+            // As of 3.4.9 cities are referenced by id, not by name
+            val toRemove = ArrayList<PopupAlert>()
+            for (popupAlert in civInfo.popupAlerts.filter { it.type == AlertType.CityConquered }) {
+                val countNames = getCities().count { it.name == popupAlert.value }
+
+                if (countNames == 1)
+                    popupAlert.value = getCities().first { it.name == popupAlert.value }.id
+                else if (countNames > 1) {
+                    // Sorry again, conflicting names: who knows what city you conquered?
+                    toRemove.add(popupAlert)
+                }
+            }
+            civInfo.popupAlerts.removeAll(toRemove)
         }
 
         for (civInfo in civilizations) civInfo.setNationTransient()

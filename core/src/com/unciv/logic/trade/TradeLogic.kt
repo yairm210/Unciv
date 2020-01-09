@@ -48,7 +48,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState() && !otherCivilization.isCityState()) {
             for (city in civInfo.cities.filterNot { it.isCapital() })
-                offers.add(TradeOffer(city.name, TradeType.City, 0))
+                offers.add(TradeOffer(city.id, TradeType.City, 0))
         }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
@@ -94,7 +94,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     to.tech.addTechnology(offer.name)
                 }
                 if (offer.type == TradeType.City) {
-                    val city = from.cities.first { it.name == offer.name }
+                    val city = from.cities.first { it.id == offer.name }
                     city.moveToCiv(to)
                     city.getCenterTile().getUnits().forEach { it.movement.teleportToClosestMoveableTile() }
                     to.updateViewableTiles()
