@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -12,7 +11,7 @@ import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table(CameraStageBaseScreen.skin) {
-    init{
+    init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
     }
 
@@ -28,13 +27,14 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table(CameraStageBas
         pack()
     }
 
-    fun getStatsTable(tile: TileInfo):Table{
-        val table=Table()
+    fun getStatsTable(tile: TileInfo): Table {
+        val table = Table()
         table.defaults().pad(2f)
 
-        for (entry in tile.getTileStats(worldScreen.viewingCiv).toHashMap().filterNot { it.value == 0f||it.key.toString() == "" }) {
+        for (entry in tile.getTileStats(worldScreen.viewingCiv).toHashMap()
+                .filterNot { it.value == 0f || it.key.toString() == "" }) {
             table.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f).align(Align.right)
-            table.add(Label(entry.value.toInt().toString(), skin)).align(Align.left).padRight(10f)
+            table.add(entry.value.toInt().toString().toLabel()).align(Align.left).padRight(10f)
             table.row()
         }
         return table
