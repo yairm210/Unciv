@@ -94,51 +94,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun addCityStats(cityInfo: CityInfo) {
-        val statsTable = Table().align(Align.center)
-        addCategory("Stats", statsTable)
-
-        val unassignedPopString = "{Unassigned population}:".tr()+
-                " "+cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
-        statsTable.add(unassignedPopString.toLabel()).pad(5f).row()
-
-        var turnsToExpansionString =
-        if (cityInfo.cityStats.currentCityStats.culture > 0) {
-            var turnsToExpansion = ceil((cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored)
-                    / cityInfo.cityStats.currentCityStats.culture).toInt()
-            if (turnsToExpansion < 1) turnsToExpansion = 1
-            "[$turnsToExpansion] turns to expansion".tr()
-        } else {
-            "Stopped expansion".tr()
-        }
-        turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" + cityInfo.expansion.getCultureToNextTile() + ")"
-
-        statsTable.add(turnsToExpansionString.toLabel()).pad(5f).row()
-
-        var turnsToPopString =
-        when {
-            cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population".tr()
-            cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population".tr()
-            cityInfo.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production".tr()
-            else -> "Stopped population growth".tr()
-        }
-        turnsToPopString +=  " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
-        statsTable.add(turnsToPopString.toLabel()).colspan(columns).row()
-
-        if (cityInfo.isInResistance()) {
-            statsTable.add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).colspan(columns).row()
-        }
-
-        statsTable.addSeparator()
-
-        val ministatsTable = Table().pad(5f)
-        ministatsTable.defaults()
-        statsTable.add(ministatsTable)
-
-        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key == Stat.Happiness) continue
-            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
-        }
+        addCategory("Stats", CityStatsTable(cityInfo))
     }
 
     private fun addBuildingsInfo(cityInfo: CityInfo) {
@@ -333,4 +289,52 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         return specialist
     }
 
+}
+
+class CityStatsTable(val cityInfo: CityInfo):Table(){
+    init{
+        val unassignedPopString = "{Unassigned population}:".tr()+
+                " "+cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
+        add(unassignedPopString.toLabel()).pad(5f).row()
+
+        var turnsToExpansionString =
+                if (cityInfo.cityStats.currentCityStats.culture > 0) {
+                    val remainingCulture = cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored
+                    var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
+                    if (turnsToExpansion < 1) turnsToExpansion = 1
+                    "[$turnsToExpansion] turns to expansion".tr()
+                } else {
+                    "Stopped expansion".tr()
+                }
+        turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
+                cityInfo.expansion.getCultureToNextTile() + ")"
+
+        add(turnsToExpansionString.toLabel()).pad(5f).row()
+
+        var turnsToPopString =
+                when {
+                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population".tr()
+                    cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population".tr()
+                    cityInfo.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production".tr()
+                    else -> "Stopped population growth".tr()
+                }
+        turnsToPopString +=  " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
+        add(turnsToPopString.toLabel()).colspan(columns).row()
+
+        if (cityInfo.isInResistance()) {
+            add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).colspan(columns).row()
+        }
+
+        addSeparator()
+
+        val ministatsTable = Table().pad(5f)
+        ministatsTable.defaults()
+        add(ministatsTable)
+
+        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
+            if(stat.key == Stat.Happiness) continue
+            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
+            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
+        }
+    }
 }
