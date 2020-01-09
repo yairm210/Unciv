@@ -614,7 +614,6 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
 	{
 		name:"Mandekalu Cavalry",
 		replaces:"Knight",
@@ -630,8 +629,8 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20,
 		attackSound:"horse"
-		//Songhai unique unit. Costs slightly less and is more powerful than a Knight
 	},
+	/*
 	{
 		name:"Keshik",
 		replaces:"Knight",
