@@ -5,14 +5,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Tutorial
-import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -21,51 +19,52 @@ import java.util.*
 import kotlin.math.ceil
 import kotlin.math.round
 
-class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
-    private var selectedTile: TileInfo? = null
+class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
+    var selectedTile: TileInfo? = null
+    var selectedConstruction: IConstruction? = null
 
     // Clockwise from the top-left
-    /** Displays city stats - sits on the top left side */
-    var topCityStatsTable=Table()
 
-    private var razeCityButtonHolder = Table() // sits on the top
-
-    /** Displays buildings, specialists and stats drilldown - sits on the top right of the city screen */
-    private var cityInfoTable = CityInfoTable(this)
-
-    /** Displays tile info, sits on the bottom right */
-    private var tileTable = CityScreenTileTable(city)
-
-    /** Displays city name, allows switching between cities - sits on the bottom */
-    private var cityPickerTable = CityScreenCityPickerTable(this)
-
-    /** Holds production list and current production - sits on the bottom left */
+    /** Displays current production, production queue and available productions list - sits on LEFT */
     private var constructionsTable = ConstructionsTable(this)
 
+    /** Displays raze city button - sits on TOP CENTER */
+    private var razeCityButtonHolder = Table()
+
+    /** Displays stats, buildings, specialists and stats drilldown - sits on TOP RIGHT */
+    private var cityInfoTable = CityInfoTable(this)
+
+    /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */
+    private var tileTable = CityScreenTileTable(city)
+
+    /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
+    private var selectedConstructionTable = ConstructionInfoTable(this.city)
+
+    /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
+    private var cityPickerTable = CityScreenCityPickerTable(this)
+
+    /** Holds City tiles group*/
     private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
         onBackButtonClicked { game.setWorldScreen() }
-        addTiles()
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
-
-        val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
+        addTiles()
 
         var buildingsTableContainer = Table()
         buildingsTableContainer.pad(3f)
-        buildingsTableContainer.background = ImageGetter.getBackground(tableBackgroundColor)
+        buildingsTableContainer.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         cityInfoTable.update()
         val buildingsScroll = ScrollPane(cityInfoTable)
-        buildingsTableContainer.add(buildingsScroll)
-                .size(stage.width/4,stage.height / 2)
+        buildingsTableContainer.add(buildingsScroll).size(stage.width/4,stage.height / 2)
 
         buildingsTableContainer = buildingsTableContainer.addBorder(2f, Color.WHITE)
-        buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width-5,
-                stage.height - buildingsTableContainer.height-5)
+        buildingsTableContainer.setPosition( stage.width - 5f, stage.height - 5f, Align.topRight)
 
+        //stage.setDebugTableUnderMouse(true)
         stage.addActor(constructionsTable)
         stage.addActor(tileTable)
-
+        stage.addActor(selectedConstructionTable)
         stage.addActor(cityPickerTable)
         stage.addActor(buildingsTableContainer)
 
@@ -73,87 +72,38 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     }
 
     internal fun update() {
-        cityInfoTable.update()
+        city.cityStats.update()
+
+        constructionsTable.update(selectedConstruction)
+        constructionsTable.setPosition(5f, stage.height - 5f, Align.topLeft)
 
         cityPickerTable.update()
         cityPickerTable.centerX(stage)
 
-        constructionsTable.update()
-        updateAnnexAndRazeCityButton()
         tileTable.update(selectedTile)
-        tileTable.setPosition(stage.width-5, 5f,Align.bottomRight)
+        tileTable.setPosition(stage.width - 5f, 5f, Align.bottomRight)
+
+        selectedConstructionTable.update(selectedConstruction)
+        selectedConstructionTable.setPosition(stage.width - 5f, 5f, Align.bottomRight)
+
+        cityInfoTable.update()
+
+        updateAnnexAndRazeCityButton()
         updateTileGroups()
 
-        topCityStatsTable.remove()
-        topCityStatsTable = getCityStatsTable()
-        topCityStatsTable.setPosition(5f, stage.height-5, Align.topLeft)
-        stage.addActor(topCityStatsTable)
-        constructionsTable.height=stage.height-topCityStatsTable.height
-        constructionsTable.setPosition(5f, stage.height-5-topCityStatsTable.height, Align.topLeft)
-
-        if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
+        if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty())
             displayTutorial(Tutorial.CityRange)
-        }
     }
 
     private fun updateTileGroups() {
         val nextTile = city.expansion.chooseNewTileToOwn()
         for (tileGroup in tileGroups) {
-
             tileGroup.update()
             if(tileGroup.tileInfo == nextTile){
                 tileGroup.showCircle(Color.PURPLE)
                 tileGroup.setColor(0f,0f,0f,0.7f)
             }
         }
-
-    }
-
-    fun getCityStatsTable(): Table {
-        val table=Table().pad(10f)
-        table.defaults().pad(5f)
-        table.background=ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
-        val columns = Stats().toHashMap().size
-        val unassignedPopText = "{Unassigned population}:".tr()+
-                city.population.getFreePopulation().toString() + "/" + city.population.population
-        table.add(unassignedPopText.toLabel()).colspan(columns).row()
-
-        var turnsToExpansionString = when {
-            city.cityStats.currentCityStats.culture > 0 -> {
-                var turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
-                        / city.cityStats.currentCityStats.culture).toInt()
-                if (turnsToExpansion < 1) turnsToExpansion = 1
-                "[$turnsToExpansion] turns to expansion".tr()
-            }
-            else -> "Stopped expansion".tr()
-        }
-        turnsToExpansionString += " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")"
-        table.add(turnsToExpansionString.toLabel()).colspan(columns).row()
-
-
-        var turnsToPopString = when {
-            city.isGrowing() -> "[${city.getNumTurnsToNewPopulation()}] turns to new population"
-            city.isStarving() -> "[${city.getNumTurnsToStarvation()}] turns to lose population"
-            city.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production"
-            else -> "Stopped population growth"
-        }.tr()
-        turnsToPopString += " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
-        table.add(turnsToPopString.toLabel()).colspan(columns).row()
-
-        if (city.isInResistance()) {
-            table.add("In resistance for another [${city.resistanceCounter}] turns".toLabel()).colspan(columns).row()
-        }
-
-        table.addSeparator()
-        val beige = colorFromRGB(194,180,131)
-        for(stat in city.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key==Stat.Happiness) continue
-            val minitable=Table().padRight(5f).padLeft(5f)
-            minitable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-            minitable.add(round(stat.value).toInt().toString().toLabel())
-            table.add(minitable)
-        }
-        return table.addBorder(2f, beige)
     }
 
     private fun updateAnnexAndRazeCityButton() {
@@ -167,15 +117,13 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 update()
             }
             razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
-        }
-        else if(!city.isBeingRazed) {
+        } else if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
             if(!UncivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
-        }
-        else {
+        } else {
             val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
             stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
@@ -203,6 +151,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             tileGroup.onClick {
                 if (!city.isPuppet) {
                     selectedTile = tileInfo
+                    selectedConstruction = null
                     if (tileGroup.isWorkable && UncivGame.Current.worldScreen.isPlayersTurn) {
                         if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
                             city.workedTiles.add(tileInfo.position)
@@ -235,5 +184,4 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         scrollPane.scrollPercentY=0.5f
         scrollPane.updateVisualScroll()
     }
-
 }
