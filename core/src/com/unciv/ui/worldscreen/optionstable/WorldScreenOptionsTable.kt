@@ -77,6 +77,12 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
+        innerTable.add("Autocomplete turn".toLabel())
+        innerTable.addButton(if (settings.autoCompleteTurn) "Yes".tr() else "No".tr()) {
+            settings.autoCompleteTurn = !settings.autoCompleteTurn
+            update()
+        }
+
         addLanguageSelectBox(innerTable)
 
         addResolutionSelectBox(innerTable)

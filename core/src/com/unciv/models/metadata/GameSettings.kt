@@ -17,6 +17,7 @@ class GameSettings {
     var turnsBetweenAutosaves = 1
     var tileSet:String = "FantasyHex"
     var showTutorials: Boolean = true
+    var autoCompleteTurn: Boolean = false
     var autoAssignCityProduction: Boolean = true
     var autoBuildingRoads: Boolean = true
     var showMinimap: Boolean = true

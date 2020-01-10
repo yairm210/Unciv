@@ -236,8 +236,6 @@ class CivilizationInfo {
     fun shouldOpenTechPicker() = tech.freeTechs != 0
             || tech.currentTechnology()==null && cities.isNotEmpty()
 
-
-
     fun getEquivalentBuilding(buildingName:String): Building {
         val baseBuilding = gameInfo.ruleSet.buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
 

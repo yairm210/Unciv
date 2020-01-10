@@ -39,6 +39,7 @@ import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
 import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.worldscreen.optionstable.WorldScreenMenuTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlin.concurrent.thread
@@ -216,10 +217,29 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
             }
         }
+
+         if  (canAutoCompleteTurn()) {
+            nextTurn()
+         }
+
         updateNextTurnButton(hasVisibleDialogs()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
+    }
+
+    private fun canAutoCompleteTurn(): Boolean {
+        return  !hasVisibleDialogs() &&
+                isPlayersTurn &&
+                !waitingForAutosave &&
+                UncivGame.Current.settings.autoCompleteTurn &&
+                !viewingCiv.policies.canAdoptPolicy() &&
+                viewingCiv.greatPeople.freeGreatPeople == 0 &&
+                viewingCiv.popupAlerts.none() &&
+                viewingCiv.tradeRequests.isEmpty() &&
+                !viewingCiv.shouldOpenTechPicker() &&
+                viewingCiv.getIdleUnits().isEmpty() &&
+                stage.actors.last() !is WorldScreenMenuTable
     }
 
     private fun getCurrentTutorialTask(): String {
