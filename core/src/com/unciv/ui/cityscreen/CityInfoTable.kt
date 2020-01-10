@@ -18,8 +18,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private val pad = 10f
 
     private val showConstructionsTableButton = TextButton("Show construction queue", skin)
-    private val cityInfoScrollPane: ScrollPane
-    private val cityInfoTable = Table(skin)
+    private val scrollPane: ScrollPane
+    private val innerTable = Table(skin)
 
     init {
         showConstructionsTableButton.onClick {
@@ -27,28 +27,27 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             cityScreen.update()
         }
 
-        cityInfoTable.width = cityScreen.stage.width/4
-        cityInfoTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
-        cityInfoScrollPane = ScrollPane(cityInfoTable.addBorder(2f, Color.WHITE))
-        cityInfoScrollPane.setOverscroll(false, false)
+        innerTable.width = cityScreen.stage.width/4
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
+        scrollPane.setOverscroll(false, false)
 
         add(showConstructionsTableButton).left().padLeft(pad).padBottom(pad).row()
-        add(cityInfoScrollPane).left().row()
+        add(scrollPane).left().row()
     }
 
     internal fun update() {
         val cityInfo = cityScreen.city
 
-        cityInfoTable.clear()
+        innerTable.clear()
 
-        //TODO: Sorry, this is a hack, i'm getting tired and needed some content to test the idea
-        cityInfoTable.apply {
+        innerTable.apply {
             addBuildingsInfo(cityInfo)
             addStatInfo()
             addGreatPersonPointInfo(cityInfo)
         }
 
-        getCell(cityInfoScrollPane).maxHeight(stage.height - showConstructionsTableButton.height - pad - 10f)
+        getCell(scrollPane).maxHeight(stage.height - showConstructionsTableButton.height - pad - 10f)
         pack()
     }
 
