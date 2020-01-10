@@ -409,6 +409,7 @@ class MapUnit {
     fun destroy(){
         removeFromTile()
         civInfo.removeUnit(this)
+        civInfo.updateViewableTiles()
     }
 
     fun removeFromTile(){
