@@ -17,12 +17,11 @@ import java.text.DecimalFormat
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     private val pad = 10f
 
-    private val showConstructionsTableButton: TextButton
+    private val showConstructionsTableButton = TextButton("Show construction queue", skin)
     private val cityInfoScrollPane: ScrollPane
     private val cityInfoTable = Table(skin)
 
     init {
-        showConstructionsTableButton = TextButton("Show the other stuff bruh", skin)
         showConstructionsTableButton.onClick {
             cityScreen.showConstructionsTable = true
             cityScreen.update()

@@ -26,15 +26,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.centerX
-import com.unciv.ui.utils.colorFromRGB
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontSize
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
@@ -234,7 +226,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return "Pick a technology to research!\nClick on the tech button (greenish, top left) > " +
                     "\n select technology > click 'Research' (bottom right)"
         if(!completedTasks.contains("Pick construction"))
-            return "Pick a construction!\nEnter city screen > Click on a unit or building (left side)"
+            return "Pick a construction!\nEnter city screen > Click on a unit or building (bottom left side) >" +
+                    " \n click 'add to queue'"
         if(!completedTasks.contains("Pass a turn"))
             return "Pass a turn!\nCycle through units with 'Next unit' > Click 'Next turn'"
         if(!completedTasks.contains("Reassign worked tiles"))
