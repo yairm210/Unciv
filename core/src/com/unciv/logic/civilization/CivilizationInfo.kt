@@ -358,7 +358,8 @@ class CivilizationInfo {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
-    fun startTurn(){
+    fun startTurn() {
+        policies.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Generate great people at the start of the turn,

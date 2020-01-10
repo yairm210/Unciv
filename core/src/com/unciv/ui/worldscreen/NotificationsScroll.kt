@@ -29,7 +29,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
         notificationsHash = notifications.hashCode()
 
         notificationsTable.clearChildren()
-        for (notification in notifications.toList()) { // toList to avoid concurrency problems
+        for (notification in notifications.toList().reversed()) { // toList to avoid concurrency problems
             val label = notification.text.toLabel(Color.BLACK,14)
             val listItem = Table()
 
