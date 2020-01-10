@@ -20,6 +20,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     /* -2 = Nothing, -1 = current construction, >= 0 queue entry */
     private var selectedQueueEntry = -2 // None
 
+    private val showCityInfoTableButton: TextButton
     private val constructionsQueueScrollPane: ScrollPane
     private val availableConstructionsScrollPane: ScrollPane
 
@@ -30,6 +31,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private val pad = 10f
 
     init {
+        showCityInfoTableButton = TextButton("Show the other stuff bruh", skin)
+        showCityInfoTableButton.onClick {
+            cityScreen.showConstructionsTable = false
+            cityScreen.update()
+        }
+
         constructionsQueueScrollPane = ScrollPane(constructionsQueueTable.addBorder(2f, Color.WHITE))
         constructionsQueueScrollPane.setOverscroll(false,false)
         availableConstructionsScrollPane = ScrollPane(availableConstructionsTable.addBorder(2f, Color.WHITE))
@@ -38,6 +45,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionsQueueTable.background = ImageGetter.getBackground(Color.BLACK)
         availableConstructionsTable.background = ImageGetter.getBackground(Color.BLACK)
 
+        add(showCityInfoTableButton).left().padLeft(pad).padBottom(pad).row()
         add(constructionsQueueScrollPane).left().padBottom(pad).row()
         add(buttons).center().bottom().padBottom(pad).row()
         add(availableConstructionsScrollPane).left().bottom().row()
@@ -59,7 +67,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         // Need to pack before computing space left for bottom panel
         pack()
-        val usedHeight = constructionsQueueScrollPane.height + buttons.height + 2f * pad + 10f
+        val usedHeight = showCityInfoTableButton.height + constructionsQueueScrollPane.height + buttons.height + 3f * pad + 10f
 
         updateAvailableConstructions()
         availableConstructionsScrollPane.layout()
@@ -105,7 +113,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             queue.forEachIndexed { i, constructionName ->
                 constructionsQueueTable.add(getQueueEntry(i, constructionName, i == queue.size - 1, i == selectedQueueEntry))
                         .expandX().fillX().row()
-                constructionsQueueTable.addSeparator()
+                if (i != queue.size - 1)
+                    constructionsQueueTable.addSeparator()
             }
         } else
             constructionsQueueTable.add("Queue empty".toLabel()).pad(2f).row()

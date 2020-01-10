@@ -2,12 +2,8 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -17,29 +13,47 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.text.DecimalFormat
-import kotlin.math.ceil
-import kotlin.math.round
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
-    val pad = 5f
+    private val pad = 10f
+
+    private val showConstructionsTableButton: TextButton
+    private val cityInfoScrollPane: ScrollPane
+    private val cityInfoTable = Table(skin)
+
     init {
-        defaults().pad(pad)
-        width = cityScreen.stage.width/4
+        showConstructionsTableButton = TextButton("Show the other stuff bruh", skin)
+        showConstructionsTableButton.onClick {
+            cityScreen.showConstructionsTable = true
+            cityScreen.update()
+        }
+
+        cityInfoTable.width = cityScreen.stage.width/4
+        cityInfoTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        cityInfoScrollPane = ScrollPane(cityInfoTable.addBorder(2f, Color.WHITE))
+        cityInfoScrollPane.setOverscroll(false, false)
+
+        add(showConstructionsTableButton).left().padLeft(pad).padBottom(pad).row()
+        add(cityInfoScrollPane).left().row()
     }
 
     internal fun update() {
-        clear()
         val cityInfo = cityScreen.city
 
-        addCityStats(cityInfo)
-        addBuildingsInfo(cityInfo)
-        addStatInfo()
-        addGreatPersonPointInfo(cityInfo)
+        cityInfoTable.clear()
 
+        //TODO: Sorry, this is a hack, i'm getting tired and needed some content to test the idea
+        cityInfoTable.apply {
+            addBuildingsInfo(cityInfo)
+            addStatInfo()
+            addGreatPersonPointInfo(cityInfo)
+        }
+
+        getCell(cityInfoScrollPane).maxHeight(stage.height - showConstructionsTableButton.height - pad - 10f)
         pack()
     }
 
-    private fun addCategory(str: String, showHideTable: Table) {
+    private fun Table.addCategory(str: String, showHideTable: Table) {
         val titleTable = Table().background(ImageGetter.getBackground(ImageGetter.getBlue()))
         val width = cityScreen.stage.width/4 - 2*pad
         val showHideTableWrapper = Table()
@@ -53,7 +67,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         add(showHideTableWrapper).row()
     }
 
-    fun addBuildingInfo(building: Building, wondersTable: Table){
+    private fun Table.addBuildingInfo(building: Building, wondersTable: Table){
         val wonderNameAndIconTable = Table()
         wonderNameAndIconTable.touchable = Touchable.enabled
         wonderNameAndIconTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
@@ -93,11 +107,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addCityStats(cityInfo: CityInfo) {
-        addCategory("Stats", CityStatsTable(cityInfo))
-    }
-
-    private fun addBuildingsInfo(cityInfo: CityInfo) {
+    private fun Table.addBuildingsInfo(cityInfo: CityInfo) {
         val wonders = mutableListOf<Building>()
         val specialistBuildings = mutableListOf<Building>()
         val otherBuildings = mutableListOf<Building>()
@@ -142,7 +152,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addStatInfo() {
+    private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
 
         for(stat in Stat.values().filter { it!=Stat.Happiness }){
@@ -199,7 +209,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
+    private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
         val greatPersonPoints = cityInfo.getGreatPersonMap()
         val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
         for (stat in Stat.values()) {
@@ -218,7 +228,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
+    private fun Table.addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
         val specialistAllocationTable = Table()
         addCategory("Specialist Allocation", specialistAllocationTable) // todo WRONG, BAD - table should contain all the below specialist stuff
 
@@ -287,54 +297,5 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
 
         return specialist
-    }
-
-}
-
-class CityStatsTable(val cityInfo: CityInfo):Table(){
-    init{
-        val unassignedPopString = "{Unassigned population}:".tr()+
-                " "+cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
-        add(unassignedPopString.toLabel()).pad(5f).row()
-
-        var turnsToExpansionString =
-                if (cityInfo.cityStats.currentCityStats.culture > 0) {
-                    val remainingCulture = cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored
-                    var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
-                    if (turnsToExpansion < 1) turnsToExpansion = 1
-                    "[$turnsToExpansion] turns to expansion".tr()
-                } else {
-                    "Stopped expansion".tr()
-                }
-        turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
-                cityInfo.expansion.getCultureToNextTile() + ")"
-
-        add(turnsToExpansionString.toLabel()).pad(5f).row()
-
-        var turnsToPopString =
-                when {
-                    cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population".tr()
-                    cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population".tr()
-                    cityInfo.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production".tr()
-                    else -> "Stopped population growth".tr()
-                }
-        turnsToPopString +=  " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
-        add(turnsToPopString.toLabel()).colspan(columns).row()
-
-        if (cityInfo.isInResistance()) {
-            add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).colspan(columns).row()
-        }
-
-        addSeparator()
-
-        val ministatsTable = Table().pad(5f)
-        ministatsTable.defaults()
-        add(ministatsTable)
-
-        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key == Stat.Happiness) continue
-            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
-        }
     }
 }
