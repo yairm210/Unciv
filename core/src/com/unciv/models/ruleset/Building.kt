@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.VictoryType
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats

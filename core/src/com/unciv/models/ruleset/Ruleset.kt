@@ -13,7 +13,7 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
-class Ruleset() {
+class Ruleset {
 
     private val jsonParser = JsonParser()
 
@@ -130,7 +130,6 @@ class Ruleset() {
         val nationsFile = folderHandle.child("Nations/Nations.json")
         if(nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
-            for (nation in nations.values) nation.setTransients()
         }
 
         val difficultiesFile = folderHandle.child("Difficulties.json")

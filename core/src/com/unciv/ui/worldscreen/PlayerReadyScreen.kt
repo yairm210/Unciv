@@ -13,9 +13,9 @@ class PlayerReadyScreen(currentPlayerCiv: CivilizationInfo) : CameraStageBaseScr
     init {
         val table= Table()
         table.touchable= Touchable.enabled
-        table.background= ImageGetter.getBackground(currentPlayerCiv.nation.getOuterColor())
+        table.background= ImageGetter.getBackground(currentPlayerCiv.nation.outerColor)
 
-        table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),24))
+        table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.innerColor,24))
 
         table.onClick {
             UncivGame.Current.worldScreen = WorldScreen(currentPlayerCiv)

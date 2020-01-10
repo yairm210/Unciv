@@ -1,7 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.VictoryType
 
 class VictoryManager {
     @Transient lateinit var civInfo: CivilizationInfo

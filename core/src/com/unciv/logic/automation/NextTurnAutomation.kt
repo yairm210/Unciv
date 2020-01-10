@@ -10,7 +10,8 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.VictoryType
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
 import kotlin.math.min
@@ -86,7 +87,7 @@ class NextTurnAutomation{
     private fun useGold(civInfo: CivilizationInfo) {
         if(civInfo.victoryType()==VictoryType.Cultural){
             for(cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.getCityStateType()==CityStateType.Cultured }){
+                    .filter { it.isCityState() && it.getCityStateType() == CityStateType.Cultured }){
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if(diploManager.influence < 40){ // we want to gain influence with them
                     tryGainInfluence(civInfo,cityState)
@@ -97,7 +98,7 @@ class NextTurnAutomation{
 
         if(civInfo.getHappiness() < 5){
             for(cityState in civInfo.getKnownCivs()
-                    .filter { it.isCityState() && it.getCityStateType()==CityStateType.Mercantile }){
+                    .filter { it.isCityState() && it.getCityStateType() == CityStateType.Mercantile }){
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if(diploManager.influence < 40){ // we want to gain influence with them
                     tryGainInfluence(civInfo,cityState)

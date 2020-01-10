@@ -121,13 +121,13 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
     private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
         val table = Table()
         table.defaults().pad(10f)
-        table.background = ImageGetter.getBackground(civ.nation.getOuterColor())
-        table.add(civ.civName.toLabel(civ.nation.getInnerColor())).row()
+        table.background = ImageGetter.getBackground(civ.nation.outerColor)
+        table.add(civ.civName.toLabel(civ.nation.innerColor)).row()
         table.addSeparator()
         for(offer in offersList){
             var offerText = offer.getOfferText()
             if(!offerText.contains("\n")) offerText+="\n"
-            table.add(offerText.toLabel(civ.nation.getInnerColor())).row()
+            table.add(offerText.toLabel(civ.nation.innerColor)).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)
             table.add("\n".toLabel()).row() // we want both sides of the general table to have the same number of rows
@@ -416,8 +416,8 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
                 labelColor = Color.BLACK
             } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
-                backgroundColor = civ.nation.getOuterColor()
-                labelColor = civ.nation.getInnerColor()
+                backgroundColor = civ.nation.outerColor
+                labelColor = civ.nation.innerColor
             } else {
                 backgroundColor = Color.DARK_GRAY
                 labelText = "???"

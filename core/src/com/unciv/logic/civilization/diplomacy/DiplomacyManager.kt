@@ -3,11 +3,12 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import kotlin.math.ceil
 import kotlin.math.max
@@ -160,7 +161,7 @@ class DiplomacyManager() {
 
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
             val hasCityStateInfluenceBonus =
-                    otherCiv().nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+                    otherCiv().nation.hasUnique(NationUnique.HellenicLeague)
             val dropPerTurn = if(hasCityStateInfluenceBonus) .5f else 1f
 
             if (relationshipLevel() >= RelationshipLevel.Ally)
@@ -253,7 +254,7 @@ class DiplomacyManager() {
         val initialRelationshipLevel = relationshipLevel()
 
         val hasCityStateInfluenceBonus =
-                otherCiv().nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+                otherCiv().nation.hasUnique(NationUnique.HellenicLeague)
         val increment = if (hasCityStateInfluenceBonus) 2f else 1f
         val decrement = if (hasCityStateInfluenceBonus) .5f else 1f
 

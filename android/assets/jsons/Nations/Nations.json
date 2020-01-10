@@ -423,6 +423,7 @@
 				
 		outerColor:[16,126,5],
 		innerColor:[255,153,51],
+		uniqueName: "Population Growth",
 		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
 		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",

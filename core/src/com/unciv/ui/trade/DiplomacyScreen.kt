@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags

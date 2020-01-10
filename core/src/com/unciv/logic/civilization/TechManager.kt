@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.withItem
@@ -234,8 +235,7 @@ class TechManager {
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
 
-        if(techName=="Writing" && civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
-                && civInfo.cities.any())
+        if(techName=="Writing" && civInfo.nation.hasUnique(NationUnique.Ingenuity) && civInfo.cities.any())
             civInfo.addGreatPerson("Great Scientist")
     }
 
@@ -270,11 +270,11 @@ class TechManager {
 
     fun updateTransientBooleans(){
         if(researchedTechUniques.contains("Enables embarkation for land units")
-                || civInfo.nation.unique=="Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+                || civInfo.nation.hasUnique(NationUnique.Wayfinding))
             unitsCanEmbark=true
 
         if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")
-                || civInfo.nation.unique=="Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+           || civInfo.nation.hasUnique(NationUnique.Wayfinding))
             embarkedUnitsCanEnterOcean=true
 
         if(researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true

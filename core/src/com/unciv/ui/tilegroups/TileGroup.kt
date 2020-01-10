@@ -354,7 +354,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         previousTileOwner = tileOwner
         if (tileOwner == null) return
 
-        val civColor = tileInfo.getOwner()!!.nation.getOuterColor()
+        val civColor = tileInfo.getOwner()!!.nation.outerColor
         for (neighbor in tileInfo.neighbors) {
             val neighborOwner = neighbor.getOwner()
             if (neighborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours

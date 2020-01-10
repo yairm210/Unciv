@@ -1,4 +1,4 @@
-package com.unciv.logic.civilization
+package com.unciv.models.ruleset
 
 enum class CityStateType{
     Cultured,

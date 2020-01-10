@@ -1,7 +1,7 @@
 package com.unciv.models.metadata
 
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 
 class GameParameters { // Default values are the default new game

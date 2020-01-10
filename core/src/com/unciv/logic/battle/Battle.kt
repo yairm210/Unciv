@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.math.max
@@ -153,7 +154,7 @@ class Battle(val gameInfo:GameInfo) {
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if (defender.isDefeated() && defender.getCivInfo().isBarbarian()
                 && attackedTile.improvement == Constants.barbarianEncampment
-                && attacker.getCivInfo().nation.unique == "67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."
+                && attacker.getCivInfo().nation.hasUnique(NationUnique.FurorTeutonicus)
                 && Random().nextDouble() > 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
@@ -162,7 +163,7 @@ class Battle(val gameInfo:GameInfo) {
 
         // Similarly, Ottoman unique
         if (defender.isDefeated() && defender.getUnitType().isWaterUnit() && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                && attacker.getCivInfo().nation.unique == "Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units."
+                && attacker.getCivInfo().nation.hasUnique(NationUnique.BarbaryCorsairs)
                 && Random().nextDouble() > 0.33) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
         }
@@ -229,8 +230,7 @@ class Battle(val gameInfo:GameInfo) {
         if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
         thisCombatant.unit.promotions.XP += amountToAdd
 
-        if(thisCombatant.getCivInfo().nation.unique
-                == "Great general provides double combat bonus, and spawns 50% faster")
+        if(thisCombatant.getCivInfo().nation.hasUnique(NationUnique.ArtOfWar))
             amountToAdd = (amountToAdd * 1.5f).toInt()
         if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
             amountToAdd *= 2

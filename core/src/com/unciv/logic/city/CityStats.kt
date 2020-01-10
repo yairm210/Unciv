@@ -2,10 +2,11 @@ package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.CityStateType
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
@@ -48,7 +49,7 @@ class CityStats {
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            if (civInfo.nation.unique == "+1 Gold from each Trade Route, Oil resources provide double quantity") goldFromTradeRoute += 1
+            if (civInfo.nation.hasUnique(NationUnique.TradeCaravans)) goldFromTradeRoute += 1
             if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2
             if (civInfo.containsBuildingUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
@@ -109,8 +110,7 @@ class CityStats {
     private fun getStatsFromNationUnique(): Stats {
         val stats = Stats()
 
-        val civUnique = cityInfo.civInfo.nation.unique
-        if (civUnique == "+2 Culture per turn from cities before discovering Steam Power")
+        if (cityInfo.civInfo.nation.hasUnique(NationUnique.AncientRegime))
             stats.culture += 2
 
         return stats
@@ -121,11 +121,11 @@ class CityStats {
 
         for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Maritime
-                    && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+                && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (cityInfo.isCapital()) stats.food += 3
                 else stats.food += 1
 
-                if (cityInfo.civInfo.nation.unique == "Food and Culture from Friendly City-States are increased by 50%")
+                if (cityInfo.civInfo.nation.hasUnique(NationUnique.FatherGovernsChildren))
                     stats.food *= 1.5f
             }
         }
@@ -136,15 +136,14 @@ class CityStats {
     private fun getStatPercentBonusesFromNationUnique(): Stats {
         val stats = Stats()
 
-        val civUnique = cityInfo.civInfo.nation.unique
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
-        if (civUnique == "+25% Production towards any buildings that already exist in the Capital"
+        if (cityInfo.civInfo.nation.hasUnique(NationUnique.TheGloryOfRome)
                 && currentConstruction is Building
                 && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings
                         .contains(currentConstruction.name))
             stats.production += 25f
 
-        if (civUnique == "+20% production towards Wonder construction"
+        if (cityInfo.civInfo.nation.hasUnique(NationUnique.MonumentBuilders)
                 && currentConstruction is Building && currentConstruction.isWonder)
             stats.production += 20
 
@@ -180,7 +179,7 @@ class CityStats {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f
-        if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
+        if (civInfo.nation.hasUnique(NationUnique.PopulationGrowth))
             unhappinessFromCity *= 2f//doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
@@ -197,7 +196,7 @@ class CityStats {
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
-        if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
+        if (civInfo.nation.hasUnique(NationUnique.PopulationGrowth))
             unhappinessFromCitizens *= 0.5f //halved for the Indian
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
@@ -244,7 +243,7 @@ class CityStats {
         if (policies.contains("Secularism")) stats.science += 2
         if (cityInfo.civInfo.containsBuildingUnique("+1 Production from specialists"))
             stats.production += 1
-        if(cityInfo.civInfo.nation.unique=="+2 Science for all specialists and Great Person tile improvements")
+        if(cityInfo.civInfo.nation.hasUnique(NationUnique.ScholarsOfTheJadeHall))
             stats.science+=2
         return stats
     }

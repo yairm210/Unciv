@@ -2,6 +2,8 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.NationUnique
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -21,7 +23,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
-        if(civInfo.nation.unique=="67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."){
+        if(civInfo.nation.hasUnique(NationUnique.FurorTeutonicus)){
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
@@ -64,10 +66,10 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         //City states culture bonus
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
-                    && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
+                && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
                 var culture = 3f * (civInfo.getEra().ordinal+1)
-                if(civInfo.nation.unique=="Food and Culture from Friendly City-States are increased by 50%")
+                if(civInfo.nation.hasUnique(NationUnique.FatherGovernsChildren))
                     culture*=1.5f
                 cultureBonus.add(Stat.Culture, culture)
                 statMap.add("City States",cultureBonus)
@@ -127,7 +129,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.")
+        if (civInfo.nation.hasUnique(NationUnique.SevenCitiesOfGold))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size
@@ -135,7 +137,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         //From city-states
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
-                    && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+                && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (statMap.containsKey("City-states"))
                     statMap["City-states"] = statMap["City-states"]!! + 3f
                 else

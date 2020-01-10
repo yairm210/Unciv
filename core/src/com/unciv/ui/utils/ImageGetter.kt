@@ -104,13 +104,13 @@ object ImageGetter {
         val civIconName = if(nation.isCityState()) "CityState" else nation.name
         if(nationIconExists(civIconName)){
             val cityStateIcon = getNationIcon(civIconName)
-            cityStateIcon.color = nation.getInnerColor()
-            return cityStateIcon.surroundWithCircle(size*0.9f).apply { circle.color = nation.getOuterColor() }
-                    .surroundWithCircle(size,false).apply { circle.color=nation.getInnerColor() }
+            cityStateIcon.color = nation.innerColor
+            return cityStateIcon.surroundWithCircle(size*0.9f).apply { circle.color = nation.outerColor }
+                    .surroundWithCircle(size,false).apply { circle.color=nation.innerColor }
         }
         else{
-            return getCircle().apply { color = nation.getOuterColor() }
-                    .surroundWithCircle(size).apply { circle.color = nation.getInnerColor() }
+            return getCircle().apply { color = nation.outerColor }
+                    .surroundWithCircle(size).apply { circle.color = nation.innerColor }
 
         }
     }

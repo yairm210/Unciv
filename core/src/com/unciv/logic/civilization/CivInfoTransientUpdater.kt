@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import java.util.*
 import kotlin.collections.HashMap
@@ -98,7 +99,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
                 goldGained += 500
             }
 
-            if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.") {
+            if (civInfo.nation.hasUnique(NationUnique.SevenCitiesOfGold)) {
                 if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
                     goldGained += 500
                 else goldGained += 100

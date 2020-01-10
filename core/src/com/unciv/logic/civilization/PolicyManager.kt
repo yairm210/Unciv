@@ -1,8 +1,8 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
+import com.unciv.models.VictoryType
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.VictoryType
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt

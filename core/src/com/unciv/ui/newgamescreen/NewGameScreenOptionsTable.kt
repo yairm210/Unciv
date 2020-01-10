@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
+import com.unciv.models.VictoryType
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen

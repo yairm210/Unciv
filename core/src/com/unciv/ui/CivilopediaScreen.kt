@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.getUniqueString
 import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialMiner
 import com.unciv.ui.utils.*
@@ -78,7 +79,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                         ImageGetter.getConstructionImage(it.name)) }
         categoryToEntries["Nations"] = ruleset.nations.values
                 .filter { it.isMajorCiv() }
-                .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset),
+                .map { CivilopediaEntry(it.name, it.getUniqueString(ruleset),
                         ImageGetter.getNationIndicator(it,50f)) }
         categoryToEntries["Technologies"] = ruleset.technologies.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),

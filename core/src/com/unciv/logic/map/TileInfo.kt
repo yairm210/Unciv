@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.translations.tr
@@ -170,7 +171,7 @@ open class TileInfo {
             stats.add(wonder)
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.") {
+            if (city != null && city.civInfo.nation.hasUnique(NationUnique.SevenCitiesOfGold)) {
                 stats.add(wonder)
             }
         }
@@ -182,8 +183,7 @@ open class TileInfo {
                 val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]!!
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
-            if(resource.resourceType==ResourceType.Strategic
-                    && observingCiv.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
+            if(resource.resourceType==ResourceType.Strategic && observingCiv.nation.hasUnique(NationUnique.SiberianRiches))
                 stats.production+=1
             if(resource.name=="Oil" && city!=null
                     && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
@@ -212,7 +212,7 @@ open class TileInfo {
                 stats.gold += 1f
             if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
-            if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
+            if (containsGreatImprovement() && city != null && city.civInfo.nation.hasUnique(NationUnique.ScholarsOfTheJadeHall))
                 stats.science += 2
 
             if(improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
@@ -360,7 +360,7 @@ open class TileInfo {
 
     fun hasRoad(civInfo: CivilizationInfo): Boolean {
         if(roadStatus != RoadStatus.None) return true
-        if(civInfo.nation.forestsAndJunglesAreRoads && (terrainFeature==Constants.jungle || terrainFeature==Constants.forest))
+        if(civInfo.nation.hasUnique(NationUnique.TheGreatWarpath) && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest))
             return true
         return false
     }

@@ -78,9 +78,9 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             if (!(UncivGame.Current.viewEntireMapForDebug || cloneCivilization.exploredTiles.contains(tileInfo.position)))
                 hex.color = Color.DARK_GRAY
             else if (tileInfo.isCityCenter() && !tileInfo.isWater)
-                hex.color = tileInfo.getOwner()!!.nation.getInnerColor()
+                hex.color = tileInfo.getOwner()!!.nation.innerColor
             else if (tileInfo.getCity() != null && !tileInfo.isWater)
-                hex.color = tileInfo.getOwner()!!.nation.getOuterColor()
+                hex.color = tileInfo.getOwner()!!.nation.outerColor
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
         }
     }

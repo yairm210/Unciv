@@ -5,7 +5,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.VictoryType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats

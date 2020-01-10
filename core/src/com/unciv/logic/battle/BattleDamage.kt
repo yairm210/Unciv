@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.NationUnique
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.collections.HashMap
@@ -80,13 +81,12 @@ class BattleDamage{
                     .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
                     .map { it.civilianUnit }
             if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier = if (combatant.unit.civInfo.nation.unique ==
-                        "Great general provides double combat bonus, and spawns 50% faster") 0.3f
+                val greatGeneralModifier = if (combatant.unit.civInfo.nation.hasUnique(NationUnique.ArtOfWar)) 0.3f
                 else 0.15f
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            if(combatant.getCivInfo().nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength"
+            if(combatant.getCivInfo().nation.hasUnique(NationUnique.AchaemenidLegacy)
                     && combatant.getCivInfo().goldenAges.isGoldenAge())
                 modifiers["Golden Age"] = 0.1f
 
@@ -146,7 +146,7 @@ class BattleDamage{
         if (defender.unit.isEmbarked()) {
             // embarked units get no defensive modifiers apart from this unique
             if (defender.unit.hasUnique("Defense bonus when embarked") ||
-                    defender.getCivInfo().nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
+                    defender.getCivInfo().nation.hasUnique(NationUnique.RiverWarlord))
                 modifiers["Embarkation"] = 1f
 
             return modifiers
@@ -182,7 +182,7 @@ class BattleDamage{
             modifiers["Foreign Land"] = 0.2f
 
 
-        if(unit.getCivInfo().nation.unique == "Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai."
+        if(unit.getCivInfo().nation.hasUnique(NationUnique.Wayfinding)
                 && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
             modifiers["Moai"] = 0.1f
 
@@ -222,7 +222,7 @@ class BattleDamage{
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if(combatant.getUnitType() == UnitType.City
-                || combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged" && !combatant.getUnitType().isAirUnit())
+                  || combatant.getCivInfo().nation.hasUnique(NationUnique.Bushido) && !combatant.getUnitType().isAirUnit())
             1f
         else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
     }

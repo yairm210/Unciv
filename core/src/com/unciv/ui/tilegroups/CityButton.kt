@@ -46,9 +46,9 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
     private fun addAirUnitTable() {
         if (tileGroup.tileInfo.airUnits.isEmpty()) return
-        val secondarycolor = city.civInfo.nation.getInnerColor()
+        val secondarycolor = city.civInfo.nation.innerColor
         val airUnitTable = Table().apply { defaults().pad(5f) }
-        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
+        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.outerColor)
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -90,10 +90,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     private fun getIconTable(): Table {
-        val secondaryColor = city.civInfo.nation.getInnerColor()
+        val secondaryColor = city.civInfo.nation.innerColor
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
+        iconTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.outerColor)
 
         if (city.isInResistance()) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
@@ -165,7 +165,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val group = Group()
 
         val populationLabel = city.population.population.toString().toLabel()
-        populationLabel.color = city.civInfo.nation.getInnerColor()
+        populationLabel.color = city.civInfo.nation.innerColor
 
         group.addActor(populationLabel)
 
@@ -216,7 +216,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             } else {
                 turnLabel = "∞".toLabel()
             }
-            turnLabel.color = city.civInfo.nation.getInnerColor()
+            turnLabel.color = city.civInfo.nation.innerColor
             turnLabel.setFontSize(14)
             turnLabel.pack()
 
@@ -248,7 +248,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         group.addActor(circle)
         group.addActor(image)
 
-        val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
+        val secondaryColor = cityConstructions.cityInfo.civInfo.nation.innerColor
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
         if(cityCurrentConstruction !is SpecialConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)

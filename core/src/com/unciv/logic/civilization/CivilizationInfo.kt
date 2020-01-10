@@ -15,10 +15,11 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
+import com.unciv.models.VictoryType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.CityStateType
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
