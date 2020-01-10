@@ -459,6 +459,7 @@ class MapUnit {
         destroy()
         if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
+        if (civInfo.isDefeated()) civInfo.destroy()
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
