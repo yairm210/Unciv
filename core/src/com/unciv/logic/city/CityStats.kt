@@ -110,7 +110,8 @@ class CityStats {
         val stats = Stats()
 
         val civUnique = cityInfo.civInfo.nation.unique
-        if (civUnique == "+2 Culture per turn from cities before discovering Steam Power")
+        if (civUnique == "+2 Culture per turn from cities before discovering Steam Power"
+            && !cityInfo.civInfo.tech.isResearched("Steam Power"))
             stats.culture += 2
 
         return stats
