@@ -16,23 +16,26 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
-import kotlin.math.ceil
-import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     var selectedTile: TileInfo? = null
     var selectedConstruction: IConstruction? = null
 
+    /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
+    var showConstructionsTable = true
+
     // Clockwise from the top-left
 
     /** Displays current production, production queue and available productions list - sits on LEFT */
     private var constructionsTable = ConstructionsTable(this)
+    /** Displays stats, buildings, specialists and stats drilldown - sits on TOP RIGHT */
+    private var cityInfoTable = CityInfoTable(this)
 
     /** Displays raze city button - sits on TOP CENTER */
     private var razeCityButtonHolder = Table()
 
-    /** Displays stats, buildings, specialists and stats drilldown - sits on TOP RIGHT */
-    private var cityInfoTable = CityInfoTable(this)
+    /** Displays city stats info */
+    private var cityStatsTable = CityStatsTable(this.city)
 
     /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */
     private var tileTable = CityScreenTileTable(city)
@@ -49,33 +52,35 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     init {
         onBackButtonClicked { game.setWorldScreen() }
         UncivGame.Current.settings.addCompletedTutorialTask("Enter city screen")
+
         addTiles()
 
-        var buildingsTableContainer = Table()
-        buildingsTableContainer.pad(3f)
-        buildingsTableContainer.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
-        cityInfoTable.update()
-        val buildingsScroll = ScrollPane(cityInfoTable)
-        buildingsTableContainer.add(buildingsScroll).size(stage.width/4,stage.height / 2)
-
-        buildingsTableContainer = buildingsTableContainer.addBorder(2f, Color.WHITE)
-        buildingsTableContainer.setPosition( stage.width - 5f, stage.height - 5f, Align.topRight)
-
         //stage.setDebugTableUnderMouse(true)
+        stage.addActor(cityStatsTable)
         stage.addActor(constructionsTable)
         stage.addActor(tileTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(cityPickerTable)
-        stage.addActor(buildingsTableContainer)
-
+        stage.addActor(cityInfoTable)
         update()
     }
 
     internal fun update() {
+        if (showConstructionsTable) {
+            constructionsTable.isVisible = true
+            cityInfoTable.isVisible = false
+        } else {
+            constructionsTable.isVisible = false
+            cityInfoTable.isVisible = true
+        }
+
         city.cityStats.update()
 
         constructionsTable.update(selectedConstruction)
         constructionsTable.setPosition(5f, stage.height - 5f, Align.topLeft)
+
+        cityInfoTable.update()
+        cityInfoTable.setPosition(5f, stage.height - 5f, Align.topLeft)
 
         cityPickerTable.update()
         cityPickerTable.centerX(stage)
@@ -86,7 +91,8 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         selectedConstructionTable.update(selectedConstruction)
         selectedConstructionTable.setPosition(stage.width - 5f, 5f, Align.bottomRight)
 
-        cityInfoTable.update()
+        cityStatsTable.update()
+        cityStatsTable.setPosition( stage.width - 5f, stage.height - 5f, Align.topRight)
 
         updateAnnexAndRazeCityButton()
         updateTileGroups()

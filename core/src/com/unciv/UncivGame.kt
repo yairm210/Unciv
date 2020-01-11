@@ -41,7 +41,7 @@ class UncivGame(
     /** For when you need to test something in an advanced game and don't have time to faff around */
     val superchargedForDebug = false
 
-    var rewriteTranslationFiles = true
+    var rewriteTranslationFiles = false
 
     lateinit var worldScreen: WorldScreen
 

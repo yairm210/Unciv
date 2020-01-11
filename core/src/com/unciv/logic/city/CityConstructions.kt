@@ -107,6 +107,7 @@ class CityConstructions {
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
 
     fun isQueueFull(): Boolean = constructionQueue.size == queueMaxSize
+    fun isQueueEmpty(): Boolean = constructionQueue.isEmpty()
 
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
@@ -309,8 +310,13 @@ class CityConstructions {
     }
 
     fun addToQueue(constructionName: String) {
-        if (!isQueueFull())
-            constructionQueue.add(constructionName)
+        if (!isQueueFull()) {
+            if (isQueueEmpty() && currentConstruction == "Nothing") {
+                currentConstruction = constructionName
+                currentConstructionIsUserSet = true
+            } else
+                constructionQueue.add(constructionName)
+        }
     }
 
     fun removeFromQueue(idx: Int) {
