@@ -20,7 +20,6 @@ import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
-    private val battle = Battle(worldScreen.viewingCiv.gameInfo)
     init{
         isVisible = false
         skin = CameraStageBaseScreen.skin
@@ -64,7 +63,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (worldScreen.mapHolder.selectedTile == null) return null // no selected tile
         val selectedTile = worldScreen.mapHolder.selectedTile!!
 
-        val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
+        val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
                 defender.getCivInfo()==attackerCiv)
@@ -196,7 +195,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 try {
-                    battle.moveAndAttack(attacker, attackableEnemy)
+                    Battle.moveAndAttack(attacker, attackableEnemy)
                     worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }

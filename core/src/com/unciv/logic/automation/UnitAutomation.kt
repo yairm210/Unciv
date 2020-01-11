@@ -186,7 +186,7 @@ class UnitAutomation{
             }
         }
 
-        val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
+        val tileCombatant = Battle.getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
         if(tileCombatant.getCivInfo()==combatant.getCivInfo() ) return false
         if(!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
@@ -269,7 +269,7 @@ class UnitAutomation{
             tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT)
         ).filter {  // Ignore units that would 1-shot you if you attacked
             BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
-                Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
         }
 
         if(unit.type.isRanged())
@@ -383,7 +383,7 @@ class UnitAutomation{
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
-                            Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                            Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
                 .filter {it.tileToAttackFrom.isLand}
 
@@ -401,13 +401,13 @@ class UnitAutomation{
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
-                            Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                            Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
 
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            Battle(unit.civInfo.gameInfo).moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
+            Battle.moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
             return true
         }
         return false
@@ -417,8 +417,8 @@ class UnitAutomation{
         if (!city.attackedThisTurn) {
             val target = chooseBombardTarget(city)
             if (target == null) return false
-            val enemy = Battle(city.civInfo.gameInfo).getMapCombatantOfTile(target)!!
-            Battle(city.civInfo.gameInfo).attack(CityCombatant(city), enemy)
+            val enemy = Battle.getMapCombatantOfTile(target)!!
+            Battle.attack(CityCombatant(city), enemy)
             return true
         }
         return false
@@ -439,7 +439,7 @@ class UnitAutomation{
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
+            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle.getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
 
         else if (cityWithHealthLeft!=null) enemyTileToAttack = cityWithHealthLeft// third priority, city
 
@@ -450,14 +450,14 @@ class UnitAutomation{
         var targets = getBombardTargets(city)
         if (targets.isEmpty()) return null
         val siegeUnits = targets
-                .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType()==UnitType.Siege }
+                .filter { Battle.getMapCombatantOfTile(it)!!.getUnitType()==UnitType.Siege }
         if(siegeUnits.any()) targets = siegeUnits
         else{
             val rangedUnits = targets
-                    .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType().isRanged() }
+                    .filter { Battle.getMapCombatantOfTile(it)!!.getUnitType().isRanged() }
             if(rangedUnits.any()) targets=rangedUnits
         }
-        return targets.minBy { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getHealth() }
+        return targets.minBy { Battle.getMapCombatantOfTile(it)!!.getHealth() }
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {

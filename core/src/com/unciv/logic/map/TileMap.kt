@@ -150,19 +150,22 @@ class TileMap {
     }
 
 
-    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight:Boolean=false): MutableList<TileInfo> {
-        val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val currentTileHeight = if(ignoreCurrentTileHeight) 0 else get(position).getHeight()
+    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean = false): MutableList<TileInfo> {
+        if (ignoreCurrentTileHeight) {
+            return getTilesInDistance(position, sightDistance).toMutableList()
+        } else {
+            val viewableTiles = getTilesInDistance(position, 1).toMutableList()
+            val currentTileHeight = get(position).getHeight()
 
-        for (i in 1..sightDistance) { // in each layer,
-            // This is so we don't use tiles in the same distance to "see over",
-            // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
-            val tilesToAddInDistanceI = ArrayList<TileInfo>()
+            for (i in 1..sightDistance) { // in each layer,
+                // This is so we don't use tiles in the same distance to "see over",
+                // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
+                val tilesToAddInDistanceI = ArrayList<TileInfo>()
 
-            for (tile in getTilesAtDistance(position, i)) { // for each tile in that layer,
-                val targetTileHeight = tile.getHeight()
+                for (tile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+                    val targetTileHeight = tile.getHeight()
 
-                /*
+                    /*
                 Okay so, if we're looking at a tile from a to c with b in the middle,
                 we have several scenarios:
                 1. a>b -  - I can see everything, b does not hide c
@@ -177,19 +180,20 @@ class TileMap {
                 This can all be summed up as "I can see c if a>b || c>b || b==0 "
                 */
 
-                val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
-                    val neighborHeight = it.getHeight()
-                    viewableTiles.contains(it) && (
-                            currentTileHeight > neighborHeight // a>b
-                                    || targetTileHeight > neighborHeight // c>b
-                                    || neighborHeight == 0) // b==0
+                    val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
+                        val neighborHeight = it.getHeight()
+                        viewableTiles.contains(it) && (
+                                currentTileHeight > neighborHeight // a>b
+                                || targetTileHeight > neighborHeight // c>b
+                                || neighborHeight == 0) // b==0
+                    }
+                    if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(tile)
                 }
-                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(tile)
+                viewableTiles.addAll(tilesToAddInDistanceI)
             }
-            viewableTiles.addAll(tilesToAddInDistanceI)
-        }
 
-        return viewableTiles
+            return viewableTiles
+        }
     }
 
     fun setTransients(ruleset: Ruleset) {
