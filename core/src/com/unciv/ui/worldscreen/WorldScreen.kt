@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
@@ -57,6 +58,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate=false
+
+    private var backButtonListener : InputListener
 
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
@@ -126,7 +129,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             shouldUpdate = true
         }
 
-        onBackButtonClicked { exitGamePrompt() }
+        backButtonListener = onBackButtonClicked { exitGamePrompt() }
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
@@ -505,11 +508,24 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun exitGamePrompt() {
+
+        // don't show a dialog, if it can't exit the game
+        if (game.exitEvent == null)
+            return
+
+        // remove current listener for the "BACK" button to avoid showing the dialog twice
+        stage.removeListener( backButtonListener )
+
         var promptWindow = PopupTable(this)
-        promptWindow.add("Do you want to exit the game?".tr())
+        promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
         promptWindow.addButton("Yes"){game.exitEvent?.invoke()}
-        promptWindow.addButton("No") {promptWindow.close()}
+        promptWindow.addButton("No") {
+            // restore the listener back
+            stage.addListener(backButtonListener)
+            promptWindow.close()
+        }
+        // show the dialog
         promptWindow.open()
     }
 }

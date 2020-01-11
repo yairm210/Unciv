@@ -106,8 +106,9 @@ open class CameraStageBaseScreen : Screen {
         internal var batch: Batch = SpriteBatch()
     }
 
-    fun onBackButtonClicked(action:()->Unit){
-        stage.addListener(object : InputListener(){
+    /** It returns the assigned [InputListener] */
+    fun onBackButtonClicked(action:()->Unit): InputListener {
+        var listener = object : InputListener(){
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                 if(keycode == Input.Keys.BACK){
                     action()
@@ -115,7 +116,9 @@ open class CameraStageBaseScreen : Screen {
                 }
                 return false
             }
-        })
+        }
+        stage.addListener( listener )
+        return listener
     }
 
 }
