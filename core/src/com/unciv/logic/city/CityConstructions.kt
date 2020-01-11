@@ -305,10 +305,6 @@ class CityConstructions {
         ConstructionAutomation(this).chooseNextConstruction()
     }
 
-    fun isEnqueuable(constructionName: String): Boolean {
-        return true
-    }
-
     fun addToQueue(constructionName: String) {
         if (!isQueueFull()) {
             if (isQueueEmpty() && currentConstruction == "Nothing") {
