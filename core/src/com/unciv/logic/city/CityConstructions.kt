@@ -11,6 +11,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
+import kotlin.math.ceil
 
 /**
  * City constructions manager.
@@ -167,10 +168,10 @@ class CityConstructions {
             cityInfo.cityStats.update()
         }
 
-        var production = Math.round(cityStatsForConstruction.production)
+        var production = cityStatsForConstruction.production
         if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
 
-        return Math.ceil((workLeft / production.toDouble())).toInt()
+        return ceil((workLeft / production.toDouble())).toInt()
     }
     //endregion
 
