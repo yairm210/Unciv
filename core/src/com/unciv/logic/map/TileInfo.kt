@@ -7,8 +7,8 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import kotlin.math.abs
 
 open class TileInfo {
@@ -262,7 +262,7 @@ open class TileInfo {
         return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
     }
 
-    fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): MutableList<TileInfo> {
+    fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): List<TileInfo> {
         return tileMap.getViewableTiles(this.position,distance,ignoreCurrentTileHeight)
     }
 

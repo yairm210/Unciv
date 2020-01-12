@@ -19,31 +19,29 @@ class NextTurnAutomation{
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
-        if (civInfo.isBarbarian()) {
-            BarbarianAutomation(civInfo).automate()
+        if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+
+        respondToDemands(civInfo)
+        respondToTradeRequests(civInfo)
+
+        if(civInfo.isMajorCiv()) {
+            offerPeaceTreaty(civInfo)
+            exchangeTechs(civInfo)
+            exchangeLuxuries(civInfo)
+            issueRequests(civInfo)
+            adoptPolicy(civInfo)
         } else {
-            respondToDemands(civInfo)
-            respondToTradeRequests(civInfo)
-
-            if(civInfo.isMajorCiv()) {
-                offerPeaceTreaty(civInfo)
-                exchangeTechs(civInfo)
-                exchangeLuxuries(civInfo)
-                issueRequests(civInfo)
-                adoptPolicy(civInfo)
-            } else {
-                getFreeTechForCityStates(civInfo)
-            }
-
-            chooseTechToResearch(civInfo)
-            updateDiplomaticRelationship(civInfo)
-            declareWar(civInfo)
-            automateCityBombardment(civInfo)
-            useGold(civInfo)
-            automateUnits(civInfo)
-            reassignWorkedTiles(civInfo)
-            trainSettler(civInfo)
+            getFreeTechForCityStates(civInfo)
         }
+
+        chooseTechToResearch(civInfo)
+        updateDiplomaticRelationship(civInfo)
+        declareWar(civInfo)
+        automateCityBombardment(civInfo)
+        useGold(civInfo)
+        automateUnits(civInfo)
+        reassignWorkedTiles(civInfo)
+        trainSettler(civInfo)
 
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
