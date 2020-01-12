@@ -469,8 +469,10 @@ class CivilizationInfo {
 
 
     fun destroy(){
+        val destructionText = if(isMajorCiv()) "The civilization of [$civName] has been destroyed!"
+        else "The City-State of [$civName] has been destroyed!"
         for(civ in gameInfo.civilizations)
-            civ.addNotification("The civilization of [$civName] has been destroyed!", null, Color.RED)
+            civ.addNotification(destructionText, null, Color.RED)
         getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for(diplomacyManager in diplomacy.values){
