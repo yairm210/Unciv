@@ -115,7 +115,7 @@ class UnitAutomation {
         return true
     }
 
-    private fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
+    fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val currentUnitTile = unit.getTile()
@@ -142,11 +142,11 @@ class UnitAutomation {
             && bestTileForHealingRank > unit.rankTileForHealing(currentUnitTile))
             unit.movement.moveToTile(bestTileForHealing)
 
-        if (unit.currentMovement > 0 && unit.canFortify()) unit.fortify()
+        unit.fortifyIfCan()
         return true
     }
 
-    private fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
+    fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         if (unit.type.isCivilian()) return false
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
                 .filter { it.value.totalDistance < unit.currentMovement }.keys
