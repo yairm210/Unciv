@@ -22,9 +22,9 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
     fun automate() {
         // ranged go first, after melee and then everyone else
-        civInfo.getCivUnits().filter { it.type.isRanged() }.forEach(::automateUnit)
-        civInfo.getCivUnits().filter { it.type.isMelee() }.forEach(::automateUnit)
-        civInfo.getCivUnits().filter { !it.type.isRanged() && !it.type.isMelee() }.forEach(::automateUnit)
+        civInfo.getCivUnits().filter { it.type.isRanged() }.forEach { automateUnit(it) }
+        civInfo.getCivUnits().filter { it.type.isMelee() }.forEach { automateUnit(it) }
+        civInfo.getCivUnits().filter { !it.type.isRanged() && !it.type.isMelee() }.forEach { automateUnit(it) }
     }
 
     private fun automateUnit(unit: MapUnit) {
@@ -82,11 +82,11 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route
-        if (tryPillageImprovement(unit, unitDistanceToTiles, unitActions)) return
+        if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         // 5 - heal the unit if needed
         if (unit.health < 100) {
-            healUnit(unit, unitDistanceToTiles)
+            UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)
             return
         }
 
@@ -95,20 +95,17 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
     }
 
     private fun automateScout(unit: MapUnit) {
-        val unitActions = UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val nearEnemyTiles = battleHelper.getAttackableEnemies(unit, unitDistanceToTiles)
 
         // 1 - heal or run if death is near
         if (unit.health < 50) {
             if (nearEnemyTiles.isNotEmpty()) {
-                // run
                 val furthestTile = findFurthestTile(unit, unitDistanceToTiles, nearEnemyTiles)
                 unit.movement.moveToTile(furthestTile)
-            } else {
-                // heal
-                unit.fortifyIfCan()
             }
+            unit.fortifyIfCan()
+
             return
         }
 
@@ -116,11 +113,11 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // TODO
 
         // 3 - trying to pillage tile or trade route
-        if (tryPillageImprovement(unit, unitDistanceToTiles, unitActions)) return
+        if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         // 4 - heal the unit if needed
         if (unit.health < 100) {
-            healUnit(unit, unitDistanceToTiles)
+            UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)
             return
         }
 
@@ -147,23 +144,6 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         return furthestTile.first
     }
 
-    private fun healUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn) {
-        val currentUnitTile = unit.getTile()
-        val bestTilesForHealing = unitDistanceToTiles.keys
-                .filter { unit.movement.canMoveTo(it) }
-                .groupBy { unit.rankTileForHealing(it) }
-                .maxBy { it.key }
-
-        // within the tiles with best healing rate, we'll prefer one which has the highest defensive bonuses
-        val bestTileForHealing = bestTilesForHealing?.value?.maxBy { it.getDefensiveBonus() }
-        if (bestTileForHealing != null
-            && currentUnitTile != bestTileForHealing
-            && unit.rankTileForHealing(bestTileForHealing) > unit.rankTileForHealing(currentUnitTile)) {
-            unit.movement.moveToTile(bestTileForHealing)
-        }
-
-        unit.fortifyIfCan()
-    }
 
     private fun tryUpgradeUnit(unit: MapUnit, unitActions: List<UnitAction>): Boolean {
         if (unit.baseUnit().upgradesTo != null) {
@@ -179,22 +159,4 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         return false
     }
 
-    private fun tryPillageImprovement(
-            unit: MapUnit,
-            unitDistanceToTiles: PathsToTilesWithinTurn,
-            unitActions: List<UnitAction>
-    ): Boolean {
-        val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-                .filter { it.value.totalDistance < unit.currentMovement }.keys
-                .filter { unit.movement.canMoveTo(it) && UnitActions().canPillage(unit, it) }
-
-        if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
-        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxBy { it.getDefensiveBonus() }!!
-        if (unit.getTile() != tileToPillage) {
-            unit.movement.moveToTile(tileToPillage)
-        }
-
-        unitActions.first { it.type == UnitActionType.Pillage }.action?.invoke()
-        return true
-    }
 }
