@@ -35,9 +35,11 @@ class BasicTests {
 
     @Test
     fun gameIsNotRunWithDebugModes() {
-        val game = UncivGame("", null)
+        val game = UncivGame("", null, null)
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
-                !game.superchargedForDebug && !game.viewEntireMapForDebug)
+                !game.superchargedForDebug
+                        && !game.viewEntireMapForDebug
+                        && !game.rewriteTranslationFiles)
     }
 
     // If there's a unit that obsoletes with no upgrade then when it obsoletes

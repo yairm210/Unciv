@@ -3,14 +3,13 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
-import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.math.max
@@ -18,9 +17,9 @@ import kotlin.math.max
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
  */
-class Battle(val gameInfo:GameInfo) {
+object Battle {
 
-    fun moveAndAttack(attacker: ICombatant, attackableTile: UnitAutomation.AttackableTile){
+    fun moveAndAttack(attacker: ICombatant, attackableTile: AttackableTile){
         if (attacker is MapUnitCombatant) {
             attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
             if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != Constants.unitActionSetUp) {
@@ -286,7 +285,7 @@ class Battle(val gameInfo:GameInfo) {
             defender.getCivInfo().destroy()
             attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,defender.getCivInfo().civName))
         }
-        
+
         val capturedUnit = (defender as MapUnitCombatant).unit
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)

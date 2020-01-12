@@ -262,7 +262,15 @@ class MapUnit {
         return true
     }
 
-    fun fortify(){ action = "Fortify 0"}
+    fun fortify() {
+        action = "Fortify 0"
+    }
+
+    fun fortifyIfCan() {
+        if (canFortify()) {
+            fortify()
+        }
+    }
 
     fun adjacentHealingBonus():Int{
         var healingBonus = 0
@@ -416,6 +424,7 @@ class MapUnit {
     fun destroy(){
         removeFromTile()
         civInfo.removeUnit(this)
+        civInfo.updateViewableTiles()
     }
 
     fun removeFromTile(){
@@ -470,6 +479,7 @@ class MapUnit {
         destroy()
         if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
+        if (civInfo.isDefeated()) civInfo.destroy()
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {

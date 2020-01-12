@@ -150,9 +150,11 @@ class TileMap {
     }
 
 
-    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight:Boolean=false): MutableList<TileInfo> {
+    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean = false): List<TileInfo> {
+        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance)
+
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val currentTileHeight = if(ignoreCurrentTileHeight) 0 else get(position).getHeight()
+        val currentTileHeight = get(position).getHeight()
 
         for (i in 1..sightDistance) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
@@ -163,19 +165,19 @@ class TileMap {
                 val targetTileHeight = tile.getHeight()
 
                 /*
-                Okay so, if we're looking at a tile from a to c with b in the middle,
-                we have several scenarios:
-                1. a>b -  - I can see everything, b does not hide c
-                2. a==b
-                    2.1 a==b==0, all flat ground, no hiding
-                    2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
-                    2.3 a>0, c>b - c is tall enough I can see it over b!
-                3. a<b
-                    3.1 b>=c - b hides c
-                    3.2 b<c - c is tall enough I can see it over b!
+            Okay so, if we're looking at a tile from a to c with b in the middle,
+            we have several scenarios:
+            1. a>b -  - I can see everything, b does not hide c
+            2. a==b
+                2.1 a==b==0, all flat ground, no hiding
+                2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
+                2.3 a>0, c>b - c is tall enough I can see it over b!
+            3. a<b
+                3.1 b>=c - b hides c
+                3.2 b<c - c is tall enough I can see it over b!
 
-                This can all be summed up as "I can see c if a>b || c>b || b==0 "
-                */
+            This can all be summed up as "I can see c if a>b || c>b || b==0 "
+            */
 
                 val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
                     val neighborHeight = it.getHeight()

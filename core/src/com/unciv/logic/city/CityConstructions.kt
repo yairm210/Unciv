@@ -62,7 +62,15 @@ class CityConstructions {
     /**
      * @return Maintenance cost of all built buildings
      */
-    fun getMaintenanceCosts(): Int = getBuiltBuildings().sumBy { it.maintenance }
+    fun getMaintenanceCosts(): Int {
+        var maintenanceCost = getBuiltBuildings().sumBy { it.maintenance }
+        val policyManager = cityInfo.civInfo.policies
+        if (policyManager.isAdopted("Legalism") && cityInfo.id in policyManager.legalismState) {
+            val buildingName = policyManager.legalismState[cityInfo.id]
+            maintenanceCost -= cityInfo.getRuleset().buildings[buildingName]!!.maintenance
+        }
+        return maintenanceCost
+    }
 
     /**
      * @return Bonus (%) [Stats] provided by all built buildings in city
@@ -194,6 +202,7 @@ class CityConstructions {
             if (inProgressConstructions.containsKey(currentConstruction)
                     && inProgressConstructions[currentConstruction]!! >= productionCost) {
                 constructionComplete(construction)
+                cancelCurrentConstruction()
             }
         }
     }
@@ -232,20 +241,19 @@ class CityConstructions {
 
     private fun constructionComplete(construction: IConstruction) {
         construction.postBuildEvent(this)
-        inProgressConstructions.remove(currentConstruction)
+        if (construction.name in inProgressConstructions)
+            inProgressConstructions.remove(construction.name)
 
         if (construction is Building && construction.isWonder) {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
-                    civ.addNotification("[$currentConstruction] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
+                    civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
                 else
-                    civ.addNotification("[$currentConstruction] has been built in a faraway land",null,Color.BROWN)
+                    civ.addNotification("[${construction.name}] has been built in a faraway land",null,Color.BROWN)
             }
         } else
-            cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
-
-        cancelCurrentConstruction()
+            cityInfo.civInfo.addNotification("[${construction.name}] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
     }
 
     fun addBuilding(buildingName:String){
@@ -270,18 +278,32 @@ class CityConstructions {
         cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
     }
 
-    fun addCultureBuilding() {
+    fun hasBuildableCultureBuilding(): Boolean {
+        val basicCultureBuildings = listOf("Monument", "Temple", "Opera House", "Museum")
+                .map { cityInfo.civInfo.getEquivalentBuilding(it) }
+
+        return basicCultureBuildings
+                .filter { it.isBuildable(this) || it.name == currentConstruction}
+                .any()
+    }
+
+    fun addCultureBuilding(): String? {
         val basicCultureBuildings = listOf("Monument", "Temple", "Opera House", "Museum")
                 .map { cityInfo.civInfo.getEquivalentBuilding(it) }
 
         val buildableCultureBuildings = basicCultureBuildings
-                .filter { it.isBuildable(this)}
+                .filter { it.isBuildable(this) || it.name == currentConstruction }
 
-        if (buildableCultureBuildings.isEmpty()) return
+        if (buildableCultureBuildings.isEmpty())
+            return null
+
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
-        addBuilding(cultureBuildingToBuild)
+        constructionComplete(getConstruction(cultureBuildingToBuild))
+
         if (currentConstruction == cultureBuildingToBuild)
             cancelCurrentConstruction()
+
+        return cultureBuildingToBuild
     }
 
     private fun cancelCurrentConstruction() {
@@ -303,10 +325,6 @@ class CityConstructions {
         }
 
         ConstructionAutomation(this).chooseNextConstruction()
-    }
-
-    fun isEnqueuable(constructionName: String): Boolean {
-        return true
     }
 
     fun addToQueue(constructionName: String) {
