@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.MapSaver
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -90,6 +91,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
             var isDragging = false
             var isPainting = false
             var touchDownTime = System.currentTimeMillis()
+            var lastDrawnTiles = HashSet<TileInfo>()
 
             override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 touchDownTime = System.currentTimeMillis()
@@ -107,8 +109,10 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 }
 
                 if (isPainting) {
-                    mapHolder.updateTileGroups()
-                    mapHolder.setTransients()
+
+                    for (tileInfo in lastDrawnTiles)
+                        mapHolder.tileGroups[tileInfo]!!.hideCircle()
+                    lastDrawnTiles.clear()
 
                     val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
                     val centerTileInfo = mapHolder.getClosestTileTo(stageCoords)
@@ -122,13 +126,15 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                             tileInfo.setTransients()
                             mapHolder.tileGroups[tileInfo]!!.update()
                             mapHolder.tileGroups[tileInfo]!!.showCircle(Color.WHITE)
+
+                            lastDrawnTiles.add(tileInfo)
                         }
                     }
                 }
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
-                // Reset tile overlays
+                // Reset the whole map
                 if (isPainting) {
                     mapHolder.updateTileGroups()
                     mapHolder.setTransients()
