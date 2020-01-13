@@ -343,6 +343,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 val nextDueUnit = viewingCiv.getNextDueUnit()
                 if(nextDueUnit!=null) {
                     mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                    bottomUnitTable.selectedCity = null
                     bottomUnitTable.selectedUnit = nextDueUnit
                     shouldUpdate=true
                 }
