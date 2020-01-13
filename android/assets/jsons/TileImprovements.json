@@ -1,183 +1,183 @@
 [	
 	{
-		name:"Farm",
-		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Flood plains"],
-		food:1,
-		turnsToBuild:7,
-		techRequired:"Agriculture",
-		improvingTech:"Fertilizer",
-		improvingTechStats:{food:1}
+		"name": "Farm",
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Flood plains"],
+		"food": 1,
+		"turnsToBuild": 7,
+		"techRequired": "Agriculture",
+		"improvingTech": "Fertilizer",
+		"improvingTechStats": {"food": 1}
 	},
 	{
-		name:"Lumber mill",
-		terrainsCanBeBuiltOn:["Forest"],
-		production:1,
-		turnsToBuild:7,
-		techRequired:"Construction",
-		improvingTech:"Steam Power",
-		improvingTechStats:{production:1}
+		"name": "Lumber mill",
+		"terrainsCanBeBuiltOn": ["Forest"],
+		"production": 1,
+		"turnsToBuild": 7,
+		"techRequired": "Construction",
+		"improvingTech": "Steam Power",
+		"improvingTechStats": {"production": 1}
 	},
 	{
-		name:"Mine",
-		terrainsCanBeBuiltOn:["Hill"],
-		production:1,
-		turnsToBuild:7,
-		techRequired:"Mining",
-		improvingTech:"Chemistry",
-		improvingTechStats:{production:1}
+		"name": "Mine",
+		"terrainsCanBeBuiltOn": ["Hill"],
+		"production": 1,
+		"turnsToBuild": 7,
+		"techRequired": "Mining",
+		"improvingTech": "Chemistry",
+		"improvingTechStats": {"production": 1}
 	},
 	{
-		name:"Trading post",
-		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Flood plains"],
-		gold:1,
-		turnsToBuild:7,
-		techRequired:"Guilds",
-		improvingTech:"Economics",
-		improvingTechStats: {gold:1}
+		"name": "Trading post",
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Flood plains"],
+		"gold": 1,
+		"turnsToBuild": 7,
+		"techRequired": "Guilds",
+		"improvingTech": "Economics",
+		"improvingTechStats": {"gold": 1}
 	},
 	
 	// Resource-specific
 	{
-		name:"Camp",
-		turnsToBuild:7,
-		techRequired:"Trapping",
-		improvingTech:"Economics",
-		improvingTechStats:{gold:1}
+		"name": "Camp",
+		"turnsToBuild": 7,
+		"techRequired": "Trapping",
+		"improvingTech": "Economics",
+		"improvingTechStats": {"gold": 1}
 	},
 	{
-		name:"Oil well",
-		turnsToBuild:9,
-		techRequired:"Biology",
+		"name": "Oil well",
+		"turnsToBuild": 9,
+		"techRequired": "Biology"
 	},
 	{
-		name:"Pasture",
-		turnsToBuild:8,
-		techRequired:"Animal Husbandry",
-		improvingTech:"Fertilizer",
-		improvingTechStats:{food:1}
+		"name": "Pasture",
+		"turnsToBuild": 8,
+		"techRequired": "Animal Husbandry",
+		"improvingTech": "Fertilizer",
+		"improvingTechStats": {"food": 1}
 	},
 	{
-		name:"Plantation",
-		turnsToBuild:6,
-		gold:1,
-		techRequired:"Calendar",
-		improvingTech:"Fertilizer",
-		improvingTechStats:{food:1}
+		"name": "Plantation",
+		"turnsToBuild": 6,
+		"gold": 1,
+		"techRequired": "Calendar",
+		"improvingTech": "Fertilizer",
+		"improvingTechStats": {"food": 1}
 	},
 	{
-		name:"Quarry",
-		turnsToBuild:8,
-		techRequired:"Masonry",
-		improvingTech:"Chemistry",
-		improvingTechStats:{production:1}
+		"name": "Quarry",
+		"turnsToBuild": 8,
+		"techRequired": "Masonry",
+		"improvingTech": "Chemistry",
+		"improvingTechStats": {"production": 1}
 	},
 	{
-		name:"Fishing Boats",
-		terrainsCanBeBuiltOn:["Coast"],
-		food:1,
-		techRequired:"Sailing",
-		improvingTech:"Compass",
-		improvingTechStats:{gold:1}
+		"name": "Fishing Boats",
+		"terrainsCanBeBuiltOn": ["Coast"],
+		"food": 1,
+		"techRequired": "Sailing",
+		"improvingTech": "Compass",
+		"improvingTechStats": {"gold": 1}
 	},
 	
 	// Transportation
 	{
-		name:"Road",
-		turnsToBuild:4,
-		techRequired:"The Wheel"
+		"name": "Road",
+		"turnsToBuild": 4,
+		"techRequired": "The Wheel"
 	},
 	{
-		name:"Railroad",
-		turnsToBuild:4,
-		techRequired:"Railroad"
+		"name": "Railroad",
+		"turnsToBuild": 4,
+		"techRequired": "Railroad"
 	},
 	
 	// Removals
 	{
-		name:"Remove Forest",
-		turnsToBuild:4,
-		terrainsCanBeBuiltOn:["Forest"],
-		techRequired:"Mining"
+		"name": "Remove Forest",
+		"turnsToBuild": 4,
+		"terrainsCanBeBuiltOn": ["Forest"],
+		"techRequired": "Mining"
 	},
 	{
-		name:"Remove Jungle",
-		turnsToBuild:7,
-		terrainsCanBeBuiltOn:["Jungle"],
-		techRequired:"Bronze Working"
+		"name": "Remove Jungle",
+		"turnsToBuild": 7,
+		"terrainsCanBeBuiltOn": ["Jungle"],
+		"techRequired": "Bronze Working"
 	},
 	{
-		name:"Remove Fallout",
-		turnsToBuild:8,
-		terrainsCanBeBuiltOn:["Fallout"],
-		techRequired:"Agriculture"
+		"name": "Remove Fallout",
+		"turnsToBuild": 8,
+		"terrainsCanBeBuiltOn": ["Fallout"],
+		"techRequired": "Agriculture"
 	},
 	{
-		name:"Remove Marsh",
-		turnsToBuild:6,
-		terrainsCanBeBuiltOn:["Marsh"],
-		techRequired:"Bronze Working"
+		"name": "Remove Marsh",
+		"turnsToBuild": 6,
+		"terrainsCanBeBuiltOn": ["Marsh"],
+		"techRequired": "Bronze Working"
 	},
 
 	// These are unique and have unique in-game checks related to them
 	{
-		name:"Remove Road",
-		turnsToBuild:2
+		"name": "Remove Road",
+		"turnsToBuild": 2
 	},
 	{
-		name:"Remove Railroad",
-		turnsToBuild:2
+		"name": "Remove Railroad",
+		"turnsToBuild": 2
 	},
 	
 	// Great Person improvements
 	{
-		name:"Academy",
-		science:8,
-		improvingTech:"Scientific Theory",
-		improvingTechStats:{science:2}
+		"name": "Academy",
+		"science": 8,
+		"improvingTech": "Scientific Theory",
+		"improvingTechStats": {"science": 2}
 	},
 	{
-		name:"Landmark",
-		culture:6
+		"name": "Landmark",
+		"culture": 6
 	},
 	{
-		name:"Manufactory",
-		production:4,
-		improvingTech:"Chemistry",
-		improvingTechStats:{production:1}
+		"name": "Manufactory",
+		"production": 4,
+		"improvingTech": "Chemistry",
+		"improvingTechStats": {"production": 1}
 	},
 	{
-		name:"Customs house",
-		gold:4,
-		improvingTech:"Economics",
-		improvingTechStats:{gold:1}
+		"name": "Customs house",
+		"gold": 4,
+		"improvingTech": "Economics",
+		"improvingTechStats": {"gold": 1}
 	},
 	
 	//Civilization unique improvements
 	{
-		name:"Moai",
-		uniqueTo:"Polynesia",
-		culture:1,
-		turnsToBuild:4,
-		uniques:["+1 additional Culture for each adjacent Moai","Can only be built on Coastal tiles"],
-		techRequired:"Construction",
-		improvingTech:"Flight",
-		improvingTechStats:{gold:1}
+		"name": "Moai",
+		"uniqueTo": "Polynesia",
+		"culture": 1,
+		"turnsToBuild": 4,
+		"uniques": ["+1 additional Culture for each adjacent Moai","Can only be built on Coastal tiles"],
+		"techRequired": "Construction",
+		"improvingTech": "Flight",
+		"improvingTechStats": {"gold": 1}
 	},
 	/*
 	{
-		name:"Terrace Farm",
-		uniqueTo:"Inca",
-		food:1,
-		turnsToBuild:4,
-		improvingTech:"Construction",
-		uniques:["+1 Food for each adjacent Mountain","+1 additional Food  with Fertilizer and no fresh water"],
-		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Tundra"],
+		"name": "Terrace Farm",
+		"uniqueTo": "Inca",
+		"food": 1,
+		"turnsToBuild": 4,
+		"improvingTech": "Construction",
+		"uniques": ["+1 Food for each adjacent Mountain","+1 additional Food  with Fertilizer and no fresh water"],
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Tundra"],
 		//It can be colored in lemon
 		//Cannot improve a resource
 	},
 	*/
 	
-	{ name:"Ancient ruins" },
-	{ name:"City ruins" },
-	{ name:"Barbarian encampment" },
+	{ "name": "Ancient ruins" },
+	{ "name": "City ruins" },
+	{ "name": "Barbarian encampment" }
 ]
