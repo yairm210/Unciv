@@ -275,7 +275,10 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any {it.name== Constants.settler})
+    /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
+    fun isDefeated()= cities.isEmpty()
+            && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
+            && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
@@ -303,6 +306,13 @@ class CivilizationInfo {
             leaderName += " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
         else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
         return leaderName
+    }
+
+    /** Returns true when the civ is a human player defeated in singleplayer game */
+    fun isMapRevealEnabled(): Boolean {
+        return isDefeated()
+                && isPlayerCivilization()
+                && !gameInfo.gameParameters.isOnlineMultiplayer
     }
     //endregion
 
@@ -480,6 +490,10 @@ class CivilizationInfo {
             diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
             for(tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv==civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
+        }
+
+        if (isMapRevealEnabled()) {
+            exploredTiles = gameInfo.tileMap.values.map { it.position }.toHashSet()
         }
     }
 
