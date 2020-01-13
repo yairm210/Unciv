@@ -35,6 +35,7 @@ class CityInfo {
     var location: Vector2 = Vector2.Zero
     var id: String = UUID.randomUUID().toString()
     var name: String = ""
+    var isOriginalCapital = false
     var foundingCiv = ""
     var turnAcquired = 0
     var health = 200
@@ -55,6 +56,7 @@ class CityInfo {
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
+        if (civInfo.citiesCreated == 0) isOriginalCapital = true
         foundingCiv = civInfo.civName
         turnAcquired = civInfo.gameInfo.turns
         this.location = cityLocation
@@ -103,6 +105,7 @@ class CityInfo {
     fun clone(): CityInfo {
         val toReturn = CityInfo()
         toReturn.location = location
+        toReturn.isOriginalCapital = isOriginalCapital
         toReturn.id = id
         toReturn.name = name
         toReturn.health = health
@@ -208,7 +211,7 @@ class CityInfo {
     }
 
     fun canBeRazed(): Boolean {
-        return this.foundingCiv != civInfo.civName
+        return foundingCiv != civInfo.civName && !isOriginalCapital
     }
 
     /** Take null to mean infinity. */
