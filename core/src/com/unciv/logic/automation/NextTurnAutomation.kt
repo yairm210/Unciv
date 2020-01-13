@@ -19,6 +19,8 @@ class NextTurnAutomation{
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
+        if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+
         respondToDemands(civInfo)
         respondToTradeRequests(civInfo)
 
@@ -40,6 +42,7 @@ class NextTurnAutomation{
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
+
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 

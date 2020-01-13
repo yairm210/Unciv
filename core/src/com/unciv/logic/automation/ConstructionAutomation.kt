@@ -61,6 +61,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         addUnitTrainingBuildingChoice()
         addCultureBuildingChoice()
         addSpaceshipPartChoice()
+        addOtherBuildingChoice()
 
         if(!cityInfo.isPuppet) {
             addWondersChoice()
@@ -149,6 +150,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
                 modifier=0.8f
             if (preferredVictoryType == VictoryType.Scientific) modifier = 2f
             addChoice(relativeCostEffectiveness, spaceshipPart.name, modifier)
+        }
+    }
+
+    private fun addOtherBuildingChoice() {
+        val otherBuilding = buildableNotWonders.minBy { it.cost }
+        if (otherBuilding != null) {
+            val modifier = 0.6f
+            addChoice(relativeCostEffectiveness, otherBuilding.name, modifier)
         }
     }
 

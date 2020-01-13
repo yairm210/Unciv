@@ -262,7 +262,15 @@ class MapUnit {
         return true
     }
 
-    fun fortify(){ action = "Fortify 0"}
+    fun fortify() {
+        action = "Fortify 0"
+    }
+
+    fun fortifyIfCan() {
+        if (canFortify()) {
+            fortify()
+        }
+    }
 
     fun adjacentHealingBonus():Int{
         var healingBonus = 0
