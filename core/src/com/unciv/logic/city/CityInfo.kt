@@ -207,6 +207,10 @@ class CityInfo {
         return cityStats.currentCityStats.food < 0
     }
 
+    fun canBeRazed(): Boolean {
+        return this.foundingCiv != civInfo.civName
+    }
+
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {
         if (isGrowing()) {

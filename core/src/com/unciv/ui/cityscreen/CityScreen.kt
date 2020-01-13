@@ -115,26 +115,31 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
 
-        if(city.isPuppet) {
-            val annexCityButton = TextButton("Annex city".tr(), skin)
-            annexCityButton.labelCell.pad(10f)
-            annexCityButton.onClick {
-                city.annexCity()
-                update()
+        when {
+            city.isPuppet -> {
+                val annexCityButton = TextButton("Annex city".tr(), skin)
+                annexCityButton.labelCell.pad(10f)
+                annexCityButton.onClick {
+                    city.annexCity()
+                    update()
+                }
+                razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
             }
-            razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
-        } else if(!city.isBeingRazed) {
-            val razeCityButton = TextButton("Raze city".tr(), skin)
-            razeCityButton.labelCell.pad(10f)
-            razeCityButton.onClick { city.isBeingRazed=true; update() }
-            if(!UncivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
-            razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
-        } else {
-            val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
-            stopRazingCityButton.labelCell.pad(10f)
-            stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
-            if(!UncivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
-            razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
+            city.canBeRazed() && !city.isBeingRazed -> {
+                val razeCityButton = TextButton("Raze city".tr(), skin)
+                razeCityButton.labelCell.pad(10f)
+                razeCityButton.onClick { city.isBeingRazed = true; update() }
+                if (!UncivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
+                razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
+            }
+            city.isBeingRazed -> {
+                val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
+                stopRazingCityButton.labelCell.pad(10f)
+                stopRazingCityButton.onClick { city.isBeingRazed = false; update() }
+                if (!UncivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
+                razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
+            }
+            else -> return
         }
         razeCityButtonHolder.pack()
         //goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
