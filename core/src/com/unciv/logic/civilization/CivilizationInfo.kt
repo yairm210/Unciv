@@ -308,13 +308,6 @@ class CivilizationInfo {
         else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
         return leaderName
     }
-
-    /** Returns true when the civ is a human player defeated in singleplayer game */
-    fun isMapRevealEnabled(): Boolean {
-        return isDefeated()
-                && isPlayerCivilization()
-                && !gameInfo.gameParameters.isOnlineMultiplayer
-    }
     //endregion
 
     //region state-changing functions
@@ -491,10 +484,6 @@ class CivilizationInfo {
             diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
             for(tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv==civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
-        }
-
-        if (isMapRevealEnabled()) {
-            exploredTiles = gameInfo.tileMap.values.map { it.position }.toHashSet()
         }
     }
 

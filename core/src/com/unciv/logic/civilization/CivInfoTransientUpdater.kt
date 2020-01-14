@@ -15,12 +15,6 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
     // This is a big performance
     fun updateViewableTiles() {
-
-        if (civInfo.isMapRevealEnabled()) {
-            civInfo.viewableTiles = civInfo.gameInfo.tileMap.values.toSet()
-            return
-        }
-
         setNewViewableTiles()
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
