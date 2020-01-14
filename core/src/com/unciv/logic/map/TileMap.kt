@@ -109,7 +109,12 @@ class TileMap {
         return tilesToReturn
     }
 
-    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
+    fun placeUnitNearTile(
+            position: Vector2,
+            unitName: String,
+            civInfo: CivilizationInfo,
+            removeImprovement: Boolean = false
+    ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
         fun isTileMovePotential(tileInfo:TileInfo): Boolean {
@@ -130,6 +135,7 @@ class TileMap {
 
         if(unitToPlaceTile!=null) {
             // only once we know the unit can be placed do we add it to the civ's unit list
+            if (removeImprovement) unitToPlaceTile.improvement = null
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()
 
