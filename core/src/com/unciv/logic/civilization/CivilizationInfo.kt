@@ -496,10 +496,6 @@ class CivilizationInfo {
         if (isMapRevealEnabled()) {
             exploredTiles = gameInfo.tileMap.values.map { it.position }.toHashSet()
         }
-
-        if (isCurrentPlayer()) {
-            UncivGame.Current.setScreen(VictoryScreen())
-        }
     }
 
     fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
