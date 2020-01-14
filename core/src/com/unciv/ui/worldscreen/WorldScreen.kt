@@ -177,7 +177,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         tutorialTaskTable.clear()
         val tutorialTask = getCurrentTutorialTask()
-        if (tutorialTask == "" || !game.settings.showTutorials) {
+        if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
             tutorialTaskTable.isVisible = false
         } else {
             tutorialTaskTable.isVisible = true
@@ -290,7 +290,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
-        if(civInfo.getKnownCivs()
+        if(!civInfo.isDefeated() && civInfo.getKnownCivs()
                         .filterNot { it.isDefeated() || it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)
