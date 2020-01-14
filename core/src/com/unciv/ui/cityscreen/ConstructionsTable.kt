@@ -253,6 +253,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     cityConstructions.addToQueue(construction.name)
                     if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
                     cityScreen.update()
+                    cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
                 }
             } else {
                 button.disable()
