@@ -24,6 +24,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.VictoryScreen
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -275,7 +276,10 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any {it.name== Constants.settler})
+    /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
+    fun isDefeated()= cities.isEmpty()
+            && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
+            && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
