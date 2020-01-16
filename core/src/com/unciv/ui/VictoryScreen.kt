@@ -67,7 +67,10 @@ class VictoryScreen : PickerScreen() {
             }
         }
 
-        if(!someoneHasWon) setDefaultCloseAction()
+        if (playerCivInfo.isDefeated()) {
+            wonOrLost("")
+        } else if(!someoneHasWon)
+            setDefaultCloseAction()
     }
 
 

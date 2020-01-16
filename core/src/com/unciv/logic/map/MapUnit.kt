@@ -484,9 +484,10 @@ class MapUnit {
 
     private fun getAncientRuinBonus(tile: TileInfo) {
         tile.improvement=null
+        val tileBasedRandom = Random(tile.position.toString().hashCode())
         val actions: ArrayList<() -> Unit> = ArrayList()
         if(civInfo.cities.isNotEmpty()) actions.add {
-            val city = civInfo.cities.random()
+            val city = civInfo.cities.random(tileBasedRandom)
             city.population.population++
             city.population.autoAssignPopulation()
             civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",tile.position, Color.GREEN)
@@ -499,13 +500,13 @@ class MapUnit {
                 }
         if(researchableAncientEraTechs.isNotEmpty())
             actions.add {
-                val tech = researchableAncientEraTechs.random().name
+                val tech = researchableAncientEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
                 civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",tile.position, Color.BLUE)
             }
 
         actions.add {
-            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random()
+            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random(tileBasedRandom)
             if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City states and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)
                 civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
@@ -519,14 +520,14 @@ class MapUnit {
             }
 
         actions.add {
-            val amount = listOf(25,60,100).random()
+            val amount = listOf(25,60,100).random(tileBasedRandom)
             civInfo.gold+=amount
             civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
         }
 
         // Map of the surrounding area
         actions.add {
-            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).random()
+            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).random(tileBasedRandom)
             val tilesToReveal = revealCenter
                 .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
                 .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
@@ -535,7 +536,7 @@ class MapUnit {
             civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
         }
 
-        (actions.random())()
+        (actions.random(tileBasedRandom))()
     }
 
     fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true){

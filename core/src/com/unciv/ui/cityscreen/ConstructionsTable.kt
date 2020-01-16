@@ -251,7 +251,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     && !city.isPuppet) {
                 button.onClick {
                     cityConstructions.addToQueue(construction.name)
+                    if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
                     cityScreen.update()
+                    cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
                 }
             } else {
                 button.disable()
@@ -286,6 +288,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                         selectedQueueEntry = -2
                         cityScreen.selectedConstruction = null
                     }
+                    if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
                     cityScreen.update()
                 }, cityScreen)
             }

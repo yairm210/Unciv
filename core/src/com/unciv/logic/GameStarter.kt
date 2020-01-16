@@ -113,8 +113,6 @@ class GameStarter{
 
             civ.placeUnitNearTile(startingLocation.position, Constants.settler, removeImprovement = true)
             civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ), removeImprovement = true)
-            if(civ.isMajorCiv()) // City-states don't get initial Scouts
-                civ.placeUnitNearTile(startingLocation.position, "Scout", removeImprovement = true)
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {

@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -18,9 +20,9 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
-import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
 import kotlin.concurrent.thread
@@ -186,7 +188,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     }
 
+    /** Returns true when the civ is a human player defeated in singleplayer game */
+    private fun isMapRevealEnabled(viewingCiv: CivilizationInfo) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
+            && viewingCiv.isCurrentPlayer()
+            && viewingCiv.isDefeated()
+
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
+
+        if (isMapRevealEnabled(viewingCiv)) {
+            viewingCiv.viewableTiles = tileMap.values.toSet()
+
+            // Only needs to be done once
+            if (viewingCiv.exploredTiles.size != tileMap.values.size)
+                viewingCiv.exploredTiles = tileMap.values.map { it.position }.toHashSet()
+        }
 
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
 
