@@ -111,13 +111,13 @@ class GameStarter{
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
 
-            civ.placeUnitNearTile(startingLocation.position, Constants.settler)
-            civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ))
+            civ.placeUnitNearTile(startingLocation.position, Constants.settler, removeImprovement = true)
+            civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ), removeImprovement = true)
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {
                     val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
-                    civ.placeUnitNearTile(startingLocation.position, unitToAdd)
+                    civ.placeUnitNearTile(startingLocation.position, unitToAdd, removeImprovement = true)
                 }
             }
         }
@@ -178,7 +178,6 @@ class GameStarter{
             }
             if(startingLocations.size < civs.size) continue // let's try again with less minimum distance!
 
-            for(tile in tilesWithStartingLocations) tile.improvement=null // get rid of the starting location improvements
             return startingLocations
         }
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
