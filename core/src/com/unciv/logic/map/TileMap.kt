@@ -109,6 +109,13 @@ class TileMap {
         return tilesToReturn
     }
 
+    /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
+     *
+     * @param civInfo civilization to assign unit to
+     * @param removeImprovement True if the improvement of [TileInfo] unit is placed into should be deleted
+     *
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
     fun placeUnitNearTile(
             position: Vector2,
             unitName: String,
@@ -134,8 +141,9 @@ class TileMap {
         val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
 
         if(unitToPlaceTile!=null) {
-            // only once we know the unit can be placed do we add it to the civ's unit list
+            // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
             if (removeImprovement) unitToPlaceTile.improvement = null
+            // only once we know the unit can be placed do we add it to the civ's unit list
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()
 
