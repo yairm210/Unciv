@@ -195,6 +195,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (ImageGetter.imageExists(baseTerrainTileLocation)){
             if(shouldShowImprovement){
                 val improvementImageLocation = tileSetStrings.getTile(tileInfo.improvement!!)
+                if(shouldShowResource){
+                    // E.g. (Grassland, Plantation+Spices)
+                    val improvementAndResourceImageLocation = improvementImageLocation+"+${tileInfo.resource}"
+                    if(ImageGetter.imageExists(improvementAndResourceImageLocation))
+                        return listOf(baseTerrainTileLocation,improvementAndResourceImageLocation)
+                }
                 // E.g. (Desert, Mine)
                 if(ImageGetter.imageExists(improvementImageLocation))
                     return listOf(baseTerrainTileLocation, improvementImageLocation)
