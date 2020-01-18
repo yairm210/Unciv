@@ -42,6 +42,7 @@ class MapUnit {
     lateinit var name: String
     var currentMovement: Float = 0f
     var health:Int = 100
+    var createdThisTurn = true
 
     var mapUnitAction : MapUnitAction? = null
 
@@ -77,6 +78,7 @@ class MapUnit {
         toReturn.name=name
         toReturn.currentMovement=currentMovement
         toReturn.health=health
+        toReturn.createdThisTurn=createdThisTurn
         toReturn.action=action
         toReturn.attacksThisTurn=attacksThisTurn
         toReturn.promotions=promotions.clone()
@@ -397,6 +399,7 @@ class MapUnit {
 
 
     fun endTurn() {
+        createdThisTurn = false
         doPostTurnAction()
         if(currentMovement== getMaxMovement().toFloat() // didn't move this turn
                 || getUniques().contains("Unit will heal every turn, even if it performs an action")){
@@ -405,7 +408,7 @@ class MapUnit {
     }
 
     fun startTurn(){
-        currentMovement = getMaxMovement().toFloat()
+        currentMovement = if (createdThisTurn && civInfo.isBarbarian()) 0f else getMaxMovement().toFloat()
         attacksThisTurn=0
         due = true
 
