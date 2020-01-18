@@ -279,7 +279,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.isLand
                 && unit.type.isWaterUnit()
                 // Check that the tile is not a coastal city's center
-                && !(tile.isCityCenter() && tile.getCity()?.isCoastal() == true))
+                && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
         if(tile.isWater && unit.type.isLandUnit()){
