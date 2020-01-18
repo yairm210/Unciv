@@ -64,12 +64,10 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
             val possibleHeal = unit.rankTileForHealing(unit.currentTile)
             if (possibleDamage > possibleHeal) {
                 // run
-                val furthestTile = findFurthestTile(unit, unitDistanceToTiles, nearEnemyTiles)
-                unit.movement.moveToTile(furthestTile)
-            } else {
-                // heal
-                unit.fortifyIfCan()
+                val furthestTile = findFurthestTileCanMoveTo(unit, unitDistanceToTiles, nearEnemyTiles)
+                if(furthestTile!=null) unit.movement.moveToTile(furthestTile)
             }
+            unit.fortifyIfCan()
             return
         }
 
@@ -101,8 +99,8 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // 1 - heal or run if death is near
         if (unit.health < 50) {
             if (nearEnemyTiles.isNotEmpty()) {
-                val furthestTile = findFurthestTile(unit, unitDistanceToTiles, nearEnemyTiles)
-                unit.movement.moveToTile(furthestTile)
+                val furthestTile = findFurthestTileCanMoveTo(unit, unitDistanceToTiles, nearEnemyTiles)
+                if(furthestTile!=null) unit.movement.moveToTile(furthestTile)
             }
             unit.fortifyIfCan()
 
@@ -125,12 +123,13 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         UnitAutomation().wander(unit, unitDistanceToTiles)
     }
 
-    private fun findFurthestTile(
+    private fun findFurthestTileCanMoveTo(
             unit: MapUnit,
             unitDistanceToTiles: PathsToTilesWithinTurn,
             nearEnemyTiles: List<AttackableTile>
-    ): TileInfo {
+    ): TileInfo? {
         val possibleTiles = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
+        if(possibleTiles.isEmpty()) return null
         val enemies = nearEnemyTiles.mapNotNull { it.tileToAttack.militaryUnit }
         var furthestTile: Pair<TileInfo, Float> = possibleTiles.random() to 0f
         for (enemy in enemies) {
