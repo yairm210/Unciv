@@ -130,6 +130,9 @@ class CityInfo {
     fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
     fun isInResistance() = resistanceCounter>0
 
+    /** Returns true when there is at least one water tile next to city center  */
+    fun isCoastal() = getCenterTile().getTilesAtDistance(1).any { it.isWater }
+
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
