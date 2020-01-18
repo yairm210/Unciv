@@ -9,8 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
+import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
+import com.unciv.models.AttackableTile
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.*
@@ -20,8 +22,9 @@ import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
-    private val battle = Battle(worldScreen.viewingCiv.gameInfo)
-    init{
+    private val battleHelper = BattleHelper()
+
+    init {
         isVisible = false
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
@@ -61,10 +64,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun tryGetDefender(): ICombatant? {
         val attackerCiv = worldScreen.viewingCiv
-        if (worldScreen.tileMapHolder.selectedTile == null) return null // no selected tile
-        val selectedTile = worldScreen.tileMapHolder.selectedTile!!
+        if (worldScreen.mapHolder.selectedTile == null) return null // no selected tile
+        val selectedTile = worldScreen.mapHolder.selectedTile!!
 
-        val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
+        val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
                 defender.getCivInfo()==attackerCiv)
@@ -171,11 +174,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
 
-        var attackableEnemy : UnitAutomation.AttackableTile? = null
+        var attackableEnemy : AttackableTile? = null
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
-                attackableEnemy = UnitAutomation()
+                attackableEnemy = battleHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             }
@@ -183,7 +186,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             {
                 val canBombard = UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
                 if (canBombard) {
-                    attackableEnemy = UnitAutomation.AttackableTile(attacker.getTile(), defender.getTile())
+                    attackableEnemy = AttackableTile(attacker.getTile(), defender.getTile())
                 }    
             }
         }
@@ -196,8 +199,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 try {
-                    battle.moveAndAttack(attacker, attackableEnemy)
-                    worldScreen.tileMapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                    Battle.moveAndAttack(attacker, attackableEnemy)
+                    worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){

@@ -15,6 +15,6 @@ enum class RoadStatus {
     Railroad;
 
     /** returns null for [None] */
-    fun improvement(ruleset: Ruleset) = ruleset.TileImprovements[this.name]
+    fun improvement(ruleset: Ruleset) = ruleset.tileImprovements[this.name]
 
 }

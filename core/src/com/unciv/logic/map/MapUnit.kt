@@ -15,6 +15,7 @@ import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
+import kotlin.random.Random
 
 class MapUnit {
 
@@ -62,6 +63,12 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
+
+    companion object {
+        private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
+        private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
+        private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
+    }
 
     //region pure functions
     fun clone(): MapUnit {
@@ -114,7 +121,7 @@ class MapUnit {
         val uniques = ArrayList<String>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniques)
-        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.UnitPromotions[it]!!.effect })
+        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.unitPromotions[it]!!.effect })
         tempUniques = uniques
 
         if("Ignores terrain cost" in uniques) ignoresTerrainCost=true
@@ -136,6 +143,7 @@ class MapUnit {
         else {
             var visibilityRange = 2
             visibilityRange += getUniques().count { it == "+1 Visibility Range" }
+            if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
             if (civInfo.nation.unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
                 visibilityRange += 1
@@ -254,7 +262,15 @@ class MapUnit {
         return true
     }
 
-    fun fortify(){ action = "Fortify 0"}
+    fun fortify() {
+        action = "Fortify 0"
+    }
+
+    fun fortifyIfCan() {
+        if (canFortify()) {
+            fortify()
+        }
+    }
 
     fun adjacentHealingBonus():Int{
         var healingBonus = 0
@@ -269,7 +285,7 @@ class MapUnit {
     fun setTransients(ruleset: Ruleset) {
         promotions.unit=this
         mapUnitAction?.unit = this
-        baseUnit=ruleset.Units[name]!!
+        baseUnit=ruleset.units[name]!!
         updateUniques()
     }
 
@@ -408,6 +424,7 @@ class MapUnit {
     fun destroy(){
         removeFromTile()
         civInfo.removeUnit(this)
+        civInfo.updateViewableTiles()
     }
 
     fun removeFromTile(){
@@ -429,7 +446,7 @@ class MapUnit {
 
         if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary())
         {
-            val gainDoubleHealPromotion = tile.neighbors.filter{it.naturalWonder == "Fountain of Youth"}.any()
+            val gainDoubleHealPromotion = tile.neighbors.any{it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game")}
             if (gainDoubleHealPromotion)
                 promotions.addPromotion("Rejuvenation", true)
         }
@@ -448,28 +465,34 @@ class MapUnit {
     }
 
     private fun clearEncampment(tile: TileInfo) {
-        tile.improvement=null
-        val goldToAdd = 25 // game-speed-dependant
-        civInfo.gold+=goldToAdd
-        civInfo.addNotification("We have captured a barbarian encampment and recovered [$goldToAdd] gold!", tile.position, Color.RED)
+        tile.improvement = null
+
+        var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        if (civInfo.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
+            goldGained *= 3f
+
+        civInfo.gold += goldGained.toInt()
+        civInfo.addNotification("We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!", tile.position, Color.RED)
     }
 
     fun disband(){
         destroy()
         if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
+        if (civInfo.isDefeated()) civInfo.destroy()
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
         tile.improvement=null
+        val tileBasedRandom = Random(tile.position.toString().hashCode())
         val actions: ArrayList<() -> Unit> = ArrayList()
         if(civInfo.cities.isNotEmpty()) actions.add {
-            val city = civInfo.cities.random()
+            val city = civInfo.cities.random(tileBasedRandom)
             city.population.population++
             city.population.autoAssignPopulation()
             civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",tile.position, Color.GREEN)
         }
-        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.Technologies.values
+        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
                 .filter {
                     !civInfo.tech.isResearched(it.name)
                             && civInfo.tech.canBeResearched(it.name)
@@ -477,13 +500,13 @@ class MapUnit {
                 }
         if(researchableAncientEraTechs.isNotEmpty())
             actions.add {
-                val tech = researchableAncientEraTechs.random().name
+                val tech = researchableAncientEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
                 civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",tile.position, Color.BLUE)
             }
 
         actions.add {
-            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random()
+            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random(tileBasedRandom)
             if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City states and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)
                 civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
@@ -497,12 +520,23 @@ class MapUnit {
             }
 
         actions.add {
-            val amount = listOf(25,60,100).random()
+            val amount = listOf(25,60,100).random(tileBasedRandom)
             civInfo.gold+=amount
             civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
         }
 
-        (actions.random())()
+        // Map of the surrounding area
+        actions.add {
+            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).random(tileBasedRandom)
+            val tilesToReveal = revealCenter
+                .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
+                .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
+                .map { it.position }
+            civInfo.exploredTiles.addAll(tilesToReveal)
+            civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
+        }
+
+        (actions.random(tileBasedRandom))()
     }
 
     fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true){

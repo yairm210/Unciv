@@ -61,8 +61,7 @@ interface CrashController {
         private fun buildReport(): CrashReport {
             return UncivGame.Current.run {
                 val zippedGameInfo = Json().toJson(gameInfo).let { Gzip.zip(it) }
-                val zippedGameSettings = Json().toJson(settings).let { Gzip.zip(it) }
-                CrashReport(zippedGameInfo, zippedGameSettings, version)
+                CrashReport(zippedGameInfo, version)
             }
         }
     }

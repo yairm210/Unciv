@@ -25,6 +25,7 @@ class TileMap {
     fun clone(): TileMap {
         val toReturn = TileMap()
         toReturn.tileList.addAll(tileList.map { it.clone() })
+        toReturn.mapParameters = mapParameters
         return toReturn
     }
 
@@ -34,38 +35,94 @@ class TileMap {
 
 
     constructor(radius:Int, ruleset: Ruleset){
-        for(vector in HexMath().getVectorsInDistance(Vector2.Zero, radius))
+        for(vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
             tileList.add(TileInfo().apply { position = vector; baseTerrain= Constants.grassland })
         setTransients(ruleset)
     }
 
 
     operator fun contains(vector: Vector2): Boolean {
-        val arrayXIndex = vector.x.toInt()-leftX
+        return contains(vector.x.toInt(), vector.y.toInt())
+    }
+
+    fun contains(x:Int, y:Int): Boolean {
+        val arrayXIndex = x-leftX
         if(arrayXIndex<0 || arrayXIndex>=tileMatrix.size) return false
-        val arrayYIndex = vector.y.toInt()-bottomY
+        val arrayYIndex = y-bottomY
         if(arrayYIndex<0 || arrayYIndex>=tileMatrix[arrayXIndex].size) return false
         return tileMatrix[arrayXIndex][arrayYIndex] != null
     }
 
-    operator fun get(vector: Vector2): TileInfo {
-        val arrayXIndex = vector.x.toInt()-leftX
-        val arrayYIndex = vector.y.toInt()-bottomY
+    operator fun get(x:Int, y:Int):TileInfo{
+        val arrayXIndex = x-leftX
+        val arrayYIndex = y-bottomY
         return tileMatrix[arrayXIndex][arrayYIndex]!!
     }
 
+    operator fun get(vector: Vector2): TileInfo {
+        return get(vector.x.toInt(), vector.y.toInt())
+    }
+
     fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath().getVectorsInDistance(origin, distance).asSequence()
-                .filter {contains(it)}.map { get(it) }.toList()
+        val tilesToReturn = mutableListOf<TileInfo>()
+        for (i in 0 .. distance) {
+            tilesToReturn += getTilesAtDistance(origin, i)
+        }
+        return tilesToReturn
     }
 
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath().getVectorsAtDistance(origin, distance).asSequence()
-                .filter {contains(it)}.map { get(it) }.toList()
+        if(distance==0) return listOf(get(origin))
+        val tilesToReturn = ArrayList<TileInfo>()
+
+        fun addIfTileExists(x:Int,y:Int){
+            if(contains(x,y))
+                tilesToReturn += get(x,y)
+        }
+
+        val centerX = origin.x.toInt()
+        val centerY = origin.y.toInt()
+
+        // Start from 6 O'clock point which means (-distance, -distance) away from the center point
+        var currentX = centerX - distance
+        var currentY = centerY - distance
+
+        for (i in 0 until distance) { // From 6 to 8
+            addIfTileExists(currentX,currentY)
+            // We want to get the tile on the other side of the clock,
+            // so if we're at current = origin-delta we want to get to origin+delta.
+            // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
+            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
+            currentX += 1 // we're going upwards to the left, towards 8 o'clock
+        }
+        for (i in 0 until distance) { // 8 to 10
+            addIfTileExists(currentX,currentY)
+            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
+            currentX += 1
+            currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
+        }
+        for (i in 0 until distance) { // 10 to 12
+            addIfTileExists(currentX,currentY)
+            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
+            currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
+        }
+        return tilesToReturn
     }
 
-    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
-        val unit = gameInfo.ruleSet.Units[unitName]!!.getMapUnit(gameInfo.ruleSet)
+    /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
+     *
+     * @param civInfo civilization to assign unit to
+     * @param removeImprovement True if the improvement of [TileInfo] unit is placed into should be deleted
+     *
+     * @return created [MapUnit] or null if no suitable location was found
+     * */
+    fun placeUnitNearTile(
+            position: Vector2,
+            unitName: String,
+            civInfo: CivilizationInfo,
+            removeImprovement: Boolean = false
+    ): MapUnit? {
+        val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
         fun isTileMovePotential(tileInfo:TileInfo): Boolean {
             if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()
@@ -84,6 +141,8 @@ class TileMap {
         val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
 
         if(unitToPlaceTile!=null) {
+            // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
+            if (removeImprovement) unitToPlaceTile.improvement = null
             // only once we know the unit can be placed do we add it to the civ's unit list
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()
@@ -105,9 +164,11 @@ class TileMap {
     }
 
 
-    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight:Boolean=false): MutableList<TileInfo> {
+    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean = false): List<TileInfo> {
+        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance)
+
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        val currentTileHeight = if(ignoreCurrentTileHeight) 0 else get(position).getHeight()
+        val currentTileHeight = get(position).getHeight()
 
         for (i in 1..sightDistance) { // in each layer,
             // This is so we don't use tiles in the same distance to "see over",
@@ -118,19 +179,19 @@ class TileMap {
                 val targetTileHeight = tile.getHeight()
 
                 /*
-                Okay so, if we're looking at a tile from a to c with b in the middle,
-                we have several scenarios:
-                1. a>b -  - I can see everything, b does not hide c
-                2. a==b
-                    2.1 a==b==0, all flat ground, no hiding
-                    2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
-                    2.3 a>0, c>b - c is tall enough I can see it over b!
-                3. a<b
-                    3.1 b>=c - b hides c
-                    3.2 b<c - c is tall enough I can see it over b!
+            Okay so, if we're looking at a tile from a to c with b in the middle,
+            we have several scenarios:
+            1. a>b -  - I can see everything, b does not hide c
+            2. a==b
+                2.1 a==b==0, all flat ground, no hiding
+                2.2 a>0, b>=c - b hides c from view (say I am in a forest/jungle and b is a forest/jungle, or hill)
+                2.3 a>0, c>b - c is tall enough I can see it over b!
+            3. a<b
+                3.1 b>=c - b hides c
+                3.2 b<c - c is tall enough I can see it over b!
 
-                This can all be summed up as "I can see c if a>b || c>b || b==0 "
-                */
+            This can all be summed up as "I can see c if a>b || c>b || b==0 "
+            */
 
                 val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
                     val neighborHeight = it.getHeight()
@@ -169,6 +230,8 @@ class TileMap {
             tileInfo.setTransients()
         }
     }
+
+
 
 }
 

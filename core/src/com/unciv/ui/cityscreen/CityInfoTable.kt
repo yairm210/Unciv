@@ -2,43 +2,56 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.ruleset.Building
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stat
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.text.DecimalFormat
 
-
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
-    val pad = 5f
+    private val pad = 10f
+
+    private val showConstructionsTableButton = TextButton("Show construction queue", skin)
+    private val scrollPane: ScrollPane
+    private val innerTable = Table(skin)
+
     init {
-        defaults().pad(pad)
-        width = cityScreen.stage.width/4
+        showConstructionsTableButton.onClick {
+            cityScreen.showConstructionsTable = true
+            cityScreen.update()
+        }
+
+        innerTable.width = cityScreen.stage.width/4
+        innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        scrollPane = ScrollPane(innerTable.addBorder(2f, Color.WHITE))
+        scrollPane.setOverscroll(false, false)
+
+        add(showConstructionsTableButton).left().padLeft(pad).padBottom(pad).row()
+        add(scrollPane).left().row()
     }
 
     internal fun update() {
-        clear()
         val cityInfo = cityScreen.city
 
-        addBuildingsInfo(cityInfo)
+        innerTable.clear()
 
-        addStatInfo()
+        innerTable.apply {
+            addBuildingsInfo(cityInfo)
+            addStatInfo()
+            addGreatPersonPointInfo(cityInfo)
+        }
 
-        addGreatPersonPointInfo(cityInfo)
-
+        getCell(scrollPane).maxHeight(stage.height - showConstructionsTableButton.height - pad - 10f)
         pack()
     }
 
-    private fun addCategory(str: String, showHideTable: Table) {
+    private fun Table.addCategory(str: String, showHideTable: Table) {
         val titleTable = Table().background(ImageGetter.getBackground(ImageGetter.getBlue()))
         val width = cityScreen.stage.width/4 - 2*pad
         val showHideTableWrapper = Table()
@@ -52,7 +65,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         add(showHideTableWrapper).row()
     }
 
-    fun addBuildingInfo(building: Building, wondersTable: Table){
+    private fun Table.addBuildingInfo(building: Building, wondersTable: Table){
         val wonderNameAndIconTable = Table()
         wonderNameAndIconTable.touchable = Touchable.enabled
         wonderNameAndIconTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
@@ -83,7 +96,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                 cityScreen.update()
                             }, cityScreen)
                     }
-                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold
+                    if (cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.isPuppet
                             || !UncivGame.Current.worldScreen.isPlayersTurn)
                         sellBuildingButton.disable()
                 }
@@ -92,7 +105,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addBuildingsInfo(cityInfo: CityInfo) {
+    private fun Table.addBuildingsInfo(cityInfo: CityInfo) {
         val wonders = mutableListOf<Building>()
         val specialistBuildings = mutableListOf<Building>()
         val otherBuildings = mutableListOf<Building>()
@@ -137,7 +150,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addStatInfo() {
+    private fun Table.addStatInfo() {
         val cityStats = cityScreen.city.cityStats
 
         for(stat in Stat.values().filter { it!=Stat.Happiness }){
@@ -194,7 +207,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
+    private fun Table.addGreatPersonPointInfo(cityInfo: CityInfo) {
         val greatPersonPoints = cityInfo.getGreatPersonMap()
         val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
         for (stat in Stat.values()) {
@@ -213,7 +226,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
+    private fun Table.addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
         val specialistAllocationTable = Table()
         addCategory("Specialist Allocation", specialistAllocationTable) // todo WRONG, BAD - table should contain all the below specialist stuff
 
@@ -283,5 +296,4 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         return specialist
     }
-
 }

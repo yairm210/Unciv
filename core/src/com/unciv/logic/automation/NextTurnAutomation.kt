@@ -19,6 +19,8 @@ class NextTurnAutomation{
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
+        if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
+
         respondToDemands(civInfo)
         respondToTradeRequests(civInfo)
 
@@ -40,6 +42,7 @@ class NextTurnAutomation{
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
+
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
@@ -170,7 +173,7 @@ class NextTurnAutomation{
 
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = civInfo.gameInfo.ruleSet.Technologies.values
+            val researchableTechs = civInfo.gameInfo.ruleSet.technologies.values
                     .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
@@ -198,7 +201,7 @@ class NextTurnAutomation{
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
 
-            val adoptablePolicies = civInfo.gameInfo.ruleSet.PolicyBranches.values
+            val adoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
                     .flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
 
@@ -436,7 +439,7 @@ class NextTurnAutomation{
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             if (city.isPuppet && city.population.population > 9
-                    && city.resistanceCounter == 0) {
+                    && !city.isInResistance()) {
                 city.annexCity()
             }
 

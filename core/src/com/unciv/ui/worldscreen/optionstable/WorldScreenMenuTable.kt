@@ -118,7 +118,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 badGameIdLabel.isVisible = true
                 return@addButton
             }
-            thread {
+            thread(name="MultiplayerDownload") {
                 try {
                     // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                     // we need to run it in a different thread.
@@ -151,7 +151,7 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
         }
 
         addButton("Patreon"){
-            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            Gdx.net.openURI("https://www.patreon.com/yairm210")
             remove()
         }
 

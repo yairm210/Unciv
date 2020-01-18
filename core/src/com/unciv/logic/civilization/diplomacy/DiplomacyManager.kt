@@ -9,9 +9,9 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.ceil
 
 enum class RelationshipLevel{
     Unforgivable,
@@ -191,13 +191,17 @@ class DiplomacyManager() {
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.ruleSet.TileResources[offer.name]!!,-offer.amount,"Trade")
+                    counter.add(civInfo.gameInfo.ruleSet.tileResources[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.ruleSet.TileResources[offer.name]!!,offer.amount,"Trade")
+                    counter.add(civInfo.gameInfo.ruleSet.tileResources[offer.name]!!,offer.amount,"Trade")
         }
         return counter
     }
+
+    /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */
+    fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs())
+
     //endregion
 
     //region state-changing functions
@@ -361,6 +365,10 @@ class DiplomacyManager() {
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
 
+        getCommonKnownCivs().forEach {
+            it.addNotification("[${civInfo.civName}] has declared war on [${otherCiv().civName}]!", null, Color.RED)
+        }
+
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs,-20f)
         if(otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
 
@@ -395,6 +403,7 @@ class DiplomacyManager() {
         if (!otherCiv.isCityState()) {
             for (thirdCiv in otherCiv.getKnownCivs()) {
                 if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
+                        && !thirdCiv.isDefeated()
                         && thirdCiv.knows(civInfo)
                         && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
                     thirdCiv.getDiplomacyManager(civInfo).declareWar()
@@ -405,6 +414,17 @@ class DiplomacyManager() {
 
     fun makePeace(){
         diplomaticStatus= DiplomaticStatus.Peace
+
+        if (otherCiv().isAtWarWith(civInfo)) {
+            for (civ in getCommonKnownCivs()) {
+                civ.addNotification(
+                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
+                    null,
+                    Color.WHITE
+                )
+            }
+        }
+
         val otherCiv = otherCiv()
         // We get out of their territory
         for(unit in civInfo.getCivUnits().filter { it.getTile().getOwner()== otherCiv})
@@ -452,8 +472,8 @@ class DiplomacyManager() {
         setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
 
-        for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
-            if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
+        for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
+            thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when(thirdCivRelationshipWithOtherCiv){
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,-15f)
@@ -463,7 +483,7 @@ class DiplomacyManager() {
             }
         }
     }
-    
+
     fun denounce(){
         setModifier(DiplomaticModifiers.Denunciation,-35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation,-35f)
@@ -473,8 +493,8 @@ class DiplomacyManager() {
         otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
 
         // We, A, are denouncing B. What do other major civs (C,D, etc) think of this?
-        for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
-            if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
+        getCommonKnownCivs().filter { it.isMajorCiv() }.forEach { thirdCiv ->
+            thirdCiv.addNotification("[${civInfo.civName}] has denounced [${otherCiv().civName}]!", null, Color.RED)
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when(thirdCivRelationshipWithOtherCiv){
                 RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DenouncedOurEnemies,15f)

@@ -51,7 +51,7 @@ class TechManager {
     fun getRuleset() = civInfo.gameInfo.ruleSet
 
     fun costOfTech(techName: String): Int {
-        var techCost = getRuleset().Technologies[techName]!!.cost.toFloat()
+        var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
@@ -74,7 +74,7 @@ class TechManager {
     fun currentTechnology(): Technology? {
         val currentTechnologyName = currentTechnologyName()
         if (currentTechnologyName == null) return null
-        return getRuleset().Technologies[currentTechnologyName]
+        return getRuleset().technologies[currentTechnologyName]
     }
 
     fun currentTechnologyName(): String? {
@@ -94,7 +94,7 @@ class TechManager {
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
 
     fun canBeResearched(TechName: String): Boolean {
-        return getRuleset().Technologies[TechName]!!.prerequisites.all { isResearched(it) }
+        return getRuleset().technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
 
     fun getTechUniques() = researchedTechUniques
@@ -115,7 +115,7 @@ class TechManager {
                     (isResearched(techToCheck.name) || prerequisites.contains(techToCheck)) )
                 continue //no need to add or check prerequisites
             for (prerequisite in techToCheck.prerequisites)
-                checkPrerequisites.add(getRuleset().Technologies[prerequisite]!!)
+                checkPrerequisites.add(getRuleset().technologies[prerequisite]!!)
             prerequisites.add(techToCheck)
         }
 
@@ -157,7 +157,7 @@ class TechManager {
         // Apparently yes, we care about the absolute tech cost, not the actual calculated-for-this-player tech cost,
         //  so don't change to costOfTech()
         return min(overflowscience, max(civInfo.statsForNextTurn.science.toInt() * 5,
-                getRuleset().Technologies[currentTechnologyName()]!!.cost))
+                getRuleset().technologies[currentTechnologyName()]!!.cost))
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
@@ -194,7 +194,7 @@ class TechManager {
         techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
-        val newTech = getRuleset().Technologies[techName]!!
+        val newTech = getRuleset().technologies[techName]!!
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         for(unique in newTech.uniques)
             researchedTechUniques = researchedTechUniques.withItem(unique)
@@ -206,11 +206,14 @@ class TechManager {
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
             civInfo.addNotification("You have entered the [$currentEra era]!", null, Color.GOLD)
-            getRuleset().PolicyBranches.values.filter { it.era == currentEra }
+            civInfo.getKnownCivs().forEach {
+                it.addNotification("[${civInfo.civName}] has entered the [$currentEra era]!", null, Color.BLUE)
+            }
+            getRuleset().policyBranches.values.filter { it.era == currentEra }
                     .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE) }
         }
 
-        for(revealedResource in getRuleset().TileResources.values.filter{ techName == it.revealedBy }){
+        for(revealedResource in getRuleset().tileResources.values.filter{ techName == it.revealedBy }){
             for (tileInfo in civInfo.gameInfo.tileMap.values
                     .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
@@ -224,7 +227,7 @@ class TechManager {
             }
         }
 
-        val obsoleteUnits = getRuleset().Units.values.filter { it.obsoleteTech == techName }
+        val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }
         for (city in civInfo.cities)
             if (city.cityConstructions.getCurrentConstruction() in obsoleteUnits) {
                 val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
@@ -260,7 +263,7 @@ class TechManager {
             techsToResearch = newTechToReseach
         }
 
-        researchedTechnologies.addAll(techsResearched.map { getRuleset().Technologies[it]!! })
+        researchedTechnologies.addAll(techsResearched.map { getRuleset().technologies[it]!! })
         researchedTechUniques.addAll(researchedTechnologies.flatMap { it.uniques })
         updateTransientBooleans()
     }

@@ -2,20 +2,24 @@ package com.unciv.ui
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.tutorials.TutorialMiner
 import com.unciv.ui.utils.*
 import java.util.*
 
 class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     class CivilopediaEntry(var name: String, var description: String, var image: Actor? = null)
 
-    val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
-    val categoryToButtons = LinkedHashMap<String, Button>()
+    private val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
+    private val categoryToButtons = LinkedHashMap<String, Button>()
 
-    val entrySelectTable = Table().apply { defaults().pad(5f) }
+    private val entrySelectTable = Table().apply { defaults().pad(5f) }
     val description = "".toLabel()
+
+    private val tutorialMiner = TutorialMiner(JsonParser())
 
     fun select(category: String) {
         entrySelectTable.clear()
@@ -58,36 +62,33 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         description.setWrap(true)
 
-        categoryToEntries["Buildings"] = ruleset.Buildings.values
+        categoryToEntries["Buildings"] = ruleset.buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name)) }
-        categoryToEntries["Resources"] = ruleset.TileResources.values
+        categoryToEntries["Resources"] = ruleset.tileResources.values
                 .map { CivilopediaEntry(it.name,it.getDescription(),
                         ImageGetter.getResourceImage(it.name,50f)) }
-        categoryToEntries["Terrains"] = ruleset.Terrains.values
+        categoryToEntries["Terrains"] = ruleset.terrains.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset)) }
-        categoryToEntries["Tile Improvements"] = ruleset.TileImprovements.values
+        categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
-        categoryToEntries["Units"] = ruleset.Units.values
+        categoryToEntries["Units"] = ruleset.units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name)) }
-        categoryToEntries["Nations"] = ruleset.Nations.values
+        categoryToEntries["Nations"] = ruleset.nations.values
                 .filter { it.isMajorCiv() }
                 .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset),
                         ImageGetter.getNationIndicator(it,50f)) }
-        categoryToEntries["Technologies"] = ruleset.Technologies.values
+        categoryToEntries["Technologies"] = ruleset.technologies.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
-        categoryToEntries["Promotions"] = ruleset.UnitPromotions.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.UnitPromotions.values, true),
+        categoryToEntries["Promotions"] = ruleset.unitPromotions.values
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.unitPromotions.values, true),
                         Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
-        categoryToEntries["Tutorials"] = Tutorials().getTutorialsOfLanguage("English").keys
-                .filter { !it.startsWith("_") }
-                .map { CivilopediaEntry(it.replace("_"," "),
-                        Tutorials().getTutorials(it, UncivGame.Current.settings.language)
-                                .joinToString("\n\n")) }
+        categoryToEntries["Tutorials"] = tutorialMiner.getCivilopediaTutorials(UncivGame.Current.settings.language)
+                .map { CivilopediaEntry(it.key.value.replace("_"," "), it.value.joinToString("\n\n")) }
 
         for (category in categoryToEntries.keys) {
             val button = TextButton(category.tr(), skin)

@@ -141,10 +141,18 @@ class BattleDamage{
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): HashMap<String, Float> {
-        if(defender.unit.isEmbarked()) // embarked units get no defensive modifiers
-            return HashMap()
+        val modifiers = HashMap<String, Float>()
 
-        val modifiers = getGeneralModifiers(defender, attacker)
+        if (defender.unit.isEmbarked()) {
+            // embarked units get no defensive modifiers apart from this unique
+            if (defender.unit.hasUnique("Defense bonus when embarked") ||
+                    defender.getCivInfo().nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
+                modifiers["Embarkation"] = 1f
+
+            return modifiers
+        }
+
+        modifiers.putAll(getGeneralModifiers(defender, attacker))
 
         modifiers.putAll(getTileSpecificModifiers(defender, defender.getTile()))
 

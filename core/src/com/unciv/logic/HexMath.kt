@@ -1,12 +1,10 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
-import java.util.*
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.sqrt
+import com.badlogic.gdx.math.Vector3
+import kotlin.math.*
 
-class HexMath {
+object HexMath {
 
     fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())
@@ -14,6 +12,19 @@ class HexMath {
 
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
+    }
+
+    fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
+        val vectors = arrayListOf(
+                Vector2(1f, 0f),
+                Vector2(1f, 1f),
+                Vector2(0f, 1f),
+                Vector2(-1f, 0f),
+                Vector2(-1f, -1f),
+                Vector2(0f, -1f)
+        )
+        for (vector in vectors) vector.add(origin)
+        return vectors
     }
 
     // HexCoordinates are a (x,y) vector, where x is the vector getting us to the top-left hex (e.g. 10 o'clock)
@@ -30,16 +41,45 @@ class HexMath {
         return xVector.scl(hexCoord.x).add(yVector.scl(hexCoord.y))
     }
 
-    fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
-        val vectors = ArrayList<Vector2>()
-        vectors += Vector2(1f, 0f)
-        vectors += Vector2(1f, 1f)
-        vectors += Vector2(0f, 1f)
-        vectors += Vector2(-1f, 0f)
-        vectors += Vector2(-1f, -1f)
-        vectors += Vector2(0f, -1f)
-        for (vector in vectors) vector.add(origin)
-        return vectors
+    fun world2HexCoords(worldCoord: Vector2): Vector2 {
+        // D: diagonal, A: antidiagonal versors
+        val D = getVectorByClockHour(10).scl(sqrt(3.0).toFloat())
+        val A = getVectorByClockHour(2).scl(sqrt(3.0).toFloat())
+        val den = D.x * A.y - D.y * A.x
+        val x = (worldCoord.x * A.y - worldCoord.y * A.x) / den
+        val y = (worldCoord.y * D.x - worldCoord.x * D.y) / den
+        return Vector2(x, y)
+    }
+
+    fun hex2CubicCoords(hexCoord: Vector2): Vector3 {
+        return Vector3(hexCoord.y - hexCoord.x, hexCoord.x, -hexCoord.y)
+    }
+
+    fun cubic2HexCoords(cubicCoord: Vector3): Vector2 {
+        return Vector2(cubicCoord.y, -cubicCoord.z)
+    }
+
+    fun roundCubicCoords(cubicCoords: Vector3): Vector3 {
+        var rx = round(cubicCoords.x)
+        var ry = round(cubicCoords.y)
+        var rz = round(cubicCoords.z)
+
+        val deltaX = abs(rx - cubicCoords.x)
+        val deltaY = abs(ry - cubicCoords.y)
+        val deltaZ = abs(rz - cubicCoords.z)
+
+        if (deltaX > deltaY && deltaX > deltaZ)
+            rx = -ry-rz
+        else if (deltaY > deltaZ)
+            ry = -rx-rz
+        else
+            rz = -rx-ry
+
+        return Vector3(rx, ry, rz)
+    }
+
+    fun roundHexCoords(hexCoord: Vector2): Vector2 {
+        return cubic2HexCoords(roundCubicCoords(hex2CubicCoords(hexCoord)))
     }
 
     fun getVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {

@@ -44,7 +44,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         val civName = techManager.civInfo.civName
         val gameBasics = techManager.civInfo.gameInfo.ruleSet
 
-        val tech = gameBasics.Technologies[techName]!!
+        val tech = gameBasics.technologies[techName]!!
 
         for (unit in tech.getEnabledUnits(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(30f))
@@ -52,7 +52,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         for (building in tech.getEnabledBuildings(techManager.civInfo))
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
 
-        for (improvement in gameBasics.TileImprovements.values
+        for (improvement in gameBasics.tileImprovements.values
                 .filter { it.techRequired == techName || it.improvingTech == techName }
                 .filter { it.uniqueTo==null || it.uniqueTo==civName }) {
             if (improvement.name.startsWith("Remove"))
@@ -60,7 +60,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
             else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 30f))
         }
 
-        for (resource in gameBasics.TileResources.values.filter { it.revealedBy == techName })
+        for (resource in gameBasics.tileResources.values.filter { it.revealedBy == techName })
             techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, 30f))
 
         for (unique in tech.uniques)

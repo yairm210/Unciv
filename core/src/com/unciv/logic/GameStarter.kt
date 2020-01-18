@@ -2,11 +2,11 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
@@ -17,20 +17,20 @@ class GameStarter{
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
-        val gameBasics = UncivGame.Current.ruleset
+        val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
         if(mapParameters.name!="")
             gameInfo.tileMap = MapSaver().loadMap(mapParameters.name)
-        else gameInfo.tileMap = MapGenerator().generateMap(mapParameters, gameBasics)
+        else gameInfo.tileMap = MapGenerator().generateMap(mapParameters, ruleset)
         gameInfo.tileMap.mapParameters = mapParameters
 
-        gameInfo.tileMap.setTransients(gameBasics)
+        gameInfo.tileMap.setTransients(ruleset)
 
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         gameInfo.difficulty = newGameParameters.difficulty
 
 
-        addCivilizations(newGameParameters, gameInfo, gameBasics) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
+        addCivilizations(newGameParameters, gameInfo, ruleset) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
@@ -41,7 +41,7 @@ class GameStarter{
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
-            for (tech in gameBasics.Technologies.values
+            for (tech in ruleset.technologies.values
                     .filter { it.era() < newGameParameters.startingEra })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
@@ -57,7 +57,7 @@ class GameStarter{
 
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
         val availableCivNames = Stack<String>()
-        availableCivNames.addAll(ruleset.Nations.filter { !it.value.isCityState() }.keys.shuffled())
+        availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove("Barbarians")
 
@@ -83,7 +83,7 @@ class GameStarter{
         val availableCityStatesNames = Stack<String>()
         // since we shuffle and then order by, we end up with all the city states with starting tiles first in a random order,
         //   and then all the other city states in a random order! Because the sortedBy function is stable!
-        availableCityStatesNames.addAll(ruleset.Nations.filter { it.value.isCityState() }.keys
+        availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
@@ -100,7 +100,7 @@ class GameStarter{
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
-            val availableMilitaryUnits = gameInfo.ruleSet.Units.values.filter {
+            val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {
                 it.isBuildable(civ)
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
@@ -111,15 +111,13 @@ class GameStarter{
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
 
-            civ.placeUnitNearTile(startingLocation.position, Constants.settler)
-            civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ))
-            if(civ.isMajorCiv()) // City-states don't get initial Scouts
-                civ.placeUnitNearTile(startingLocation.position, "Scout")
+            civ.placeUnitNearTile(startingLocation.position, Constants.settler, removeImprovement = true)
+            civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ), removeImprovement = true)
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {
                     val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
-                    civ.placeUnitNearTile(startingLocation.position, unitToAdd)
+                    civ.placeUnitNearTile(startingLocation.position, unitToAdd, removeImprovement = true)
                 }
             }
         }
@@ -180,7 +178,6 @@ class GameStarter{
             }
             if(startingLocations.size < civs.size) continue // let's try again with less minimum distance!
 
-            for(tile in tilesWithStartingLocations) tile.improvement=null // get rid of the starting location improvements
             return startingLocations
         }
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
@@ -191,7 +188,7 @@ class GameStarter{
         // edge is checking the distance to the CENTER POINT
         // Can't believe we used a dumb way of calculating this before!
         val hexagonalRadius = -tileMap.leftX
-        val distanceFromCenter = HexMath().getDistance(vector, Vector2.Zero)
+        val distanceFromCenter = HexMath.getDistance(vector, Vector2.Zero)
         return hexagonalRadius-distanceFromCenter >= n
     }
 }

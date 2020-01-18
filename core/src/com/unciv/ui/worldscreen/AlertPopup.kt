@@ -58,7 +58,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }
             }
             AlertType.CityConquered -> {
-                val city = worldScreen.gameInfo.civilizations.flatMap { it.cities }.first { it.name == popupAlert.value}
+                val city = worldScreen.gameInfo.getCities().first { it.id == popupAlert.value }
                 addGoodSizedLabel("What would you like to do with the city?",24)
                         .padBottom(20f).row()
                 val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
@@ -149,7 +149,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Very well."))
             }
             AlertType.WonderBuilt -> {
-                val wonder = worldScreen.gameInfo.ruleSet.Buildings[popupAlert.value]!!
+                val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 val centerTable = Table()
@@ -162,7 +162,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
-                val tech = gameBasics.Technologies[popupAlert.value]!!
+                val tech = gameBasics.technologies[popupAlert.value]!!
                 addGoodSizedLabel(tech.name)
                 addSeparator()
                 val centerTable = Table()
@@ -180,12 +180,12 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
         }
         open()
-        worldScreen.alertPopupIsOpen = true
+        worldScreen.hasPopupOpen = true
     }
 
     override fun close(){
         worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
-        worldScreen.alertPopupIsOpen = false
+        worldScreen.hasPopupOpen = false
         super.close()
     }
 }

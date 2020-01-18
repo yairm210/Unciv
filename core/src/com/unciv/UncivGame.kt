@@ -13,7 +13,7 @@ import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
-import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
@@ -24,8 +24,12 @@ import kotlin.concurrent.thread
 
 class UncivGame(
         val version: String,
-        private val crashReportSender: CrashReportSender? = null
+        private val crashReportSender: CrashReportSender? = null,
+        val exitEvent: (()->Unit)? = null
 ) : Game() {
+    // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
+    constructor(version: String) : this(version, null)
+
     lateinit var gameInfo: GameInfo
     lateinit var settings : GameSettings
     lateinit var crashController: CrashController
@@ -39,14 +43,12 @@ class UncivGame(
 
     var rewriteTranslationFiles = false
 
-
     lateinit var worldScreen: WorldScreen
 
     var music : Music? =null
     val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
 
-    lateinit var ruleset:Ruleset
 
     val translations = Translations()
 
@@ -65,8 +67,8 @@ class UncivGame(
         settings = GameSaver().getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
 
-        thread {
-            ruleset = Ruleset(true)
+        thread(name="LoadJSON") {
+            RulesetCache.loadRulesets()
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
@@ -120,7 +122,8 @@ class UncivGame(
 
     fun loadGame(gameInfo:GameInfo){
         this.gameInfo = gameInfo
-
+        ImageGetter.ruleset = gameInfo.ruleSet
+        ImageGetter.refreshAtlas()
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }
@@ -144,7 +147,7 @@ class UncivGame(
     override fun resume() {
         super.resume()
         if(!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        ImageGetter.refreshAltas()
+        ImageGetter.refreshAtlas()
 
         // This is to solve a rare problem -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.

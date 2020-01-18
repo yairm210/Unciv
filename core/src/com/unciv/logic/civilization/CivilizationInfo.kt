@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.NextTurnAutomation
@@ -14,18 +15,25 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Difficulty
+import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.VictoryScreen
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.roundToInt
 
 class CivilizationInfo {
+
+    @Transient private val jsonParser = JsonParser()
+
     @Transient lateinit var gameInfo: GameInfo
     @Transient lateinit var nation:Nation
     /**
@@ -110,14 +118,14 @@ class CivilizationInfo {
     //region pure functions
     fun getDifficulty():Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return gameInfo.ruleSet.Difficulties["Chieftain"]!!
+        return gameInfo.ruleSet.difficulties["Chieftain"]!!
     }
 
     fun getTranslatedNation(): Nation {
         val language = UncivGame.Current.settings.language.replace(" ","_")
         val filePath = "jsons/Nations/Nations_$language.json"
         if(!Gdx.files.internal(filePath).exists()) return nation
-        val translatedNation = gameInfo.ruleSet.getFromJson(Array<Nation>::class.java, filePath)
+        val translatedNation = jsonParser.getFromJson(Array<Nation>::class.java, filePath)
                 .firstOrNull { it.name==civName}
         if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
             return nation      // default to english
@@ -174,7 +182,7 @@ class CivilizationInfo {
      */
     fun getCivResourcesByName():HashMap<String,Int>{
         val hashMap = HashMap<String,Int>()
-        for(resource in gameInfo.ruleSet.TileResources.keys) hashMap[resource]=0
+        for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
         return hashMap
@@ -232,19 +240,19 @@ class CivilizationInfo {
 
 
     fun getEquivalentBuilding(buildingName:String): Building {
-        val baseBuilding = gameInfo.ruleSet.Buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
+        val baseBuilding = gameInfo.ruleSet.buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
 
-        for(building in gameInfo.ruleSet.Buildings.values)
+        for(building in gameInfo.ruleSet.buildings.values)
             if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
                 return building
         return baseBuilding
     }
 
     fun getEquivalentUnit(baseUnitName:String):BaseUnit {
-        for (unit in gameInfo.ruleSet.Units.values)
+        for (unit in gameInfo.ruleSet.units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        return gameInfo.ruleSet.Units[baseUnitName]!!
+        return gameInfo.ruleSet.units[baseUnitName]!!
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
@@ -268,7 +276,10 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any {it.name== Constants.settler})
+    /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
+    fun isDefeated()= cities.isEmpty()
+            && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
+            && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
@@ -306,7 +317,7 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.ruleSet.Nations[civName]!!
+        nation = gameInfo.ruleSet.nations[civName]!!
     }
 
     fun setTransients() {
@@ -351,7 +362,8 @@ class CivilizationInfo {
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
-    fun startTurn(){
+    fun startTurn() {
+        policies.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 
         // Generate great people at the start of the turn,
@@ -450,8 +462,8 @@ class CivilizationInfo {
         addNotification("A [$greatPerson] has been born in [${city.name}]!", city.location, Color.GOLD)
     }
 
-    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
-        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
+    fun placeUnitNearTile(location: Vector2, unitName: String, removeImprovement: Boolean = false): MapUnit? {
+        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this, removeImprovement = removeImprovement)
     }
 
     fun addCity(location: Vector2) {
@@ -461,8 +473,10 @@ class CivilizationInfo {
 
 
     fun destroy(){
+        val destructionText = if(isMajorCiv()) "The civilization of [$civName] has been destroyed!"
+        else "The City-State of [$civName] has been destroyed!"
         for(civ in gameInfo.civilizations)
-            civ.addNotification("The civilization of [$civName] has been destroyed!", null, Color.RED)
+            civ.addNotification(destructionText, null, Color.RED)
         getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
         for(diplomacyManager in diplomacy.values){
@@ -485,7 +499,7 @@ class CivilizationInfo {
         val city = NextTurnAutomation().getClosestCities(this, otherCiv).city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
-                .random()
+                .toList().random()
         placeUnitNearTile(city.location, militaryUnit.name)
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }

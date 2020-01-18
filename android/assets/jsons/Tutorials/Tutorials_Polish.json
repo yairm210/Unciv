@@ -1,412 +1,282 @@
 {
-	// Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
-	// Entries starting with a _ will NOT be shown in Civilopedia.
+  // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
+  // Entries starting with a _ will NOT be shown in Civilopedia.
 
-
-	New_Game: [
-		[
-			"Witaj w grze Unciv!",
-			"Gry cywilizacyjne mogą być złożone, więc poprowadzę Cię krok po kroku.",
-			"Twoim pierwszym zadaniem jest założenie stolicy.",
-			"To jest dosyć istotne zadanie gdyż Twoja stolica będzie przynosiła dużo korzyści jeżeli będzie leżała w dobrym miejscu.",
-			"Wiele bonusów będzie nadawanych właśnie Twojej stolicy, a poza tym to stolica będzie prawdopodobnie w centrum Twojego imperium."
-		],
-		[
-			"Po czym poznać że wybrane miejsce jest właściwe?",
-			"Na to pytanie nie ma prostej odpowiedzi, ale zawsze dobrze mieć w swoim zasięgu luksusowe zasoby.",
-			"Luksusowe zasoby to pola z klejnotami, bawełną, lub z jedwabiem (na mapie widoczne są jako uśmieszki obok ikony zasobów)",
-			"Te zasoby sprawiają że Twoja cywilizacja jest zadowolona. Zwróć też uwagę na zasoby, takie jak żelazo, potrzebne do budowy jednostek"
-		],
-		[
-			"Jednakże, miasta nie posiadają ustalonej strefy w których pracują ale o tym później!",
-			"To oznacza, że nie ma potrzeby budować miast przy samych surowcach.",
-			"Powiedzmy że chcesz mieć dostęp do żelaza, ale ten zasób leży niemalże na pustyni.",
-			"Nie musisz zakładać miasta przy pustyni. Możesz zbudować miasto kilka pól dalej w bardziej prosperującuch ziemiach",
-			"Twoje miasto z czasem urośnie i ostatecznie dosięgnie swoimi granicami to przysłowiowe żelazo",
-			"Jeżeli natomiast jesteś w pilnej potrzebie danego zasobu i nie masz czasu wtedy to może być jedyne wyjście - ",
-			"   może tak się zdarzyć, a może nie, ale zazwyczaj będziesz miał o wiele za dużo czasu na takie taktyki."
-		],
-		[
-			"UWAGA! Polskie tłumaczenie jest w trakcie powstawania, więc za ewentualne błędy i braki w tłumaczeniu z góry przepraszam."
-		],
-
-	],
-
-
-	_City_Founded : [
-		[
-			"Brawo, właśnie założyłeś miasto!",
-			"Miasta to podstawa Twojego wielkiego imperium które przynoszą korzyści dla całego imperium takie jak złoto czy nauka",
-			"  które są wyświetlone na górnym pasku.",
-			"Możesz kliknąć na nazwę miasta by zobaczyć jego ekran i przypisać ludność,",
-			"  rozpocząć produkcję i zobaczyć informacje o mieście."
-		],
-	]
-
-	First_Steps : [
-		[
-			"Miasto po założeniu stanie się miejscem gdzie będziesz mógł towrzyć nowe jednostki",
-			"	jak również będzie miejscem odpowiedzialnym za badania.",
-			"Na ten moment nie będę się zbytnio zagłębiał w temat badań, przynajmniej na razie - małymi kroczkami do celu - ",
-			"	teraz zajmiemy się kwestią produkcji."
-		],
-		[
-			"Istotną rzeczą na start jest wytrenowanie Wojownika lub Zwiadowcy.",
-			"Przewagą Wojownika jest fakt, że dobrze sprawdza się jako obrońca we wczesnym etapie gry, a poza tym może być później ulepszony",
-			"	do Fechmistrza za niewielką opłatą w Złocie",
-			"Zwiadowcy są idealnym wyborem jeżeli wokół Ciebie znajdują się gęste Lasy i Wzgórza.",
-			"Zwiadowcy ignorują trudny teren i poruszają się na nich normalnie.",
-			"Jeżeli jesteś weteranem gier 4x, Twój pierwszy Wojownik lub Zwiadowca będzie poprzedzony Osadnikiem.",
-			"Szybka rozbudowa i rozprzestrzenianie się jest kluczową kwestią, wręcz najistotniejszą, w grach tego typu."
-		],
-	],
-
-
-	Next_Turn : [
-		[
-			"Po wykonaniu wszystkich możliwych ruchów w danej turze,",
-			"	nadszedł w końcu czas na kliknięcie przycisku Następna tura w prawym, górnym rogu."
-		],
-		[
-			"Kolejne tury powiększają Twoje dobra takie jak Nauka, Kultura i Złoto",
-			"  a Twoje Miasta kontynuują budowę nowych budowli i mogą się poszerzyć o nowych Cywili lub Teren"
-		]
-	],
-
-	_Slow_Start: [
-		[
-			"W pierwszych paru turach większość czynności będzie ograniczona,",
-			"jednakże wraz z rozwojem Twojej cywilizacji ilość czynności zwiększy się",
-			" wymagając tym samym od Ciebie większej uwagi na pozostałe."
-		]
-	],
-
-	Culture_and_Policies: [ // Activated when entering policy picker screen
-		[
-			"Co turę każde Miasto generuje Kulturę, która jest wspólna",
-			" dla całej cywilizacji.",
-			"Kiedy osiągniesz określony poziom, będziesz mógł",
-			" wybrać nowy Ustrój Społeczny, a co za tym idze otrzymasz bonus."
-		],
-		[
-			"Ustroje są podzielone na drzewka, a każdo z nich dodaje dodatkową",
-			" zdolność którą otrzymasz po odblokowaniu całego drzewka."
-		],
-		[
-			"Z każdym nowym Ustrojem i z każdym nowym powstałym miastem",
-			" koszt nowego Ustroju rośnie więc wybieraj rozsądnie!"
-		]
-	],
-
-	Cities: [
-		[
-			"Każdy Cywil w Mieście może pracować wyłącznie na jednym polu, zapewniając",
-			" Miastu dostawę, oferowanych przez dane pole, zasobów.",
-			"Cywile mogą zostać przypisani poprzez kliknięcia na dano pole i na odwrót - ",
-			" jeśli oczywiście posiadasz Cywili którzy mają jeszcze ruch w tej turze!"
-		],
-		[
-			"Samo pole centrum Miasta nie potrzebuje Cywili do pracy przez co cały czas pracuje",
-			" jednakże nie może stać się bardziej wydajnym poprzez ulepszenia.",
-			"Produkcja Miasta zawsze skupia się na obecnej budowie - ",
-			" aby rozpocząć nową budowę kliknij przycisk Wybuduj w lewym dolnym rogu."
-		]
-		[
-			"Miasta rosną po zapewnieniu im odpowiedniej ilości Żywności.",
-			"Podobnie rozszerzają się granice Miasta - w tym wypadku potrzebna jest Kultura,",
-			" którą zapewniają budowle."
-		],
-	],
-
-	Technology: [
-		[
-			"Technologia ma kluczowe znaczenie dla Twojej cywilizacji,",
-			" gdyż wraz z postępem technologicznym zyskujesz",
-			" więcej możliwych do zbudowania konstrukcji jak rówież ulepszeń i zdolności."
-		],
-		[
-			"Większość technologii wymaga poprzednich badań do odblokowania, możesz więc",
-			" wybrać technologię, do której aspirujesz, a Twoja cywilizacja wykona",
-			"wszystkie niezbędne badania by osiągnąć to wybrane."
-		]
-	],
-
-
-
-
-	Happiness:[
-		[
-			"Gdy Miasto rozrasta się i staje się bardziej wpływowe powinieneś zacząć zwracać uwagę na mechanikę Zadowolenia mieszkańców, która to",
-			" wpływa na całe imperium, a nie na pojedyńcze Miasta.",
-			"Wraz z ekspansją miast utrzymanie Zadowolenia miast stanie się coraz trudniejsze."
-		],
-		[
-			"Ponad to nie możesz budować ulepszeń dla Miasta, które podnosi Zadowolenie, do czasu zakończenia odpowiednich badań.",
-			"Jeżeli Zadowolenie Twojego imperium kiedykolwiek spadnie poniżej zera tempo rozwoju miasta drastycznie zmaleje.",
-			"Jeżeli imperium będzie bardzo niezadowolone (znacznik znajduje się na górze interfejsu - to ta buźka)",
-			" Twoje armie doświadczą spadku efektywności w walce."
-		],
-		[
-			"Jak już widzisz trzeba cały czas balansować pomiędzy rozwojem i ekspansją a Zadowoleniem mieskańców.",
-			"To nie jest niemożliwe ale jako nowy gracz to nie jest dobry sposób na rozpoczęcie gry.",
-			"Póki co zamiast martwić się zbytnio o Zadowolenie na spokojnie zwiedzaj okoliczne ziemie i ulepszaj",
-			" je przy pomocy Budowniczych.",
-			"Co do Miast to zakładaj je tylko wtedy, kiedy masz pewność że wybrałeś właściwe miejsce."
-		],
-
-	]
-
-
-	World_Map: [
-		[
-			"Mapa świata jest złożona z wielu pól.",
-			"Każde pole może zawierać jednostki, zasoby oraz ulepszenia do których dojdziemy później",
-			"Aby wyświetlić więcej informacji o danym polu, kliknij na nie."
-		]
-	],
-
-
-	Tile_Clicked : [
-		[
-			"Po kliknięciu na pole, owo zostaje wybrane i",
-			" wyświetlone zostają informacje o polu w prawym dolnym rogu.",
-			"Jeżeli na polu znajdowała się jednostka, owa zostanie wybrana i rówież",
-			" informacja o danej jednosce pojawi się w prawym dolnym rogu."
-		]
-	],
-
-	Unit_Selected : [
-		[
-			"Kiedy jednostka zostaje wybrana, informacje o niej zostaną wyświetlone w lewym dolnym rogu.",
-			"Możliwe akcje danej jednostki pokażą się nad polem informacji."
-		]
-	],
-
-
-	Unhappiness:  [
-		[
-			"Wygląda na to że Twoja ludność jest nieszczęśliwa!",
-			"Przy niskim Zadowoleniu Miasta rozwijają się 4 razy wolniej, a",
-			" Twoje jednostki będą słabsze o 2% za każde Niezadowolenie"
-		],
-		[
-			"Niezadowolenie ma 2 przyczyny: Cywile i Miasta.",
-			" Każde miasto odbiera 3 Zadowolenia a każdy Cywil 1."
-		],
-		[
-			"Są 2 główne sposoby na radzenie sobie z Niezadowoleniem:",
-			" - budowanie konstrukcji przynoszących Zadowolenie Cywilom",
-			" - pozyskanie lepszych Luksusowych Zasobów."
-		]
-	],
-
-	Golden_Age:  [
-		[
-			"Brawo !",
-			"Twoje imperium wkroczyło w Złoty Wiek!",
-			"Punkty Złotego Wieku gromadzone są co ture bazując na Zadowoleniu Twojej",  //checking context ingame
-			" cywilizacji",
-			"Podczas Złotego Wieku ilość zdobywanej Kultury i Produkcj wzrasta o 20%,",
-			" a każde pole które w tym momencie generuje co najmniej 1 Złoto, dodatkowo będzie dodawało jedno więcej."
-		]
-	],
-
-	Roads_and_Railroads:  [
-		[
-			"Łączenie Twoich Miast do stolicy z użyciem dróg",
-			" będzie dostarczało Złoto poprzez szalak handlowy.",
-			"Zauważ jednak że utrzymanie drogi kosztuje 1 Złota na turę a Torowisko 2,",
-			" więc z ekonomicznego punktu widzenia czasem będzie lepiej po",
-			" prostu poczekać aż Miasta urosną."
-		]
-
-	]
-
-	Victory_Types:[
-		[
-			"Po założeniu swoich pierwszych dwóch czy trzech miast będziesz prawdopodobnie po 100-nej turze.",
-			"Najwyższy czas pomyśleć jak dokładnie zamierzasz wygrać - jeżeli jeszcze o tym nie myślałeś oczywiście"
-		],
-		[
-			"Są 3 sposoby na wygraną w Unciv, a mianowicie:",
-			" - Zwycięstwo Kulturowe: Zakończ 4 drzewa Ustrojów Społecznych",
-			" - Dominacja: Zostań ostatnią cywilizacją na mapie",
-			" - Zwycięstwo Naukowe: Bądź pierwszą cywilizacją która zbuduje statek kosmiczny na Alfa Centaurie"
-		],
-		[
-			"Podsumowując, to są podstawy gry w Unciv:",
-			" - Załóż pierwsze miasto",
-			" - Powoli powiększaj swoje granice mając na uwadze Zadowolenie",
-			" - Wybierz w jaki sposób chcesz wygrać i dąż do tego",
-		],
-		[
-			"Oczywiście jest tego więcej ale najważniejsze to nie skakać na głęboką wodę, póki nie umiesz pływać.",
-			"Człowiek uczy się najlepiej na swoich błędach, więc nie przejmuj się jeżeli coś nie wyjdzie.",
-			"Powodzenia w podbijaniu świata i baw się dobrze ^w^"
-		]
-	]
-
-	Enemy_City:  [
-		[
-			"Miasta mogą zostać przejęte po zredukowaniu ich zdrowia do 1 i",
-			" wysłaniu do tego miasta jednostki do walki w zwarciu.",
-			"Ponieważ miasta się regenerują co turę najlepiej zrobisz atakując je jednostkami",
-			" do walki dystansowej, jednocześnie osłąniając je jednostkami do walki w zwarciu, do"
-			" momentu w którym Miasto zostanie pokonane!"
-		]
-	]
-
-	Luxury_Resource:  [
-		[
-			"Luksusowe Zasoby to nic innego jak droga do zysku z handlu.",
-			"Każdy unikatowy Luksusowy Zasób dodaje 5 Zadowolenia Twojej cywilizacji,",
-			" ale dodatkowe Zasoby tego samego typu nie dodają nic,",
-			" więc można je dobrze spożytkować handlując nimi z innymi!"
-		]
-	]
-
-	Strategic_Resource:  [
-		[
-			"Zasoby Strategiczne pozwalają Tobie na tworzenie nowych jednostek jak również na budowę nowych konstrukcji które",
-			" wymagają tych konkretnych zasobów, jak na prykład Jeźdcy potrzebują Koni",
-			"Każda jednostka 'zabiera' kopię tego zasoby, ale gdy jednostka ginie możesz",
-			" stworzyć nową jednostkę z obecnie niewykorzystanym zasobem.",
-			"Pasek na górze pokazuje dokładnie ile takowych zasobów posiadasz"
-		]
-	]
-
-	_EnemyCityNeedsConqueringWithMeleeUnit:  [
-		[
-			"Miasto nie może już dłużej stawiać oporu!",
-			"Jednakże, aby podbić miasto musisz wprowadzić do niego jednostkę do walki w zwarciu."
-		]
-	],
-
-	After_Conquering: [
-		[
-			"Podczas podbijania Miasta możesz wybrać czy wolisz zburzyć je, czerpać z niego zysk",
-			" w zamian namiastkę autonomii czy zaanektować.",
-			"Burzenie miasta będzie co ture zabierało 1 Populacji co turę do momentu kiedy miasto zostanie zniszczone."
-		],
-		[
-			"Uczynienie z Miasta marionetki oznacza tyle co czerpanie z niego korzyści ale brak kontroli nad produkcją.",
-			"Samo Miasto nie zwiększy kosztów Technologii czy Ustroi Społecznych, ale jego mieszkańcy będą generować 1.5x podstawowego Niezadowolenia.",
-			"Zaanektowanie Miasta da Ci kontrolę nad produkcją, ale tym samym zwiększy przyrost Niezadowolenia Cywili dwukrotnie!",
-			"Złagodzić to może zbudowanie Sądu w mieście, co przywróci Niezadowolenie Cywili do normy.",
-			"Miasta-marionetki mogą zostać zaanektowane, ale w drugą stronę to już nie zadziała!"
-		]
-	],
-
-	_BarbarianEncountered:  [
-		[
-			"Napotkałeś jednostkę Barbażyńców!",
-			"Barbażyńcy atakują wszystkich bez wyjątku, więc nie pozwól",
-			" swoim Cywilom zbliżać się do nich!",
-			"Uważaj też na swoich Zwiadowców!"
-		]
-	]
-
-	_OtherCivEncountered:  [
-		[
-			"Napotkałeś nową cywilizację!",
-			"Nowo poznane cywilizacje zawsze są na początku obojętne, więc to od Ciebie",
-			" zależy czy wypowiesz im wojnę, czy będziesz z nimi handlował."
-		]
-	]
-
-
-	Apollo_Program:  [
-		[
-			"Po ukończeniu programu Apollo możesz rozpocząć budowę części statku kosmicznego w swoich Miastach",
-			" (mając odpowiednie technologie oczywiście) i tym samym osiągnąć Naukowe Zwycięstwo!"
-		]
-	]
-
-	Injured_Units:[
-		[
-			"Zranione jednostki zadają mniejsze obrażenia, lecz regenerują się w każdej turze w której",
-			" nie zostały użyte. Jednostki leczą się po:",
-			" - 20 punktów w Twoich Miastach",
-			" - 15 na Twoim terytorium",
-			" - 10 na neutralnych ziemiach",
-			" - 5 na terenie wroga"
-		]
-	]
-
-	Workers:[
-		[
-			"Robotnicy są istotni dla rozwoju Twoich Miast bo jako jedyni są w stanie budować ulepszenia",
-			" na polach. Ulepszenia zwiększają wydajność Twoich pól, pozwalając Miastom na znacznie szybszą",
-			" produkuckję i rozwój, zachowując tą samą liczbę pracujących pól."
-		]
-	]
-
-	Siege_Units:[
-		[
-			"Jednostki przystosowane do oblężeń są niezwykle potężne przeciwko Miastom, ale wymagają wcześniejszego",
-			" przygotowania zanim mogą być użyte.",
-			"Po przygotowaniu takiej jednostki, może ona atakować z tego pola. Jeżeli jednak przeniesiesz jednostkę",
-			" na inne pole, znowu będze potrzebna chwila na prygotowanie."
-		]
-	]
-
-	Embarking:[
-		[
-			"Po odblokowaniu pewnych technologi, twoje lądowe jednostki będą mogły wsiąść na pokład statku i ",
-			" przemieszczać się po wodzie",
-			"Wejście i zejście z pokładu trwa całą turę.",
-			"Jednostki na czas wchodzenia lub zchodzenia ze statku są bezbronni, więc uważaj!"
-		]
-	]
-
-	City_Range:[
-		[
-			"Twoi mieszkańcy mogą pracować do 3 pól od centrum Miasta.",
-			"Nawet jeżeli granice miasta się poszerzą, to dystans"
-			" dla Cywili pozostaje ten sam."
-		]
-	]
-
-
-	Idle_Units:[
-		[
-			"Jeżeli nie chcesz wykonywać daną jednostką żadnych akcji w danej turze możesz ponownie kliknąć",
-			" przycisk 'Następna jednostka'.",
-			"Jeżeli nie planujesz w najbliższym czasie żadnych akcji związanych z daną jednostką możesz wprowadzić",
-			" ją w tryb snu lub fortyfikacji - te jednostki nie będą brane pod uwagę jako bezczynne.",
-			"Jeżeli chcesz wyłączyć funkcje 'Następna jednostka' całkowicie, możesz",
-			" to zrobić w Menu -> Sprawdź jednostki czekające na rozkazy"
-		]
-	]
-
-
-	Contact_Me:  [
-		[
-			"Witaj ! Jeżeli doszedłeś aż tutaj to prawdopodobnie",
-			" zauważyłeś już że obecnie gra jest niekompletna.",
-			"UnCiv jest tworzone jako całkowicie darmowa gra.",
-			"Więc żadnych reklam czy innych dziwactw."
-		],
-		[
-			"To co naprawdę mnie motywuje do pracy na tą grą, poza",
-			" tym że samo tworzenie sprawia mi frajdę, jest wsparcie",
-			" od innych graczy - jesteście najlepsi!"
-		],
-		[
-			"Każda ocena i opinia motywuje mnie do dalszego działania.",
-			"Więc skontaktuj się ze mną! Wyślij mi maila, opinię albo",
-			" gołębiem pocztowym, i razem stwórzmy wspaniałą grę!",
-			"(Dane kontaktowe znajdują się w Sklepie Play)"
-		]
-	],
-
-	_Pillaging:[
-		[
-			"Jednostki wojskowe mogą plądrować ulepszenia co w rezultacie regeneruje im 25 punktów zdrowia, a tym samym",
-			"niszczy ulepszenie",
-			"Na tym polu wciąż będzie można pracować, ale wszystkie korzyści wynikające z ulepszenia - przepadają."
-			"Robotnicy mogą naprawiać ulepszenia, co zajmuje mniej czasu niż budowanie ich od początku."
-		]
-	]
-
+  Introduction: [
+    [
+      "Witaj w grze Unciv!",
+      "Ponieważ jest to złożona gra, podane będą zadania krok po kroku, które pomogą Ci zapoznać się z grą.",
+      "Są one całkowicie opcjonalne, więc możesz odkrywać grę na własną ręke! (Wyłączane w Ustawieniach)"
+    ]
+  ],
+  New_Game: [
+    [
+      "Twoim pierwszym zadaniem jest założenie stolicy.",
+      "To jest dosyć istotne zadanie gdyż Twoja stolica będzie przynosiła dużo korzyści jeżeli będzie leżała w dobrym miejscu.",
+      "Wiele bonusów będzie nadawanych właśnie Twojej stolicy, a poza tym to stolica będzie prawdopodobnie w centrum Twojego imperium."
+    ],
+    [
+      "Po czym poznać że wybrane miejsce jest właściwe?",
+      "Na to pytanie nie ma prostej odpowiedzi, ale zawsze dobrze mieć w swoim zasięgu luksusowe zasoby.",
+      "Luksusowe zasoby to pola z klejnotami, bawełną, lub z jedwabiem (na mapie widoczne są jako uśmieszki obok ikony zasobów)",
+      "Te zasoby sprawiają że Twoja cywilizacja jest zadowolona. Zwróć też uwagę na zasoby, takie jak żelazo, potrzebne do budowy jednostek"
+    ],
+    [
+      "Jednakże, miasta nie posiadają ustalonej strefy w których pracują ale o tym później!",
+      "To oznacza, że nie ma potrzeby budować miast przy samych surowcach.",
+      "Powiedzmy że chcesz mieć dostęp do żelaza, ale ten zasób leży niemalże na pustyni.",
+      "Nie musisz zakładać miasta przy pustyni. Możesz zbudować miasto kilka pól dalej w bardziej prosperującuch ziemiach",
+      "Twoje miasto z czasem urośnie i ostatecznie dosięgnie swoimi granicami to przysłowiowe żelazo",
+      "Jeżeli natomiast jesteś w pilnej potrzebie danego zasobu i nie masz czasu wtedy to może być jedyne wyjście - ",
+      "   może tak się zdarzyć, a może nie, ale zazwyczaj będziesz miał o wiele za dużo czasu na takie taktyki."
+    ],
+    [
+      "UWAGA! Polskie tłumaczenie jest w trakcie powstawania, więc za ewentualne błędy i braki w tłumaczeniu z góry przepraszam."
+    ]
+  ],
+  _Slow_Start: [
+    [
+      "W pierwszych paru turach większość czynności będzie ograniczona,",
+      "jednakże wraz z rozwojem Twojej cywilizacji ilość czynności zwiększy się",
+      " wymagając tym samym od Ciebie większej uwagi na pozostałe."
+    ]
+  ],
+  Culture_and_Policies: [
+    // Activated when entering policy picker screen
+    [
+      "Co turę każde Miasto generuje Kulturę, która jest wspólna",
+      " dla całej cywilizacji.",
+      "Kiedy osiągniesz określony poziom, będziesz mógł",
+      " wybrać nowy Ustrój Społeczny, a co za tym idze otrzymasz bonus."
+    ],
+    [
+      "Ustroje są podzielone na gałęzie, a każda z nich dodaje dodatkową",
+      " zdolność którą otrzymasz po odblokowaniu całej gałęzi."
+    ],
+    [
+      "Z każdym nowym Ustrojem i z każdym nowym powstałym miastem",
+      " koszt nowego Ustroju rośnie więc wybieraj rozsądnie!"
+    ]
+  ],
+  Happiness: [
+    [
+      "Gdy Miasto rozrasta się i staje się bardziej wpływowe powinieneś zacząć zwracać uwagę na mechanikę Zadowolenia mieszkańców, która to",
+      " wpływa na całe imperium, a nie na pojedyńcze Miasta.",
+      "Wraz z ekspansją miast utrzymanie Zadowolenia miast stanie się coraz trudniejsze."
+    ],
+    [
+      "Ponad to nie możesz budować ulepszeń dla Miasta, które podnosi Zadowolenie, do czasu zakończenia odpowiednich badań.",
+      "Jeżeli Zadowolenie Twojego imperium kiedykolwiek spadnie poniżej zera tempo rozwoju miasta drastycznie zmaleje.",
+      "Jeżeli imperium będzie bardzo niezadowolone (znacznik znajduje się na górze interfejsu - to ta buźka)",
+      " Twoje armie doświadczą spadku efektywności w walce."
+    ],
+    [
+      "Jak już widzisz trzeba cały czas balansować pomiędzy rozwojem i ekspansją a Zadowoleniem mieskańców.",
+      "To nie jest niemożliwe ale jako nowy gracz to nie jest dobry sposób na rozpoczęcie gry.",
+      "Póki co zamiast martwić się zbytnio o Zadowolenie na spokojnie zwiedzaj okoliczne ziemie i ulepszaj",
+      " je przy pomocy Budowniczych.",
+      "Co do Miast to zakładaj je tylko wtedy, kiedy masz pewność że wybrałeś właściwe miejsce."
+    ]
+  ],
+  Unhappiness: [
+    [
+      "Wygląda na to że Twoja ludność jest nieszczęśliwa!",
+      "Przy niskim Zadowoleniu Miasta rozwijają się 4 razy wolniej, a",
+      " Twoje jednostki będą słabsze o 2% za każde Niezadowolenie"
+    ],
+    [
+      "Niezadowolenie ma 2 przyczyny: Obywatele i Miasta.",
+      " Każde miasto odbiera 3 Zadowolenia a każdy Obywatel 1."
+    ],
+    [
+      "Są 2 główne sposoby na radzenie sobie z Niezadowoleniem:",
+      " - budowanie konstrukcji przynoszących Zadowolenie Obywatelom",
+      " - pozyskanie lepszych Luksusowych Zasobów."
+    ]
+  ],
+  Golden_Age: [
+    [
+      "Brawo !",
+      "Twoje imperium wkroczyło w Złotą Erę!",
+      "Punkty Złotej Ery gromadzone są co ture bazując na Zadowoleniu Twojej cywilizacji",
+      "Podczas Złotej Ery ilość zdobywanej Kultury i Produkcj wzrasta o 20%,",
+      " a każde pole które w tym momencie generuje co najmniej 1 Złoto, dodatkowo będzie dodawało jedno więcej."
+    ]
+  ],
+  Roads_and_Railroads: [
+    [
+      "Łączenie Twoich Miast do stolicy z użyciem dróg",
+      " będzie dostarczało Złoto poprzez szalak handlowy.",
+      "Zauważ jednak że utrzymanie drogi kosztuje 1 Złota na turę a Torowisko 2,",
+      " więc z ekonomicznego punktu widzenia czasem będzie lepiej po",
+      " prostu poczekać aż Miasta urosną."
+    ]
+  ],
+  Victory_Types: [
+    [
+      "Po założeniu swoich pierwszych dwóch czy trzech miast będziesz prawdopodobnie po 100-nej turze.",
+      "Najwyższy czas pomyśleć jak dokładnie zamierzasz wygrać - jeżeli jeszcze o tym nie myślałeś oczywiście"
+    ],
+    [
+      "Są 3 sposoby na wygraną w Unciv, a mianowicie:",
+      " - Zwycięstwo Kulturowe: Zakończ 4 drzewa Ustrojów Społecznych",
+      " - Dominacja: Zostań ostatnią cywilizacją na mapie",
+      " - Zwycięstwo Naukowe: Bądź pierwszą cywilizacją która zbuduje statek kosmiczny na Alfa Centaurie"
+    ],
+    [
+      "Podsumowując, to są podstawy gry w Unciv:",
+      " - Załóż pierwsze miasto",
+      " - Powoli powiększaj swoje granice mając na uwadze Zadowolenie",
+      " - Wybierz w jaki sposób chcesz wygrać i dąż do tego"
+    ],
+    [
+      "Oczywiście jest tego więcej ale najważniejsze to nie skakać na głęboką wodę, póki nie umiesz pływać.",
+      "Człowiek uczy się najlepiej na swoich błędach, więc nie przejmuj się jeżeli coś nie wyjdzie.",
+      "Powodzenia w podbijaniu świata i baw się dobrze ^w^"
+    ]
+  ],
+  Enemy_City: [
+    [
+      "Miasta mogą zostać przejęte po zredukowaniu ich zdrowia do 1 i",
+      " wysłaniu do tego miasta jednostki do walki w zwarciu.",
+      "Ponieważ miasta się regenerują co turę najlepiej zrobisz atakując je jednostkami",
+      " do walki dystansowej, jednocześnie osłąniając je jednostkami do walki w zwarciu, do",
+      " momentu w którym Miasto zostanie pokonane!"
+    ]
+  ],
+  Luxury_Resource: [
+    [
+      "Zasoby Luksusowe to nic innego jak droga do zysku z handlu.",
+      "Każdy unikatowy Luksusowy Zasób dodaje 5 Zadowolenia Twojej cywilizacji,",
+      " ale dodatkowe Zasoby tego samego typu nie dodają nic,",
+      " więc można je dobrze spożytkować handlując nimi z innymi!"
+    ]
+  ],
+  Strategic_Resource: [
+    [
+      "Zasoby Strategiczne pozwalają Tobie na tworzenie nowych jednostek jak również na budowę nowych konstrukcji które",
+      " wymagają tych konkretnych zasobów, jak na prykład Jeźdcy potrzebują Koni",
+      "Każda jednostka 'zabiera' kopię tego zasoby, ale gdy jednostka ginie możesz",
+      " stworzyć nową jednostkę z obecnie niewykorzystanym zasobem.",
+      "Pasek na górze pokazuje dokładnie ile takowych zasobów posiadasz"
+    ]
+  ],
+  _EnemyCityNeedsConqueringWithMeleeUnit: [
+    [
+      "Miasto nie może już dłużej stawiać oporu!",
+      "Jednakże, aby podbić miasto musisz wprowadzić do niego jednostkę do walki w zwarciu."
+    ]
+  ],
+  After_Conquering: [
+    [
+      "Podczas podbijania Miasta możesz wybrać czy wolisz zburzyć je, czerpać z niego zysk",
+      " w zamian namiastkę autonomii czy zaanektować.",
+      "Burzenie miasta będzie co ture zabierało 1 Populacji co turę do momentu kiedy miasto zostanie zniszczone."
+    ],
+    [
+      "Uczynienie z Miasta marionetki oznacza tyle co czerpanie z niego korzyści ale brak kontroli nad produkcją.",
+      "Samo Miasto nie zwiększy kosztów Technologii czy Ustroi Społecznych, ale jego mieszkańcy będą generować 1.5x podstawowego Niezadowolenia.",
+      "Zaanektowanie Miasta da Ci kontrolę nad produkcją, ale tym samym zwiększy przyrost Niezadowolenia Obywateli dwukrotnie!",
+      "Złagodzić to może zbudowanie Sądu w mieście, co przywróci Niezadowolenie Obywateli do normy.",
+      "Miasta-marionetki mogą zostać zaanektowane, ale w drugą stronę to już nie zadziała!"
+    ]
+  ],
+  _BarbarianEncountered: [
+    [
+      "Napotkałeś jednostkę Barbażyńców!",
+      "Barbażyńcy atakują wszystkich bez wyjątku, więc nie pozwól",
+      " swoim Cywilom zbliżać się do nich!",
+      "Uważaj też na swoich Zwiadowców!"
+    ]
+  ],
+  _OtherCivEncountered: [
+    [
+      "Napotkałeś nową cywilizację!",
+      "Nowo poznane cywilizacje zawsze są na początku obojętne, więc to od Ciebie",
+      " zależy czy wypowiesz im wojnę, czy będziesz z nimi handlował."
+    ]
+  ],
+  Apollo_Program: [
+    [
+      "Po ukończeniu programu Apollo możesz rozpocząć budowę części statku kosmicznego w swoich Miastach",
+      " (mając odpowiednie technologie oczywiście) i tym samym osiągnąć Naukowe Zwycięstwo!"
+    ]
+  ],
+  Injured_Units: [
+    [
+      "Zranione jednostki zadają mniejsze obrażenia, lecz regenerują się w każdej turze w której",
+      " nie zostały użyte. Jednostki leczą się po:",
+      " - 20 punktów w Twoich Miastach",
+      " - 15 na Twoim terytorium",
+      " - 10 na neutralnych ziemiach",
+      " - 5 na terenie wroga"
+    ]
+  ],
+  Workers: [
+    [
+      "Robotnicy są istotni dla rozwoju Twoich Miast bo jako jedyni są w stanie budować ulepszenia",
+      " na polach. Ulepszenia zwiększają wydajność Twoich pól, pozwalając Miastom na znacznie szybszą",
+      " produkuckję i rozwój, zachowując tą samą liczbę pracujących pól."
+    ]
+  ],
+  Siege_Units: [
+    [
+      "Jednostki przystosowane do oblężeń są niezwykle potężne przeciwko Miastom, ale wymagają wcześniejszego",
+      " przygotowania zanim mogą być użyte.",
+      "Po przygotowaniu takiej jednostki, może ona atakować z tego pola. Jeżeli jednak przeniesiesz jednostkę",
+      " na inne pole, znowu będze potrzebna chwila na prygotowanie."
+    ]
+  ],
+  Embarking: [
+    [
+      "Po odblokowaniu pewnych technologi, twoje lądowe jednostki będą mogły wsiąść na pokład statku i ",
+      " przemieszczać się po wodzie",
+      "Wejście i zejście z pokładu trwa całą turę.",
+      "Jednostki na czas wchodzenia lub zchodzenia ze statku są bezbronni, więc uważaj!"
+    ]
+  ],
+  City_Range: [
+    [
+      "Twoi mieszkańcy mogą pracować do 3 pól od centrum Miasta.",
+      "Nawet jeżeli granice miasta się poszerzą, to dystans",
+      " dla Obywateli pozostaje ten sam."
+    ]
+  ],
+  Idle_Units: [
+    [
+      "Jeżeli nie chcesz wykonywać daną jednostką żadnych akcji w danej turze możesz ponownie kliknąć",
+      " przycisk 'Następna jednostka'.",
+      "Jeżeli nie planujesz w najbliższym czasie żadnych akcji związanych z daną jednostką możesz wprowadzić",
+      " ją w tryb snu lub fortyfikacji - te jednostki nie będą brane pod uwagę jako bezczynne.",
+      "Jeżeli chcesz wyłączyć funkcje 'Następna jednostka' całkowicie, możesz",
+      " to zrobić w Menu -> Sprawdź jednostki czekające na rozkazy"
+    ]
+  ],
+  Contact_Me: [
+    [
+      "Witaj ! Jeżeli doszedłeś aż tutaj to prawdopodobnie",
+      " zauważyłeś już że obecnie gra jest niekompletna.",
+      "UnCiv jest tworzone jako całkowicie darmowa gra.",
+      "Więc żadnych reklam czy innych dziwactw."
+    ],
+    [
+      "To co naprawdę mnie motywuje do pracy na tą grą, poza",
+      " tym że samo tworzenie sprawia mi frajdę, jest wsparcie",
+      " od innych graczy - jesteście najlepsi!"
+    ],
+    [
+      "Każda ocena i opinia motywuje mnie do dalszego działania.",
+      "Więc skontaktuj się ze mną! Wyślij mi maila, opinię albo",
+      " gołębiem pocztowym, i razem stwórzmy wspaniałą grę!",
+      "(Dane kontaktowe znajdują się w Sklepie Play)"
+    ]
+  ],
+  _Pillaging: [
+    [
+      "Jednostki wojskowe mogą plądrować ulepszenia co w rezultacie regeneruje im 25 punktów zdrowia, a tym samym",
+      "niszczy ulepszenie",
+      "Na tym polu wciąż będzie można pracować, ale wszystkie korzyści wynikające z ulepszenia - przepadają.",
+      "Robotnicy mogą naprawiać ulepszenia, co zajmuje mniej czasu niż budowanie ich od początku."
+    ]
+  ]
 }

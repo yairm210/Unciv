@@ -1,51 +1,60 @@
 package com.unciv.ui.mapeditor
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.tilegroups.TileGroup
-import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontSize
-import com.unciv.ui.worldscreen.TileGroupMap
 
-class MapEditorScreen(): CameraStageBaseScreen(){
-    var tileMap = TileMap()
+class MapEditorScreen(): CameraStageBaseScreen() {
+    val ruleset = RulesetCache.getBaseRuleset()
     var mapName = "My first map"
-    lateinit var mapHolder: TileGroupMap<TileGroup>
-    private val showHideEditorOptionsButton = TextButton(">",skin)
-    val ruleSet = UncivGame.Current.ruleset
-    private val tileEditorOptions = TileEditorOptionsTable(this)
 
-    constructor(mapNameToLoad:String?):this(){
+    var tileMap = TileMap()
+    lateinit var mapHolder: EditorMapHolder
+
+    val tileEditorOptions = TileEditorOptionsTable(this)
+
+    private val showHideEditorOptionsButton = TextButton(">", skin)
+
+
+    constructor(mapNameToLoad: String?): this() {
         var mapToLoad = mapNameToLoad
         if (mapToLoad == null) {
             val existingSaves = MapSaver().getMaps()
             if(existingSaves.isNotEmpty())
                 mapToLoad = existingSaves.first()
         }
-        if(mapToLoad!=null){
-            mapName=mapToLoad
-            tileMap= MapSaver().loadMap(mapName)
+
+        if(mapToLoad != null){
+            mapName = mapToLoad
+            tileMap = MapSaver().loadMap(mapName)
         }
+
         initialize()
     }
 
-    constructor(map: TileMap):this(){
+    constructor(map: TileMap): this() {
         tileMap = map
         initialize()
     }
 
     fun initialize() {
-        tileMap.setTransients(ruleSet)
-        val mapHolder = getMapHolder(tileMap)
+        tileMap.setTransients(ruleset)
 
+        mapHolder = EditorMapHolder(this, tileMap)
+        mapHolder.addTiles()
         stage.addActor(mapHolder)
+
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
 
@@ -76,35 +85,65 @@ class MapEditorScreen(): CameraStageBaseScreen(){
         optionsMenuButton.pack()
         optionsMenuButton.x = 30f
         optionsMenuButton.y = 30f
-
         stage.addActor(optionsMenuButton)
-    }
 
-    private fun getMapHolder(tileMap: TileMap): ScrollPane {
-        val tileSetStrings = TileSetStrings()
-        val tileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
-        for (tileGroup in tileGroups) {
-            tileGroup.showEntireMap = true
-            tileGroup.update()
-            tileGroup.onClick {
-                val tileInfo = tileGroup.tileInfo
+        mapHolder.addCaptureListener(object: InputListener() {
+            var isDragging = false
+            var isPainting = false
+            var touchDownTime = System.currentTimeMillis()
+            var lastDrawnTiles = HashSet<TileInfo>()
 
-                tileEditorOptions.updateTileWhenClicked(tileInfo)
-                tileGroup.tileInfo.setTransients()
-                tileGroup.update()
+            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean {
+                touchDownTime = System.currentTimeMillis()
+                return true
             }
-        }
 
-        mapHolder = TileGroupMap(tileGroups, 300f)
-        val scrollPane = ScrollPane(mapHolder)
-        scrollPane.setSize(stage.width, stage.height)
-        scrollPane.layout()
-        scrollPane.scrollPercentX=0.5f
-        scrollPane.scrollPercentY=0.5f
-        scrollPane.updateVisualScroll()
-        return scrollPane
+            override fun touchDragged(event: InputEvent?, x: Float, y: Float, pointer: Int) {
+                if (!isDragging) {
+                    isDragging = true
+                    val deltaTime = System.currentTimeMillis() - touchDownTime
+                    if (deltaTime > 400) {
+                        isPainting = true
+                        stage.cancelTouchFocusExcept(this, mapHolder)
+                    }
+                }
+
+                if (isPainting) {
+
+                    for (tileInfo in lastDrawnTiles)
+                        mapHolder.tileGroups[tileInfo]!!.hideCircle()
+                    lastDrawnTiles.clear()
+
+                    val stageCoords = mapHolder.actor.stageToLocalCoordinates(Vector2(event!!.stageX, event.stageY))
+                    val centerTileInfo = mapHolder.getClosestTileTo(stageCoords)
+                    if (centerTileInfo != null) {
+                        val distance = tileEditorOptions.brushSize - 1
+
+                        for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
+
+                            tileEditorOptions.updateTileWhenClicked(tileInfo)
+
+                            tileInfo.setTransients()
+                            mapHolder.tileGroups[tileInfo]!!.update()
+                            mapHolder.tileGroups[tileInfo]!!.showCircle(Color.WHITE)
+
+                            lastDrawnTiles.add(tileInfo)
+                        }
+                    }
+                }
+            }
+
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int) {
+                // Reset the whole map
+                if (isPainting) {
+                    mapHolder.updateTileGroups()
+                    mapHolder.setTransients()
+                }
+
+                isDragging = false
+                isPainting = false
+            }
+        })
     }
-
-
 }
 

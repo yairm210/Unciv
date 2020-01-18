@@ -29,9 +29,9 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 
     override fun execute(worldScreen: WorldScreen) {
         if (locations.isNotEmpty()) {
-            var index = locations.indexOf(worldScreen.tileMapHolder.selectedTile?.position)
+            var index = locations.indexOf(worldScreen.mapHolder.selectedTile?.position)
             index = ++index % locations.size // cycle through tiles
-            worldScreen.tileMapHolder.setCenterPosition(locations[index], selectUnit = false)
+            worldScreen.mapHolder.setCenterPosition(locations[index], selectUnit = false)
         }
     }
 
@@ -40,7 +40,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 /** show tech screen */
 class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        val tech = worldScreen.gameInfo.ruleSet.Technologies[techName]
+        val tech = worldScreen.gameInfo.ruleSet.technologies[techName]
         worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv, tech))
     }
 }
@@ -49,7 +49,7 @@ class TechAction(val techName: String = "") : NotificationAction {
 data class CityAction(val city: Vector2 = Vector2.Zero): NotificationAction {
 
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.tileMapHolder.tileMap[city].getCity()?.let {
+        worldScreen.mapHolder.tileMap[city].getCity()?.let {
             worldScreen.game.setScreen(CityScreen(it))
         }
     }

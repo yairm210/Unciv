@@ -10,8 +10,7 @@ import kotlin.math.roundToInt
 
 class PolicyManager {
 
-    @Transient
-    lateinit var civInfo: CivilizationInfo
+    @Transient lateinit var civInfo: CivilizationInfo
 
     var freePolicies = 0
     var storedCulture = 0
@@ -19,6 +18,30 @@ class PolicyManager {
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
             get() = field && canAdoptPolicy()
+    var legalismState = HashMap<String, String>()
+
+    fun clone(): PolicyManager {
+        val toReturn = PolicyManager()
+        toReturn.numberOfAdoptedPolicies = numberOfAdoptedPolicies
+        toReturn.adoptedPolicies.addAll(adoptedPolicies)
+        toReturn.freePolicies = freePolicies
+        toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
+        toReturn.storedCulture = storedCulture
+        toReturn.legalismState.putAll(legalismState)
+        return toReturn
+    }
+
+    fun startTurn() {
+        if (isAdopted("Legalism") && legalismState.size < 4)
+            tryAddLegalismBuildings()
+    }
+
+    fun endTurn(culture: Int) {
+        val couldAdoptPolicyBefore = canAdoptPolicy()
+        storedCulture += culture
+        if (!couldAdoptPolicyBefore && canAdoptPolicy())
+            shouldOpenPolicyPicker = true
+    }
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
@@ -53,7 +76,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.PolicyBranches.values
+        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
                 .flatMap { it.policies.union(listOf(it)) }
                 .any { civInfo.policies.isAdoptable(it) }
         return hasAdoptablePolicies
@@ -88,9 +111,7 @@ class PolicyManager {
             "Citizenship" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
             "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
             "Scientific Revolution" -> civInfo.tech.freeTechs += 2
-            "Legalism" ->
-                for (city in civInfo.cities.subList(0, min(4, civInfo.cities.size)))
-                    city.cityConstructions.addCultureBuilding()
+            "Legalism" -> tryAddLegalismBuildings()
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
@@ -100,34 +121,29 @@ class PolicyManager {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"
                         VictoryType.Domination,VictoryType.Neutral ->
-                            civInfo.gameInfo.ruleSet.Units.keys.filter { it.startsWith("Great") }.random()
+                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
                     }
                     civInfo.addGreatPerson(greatPerson)
                 }
             }
         }
 
+        // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
         for (cityInfo in civInfo.cities)
-            cityInfo.cityStats.update() // This ALSO has the side-effect of updating the CivInfo startForNextTurn so we don't need to call it explicitly
+            cityInfo.cityStats.update()
 
         if(!canAdoptPolicy()) shouldOpenPolicyPicker=false
     }
 
-    fun endTurn(culture: Int) {
-        val couldAdoptPolicyBefore = canAdoptPolicy()
-        storedCulture += culture
-        if (!couldAdoptPolicyBefore && canAdoptPolicy())
-            shouldOpenPolicyPicker = true
+    private fun tryAddLegalismBuildings() {
+        val candidateCities = civInfo.cities
+                .sortedBy { it.turnAcquired }
+                .subList(0, min(4, civInfo.cities.size))
+                .filter { it.id !in legalismState
+                        && it.cityConstructions.hasBuildableCultureBuilding() }
+        for (city in candidateCities) {
+            val builtBuilding = city.cityConstructions.addCultureBuilding()
+            legalismState[city.id] = builtBuilding!!
+        }
     }
-
-    fun clone(): PolicyManager {
-        val toReturn = PolicyManager()
-        toReturn.numberOfAdoptedPolicies=numberOfAdoptedPolicies
-        toReturn.adoptedPolicies.addAll(adoptedPolicies)
-        toReturn.freePolicies=freePolicies
-        toReturn.shouldOpenPolicyPicker=shouldOpenPolicyPicker
-        toReturn.storedCulture=storedCulture
-        return toReturn
-    }
-
 }

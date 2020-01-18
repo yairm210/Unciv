@@ -12,14 +12,14 @@ import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import java.io.File
 import kotlin.concurrent.thread
+import kotlin.system.exitProcess
 
 
 internal object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
 
-        if (File("../Images").exists()) // So we don't run this from within a fat JAR
-            packImages()
+        packImages()
 
         val config = LwjglApplicationConfiguration()
         // Don't activate GL 3.0 because it causes problems for MacOS computers
@@ -27,10 +27,10 @@ internal object DesktopLauncher {
         config.title = "Unciv"
         config.useHDPI = true
 
-        val game = UncivGame("Desktop")
+        val game = UncivGame("Desktop", null){exitProcess(0)}
 
-
-        tryActivateDiscord(game)
+        if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
+            tryActivateDiscord(game)
 
         LwjglApplication(game, config)
     }
@@ -51,13 +51,24 @@ internal object DesktopLauncher {
         // This is so they don't look all pixelated
         settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-        TexturePacker.process(settings, "../Images", ".", "game")
+
+        if (File("../Images").exists()) // So we don't run this from within a fat JAR
+            TexturePacker.process(settings, "../Images", ".", "game")
+
+        // pack for mods as well
+        val modDirectory = File("mods")
+        if(modDirectory.exists()) {
+            for (mod in modDirectory.listFiles()!!){
+                TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
+            }
+        }
 
         val texturePackingTime = System.currentTimeMillis() - startTime
         println("Packing textures - "+texturePackingTime+"ms")
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
+
         try {
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)

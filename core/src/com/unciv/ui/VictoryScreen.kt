@@ -67,7 +67,10 @@ class VictoryScreen : PickerScreen() {
             }
         }
 
-        if(!someoneHasWon) setDefaultCloseAction()
+        if (playerCivInfo.isDefeated()) {
+            wonOrLost("")
+        } else if(!someoneHasWon)
+            setDefaultCloseAction()
     }
 
 
@@ -133,7 +136,7 @@ class VictoryScreen : PickerScreen() {
     fun culturalVictoryColumn():Table{
         val t=Table()
         t.defaults().pad(5f)
-        for(branch in playerCivInfo.gameInfo.ruleSet.PolicyBranches.values) {
+        for(branch in playerCivInfo.gameInfo.ruleSet.policyBranches.values) {
             val finisher = branch.policies.last().name
             t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }
@@ -202,11 +205,6 @@ class VictoryScreen : PickerScreen() {
         for (entry in civsToBranchesCompleted) {
             val civToBranchesHaveCompleted=EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
-            civToBranchesHaveCompleted.touchable= Touchable.enabled
-            civToBranchesHaveCompleted.onClick {
-                game.setScreen(PolicyPickerScreen(UncivGame.Current.worldScreen,entry.civ, false))
-                dispose()
-            }
         }
         return policyVictoryColumn
     }
