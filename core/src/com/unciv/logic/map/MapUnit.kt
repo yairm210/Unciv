@@ -63,6 +63,7 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
+    var isAirUnitInCity: Boolean = false
 
     companion object {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
@@ -80,6 +81,7 @@ class MapUnit {
         toReturn.action=action
         toReturn.attacksThisTurn=attacksThisTurn
         toReturn.promotions=promotions.clone()
+        toReturn.isAirUnitInCity=isAirUnitInCity
         return toReturn
     }
 
@@ -457,7 +459,10 @@ class MapUnit {
     fun putInTile(tile:TileInfo){
         when {
             !movement.canMoveTo(tile) -> throw Exception("I can't go there!")
-            type.isAirUnit() -> tile.airUnits.add(this)
+            type.isAirUnit() -> {
+                tile.airUnits.add(this)
+                isAirUnitInCity = tile.isCityCenter() // prevent carriers from sailing away with air units explicitly assigned to city
+            }
             type.isCivilian() -> tile.civilianUnit=this
             else -> tile.militaryUnit=this
         }

@@ -237,8 +237,19 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.isFortified() || unit.action==Constants.unitActionSetUp || unit.action==Constants.unitActionSleep)
             unit.action=null // unfortify/setup after moving
 
+        // If this unit is a carrier, keep record of its air payload whereabouts.
+        var origin = unit.getTile()
+
         unit.removeFromTile()
         unit.putInTile(destination)
+
+        if(unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit()){ // bring along the payloads
+            for(airUnit in origin.airUnits.filter { !it.isAirUnitInCity }){
+                airUnit.removeFromTile()
+                airUnit.putInTile(destination)
+                airUnit.isAirUnitInCity = false // don't leave behind payloads in the city if carrier happens to dock
+            }
+        }
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
         // and to view tiles along the way
@@ -261,6 +272,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun canMoveTo(tile: TileInfo): Boolean {
         if(unit.type.isAirUnit())
             return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==unit.civInfo
+                    || tile.militaryUnit!=null && tile.militaryUnit!!.owner==unit.owner && ((tile.militaryUnit!!.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) || (tile.militaryUnit!!.type.isMissileCarrierUnit() && unit.type.isMissileUnit())) && tile.airUnits.size<2
 
         if(!canPassThrough(tile))
             return false

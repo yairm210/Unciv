@@ -857,6 +857,14 @@
 		"attackSound": "shot"
 	},
 	{
+		"name": "Carrier",
+		"unitType": "WaterAircraftCarrier",
+		"movement": 5,
+		"cost": 325,
+		"requiredTech": "Flight",
+		"hurryCostModifier": 20
+	},
+	{
 		"name": "Triplane",
 		"unitType": "Fighter",
 		"movement": 1,
