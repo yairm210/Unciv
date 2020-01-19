@@ -274,9 +274,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             if(tile.isCityCenter())
                 return tile.airUnits.size<6 && tile.getCity()?.civInfo==unit.civInfo
             else if(tile.militaryUnit!=null) {
-                var unitAtDestination = tile.militaryUnit!!
+                val unitAtDestination = tile.militaryUnit!!
                 return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) || (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
-                        && unitAtDestination.owner==unit.owner && tile.airUnits.size<2
+                        && unitAtDestination.owner==unit.owner && tile.airUnits.size<(2+unit.getUniques().count { it == "Can carry 1 extra air unit" })
             } else
                 return false
 
