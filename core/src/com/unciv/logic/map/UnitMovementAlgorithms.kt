@@ -271,8 +271,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(unit.type.isAirUnit())
-            return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==unit.civInfo
-                    || tile.militaryUnit!=null && tile.militaryUnit!!.owner==unit.owner && ((tile.militaryUnit!!.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) || (tile.militaryUnit!!.type.isMissileCarrierUnit() && unit.type.isMissileUnit())) && tile.airUnits.size<2
+            if(tile.isCityCenter())
+                return tile.airUnits.size<6 && tile.getCity()?.civInfo==unit.civInfo
+            else if(tile.militaryUnit!=null) {
+                var unitAtDestination = tile.militaryUnit!!
+                return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) || (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
+                        && unitAtDestination.owner==unit.owner && tile.airUnits.size<2
+            } else
+                return false
 
         if(!canPassThrough(tile))
             return false
