@@ -166,6 +166,10 @@ class BattleDamage{
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
+        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it == "+[25]% Combat Bonus when defending" }
+        if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
+        println("carrierDefenceBonus=${carrierDefenceBonus}");
+
 
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()
