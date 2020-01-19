@@ -135,7 +135,7 @@ class PolicyManager {
         if(!canAdoptPolicy()) shouldOpenPolicyPicker=false
     }
 
-    private fun tryAddLegalismBuildings() {
+    fun tryAddLegalismBuildings() {
         val candidateCities = civInfo.cities
                 .sortedBy { it.turnAcquired }
                 .subList(0, min(4, civInfo.cities.size))
