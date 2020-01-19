@@ -224,6 +224,42 @@
 		"unitTypes": ["WaterSubmarine"]
 	},
 	
+	// Aircraft Carrier
+	{
+		"name": "Armor Plating I",
+		"effect": "+25% Combat Bonus when defending",
+		"unitTypes": ["WaterAircraftCarrier"]
+	},
+	{
+		"name": "Armor Plating II",
+		"prerequisites": ["Armor Plating I"],
+		"effect": "+25% Combat Bonus when defending",
+		"unitTypes": ["WaterAircraftCarrier"]
+	},
+	{
+		"name": "Armor Plating III",
+		"prerequisites": ["Armor Plating II"],
+		"effect": "+25% Combat Bonus when defending",
+		"unitTypes": ["WaterAircraftCarrier"]
+	},
+	{
+		"name": "Flight Deck I",
+		"effect": "Can carry 1 extra air unit",
+		"unitTypes": ["WaterAircraftCarrier"]
+	},
+	{
+		"name": "Flight Deck II",
+		"prerequisites": ["Flight Deck I"],
+		"effect": "Can carry 1 extra air unit",
+		"unitTypes": ["WaterAircraftCarrier"]
+	},
+	{
+		"name": "Flight Deck III",
+		"prerequisites": ["Flight Deck II"],
+		"effect": "Can carry 1 extra air unit",
+		"unitTypes": ["WaterAircraftCarrier"]
+	},
+
 	// Bomber
 	{
 		"name": "Siege I",
