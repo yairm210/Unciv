@@ -128,7 +128,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         var unitList = ArrayList<MapUnit>()
         if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
             unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
-        } else if (tileInfo.militaryUnit!=null && (tileInfo.militaryUnit!!.type.isAircraftCarrierUnit() || tileInfo.militaryUnit!!.type.isMissileCarrierUnit()) && tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && !tileInfo.airUnits.isEmpty()) {
+        } else if (tileInfo.militaryUnit!=null &&
+                (tileInfo.militaryUnit!!.type.isAircraftCarrierUnit() || tileInfo.militaryUnit!!.type.isMissileCarrierUnit()) &&
+                 tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && !tileInfo.airUnits.isEmpty()) {
             unitList.addAll(tileInfo.getUnits())
         }
 

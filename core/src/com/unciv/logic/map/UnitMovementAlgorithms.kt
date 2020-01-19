@@ -244,10 +244,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         unit.putInTile(destination)
 
         if(unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit()){ // bring along the payloads
-            for(airUnit in origin.airUnits.filter { !it.isAirUnitInCity }){
+            for(airUnit in origin.airUnits.filter { !it.isUnitInCity }){
                 airUnit.removeFromTile()
                 airUnit.putInTile(destination)
-                airUnit.isAirUnitInCity = false // don't leave behind payloads in the city if carrier happens to dock
+                airUnit.isUnitInCity = false // don't leave behind payloads in the city if carrier happens to dock
             }
         }
 
@@ -275,7 +275,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return tile.airUnits.size<6 && tile.getCity()?.civInfo==unit.civInfo
             else if(tile.militaryUnit!=null) {
                 val unitAtDestination = tile.militaryUnit!!
-                return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) || (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
+                return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
+                        (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
                         && unitAtDestination.owner==unit.owner && tile.airUnits.size<(2+unit.getUniques().count { it == "Can carry 1 extra air unit" })
             } else
                 return false
