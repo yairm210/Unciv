@@ -48,6 +48,9 @@ class CityConstructions {
     fun getConstructableUnits() = cityInfo.getRuleset().units.values
             .asSequence().filter { it.isBuildable(this) }
 
+    fun getBasicCultureBuildings() = cityInfo.getRuleset().buildings.values
+            .asSequence().filter { it.culture > 0f && !it.isWonder && !it.isNationalWonder && it.replaces == null }
+
     /**
      * @return [Stats] provided by all built buildings in city plus the bonus from Library
      */
@@ -279,22 +282,18 @@ class CityConstructions {
     }
 
     fun hasBuildableCultureBuilding(): Boolean {
-        val basicCultureBuildings = listOf("Monument", "Temple", "Opera House", "Museum")
-                .map { cityInfo.civInfo.getEquivalentBuilding(it) }
-
-        return basicCultureBuildings
+        return getBasicCultureBuildings()
+                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
                 .filter { it.isBuildable(this) || it.name == currentConstruction}
                 .any()
     }
 
     fun addCultureBuilding(): String? {
-        val basicCultureBuildings = listOf("Monument", "Temple", "Opera House", "Museum")
-                .map { cityInfo.civInfo.getEquivalentBuilding(it) }
-
-        val buildableCultureBuildings = basicCultureBuildings
+        val buildableCultureBuildings = getBasicCultureBuildings()
+                .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
                 .filter { it.isBuildable(this) || it.name == currentConstruction }
 
-        if (buildableCultureBuildings.isEmpty())
+        if (!buildableCultureBuildings.any())
             return null
 
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
@@ -329,7 +328,7 @@ class CityConstructions {
 
     fun addToQueue(constructionName: String) {
         if (!isQueueFull()) {
-            if (isQueueEmpty() && currentConstruction == "Nothing") {
+            if (isQueueEmpty() && currentConstruction == "" || currentConstruction == "Nothing") {
                 currentConstruction = constructionName
                 currentConstructionIsUserSet = true
             } else

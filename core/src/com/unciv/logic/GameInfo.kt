@@ -73,7 +73,6 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0 && !gameParameters.noBarbarians) placeBarbarians()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -82,8 +81,14 @@ class GameInfo {
         switchTurn()
 
         while(thisPlayer.playerType==PlayerType.AI){
-            if(thisPlayer.isBarbarian() || !thisPlayer.isDefeated())
+            if(thisPlayer.isBarbarian() || !thisPlayer.isDefeated()) {
                 NextTurnAutomation().automateCivMoves(thisPlayer)
+
+                // Placing barbarians after their turn
+                if (thisPlayer.isBarbarian()
+                        && !gameParameters.noBarbarians
+                        && turns % 10 == 0) placeBarbarians()
+            }
             switchTurn()
         }
 

@@ -76,7 +76,8 @@ class CityInfo {
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
 
-        if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
+        civInfo.policies.tryAddLegalismBuildings()
+
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")
             cityConstructions.currentConstruction = Constants.worker // Default for first city only!
