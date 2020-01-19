@@ -277,7 +277,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 val unitAtDestination = tile.militaryUnit!!
                 return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
                         (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
-                        && unitAtDestination.owner==unit.owner && tile.airUnits.size<(2+unit.getUniques().count { it == "Can carry 1 extra air unit" })
+                        && unitAtDestination.owner==unit.owner && tile.airUnits.size<2
             } else
                 return false
 
