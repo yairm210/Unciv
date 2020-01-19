@@ -860,7 +860,6 @@
 		"name": "Carrier",
 		"unitType": "WaterAircraftCarrier",
 		"movement": 5,
-		"strength": 30,
 		"cost": 325,
 		"requiredTech": "Flight",
 		"hurryCostModifier": 20
