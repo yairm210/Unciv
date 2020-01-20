@@ -20,7 +20,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
+import com.unciv.ui.utils.YesNoPopup
 import kotlin.math.roundToInt
 
 class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
@@ -152,7 +152,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (viewingCiv.isAtWarWith(otherCiv)) {
             val peaceButton = TextButton("Negotiate Peace".tr(), skin)
             peaceButton.onClick {
-                YesNoPopupTable("Peace with [${otherCiv.civName}]?".tr(), {
+                YesNoPopup("Peace with [${otherCiv.civName}]?".tr(), {
                     val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                     tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                     tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
@@ -334,9 +334,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
         }
         declareWarButton.onClick {
-            YesNoPopupTable("Declare war on [${otherCiv.civName}]?".tr(), {
+            YesNoPopup("Declare war on [${otherCiv.civName}]?".tr(), {
                 diplomacyManager.declareWar()
-                setRightSideFlavorText(otherCiv,otherCiv.getTranslatedNation().attacked,"Very well.")
+                setRightSideFlavorText(otherCiv, otherCiv.getTranslatedNation().attacked, "Very well.")
                 updateLeftSideTable()
             }, this)
         }

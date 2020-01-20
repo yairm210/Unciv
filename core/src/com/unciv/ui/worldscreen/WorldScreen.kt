@@ -30,8 +30,7 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlin.concurrent.thread
@@ -137,7 +136,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun loadLatestMultiplayerState(){
-        val loadingGamePopup = PopupTable(this)
+        val loadingGamePopup = Popup(this)
         loadingGamePopup.add("Loading latest game state...")
         loadingGamePopup.open()
         thread(name="MultiplayerLoad") {
@@ -153,7 +152,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
             } catch (ex: Exception) {
                 loadingGamePopup.close()
-                val couldntDownloadLatestGame = PopupTable(this)
+                val couldntDownloadLatestGame = Popup(this)
                 couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
                 couldntDownloadLatestGame.addCloseButton()
                 couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
@@ -204,7 +203,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
-        if (!hasVisibleDialogs() && isPlayersTurn) {
+        if (!hasOpenPopups() && isPlayersTurn) {
             when {
                 !gameInfo.oneMoreTurnMode && viewingCiv.isDefeated() -> game.setScreen(VictoryScreen())
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
@@ -214,7 +213,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
             }
         }
-        updateNextTurnButton(hasVisibleDialogs()) // This must be before the notifications update, since its position is based on it
+        updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
@@ -389,7 +388,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     try {
                         OnlineMultiplayer().tryUploadGame(gameInfoClone)
                     } catch (ex: Exception) {
-                        val cantUploadNewGamePopup = PopupTable(this)
+                        val cantUploadNewGamePopup = Popup(this)
                         cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
@@ -518,7 +517,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // remove current listener for the "BACK" button to avoid showing the dialog twice
         stage.removeListener( backButtonListener )
 
-        var promptWindow = PopupTable(this)
+        var promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
         promptWindow.addButton("Yes"){game.exitEvent?.invoke()}

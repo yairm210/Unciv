@@ -15,7 +15,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.utils.Popup
 import java.util.*
 
 class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters: GameParameters): Table() {
@@ -122,7 +122,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
     }
 
     private fun popupNationPicker(player: Player) {
-        val nationsPopup = PopupTable(newGameScreen)
+        val nationsPopup = Popup(newGameScreen)
         val nationListTable = Table()
 
         val randomPlayerTable = Table()

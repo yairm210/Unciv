@@ -6,8 +6,8 @@ import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 
 data class TutorialForRender(val tutorial: Tutorial, val texts: List<String>)
 
@@ -22,21 +22,21 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
         if (text == null) {
             closeAction()
         } else {
-            val tutorialTable = PopupTable(screen)
+            val tutorialPopup = Popup(screen)
 
             if (Gdx.files.internal("ExtraImages/$tutorialName").exists()) {
-                tutorialTable.add(ImageGetter.getExternalImage(tutorialName)).row()
+                tutorialPopup.add(ImageGetter.getExternalImage(tutorialName)).row()
             }
 
-            tutorialTable.addGoodSizedLabel(texts[0]).row()
+            tutorialPopup.addGoodSizedLabel(texts[0]).row()
 
             val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)
             button.onClick {
-                tutorialTable.remove()
+                tutorialPopup.remove()
                 showDialog(tutorialName, texts - text, closeAction)
             }
-            tutorialTable.add(button).pad(10f)
-            tutorialTable.open()
+            tutorialPopup.add(button).pad(10f)
+            tutorialPopup.open()
         }
     }
 }

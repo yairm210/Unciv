@@ -12,16 +12,16 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.translations.tr
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.optionstable.DropBox
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.worldscreen.mainmenu.DropBox
+import com.unciv.ui.utils.Popup
 import kotlin.concurrent.thread
 
-class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
+class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
     init{
         val mapNameEditor = TextField(mapEditorScreen.mapName, skin)
         mapNameEditor.addListener{ mapEditorScreen.mapName=mapNameEditor.text; true }
         add(mapNameEditor).row()
-        
+
         val clearCurrentMapButton = TextButton("Clear current map".tr(),skin)
         clearCurrentMapButton.onClick {
             for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values)
@@ -72,13 +72,13 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
                     DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
 
                     remove()
-                    val uploadedSuccessfully = PopupTable(screen)
+                    val uploadedSuccessfully = Popup(screen)
                     uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
                     uploadedSuccessfully.addCloseButton()
                     uploadedSuccessfully.open()
                 } catch (ex: Exception) {
                     remove()
-                    val couldNotUpload = PopupTable(screen)
+                    val couldNotUpload = Popup(screen)
                     couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
                     couldNotUpload.addCloseButton()
                     couldNotUpload.open()

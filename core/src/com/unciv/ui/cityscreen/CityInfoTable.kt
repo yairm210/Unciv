@@ -11,7 +11,7 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
+import com.unciv.ui.utils.YesNoPopup
 import java.text.DecimalFormat
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -89,12 +89,12 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
 
                     sellBuildingButton.onClick {
-                        YesNoPopupTable("Are you sure you want to sell this [${building.name}]?".tr(),
-                            {
-                                cityScreen.city.sellBuilding(building.name)
-                                cityScreen.city.cityStats.update()
-                                cityScreen.update()
-                            }, cityScreen)
+                        YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
+                                {
+                                    cityScreen.city.sellBuilding(building.name)
+                                    cityScreen.city.cityStats.update()
+                                    cityScreen.update()
+                                }, cityScreen)
                     }
                     if (cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.isPuppet
                             || !UncivGame.Current.worldScreen.isPlayersTurn)

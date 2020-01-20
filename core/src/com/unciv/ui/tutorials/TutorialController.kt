@@ -20,8 +20,6 @@ class TutorialController(
         showTutorialIfNeeded()
     }
 
-    fun isTutorialShowing(): Boolean = isTutorialShowing
-
     private fun showTutorialIfNeeded() {
         val tutorial = tutorialQueue.firstOrNull()
         if (tutorial == null) {

@@ -14,7 +14,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
+import com.unciv.ui.utils.YesNoPopup
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     /* -2 = Nothing, -1 = current construction, >= 0 queue entry */
@@ -281,7 +281,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
 
             button.onClick(UncivSound.Coin) {
-                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
+                YesNoPopup("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
                     cityConstructions.purchaseConstruction(construction.name)
                     if (isSelectedQueueEntry()) {
                         cityConstructions.removeFromQueue(selectedQueueEntry)
