@@ -19,3 +19,5 @@ Note that Right-to-Left languages such as Arabic and Hebrew are not supported by
 Beyond the regular translations, there are 2 more files that contain special translations: the [Tutorials](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials) and the [Nations](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Nations) json files.
 
 Both of these are much more rigorous in their type-checking, but the basic instructions are the same - copy the base file (Nations, Tutorials_English) to a new file with your language.
+
+If you're done with all of that, then there's always the Google Play page to translate... ;)
