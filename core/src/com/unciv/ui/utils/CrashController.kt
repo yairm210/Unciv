@@ -4,7 +4,6 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
 import com.unciv.models.CrashReport
 import com.unciv.ui.saves.Gzip
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 
 interface CrashController {
 
@@ -40,14 +39,14 @@ interface CrashController {
             }
         }
 
-        private fun prepareDialog(): PopupTable {
+        private fun prepareDialog(): Popup {
             return if (crashReportSender == null) {
-                PopupTable(UncivGame.Current.worldScreen).apply {
+                Popup(UncivGame.Current.worldScreen).apply {
                     addGoodSizedLabel(MESSAGE_FALLBACK).row()
                     addCloseButton()
                 }
             } else {
-                PopupTable(UncivGame.Current.worldScreen).apply {
+                Popup(UncivGame.Current.worldScreen).apply {
                     addGoodSizedLabel(MESSAGE).row()
                     addButton("Send report") {
                         crashReportSender.sendReport(buildReport())

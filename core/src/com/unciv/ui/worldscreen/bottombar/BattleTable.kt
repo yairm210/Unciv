@@ -17,7 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.utils.Popup
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
@@ -187,7 +187,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 val canBombard = UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
                 if (canBombard) {
                     attackableEnemy = AttackableTile(attacker.getTile(), defender.getTile())
-                }    
+                }
             }
         }
 
@@ -204,7 +204,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
-                    val battleBugPopup = PopupTable(worldScreen)
+                    val battleBugPopup = Popup(worldScreen)
                     battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
                     battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
                     battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()

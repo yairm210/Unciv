@@ -11,11 +11,11 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.utils.Popup
 import kotlin.math.max
 import kotlin.math.min
 
-class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
+class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
     init{
         val viewingCiv = worldScreen.viewingCiv
         val tradeRequest = viewingCiv.tradeRequests.first()
@@ -52,7 +52,7 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             tradeLogic.acceptTrade()
             viewingCiv.tradeRequests.remove(tradeRequest)
             close()
-            PopupTable(worldScreen).apply {
+            Popup(worldScreen).apply {
                 add(otherCivLeaderName.toLabel()).colspan(2)
                 addSeparator()
                 addGoodSizedLabel("Excellent!").row()

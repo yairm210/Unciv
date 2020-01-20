@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen.optionstable
+package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -11,6 +11,7 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.toLabel
@@ -19,7 +20,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
-class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
+class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
 
     init {
         val width = 200f
@@ -69,13 +70,13 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         addSeparator()
 
         addSquareButton("Options".tr()){
-            UncivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsTable(worldScreen))
+            UncivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsPopup(worldScreen))
             remove()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Community"){
-            WorldScreenCommunityTable(worldScreen)
+            WorldScreenCommunityPopup(worldScreen)
             remove()
         }.size(width,height)
         addSeparator()
@@ -92,7 +93,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
     fun openMultiplayerPopup(){
 
         close()
-        val multiplayerPopup = PopupTable(screen)
+        val multiplayerPopup = Popup(screen)
 
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
         multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
@@ -138,7 +139,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
     }
 }
 
-class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
+class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init{
         addButton("Discord"){
             Gdx.net.openURI("https://discord.gg/bjrB4Xw")

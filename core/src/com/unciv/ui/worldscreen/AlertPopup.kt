@@ -7,9 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 
-class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): PopupTable(worldScreen){
+class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen){
     fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
         val button = TextButton(text.tr(), skin)
         button.onClick {
@@ -119,7 +118,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
 
                 }
-                
+
             }
             AlertType.BorderConflict -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
@@ -180,12 +179,10 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
         }
         open()
-        worldScreen.hasPopupOpen = true
     }
 
     override fun close(){
         worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
-        worldScreen.hasPopupOpen = false
         super.close()
     }
 }
