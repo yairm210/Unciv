@@ -275,26 +275,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
-        if(unit.type.isAirUnit()) {
-            if (tile.isCityCenter()) {
-                    if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
-                        return true // if city is free - no problem, get in
-                    if (!unit.isTransported)
-                        return false // if no space and it is not on carrier - get out
-                } // let's check whether it enters city on carrier now...
-
-                if (tile.militaryUnit != null) {
-                    val unitAtDestination = tile.militaryUnit!!
-
-                    var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
-                    // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
-
-                    return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
-                            (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
-                            && unitAtDestination.owner == unit.owner && tile.airUnits.filter { it.isTransported }.size < unitCapacity
-                } else
-                    return false
-            }
+        if(unit.type.isAirUnit())
+            return canAirUnitMoveTo(tile, unit)
 
         if(!canPassThrough(tile))
             return false
@@ -302,6 +284,28 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.type.isCivilian())
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==unit.owner)
         else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==unit.owner)
+    }
+
+    private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
+        // landing in the city
+        if (tile.isCityCenter()) {
+            if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
+                return true // if city is free - no problem, get in
+            if (!unit.isTransported)
+                return false // if no space and it is not on carrier - get out
+        } // let's check whether it enters city on carrier now...
+
+        if (tile.militaryUnit != null) {
+            val unitAtDestination = tile.militaryUnit!!
+
+            var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
+            // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
+
+            return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
+                    (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
+                    && unitAtDestination.owner == unit.owner && tile.airUnits.filter { it.isTransported }.size < unitCapacity
+        } else
+            return false
     }
 
 
