@@ -10,11 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.WorldScreenMenuTable
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -95,8 +95,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.onClick {
-            if(worldScreen.stage.actors.none { it is WorldScreenMenuTable })
-                WorldScreenMenuTable(worldScreen)
+            if(worldScreen.stage.actors.none { it is WorldScreenMenuPopup })
+                WorldScreenMenuPopup(worldScreen)
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y

@@ -3,11 +3,11 @@ package com.unciv.ui.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.UnitGroup
-import com.unciv.ui.utils.center
+import com.unciv.ui.utils.*
 
 /** Helper class for TileGroup, which was getting too full */
 class TileGroupIcons(val tileGroup: TileGroup){
@@ -57,6 +57,23 @@ class TileGroupIcons(val tileGroup: TileGroup){
             tileGroup.unitLayerGroup.addActor(newImage)
             newImage.center(tileGroup)
             newImage.y += yFromCenter
+
+            // Display number of carried air units
+            if ((unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit())
+                    && !unit.getTile().airUnits.isEmpty() && !unit.getTile().isCityCenter()) {
+                val holder = Table()
+                val secondarycolor = unit.civInfo.nation.getInnerColor()
+                val airUnitTable = Table().apply { defaults().pad(5f) }
+                airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(unit.civInfo.nation.getOuterColor())
+                val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
+                aircraftImage.color = secondarycolor
+                airUnitTable.add(aircraftImage).size(15f)
+                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 14))
+                holder.add(airUnitTable).row()
+                holder.setOrigin(Align.center)
+                holder.center(tileGroup)
+                newImage.addActor(holder)
+            }
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map

@@ -9,11 +9,11 @@ import com.unciv.logic.MapSaver
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.optionstable.DropBox
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.worldscreen.mainmenu.DropBox
+import com.unciv.ui.utils.Popup
 import kotlin.concurrent.thread
 
-class MapDownloadTable(loadMapScreen: LoadMapScreen): PopupTable(loadMapScreen) {
+class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
     init {
         val folderList: DropBox.FolderList
         try {
@@ -36,7 +36,7 @@ class MapDownloadTable(loadMapScreen: LoadMapScreen): PopupTable(loadMapScreen) 
 
                             // Yes, even creating popups.
                             Gdx.app.postRunnable {
-                                val couldNotDownloadMapPopup = PopupTable(screen)
+                                val couldNotDownloadMapPopup = Popup(screen)
                                 couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
                                 couldNotDownloadMapPopup.addCloseButton()
                             }

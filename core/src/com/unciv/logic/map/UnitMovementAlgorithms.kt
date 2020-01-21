@@ -237,8 +237,25 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.isFortified() || unit.action==Constants.unitActionSetUp || unit.action==Constants.unitActionSleep)
             unit.action=null // unfortify/setup after moving
 
+        // If this unit is a carrier, keep record of its air payload whereabouts.
+        var origin = unit.getTile()
+
         unit.removeFromTile()
         unit.putInTile(destination)
+
+        // Unit maintenance changed
+        if (unit.canGarrison()
+            && (origin.isCityCenter() || destination.isCityCenter())
+            && unit.civInfo.policies.isAdopted("Oligarchy")
+        ) unit.civInfo.updateStatsForNextTurn()
+
+        if(unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit()){ // bring along the payloads
+            for(airUnit in origin.airUnits.filter { !it.isUnitInCity }){
+                airUnit.removeFromTile()
+                airUnit.putInTile(destination)
+                airUnit.isUnitInCity = false // don't leave behind payloads in the city if carrier happens to dock
+            }
+        }
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
         // and to view tiles along the way
@@ -260,7 +277,19 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(unit.type.isAirUnit())
-            return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==unit.civInfo
+            if(tile.isCityCenter())
+                return tile.airUnits.size<6 && tile.getCity()?.civInfo==unit.civInfo
+            else if(tile.militaryUnit!=null) {
+                val unitAtDestination = tile.militaryUnit!!
+
+                var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
+                // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
+
+                return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
+                        (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
+                        && unitAtDestination.owner==unit.owner && tile.airUnits.size < unitCapacity
+            } else
+                return false
 
         if(!canPassThrough(tile))
             return false

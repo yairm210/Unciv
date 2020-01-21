@@ -63,6 +63,7 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
+    var isUnitInCity: Boolean = true
 
     companion object {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
@@ -80,6 +81,7 @@ class MapUnit {
         toReturn.action=action
         toReturn.attacksThisTurn=attacksThisTurn
         toReturn.promotions=promotions.clone()
+        toReturn.isUnitInCity=isUnitInCity
         return toReturn
     }
 
@@ -278,6 +280,8 @@ class MapUnit {
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
         return healingBonus
     }
+    
+    fun canGarrison() = type.isMilitary() && type.isLandUnit()
 
     //endregion
 
@@ -461,6 +465,7 @@ class MapUnit {
             type.isCivilian() -> tile.civilianUnit=this
             else -> tile.militaryUnit=this
         }
+        isUnitInCity = tile.isCityCenter() // prevent carriers from sailing away with air units explicitly assigned to city
         moveThroughTile(tile)
     }
 

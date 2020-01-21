@@ -16,7 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
-import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
+import com.unciv.ui.utils.YesNoPopup
 
 class UnitActions {
 
@@ -314,7 +314,7 @@ class UnitActions {
                     val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
                         "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
                     else "Do you really want to disband this unit?".tr()
-                    YesNoPopupTable(disbandText, { unit.disband(); worldScreen.shouldUpdate = true })
+                    YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true })
                 })
 
         return actionList

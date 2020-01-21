@@ -125,20 +125,27 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if(moveHereDto!=null)
             table.add(getMoveHereButton(moveHereDto))
 
+        var unitList = ArrayList<MapUnit>()
         if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
-            for (unit in tileInfo.getCity()!!.getCenterTile().getUnits()) {
-                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
-                unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-                if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
-                unitGroup.touchable = Touchable.enabled
-                unitGroup.onClick {
-                    worldScreen.bottomUnitTable.selectedUnit = unit
-                    worldScreen.bottomUnitTable.selectedCity = null
-                    worldScreen.shouldUpdate = true
-                    unitActionOverlay?.remove()
-                }
-                table.add(unitGroup)
+            unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
+        } else if (tileInfo.militaryUnit!=null &&
+                (tileInfo.militaryUnit!!.type.isAircraftCarrierUnit() || tileInfo.militaryUnit!!.type.isMissileCarrierUnit()) &&
+                 tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && !tileInfo.airUnits.isEmpty()) {
+            unitList.addAll(tileInfo.getUnits())
+        }
+
+        for (unit in unitList) {
+            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+            unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
+            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+            unitGroup.touchable = Touchable.enabled
+            unitGroup.onClick {
+                worldScreen.bottomUnitTable.selectedUnit = unit
+                worldScreen.bottomUnitTable.selectedCity = null
+                worldScreen.shouldUpdate = true
+                unitActionOverlay?.remove()
             }
+            table.add(unitGroup)
         }
 
         addOverlayOnTileGroup(tileInfo, table)

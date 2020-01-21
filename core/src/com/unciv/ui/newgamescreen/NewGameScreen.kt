@@ -16,8 +16,8 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.ui.utils.Popup
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -41,7 +41,7 @@ class NewGameScreen: PickerScreen(){
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (newGameParameters.players.none { it.playerType == PlayerType.Human }) {
-                val noHumanPlayersPopup = PopupTable(this)
+                val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
@@ -53,7 +53,7 @@ class NewGameScreen: PickerScreen(){
                     try {
                         UUID.fromString(player.playerId)
                     } catch (ex: Exception) {
-                        val invalidPlayerIdPopup = PopupTable(this)
+                        val invalidPlayerIdPopup = Popup(this)
                         invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                         invalidPlayerIdPopup.addCloseButton()
                         invalidPlayerIdPopup.open()
@@ -76,7 +76,7 @@ class NewGameScreen: PickerScreen(){
                             OnlineMultiplayer().tryUploadGame(newGame!!)
                             GameSaver().autoSave(newGame!!){}
                         } catch (ex: Exception) {
-                            val cantUploadNewGamePopup = PopupTable(this)
+                            val cantUploadNewGamePopup = Popup(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
                             cantUploadNewGamePopup.addCloseButton()
                             cantUploadNewGamePopup.open()
@@ -84,7 +84,7 @@ class NewGameScreen: PickerScreen(){
                         }
                     }
                 } catch (exception: Exception) {
-                    val cantMakeThatMapPopup = PopupTable(this)
+                    val cantMakeThatMapPopup = Popup(this)
                     cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
                     cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
                     cantMakeThatMapPopup.addCloseButton()

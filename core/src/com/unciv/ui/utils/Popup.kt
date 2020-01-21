@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen.optionstable
+package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.*
 
-open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin) {
+/**
+ * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else
+ */
+open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin) {
     init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
@@ -18,7 +20,11 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         this.defaults().pad(5f)
     }
 
+    /**
+     * Displays the Popup on the screen. Will not open the popup if another one is already open.
+     */
     fun open() {
+        if (screen.hasOpenPopups()) return;
         pack()
         center(screen.stage)
         screen.stage.addActor(this)

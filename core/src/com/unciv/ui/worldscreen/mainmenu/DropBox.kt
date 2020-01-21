@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen.optionstable
+package com.unciv.ui.worldscreen.mainmenu
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver

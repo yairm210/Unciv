@@ -32,14 +32,12 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.tutorials.TutorialMiner
 import com.unciv.ui.tutorials.TutorialRender
-import com.unciv.ui.worldscreen.TradePopup
 import kotlin.concurrent.thread
 
 open class CameraStageBaseScreen : Screen {
 
     var game: UncivGame = UncivGame.Current
     var stage: Stage
-    var hasPopupOpen = false
 
     val tutorialController by lazy {
         TutorialController(TutorialMiner(JsonParser()), TutorialRender(this))
@@ -85,8 +83,8 @@ open class CameraStageBaseScreen : Screen {
         tutorialController.showTutorial(tutorial)
     }
 
-    fun hasVisibleDialogs(): Boolean =
-            tutorialController.isTutorialShowing() || stage.actors.any { it is TradePopup } || hasPopupOpen
+    fun hasOpenPopups(): Boolean =
+            stage.actors.any { it is Popup }
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))

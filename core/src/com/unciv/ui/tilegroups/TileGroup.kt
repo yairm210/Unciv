@@ -160,6 +160,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (tileInfo.terrainFeature != null) {
             // e.g. Grassland+Forest
             val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
+            if(shouldShowImprovement && shouldShowResource){
+                // e.g. Grassland+Forest+Deer+Camp
+                val baseFeatureImprovementAndResourceLocation =
+                        "$baseTerrainAndFeatureTileLocation+${tileInfo.improvement}+${tileInfo.resource}"
+                if (ImageGetter.imageExists(baseFeatureImprovementAndResourceLocation))
+                    return listOf(baseFeatureImprovementAndResourceLocation)
+            }
             if(shouldShowImprovement){
                 // e.g. Grassland+Forest+Lumber mill
                 val baseFeatureAndImprovementTileLocation = "$baseTerrainAndFeatureTileLocation+${tileInfo.improvement}"

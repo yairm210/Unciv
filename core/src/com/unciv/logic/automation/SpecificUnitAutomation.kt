@@ -190,6 +190,8 @@ class SpecificUnitAutomation{
         if(enemyAirUnitsInRange.isNotEmpty()) return // we need to be on standby in case they attack
         if(battleHelper.tryAttackNearbyEnemy(unit)) return
 
+        // TODO Implement consideration for landing on aircraft carrier
+
         val immediatelyReachableCities = tilesInRange
                 .filter { it.isCityCenter() && it.getOwner()==unit.civInfo && unit.movement.canMoveTo(it)}
 
@@ -225,6 +227,8 @@ class SpecificUnitAutomation{
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+
+        // TODO Implement consideration for landing on aircraft carrier
 
         val immediatelyReachableCities = tilesInRange
                 .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
