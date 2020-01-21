@@ -14,6 +14,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 
 class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
@@ -61,11 +62,12 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     private fun setButtonActions() {
 
         val unitTable = tileGroup.worldScreen.bottomUnitTable
+
+        // So you can click anywhere on the button to go to the city
+        touchable = Touchable.childrenOnly
+
         if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
-
-            // So you can click anywhere on the button to go to the city
-            touchable = Touchable.childrenOnly
-
+            // If this city belongs to you,
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             // second tap on the button will go to the city screen
@@ -76,6 +78,17 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                     moveButtonDown()
                     if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
                         tileGroup.selectCity(city)
+                }
+            }
+        } else {
+            onClick {
+                // If city doesn't belong to you, go directly to its owner's diplomacy screen,
+                // only when you don't have a unit selected for attacking that same city.
+                if (unitTable.selectedUnit == null)
+                {
+                    val screen = DiplomacyScreen(UncivGame.Current.worldScreen.viewingCiv)
+                    screen.updateRightSide(city.civInfo)
+                    UncivGame.Current.setScreen(screen)
                 }
             }
         }

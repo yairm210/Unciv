@@ -522,13 +522,13 @@ class CivilizationInfo {
 
             if (newAllyName != "") {
                 val newAllyCiv = gameInfo.getCivilization(newAllyName)
-                newAllyCiv.addNotification("We have allied with [${civName}].", Color.GREEN)
+                newAllyCiv.addNotification("We have allied with [${civName}].", getCapital().location, Color.GREEN)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
             }
             if (oldAllyName != "") {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
-                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", Color.RED)
+                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", getCapital().location, Color.RED)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()
             }

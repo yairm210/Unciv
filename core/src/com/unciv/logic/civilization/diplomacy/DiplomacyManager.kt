@@ -264,10 +264,10 @@ class DiplomacyManager() {
         else influence = restingPoint
 
         if (getTurnsToRelationshipChange() == 1)
-            otherCiv().addNotification("Your relationship with [${civInfo.civName}] is about to degrade", null, Color.GOLD)
+            otherCiv().addNotification("Your relationship with [${civInfo.civName}] is about to degrade", civInfo.getCapital().location, Color.GOLD)
 
         if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel())
-            otherCiv().addNotification("Your relationship with [${civInfo.civName}] degraded", null, Color.GOLD)
+            otherCiv().addNotification("Your relationship with [${civInfo.civName}] degraded", civInfo.getCapital().location, Color.GOLD)
     }
 
     private fun nextTurnFlags() {
