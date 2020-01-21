@@ -1,6 +1,5 @@
 package com.unciv.ui.cityscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -12,7 +11,6 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     val cityInfo = cityScreen.city
 
     fun update() {
-        background = ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.7f })
         clear()
 
         for (statToMaximumSpecialist in cityInfo.population.getMaxSpecialists().toHashMap()) {

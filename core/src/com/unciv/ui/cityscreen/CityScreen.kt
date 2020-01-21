@@ -28,6 +28,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
     /** Displays current production, production queue and available productions list - sits on LEFT */
     private var constructionsTable = ConstructionsTable(this)
+
     /** Displays stats, buildings, specialists and stats drilldown - sits on TOP RIGHT */
     private var cityInfoTable = CityInfoTable(this)
 
@@ -35,10 +36,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     private var razeCityButtonHolder = Table()
 
     /** Displays city stats info */
-    private var cityStatsTable = CityStatsTable(this.city)
-
-    /** Displays specialist allocation */
-    private var specialistAllocationTable=SpecialistAllocationTable(this)
+    private var cityStatsTable = CityStatsTable(this)
 
     /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */
     private var tileTable = CityScreenTileTable(city)
@@ -60,7 +58,6 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
-        stage.addActor(specialistAllocationTable)
         stage.addActor(constructionsTable)
         stage.addActor(tileTable)
         stage.addActor(selectedConstructionTable)
@@ -97,8 +94,6 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         cityStatsTable.update()
         cityStatsTable.setPosition( stage.width - 5f, stage.height - 5f, Align.topRight)
-        specialistAllocationTable.update()
-        specialistAllocationTable.setPosition(stage.width-5, cityStatsTable.y, Align.topRight)
 
         updateAnnexAndRazeCityButton()
         updateTileGroups()

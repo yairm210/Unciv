@@ -3,7 +3,6 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
-import com.unciv.logic.city.CityInfo
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.ImageGetter
@@ -13,8 +12,9 @@ import com.unciv.ui.utils.toLabel
 import kotlin.math.ceil
 import kotlin.math.round
 
-class CityStatsTable(val cityInfo: CityInfo): Table() {
+class CityStatsTable(val cityScreen: CityScreen): Table() {
     private val innerTable = Table()
+    private val cityInfo = cityScreen.city
 
     init {
         pad(2f)
@@ -30,8 +30,26 @@ class CityStatsTable(val cityInfo: CityInfo): Table() {
     fun update() {
         innerTable.clear()
 
-        val unassignedPopString = "{Unassigned population}:".tr()+
-                " "+cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
+        val ministatsTable = Table().pad(5f)
+        ministatsTable.defaults()
+        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
+            if(stat.key == Stat.Happiness) continue
+            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
+            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
+        }
+        innerTable.add(ministatsTable)
+
+        innerTable.addSeparator()
+        addText()
+        innerTable.addSeparator()
+        innerTable.add(SpecialistAllocationTable(cityScreen).apply { update() })
+
+        pack()
+    }
+
+    private fun addText() {
+        val unassignedPopString = "{Unassigned population}:".tr() +
+                " " + cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
 
         var turnsToExpansionString =
                 if (cityInfo.cityStats.currentCityStats.culture > 0) {
@@ -52,25 +70,12 @@ class CityStatsTable(val cityInfo: CityInfo): Table() {
                     cityInfo.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production".tr()
                     else -> "Stopped population growth".tr()
                 }
-        turnsToPopString +=  " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
-
-        val ministatsTable = Table().pad(5f)
-        ministatsTable.defaults()
-
-        for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key == Stat.Happiness) continue
-            ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-            ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
-        }
+        turnsToPopString += " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"
 
         innerTable.add(unassignedPopString.toLabel()).row()
         innerTable.add(turnsToExpansionString.toLabel()).row()
         innerTable.add(turnsToPopString.toLabel()).row()
         if (cityInfo.isInResistance())
             innerTable.add("In resistance for another [${cityInfo.resistanceCounter}] turns".toLabel()).row()
-        innerTable.addSeparator()
-        innerTable.add(ministatsTable)
-
-        pack()
     }
 }
