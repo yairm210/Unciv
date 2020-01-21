@@ -1052,7 +1052,7 @@
 		"cost": 1000,
 		"requiredTech": "Rocketry",
 		"requiredResource": "Uranium",
-		"uniques": ["Requires Manhattan Project"],
+		"uniques": ["Requires Manhattan Project", "Evasion"],
 		"hurryCostModifier": 20
 	},
 	{
