@@ -280,6 +280,8 @@ class MapUnit {
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
         return healingBonus
     }
+    
+    fun canGarrison() = type.isMilitary() && type.isLandUnit()
 
     //endregion
 
