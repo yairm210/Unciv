@@ -243,6 +243,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         unit.removeFromTile()
         unit.putInTile(destination)
 
+        // Unit maintenance changed
+        if (unit.canGarrison()
+            && (origin.isCityCenter() || destination.isCityCenter())
+            && unit.civInfo.policies.isAdopted("Oligarchy")
+        ) unit.civInfo.updateStatsForNextTurn()
+
         if(unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit()){ // bring along the payloads
             for(airUnit in origin.airUnits.filter { !it.isUnitInCity }){
                 airUnit.removeFromTile()
