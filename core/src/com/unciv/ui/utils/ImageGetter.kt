@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.stats.Stat
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -287,6 +288,20 @@ object ImageGetter {
         line.y = (startY+endY)/2 - line.height/2
 
         return line
+    }
+
+    fun getSpecialistIcon(stat: Stat, isFilled: Boolean =true): Image {
+        val specialist = getImage("StatIcons/Specialist")
+        if (!isFilled) specialist.color = Color.GRAY
+        else specialist.color=when(stat){
+            Stat.Production -> Color.BROWN
+            Stat.Gold -> Color.GOLD
+            Stat.Science -> Color.BLUE
+            Stat.Culture -> Color.PURPLE
+            else -> Color.WHITE
+        }
+
+        return specialist
     }
 }
 

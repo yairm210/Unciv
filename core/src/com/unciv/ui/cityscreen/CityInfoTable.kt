@@ -2,7 +2,9 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
@@ -11,7 +13,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.YesNoPopup
 import java.text.DecimalFormat
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -134,13 +135,13 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistIcons.row().size(20f).pad(5f)
                 for (stat in building.specialistSlots!!.toHashMap())
                     for (i in 0 until stat.value.toInt())
-                        specialistIcons.add(getSpecialistIcon(stat.key)).size(20f)
+                        specialistIcons.add(ImageGetter.getSpecialistIcon(stat.key)).size(20f)
 
                 specialistBuildingsTable.add(specialistIcons).pad(0f).row()
             }
 
             // specialist allocation
-            addSpecialistAllocation(skin, cityInfo)
+//            addCategory("Specialist Allocation", SpecialistAllocationTable(cityScreen)) todo
         }
 
         if (!otherBuildings.isEmpty()) {
@@ -226,74 +227,5 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
     }
 
-    private fun Table.addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
-        val specialistAllocationTable = Table()
-        addCategory("Specialist Allocation", specialistAllocationTable) // todo WRONG, BAD - table should contain all the below specialist stuff
-
-        val currentSpecialists = cityInfo.population.specialists.toHashMap()
-        val maximumSpecialists = cityInfo.population.getMaxSpecialists()
-
-        for (statToMaximumSpecialist in maximumSpecialists.toHashMap()) {
-            val specialistPickerTable = Table()
-            if (statToMaximumSpecialist.value == 0f) continue
-            val stat = statToMaximumSpecialist.key
-            // these two are conflictingly named compared to above...
-            val assignedSpecialists = currentSpecialists[stat]!!.toInt()
-            val maxSpecialists = statToMaximumSpecialist.value.toInt()
-            if (assignedSpecialists > 0 && !cityInfo.isPuppet) {
-                val unassignButton = TextButton("-", skin)
-                unassignButton.label.setFontSize(24)
-                unassignButton.onClick {
-                    cityInfo.population.specialists.add(stat, -1f)
-                    cityInfo.cityStats.update()
-                    cityScreen.update()
-                }
-                if(!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.disable()
-                specialistPickerTable.add(unassignButton)
-            } else specialistPickerTable.add()
-
-            val specialistIconTable = Table()
-            for (i in 1..maxSpecialists) {
-                val icon = getSpecialistIcon(stat, i <= assignedSpecialists)
-                specialistIconTable.add(icon).size(30f)
-            }
-            specialistPickerTable.add(specialistIconTable)
-            if (assignedSpecialists < maxSpecialists && !cityInfo.isPuppet) {
-                val assignButton = TextButton("+", skin)
-                assignButton.label.setFontSize(24)
-                assignButton.onClick {
-                    cityInfo.population.specialists.add(statToMaximumSpecialist.key, 1f)
-                    cityInfo.cityStats.update()
-                    cityScreen.update()
-                }
-                if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen.isPlayersTurn)
-                    assignButton.disable()
-                specialistPickerTable.add(assignButton)
-            } else specialistPickerTable.add()
-            specialistAllocationTable.add(specialistPickerTable).row()
-
-            val specialistStatTable = Table().apply { defaults().pad(5f) }
-            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(stat, cityInfo.civInfo.policies.adoptedPolicies).toHashMap()
-            for (entry in specialistStats) {
-                if (entry.value == 0f) continue
-                specialistStatTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-                specialistStatTable.add(entry.value.toInt().toString().toLabel()).padRight(10f)
-            }
-            specialistAllocationTable.add(specialistStatTable).row()
-        }
-    }
-
-    private fun getSpecialistIcon(stat: Stat, isFilled: Boolean =true): Image {
-        val specialist = ImageGetter.getImage("StatIcons/Specialist")
-        if (!isFilled) specialist.color = Color.GRAY
-        else specialist.color=when(stat){
-            Stat.Production -> Color.BROWN
-            Stat.Gold -> Color.GOLD
-            Stat.Science -> Color.BLUE
-            Stat.Culture -> Color.PURPLE
-            else -> Color.WHITE
-        }
-
-        return specialist
-    }
 }
+

@@ -37,6 +37,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     /** Displays city stats info */
     private var cityStatsTable = CityStatsTable(this.city)
 
+    /** Displays specialist allocation */
+    private var specialistAllocationTable=SpecialistAllocationTable(this)
+
     /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */
     private var tileTable = CityScreenTileTable(city)
 
@@ -57,6 +60,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         //stage.setDebugTableUnderMouse(true)
         stage.addActor(cityStatsTable)
+        stage.addActor(specialistAllocationTable)
         stage.addActor(constructionsTable)
         stage.addActor(tileTable)
         stage.addActor(selectedConstructionTable)
@@ -93,6 +97,8 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         cityStatsTable.update()
         cityStatsTable.setPosition( stage.width - 5f, stage.height - 5f, Align.topRight)
+        specialistAllocationTable.update()
+        specialistAllocationTable.setPosition(stage.width-5, cityStatsTable.y, Align.topRight)
 
         updateAnnexAndRazeCityButton()
         updateTileGroups()
@@ -155,19 +161,18 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             val tileInfo = tileGroup.tileInfo
 
             tileGroup.onClick {
-                if (!city.isPuppet) {
-                    selectedTile = tileInfo
-                    selectedConstruction = null
-                    if (tileGroup.isWorkable && UncivGame.Current.worldScreen.isPlayersTurn) {
-                        if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
-                            city.workedTiles.add(tileInfo.position)
-                            game.settings.addCompletedTutorialTask("Reassign worked tiles")
-                        }
-                        else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
-                        city.cityStats.update()
-                    }
-                    update()
+                if (city.isPuppet) return@onClick
+
+                selectedTile = tileInfo
+                selectedConstruction = null
+                if (tileGroup.isWorkable && UncivGame.Current.worldScreen.isPlayersTurn) {
+                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
+                        city.workedTiles.add(tileInfo.position)
+                        game.settings.addCompletedTutorialTask("Reassign worked tiles")
+                    } else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                    city.cityStats.update()
                 }
+                update()
             }
 
             tileGroups.add(tileGroup)
