@@ -243,12 +243,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         unit.removeFromTile()
         unit.putInTile(destination)
-
+      
         for(payload in origin.getUnits().filter { it.isTransported }){  // bring along the payloads
            payload.removeFromTile()
            payload.putInTile(destination)
            payload.isTransported = true // restore the flag to not leave the payload in the city
         }
+
+        // Unit maintenance changed
+        if (unit.canGarrison()
+            && (origin.isCityCenter() || destination.isCityCenter())
+            && unit.civInfo.policies.isAdopted("Oligarchy")
+        ) unit.civInfo.updateStatsForNextTurn()
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
         // and to view tiles along the way
