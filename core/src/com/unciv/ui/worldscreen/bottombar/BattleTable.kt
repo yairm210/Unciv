@@ -87,7 +87,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         return defender
     }
 
-    fun simulateBattle(attacker: ICombatant, defender: ICombatant){
+    private fun simulateBattle(attacker: ICombatant, defender: ICombatant){
         clear()
         defaults().pad(5f)
 
@@ -174,11 +174,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
 
-        var attackableEnemy : AttackableTile? = null
+        var attackableTile : AttackableTile? = null
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
-                attackableEnemy = battleHelper
+                attackableTile = battleHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             }
@@ -186,12 +186,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             {
                 val canBombard = UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
                 if (canBombard) {
-                    attackableEnemy = AttackableTile(attacker.getTile(), defender.getTile())
+                    attackableTile = AttackableTile(attacker.getTile(), defender.getTile())
                 }
             }
         }
 
-        if (!worldScreen.isPlayersTurn || attackableEnemy == null) {
+        if (!worldScreen.isPlayersTurn || attackableTile == null) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
@@ -199,7 +199,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 try {
-                    Battle.moveAndAttack(attacker, attackableEnemy)
+                    Battle.moveAndAttack(attacker, attackableTile)
                     worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
