@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -38,20 +39,15 @@ class MapParametersTable(val mapParameters: MapParameters): Table(){
     private fun addWorldSizeSelectBox(){
 
         val worldSizeLabel = "{World size}:".toLabel()
-        val worldSizeToRadius = LinkedHashMap<String, Int>()
-        worldSizeToRadius["Tiny"] = 10
-        worldSizeToRadius["Small"] = 15
-        worldSizeToRadius["Medium"] = 20
-        worldSizeToRadius["Large"] = 30
-        worldSizeToRadius["Huge"] = 40
-
-        val currentWorldSizeName = worldSizeToRadius.entries
-                .first { it.value == mapParameters.radius }.key
-        val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys, currentWorldSizeName, CameraStageBaseScreen.skin)
+        val worldSizeSelectBox = TranslatedSelectBox(
+            MapSize.values().map { it.name },
+            mapParameters.size.name,
+            CameraStageBaseScreen.skin
+        )
 
         worldSizeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.radius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
+                mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
             }
         })
 

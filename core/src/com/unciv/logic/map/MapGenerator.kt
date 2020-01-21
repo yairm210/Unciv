@@ -30,7 +30,7 @@ class MapType {
 class MapGenerator {
 
     fun generateMap(mapParameters: MapParameters, ruleset: Ruleset): TileMap {
-        val mapRadius = mapParameters.radius
+        val mapRadius = mapParameters.size.radius
         val mapType = mapParameters.type
 
         val map = TileMap(mapRadius, ruleset)

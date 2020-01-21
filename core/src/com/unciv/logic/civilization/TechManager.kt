@@ -4,6 +4,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -60,11 +61,11 @@ class TechManager {
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        val worldSizeModifier = when(civInfo.gameInfo.tileMap.mapParameters.radius) {
-            20 -> floatArrayOf(1.1f, 0.05f) // Medium Size
-            30 -> floatArrayOf(1.2f, 0.03f) // Large Size
-            40 -> floatArrayOf(1.3f, 0.02f) // Huge Size
-            else -> floatArrayOf(1f, 0.05f) // Tiny and Small Size
+        val worldSizeModifier = when(civInfo.gameInfo.tileMap.mapParameters.size) {
+            MapSize.Medium -> floatArrayOf(1.1f, 0.05f)
+            MapSize.Large -> floatArrayOf(1.2f, 0.03f)
+            MapSize.Huge -> floatArrayOf(1.3f, 0.02f)
+            else -> floatArrayOf(1f, 0.05f)
         }
         techCost *= worldSizeModifier[0]
         techCost *= 1 + (civInfo.cities.size -1) * worldSizeModifier[1]
