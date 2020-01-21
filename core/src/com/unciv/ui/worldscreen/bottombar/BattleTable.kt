@@ -67,7 +67,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (worldScreen.mapHolder.selectedTile == null) return null // no selected tile
         val selectedTile = worldScreen.mapHolder.selectedTile!!
 
-        val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
+        val attackerType = worldScreen.bottomUnitTable.selectedUnit?.type
+        val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile, attackerType )
 
         if(defender==null ||
                 defender.getCivInfo()==attackerCiv)
@@ -180,7 +181,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             if (attacker is MapUnitCombatant) {
                 attackableTile = battleHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
-                        .firstOrNull{ it.tileToAttack == defender.getTile()}
+                        .firstOrNull{ it.tileToAttack == worldScreen.mapHolder.selectedTile }
             }
             else if (attacker is CityCombatant)
             {

@@ -27,15 +27,16 @@ object Battle {
                 attacker.unit.useMovementPoints(1f)
             }
         }
-        attack(attacker,getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+        attack(attacker,
+                getMapCombatantOfTile(attackableTile.tileToAttack, attacker.getUnitType())!!,
+                attackableTile.tileToAttack)
     }
 
-    fun attack(attacker: ICombatant, defender: ICombatant) {
+    fun attack(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+defender.getCivInfo().civName+" "+defender.getName())
-        val attackedTile = defender.getTile()
 
         if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()){
-            tryInterceptAirAttack(attacker,defender)
+            tryInterceptAirAttack(attacker,defender, attackedTile)
             if(attacker.isDefeated()) return
         }
 
@@ -43,7 +44,7 @@ object Battle {
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
         if (attacker.getUnitType()==UnitType.Missile) {
-            nuclearBlast(attacker, defender)
+            nuclearBlast(attacker, attackedTile)
         }
         else if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
@@ -140,8 +141,7 @@ object Battle {
                 && attacker is MapUnitCombatant) {
             val regex = Regex("""Heals \[(\d*)\] damage if it kills a unit""")
             for (unique in attacker.unit.getUniques()) {
-                val match = regex.matchEntire(unique)
-                if (match == null) continue
+                val match = regex.matchEntire(unique) ?: continue
                 val amountToHeal = match.groups[1]!!.value.toInt()
                 attacker.unit.healBy(amountToHeal)
             }
@@ -267,10 +267,32 @@ object Battle {
         }
     }
 
-    fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {
+    fun getMapCombatantOfTile(tile:TileInfo, attackerType: UnitType? = null): ICombatant? {
+
+        if (attackerType != null && attackerType.isMissileUnit())
+            return getMapCombatantOfTileForMissile(tile)
+
         if(tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
         if(tile.militaryUnit!=null) return MapUnitCombatant(tile.militaryUnit!!)
         if(tile.civilianUnit!=null) return MapUnitCombatant(tile.civilianUnit!!)
+        return null
+    }
+
+    private const val NUKE_RADIUS = 2
+
+    private fun getMapCombatantOfTileForMissile(tile:TileInfo): ICombatant? {
+        val tiles = tile.getTilesInDistance(NUKE_RADIUS)
+        for (t in tiles)
+        {
+            // skip targets on invisible tiles
+            if (!UncivGame.Current.viewEntireMapForDebug &&
+                    !UncivGame.Current.gameInfo.currentPlayerCiv.viewableTiles.contains(t))
+                continue
+            val combatant = getMapCombatantOfTile(t, null)
+            // skip own units as targets
+            if (combatant != null && combatant.getCivInfo() != UncivGame.Current.gameInfo.currentPlayerCiv)
+                return combatant
+        }
         return null
     }
 
@@ -303,9 +325,9 @@ object Battle {
         capturedUnit.updateVisibleTiles()
     }
 
-    private fun nuclearBlast(attacker: ICombatant, defender: ICombatant) {
+    private fun nuclearBlast(attacker: ICombatant, epicenter: TileInfo) {
         val attackingCiv = attacker.getCivInfo()
-        for (tile in defender.getTile().getTilesInDistance(2)) {
+        for (tile in epicenter.getTilesInDistance(NUKE_RADIUS)) {
             if (tile.isCityCenter()) { //duantao: To Do
                 val city = tile.getCity()!!
                 city.health = 1
@@ -343,8 +365,7 @@ object Battle {
         }
     }
 
-    private fun tryInterceptAirAttack(attacker:MapUnitCombatant, defender: ICombatant) {
-        val attackedTile = defender.getTile()
+    private fun tryInterceptAirAttack(attacker:MapUnitCombatant, defender: ICombatant, attackedTile: TileInfo) {
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
 

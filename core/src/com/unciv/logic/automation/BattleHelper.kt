@@ -86,7 +86,7 @@ class BattleHelper {
             }
         }
 
-        val tileCombatant = Battle.getMapCombatantOfTile(tile) ?: return false
+        val tileCombatant = Battle.getMapCombatantOfTile(tile, combatant.getUnitType()) ?: return false
         if (tileCombatant.getCivInfo() == combatant.getCivInfo()) return false
         if (!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 

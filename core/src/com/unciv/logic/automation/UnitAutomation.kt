@@ -294,7 +294,7 @@ class UnitAutomation {
             val target = chooseBombardTarget(city)
             if (target == null) return false
             val enemy = Battle.getMapCombatantOfTile(target)!!
-            Battle.attack(CityCombatant(city), enemy)
+            Battle.attack(CityCombatant(city), enemy, target)
             return true
         }
         return false
