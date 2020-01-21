@@ -219,6 +219,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.type.isAirUnit()){ // they move differently from all other units
             unit.action=null
             unit.removeFromTile()
+            unit.isTransported = false // it has left the carrier by own means
             unit.putInTile(destination)
             unit.currentMovement=0f
             return
@@ -243,12 +244,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         unit.removeFromTile()
         unit.putInTile(destination)
 
-        if(unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit()){ // bring along the payloads
-            for(airUnit in origin.airUnits.filter { !it.isUnitInCity }){
-                airUnit.removeFromTile()
-                airUnit.putInTile(destination)
-                airUnit.isUnitInCity = false // don't leave behind payloads in the city if carrier happens to dock
-            }
+        for(payload in origin.getUnits().filter { it.isTransported }){  // bring along the payloads
+           payload.removeFromTile()
+           payload.putInTile(destination)
+           payload.isTransported = true // restore the flag to not leave the payload in the city
         }
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
@@ -270,20 +269,26 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
-        if(unit.type.isAirUnit())
-            if(tile.isCityCenter())
-                return tile.airUnits.size<6 && tile.getCity()?.civInfo==unit.civInfo
-            else if(tile.militaryUnit!=null) {
-                val unitAtDestination = tile.militaryUnit!!
+        if(unit.type.isAirUnit()) {
+            if (tile.isCityCenter()) {
+                    if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
+                        return true // if city is free - no problem, get in
+                    if (!unit.isTransported)
+                        return false // if no space and it is not on carrier - get out
+                } // let's check whether it enters city on carrier now...
 
-                var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
-                // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
+                if (tile.militaryUnit != null) {
+                    val unitAtDestination = tile.militaryUnit!!
 
-                return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
-                        (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
-                        && unitAtDestination.owner==unit.owner && tile.airUnits.size < unitCapacity
-            } else
-                return false
+                    var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
+                    // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
+
+                    return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
+                            (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
+                            && unitAtDestination.owner == unit.owner && tile.airUnits.filter { it.isTransported }.size < unitCapacity
+                } else
+                    return false
+            }
 
         if(!canPassThrough(tile))
             return false
