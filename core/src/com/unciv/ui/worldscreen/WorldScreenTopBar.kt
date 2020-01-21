@@ -94,10 +94,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
-        menuButton.onClick {
-            if(worldScreen.stage.actors.none { it is WorldScreenMenuPopup })
-                WorldScreenMenuPopup(worldScreen)
-        }
+        menuButton.onClick { WorldScreenMenuPopup(worldScreen) }
         menuButton.centerY(this)
         menuButton.x = menuButton.y
         return menuButton
