@@ -11,8 +11,17 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
-// This is a separate class, because it should be in use both in the New Game screen and the Map Editor screen
-class MapParametersTable(val mapParameters: MapParameters): Table(){
+/** Table for editing [mapParameters]
+ *
+ *  This is a separate class, because it should be in use both in the New Game screen and the Map Editor screen
+ *
+ *  @param isEmptyMapAllowed whether the [MapType.empty] option should be present. Is used by the Map Editor, but should **never** be used with the New Game
+ * */
+class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false) :
+    Table() {
+
+    lateinit var noRuinsCheckbox: CheckBox
+    lateinit var noNaturalWondersCheckbox: CheckBox
 
     init {
         addMapTypeSelectBox()
@@ -24,19 +33,30 @@ class MapParametersTable(val mapParameters: MapParameters): Table(){
     private fun addMapTypeSelectBox() {
         add("{Map generation type}:".toLabel())
 
-        val mapTypes = listOf(MapType.default, MapType.pangaea, MapType.continents, MapType.perlin)
-        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, CameraStageBaseScreen.skin)
+        val mapTypes = listOfNotNull(
+            MapType.default,
+            MapType.pangaea,
+            MapType.continents,
+            MapType.perlin,
+            if (isEmptyMapAllowed) MapType.empty else null
+        )
+        val mapTypeSelectBox =
+            TranslatedSelectBox(mapTypes, mapParameters.type, CameraStageBaseScreen.skin)
 
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.type=mapTypeSelectBox.selected.value
+                mapParameters.type = mapTypeSelectBox.selected.value
+
+                // If the map won't be generated, these options are irrelevant and are hidden
+                noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
+                noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
             }
         })
         add(mapTypeSelectBox).row()
     }
 
 
-    private fun addWorldSizeSelectBox(){
+    private fun addWorldSizeSelectBox() {
 
         val worldSizeLabel = "{World size}:".toLabel()
         val worldSizeSelectBox = TranslatedSelectBox(
@@ -56,7 +76,7 @@ class MapParametersTable(val mapParameters: MapParameters): Table(){
     }
 
     private fun addNoRuinsCheckbox() {
-        val noRuinsCheckbox = CheckBox("No ancient ruins".tr(), CameraStageBaseScreen.skin)
+        noRuinsCheckbox = CheckBox("No ancient ruins".tr(), CameraStageBaseScreen.skin)
         noRuinsCheckbox.isChecked = mapParameters.noRuins
         noRuinsCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -67,7 +87,7 @@ class MapParametersTable(val mapParameters: MapParameters): Table(){
     }
 
     private fun addNoNaturalWondersCheckbox() {
-        val noNaturalWondersCheckbox = CheckBox("No Natural Wonders".tr(), CameraStageBaseScreen.skin)
+        noNaturalWondersCheckbox = CheckBox("No Natural Wonders".tr(), CameraStageBaseScreen.skin)
         noNaturalWondersCheckbox.isChecked = mapParameters.noNaturalWonders
         noNaturalWondersCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {

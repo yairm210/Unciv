@@ -26,7 +26,7 @@ class NewMapScreen : PickerScreen() {
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
             add("Map options".toLabel(fontSize = 24)).row()
-            add(MapParametersTable(mapParameters)).row()
+            add(MapParametersTable(mapParameters, isEmptyMapAllowed = true)).row()
             pack()
         }
 

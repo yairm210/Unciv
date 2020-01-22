@@ -24,6 +24,7 @@ class MapType {
         val continents = "Continents"
         val pangaea = "Pangaea"
         val custom="Custom"
+        val empty="Empty"
     }
 }
 
@@ -35,6 +36,9 @@ class MapGenerator {
 
         val map = TileMap(mapRadius, ruleset)
         map.mapParameters = mapParameters
+
+        // Is the empty map is requested, there's no need for further generation
+        if (mapType == MapType.empty) return map
 
         // Step one - separate land and water, in form of Grasslands and Oceans
         if (mapType == MapType.perlin)
