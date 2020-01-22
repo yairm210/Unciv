@@ -219,6 +219,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.type.isAirUnit()){ // they move differently from all other units
             unit.action=null
             unit.removeFromTile()
+            unit.isTransported = false // it has left the carrier by own means
             unit.putInTile(destination)
             unit.currentMovement=0f
             return
@@ -242,20 +243,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         unit.removeFromTile()
         unit.putInTile(destination)
+      
+        for(payload in origin.getUnits().filter { it.isTransported }){  // bring along the payloads
+           payload.removeFromTile()
+           payload.putInTile(destination)
+           payload.isTransported = true // restore the flag to not leave the payload in the city
+        }
 
         // Unit maintenance changed
         if (unit.canGarrison()
             && (origin.isCityCenter() || destination.isCityCenter())
             && unit.civInfo.policies.isAdopted("Oligarchy")
         ) unit.civInfo.updateStatsForNextTurn()
-
-        if(unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit()){ // bring along the payloads
-            for(airUnit in origin.airUnits.filter { !it.isUnitInCity }){
-                airUnit.removeFromTile()
-                airUnit.putInTile(destination)
-                airUnit.isUnitInCity = false // don't leave behind payloads in the city if carrier happens to dock
-            }
-        }
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
         // and to view tiles along the way
@@ -277,19 +276,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(unit.type.isAirUnit())
-            if(tile.isCityCenter())
-                return tile.airUnits.size<6 && tile.getCity()?.civInfo==unit.civInfo
-            else if(tile.militaryUnit!=null) {
-                val unitAtDestination = tile.militaryUnit!!
-
-                var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
-                // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
-
-                return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
-                        (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
-                        && unitAtDestination.owner==unit.owner && tile.airUnits.size < unitCapacity
-            } else
-                return false
+            return canAirUnitMoveTo(tile, unit)
 
         if(!canPassThrough(tile))
             return false
@@ -297,6 +284,26 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.type.isCivilian())
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==unit.owner)
         else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==unit.owner)
+    }
+
+    private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
+        // landing in the city
+        if (tile.isCityCenter()) {
+            if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
+                return true // if city is free - no problem, get in
+        } // let's check whether it enters city on carrier now...
+
+        if (tile.militaryUnit != null) {
+            val unitAtDestination = tile.militaryUnit!!
+
+            var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
+            // unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
+
+            return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
+                    (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
+                    && unitAtDestination.owner == unit.owner && tile.airUnits.filter { it.isTransported }.size < unitCapacity
+        } else
+            return false
     }
 
 
