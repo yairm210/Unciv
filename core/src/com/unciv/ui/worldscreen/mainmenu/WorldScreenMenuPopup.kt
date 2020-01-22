@@ -3,21 +3,17 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
-import com.unciv.logic.map.RoadStatus
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.VictoryScreen
-import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.mapeditor.LoadMapScreen
+import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
@@ -26,17 +22,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         val width = 200f
         val height = 30f
         addSquareButton("Map editor".tr()){
-            val tileMapClone = worldScreen.gameInfo.tileMap.clone()
-            for(tile in tileMapClone.values){
-                tile.militaryUnit=null
-                tile.civilianUnit=null
-                tile.airUnits=ArrayList()
-                tile.improvement=null
-                tile.improvementInProgress=null
-                tile.turnsToImprovement=0
-                tile.roadStatus=RoadStatus.None
-            }
-            UncivGame.Current.setScreen(MapEditorScreen(tileMapClone))
+            openMapEditorPopup()
             remove()
         }.size(width,height)
         addSeparator()
@@ -137,6 +123,36 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         multiplayerPopup.addCloseButton()
         multiplayerPopup.open()
     }
+
+    /** Shows the [Popup] with the map editor initialization options */
+    private fun openMapEditorPopup() {
+
+        close()
+        val mapEditorPopup = Popup(screen)
+
+        mapEditorPopup.addGoodSizedLabel("Map editor".tr()).row()
+
+        // Create a new map
+        mapEditorPopup.addButton("New map") {
+            UncivGame.Current.setScreen(NewMapScreen())
+            mapEditorPopup.close()
+        }
+
+        // Load the map
+        mapEditorPopup.addButton("Load map") {
+            val loadMapScreen = LoadMapScreen(null)
+            loadMapScreen.closeButton.isVisible = true
+            loadMapScreen.closeButton.onClick {
+                UncivGame.Current.setWorldScreen()
+                loadMapScreen.dispose() }
+            UncivGame.Current.setScreen(loadMapScreen)
+            mapEditorPopup.close()
+        }
+
+        mapEditorPopup.addCloseButton()
+        mapEditorPopup.open()
+    }
+
 }
 
 class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
