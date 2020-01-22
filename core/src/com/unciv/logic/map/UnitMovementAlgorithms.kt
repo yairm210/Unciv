@@ -291,8 +291,6 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.isCityCenter()) {
             if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
                 return true // if city is free - no problem, get in
-            if (!unit.isTransported)
-                return false // if no space and it is not on carrier - get out
         } // let's check whether it enters city on carrier now...
 
         if (tile.militaryUnit != null) {
