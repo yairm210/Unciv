@@ -21,8 +21,8 @@ android {
         applicationId "com.unciv.app"
         minSdkVersion 14
         targetSdkVersion 29
-        versionCode 366
-        versionName "3.5.5"
+        versionCode 367
+        versionName "3.5.5-patch1"
 
         archivesBaseName = "Unciv"
     }

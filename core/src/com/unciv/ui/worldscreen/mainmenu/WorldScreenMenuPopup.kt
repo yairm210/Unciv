@@ -167,11 +167,6 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
             remove()
         }
 
-        addButton("Patreon"){
-            Gdx.net.openURI("https://www.patreon.com/yairm210")
-            remove()
-        }
-
         addCloseButton()
 
         open()
