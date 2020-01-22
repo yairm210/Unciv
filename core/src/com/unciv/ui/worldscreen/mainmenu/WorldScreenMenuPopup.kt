@@ -3,12 +3,10 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
-import com.unciv.logic.map.RoadStatus
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.mapeditor.LoadMapScreen
-import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
@@ -16,7 +14,6 @@ import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
@@ -151,24 +148,6 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
             UncivGame.Current.setScreen(loadMapScreen)
             mapEditorPopup.close()
         }
-
-        // Edit the current map
-        val editThisMapButton = mapEditorPopup.addButton("Open current map") {
-            val tileMapClone = worldScreen.gameInfo.tileMap.clone()
-            for (tile in tileMapClone.values) {
-                tile.militaryUnit = null
-                tile.civilianUnit = null
-                tile.airUnits = ArrayList()
-                tile.improvement = null
-                tile.improvementInProgress = null
-                tile.turnsToImprovement = 0
-                tile.roadStatus = RoadStatus.None
-            }
-            UncivGame.Current.setScreen(MapEditorScreen(tileMapClone))
-            mapEditorPopup.close()
-        }
-        // Disable this option in multiplayer games (exploitable: player can see resources beyond his tech level
-        if (worldScreen.gameInfo.gameParameters.isOnlineMultiplayer) editThisMapButton.actor.disable()
 
         mapEditorPopup.addCloseButton()
         mapEditorPopup.open()

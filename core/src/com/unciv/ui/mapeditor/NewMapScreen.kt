@@ -25,8 +25,8 @@ class NewMapScreen : PickerScreen() {
 
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)
-            add("Map options".toLabel(fontSize = 24)).colspan(2).row()
-            add(MapParametersTable(mapParameters)).colspan(2).row()
+            add("Map options".toLabel(fontSize = 24)).row()
+            add(MapParametersTable(mapParameters)).row()
             pack()
         }
 
@@ -44,9 +44,14 @@ class NewMapScreen : PickerScreen() {
 
             thread(name = "MapGenerator") {
                 try {
-                    // Creating a new game can take a while and we don't want ANRs
+                    // Map generation can take a while and we don't want ANRs
                     val ruleset = RulesetCache.getBaseRuleset()
                     generatedMap = MapGenerator().generateMap(mapParameters, ruleset)
+
+                    Gdx.app.postRunnable {
+                        UncivGame.Current.setScreen(MapEditorScreen(generatedMap!!))
+                    }
+
                 } catch (exception: Exception) {
                     rightButtonSetEnabled(true)
                     val cantMakeThatMapPopup = Popup(this)
@@ -59,13 +64,6 @@ class NewMapScreen : PickerScreen() {
             }
 
         }
-    }
-
-    override fun render(delta: Float) {
-        if (generatedMap != null) {
-            UncivGame.Current.setScreen(MapEditorScreen(generatedMap!!))
-        }
-        super.render(delta)
     }
 
     /** Changes the state and the text of the [rightSideButton] */
