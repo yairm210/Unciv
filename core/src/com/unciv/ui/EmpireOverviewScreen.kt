@@ -378,8 +378,17 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
         val resources = resourceDrilldown.map { it.resource }
                 .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
 
-        for(resource in resources)
-            resourcesTable.add(ImageGetter.getResourceImage(resource.name,50f))
+        for(resource in resources) {
+            val resourceImage = ImageGetter.getResourceImage(resource.name, 50f)
+            resourceImage.onClick {
+                val popup = Popup(this)
+                popup.add(resource.name)
+                popup.row()
+                popup.addCloseButton()
+                popup.open()
+            }
+            resourcesTable.add(resourceImage)
+        }
         resourcesTable.addSeparator()
 
         val origins = resourceDrilldown.map { it.origin }.distinct()
