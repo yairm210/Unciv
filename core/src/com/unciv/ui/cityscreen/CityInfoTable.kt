@@ -18,7 +18,7 @@ import java.text.DecimalFormat
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     private val pad = 10f
 
-    private val showConstructionsTableButton = TextButton("Show construction queue", skin)
+    private val showConstructionsTableButton = TextButton("Show construction queue".tr(), skin)
     private val scrollPane: ScrollPane
     private val innerTable = Table(skin)
 
