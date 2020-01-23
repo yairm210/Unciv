@@ -31,7 +31,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private val pad = 10f
 
     init {
-        showCityInfoTableButton = TextButton("Show stats drilldown", skin)
+        showCityInfoTableButton = TextButton("Show stats drilldown".tr(), skin)
         showCityInfoTableButton.onClick {
             cityScreen.showConstructionsTable = false
             cityScreen.update()
