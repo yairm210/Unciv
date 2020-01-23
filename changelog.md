@@ -18,20 +18,15 @@ Translation updates
 Turkish translations added - by rayray61
 
 By lyrjie:
-
-Starting units no longer spawn on Ancient Ruins/Barbarian encampments
-
-Ships no longer 'teleport' into landlocked cities
-
-Barbarians no longer 'pillage' city ruins
+- Starting units no longer spawn on Ancient Ruins/Barbarian encampments
+- Ships no longer 'teleport' into landlocked cities
+- Barbarians no longer 'pillage' city ruins
 
 Barbarians don't move/attack on the turn of their spawning
 
 By reversi:
-
-Legalism policy fix
-
-Fixed "empty entry in construction queue" bug
+- Legalism policy fix
+- Fixed "empty entry in construction queue" bug
 
 New Resource+Improvement images by The Bucketeer
 
@@ -40,12 +35,9 @@ Translation updates
 ## 3.5.3
 
 By lyrjie:
-
-Can no longer buy the same building multiple times
-
-"Pick construction" tutorial now completes again
-
-Map is revealed after singleplayer defeat
+- Can no longer buy the same building multiple times
+- "Pick construction" tutorial now completes again
+- Map is revealed after singleplayer defeat
 
 
 More resource images by The Bucketeer
