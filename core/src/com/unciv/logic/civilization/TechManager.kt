@@ -31,6 +31,7 @@ class TechManager {
     var freeTechs = 0
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8){0}
+    var scienceFromResearchAgreements = 0
     var techsResearched = HashSet<String>()
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
@@ -45,6 +46,7 @@ class TechManager {
         toReturn.techsInProgress.putAll(techsInProgress)
         toReturn.techsToResearch.addAll(techsToResearch)
         toReturn.scienceOfLast8Turns=scienceOfLast8Turns.clone()
+        toReturn.scienceFromResearchAgreements=scienceFromResearchAgreements
         toReturn.overflowScience=overflowScience
         return toReturn
     }
@@ -161,11 +163,25 @@ class TechManager {
                 getRuleset().technologies[currentTechnologyName()]!!.cost))
     }
 
+    private fun scienceFromResearchAgreements(): Int {
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        var researchAgreementModifier = 0.5f
+        if (civInfo.policies.isAdopted("Scientific Revolution"))
+            researchAgreementModifier += 0.25f
+        if (civInfo.containsBuildingUnique("Science gained from research agreements +50%"))
+            researchAgreementModifier += 0.25f
+        return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
+    }
+
     fun nextTurn(scienceForNewTurn: Int) {
         addCurrentScienceToScienceOfLast8Turns()
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
+        if (scienceFromResearchAgreements != 0){
+            techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + scienceFromResearchAgreements()
+            scienceFromResearchAgreements = 0
+        }
         if (overflowScience != 0){ // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
             val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
             val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }

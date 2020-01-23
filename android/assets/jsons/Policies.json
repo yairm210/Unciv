@@ -293,7 +293,7 @@
 			},
 			{
 				"name": "Scientific Revolution",
-				"description": "Gain 2 free technologies",
+				"description": "Science gained from research agreements +50%",
 				"requires": ["Free Thought"],
 				"row": 3,
 				"column": 1

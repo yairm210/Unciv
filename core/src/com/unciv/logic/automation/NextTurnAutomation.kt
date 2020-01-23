@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
@@ -25,7 +26,9 @@ class NextTurnAutomation{
         respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
+            offerDeclarationOfFriendship(civInfo)
             offerPeaceTreaty(civInfo)
+            offerResearchAgreement(civInfo)
             exchangeTechs(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
@@ -307,6 +310,62 @@ class NextTurnAutomation{
                         civ1city.getCenterTile().arialDistanceTo(civ2city.getCenterTile())))
 
         return cityDistances.minBy { it.arialDistance }!!
+    }
+
+    private fun offerDeclarationOfFriendship(civInfo: CivilizationInfo) {
+        val canDeclareFriendshipCiv = civInfo.getKnownCivs()
+                .asSequence()
+                .filter { it.isMajorCiv() }
+                .filter { !it.isAtWarWith(civInfo) }
+                .filter { it.getDiplomacyManager(civInfo).relationshipLevel() > RelationshipLevel.Neutral }
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.Denunceation) }
+                .sortedByDescending { it.getDiplomacyManager(civInfo).relationshipLevel() }
+                .toList()
+        for (civ in canDeclareFriendshipCiv) {
+            // Default setting is 5, this will be changed according to different civ.
+            if ((1..10).random()<=5) civInfo.getDiplomacyManager(civ).signDeclarationOfFriendship()
+            else continue
+        }
+    }
+
+    private fun offerResearchAgreement(civInfo: CivilizationInfo) {
+        // if Civ has researched future tech, they will not want to sign RA.
+        if (civInfo.tech.getTechUniques().contains("Enables Research agreements")
+                && civInfo.gold >= civInfo.goldCostOfSignResearchAgreement()
+                && civInfo.gameInfo.ruleSet.technologies.values.any { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }){
+            val canSignResearchAgreementCiv = civInfo.getKnownCivs()
+                    .asSequence()
+                    .filter { it.isMajorCiv() }
+                    .filter { civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
+                    .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.ResearchAgreement) }
+                    .filter { !it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.ResearchAgreement) }
+                    .filter { it.tech.getTechUniques().contains("Enables Research agreements") }
+                    .filter { it.gold >= civInfo.goldCostOfSignResearchAgreement() }
+                    .sortedByDescending { it.statsForNextTurn.science }
+                    .toList()
+            val duration = when(civInfo.gameInfo.gameParameters.gameSpeed) {
+                GameSpeed.Quick -> 25
+                GameSpeed.Standard -> 30
+                GameSpeed.Epic -> 45
+            }
+            for (otherCiv in canSignResearchAgreementCiv) {
+                // if otherCiv has researched future tech, they will not want to sign RA.
+                if (otherCiv.gameInfo.ruleSet.technologies.values.none { !otherCiv.tech.isResearched(it.name) && otherCiv.tech.canBeResearched(it.name) })
+                    continue
+                // Default setting is 5, this will be changed according to different civ.
+                if ((1..10).random()<=5
+                        && civInfo.gold >= civInfo.goldCostOfSignResearchAgreement()) {
+                    val tradeLogic = TradeLogic(civInfo, otherCiv)
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.goldCostOfSignResearchAgreement()))
+                    tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.goldCostOfSignResearchAgreement()))
+                    if (otherCiv.isPlayerCivilization())
+                        otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+                    // Default setting is 5, this will be changed according to different civ.
+                    else if ((1..10).random()<=5) tradeLogic.acceptTrade()
+                }
+            }
+        }
     }
 
     private fun offerPeaceTreaty(civInfo: CivilizationInfo) {

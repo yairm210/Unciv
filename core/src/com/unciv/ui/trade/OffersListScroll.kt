@@ -54,7 +54,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1
-                if (offer.amount > 0 && offer.name != Constants.peaceTreaty) // can't disable peace treaty!
+                if (offer.amount > 0 && offer.name != Constants.peaceTreaty && offer.name != Constants.researchAgreement) // can't disable peace treaty!
                     tradeButton.onClick {
                         val amountTransferred = min(amountPerClick, offer.amount)
                         onOfferClicked(offer.copy(amount = amountTransferred))
