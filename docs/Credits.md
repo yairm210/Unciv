@@ -481,6 +481,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Submarine](https://thenounproject.com/search/?q=submarines&i=96833) by Lloyd Humphreys for Wolfpack
 * [Axe](https://thenounproject.com/search/?q=axe&i=14290) by Brian Oppenlander for Woodsman
 * [Competition](https://thenounproject.com/search/?q=move%20fast&i=1743826) by luca fruzza
+* Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
+* Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 
 ## Others 
 
