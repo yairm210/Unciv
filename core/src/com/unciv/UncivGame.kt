@@ -67,6 +67,8 @@ class UncivGame(
         settings = GameSaver().getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
 
+        Gdx.graphics.isContinuousRendering = settings.continuousRendering
+
         thread(name="LoadJSON") {
             RulesetCache.loadRulesets()
 
