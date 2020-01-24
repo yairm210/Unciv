@@ -1163,6 +1163,60 @@
 		"innerColor": [96,96,96],
 		"cities": ["Manila"]
 	},
+	{
+		"name": "Lhasa",
+		"translatedName": "Lhasa",
+		"adjective": ["tibetano"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Perhaps now we will find peace in death...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [204,102,0],
+		"cities": ["Lhasa"]
+	},
+	{
+		"name": "Vancouver",
+		"translatedName": "Vancouver",
+		"adjective": ["canadese"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "I regret not defending my country to the last, although it was not of use.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0,255,128],
+		"cities": ["Vancouver"]
+	},
+	{
+		"name": "M'Banza-Kongo",
+		"adjective": ["M'Banza-Kongo"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
+		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "You are nothing but a glorified barbarian. Cruel, and ruthless.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,128,0],
+		"cities": ["M'Banza-Kongo"]
+	},
+	{
+		"name": "Mogadishu",
+		"adjective": ["Mogadishu"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Congratulations, conquerer. This tribe serves you now.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [153,204,255],
+		"cities": ["Mogadishu"]
+	},
 	
 	        
 
