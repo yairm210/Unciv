@@ -522,10 +522,11 @@ class CityInfo {
         tryUpdateRoadStatus()
     }
 
+    // Acquiring in this context means transferring ownership to another city of the same civ
     fun canAcquireTile(newTileInfo: TileInfo): Boolean {
         val owningCity = newTileInfo.getCity()
         if (owningCity!=null && owningCity!=this
-                && newTileInfo.getOwner()!!.isPlayerCivilization()
+                && newTileInfo.getOwner()!!.isCurrentPlayer()
                 && newTileInfo.arialDistanceTo(getCenterTile()) <= 3
                 && newTileInfo.neighbors.any{it.getCity()==this}) {
             return true
