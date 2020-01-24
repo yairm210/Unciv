@@ -50,7 +50,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
 
         if (unit != null && isViewable) { // Tile is visible
             newImage = UnitGroup(unit, 25f)
-            if (oldUnitGroup?.blackSpinningCircle != null) {
+            if (UncivGame.Current.settings.continuousRendering && oldUnitGroup?.blackSpinningCircle != null) {
                 newImage.blackSpinningCircle = ImageGetter.getCircle()
                         .apply { rotation = oldUnitGroup.blackSpinningCircle!!.rotation }
             }

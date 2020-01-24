@@ -83,6 +83,14 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         addTileSetSelectBox(innerTable)
 
+        // Do not add to template.properties yet please.
+        innerTable.add("Continuous rendering\n(HIGHLY EXPERIMENTAL)".toLabel())
+        innerTable.addButton(if (settings.continuousRendering) "Yes".tr() else "No".tr()) {
+            settings.continuousRendering = !settings.continuousRendering
+            Gdx.graphics.isContinuousRendering = settings.continuousRendering
+            update()
+        }
+
         innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).row()
 
 
