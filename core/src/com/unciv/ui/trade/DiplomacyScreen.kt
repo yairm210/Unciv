@@ -21,7 +21,6 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.YesNoPopup
 import kotlin.math.roundToInt
 
 class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
@@ -233,12 +232,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             if(diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                     && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
                     && !otherCivDiplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                    && viewingCiv.tech.getTechUniques().contains("Enables Research agreements")
-                    && otherCiv.tech.getTechUniques().contains("Enables Research agreements")
-                    && viewingCiv.gold >= viewingCiv.goldCostOfSignResearchAgreement()
-                    && otherCiv.gold >= viewingCiv.goldCostOfSignResearchAgreement()
-                    && viewingCiv.gameInfo.ruleSet.technologies.values.any { !viewingCiv.tech.isResearched(it.name) && viewingCiv.tech.canBeResearched(it.name) }
-                    && otherCiv.gameInfo.ruleSet.technologies.values.any { !otherCiv.tech.isResearched(it.name) && otherCiv.tech.canBeResearched(it.name) }){
+                    && viewingCiv.canSignResearchAgreement()
+                    && otherCiv.canSignResearchAgreement()){
                 val researchAgreementButton = TextButton("Research Agreement".tr(),skin)
                 researchAgreementButton.onClick {
                     val tradeTable = setTrade(otherCiv)
@@ -247,8 +242,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                         GameSpeed.Standard -> 30
                         GameSpeed.Epic -> 45
                     }
-                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, viewingCiv.goldCostOfSignResearchAgreement())
-                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -viewingCiv.goldCostOfSignResearchAgreement())
+                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, viewingCiv.getResearchAgreementCost())
+                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -viewingCiv.getResearchAgreementCost())
                     tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)

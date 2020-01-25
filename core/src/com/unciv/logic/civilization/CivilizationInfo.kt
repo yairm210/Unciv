@@ -24,7 +24,6 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.VictoryScreen
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -308,6 +307,14 @@ class CivilizationInfo {
         else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
         return leaderName
     }
+
+    fun canSignResearchAgreement(): Boolean {
+        if(!tech.getTechUniques().contains("Enables Research agreements")) return false
+        if(gold < getResearchAgreementCost()) return false
+        if (gameInfo.ruleSet.technologies.values
+                .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
+        return true
+    }
     //endregion
 
     //region state-changing functions
@@ -495,7 +502,7 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
-    fun goldCostOfSignResearchAgreement(): Int {
+    fun getResearchAgreementCost(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val basicGoldCostOfSignResearchAgreement = when(getEra()){
             TechEra.Medieval, TechEra.Renaissance -> 250

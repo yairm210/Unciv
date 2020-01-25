@@ -542,5 +542,6 @@ class DiplomacyManager() {
         otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", Color.MAROON)
     }
 
+
     //endregion
 }
