@@ -2,10 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -28,6 +25,7 @@ enum class DiplomacyFlags{
     DeclinedPeace,
     DeclaredWar,
     DeclarationOfFriendship,
+    ResearchAgreement,
     Denunceation,
     BorderConflict,
     SettledCitiesNearUs,
@@ -84,6 +82,9 @@ class DiplomacyManager() {
     /** For city-states. Resting point is the value of Influence at which it ceases changing by itself */
     var restingPoint = 0f
 
+    /** Total of each turn Science during Research Agreement */
+    var totalOfScienceDuringRA = 0
+
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
@@ -93,6 +94,7 @@ class DiplomacyManager() {
         toReturn.restingPoint = restingPoint
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
+        toReturn.totalOfScienceDuringRA=totalOfScienceDuringRA
         return toReturn
     }
 
@@ -186,6 +188,15 @@ class DiplomacyManager() {
         return goldPerTurnForUs
     }
 
+    fun sciencefromResearchAgreement(){
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        val scienceFromResearchAgreement = min(totalOfScienceDuringRA, otherCivDiplomacy().totalOfScienceDuringRA)
+        civInfo.tech.scienceFromResearchAgreements += scienceFromResearchAgreement
+        otherCiv().tech.scienceFromResearchAgreements += scienceFromResearchAgreement
+        totalOfScienceDuringRA = 0
+        otherCivDiplomacy().totalOfScienceDuringRA = 0
+    }
+
     fun resourcesFromTrade(): ResourceSupplyList {
         val counter = ResourceSupplyList()
         for(trade in trades){
@@ -272,8 +283,13 @@ class DiplomacyManager() {
 
     private fun nextTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
+            if (flag == DiplomacyFlags.ResearchAgreement.name){
+                totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
+            }
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if (flagsCountdown[flag] == 0) {
+                if (flag == DiplomacyFlags.ResearchAgreement.name && !otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
+                    sciencefromResearchAgreement()
                 if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                     continue
                 flagsCountdown.remove(flag)
@@ -389,6 +405,12 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+        if(hasFlag(DiplomacyFlags.ResearchAgreement)) {
+            removeFlag(DiplomacyFlags.ResearchAgreement)
+            totalOfScienceDuringRA = 0
+            otherCivDiplomacy.totalOfScienceDuringRA = 0
+        }
+        otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
         if (otherCiv.isCityState()) otherCiv.updateAllyCivForCityState()
 
         if (!civInfo.isCityState()) {
@@ -471,6 +493,8 @@ class DiplomacyManager() {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclarationOfFriendship,35f)
         setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
+        if (otherCiv().playerType == PlayerType.Human)
+            otherCiv().addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
