@@ -131,7 +131,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val specialConstructions = ArrayList<Table>()
 
         for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
-            val turnsToUnit = cityConstructions.turnsToConstruction(unit.name)
+            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
+            val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
             val productionButton = getProductionButton(unit.name,
                     unit.name.tr() + "\r\n" + turnsToUnit + turnOrTurns(turnsToUnit),
                     unit.getRejectionReason(cityConstructions))
@@ -139,6 +140,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
 
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions)}) {
+            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(building.name)
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             val productionTextButton = getProductionButton(building.name,
                     building.name.tr() + "\r\n" + turnsToBuilding + turnOrTurns(turnsToBuilding),
@@ -163,6 +165,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun getQueueEntry(idx: Int, name: String, isLast: Boolean, isSelected: Boolean): Table {
         val city = cityScreen.city
+        val cityConstructions = city.cityConstructions
+
         val table = Table()
         table.align(Align.left).pad(5f)
         table.background = ImageGetter.getBackground(Color.BLACK)
@@ -170,7 +174,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (isSelected)
             table.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
 
-        val turnsToComplete = cityScreen.city.cityConstructions.turnsToConstruction(name)
+        val turnsToComplete = cityConstructions.turnsToConstruction(name, cityConstructions.isFirstOfItsKind(idx, name))
         val text = name.tr() + "\r\n" + turnsToComplete + turnOrTurns(turnsToComplete)
 
         table.defaults().pad(2f).minWidth(40f)
@@ -192,7 +196,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return table
     }
 
-    private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String = "", isSelectable: Boolean = true): Table {
+    private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String = ""): Table {
         val pickProductionButton = Table()
 
         pickProductionButton.align(Align.left).pad(5f)

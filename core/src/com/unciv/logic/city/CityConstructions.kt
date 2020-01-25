@@ -116,6 +116,7 @@ class CityConstructions {
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
     fun isBeingConstructed(constructionName: String): Boolean = currentConstruction == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
+    fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
 
     fun isQueueFull(): Boolean = constructionQueue.size == queueMaxSize
     fun isQueueEmpty(): Boolean = constructionQueue.isEmpty()
@@ -124,6 +125,17 @@ class CityConstructions {
         val currentConstruction = getCurrentConstruction()
         return currentConstruction is Building && currentConstruction.isWonder
     }
+
+    fun isFirstOfItsKind(idx: Int, name: String): Boolean {
+        // idx = 1 is the currentConstruction, so it is the first
+        if (idx == -1)
+            return true
+
+        // if the construction name is the same as the current construction, it isn't the first
+        return !isBeingConstructed(name) &&
+                idx == constructionQueue.indexOfFirst{it == name}
+    }
+
 
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
@@ -151,14 +163,17 @@ class CityConstructions {
         else return 0
     }
 
-    fun getRemainingWork(constructionName: String): Int {
+    fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
         val constr = getConstruction(constructionName)
-        if (constr is SpecialConstruction) return 0
-        return constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
+        return when {
+            constr is SpecialConstruction -> 0
+            useStoredProduction -> constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
+            else -> constr.getProductionCost(cityInfo.civInfo)
+        }
     }
 
-    fun turnsToConstruction(constructionName: String): Int {
-        val workLeft = getRemainingWork(constructionName)
+    fun turnsToConstruction(constructionName: String, useStoredProduction: Boolean = true): Int {
+        val workLeft = getRemainingWork(constructionName, useStoredProduction)
         if(workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
             return 1 // we'll finish this next turn
 
