@@ -226,24 +226,30 @@ class Building : NamedStats(), IConstruction{
         if (construction.isBeingConstructed(name)) return "Is being built"
         if (construction.isEnqueued(name)) return "Already enqueued"
 
+        val cityCenter = construction.cityInfo.getCenterTile()
         if ("Must be next to desert" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
+                && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
             return "Must be next to desert"
 
         if ("Must be next to mountain" in uniques
-                && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain == Constants.mountain })
+                && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
             return "Must be next to mountain"
 
+        if("Must have an owned mountain within 2 tiles" in uniques
+                && !cityCenter.getTilesInDistance(2)
+                        .any { it.baseTerrain==Constants.mountain && it.getOwner()==construction.cityInfo.civInfo })
+            return "Must be within 2 tiles of an owned mountain"
+
         if("Must not be on plains" in uniques
-                && construction.cityInfo.getCenterTile().baseTerrain==Constants.plains)
+                && cityCenter.baseTerrain==Constants.plains)
             return "Must not be on plains"
 
         if("Must not be on hill" in uniques
-                && construction.cityInfo.getCenterTile().baseTerrain==Constants.hill)
+                && cityCenter.baseTerrain==Constants.hill)
             return "Must not be on hill"
 
         if("Can only be built in coastal cities" in uniques
-                && !construction.cityInfo.getCenterTile().isCoastalTile())
+                && !cityCenter.isCoastalTile())
             return "Can only be built in coastal cities"
 
         if("Can only be built in annexed cities" in uniques
@@ -258,8 +264,7 @@ class Building : NamedStats(), IConstruction{
 
         // Regular wonders
         if (isWonder){
-            if(civInfo.gameInfo.getCities()
-                            .any {it.cityConstructions.isBuilt(name)})
+            if(civInfo.gameInfo.getCities().any {it.cityConstructions.isBuilt(name)})
                 return "Wonder is already built"
 
             if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })

@@ -389,6 +389,7 @@ class UnitAutomation {
                     .filter {
                         unit.movement.canMoveTo(it) && it.position !in unit.civInfo.exploredTiles
                         && unit.movement.canReach(it)
+                                && (it.getOwner()==null || !it.getOwner()!!.isCityState())
                     }
             if (unexploredTilesAtDistance.isNotEmpty()) {
                 unit.movement.headTowards(unexploredTilesAtDistance.random())

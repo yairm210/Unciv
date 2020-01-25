@@ -18,6 +18,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.utils.YesNoPopup
@@ -187,7 +188,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         if(!viewingCiv.isAtWarWith(otherCiv)) {
             val tradeButton = TextButton("Trade".tr(), skin)
-            tradeButton.onClick { setTrade(otherCiv) }
+            tradeButton.onClick {
+                setTrade(otherCiv).apply {
+                    tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type==TradeType.Treaty }) }
+                    tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type==TradeType.Treaty }) }
+                    offerColumnsTable.update()
+                }
+            }
             diplomacyTable.add(tradeButton).row()
             if(isNotPlayersTurn()) tradeButton.disable()
         }
@@ -221,6 +228,38 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 }
                 diplomacyTable.add(declareFriendshipButton).row()
                 if(isNotPlayersTurn()) declareFriendshipButton.disable()
+            }
+
+            if(diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+                    && !otherCivDiplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+                    && viewingCiv.tech.getTechUniques().contains("Enables Research agreements")
+                    && otherCiv.tech.getTechUniques().contains("Enables Research agreements")
+                    && viewingCiv.gold >= viewingCiv.goldCostOfSignResearchAgreement()
+                    && otherCiv.gold >= viewingCiv.goldCostOfSignResearchAgreement()
+                    && viewingCiv.gameInfo.ruleSet.technologies.values.any { !viewingCiv.tech.isResearched(it.name) && viewingCiv.tech.canBeResearched(it.name) }
+                    && otherCiv.gameInfo.ruleSet.technologies.values.any { !otherCiv.tech.isResearched(it.name) && otherCiv.tech.canBeResearched(it.name) }){
+                val researchAgreementButton = TextButton("Research Agreement".tr(),skin)
+                researchAgreementButton.onClick {
+                    val tradeTable = setTrade(otherCiv)
+                    val duration = when(viewingCiv.gameInfo.gameParameters.gameSpeed) {
+                        GameSpeed.Quick -> 25
+                        GameSpeed.Standard -> 30
+                        GameSpeed.Epic -> 45
+                    }
+                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, viewingCiv.goldCostOfSignResearchAgreement())
+                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -viewingCiv.goldCostOfSignResearchAgreement())
+                    tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
+                    tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
+                    tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)
+                    tradeTable.tradeLogic.currentTrade.ourOffers.add(researchAgreement)
+                    tradeTable.tradeLogic.theirAvailableOffers.add(researchAgreement)
+                    tradeTable.tradeLogic.theirAvailableOffers.add(goldCostOfSignResearchAgreement)
+                    tradeTable.offerColumnsTable.update()
+                }
+                if (isNotPlayersTurn()) researchAgreementButton.disable()
+
+                diplomacyTable.add(researchAgreementButton).row()
             }
 
             if(!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)

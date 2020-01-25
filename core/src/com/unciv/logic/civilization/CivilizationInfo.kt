@@ -495,6 +495,18 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
+    fun goldCostOfSignResearchAgreement(): Int {
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        val basicGoldCostOfSignResearchAgreement = when(getEra()){
+            TechEra.Medieval, TechEra.Renaissance -> 250
+            TechEra.Industrial -> 300
+            TechEra.Modern -> 350
+            TechEra.Information, TechEra.Future -> 400
+            else -> 0
+        }
+        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+    }
+
     fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
         val city = NextTurnAutomation().getClosestCities(this, otherCiv).city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()

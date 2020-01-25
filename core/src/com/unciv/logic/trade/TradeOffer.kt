@@ -22,7 +22,7 @@ data class TradeOffer(var name:String, var type: TradeType,
             TradeType.City -> UncivGame.Current.gameInfo.getCities().first{ it.id == name }.name
             else -> name
         }.tr()
-        if (type !in tradesToNotHaveNumbers) offerText += " ($amount)"
+        if (type !in tradesToNotHaveNumbers || name=="Research Agreement") offerText += " ($amount)"
         if (duration > 0) offerText += "\n" + duration + " {turns}".tr()
         return offerText
     }
