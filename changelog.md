@@ -1,3 +1,21 @@
+## 3.5.6
+
+Research agreements! - by lishaoxia1985
+
+Exploring units no longer auto-enter city states
+
+Map editor menu fix - by lyrjie
+
+Can no longer acquire another player's tiles in multiplayer - by lyrjie
+
+Specialist allocation is immediately viewable on the City screen
+
+Legalism fix - by reversi
+
+Fix #1759: correct 'turns to construction' for multiple units of the same type - by reversi
+
+Translation updates
+
 ## 3.5.5
 
 Aircraft Carriers added - by ltrcao and Jack Rainy
