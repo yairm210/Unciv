@@ -410,7 +410,8 @@
 		"hurryCostModifier": 25,
 		"requiredNearbyImprovedResources": ["Iron"],
 		"resourceBonusStats": {"production": 1},
-		"requiredTech": "Metal Casting"
+		"requiredTech": "Metal Casting",
+		"uniques": ["+15% production of land units"]
 	},
 	{
 		"name": "Harbor",

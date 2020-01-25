@@ -289,10 +289,12 @@ class CityStats {
     }
 
     private fun getStatPercentBonusesFromBuildings(): Stats {
-        val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-        if (cityInfo.civInfo.containsBuildingUnique("Culture in all cities increased by 25%")) stats.culture += 25f
-
+        val stats               = cityInfo.cityConstructions.getStatPercentBonuses()
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
+
+        if (cityInfo.civInfo.containsBuildingUnique("Culture in all cities increased by 25%"))
+            stats.culture += 25f
+
         if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
             if (cityInfo.civInfo.containsBuildingUnique("Increases production of spaceship parts by 25%"))
                 stats.production += 25
@@ -300,9 +302,17 @@ class CityStats {
                 stats.production += 50
         }
 
-        if (currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted
-                && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
-            stats.production += 15
+        if (currentConstruction is BaseUnit) {
+            if (currentConstruction.unitType == UnitType.Mounted
+                    && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
+                stats.production += 15
+            if (currentConstruction.unitType.isLandUnit()
+                    && cityInfo.containsBuildingUnique("+15% production of land units"))
+                stats.production += 15
+            if (currentConstruction.unitType.isWaterUnit()
+                    && cityInfo.containsBuildingUnique("+15% production of naval units"))
+                stats.production += 15
+        }
 
         return stats
     }
