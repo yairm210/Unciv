@@ -193,7 +193,7 @@ class CivilizationInfo {
 
 
     //region Units
-    fun getCivUnits(): List<MapUnit> = units
+    fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
         val newList = ArrayList(units)
@@ -220,12 +220,12 @@ class CivilizationInfo {
 
     fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
-    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
+    fun shouldGoToDueUnit() = UncivGame.Current.settings.checkForDueUnits && getDueUnits().any()
 
     fun getNextDueUnit(): MapUnit? {
         val dueUnits = getDueUnits()
-        if(dueUnits.isNotEmpty()) {
-            val unit = dueUnits[0]
+        if(dueUnits.any()) {
+            val unit = dueUnits.first()
             unit.due = false
             return unit
         }
@@ -407,7 +407,7 @@ class CivilizationInfo {
         if (!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
                 var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
-                if (civMilitaryUnits.isNotEmpty()) {
+                if (civMilitaryUnits.any()) {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.destroy()
                     civMilitaryUnits -= unitToDisband

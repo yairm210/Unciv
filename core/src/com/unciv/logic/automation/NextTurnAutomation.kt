@@ -391,7 +391,7 @@ class NextTurnAutomation{
                 enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             else {
                 if (enemy.victoryType()!=VictoryType.Cultural
-                        && enemy.getCivUnits().filter { !it.type.isCivilian() }.size > enemy.cities.size
+                        && enemy.getCivUnits().filter { !it.type.isCivilian() }.count() > enemy.cities.size
                         && enemy.getHappiness() > 0) {
                     continue //enemy AI has too large army and happiness. It continues to fight for profit.
                 }
@@ -425,7 +425,7 @@ class NextTurnAutomation{
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
-        val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
+        val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.count()
         if (ourMilitaryUnits < civInfo.cities.size) return
 
         //evaluate war
