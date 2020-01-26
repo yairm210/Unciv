@@ -102,6 +102,15 @@ class Building : NamedStats(), IConstruction{
             if (gpp.science != 0f) stringBuilder.appendln("+" + gpp.science.toInt() + " "+"[Great Scientist] points".tr())
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
+
+        if (this.specialistSlots != null) {
+            val ss = this.specialistSlots!!
+            if (ss.production != 0f) stringBuilder.appendln("+" + ss.production.toInt() + " " + "[Engineer specialist] slots".tr())
+            if (ss.gold       != 0f) stringBuilder.appendln("+" + ss.gold      .toInt() + " " + "[Merchant specialist] slots".tr())
+            if (ss.science    != 0f) stringBuilder.appendln("+" + ss.science   .toInt() + " " + "[Scientist specialist] slots".tr())
+            if (ss.culture    != 0f) stringBuilder.appendln("+" + ss.culture   .toInt() + " " + "[Artist specialist] slots".tr())
+        }
+
         if (resourceBonusStats != null) {
             val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
