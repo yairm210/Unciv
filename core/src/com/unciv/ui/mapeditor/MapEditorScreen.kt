@@ -13,6 +13,7 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.popups
 import com.unciv.ui.utils.setFontSize
 
 class MapEditorScreen(): CameraStageBaseScreen() {
@@ -76,7 +77,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
         val optionsMenuButton = TextButton("Menu".tr(), skin)
         optionsMenuButton.onClick {
-            if(stage.actors.any { it is MapEditorMenuPopup })
+            if(popups.any { it is MapEditorMenuPopup })
                 return@onClick // already open
             MapEditorMenuPopup(this)
         }

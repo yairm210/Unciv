@@ -9,17 +9,17 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.Popup
 import kotlin.math.max
 import kotlin.math.min
 
 class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
-    init{
-        val viewingCiv = worldScreen.viewingCiv
-        val tradeRequest = viewingCiv.tradeRequests.first()
+    val viewingCiv = worldScreen.viewingCiv
+    val tradeRequest = viewingCiv.tradeRequests.first()
 
+    init{
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
         val translatedNation = requestingCiv.getTranslatedNation()
         val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
@@ -50,7 +50,6 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
-            viewingCiv.tradeRequests.remove(tradeRequest)
             close()
             Popup(worldScreen).apply {
                 add(otherCivLeaderName.toLabel()).colspan(2)
@@ -67,8 +66,6 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", Color.GOLD)
         }
         addButton("Not this time.".tr()){
-            viewingCiv.tradeRequests.remove(tradeRequest)
-
             val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
@@ -82,7 +79,6 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             worldScreen.shouldUpdate=true
         }
         addButton("How about something else...".tr()){
-            viewingCiv.tradeRequests.remove(tradeRequest)
             close()
 
             val diplomacyScreen= DiplomacyScreen(viewingCiv)
@@ -93,5 +89,10 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             worldScreen.shouldUpdate=true
         }
         open()
+    }
+
+    override fun close() {
+        viewingCiv.tradeRequests.remove(tradeRequest)
+        super.close()
     }
 }
