@@ -88,7 +88,6 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             worldScreen.game.setScreen(diplomacyScreen)
             worldScreen.shouldUpdate=true
         }
-        open()
     }
 
     override fun close() {

@@ -12,7 +12,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.YesNoPopup
 
 class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
     var chosenMap = ""
@@ -43,7 +42,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         val downloadMapButton = TextButton("Download map".tr(), skin)
         downloadMapButton.onClick {
-            MapDownloadPopup(this)
+            MapDownloadPopup(this).open()
         }
         rightSideTable.add(downloadMapButton).row()
 
@@ -70,7 +69,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
             YesNoPopup("Are you sure you want to delete this map?", {
                 MapSaver().deleteMap(chosenMap)
                 UncivGame.Current.setScreen(LoadMapScreen(previousMap))
-            }, this)
+            }, this).open()
         }
         deleteMapButton.disable()
         deleteMapButton.color = Color.RED

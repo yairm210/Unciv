@@ -95,7 +95,5 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         val closeOptionsButton = TextButton("Close".tr(), skin)
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
-
-        open(force = true)
     }
 }

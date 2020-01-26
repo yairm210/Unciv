@@ -14,7 +14,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.YesNoPopup
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     /* -2 = Nothing, -1 = current construction, >= 0 queue entry */
@@ -294,7 +293,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     }
                     if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
                     cityScreen.update()
-                }, cityScreen)
+                }, cityScreen).open()
             }
 
             if (constructionGoldCost > city.civInfo.gold)

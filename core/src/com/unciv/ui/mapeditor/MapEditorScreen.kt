@@ -79,7 +79,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         optionsMenuButton.onClick {
             if(popups.any { it is MapEditorMenuPopup })
                 return@onClick // already open
-            MapEditorMenuPopup(this)
+            MapEditorMenuPopup(this).open(force = true)
         }
         optionsMenuButton.label.setFontSize(24)
         optionsMenuButton.labelCell.pad(20f)

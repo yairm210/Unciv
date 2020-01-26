@@ -95,8 +95,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.onClick {
-                WorldScreenMenuPopup(worldScreen)
             if(worldScreen.popups.none { it is WorldScreenMenuPopup })
+                WorldScreenMenuPopup(worldScreen).open(force = true)
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y

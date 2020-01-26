@@ -56,13 +56,13 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         addSquareButton("Options".tr()){
-            UncivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsPopup(worldScreen))
+            WorldScreenOptionsPopup(worldScreen).open()
             close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Community"){
-            WorldScreenCommunityPopup(worldScreen)
+            WorldScreenCommunityPopup(worldScreen).open()
             close()
         }.size(width,height)
         addSeparator()
@@ -70,8 +70,6 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSquareButton("Close"){
             close()
         }.size(width,height)
-
-        open(force = true)
     }
 
 
@@ -168,7 +166,5 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
         }
 
         addCloseButton()
-
-        open()
     }
 }

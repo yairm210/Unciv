@@ -10,6 +10,5 @@ class YesNoPopup(question:String, action:()->Unit,
         add(question.toLabel()).colspan(2).row()
         add(TextButton("No".tr(), skin).onClick { close(); restoredefault() })
         add(TextButton("Yes".tr(), skin).onClick { close(); action() })
-        open()
     }
 }

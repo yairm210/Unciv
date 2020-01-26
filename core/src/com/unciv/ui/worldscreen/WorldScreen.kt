@@ -209,8 +209,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
                 viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy() -> game.setScreen(PolicyPickerScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
-                viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
-                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
+                viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
+                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
             }
         }
         updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it

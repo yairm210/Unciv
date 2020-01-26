@@ -8,9 +8,9 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.mainmenu.DropBox
-import com.unciv.ui.utils.Popup
 import kotlin.concurrent.thread
 
 class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
@@ -39,6 +39,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
                                 val couldNotDownloadMapPopup = Popup(screen)
                                 couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
                                 couldNotDownloadMapPopup.addCloseButton()
+                                couldNotDownloadMapPopup.open()
                             }
                         }
                     }
@@ -50,6 +51,5 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
             addGoodSizedLabel("Could not get list of maps!").row()
         }
         addCloseButton()
-        open()
     }
 }

@@ -26,7 +26,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
     init {
         UncivGame.Current.settings.addCompletedTutorialTask("Open the options table")
         update()
-        open()
     }
 
 
@@ -229,7 +228,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 UncivGame.Current.settings.save()
                 UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen)
+                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
             }
         })
     }
@@ -252,7 +251,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 UncivGame.Current.settings.save()
                 UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen)
+                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
             }
         })
     }
@@ -311,6 +310,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UncivGame.Current.setWorldScreen()
-        WorldScreenOptionsPopup(UncivGame.Current.worldScreen)
+        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
     }
 }
