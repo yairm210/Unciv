@@ -555,7 +555,7 @@ class MapUnit {
     fun canIntercept(attackedTile: TileInfo): Boolean {
         return interceptChance()!=0
                 && (attacksThisTurn==0 || hasUnique("1 extra Interception may be made per turn") && attacksThisTurn<2)
-                && currentTile.arialDistanceTo(attackedTile) <= getRange()
+                && currentTile.arialDistanceTo(attackedTile) <= baseUnit.interceptRange
     }
 
     fun interceptChance():Int{
