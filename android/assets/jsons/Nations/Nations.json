@@ -877,10 +877,10 @@
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"afterPeace": "May peace forever bless our lands.",
-		"defeated": "We shall have our revenge.",
+		"declaringWar": "I have to do this, for the sake of progress if nothing else. You must be opposed!",
+		"attacked": "You can see how fruitless this will be for you... right?",
+		"afterPeace": "This is why I prefer diplomacy to war.",
+		"defeated": "May God grant me these last wishes - peace and prosperity for Brazil.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [211, 220, 103],
 		"cities": ["Rio de Janeiro"]
@@ -904,10 +904,10 @@
 		"adjective": ["Dublin"],
 		"cityStateType": "Militaristic",
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
-		"afterPeace": "May peace forever bless our lands.",
-		"defeated": "Hah! A fine victory.",
+		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
+		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
+		"afterPeace": "Wise to keep peace with your neighbors. Blood feuds are paid at great expense.",
+		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [211,180,113],
 		"cities": ["Dublin"]
@@ -932,10 +932,10 @@
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
+		"declaringWar": "I will enjoy hearing your last breath as you witness the destruction of your realm!",
+		"attacked": "Why do we fight' Because Inanna demands it. Now, witness the power of the Sumerians!",
 		"afterPeace": "May peace forever bless our lands.",
-		"defeated": "Oh Nanna, have mercy on us, and have the enemy be merciful on us!",
+		"defeated": "What treachery has struck us? No, what evil?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,69,0],
 		"cities": ["Ur"]
@@ -960,10 +960,10 @@
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
-		"declaringWar": "You leave us no choice. War it must be.",
+		"declaringWar": "You have revealed your purposes a bit too early, my friend...",
 		"attacked": "Very well, this shall not be forgotten.",
-		"afterPeace": "May peace forever bless our lands.",
-		"defeated": "If our legacy continues, you will never have truly won.",
+		"afterPeace": "I am glad that my plan has succeded.",
+		"defeated": "A wrong calculation, on my part.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [153,204,255],
 		"cities": ["Venice"]
@@ -1025,10 +1025,10 @@
 		"adjective": ["Edinburgh"],
 		"cityStateType": "Militaristic",
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
+		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
+		"attacked": "Traitorous man! The Cletic peoples will not stand for such wanton abuse and slander - I shall have your head!",
 		"afterPeace": "May peace forever bless our lands.",
-		"defeated": "There is no dishonor in losing to a worthier foe.",
+		"defeated": "Vile ruler, kow that you 'won' this war in name only!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
 		"cities": ["Edinburgh"]
@@ -1064,8 +1064,8 @@
 		"adjective": ["Sydney"],
 		"cityStateType": "Maritime",
 
-		"declaringWar": "You leave us no choice. War it must be.",
-		"attacked": "Very well, this shall not be forgotten.",
+		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
+		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
 		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
 		"outerColor": [0, 0, 0],
@@ -1162,6 +1162,60 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [96,96,96],
 		"cities": ["Manila"]
+	},
+	{
+		"name": "Lhasa",
+		"translatedName": "Lhasa",
+		"adjective": ["tibetano"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Perhaps now we will find peace in death...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [204,102,0],
+		"cities": ["Lhasa"]
+	},
+	{
+		"name": "Vancouver",
+		"translatedName": "Vancouver",
+		"adjective": ["canadese"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "In responding to the unstinting malignancy that has heretofore defined your relationship with Canada, we can have no recourse but war!",
+		"attacked": "As we can reach no peaceful resolution with you, Canada must turn, with reluctance, to war.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "I regret not defending my country to the last, although it was not of use.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0,255,128],
+		"cities": ["Vancouver"]
+	},
+	{
+		"name": "M'Banza-Kongo",
+		"adjective": ["M'Banza-Kongo"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
+		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "You are nothing but a glorified barbarian. Cruel, and ruthless.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,128,0],
+		"cities": ["M'Banza-Kongo"]
+	},
+	{
+		"name": "Mogadishu",
+		"adjective": ["Mogadishu"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Congratulations, conquerer. This tribe serves you now.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [153,204,255],
+		"cities": ["Mogadishu"]
 	},
 	
 	        
