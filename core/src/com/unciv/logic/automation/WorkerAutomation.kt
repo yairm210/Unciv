@@ -50,7 +50,7 @@ class WorkerAutomation(val unit: MapUnit) {
                             && tileCanBeImproved(it, unit.civInfo) }
         }
 
-        val mostUndevelopedCity = unit.civInfo.cities
+        val mostUndevelopedCity = unit.civInfo.cities.asSequence()
                 .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
                 .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.id] }
                 .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city

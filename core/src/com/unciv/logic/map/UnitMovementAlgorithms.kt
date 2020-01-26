@@ -239,15 +239,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.action=null // unfortify/setup after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.
-        var origin = unit.getTile()
-
+        val origin = unit.getTile()
         unit.removeFromTile()
         unit.putInTile(destination)
-      
+
         for(payload in origin.getUnits().filter { it.isTransported }){  // bring along the payloads
-           payload.removeFromTile()
-           payload.putInTile(destination)
-           payload.isTransported = true // restore the flag to not leave the payload in the city
+            if(unit.canTransport(payload)) {
+                payload.removeFromTile()
+                payload.putInTile(destination)
+                payload.isTransported = true // restore the flag to not leave the payload in the city
+            }
         }
 
         // Unit maintenance changed
@@ -295,15 +296,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (tile.militaryUnit != null) {
             val unitAtDestination = tile.militaryUnit!!
-
-            var unitCapacity = if (unitAtDestination.getUniques().contains("Can carry 2 aircraft")) 2 else 0
-            unitCapacity += unitAtDestination.getUniques().count { it == "Can carry 1 extra air unit" }
-
-            return ((unitAtDestination.type.isAircraftCarrierUnit() && !unit.type.isMissileUnit()) ||
-                    (unitAtDestination.type.isMissileCarrierUnit() && unit.type.isMissileUnit()))
-                    && unitAtDestination.owner == unit.owner && tile.airUnits.filter { it.isTransported }.size < unitCapacity
-        } else
-            return false
+            return unitAtDestination.canTransport(unit)
+        }
+        return false
     }
 
 

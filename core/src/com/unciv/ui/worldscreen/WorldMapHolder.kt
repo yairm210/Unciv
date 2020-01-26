@@ -130,7 +130,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
         } else if (tileInfo.militaryUnit!=null &&
                 (tileInfo.militaryUnit!!.type.isAircraftCarrierUnit() || tileInfo.militaryUnit!!.type.isMissileCarrierUnit()) &&
-                 tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && !tileInfo.airUnits.isEmpty()) {
+                 tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && tileInfo.airUnits.isNotEmpty()) {
             unitList.addAll(tileInfo.getUnits())
         }
 

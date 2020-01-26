@@ -568,6 +568,25 @@ class MapUnit {
         return percent
     }
 
+    fun canTransport(mapUnit: MapUnit): Boolean {
+        if(type!=UnitType.WaterAircraftCarrier && type!=UnitType.WaterMissileCarrier)
+            return false
+        if(!mapUnit.type.isAirUnit()) return false
+        if(type==UnitType.WaterMissileCarrier && mapUnit.type!=UnitType.Missile)
+            return false
+        if(type==UnitType.WaterAircraftCarrier && mapUnit.type==UnitType.Missile)
+            return false
+        if(owner!=mapUnit.owner) return false
+
+        var unitCapacity = 0
+        if (getUniques().contains("Can carry 2 aircraft")) unitCapacity=2
+        unitCapacity += getUniques().count { it == "Can carry 1 extra air unit" }
+
+        if(currentTile.airUnits.filter { it.isTransported }.size>=unitCapacity) return false
+
+        return true
+    }
+
     fun interceptDamagePercentBonus():Int{
         var sum=0
         for(unique in getUniques().filter { it.startsWith("Bonus when intercepting") }){
