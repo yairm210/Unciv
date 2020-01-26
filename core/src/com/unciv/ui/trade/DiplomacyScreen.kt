@@ -241,6 +241,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                         GameSpeed.Quick -> 25
                         GameSpeed.Standard -> 30
                         GameSpeed.Epic -> 45
+                        GameSpeed.Marathon -> 90
                     }
                     val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, viewingCiv.getResearchAgreementCost())
                     val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -viewingCiv.getResearchAgreementCost())

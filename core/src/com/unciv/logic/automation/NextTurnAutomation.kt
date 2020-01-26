@@ -343,6 +343,7 @@ class NextTurnAutomation{
                 GameSpeed.Quick -> 25
                 GameSpeed.Standard -> 30
                 GameSpeed.Epic -> 45
+                GameSpeed.Marathon -> 90
             }
             for (otherCiv in canSignResearchAgreementCiv) {
                 // Default setting is 5, this will be changed according to different civ.
