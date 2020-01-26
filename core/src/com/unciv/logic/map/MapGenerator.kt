@@ -115,7 +115,7 @@ class MapGenerator {
     }
 
     fun getLatitude(vector: Vector2): Float {
-        return (sin(3.1416 / 3) * vector.y).toFloat()
+        return abs(vector.x + vector.y)
     }
 
     fun divideIntoBiomes(map: TileMap, averageTilesPerArea: Int, waterPercent: Float, distance: Int, ruleset: Ruleset) {
