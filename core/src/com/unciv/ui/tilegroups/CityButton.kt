@@ -14,6 +14,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 
 class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
@@ -61,22 +62,29 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     private fun setButtonActions() {
 
         val unitTable = tileGroup.worldScreen.bottomUnitTable
-        if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
 
-            // So you can click anywhere on the button to go to the city
-            touchable = Touchable.childrenOnly
+        // So you can click anywhere on the button to go to the city
+        touchable = Touchable.childrenOnly
 
+        onClick {
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
-            // second tap on the button will go to the city screen
-            onClick {
-                if (isButtonMoved) {
+            if (isButtonMoved) {
+                // second tap on the button will go to the city screen
+                // if this city belongs to you
+                if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
                     UncivGame.Current.setScreen(CityScreen(city))
                 } else {
-                    moveButtonDown()
-                    if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
-                        tileGroup.selectCity(city)
+                    // If city doesn't belong to you, go directly to its owner's diplomacy screen.
+                    val screen = DiplomacyScreen(UncivGame.Current.worldScreen.viewingCiv)
+                    screen.updateRightSide(city.civInfo)
+                    UncivGame.Current.setScreen(screen)
                 }
+            } else {
+                moveButtonDown()
+                if ((unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f) &&
+                            belongsToViewingCiv())
+                    tileGroup.selectCity(city)
             }
         }
 
