@@ -268,6 +268,20 @@ class MapGenerator {
         }
     }
 
+    private fun trySpawnOnSuitableLocation(suitableLocations: List<TileInfo>, wonder: Terrain): TileInfo? {
+        if (suitableLocations.isNotEmpty()) {
+            val location = suitableLocations.random()
+            location.naturalWonder = wonder.name
+            location.baseTerrain = wonder.turnsInto!!
+            location.terrainFeature = null
+            return location
+        }
+
+        println("No suitable location for ${wonder.name}")
+        return null
+    }
+
+
     /*
     Must be in tundra or desert; cannot be adjacent to grassland; can be adjacent to a maximum
     of 2 mountains and a maximum of 4 hills and mountains; avoids oceans; becomes mountain
@@ -281,15 +295,7 @@ class MapGenerator {
                 && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.mountain || neighbor.getBaseTerrain().name == Constants.hill} <= 4
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     /*
@@ -307,15 +313,7 @@ class MapGenerator {
                 && it.neighbors.count{ neighbor -> neighbor.getBaseTerrain().name == Constants.hill } <= 2
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     /*
@@ -331,15 +329,7 @@ class MapGenerator {
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } <= 2
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     /*
@@ -361,12 +351,8 @@ class MapGenerator {
                             && neighbor.neighbors.all{ it.isWater } }
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-
+        val location = trySpawnOnSuitableLocation(suitableLocations, wonder)
+        if (location != null) {
             val location2 = location.neighbors
                     .filter { it.resource == null && it.improvement == null
                             && wonder.occursOn!!.contains(it.getLastTerrain().name)
@@ -376,9 +362,6 @@ class MapGenerator {
             location2.naturalWonder = wonder.name
             location2.baseTerrain = wonder.turnsInto!!
             location2.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
         }
     }
 
@@ -394,12 +377,8 @@ class MapGenerator {
                 && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.coast }
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-
+        val location = trySpawnOnSuitableLocation(suitableLocations, wonder)
+        if (location != null) {
             for (tile in location.neighbors) {
                 if (tile.baseTerrain == Constants.coast) continue
                 tile.baseTerrain = Constants.coast
@@ -407,9 +386,6 @@ class MapGenerator {
                 tile.resource = null
                 tile.improvement = null
             }
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
         }
     }
 
@@ -427,12 +403,8 @@ class MapGenerator {
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.mountain } == 1
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-
+        val location = trySpawnOnSuitableLocation(suitableLocations, wonder)
+        if (location != null) {
             for (tile in location.neighbors) {
                 if (tile.baseTerrain == Constants.coast) continue
                 if (tile.baseTerrain == Constants.mountain) continue
@@ -442,9 +414,6 @@ class MapGenerator {
                 tile.resource = null
                 tile.improvement = null
             }
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
         }
     }
 
@@ -464,15 +433,7 @@ class MapGenerator {
                 && it.neighbors.count { neighbor -> neighbor.getBaseTerrain().name == Constants.tundra } <= 3
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     /*
@@ -485,15 +446,7 @@ class MapGenerator {
                 && it.neighbors.any { neighbor -> neighbor.getBaseTerrain().name == Constants.hill }
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     /*
@@ -506,15 +459,7 @@ class MapGenerator {
                 && it.neighbors.any { neighbor -> neighbor.getLastTerrain().name == Constants.jungle }
         }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     /*
@@ -525,15 +470,7 @@ class MapGenerator {
         val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
                 && wonder.occursOn!!.contains(it.getLastTerrain().name) }
 
-        if (suitableLocations.isNotEmpty()) {
-            val location = suitableLocations.random()
-            location.naturalWonder = wonder.name
-            location.baseTerrain = wonder.turnsInto!!
-            location.terrainFeature = null
-        }
-        else {
-            println("No suitable location for ${wonder.name}")
-        }
+        trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
