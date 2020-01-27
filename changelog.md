@@ -1,3 +1,21 @@
+## 3.5.7
+
+
+Added Non-continuous rendering setting, to disable animations and save battery - by reversi
+
+Add missing Forge and Seaport production bonus uniques - by Teague Lander
+
+Fixed anti air units intercept range
+
+Fixed aerial transportation crashing bug
+
+Add specialist slot description for buildings that provide them - by Teague Lander
+
+Quick access to diplomacy screen with other civilizations by tapping city buttons - by ltrcao
+
+Translation updates
+
+
 ## 3.5.6
 
 Research agreements! - by lishaoxia1985
