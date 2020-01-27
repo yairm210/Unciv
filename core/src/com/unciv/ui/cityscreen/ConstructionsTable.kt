@@ -99,9 +99,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionsQueueTable.addSeparator()
 
         if (currentConstruction != "")
-            constructionsQueueTable.add(getQueueEntry(-1, currentConstruction, queue.isEmpty(), selectedQueueEntry == -1))
+            constructionsQueueTable.add(getQueueEntry(-1, currentConstruction, queue.isEmpty(), isSelectedCurrentConstruction()))
                     .expandX().fillX().row()
-         else
+        else
             constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
 
         constructionsQueueTable.addSeparator()
@@ -227,6 +227,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return pickProductionButton
     }
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry > -2
+    private fun isSelectedCurrentConstruction(): Boolean = selectedQueueEntry == -1
 
     private fun getQueueButton(construction: IConstruction?): TextButton {
         val city = cityScreen.city
@@ -287,7 +288,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 YesNoPopup("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
                     cityConstructions.purchaseConstruction(construction.name)
                     if (isSelectedQueueEntry()) {
-                        cityConstructions.removeFromQueue(selectedQueueEntry)
+                        // currentConstruction is removed from the queue by purchaseConstruction
+                        // to avoid conflicts with NextTurnAutomation
+                        if (!isSelectedCurrentConstruction())
+                            cityConstructions.removeFromQueue(selectedQueueEntry)
                         selectedQueueEntry = -2
                         cityScreen.selectedConstruction = null
                     }
