@@ -95,7 +95,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                     cityScreen.city.sellBuilding(building.name)
                                     cityScreen.city.cityStats.update()
                                     cityScreen.update()
-                                }, cityScreen)
+                                }, cityScreen).open()
                     }
                     if (cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.isPuppet
                             || !UncivGame.Current.worldScreen.isPlayersTurn)

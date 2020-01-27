@@ -23,25 +23,25 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         val height = 30f
         addSquareButton("Map editor".tr()){
             openMapEditorPopup()
-            remove()
+            close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Civilopedia".tr()){
             UncivGame.Current.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
-            remove()
+            close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Load game".tr()){
             UncivGame.Current.setScreen(LoadGameScreen())
-            remove()
+            close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Save game".tr()) {
             UncivGame.Current.setScreen(SaveGameScreen())
-            remove()
+            close()
         }.size(width,height)
         addSeparator()
 
@@ -56,22 +56,20 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         addSquareButton("Options".tr()){
-            UncivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsPopup(worldScreen))
-            remove()
+            WorldScreenOptionsPopup(worldScreen).open()
+            close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Community"){
-            WorldScreenCommunityPopup(worldScreen)
-            remove()
+            WorldScreenCommunityPopup(worldScreen).open()
+            close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Close"){
             close()
         }.size(width,height)
-
-        open()
     }
 
 
@@ -159,16 +157,14 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
     init{
         addButton("Discord"){
             Gdx.net.openURI("https://discord.gg/bjrB4Xw")
-            remove()
+            close()
         }
 
         addButton("Github"){
             Gdx.net.openURI("https://github.com/yairm210/UnCiv")
-            remove()
+            close()
         }
 
         addCloseButton()
-
-        open()
     }
 }

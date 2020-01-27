@@ -11,9 +11,9 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.translations.tr
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.mainmenu.DropBox
-import com.unciv.ui.utils.Popup
 import kotlin.concurrent.thread
 
 class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
@@ -95,7 +95,5 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         val closeOptionsButton = TextButton("Close".tr(), skin)
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
-
-        open()
     }
 }

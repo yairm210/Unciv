@@ -178,7 +178,6 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Close"))
             }
         }
-        open()
     }
 
     override fun close(){

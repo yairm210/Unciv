@@ -158,7 +158,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                     tradeLogic.acceptTrade()
                     updateLeftSideTable()
-                }, this)
+                }, this).open()
             }
             diplomacyTable.add(peaceButton).row()
             if(isNotPlayersTurn()) peaceButton.disable()
@@ -373,7 +373,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.getTranslatedNation().attacked, "Very well.")
                 updateLeftSideTable()
-            }, this)
+            }, this).open()
         }
         return declareWarButton
     }

@@ -26,7 +26,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
     init {
         UncivGame.Current.settings.addCompletedTutorialTask("Open the options table")
         update()
-        open()
     }
 
 
@@ -35,44 +34,43 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         settings.save()
         clear()
 
-        val innerTable = Popup(screen) // cheating, to get the old code to fit inside a Scroll =)
-        innerTable.background = null
+        val innerTable = Table(CameraStageBaseScreen.skin)
 
         innerTable.add("Display options".toLabel(fontSize = 24)).colspan(2).row()
 
         innerTable.add("Show worked tiles".toLabel())
-        innerTable.addButton(if (settings.showWorkedTiles) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showWorkedTiles) "Yes".tr() else "No".tr()) {
             settings.showWorkedTiles= !settings.showWorkedTiles
             update()
         }
 
         innerTable.add("Show resources and improvements".toLabel())
-        innerTable.addButton(if (settings.showResourcesAndImprovements) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showResourcesAndImprovements) "Yes".tr() else "No".tr()) {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
             update()
         }
 
 
         innerTable.add("Show tutorials".toLabel())
-        innerTable.addButton(if (settings.showTutorials) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showTutorials) "Yes".tr() else "No".tr()) {
             settings.showTutorials = !settings.showTutorials
             update()
         }
 
         innerTable.add("Show minimap".toLabel())
-        innerTable.addButton(if (settings.showMinimap) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showMinimap) "Yes".tr() else "No".tr()) {
             settings.showMinimap = !settings.showMinimap
             update()
         }
 
         innerTable.add("Show pixel units".toLabel())
-        innerTable.addButton(if (settings.showPixelUnits) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showPixelUnits) "Yes".tr() else "No".tr()) {
             settings.showPixelUnits = !settings.showPixelUnits
             update()
         }
 
         innerTable.add("Show pixel improvements".toLabel())
-        innerTable.addButton(if (settings.showPixelImprovements) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showPixelImprovements) "Yes".tr() else "No".tr()) {
             settings.showPixelImprovements = !settings.showPixelImprovements
             update()
         }
@@ -85,7 +83,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         // Do not add to template.properties yet please.
         innerTable.add("Continuous rendering\n(HIGHLY EXPERIMENTAL)".toLabel())
-        innerTable.addButton(if (settings.continuousRendering) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.continuousRendering) "Yes".tr() else "No".tr()) {
             settings.continuousRendering = !settings.continuousRendering
             Gdx.graphics.isContinuousRendering = settings.continuousRendering
             update()
@@ -95,32 +93,32 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
 
         innerTable.add("Check for idle units".toLabel())
-        innerTable.addButton(if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
             settings.checkForDueUnits = !settings.checkForDueUnits
             update()
         }
 
         innerTable.add("Move units with a single tap".toLabel())
-        innerTable.addButton(if (settings.singleTapMove) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.singleTapMove) "Yes".tr() else "No".tr()) {
             settings.singleTapMove = !settings.singleTapMove
             update()
         }
 
         innerTable.add("Auto-assign city production".toLabel())
-        innerTable.addButton(if (settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
             settings.autoAssignCityProduction = !settings.autoAssignCityProduction
             update()
         }
 
         innerTable.add("Auto-build roads".toLabel())
-        innerTable.addButton(if (settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
             settings.autoBuildingRoads = !settings.autoBuildingRoads
             update()
         }
 
 
         innerTable.add("Enable nuclear weapons".toLabel())
-        innerTable.addButton(if (settings.nuclearWeaponEnabled) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.nuclearWeaponEnabled) "Yes".tr() else "No".tr()) {
             settings.nuclearWeaponEnabled = !settings.nuclearWeaponEnabled
             update()
         }
@@ -150,8 +148,14 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         UncivGame.Current.worldScreen.shouldUpdate = true
     }
 
+    private fun addButton(table: Table, text: String, action: () -> Unit): Cell<TextButton> {
+        val button = TextButton(text.tr(), skin).apply { color = ImageGetter.getBlue() }
+        button.onClick(action)
+        return table.add(button).apply { row() }
+    }
 
-    private fun addSoundEffectsVolumeSlider(innerTable: Popup) {
+
+    private fun addSoundEffectsVolumeSlider(innerTable: Table) {
         innerTable.add("Sound effects volume".tr())
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
@@ -166,7 +170,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         innerTable.add(soundEffectsVolumeSlider).row()
     }
 
-    private fun addMusicVolumeSlider(innerTable: Popup) {
+    private fun addMusicVolumeSlider(innerTable: Table) {
         val musicLocation =Gdx.files.local(UncivGame.Current.musicLocation)
         if(musicLocation.exists()) {
             innerTable.add("Music volume".tr())
@@ -208,7 +212,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         }
     }
 
-    private fun addResolutionSelectBox(innerTable: Popup) {
+    private fun addResolutionSelectBox(innerTable: Table) {
         innerTable.add("Resolution".toLabel())
 
         val resolutionSelectBox = SelectBox<String>(skin)
@@ -224,12 +228,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 UncivGame.Current.settings.save()
                 UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen)
+                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
             }
         })
     }
 
-    private fun addTileSetSelectBox(innerTable: Popup) {
+    private fun addTileSetSelectBox(innerTable: Table) {
         innerTable.add("Tileset".toLabel())
 
         val tileSetSelectBox = SelectBox<String>(skin)
@@ -247,12 +251,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 UncivGame.Current.settings.save()
                 UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen)
+                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
             }
         })
     }
 
-    private fun addAutosaveTurnsSelectBox(innerTable: Popup) {
+    private fun addAutosaveTurnsSelectBox(innerTable: Table) {
         innerTable.add("Turns between autosaves".toLabel())
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
@@ -272,7 +276,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         })
     }
 
-    private fun addLanguageSelectBox(innerTable: Popup) {
+    private fun addLanguageSelectBox(innerTable: Table) {
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         UncivGame.Current.translations.percentCompleteOfLanguages
@@ -306,6 +310,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UncivGame.Current.setWorldScreen()
-        WorldScreenOptionsPopup(UncivGame.Current.worldScreen)
+        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
     }
 }

@@ -18,20 +18,30 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
 
         this.pad(20f)
         this.defaults().pad(5f)
+
+        this.isVisible = false
     }
 
     /**
-     * Displays the Popup on the screen. Will not open the popup if another one is already open.
+     * Displays the Popup on the screen. If another popup is already open, this one will display after the other has
+     * closed. Use [force] = true if you want to open this popup above the other one anyway.
      */
-    fun open() {
-        if (screen.hasOpenPopups()) return;
+    fun open(force: Boolean = false) {
+        if (force || !screen.hasOpenPopups()) {
+            this.isVisible = true
+        }
+
+        screen.stage.addActor(this)
         pack()
         center(screen.stage)
-        screen.stage.addActor(this)
+
     }
 
     open fun close() {
         remove()
+        if (screen.popups.isNotEmpty()) {
+            screen.popups[0].isVisible = true;
+        }
     }
 
     fun addGoodSizedLabel(text: String, size:Int=18): Cell<Label> {
@@ -57,4 +67,9 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
 
     fun addCloseButton() = addButton("Close") { close() }
 }
+
+fun CameraStageBaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
+
+val CameraStageBaseScreen.popups: List<Popup>
+    get() = stage.actors.filter{ it is Popup }.map{ it as Popup }
 
