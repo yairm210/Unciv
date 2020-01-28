@@ -110,7 +110,6 @@ class PolicyManager {
                 civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.settler)
             "Citizenship" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
             "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
-            "Scientific Revolution" -> civInfo.tech.freeTechs += 2
             "Legalism" -> tryAddLegalismBuildings()
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
