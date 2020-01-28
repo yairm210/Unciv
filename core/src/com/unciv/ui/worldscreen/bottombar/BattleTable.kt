@@ -199,7 +199,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 try {
-                    Battle.moveAndAttack(attacker, attackableTile)
+                    if (attacker.getUnitType()==UnitType.Missile)
+                        Battle.nuke(attacker, attackableTile.tileToAttack)
+                    else
+                        Battle.moveAndAttack(attacker, attackableTile)
                     worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
