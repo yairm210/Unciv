@@ -72,6 +72,9 @@ enum class UnitType{
                 || this==Missile
     }
 
+    fun isMissile():Boolean{
+        return this == Missile
+    }
 
     fun isAircraftCarrierUnit():Boolean{
         return this == WaterAircraftCarrier

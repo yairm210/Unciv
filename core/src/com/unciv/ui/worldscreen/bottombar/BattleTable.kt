@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.UnitType
@@ -44,10 +45,19 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attacker = tryGetAttacker()
         if(attacker==null){ hide(); return }
 
-        val defender = tryGetDefender()
-        if(defender==null){ hide(); return }
+        if (attacker.getUnitType().isMissile()) {
+            val selectedTile = worldScreen.mapHolder.selectedTile
+            if (selectedTile == null) { hide(); return } // no selected tile
+            simulateNuke(attacker as MapUnitCombatant, selectedTile)
+        }
+        else {
+            val defender = tryGetDefender()
+            if (defender == null) {
+                hide(); return
+            }
 
-        simulateBattle(attacker, defender)
+            simulateBattle(attacker, defender)
+        }
     }
 
     private fun tryGetAttacker(): ICombatant? {
@@ -63,14 +73,16 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     }
 
     private fun tryGetDefender(): ICombatant? {
-        val attackerCiv = worldScreen.viewingCiv
-        if (worldScreen.mapHolder.selectedTile == null) return null // no selected tile
-        val selectedTile = worldScreen.mapHolder.selectedTile!!
+        val selectedTile = worldScreen.mapHolder.selectedTile ?: return null // no selected tile
+        return tryGetDefenderAtTile(selectedTile, false)
+    }
 
+    private fun tryGetDefenderAtTile(selectedTile: TileInfo, includeFriendly: Boolean): ICombatant? {
+        val attackerCiv = worldScreen.viewingCiv
         val defender: ICombatant? = Battle.getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
-                defender.getCivInfo()==attackerCiv)
+                !includeFriendly && defender.getCivInfo()==attackerCiv )
             return null  // no enemy combatant in tile
 
         val canSeeDefender = if(UncivGame.Current.viewEntireMapForDebug) true
@@ -167,9 +179,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         row().pad(5f)
-        val attackText : String = when {
-            attacker is CityCombatant -> "Bombard"
-            attacker.getUnitType()==UnitType.Missile -> "NUKE"
+        val attackText : String = when (attacker) {
+            is CityCombatant -> "Bombard"
             else -> "Attack"
         }
         val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
@@ -199,10 +210,73 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 try {
-                    if (attacker.getUnitType()==UnitType.Missile)
-                        Battle.nuke(attacker, attackableTile.tileToAttack)
-                    else
-                        Battle.moveAndAttack(attacker, attackableTile)
+                    Battle.moveAndAttack(attacker, attackableTile)
+                    worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                    worldScreen.shouldUpdate = true
+                }
+                catch (ex:Exception){
+                    val battleBugPopup = Popup(worldScreen)
+                    battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                    battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                    battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
+                    battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
+                    battleBugPopup.open()
+                }
+            }
+        }
+
+        add(attackButton).colspan(2)
+
+        pack()
+
+        setPosition(worldScreen.stage.width/2-width/2, 5f)
+    }
+
+    private fun simulateNuke(attacker: MapUnitCombatant, targetTile: TileInfo){
+        clear()
+        defaults().pad(5f)
+
+        val attackerNameWrapper = Table()
+        val attackerLabel = attacker.getName().toLabel()
+        attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(attackerLabel)
+        add(attackerNameWrapper)
+
+        val defenderNameWrapper = Table()
+        for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
+            val defender: ICombatant = tryGetDefenderAtTile(tile, true) ?: continue
+            val defenderLabel = Label(defender.getName().tr(), skin)
+            when (defender) {
+                is MapUnitCombatant ->
+                    defenderNameWrapper.add(UnitGroup(defender.unit, 25f)).padRight(5f)
+                is CityCombatant -> {
+                    val nation = defender.city.civInfo.nation
+                    val nationIcon = ImageGetter.getNationIcon(nation.name)
+                    nationIcon.color = nation.getInnerColor()
+                    defenderNameWrapper.add(nationIcon).size(25f).padRight(5f)
+                }
+            }
+            defenderNameWrapper.add(defenderLabel).row()
+        }
+        add(defenderNameWrapper).row()
+
+        addSeparator().pad(0f)
+        row().pad(5f)
+
+        val attackButton = TextButton("NUKE".tr(), skin).apply { color= Color.RED }
+
+        val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
+
+        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach) {
+            attackButton.disable()
+            attackButton.label.color = Color.GRAY
+        }
+        else {
+            attackButton.onClick {
+                try {
+                    Battle.nuke(attacker, targetTile)
                     worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
