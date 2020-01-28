@@ -58,6 +58,12 @@ enum class DiplomaticModifiers{
 }
 
 class DiplomacyManager() {
+    
+    companion object {
+        /** The value city-state influence can't go below */
+        const val MINIMUM_INFLUENCE = -60f
+    }
+    
     @Transient lateinit var civInfo: CivilizationInfo
     // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
     @Transient var hasOpenBorders=false
@@ -76,8 +82,10 @@ class DiplomacyManager() {
      * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
     var diplomaticModifiers = HashMap<String,Float>()
 
-    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy. */
+    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy.
+     *  Won't go below [MINIMUM_INFLUENCE] */
     var influence = 0f
+        set(value) { field = max(value, MINIMUM_INFLUENCE) }
 
     /** For city-states. Resting point is the value of Influence at which it ceases changing by itself */
     var restingPoint = 0f
