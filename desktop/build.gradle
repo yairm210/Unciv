@@ -40,6 +40,7 @@ task dist(dependsOn: classes, type: Jar) { // Compiles the jar file
  
     manifest {
         attributes 'Main-Class': project.mainClassName
+        attributes 'Specification-Version': appVersion
     }
 }
 

@@ -27,7 +27,9 @@ internal object DesktopLauncher {
         config.title = "Unciv"
         config.useHDPI = true
 
-        val game = UncivGame("Desktop", null){exitProcess(0)}
+        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion
+
+        val game = UncivGame(if (versionFromJar != null) versionFromJar else "Desktop", null){exitProcess(0)}
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
