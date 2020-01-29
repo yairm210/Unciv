@@ -139,7 +139,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
 
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions)}) {
-            val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(building.name)
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             val productionTextButton = getProductionButton(building.name,
                     building.name.tr() + "\r\n" + turnsToBuilding + turnOrTurns(turnsToBuilding),
@@ -162,7 +161,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         availableConstructionsTable.addCategory("Other", specialConstructions)
     }
 
-    private fun getQueueEntry(idx: Int, name: String, isLast: Boolean, isSelected: Boolean): Table {
+    private fun getQueueEntry(constructionQueueIndex: Int, name: String, isLast: Boolean, isSelected: Boolean): Table {
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
@@ -173,23 +172,24 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (isSelected)
             table.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
 
-        val turnsToComplete = cityConstructions.turnsToConstruction(name, cityConstructions.isFirstOfItsKind(idx, name))
+        val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
+        val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
         val text = name.tr() + "\r\n" + turnsToComplete + turnOrTurns(turnsToComplete)
 
         table.defaults().pad(2f).minWidth(40f)
         table.add(ImageGetter.getConstructionImage(name).surroundWithCircle(40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
-        if (idx >= 0) table.add(getHigherPrioButton(idx, name, city)).right()
+        if (constructionQueueIndex >= 0) table.add(getRaisePriorityButton(constructionQueueIndex, name, city)).right()
         else table.add().right()
-        if (!isLast) table.add(getLowerPrioButton(idx, name, city)).right()
+        if (!isLast) table.add(getLowerPriorityButton(constructionQueueIndex, name, city)).right()
         else table.add().right()
 
         table.touchable = Touchable.enabled
         table.onClick {
             cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
             cityScreen.selectedTile = null
-            selectedQueueEntry = idx
+            selectedQueueEntry = constructionQueueIndex
             cityScreen.update()
         }
         return table
@@ -236,31 +236,30 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         if (isSelectedQueueEntry()) {
             button = TextButton("Remove from queue".tr(), CameraStageBaseScreen.skin)
-            if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+            if (!UncivGame.Current.worldScreen.isPlayersTurn || city.isPuppet) button.disable()
+            else {
                 button.onClick {
                     cityConstructions.removeFromQueue(selectedQueueEntry)
                     cityScreen.selectedConstruction = null
                     selectedQueueEntry = -2
                     cityScreen.update()
                 }
-            } else {
-                button.disable()
             }
         } else {
             button = TextButton("Add to queue".tr(), CameraStageBaseScreen.skin)
-            if (construction != null
-                    && !cityConstructions.isQueueFull()
-                    && cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
-                    && UncivGame.Current.worldScreen.isPlayersTurn
-                    && !city.isPuppet) {
+            if (construction == null
+                    || cityConstructions.isQueueFull()
+                    || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
+                    || !UncivGame.Current.worldScreen.isPlayersTurn
+                    || city.isPuppet) {
+                button.disable()
+            } else {
                 button.onClick {
                     cityConstructions.addToQueue(construction.name)
                     if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
                     cityScreen.update()
                     cityScreen.game.settings.addCompletedTutorialTask("Pick construction")
                 }
-            } else {
-                button.disable()
             }
         }
 
@@ -274,11 +273,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val button = TextButton("", CameraStageBaseScreen.skin)
 
-        if (construction != null
-                && construction.canBePurchased()
-                && UncivGame.Current.worldScreen.isPlayersTurn
-                && !city.isPuppet
-                && !city.isInResistance()) {
+        if (construction == null || !construction.canBePurchased()
+                || !UncivGame.Current.worldScreen.isPlayersTurn
+                || city.isPuppet || city.isInResistance()) {
+            button.setText("Buy".tr())
+            button.disable()
+        } else {
 
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
             button.setText("Buy".tr() + " " + constructionGoldCost)
@@ -303,9 +303,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             if (constructionGoldCost > city.civInfo.gold)
                 button.disable()
 
-        } else {
-            button.setText("Buy".tr())
-            button.disable()
         }
 
         button.labelCell.pad(5f)
@@ -313,34 +310,34 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return button
     }
 
-    private fun getHigherPrioButton(idx: Int, name: String, city: CityInfo): Table {
+    private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
         if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.higherPrio(idx)
+                city.cityConstructions.raisePriority(constructionQueueIndex)
                 cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
                 cityScreen.selectedTile = null
-                selectedQueueEntry = idx - 1
+                selectedQueueEntry = constructionQueueIndex - 1
                 cityScreen.update()
             }
         }
         return tab
     }
 
-    private fun getLowerPrioButton(idx: Int, name: String, city: CityInfo): Table {
+    private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
         if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.lowerPrio(idx)
+                city.cityConstructions.lowerPriority(constructionQueueIndex)
                 cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
                 cityScreen.selectedTile = null
-                selectedQueueEntry = idx + 1
+                selectedQueueEntry = constructionQueueIndex + 1
                 cityScreen.update()
             }
         }
