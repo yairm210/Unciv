@@ -215,14 +215,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
-                    val battleBugPopup = Popup(worldScreen)
-                    battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
-                    battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
-                    battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
-                    battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
-                    battleBugPopup.open()
+                    openBugReportPopup()
                 }
             }
         }
@@ -281,14 +274,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
-                    val battleBugPopup = Popup(worldScreen)
-                    battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
-                    battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
-                    battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
-                    battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
-                    battleBugPopup.open()
+                    openBugReportPopup()
                 }
             }
         }
@@ -300,7 +286,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         setPosition(worldScreen.stage.width/2-width/2, 5f)
     }
 
-    fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
+    private fun openBugReportPopup() {
+        val battleBugPopup = Popup(worldScreen)
+        battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
+        battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+        battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+        battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
+        battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
+        battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
+        battleBugPopup.open()
+    }
+
+    private fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
         val healthBar = Table()
         val totalWidth = 100f
         fun addHealthToBar(image: Image, amount:Int){
