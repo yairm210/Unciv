@@ -1,3 +1,18 @@
+## 3.5.8
+
+Buying current construction no longer removes other items from the queue - by reversi
+
+Resolved #1757 - Can now see version when running from a desktop Jar
+
+Fixed crash in city-state influence notification
+
+Solved ANR when waiting for the list of maps
+
+Resolved #1808 - Disabled problematic declaration of friendship
+
+Translation updates
+
+
 ## 3.5.7
 
 
