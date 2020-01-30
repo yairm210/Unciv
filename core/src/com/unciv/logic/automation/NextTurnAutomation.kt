@@ -26,7 +26,7 @@ class NextTurnAutomation{
         respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
-            offerDeclarationOfFriendship(civInfo)
+//            offerDeclarationOfFriendship(civInfo)
             offerPeaceTreaty(civInfo)
             offerResearchAgreement(civInfo)
             exchangeTechs(civInfo)

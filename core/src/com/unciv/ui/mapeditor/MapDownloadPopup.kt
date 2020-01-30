@@ -34,6 +34,9 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
                     scrollableMapTable.add(downloadMapButton).row()
                 }
                 contentTable.add(ScrollPane(scrollableMapTable)).height(screen.stage.height * 2 / 3).row()
+                pack()
+                close()
+                open()
             }
         } catch (ex: Exception) {
             addGoodSizedLabel("Could not get list of maps!").row()
