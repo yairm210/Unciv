@@ -239,7 +239,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
-            val defender: ICombatant = tryGetDefenderAtTile(tile, true) ?: continue
+            val defender = tryGetDefenderAtTile(tile, true)
+            if (defender == null) continue
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->
