@@ -29,6 +29,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         isVisible = false
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
+
+        defaults().pad(5f)
         pad(5f)
         touchable = Touchable.enabled
     }
@@ -101,7 +103,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun simulateBattle(attacker: ICombatant, defender: ICombatant){
         clear()
-        defaults().pad(5f)
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
@@ -229,7 +230,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private fun simulateNuke(attacker: MapUnitCombatant, targetTile: TileInfo){
         clear()
-        defaults().pad(5f)
 
         val attackerNameWrapper = Table()
         val attackerLabel = attacker.getName().toLabel()
