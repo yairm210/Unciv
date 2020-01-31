@@ -256,7 +256,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return "Conquer a city!\nBring an enemy city down to low health > " +
                     "\nEnter the city with a melee unit"
         if(viewingCiv.getCivUnits().any { it.type.isAirUnit() } && !completedTasks.contains("Move an air unit"))
-            return "Move an air unit!\nSelect an air unit > select another city withing range > " +
+            return "Move an air unit!\nSelect an air unit > select another city within range > " +
                     "\nMove the unit to the other city"
         if(!completedTasks.contains("See your stats breakdown"))
             return "See your stats breakdown!\nEnter the Overview screen (top right corner) >" +
