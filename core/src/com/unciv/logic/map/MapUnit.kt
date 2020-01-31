@@ -386,19 +386,31 @@ class MapUnit {
         if(health>100) health=100
     }
 
-    fun rankTileForHealing(tileInfo:TileInfo): Int {
-        return when{
-            tileInfo.isWater && type.isLandUnit() -> 0 // Can't heal in water!
-            tileInfo.getOwner() == null -> 10 // no man's land (neutral)
-            tileInfo.isCityCenter() -> 20
-            !civInfo.isAtWarWith(tileInfo.getOwner()!!) -> 15 // home or allied territory
-            else -> {  // enemy territory
-                if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) 10
-                else 5
-            }
-        }
-    }
+    /** Returns the health points [MapUnit] will receive if healing on [tileInfo] */
+    fun rankTileForHealing(tileInfo: TileInfo): Int {
+        val tileOwner = tileInfo.getOwner()
+        val isAlliedTerritory = if (tileOwner != null)
+            tileOwner == civInfo || tileOwner.getDiplomacyManager(civInfo).isConsideredAllyTerritory()
+        else
+            false
 
+        var healing =  when {
+            tileInfo.isCityCenter() -> 20
+            tileInfo.isWater && isAlliedTerritory && type.isWaterUnit() -> 15 // Water unit on friendly water
+            tileInfo.isWater -> 0 // All other water cases
+            tileOwner == null -> 10 // Neutral territory
+            isAlliedTerritory -> 15 // Allied territory
+            else -> 5 // Enemy territory
+        }
+        
+        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.") 
+            && !isAlliedTerritory
+            // Additional healing from medic is only applied when the unit is able to heal
+            && healing > 0)
+            healing += 5
+        
+        return healing
+    }
 
     fun endTurn() {
         doPostTurnAction()

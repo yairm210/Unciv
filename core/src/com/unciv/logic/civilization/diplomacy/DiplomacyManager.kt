@@ -221,6 +221,14 @@ class DiplomacyManager() {
     /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */
     fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs())
 
+    /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
+     * 
+     *  This includes friendly and allied city-states and the open border treaties.
+     */
+    fun isConsideredAllyTerritory(): Boolean {
+        return (hasOpenBorders)
+                || (civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+    }
     //endregion
 
     //region state-changing functions
