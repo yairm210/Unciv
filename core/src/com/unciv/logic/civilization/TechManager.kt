@@ -224,8 +224,12 @@ class TechManager {
         if (previousEra < currentEra) {
             civInfo.addNotification("You have entered the [$currentEra era]!", null, Color.GOLD)
             if (civInfo.isMajorCiv()) {
-                civInfo.getKnownCivs().forEach {
-                    it.addNotification("[${civInfo.civName}] has entered the [$currentEra era]!", null, Color.BLUE)
+                for (knownCiv in civInfo.getKnownCivs()) {
+                    knownCiv.addNotification(
+                        "[${civInfo.civName}] has entered the [$currentEra era]!",
+                        null,
+                        Color.BLUE
+                    )
                 }
             }
             getRuleset().policyBranches.values.filter { it.era == currentEra }
