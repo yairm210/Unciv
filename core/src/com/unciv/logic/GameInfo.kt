@@ -80,7 +80,9 @@ class GameInfo {
 
         switchTurn()
 
-        while(thisPlayer.playerType==PlayerType.AI){
+        while (thisPlayer.playerType == PlayerType.AI
+            || UncivGame.Current.simulateUntilTurnForDebug > turns
+        ) {
             if(thisPlayer.isBarbarian() || !thisPlayer.isDefeated()) {
                 NextTurnAutomation().automateCivMoves(thisPlayer)
 
