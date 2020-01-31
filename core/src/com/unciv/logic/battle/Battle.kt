@@ -42,10 +42,7 @@ object Battle {
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
-        if (attacker.getUnitType()==UnitType.Missile) {
-            nuclearBlast(attacker, defender)
-        }
-        else if(defender.getUnitType().isCivilian() && attacker.isMelee()){
+        if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
         }
         else if (attacker.isRanged()) {
@@ -303,11 +300,13 @@ object Battle {
         capturedUnit.updateVisibleTiles()
     }
 
-    private fun nuclearBlast(attacker: ICombatant, defender: ICombatant) {
+    const val NUKE_RADIUS = 2
+
+    fun nuke(attacker: ICombatant, targetTile: TileInfo) {
         val attackingCiv = attacker.getCivInfo()
-        for (tile in defender.getTile().getTilesInDistance(2)) {
-            if (tile.isCityCenter()) { //duantao: To Do
-                val city = tile.getCity()!!
+        for (tile in targetTile.getTilesInDistance(NUKE_RADIUS)) {
+            val city = tile.getCity()
+            if (city != null && city.location == tile.position) {
                 city.health = 1
                 if (city.population.population <= 5) {
                     city.destroyCity()
@@ -341,6 +340,9 @@ object Battle {
             civ.getDiplomacyManager(attackingCiv)
                     .setModifier(DiplomaticModifiers.UsedNuclearWeapons,-50f)
         }
+
+        // Instead of postBattleAction() just destroy the missile, all other functions are not relevant
+        (attacker as MapUnitCombatant).unit.destroy()
     }
 
     private fun tryInterceptAirAttack(attacker:MapUnitCombatant, defender: ICombatant) {
