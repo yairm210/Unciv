@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
+import com.unciv.logic.map.ResourceLevel
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
@@ -25,9 +26,27 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
 
     init {
         addMapTypeSelectBox()
+        addResourceLevelSelectBox()
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
+    }
+
+    private fun addResourceLevelSelectBox() {
+        add("{Resource Level}:".toLabel())
+
+        val resourceLevelSelectBox = TranslatedSelectBox(
+                        ResourceLevel.values().map { it.name },
+                        mapParameters.resourceLevel.name,
+                        CameraStageBaseScreen.skin)
+
+        resourceLevelSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                mapParameters.resourceLevel = ResourceLevel.valueOf(resourceLevelSelectBox.selected.value)
+            }
+        })
+
+        add(resourceLevelSelectBox).pad(10f).row()
     }
 
     private fun addMapTypeSelectBox() {
@@ -52,7 +71,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
                 noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
             }
         })
-        add(mapTypeSelectBox).row()
+        add(mapTypeSelectBox).pad(10f).row()
     }
 
 

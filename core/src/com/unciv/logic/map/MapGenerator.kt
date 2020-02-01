@@ -481,8 +481,7 @@ class MapGenerator {
                     .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
 
             val averageTilesPerResource = 15 * resourcesOfType.count()
-            val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / averageTilesPerResource
-
+            val numberOfResources = ((mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / averageTilesPerResource) * mapToReturn.mapParameters.resourceLevel.percent).toInt()
             val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
 
             for (location in locations) location.resource = resource.name
@@ -495,7 +494,7 @@ class MapGenerator {
 
         val suitableTiles = mapToReturn.values
                 .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
-        val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / 15
+        val numberOfResources = ((mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / 15) * mapToReturn.mapParameters.resourceLevel.percent).toInt()
         val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
 
         val resourceToNumber = Counter<String>()
