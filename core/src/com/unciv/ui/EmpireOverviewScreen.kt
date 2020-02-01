@@ -378,8 +378,38 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
         val resources = resourceDrilldown.map { it.resource }
                 .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
 
-        for(resource in resources)
-            resourcesTable.add(ImageGetter.getResourceImage(resource.name,50f))
+        var visibleLabel: Label? = null
+        for(resource in resources) {
+            // Create a group of label and icon for each resource.
+            val resourceImage = ImageGetter.getResourceImage(resource.name,50f)
+            val resourceLabel = resource.name.toLabel()
+            val labelPadding = 10f
+            // Using a table here leads to spacing issues
+            // due to different label lengths.
+            val holder = Group()
+            resourceImage.onClick {
+                if (visibleLabel != null)
+                    visibleLabel!!.setVisible(false)
+                resourceLabel.setVisible(true)
+                visibleLabel = resourceLabel
+            }
+            holder.addActor(resourceImage)
+            holder.addActor(resourceLabel)
+            holder.setSize(resourceImage.getWidth(),
+                    resourceImage.getHeight() + resourceLabel.getHeight() + labelPadding)
+            // Center-align all labels, but right-align the last couple resources' labels
+            // because they may get clipped otherwise. The leftmost label should be fine
+            // center-aligned (if there are more than 2 resources), because the left side
+            // has more padding.
+            val alignFactor = when {
+                (resources.indexOf(resource) + 2 >= resources.count()) -> 1
+                else -> 2
+            }
+            resourceLabel.moveBy((resourceImage.getWidth() - resourceLabel.getWidth()) / alignFactor,
+                    resourceImage.getHeight() + labelPadding)
+            resourceLabel.setVisible(false)
+            resourcesTable.add(holder)
+        }
         resourcesTable.addSeparator()
 
         val origins = resourceDrilldown.map { it.origin }.distinct()
