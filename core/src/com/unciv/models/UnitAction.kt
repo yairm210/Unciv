@@ -15,6 +15,7 @@ enum class UnitActionType(val value: String) {
     StopAutomation("Stop automation"),
     StopExploration("Stop exploration"),
     Sleep("Sleep"),
+    SleepUntilHealed("Sleep until healed"),
     Fortify("Fortify"),
     Explore("Explore"),
     Promote("Promote"),
