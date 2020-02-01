@@ -37,46 +37,11 @@ class UnitActions {
                                    && unit.currentTile.hasImprovementInProgress()
         if (!unit.isFortified() && !unit.canFortify()
                 && unit.currentMovement > 0 && !workingOnImprovement) {
-            val isSleeping = unit.isSleeping()
-
-            if (unit.health < 100 && !isSleeping)
-                actionList += UnitAction(
-                        type = UnitActionType.SleepUntilHealed,
-                        canAct = !isSleeping,
-                        isCurrentAction = isSleeping,
-                        action = {
-                            unit.action = Constants.unitActionSleepUntilHealed
-                            unitTable.selectedUnit = null
-                        })
-
-            actionList += UnitAction(
-                    type = UnitActionType.Sleep,
-                    canAct = !isSleeping,
-                    isCurrentAction = isSleeping,
-                    action = {
-                        unit.action = Constants.unitActionSleep
-                        unitTable.selectedUnit = null
-                    })
+            addSleepActions(actionList, unit, unitTable)
         }
 
         if (unit.canFortify()) {
-            if (unit.health < 100)
-                actionList += UnitAction(
-                        type = UnitActionType.FortifyUntilHealed,
-                        canAct = unit.currentMovement > 0,
-                        uncivSound = UncivSound.Fortify,
-                        action = {
-                            unit.fortifyUntilHealed()
-                            unitTable.selectedUnit = null
-                        })
-            actionList += UnitAction(
-                    type = UnitActionType.Fortify,
-                    canAct = unit.currentMovement > 0,
-                    uncivSound = UncivSound.Fortify,
-                    action = {
-                        unit.fortify()
-                        unitTable.selectedUnit = null
-                    })
+            addFortifyActions(actionList, unit, unitTable)
         } else if (unit.isFortified()) {
             actionList += UnitAction(
                     type = if (unit.action!!.endsWith(" until healed"))
@@ -340,6 +305,58 @@ class UnitActions {
                 })
 
         return actionList
+    }
+
+    private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
+
+        val action = UnitAction(
+                type = UnitActionType.Fortify,
+                canAct = unit.currentMovement > 0,
+                uncivSound = UncivSound.Fortify,
+                action = {
+                    unit.fortify()
+                    unitTable.selectedUnit = null
+                })
+
+        if (unit.health < 100) {
+            val actionForWounded = action.copy(
+                    type = UnitActionType.FortifyUntilHealed,
+                    title = UnitActionType.FortifyUntilHealed.value,
+                    action = {
+                        unit.fortifyUntilHealed()
+                        unitTable.selectedUnit = null
+                    })
+            actionList += actionForWounded
+        }
+
+        actionList += action
+    }
+
+    private fun addSleepActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
+
+        val isSleeping = unit.isSleeping()
+
+        val action = UnitAction(
+                type = UnitActionType.Sleep,
+                canAct = !isSleeping,
+                isCurrentAction = isSleeping,
+                action = {
+                    unit.action = Constants.unitActionSleep
+                    unitTable.selectedUnit = null
+                })
+
+        if (unit.health < 100 && !isSleeping) {
+            val actionForWounded = action.copy(
+                    type = UnitActionType.SleepUntilHealed,
+                    title = UnitActionType.SleepUntilHealed.value,
+                    action = {
+                unit.action = Constants.unitActionSleepUntilHealed
+                unitTable.selectedUnit = null
+            })
+            actionList += actionForWounded
+        }
+
+        actionList += action
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
