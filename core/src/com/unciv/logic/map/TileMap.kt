@@ -10,14 +10,14 @@ import com.unciv.models.ruleset.Ruleset
 class TileMap {
 
     @Transient lateinit var gameInfo: GameInfo
-    @Transient var tileMatrix=ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
-    @Transient var leftX=0
-    @Transient var bottomY=0
+    @Transient var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
+    @Transient var leftX = 0
+    @Transient var bottomY = 0
 
     @Deprecated("as of 2.7.10")
     private var tiles = HashMap<String, TileInfo>()
 
-    var mapParameters= MapParameters()
+    var mapParameters = MapParameters()
     private var tileList = ArrayList<TileInfo>()
 
     constructor()  // for json parsing, we need to have a default constructor
@@ -33,10 +33,20 @@ class TileMap {
         get() = tileList
 
 
-
+    /** generates an hexagonal map of given radius */
     constructor(radius:Int, ruleset: Ruleset){
         for(vector in HexMath.getVectorsInDistance(Vector2.Zero, radius))
-            tileList.add(TileInfo().apply { position = vector; baseTerrain= Constants.grassland })
+            tileList.add(TileInfo().apply { position = vector; baseTerrain = Constants.grassland })
+        setTransients(ruleset)
+    }
+
+    /** generates a rectangular map of given width and height*/
+    constructor(width: Int, height: Int, ruleset: Ruleset) {
+        for(x in -width/2..width/2)
+            for (y in -height/2..height/2)
+                tileList.add(TileInfo().apply {
+                    position = HexMath.evenQ2HexCoords(Vector2(x.toFloat(),y.toFloat()))
+                    baseTerrain = Constants.grassland })
         setTransients(ruleset)
     }
 
@@ -230,8 +240,5 @@ class TileMap {
             tileInfo.setTransients()
         }
     }
-
-
-
 }
 
