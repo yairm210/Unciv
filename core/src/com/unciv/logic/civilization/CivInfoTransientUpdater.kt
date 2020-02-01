@@ -200,11 +200,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         for (city in civInfo.cities) newDetailedCivResources.add(city.getCityResources())
 
         if (!civInfo.isCityState()) {
-            for (otherCiv in civInfo.getKnownCivs()) {
-                if (otherCiv.getAllyCiv() == civInfo.civName) {
-                    for (city in otherCiv.cities) {
-                        newDetailedCivResources.add(city.getCityResourcesForAlly())
-                    }
+            for (otherCiv in civInfo.getKnownCivs().filter { it.getAllyCiv() == civInfo.civName }) {
+                for (city in otherCiv.cities) {
+                    newDetailedCivResources.add(city.getCityResourcesForAlly())
                 }
             }
         }

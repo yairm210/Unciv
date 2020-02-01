@@ -183,7 +183,8 @@ class TechManager {
             scienceFromResearchAgreements = 0
         }
         if (overflowScience != 0){ // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-            val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
+            val techsResearchedKnownCivs = civInfo.getKnownCivs()
+                    .count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
             val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
             techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f)* overflowScience).toInt()
             overflowScience = 0

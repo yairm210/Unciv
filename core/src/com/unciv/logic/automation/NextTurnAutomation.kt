@@ -35,10 +35,10 @@ class NextTurnAutomation{
             adoptPolicy(civInfo)
         } else {
             getFreeTechForCityStates(civInfo)
+            updateDiplomaticRelationshipForCityStates(civInfo)
         }
 
         chooseTechToResearch(civInfo)
-        updateDiplomaticRelationship(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
@@ -401,20 +401,18 @@ class NextTurnAutomation{
         }
     }
 
-    private fun updateDiplomaticRelationship(civInfo: CivilizationInfo) {
+    private fun updateDiplomaticRelationshipForCityStates(civInfo: CivilizationInfo) {
         // Check if city-state invaded by other civs
-        if (civInfo.isCityState()) {
-            for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
-                if(civInfo.isAtWarWith(otherCiv)) continue
-                val diplomacy = civInfo.getDiplomacyManager(otherCiv)
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+            if(civInfo.isAtWarWith(otherCiv)) continue
+            val diplomacy = civInfo.getDiplomacyManager(otherCiv)
 
-                val unitsInBorder = otherCiv.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
-                if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
-                    diplomacy.influence -= 10f
-                    if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
-                        otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
-                        diplomacy.setFlag(DiplomacyFlags.BorderConflict,10)
-                    }
+            val unitsInBorder = otherCiv.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
+            if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
+                diplomacy.influence -= 10f
+                if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
+                    diplomacy.setFlag(DiplomacyFlags.BorderConflict,10)
                 }
             }
         }

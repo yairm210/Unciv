@@ -133,7 +133,8 @@ class CivilizationInfo {
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
-    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
+    /** Returns only undefeated civs, aka the ones we care about */
+    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
@@ -530,7 +531,9 @@ class CivilizationInfo {
     fun updateAllyCivForCityState() {
         var newAllyName = ""
         if (!isCityState()) return
-        val maxInfluence = diplomacy.filter{ !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }.maxBy { it.value.influence }
+        val maxInfluence = diplomacy
+                .filter{ !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
+                .maxBy { it.value.influence }
         if (maxInfluence != null && maxInfluence.value.influence >= 60) {
             newAllyName = maxInfluence.key
         }
