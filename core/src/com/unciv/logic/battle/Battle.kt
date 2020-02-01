@@ -201,7 +201,7 @@ object Battle {
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
             unit.attacksThisTurn += 1
-            if (unit.isFortified() || unit.action == Constants.unitActionSleep)
+            if (unit.isFortified() || unit.isSleeping())
                 attacker.unit.action = null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
             attacker.city.attackedThisTurn = true

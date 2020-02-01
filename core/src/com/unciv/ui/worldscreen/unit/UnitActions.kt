@@ -35,11 +35,11 @@ class UnitActions {
 
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles")
                                    && unit.currentTile.hasImprovementInProgress()
-        if (!unit.isFortified() && (!unit.canFortify() || unit.health < 100)
+        if (!unit.isFortified() && !unit.canFortify()
                 && unit.currentMovement > 0 && !workingOnImprovement) {
             val isSleeping = unit.isSleeping()
 
-            if (unit.health < 100)
+            if (unit.health < 100 && !isSleeping)
                 actionList += UnitAction(
                         type = UnitActionType.SleepUntilHealed,
                         canAct = !isSleeping,
@@ -60,6 +60,15 @@ class UnitActions {
         }
 
         if (unit.canFortify()) {
+            if (unit.health < 100)
+                actionList += UnitAction(
+                        type = UnitActionType.FortifyUntilHealed,
+                        canAct = unit.currentMovement > 0,
+                        uncivSound = UncivSound.Fortify,
+                        action = {
+                            unit.fortifyUntilHealed()
+                            unitTable.selectedUnit = null
+                        })
             actionList += UnitAction(
                     type = UnitActionType.Fortify,
                     canAct = unit.currentMovement > 0,
@@ -70,7 +79,9 @@ class UnitActions {
                     })
         } else if (unit.isFortified()) {
             actionList += UnitAction(
-                    type = UnitActionType.Fortify,
+                    type = if (unit.action!!.endsWith(" until healed"))
+                                UnitActionType.FortifyUntilHealed else
+                                UnitActionType.Fortify,
                     canAct = false,
                     isCurrentAction = true,
                     title = "${"Fortification".tr()} ${unit.getFortificationTurns() * 20}%"

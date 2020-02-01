@@ -272,13 +272,17 @@ class MapUnit {
         action = "Fortify 0"
     }
 
+    fun fortifyUntilHealed() {
+        action = "Fortify 0 until healed"
+    }
+
     fun fortifyIfCan() {
         if (canFortify()) {
             fortify()
         }
     }
 
-    fun adjacentHealingBonus():Int{
+    private fun adjacentHealingBonus():Int{
         var healingBonus = 0
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus +=5
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
@@ -341,7 +345,8 @@ class MapUnit {
         if(currentMovement == getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()
-            if(currentTurnsFortified<2) action = "Fortify ${currentTurnsFortified+1}"
+            if(currentTurnsFortified<2)
+                action = action!!.replace(currentTurnsFortified.toString(),(currentTurnsFortified+1).toString(), true)
         }
     }
 
@@ -422,9 +427,10 @@ class MapUnit {
                 || getUniques().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
-        if(action == Constants.unitActionSleepUntilHealed && health > 99) {
-            action = null // wake up when healed
-        }
+        if(action != null && health > 99)
+            if (action!!.endsWith(" until healed")) {
+                action = null // wake up when healed
+            }
     }
 
     fun startTurn(){

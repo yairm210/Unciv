@@ -26,13 +26,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
                 val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
                 return ImageGetter.getUnitIcon(unitToUpgradeTo)
             }
-            unitAction.startsWith("Sleep") -> {
-                return ImageGetter.getImage("OtherIcons/Sleep")
-            }
+            unitAction.startsWith("Sleep") -> return ImageGetter.getImage("OtherIcons/Sleep")
+            unitAction.startsWith("Fortify") -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
             else -> when(unitAction){
                 "Move unit" -> return ImageGetter.getStatIcon("Movement")
                 "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
-                "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
                 "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
                 "Construct improvement" -> return ImageGetter.getUnitIcon(Constants.worker)
                 "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
