@@ -18,7 +18,7 @@ import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply {  defaults().pad(20f) }
 
@@ -291,7 +291,7 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
         return table
     }
 
-    fun getUnitTable(): Table {
+    private fun getUnitTable(): Table {
         val table=Table(skin).apply { defaults().pad(5f) }
         table.add("Name".tr())
         table.add("Action".tr())
@@ -324,16 +324,15 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
     }
 
 
-    fun playerKnows(civ:CivilizationInfo) = civ==viewingPlayer ||
+    private fun playerKnows(civ:CivilizationInfo) = civ==viewingPlayer ||
             viewingPlayer.diplomacy.containsKey(civ.civName)
 
-    fun getDiplomacyGroup(): Group {
+    private fun getDiplomacyGroup(): Group {
         val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val freeWidth = stage.width
         val freeHeight = stage.height - topTable.height
-        val groupSize = if (freeWidth > freeHeight) freeHeight else freeWidth
         val group = Group()
-        group.setSize(groupSize,groupSize)
+        group.setSize(freeWidth,freeHeight)
         val civGroups = HashMap<String, Actor>()
         for(i in 0..relevantCivs.lastIndex){
             val civ = relevantCivs[i]
@@ -342,7 +341,7 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
 
             val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
-            civGroup.moveBy(vector.x*groupSize/3, vector.y*groupSize/3)
+            civGroup.moveBy(vector.x*freeWidth/3, vector.y*freeHeight/3)
 
             civGroups[civ.civName]=civGroup
             group.addActor(civGroup)
