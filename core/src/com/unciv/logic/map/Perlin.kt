@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import kotlin.math.floor
 
 // version 1.1.3
 // From https://rosettacode.org/wiki/Perlin_noise#Kotlin
@@ -25,20 +26,44 @@ object Perlin {
             222, 114,  67,  29,  24,  72, 243, 141, 128, 195,  78,  66, 215,  61, 156, 180
     )
 
+    private val grad3 = arrayOf(
+            intArrayOf(1,1,0), intArrayOf(-1,1,0), intArrayOf(1,-1,0), intArrayOf(-1,-1,0),
+            intArrayOf(1,0,1), intArrayOf(-1,0,1), intArrayOf(1,0,-1), intArrayOf(-1,0,-1),
+            intArrayOf(0,1,1), intArrayOf(0,-1,1), intArrayOf(0,1,-1), intArrayOf(0,-1,-1),
+            intArrayOf(1,0,-1), intArrayOf(-1,0,-1), intArrayOf(0,-1,1), intArrayOf(0,1,1))
+
     private val p = IntArray(512) {
         if (it < 256) permutation[it] else permutation[it - 256]
     }
 
+    fun noise3d(x: Double, y: Double, z: Double,
+                nOctaves: Int = 3,
+                persistence: Double = 0.5,
+                lacunarity: Double = 2.0,
+                scale: Double = 10.0): Double {
+        var freq = 1.0
+        var amp = 1.0
+        var max = 0.0
+        var total = 0.0
+        for (i in 0 until nOctaves) {
+            total += amp * noise(x * freq / scale, y * freq / scale, z * freq / scale)
+            max += amp
+            freq *= lacunarity
+            amp *= persistence
+        }
+        return total/max
+    }
+
     fun noise(x: Double, y: Double, z: Double): Double {
         // Find unit cube that contains point
-        val xi = Math.floor(x).toInt() and 255
-        val yi = Math.floor(y).toInt() and 255
-        val zi = Math.floor(z).toInt() and 255
+        val xi = floor(x).toInt() and 255
+        val yi = floor(y).toInt() and 255
+        val zi = floor(z).toInt() and 255
 
         // Find relative x, y, z of point in cube
-        val xx = x - Math.floor(x)
-        val yy = y - Math.floor(y)
-        val zz = z - Math.floor(z)
+        val xx = x - floor(x)
+        val yy = y - floor(y)
+        val zz = z - floor(z)
 
         // Compute fade curves for each of xx, yy, zz
         val u = fade(xx)
@@ -55,26 +80,22 @@ object Perlin {
         val ba = p[b] + zi
         val bb = p[b + 1] + zi
 
-        return lerp(w, lerp(v, lerp(u, grad(p[aa], xx, yy, zz),
-                grad(p[ba], xx - 1, yy, zz)),
-                lerp(u, grad(p[ab], xx, yy - 1, zz),
-                        grad(p[bb], xx - 1, yy - 1, zz))),
-                lerp(v, lerp(u, grad(p[aa + 1], xx, yy, zz - 1),
-                        grad(p[ba + 1], xx - 1, yy, zz - 1)),
-                        lerp(u, grad(p[ab + 1], xx, yy - 1, zz - 1),
-                                grad(p[bb + 1], xx - 1, yy - 1, zz - 1))))
+        return lerp(w, lerp(v, lerp(u, grad3(p[aa], xx, yy, zz),
+                grad3(p[ba], xx - 1, yy, zz)),
+                lerp(u, grad3(p[ab], xx, yy - 1, zz),
+                        grad3(p[bb], xx - 1, yy - 1, zz))),
+                lerp(v, lerp(u, grad3(p[aa + 1], xx, yy, zz - 1),
+                        grad3(p[ba + 1], xx - 1, yy, zz - 1)),
+                        lerp(u, grad3(p[ab + 1], xx, yy - 1, zz - 1),
+                                grad3(p[bb + 1], xx - 1, yy - 1, zz - 1))))
     }
 
     private fun fade(t: Double) = t * t * t * (t * (t * 6 - 15) + 10)
 
     private fun lerp(t: Double, a: Double, b: Double) = a + t * (b - a)
 
-    private fun grad(hash: Int, x: Double, y: Double, z: Double): Double {
-        // Convert low 4 bits of hash code into 12 gradient directions
-        val h = hash and 15
-        val u = if (h < 8) x else y
-        val v = if (h < 4) y else if (h == 12 || h == 14) x else z
-        return (if ((h and 1) == 0) u else -u) +
-                (if ((h and 2) == 0) v else -v)
+    private fun grad3(hash: Int, x: Double, y: Double, z: Double): Double {
+        val h = hash and 15;
+        return x * grad3[h][0] + y * grad3[h][1] + z * grad3[h][2]
     }
 }
