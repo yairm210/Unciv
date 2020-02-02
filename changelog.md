@@ -1,3 +1,22 @@
+## 3.5.9
+
+Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated city states, as well as many other minor bugs
+
+By Jack Rainy:
+- Nuclear missile is able to target any tile within the range
+- Added "Sleep/Fortify until healed" functionality
+- Fixed relationship bug when capturing cities
+
+By lyrjie:
+- Notification when City-states advance an era disabled
+- Fixed bug pertaining to unit healing
+
+Half-ready Japanese translation added! - by paonty
+
+Show name when icon is tapped in resource overview in a label above the icon - by ltrcao
+
+Translation updates
+
 ## 3.5.8
 
 Buying current construction no longer removes other items from the queue - by reversi
@@ -9,6 +28,7 @@ Fixed crash in city-state influence notification
 Solved ANR when waiting for the list of maps
 
 Resolved #1808 - Disabled problematic declaration of friendship
+
 
 Translation updates
 
