@@ -402,7 +402,7 @@ class CityInfo {
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
         val currentPopulation = population.population
-        val percentageOfCivPopulationInThatCity = currentPopulation * 100f / civInfo.cities.sumBy { it.population.population }
+        val percentageOfCivPopulationInThatCity = currentPopulation * 100f / oldCiv.cities.sumBy { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // How can you conquer a city but not know the civ you conquered it from?!
@@ -415,7 +415,7 @@ class CityInfo {
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
-            if (thirdPartyCiv.isAtWarWith(civInfo)) // You annoyed our enemy?
+            if (thirdPartyCiv.isAtWarWith(oldCiv)) // You annoyed our enemy?
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)
                         .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
             else thirdPartyCiv.getDiplomacyManager(conqueringCiv)
