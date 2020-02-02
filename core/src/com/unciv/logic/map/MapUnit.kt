@@ -166,6 +166,10 @@ class MapUnit {
         return action?.startsWith("Fortify") == true
     }
 
+    fun isSleeping(): Boolean {
+        return action?.startsWith("Sleep") == true
+    }
+
     fun getFortificationTurns(): Int {
         if(!isFortified()) return 0
         return action!!.split(" ")[1].toInt()
@@ -181,7 +185,7 @@ class MapUnit {
         if (name == Constants.worker && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
-        if (action==Constants.unitActionExplore || action==Constants.unitActionSleep
+        if (action==Constants.unitActionExplore || isSleeping()
                 || action == Constants.unitActionAutomation) return false
         return true
     }
@@ -268,13 +272,17 @@ class MapUnit {
         action = "Fortify 0"
     }
 
+    fun fortifyUntilHealed() {
+        action = "Fortify 0 until healed"
+    }
+
     fun fortifyIfCan() {
         if (canFortify()) {
             fortify()
         }
     }
 
-    fun adjacentHealingBonus():Int{
+    private fun adjacentHealingBonus():Int{
         var healingBonus = 0
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus +=5
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
@@ -334,10 +342,11 @@ class MapUnit {
     private fun doPostTurnAction() {
         if (name == Constants.worker && getTile().improvementInProgress != null) workOnImprovement()
         if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
-        if(currentMovement== getMaxMovement().toFloat()
+        if(currentMovement == getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()
-            if(currentTurnsFortified<2) action = "Fortify ${currentTurnsFortified+1}"
+            if(currentTurnsFortified<2)
+                action = action!!.replace(currentTurnsFortified.toString(),(currentTurnsFortified+1).toString(), true)
         }
     }
 
@@ -418,6 +427,10 @@ class MapUnit {
                 || getUniques().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
+        if(action != null && health > 99)
+            if (action!!.endsWith(" until healed")) {
+                action = null // wake up when healed
+            }
     }
 
     fun startTurn(){
@@ -426,7 +439,7 @@ class MapUnit {
         due = true
 
         // Wake sleeping units if there's an enemy nearby
-        if(action==Constants.unitActionSleep && currentTile.getTilesInDistance(2).any {
+        if(isSleeping() && currentTile.getTilesInDistance(2).any {
                     it.militaryUnit!=null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
                 })
             action=null

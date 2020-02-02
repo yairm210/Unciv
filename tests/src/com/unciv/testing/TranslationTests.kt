@@ -4,6 +4,7 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -50,6 +51,20 @@ class TranslationTests {
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue("This test will only pass when there is a translation for all units uniques",
                 allStringsHaveTranslation)
+    }
+
+    @Test
+    fun allUnitActionsHaveTranslation() {
+        val actions: MutableSet<String> = HashSet()
+        for (action in UnitActionType.values()) {
+            if (action == UnitActionType.Upgrade)
+                actions.add("Upgrade to [unitType] ([goldCost] gold)")
+            else
+                actions.add(action.value)
+        }
+        val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
+        Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
+                allUnitActionsHaveTranslation)
     }
 
     @Test
