@@ -45,7 +45,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
-    val bottomTileInfoTable = TileInfoTable(this)
+    val bottomTileInfoTable = TileInfoTable(viewingCiv)
     val battleTable = BattleTable(this)
     val unitActionsTable = UnitActionsTable(this)
 
