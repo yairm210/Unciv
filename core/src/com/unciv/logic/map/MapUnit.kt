@@ -398,10 +398,12 @@ class MapUnit {
     /** Returns the health points [MapUnit] will receive if healing on [tileInfo] */
     fun rankTileForHealing(tileInfo: TileInfo): Int {
         val tileOwner = tileInfo.getOwner()
-        val isAlliedTerritory = if (tileOwner != null)
-            tileOwner == civInfo || tileOwner.getDiplomacyManager(civInfo).isConsideredAllyTerritory()
-        else
-            false
+        val isAlliedTerritory = when {
+            tileOwner == null -> false
+            tileOwner == civInfo -> true
+            !civInfo.knows(tileOwner) -> false
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredAllyTerritory()
+        }
 
         var healing =  when {
             tileInfo.isCityCenter() -> 20
