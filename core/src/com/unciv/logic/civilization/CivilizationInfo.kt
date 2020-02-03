@@ -542,15 +542,19 @@ class CivilizationInfo {
             val oldAllyName = allyCivName
             allyCivName = newAllyName
 
+            // If the city-state is captured by a civ, it stops being the ally of the civ it was previously an ally of.
+            //  This means that it will NOT HAVE a capital at that time, so if we run getCapital we'll get a crash!
+            val capitalLocation = if(cities.isNotEmpty()) getCapital().location else null
+
             if (newAllyName != "") {
                 val newAllyCiv = gameInfo.getCivilization(newAllyName)
-                newAllyCiv.addNotification("We have allied with [${civName}].", getCapital().location, Color.GREEN)
+                newAllyCiv.addNotification("We have allied with [${civName}].", capitalLocation, Color.GREEN)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
             }
             if (oldAllyName != "") {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
-                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", getCapital().location, Color.RED)
+                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", capitalLocation, Color.RED)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()
             }
