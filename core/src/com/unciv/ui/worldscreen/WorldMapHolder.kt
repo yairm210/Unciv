@@ -72,12 +72,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
-                && worldScreen.isPlayersTurn
-                && previousSelectedUnit.movement.canMoveTo(tileInfo) && previousSelectedUnit.movement.canReach(tileInfo)) {
+            && worldScreen.isPlayersTurn
+            && previousSelectedUnit.movement.canMoveTo(tileInfo)
+            && previousSelectedUnit.movement.canReach(tileInfo)
+            // Do not show for the unexplored tiles
+            && (tileInfo.position in previousSelectedUnit.civInfo.exploredTiles || UncivGame.Current.viewEntireMapForDebug)
+        ) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnit, tileInfo)
-        }
-        else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
+        } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
         if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
@@ -259,9 +262,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 tileGroups[tile]!!.showCircle(Color.BLUE,0.3f)
 
         for (tile: TileInfo in tilesInMoveRange)
-            if (unit.movement.canMoveTo(tile))
-                tileGroups[tile]!!.showCircle(Color.WHITE,
-                        if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
+            if (unit.movement.canMoveTo(tile) && 
+                (tile.position in unit.civInfo.exploredTiles || UncivGame.Current.viewEntireMapForDebug))
+                tileGroups[tile]!!.showCircle(
+                    Color.WHITE,
+                    if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f
+                )
 
 
         val unitType = unit.type
