@@ -6,8 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.toLabel
 
 /** Helper class for TileGroup, which was getting too full */
 class TileGroupIcons(val tileGroup: TileGroup){
@@ -18,7 +22,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean) {
+    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
 
