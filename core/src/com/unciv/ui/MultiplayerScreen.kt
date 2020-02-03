@@ -1,102 +1,144 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.logic.GameSaver
+import com.unciv.logic.GameInfo
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
 import java.util.*
 import kotlin.concurrent.thread
 
 class MultiplayerScreen() : PickerScreen() {
 
-    private lateinit var selectedSessionId:String
-    private val idGetterTable = Table()
-    private val sessionBrowserTable = Table()
+    private lateinit var selectedGame: GameInfo
+    private val rightSideTable = Table()
+    private val leftSideTable = Table()
+    private val editButton = TextButton("Edit Session Info".tr(), skin).apply { disable() }
+    private val addSessionButton = TextButton("Add Multiplayer Session".tr(), skin)
+    private var sessionCount = 1
 
     init {
         setDefaultCloseAction()
 
         //TopTable Setup
-        topTable.add("Session Browser".toLabel(Color.WHITE,30)).pad(10f)
-        topTable.add("".toLabel()).row()
-        topTable.add(ScrollPane(sessionBrowserTable).apply { setScrollingDisabled(true, false) }).height(stage.height*2/3)
-        topTable.add(idGetterTable)
+        topTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).height(stage.height*2/3)
+        topTable.add(rightSideTable)
         scrollPane.setScrollingDisabled(false, true)
-        //topTable.debug()
 
-        //TODO SHIT
         //rightTable
-        //addGoodSizedLabel(idGetterTable, "To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.")
-        //(idGetterTable, "You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.")
+        //TODO ADD INFO
 
-        idGetterTable.add(
-                TextButton("Copy User ID", skin).onClick { Gdx.app.clipboard.contents = UncivGame.Current.settings.userId }
+        rightSideTable.add(
+                TextButton("Copy User ID".tr(), skin).onClick { Gdx.app.clipboard.contents = UncivGame.Current.settings.userId }
         ).pad(10f).row()
-
-        //addGoodSizedLabel(idGetterTable, "Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.")
 
         var copyGameIdButton = TextButton("Copy Game ID".tr(), skin).apply { onClick { Gdx.app.clipboard.contents = game.gameInfo.gameId } }
         if(!game.gameInfo.gameParameters.isOnlineMultiplayer)
             copyGameIdButton.disable()
-        idGetterTable.add(copyGameIdButton).pad(10f).row()
+        rightSideTable.add(copyGameIdButton).pad(10f).row()
 
-        //addGoodSizedLabel(idGetterTable, "Players can enter your game by copying the game ID to the clipboard, and clicking on the Add Game button")
-        //TODO END OF SHIT*/
+        rightSideTable.add(
+                addSessionButton.onClick {
+                    downloadMultiplayerGame(Gdx.app.clipboard.contents)
+                }
+        ).pad(10f).row()
+
+        rightSideTable.add(
+                editButton.onClick {
+                    //TODO EDIT SCREEN
+                    //GameSaver().deleteSave()
+                }
+        ).pad(10f).row()
 
         //SessionBrowserTable Setup
-        updateSessions()
+        updateSessionList()
 
         //RightSideButton Setup
-        val errorPopup = Popup(this)
         rightSideButton.setText("Join Game".tr())
         rightSideButton.onClick {
-            val gameId = selectedSessionId
+            joinMultiplaerGame()
+        }
+
+        //TODO ADD SESSION INFO
+    }
+
+    private fun downloadMultiplayerGame(gameId: String){
+        val errorPopup = Popup(this)
+        try {
+            UUID.fromString(gameId.trim())
+        } catch (ex: Exception) {
+            errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
+            errorPopup.open()
+            errorPopup.addCloseButton()
+            return
+        }
+        thread(name="MultiplayerDownload") {
             try {
-                UUID.fromString(gameId.trim())
+                addSessionButton.setText("loading...")
+                addSessionButton.disable()
+                // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
+                // we need to run it in a different thread.
+                val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
+                GameSaver().saveGame(game, "MultiplayerSession-Multiplayer-Game-$sessionCount")
+                updateSessionList()
+                addSessionButton.setText("Add Multiplayer Session")
+                addSessionButton.enable()
+
             } catch (ex: Exception) {
-                errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
+                errorPopup.addGoodSizedLabel("Could not download game!".tr())
                 errorPopup.open()
-            }
-            thread(name="MultiplayerDownload") {
-                try {
-                    // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
-                    // we need to run it in a different thread.
-                    val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
-                    // The loadGame creates a screen, so it's a UI action,
-                    // therefore it needs to run on the main thread so it has a GL context
-                    Gdx.app.postRunnable { UncivGame.Current.loadGame(game) }
-                } catch (ex: Exception) {
-                    errorPopup.addGoodSizedLabel("Could not download game!".tr())
-                    errorPopup.open()
-                }
+                errorPopup.addCloseButton()
             }
         }
     }
 
-    fun updateSessions(){
-        var i = 0;
-        while (i < 20){
-            sessionBrowserTable.add(TextButton("Session $i", skin).apply {
-                onClick {
-
-                }
-            }).pad(5f).row()
-            i++
+    private fun joinMultiplaerGame(){
+        val errorPopup = Popup(this)
+        val gameId = selectedGame.gameId
+        try {
+            UUID.fromString(gameId.trim())
+        } catch (ex: Exception) {
+            errorPopup.addGoodSizedLabel("Invalid game ID!".tr()).row()//TODO closebutton should be in next row
+            errorPopup.addCloseButton()
+            errorPopup.open()
+            return
         }
+        thread(name="MultiplayerDownload") {
+            try {
+                // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
+                // we need to run it in a different thread.
+                val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
+                // The loadGame creates a screen, so it's a UI action,
+                // therefore it needs to run on the main thread so it has a GL context
+                Gdx.app.postRunnable { UncivGame.Current.loadGame(game) }
+            } catch (ex: Exception) {
+                errorPopup.addGoodSizedLabel("Could not download game!".tr()).row()//TODO closebutton should be in next row
+                errorPopup.addCloseButton()
+                errorPopup.open()
 
+            }
+        }
     }
 
-    fun addGoodSizedLabel(table:Table, text:String) {
-        table.add(text.toLabel().apply {
-            //width = stage.width / 2 //TODO WHY IS STAGE NULL?
-            setWrap(true)
-        }).row()
+    private fun updateSessionList(){
+        leftSideTable.clear()
+        sessionCount = 1
+        for (game in GameSaver().getSaves()) {
+            if (game.startsWith("MultiplayerSession")) {
+                val sessionName = game.removePrefix("MultiplayerSession-")
+                leftSideTable.add(TextButton(sessionName, skin).apply {
+                    onClick {
+                        selectedGame = GameSaver().loadGameByName(game)
+                        editButton.enable()
+                        rightSideButton.enable()
+                    }
+                }).pad(5f).row()
+                sessionCount++
+            }
+        }
     }
 }

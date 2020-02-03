@@ -105,6 +105,7 @@ class LoadGameScreen : PickerScreen() {
         saveTable.clear()
         for (save in GameSaver().getSaves().sortedByDescending { GameSaver().getSave(it).lastModified() }) {
             if(save.startsWith("Autosave") && !showAutosaves) continue
+            if(save.startsWith("MultiplayerSession")) continue
             val textButton = TextButton(save, skin)
             textButton.onClick {
                 selectedSave = save
