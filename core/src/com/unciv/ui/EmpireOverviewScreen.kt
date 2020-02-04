@@ -16,7 +16,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
@@ -357,14 +357,29 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
 
-                statusLine.color = if(diplomacy.diplomaticStatus== DiplomaticStatus.War) Color.RED
-                else Color.GREEN
+                if(diplomacy.diplomaticStatus == DiplomaticStatus.War)
+                    statusLine.color = Color.RED
+                else {
+                    val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
+                    statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
+                }
 
                 group.addActor(statusLine)
                 statusLine.toBack()
             }
 
         return group
+    }
+
+    private fun getColorForDiplomacyLevel(value: Float): Color {
+
+        var amplitude = min(1.0f,abs(value)/80) // 80 = RelationshipLevel.Ally
+        val shade = max(0.5f - amplitude, 0.0f)
+        amplitude = max(amplitude, 0.5f)
+
+        return Color( if (sign(value) < 0) amplitude else shade,
+                      if (sign(value) > 0) amplitude else shade,
+                      shade,1.0f)
     }
 
 
