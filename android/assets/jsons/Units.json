@@ -582,6 +582,26 @@
 		"attackSound": "arrow"
 		//Camel Archer should have no penalty attacking cities
 	},
+	/*
+	{
+		"name": "Keshik",
+		"replaces": "Knight",
+		"uniqueTo": "Mongolia",
+		"unitType": "Ranged",
+		"movement": 5,
+		"strength": 15,
+		"rangedStrength": 16,
+		"cost": 120,
+		"requiredTech": "Chivalry",
+		"requiredResource": "Horses",
+		"upgradesTo": "Cavalry",
+		"obsoleteTech": "Military Science",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","Combat very likely to create Great Generals","Quick learning"],
+		"hurryCostModifier": 20,
+		"attackSound": "arrow"
+		//Keshiks should also gain experience 50% faster, or at least gain 50% more experience
+	},
+	*/
 	{
 		"name": "Conquistador",
 		"replaces": "Knight",
@@ -1331,4 +1351,16 @@
 		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"] //todo : should be able to build mega-fort
 		"movement": 2
 	}
+	/*
+	{
+		"name": "Khan",
+		"unbuildable": true,
+		"replaces": "Great General",
+		"uniqueTo": "Mongolia",
+		"unitType": "Civilian",
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"] //todo : should be able to build mega-fort
+		"movement": 5
+		//Khans should also heal units
+	}
+	*/
 ]
