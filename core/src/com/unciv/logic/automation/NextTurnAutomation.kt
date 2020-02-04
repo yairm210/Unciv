@@ -515,7 +515,7 @@ class NextTurnAutomation{
 
 
     private fun issueRequests(civInfo: CivilizationInfo) {
-        for(otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
+        for(otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() && !civInfo.isAtWarWith(it) }){
             val diploManager = civInfo.getDiplomacyManager(otherCiv)
             if(diploManager.hasFlag(DiplomacyFlags.SettledCitiesNearUs))
                 onCitySettledNearBorders(civInfo,otherCiv)
