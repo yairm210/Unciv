@@ -4,9 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
@@ -380,10 +379,7 @@ class CityInfo {
 
         val oldCiv = civInfo
         moveToCiv(conqueringCiv)
-        if(oldCiv.isDefeated()) {
-            oldCiv.destroy()
-            conqueringCiv.popupAlerts.add(PopupAlert(AlertType.Defeated,oldCiv.civName))
-        }
+        Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
         diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
 
