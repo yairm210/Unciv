@@ -149,7 +149,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             else buildableBuildings += productionTextButton
         }
 
-        for (specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.shouldBeDisplayed(cityConstructions) }) {
+        for (specialConstruction in SpecialConstruction.getSpecialConstructions()
+                .filter { it.shouldBeDisplayed(cityConstructions) }) {
             specialConstructions += getProductionButton(specialConstruction.name,
                     "Produce [${specialConstruction.name}]".tr())
         }

@@ -58,7 +58,7 @@ class NextTurnAutomation{
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
             }
-            else{
+            else {
                 otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD)
             }
         }
@@ -125,7 +125,7 @@ class NextTurnAutomation{
     private fun exchangeTechs(civInfo: CivilizationInfo) {
         if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
         val otherCivList = civInfo.getKnownCivs()
-                .filter { it.playerType == PlayerType.AI && it.isMajorCiv() }
+                .filter { it.playerType == PlayerType.AI && it.isMajorCiv() && !civInfo.isAtWarWith(it) }
                 .sortedBy { it.tech.techsResearched.size }
 
         for (otherCiv in otherCivList) {
@@ -145,19 +145,17 @@ class NextTurnAutomation{
                 if (ourOfferList.isNotEmpty()) {
                     tradeLogic.currentTrade.ourOffers.add(ourOfferList.random())
                     tradeLogic.currentTrade.theirOffers.add(theirOffer)
-                } else {
+                } else if (ourGold / 2 >= theirValue) {
                     //try to buy tech with money, not spending more than 1/3 of treasury
-                    if (ourGold / 2 >= theirValue)
-                    {
-                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, theirValue))
-                        tradeLogic.currentTrade.theirOffers.add(theirOffer)
-                        ourGold -= theirValue
-                    }
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, theirValue))
+                    tradeLogic.currentTrade.theirOffers.add(theirOffer)
+                    ourGold -= theirValue
                 }
             }
 
             if (tradeLogic.currentTrade.theirOffers.isNotEmpty()) {
-                tradeLogic.acceptTrade()
+                val tradeRequest = TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse())
+                otherCiv.tradeRequests.add(tradeRequest)
             }
         }
     }
@@ -266,10 +264,10 @@ class NextTurnAutomation{
         // When the AI offers a trade, it's not immediately accepted,
         // so what if it thinks that it has a spare luxury and offers it to two human players?
         // What's to stop the AI "nagging" the player to accept a luxury trade?
-        // We should A. add some sort of timer (20? 30 turns?) between luxury trade requests if they're denied
+        // We should A. add some sort of timer (20? 30 turns?) between luxury trade requests if they're denied - see DeclinedLuxExchange
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
-        for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
+        for (otherCiv in knownCivs.filter { it.isMajorCiv() && !it.isAtWarWith(civInfo)
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)}) {
 
             val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
@@ -282,18 +280,6 @@ class NextTurnAutomation{
                 otherCiv.tradeRequests.add(tradeRequest)
             }
         }
-
-        // AI luxury trades are automatically accepted
-        for (otherCiv in knownCivs.filter { !it.isPlayerCivilization() && !it.isAtWarWith(civInfo) }) {
-            val trades = potentialLuxuryTrades(civInfo,otherCiv)
-            for(trade in trades){
-                val tradeLogic = TradeLogic(civInfo,otherCiv)
-                tradeLogic.currentTrade.ourOffers.addAll(trade.ourOffers)
-                tradeLogic.currentTrade.theirOffers.addAll(trade.theirOffers)
-                tradeLogic.acceptTrade()
-            }
-        }
-
 
     }
 
@@ -381,24 +367,17 @@ class NextTurnAutomation{
             tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
             tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
 
-            var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
-            if (moneyWeNeedToPay > 0) {
-                if (moneyWeNeedToPay > civInfo.gold && civInfo.gold > 0) { // we need to make up for this somehow...
+            if(civInfo.gold>0) {
+                var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
+                if (moneyWeNeedToPay > civInfo.gold) { // we need to make up for this somehow...
                     moneyWeNeedToPay = civInfo.gold
                 }
-                if (civInfo.gold > 0) tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, moneyWeNeedToPay))
+                if (moneyWeNeedToPay > 0) {
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, moneyWeNeedToPay))
+                }
             }
 
-            if (enemy.isPlayerCivilization())
-                enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
-            else {
-                if (enemy.victoryType()!=VictoryType.Cultural
-                        && enemy.getCivUnits().filter { !it.type.isCivilian() }.count() > enemy.cities.size
-                        && enemy.getHappiness() > 0) {
-                    continue //enemy AI has too large army and happiness. It continues to fight for profit.
-                }
-                tradeLogic.acceptTrade()
-            }
+            enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
     }
 
