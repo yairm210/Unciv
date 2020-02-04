@@ -130,14 +130,15 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         row()
 
         button.onClick {
-            if (!advancedSettingsTable.isVisible) {
-                button.setText("Show advanced settings".tr())
+            advancedSettingsTable.isVisible = !advancedSettingsTable.isVisible
+
+            if (advancedSettingsTable.isVisible) {
+                button.setText("Hide advanced settings".tr())
                 advancedSettingsCell.setActor(advancedSettingsTable)
             } else {
-                button.setText("Hide advanced settings".tr())
+                button.setText("Show advanced settings".tr())
                 advancedSettingsCell.setActor(Table())
             }
-            advancedSettingsTable.isVisible = !advancedSettingsTable.isVisible
         }
 
 
