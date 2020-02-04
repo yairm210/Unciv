@@ -334,6 +334,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         val group = Group()
         group.setSize(freeWidth,freeHeight)
         val civGroups = HashMap<String, Actor>()
+        val civLines = HashMap<String, MutableSet<Actor>>()
         for(i in 0..relevantCivs.lastIndex){
             val civ = relevantCivs[i]
 
@@ -342,6 +343,22 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
             civGroup.moveBy(vector.x*freeWidth/3, vector.y*freeHeight/3)
+            civGroup.onClick {
+
+                val numberOfDisabled = civLines.values.count { it.firstOrNull()?.isVisible == false }
+                if (numberOfDisabled == 0)
+                    // all enabled: disable all except current one
+                    civLines.forEach{ (s, set) -> set.forEach {it.isVisible = s == civ.civName} }
+                else {
+                    val chosenOn = civLines[civ.civName]?.firstOrNull()?.isVisible
+                    if (chosenOn != false && numberOfDisabled >= civLines.values.size-1)
+                        // disabling last one: enable all
+                        civLines.values.forEach {it.forEach { line: Actor -> line.isVisible = true }}
+                    else
+                        // enable/disable another one
+                        civLines[civ.civName]?.forEach { it.isVisible = !it.isVisible }
+                }
+            }
 
             civGroups[civ.civName]=civGroup
             group.addActor(civGroup)
@@ -363,6 +380,10 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                     val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
                     statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
                 }
+
+                if (civLines[civ.civName] == null)
+                    civLines[civ.civName] = mutableSetOf()
+                civLines[civ.civName]?.add(statusLine)
 
                 group.addActor(statusLine)
                 statusLine.toBack()
