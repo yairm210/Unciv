@@ -32,7 +32,7 @@ class NewGameScreen: PickerScreen(){
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
         val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
-        topTable.add(ScrollPane(newGameScreenOptionsTable)).height(topTable.parent.height)
+        topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
         topTable.add(playerPickerTable).pad(10f)
         topTable.pack()
         topTable.setFillParent(true)
@@ -90,6 +90,8 @@ class NewGameScreen: PickerScreen(){
                     cantMakeThatMapPopup.addCloseButton()
                     cantMakeThatMapPopup.open()
                     Gdx.input.inputProcessor = stage
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
             }
         }

@@ -46,7 +46,7 @@ class NewMapScreen : PickerScreen() {
                 try {
                     // Map generation can take a while and we don't want ANRs
                     val ruleset = RulesetCache.getBaseRuleset()
-                    generatedMap = MapGenerator().generateMap(mapParameters, ruleset)
+                    generatedMap = MapGenerator(ruleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {
                         UncivGame.Current.setScreen(MapEditorScreen(generatedMap!!))
