@@ -26,6 +26,7 @@ class NextTurnAutomation{
         respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
+            declareWar(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
             offerPeaceTreaty(civInfo)
             offerResearchAgreement(civInfo)
@@ -39,7 +40,6 @@ class NextTurnAutomation{
         }
 
         chooseTechToResearch(civInfo)
-        declareWar(civInfo)
         automateCityBombardment(civInfo)
         useGold(civInfo)
         automateUnits(civInfo)
@@ -330,31 +330,32 @@ class NextTurnAutomation{
 
     private fun offerResearchAgreement(civInfo: CivilizationInfo) {
         // if Civ has researched future tech, they will not want to sign RA.
-        if (civInfo.canSignResearchAgreement()){
-            val canSignResearchAgreementCiv = civInfo.getKnownCivs()
-                    .asSequence()
-                    .filter { it.isMajorCiv() }
-                    .filter { civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
-                    .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.ResearchAgreement) }
-                    .filter { !it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.ResearchAgreement) }
-                    .filter { it.canSignResearchAgreement() }
-                    .sortedByDescending { it.statsForNextTurn.science }
-            val duration = when(civInfo.gameInfo.gameParameters.gameSpeed) {
-                GameSpeed.Quick -> 25
-                GameSpeed.Standard -> 30
-                GameSpeed.Epic -> 45
-                GameSpeed.Marathon -> 90
-            }
-            for (otherCiv in canSignResearchAgreementCiv) {
-                // Default setting is 5, this will be changed according to different civ.
-                if ((1..10).random()<=5) {
-                    val tradeLogic = TradeLogic(civInfo, otherCiv)
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.getResearchAgreementCost()))
-                    tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.getResearchAgreementCost()))
+        if (!civInfo.canSignResearchAgreement()) return
 
-                    otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
-                }
-            }
+        val canSignResearchAgreementCiv = civInfo.getKnownCivs()
+                .asSequence()
+                .filter { it.isMajorCiv() }
+                .filter { civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.ResearchAgreement) }
+                .filter { !it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.ResearchAgreement) }
+                .filter { it.canSignResearchAgreement() }
+                .sortedByDescending { it.statsForNextTurn.science }
+
+        val duration = when(civInfo.gameInfo.gameParameters.gameSpeed) {
+            GameSpeed.Quick -> 25
+            GameSpeed.Standard -> 30
+            GameSpeed.Epic -> 45
+            GameSpeed.Marathon -> 90
+        }
+
+        for (otherCiv in canSignResearchAgreementCiv) {
+            // Default setting is 5, this will be changed according to different civ.
+            if ((1..10).random() > 5) continue
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.getResearchAgreementCost()))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.getResearchAgreementCost()))
+
+            otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
     }
 
@@ -419,7 +420,6 @@ class NextTurnAutomation{
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
-        if (civInfo.isCityState()) return
         if (civInfo.victoryType() == VictoryType.Cultural) return
         if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
         if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
