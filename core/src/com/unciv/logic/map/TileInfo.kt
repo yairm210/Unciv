@@ -298,7 +298,7 @@ open class TileInfo {
             var cityString = city.name
             if(isViewableToPlayer) cityString += " ("+city.health+")"
             lineList += cityString
-            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
+            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()
