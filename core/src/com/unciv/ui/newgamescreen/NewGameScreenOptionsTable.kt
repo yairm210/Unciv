@@ -64,13 +64,14 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
-            if (mapParameters.type == MapType.custom) {
+            if (mapTypeSelectBox.selected.value == MapType.custom) {
                 mapParameters.type = MapType.custom
-                mapTypeSpecificTable.add(savedMapOptionsTable)
                 mapParameters.name = mapFileSelectBox.selected
+                mapTypeSpecificTable.add(savedMapOptionsTable)
             } else {
-                mapTypeSpecificTable.add(generatedMapOptionsTable)
                 mapParameters.name = ""
+                mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
+                mapTypeSpecificTable.add(generatedMapOptionsTable)
             }
         }
 

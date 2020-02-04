@@ -23,7 +23,7 @@ import com.unciv.ui.utils.toLabel
  * */
 class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false):
     Table() {
-
+    lateinit var mapTypeSelectBox: TranslatedSelectBox
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
 
@@ -35,6 +35,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addWorldSizeSelectBox()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
+        addAdvancedSettings()
     }
 
     private fun addMapShapeSelectBox() {
@@ -63,8 +64,8 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             MapType.perlin,
             if (isEmptyMapAllowed) MapType.empty else null
         )
-        val mapTypeSelectBox =
-            TranslatedSelectBox(mapTypes, mapParameters.type, skin)
+
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, skin)
 
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -118,5 +119,121 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             }
         })
         add(noNaturalWondersCheckbox).colspan(2).row()
+    }
+
+    private fun addAdvancedSettings() {
+        val button = TextButton("Show advanced settings".tr(), skin)
+        val advancedSettingsTable = Table().apply {isVisible = false; defaults().pad(5f)}
+
+        add(button).colspan(2).row()
+        val advancedSettingsCell = add(Table()).colspan(2)
+        row()
+
+        button.onClick {
+            if (!advancedSettingsTable.isVisible) {
+                button.setText("Show advanced settings".tr())
+                advancedSettingsCell.setActor(advancedSettingsTable)
+            } else {
+                button.setText("Hide advanced settings".tr())
+                advancedSettingsCell.setActor(Table())
+            }
+            advancedSettingsTable.isVisible = !advancedSettingsTable.isVisible
+        }
+
+
+        val averageHeightSlider = Slider(0f,1f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.mountainProbability = this@apply.value
+                }
+            })
+        }
+        averageHeightSlider.value = mapParameters.mountainProbability
+        advancedSettingsTable.add("Map Height".toLabel()).left()
+        advancedSettingsTable.add(averageHeightSlider).fillX().row()
+
+
+        val tempExtremeSlider = Slider(0f,1f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.temperatureExtremeness = this@apply.value
+                }
+            })
+        }
+        tempExtremeSlider.value = mapParameters.temperatureExtremeness
+        advancedSettingsTable.add("Temperature extremeness".toLabel()).left()
+        advancedSettingsTable.add(tempExtremeSlider).fillX().row()
+
+
+        val resourceRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.resourceRichness = this@apply.value
+                }
+            })
+        }
+        resourceRichnessSlider.value = mapParameters.resourceRichness
+        advancedSettingsTable.add("Resource richness".toLabel()).left()
+        advancedSettingsTable.add(resourceRichnessSlider).fillX().row()
+
+
+        val terrainFeatureRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.terrainFeatureRichness = this@apply.value
+                }
+            })
+        }
+        terrainFeatureRichnessSlider.value = mapParameters.terrainFeatureRichness
+        advancedSettingsTable.add("Terrain Features richness".toLabel()).left()
+        advancedSettingsTable.add(terrainFeatureRichnessSlider).fillX().row()
+
+
+        val maxCoastExtensionSlider = Slider(0f,5f,1f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.maxCoastExtension = this@apply.value.toInt()
+                }
+            })
+        }
+        maxCoastExtensionSlider.value = mapParameters.maxCoastExtension.toFloat()
+        advancedSettingsTable.add("Max Coast extension".toLabel()).left()
+        advancedSettingsTable.add(maxCoastExtensionSlider).fillX().row()
+
+
+        val tilesPerBiomeAreaSlider = Slider(0f,15f,1f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.tilesPerBiomeArea = this@apply.value.toInt()
+                }
+            })
+        }
+        tilesPerBiomeAreaSlider.value = mapParameters.tilesPerBiomeArea.toFloat()
+        advancedSettingsTable.add("Biome areas extension".toLabel()).left()
+        advancedSettingsTable.add(tilesPerBiomeAreaSlider).fillX().row()
+
+
+        val waterPercentSlider = Slider(0f,1f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.waterProbability = this@apply.value
+                }
+            })
+        }
+        waterPercentSlider.value = mapParameters.waterProbability
+        advancedSettingsTable.add("Water percent".toLabel()).left()
+        advancedSettingsTable.add(waterPercentSlider).fillX().row()
+
+
+        val landPercentSlider = Slider(0f,1f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.landProbability = this@apply.value
+                }
+            })
+        }
+        landPercentSlider.value = mapParameters.landProbability
+        advancedSettingsTable.add("Land percent".toLabel()).left()
+        advancedSettingsTable.add(landPercentSlider).fillX().row()
     }
 }
