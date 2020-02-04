@@ -8,10 +8,41 @@ enum class MapSize(val radius: Int) {
     Huge(40)
 }
 
+object MapShape {
+    const val hexagonal = "Hexagonal"
+    const val rectangular = "Rectangular"
+}
+
+object MapType {
+    const val pangaea = "Pangaea"
+    const val continents = "Continents"
+    const val perlin = "Perlin"
+
+    // Cellular automata
+    const val default = "Default"
+
+    // Non-generated maps
+    const val custom = "Custom"
+
+    // All ocean tiles
+    const val empty = "Empty"
+}
+
 class MapParameters {
     var name = ""
     var type = MapType.pangaea
+    var shape = MapShape.hexagonal
     var size: MapSize = MapSize.Medium
     var noRuins = false
-    var noNaturalWonders = true
+    var noNaturalWonders = false
+
+    var seed: Long = 0
+    var tilesPerBiomeArea = 6
+    var maxCoastExtension = 2
+    var mountainProbability = 0.10f
+    var temperatureExtremeness = 0.30f
+    var terrainFeatureRichness = 0.30f
+    var resourceRichness = 0.10f
+    var waterProbability = 0.05f
+    var landProbability = 0.55f
 }

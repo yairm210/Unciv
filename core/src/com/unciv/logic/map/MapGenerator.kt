@@ -8,77 +8,66 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.*
+import kotlin.random.Random
 
-// This is no longer an Enum because there were map types that were disabled,
-// and when parsing an existing map to an Enum you have to have all the options.
-// So either we had to keep the old Enums forever, or change to strings.
 
-class MapType {
-    companion object{
-        val default="Default" // Creates a cellular automata map
-        val perlin="Perlin"
-        val continents = "Continents"
-        val pangaea = "Pangaea"
-        val custom="Custom"
-        val empty="Empty"
-    }
-}
+class MapGenerator(val ruleset: Ruleset) {
 
-class MapGenerator {
-
-    fun generateMap(mapParameters: MapParameters, ruleset: Ruleset): TileMap {
+    fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapRadius = mapParameters.size.radius
         val mapType = mapParameters.type
+        val map: TileMap
 
-        val map = TileMap(mapRadius, ruleset)
+        if (mapParameters.shape == MapShape.rectangular) {
+            val size = HexMath.getEquivalentRectangularSize(mapRadius)
+            map = TileMap(size.x.toInt(), size.y.toInt(), ruleset)
+        }
+        else
+            map = TileMap(mapRadius, ruleset)
+
         map.mapParameters = mapParameters
+        map.mapParameters.seed = seed
 
-        // Is the empty map is requested, there's no need for further generation
-        if (mapType == MapType.empty) return map
+        if (mapType == MapType.empty)
+            return map
 
-        // Step one - separate land and water, in form of Grasslands and Oceans
-        if (mapType == MapType.perlin)
-            MapLandmassGenerator().generateLandPerlin(map)
-        else MapLandmassGenerator().generateLandCellularAutomata(map, mapRadius, mapType)
-
-        divideIntoBiomes(map, 6, 0.05f, mapRadius, ruleset)
-
-        for (tile in map.values) tile.setTransients()
-
-        setWaterTiles(map)
-
-        for (tile in map.values) randomizeTile(tile, mapParameters, ruleset)
-
-        spreadResources(map, mapRadius, ruleset)
-
-        if(!mapParameters.noRuins)
-            spreadAncientRuins(map)
-
-        if (!mapParameters.noNaturalWonders)
-            spawnNaturalWonders(map, mapRadius, ruleset)
+        seedRNG(seed)
+        generateLand(map)
+        divideIntoBiomes(map)
+        spawnLakesAndCoasts(map)
+        randomizeTiles(map)
+        spreadResources(map)
+        spreadAncientRuins(map)
+        spawnNaturalWonders(map)
 
         return map
     }
 
+    private fun seedRNG(seed: Long) {
+        RNG = Random(seed)
+        println("RNG seeded with $seed")
+    }
 
-    fun setWaterTiles(map: TileMap) {
+    private fun spawnLakesAndCoasts(map: TileMap) {
 
         //define lakes
         var waterTiles = map.values.filter { it.isWater }
+
         val tilesInArea = ArrayList<TileInfo>()
         val tilesToCheck = ArrayList<TileInfo>()
+
         while (waterTiles.isNotEmpty()) {
-            val initialWaterTile = waterTiles.random()
+            val initialWaterTile = waterTiles.random(RNG)
             tilesInArea += initialWaterTile
             tilesToCheck += initialWaterTile
             waterTiles -= initialWaterTile
 
+            // Floodfill to cluster water tiles
             while (tilesToCheck.isNotEmpty()) {
-                val tileWeAreChecking = tilesToCheck.random()
+                val tileWeAreChecking = tilesToCheck.random(RNG)
                 for (vector in tileWeAreChecking.neighbors
                         .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
                     tilesInArea += vector
@@ -99,52 +88,65 @@ class MapGenerator {
 
         //Coasts
         for (tile in map.values.filter { it.baseTerrain == Constants.ocean }) {
-            if (tile.getTilesInDistance(2).any { it.isLand }) {
+            val coastLength = max(1, RNG.nextInt(max(1, map.mapParameters.maxCoastExtension)))
+            if (tile.getTilesInDistance(coastLength).any { it.isLand }) {
                 tile.baseTerrain = Constants.coast
                 tile.setTransients()
             }
         }
     }
 
-    fun randomizeTile(tileInfo: TileInfo, mapParameters: MapParameters, ruleset: Ruleset) {
-        if (tileInfo.getBaseTerrain().type == TerrainType.Land && Math.random() < 0.05f) {
-            tileInfo.baseTerrain = Constants.mountain
-            tileInfo.setTransients()
+    private fun randomizeTiles(tileMap: TileMap) {
+
+        for (tile in tileMap.values) {
+            if (tile.getBaseTerrain().type == TerrainType.Land && RNG.nextDouble() < tileMap.mapParameters.mountainProbability) {
+                tile.baseTerrain = Constants.mountain
+                tile.setTransients()
+            }
+            addRandomTerrainFeature(tile, tileMap.mapParameters)
         }
-        addRandomTerrainFeature(tileInfo, ruleset)
     }
 
-    fun getLatitude(vector: Vector2): Float {
-        return abs(vector.x + vector.y)
-    }
+    private fun divideIntoBiomes(tileMap: TileMap) {
+        val averageTilesPerArea = tileMap.mapParameters.tilesPerBiomeArea
+        val waterPercent = tileMap.mapParameters.waterProbability
 
-    fun divideIntoBiomes(map: TileMap, averageTilesPerArea: Int, waterPercent: Float, distance: Int, ruleset: Ruleset) {
+        val maxLatitude = tileMap.values.map { abs(HexMath.getLatitude(it.position)) }.max()!!
+
         val areas = ArrayList<Area>()
 
         val terrains = ruleset.terrains.values
                 .filter { it.type === TerrainType.Land && it.name != Constants.lakes && it.name != Constants.mountain }
 
-        for (tile in map.values.filter { it.baseTerrain == Constants.grassland }) tile.baseTerrain = "" // So we know it's not chosen
+        // So we know it's not chosen
+        for (tile in tileMap.values.filter { it.baseTerrain == Constants.grassland })
+            tile.baseTerrain = ""
 
-        while (map.values.any { it.baseTerrain == "" }) // the world could be split into lots off tiny islands, and every island deserves land types
+        while (tileMap.values.any { it.baseTerrain == "" }) // the world could be split into lots off tiny islands, and every island deserves land types
         {
-            val emptyTiles = map.values.filter { it.baseTerrain == "" }.toMutableList()
+            val emptyTiles = tileMap.values.filter { it.baseTerrain == "" }.toMutableList()
             val numberOfSeeds = ceil(emptyTiles.size / averageTilesPerArea.toFloat()).toInt()
-            val maxLatitude = abs(getLatitude(Vector2(distance.toFloat(), distance.toFloat())))
+
 
             for (i in 0 until numberOfSeeds) {
-                var terrain = if (Math.random() > waterPercent) terrains.random().name
-                else Constants.ocean
-                val tile = emptyTiles.random()
+                var terrain = if (RNG.nextDouble() < waterPercent) Constants.ocean
+                else terrains.random(RNG).name
 
-                //change grassland to desert or tundra based on y
-                if (abs(getLatitude(tile.position)) < maxLatitude * 0.1) {
-                    if (terrain == Constants.grassland || terrain == Constants.tundra)
+                val tile = emptyTiles.random(RNG)
+
+                val desertBand = maxLatitude * 0.5 * tileMap.mapParameters.temperatureExtremeness
+                val tundraBand = maxLatitude * (1 - 0.5 * tileMap.mapParameters.temperatureExtremeness)
+
+                if (abs(HexMath.getLatitude(tile.position)) < desertBand) {
+
+                    if (terrain in arrayOf(Constants.grassland, Constants.tundra))
                         terrain = Constants.desert
-                } else if (abs(getLatitude(tile.position)) > maxLatitude * 0.7) {
-                    if (terrain == Constants.grassland || terrain == Constants.plains || terrain == Constants.desert || terrain == Constants.ocean) {
+
+                } else if (abs(HexMath.getLatitude(tile.position)) > tundraBand) {
+
+                    if (terrain in arrayOf(Constants.grassland, Constants.plains, Constants.desert, Constants.ocean))
                         terrain = Constants.tundra
-                    }
+
                 } else {
                     if (terrain == Constants.tundra) terrain = Constants.plains
                     else if (terrain == Constants.desert) terrain = Constants.grassland
@@ -159,14 +161,16 @@ class MapGenerator {
             expandAreas(areas)
             expandAreas(areas)
         }
+
+        for (tile in tileMap.values)
+            tile.setTransients()
     }
 
-
-    fun expandAreas(areas: ArrayList<Area>) {
+    private fun expandAreas(areas: ArrayList<Area>) {
         val expandableAreas = ArrayList<Area>(areas)
 
         while (expandableAreas.isNotEmpty()) {
-            val areaToExpand = expandableAreas.random()
+            val areaToExpand = expandableAreas.random(RNG)
             if (areaToExpand.tiles.size >= 20) {
                 expandableAreas -= areaToExpand
                 continue
@@ -178,7 +182,7 @@ class MapGenerator {
 
             if (availableExpansionTiles.isEmpty()) expandableAreas -= areaToExpand
             else {
-                val expansionTile = availableExpansionTiles.random()
+                val expansionTile = availableExpansionTiles.random(RNG)
                 areaToExpand.addTile(expansionTile)
 
                 val areasToJoin = areas.filter {
@@ -195,40 +199,48 @@ class MapGenerator {
         }
     }
 
-
-    fun addRandomTerrainFeature(tileInfo: TileInfo, ruleset: Ruleset) {
-        if (tileInfo.getBaseTerrain().canHaveOverlay && Math.random() > 0.7f) {
+    private fun addRandomTerrainFeature(tileInfo: TileInfo, mapParameters: MapParameters) {
+        if (tileInfo.getBaseTerrain().canHaveOverlay && RNG.nextDouble() < mapParameters.terrainFeatureRichness) {
             val secondaryTerrains = ruleset.terrains.values
-                    .filter { it.type === TerrainType.TerrainFeature && it.occursOn != null && it.occursOn.contains(tileInfo.baseTerrain) }
-            if (secondaryTerrains.any()) tileInfo.terrainFeature = secondaryTerrains.random().name
+                    .filter { it.type === TerrainType.TerrainFeature &&
+                            it.occursOn != null &&
+                            it.occursOn.contains(tileInfo.baseTerrain) }
+            if (secondaryTerrains.any())
+                tileInfo.terrainFeature = secondaryTerrains.random(RNG).name
         }
     }
 
-
-    fun spreadAncientRuins(map: TileMap) {
+    private fun spreadAncientRuins(map: TileMap) {
+        if(map.mapParameters.noRuins)
+            return
         val suitableTiles = map.values.filter { it.isLand && !it.getBaseTerrain().impassable }
         val locations = chooseSpreadOutLocations(suitableTiles.size/100,
                 suitableTiles, 10)
         for(tile in locations)
-            tile.improvement =Constants.ancientRuins
+            tile.improvement = Constants.ancientRuins
     }
 
-
-    fun spreadResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
+    private fun spreadResources(mapToReturn: TileMap) {
+        val distance = mapToReturn.mapParameters.size.radius
         for (tile in mapToReturn.values)
             if (tile.resource != null)
                 tile.resource = null
 
-        spreadStrategicResources(mapToReturn, distance, ruleset)
-        spreadResource(mapToReturn, distance, ResourceType.Luxury, ruleset)
-        spreadResource(mapToReturn, distance, ResourceType.Bonus, ruleset)
+        spreadStrategicResources(mapToReturn, distance)
+        spreadResource(mapToReturn, distance, ResourceType.Luxury)
+        spreadResource(mapToReturn, distance, ResourceType.Bonus)
     }
+
+    //region natural-wonders
 
     /*
     https://gaming.stackexchange.com/questions/95095/do-natural-wonders-spawn-more-closely-to-city-states/96479
     https://www.reddit.com/r/civ/comments/1jae5j/information_on_the_occurrence_of_natural_wonders/
     */
-    fun spawnNaturalWonders(mapToReturn: TileMap, mapRadius: Int, ruleset: Ruleset) {
+    private fun spawnNaturalWonders(tileMap: TileMap) {
+        if (tileMap.mapParameters.noNaturalWonders)
+            return
+        val mapRadius = tileMap.mapParameters.size.radius
         // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
         val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()
 
@@ -238,7 +250,7 @@ class MapGenerator {
 
         while (allNaturalWonders.isNotEmpty() && toBeSpawned.size < numberToSpawn) {
             val totalWeight = allNaturalWonders.map { it.weight }.sum().toFloat()
-            val random = Random().nextDouble()
+            val random = RNG.nextDouble()
             var sum = 0f
             for (wonder in allNaturalWonders) {
                 sum += wonder.weight/totalWeight
@@ -254,16 +266,16 @@ class MapGenerator {
 
         for (wonder in toBeSpawned) {
             when (wonder.name) {
-                Constants.barringerCrater -> spawnBarringerCrater(mapToReturn, ruleset)
-                Constants.mountFuji -> spawnMountFuji(mapToReturn, ruleset)
-                Constants.grandMesa -> spawnGrandMesa(mapToReturn, ruleset)
-                Constants.greatBarrierReef -> spawnGreatBarrierReef(mapToReturn, ruleset, mapRadius)
-                Constants.krakatoa -> spawnKrakatoa(mapToReturn, ruleset)
-                Constants.rockOfGibraltar -> spawnRockOfGibraltar(mapToReturn, ruleset)
-                Constants.oldFaithful -> spawnOldFaithful(mapToReturn, ruleset)
-                Constants.cerroDePotosi -> spawnCerroDePotosi(mapToReturn, ruleset)
-                Constants.elDorado -> spawnElDorado(mapToReturn, ruleset)
-                Constants.fountainOfYouth -> spawnFountainOfYouth(mapToReturn, ruleset)
+                Constants.barringerCrater -> spawnBarringerCrater(tileMap, ruleset)
+                Constants.mountFuji -> spawnMountFuji(tileMap, ruleset)
+                Constants.grandMesa -> spawnGrandMesa(tileMap, ruleset)
+                Constants.greatBarrierReef -> spawnGreatBarrierReef(tileMap, ruleset, mapRadius)
+                Constants.krakatoa -> spawnKrakatoa(tileMap, ruleset)
+                Constants.rockOfGibraltar -> spawnRockOfGibraltar(tileMap, ruleset)
+                Constants.oldFaithful -> spawnOldFaithful(tileMap, ruleset)
+                Constants.cerroDePotosi -> spawnCerroDePotosi(tileMap, ruleset)
+                Constants.elDorado -> spawnElDorado(tileMap, ruleset)
+                Constants.fountainOfYouth -> spawnFountainOfYouth(tileMap, ruleset)
             }
         }
     }
@@ -339,11 +351,11 @@ class MapGenerator {
     */
     private fun spawnGreatBarrierReef(mapToReturn: TileMap, ruleset: Ruleset, mapRadius: Int) {
         val wonder = ruleset.terrains[Constants.greatBarrierReef]!!
-        val maxLatitude = abs(getLatitude(Vector2(mapRadius.toFloat(), mapRadius.toFloat())))
+        val maxLatitude = abs(HexMath.getLatitude(Vector2(mapRadius.toFloat(), mapRadius.toFloat())))
         val suitableLocations = mapToReturn.values.filter { it.resource == null && it.improvement == null
                 && wonder.occursOn!!.contains(it.getLastTerrain().name)
-                && abs(getLatitude(it.position)) > maxLatitude * 0.1
-                && abs(getLatitude(it.position)) < maxLatitude * 0.7
+                && abs(HexMath.getLatitude(it.position)) > maxLatitude * 0.1
+                && abs(HexMath.getLatitude(it.position)) < maxLatitude * 0.7
                 && it.neighbors.all {neighbor -> neighbor.isWater}
                 && it.neighbors.any {neighbor ->
                     neighbor.resource == null && neighbor.improvement == null
@@ -472,9 +484,10 @@ class MapGenerator {
 
         trySpawnOnSuitableLocation(suitableLocations, wonder)
     }
+    //endregion
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
-    private fun spreadStrategicResources(mapToReturn: TileMap, distance: Int, ruleset: Ruleset) {
+    private fun spreadStrategicResources(mapToReturn: TileMap, distance: Int) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         for (resource in resourcesOfType) {
             val suitableTiles = mapToReturn.values
@@ -490,12 +503,12 @@ class MapGenerator {
     }
 
     // Here, we need there to be some luxury/bonus resource - it matters less what
-    private fun spreadResource(mapToReturn: TileMap, distance: Int, resourceType: ResourceType, ruleset: Ruleset) {
+    private fun spreadResource(mapToReturn: TileMap, distance: Int, resourceType: ResourceType) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == resourceType }
 
         val suitableTiles = mapToReturn.values
                 .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
-        val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / 15
+        val numberOfResources = (mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } * mapToReturn.mapParameters.resourceRichness).toInt()
         val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
 
         val resourceToNumber = Counter<String>()
@@ -511,7 +524,7 @@ class MapGenerator {
         }
     }
 
-    fun chooseSpreadOutLocations(numberOfResources: Int, suitableTiles: List<TileInfo>, initialDistance: Int): ArrayList<TileInfo> {
+    private fun chooseSpreadOutLocations(numberOfResources: Int, suitableTiles: List<TileInfo>, initialDistance: Int): ArrayList<TileInfo> {
 
         for (distanceBetweenResources in initialDistance downTo 1) {
             var availableTiles = suitableTiles.toList()
@@ -542,29 +555,125 @@ class MapGenerator {
         }
         throw Exception("Couldn't choose suitable tiles for $numberOfResources resources!")
     }
-}
 
-class MapLandmassGenerator {
+    companion object MapLandmassGenerator {
+        var RNG = Random(42)
 
-    fun generateLandCellularAutomata(tileMap: TileMap, mapRadius: Int, mapType: String) {
-
-        val numSmooth = 4
-
-        //init
-        for (tile in tileMap.values) {
-            val terrainType = getInitialTerrainCellularAutomata(tile, mapRadius, mapType)
-            if (terrainType == TerrainType.Land) tile.baseTerrain = Constants.grassland
-            else tile.baseTerrain = Constants.ocean
-            tile.setTransients()
+        fun generateLand(tileMap: TileMap) {
+            when (tileMap.mapParameters.type) {
+                MapType.pangaea -> createPangea(tileMap)
+                MapType.continents -> createTwoContinents(tileMap)
+                MapType.perlin -> createPerlin(tileMap)
+                MapType.default -> generateLandCellularAutomata(tileMap)
+            }
         }
 
-        //smooth
-        val grassland = Constants.grassland
-        val ocean = Constants.ocean
-
-        for (loop in 0..numSmooth) {
+        private fun smooth(tileMap: TileMap) {
             for (tileInfo in tileMap.values) {
-                if (HexMath.getDistance(Vector2.Zero, tileInfo.position) < mapRadius) {
+                val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == Constants.grassland }
+                if (RNG.nextFloat() < 0.5f)
+                    continue
+
+                if (numberOfLandNeighbors > 3)
+                    tileInfo.baseTerrain = Constants.grassland
+                else if (numberOfLandNeighbors < 3)
+                    tileInfo.baseTerrain = Constants.ocean
+            }
+        }
+
+        private fun createPerlin(tileMap: TileMap) {
+            val elevationSeed = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                var elevation = getPerlinNoise(tile, elevationSeed)
+
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun createPangea(tileMap: TileMap) {
+            val elevationSeed = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                var elevation = getPerlinNoise(tile, elevationSeed)
+                elevation = (elevation + getCircularNoise(tile, tileMap) ) / 2.0
+
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun createTwoContinents(tileMap: TileMap) {
+            val elevationSeed = RNG.nextInt().toDouble()
+            for (tile in tileMap.values) {
+                var elevation = getPerlinNoise(tile, elevationSeed)
+                elevation = (elevation + getTwoContinentsTransform(tile, tileMap)) / 2.0
+
+                when {
+                    elevation < 0 -> tile.baseTerrain = Constants.ocean
+                    else -> tile.baseTerrain = Constants.grassland
+                }
+            }
+        }
+
+        private fun getCircularNoise(tileInfo: TileInfo, tileMap: TileMap): Double {
+            val randomScale = RNG.nextDouble()
+            val distanceFactor =  percentualDistanceToCenter(tileInfo, tileMap)
+
+            return min(0.3, 1.0 - (5.0 * distanceFactor * distanceFactor + randomScale) / 3.0)
+        }
+
+        private fun getTwoContinentsTransform(tileInfo: TileInfo, tileMap: TileMap): Double {
+            val randomScale = RNG.nextDouble()
+            val maxLongitude = abs(tileMap.values.map { abs(HexMath.getLongitude(it.position)) }.max()!!)
+            val longitudeFactor = abs(HexMath.getLongitude(tileInfo.position))/maxLongitude
+
+            return min(0.0,-1.0 + (5.0 * longitudeFactor.pow(0.7f) + randomScale) / 3.0)
+        }
+
+        private fun percentualDistanceToCenter(tileInfo: TileInfo, tileMap: TileMap): Double {
+            val mapRadius = tileMap.mapParameters.size.radius
+            if (tileMap.mapParameters.shape == MapShape.hexagonal)
+                return HexMath.getDistance(Vector2.Zero, tileInfo.position).toDouble()/mapRadius
+            else {
+                val size = HexMath.getEquivalentRectangularSize(mapRadius)
+                return HexMath.getDistance(Vector2.Zero, tileInfo.position).toDouble() / HexMath.getDistance(Vector2.Zero, Vector2(size.x/2, size.y/2))
+            }
+        }
+
+        private fun getPerlinNoise(tile: TileInfo, seed: Double,
+                                   nOctaves: Int = 6,
+                                   persistence: Double = 0.5,
+                                   lacunarity: Double = 2.0,
+                                   scale: Double = 10.0): Double {
+            val worldCoords = HexMath.hex2WorldCoords(tile.position)
+            return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
+        }
+
+        // region Cellular automata
+        private fun generateLandCellularAutomata(tileMap: TileMap) {
+            val mapRadius = tileMap.mapParameters.size.radius
+            val mapType = tileMap.mapParameters.type
+            val numSmooth = 4
+
+            //init
+            for (tile in tileMap.values) {
+                val terrainType = getInitialTerrainCellularAutomata(tile, tileMap.mapParameters)
+                if (terrainType == TerrainType.Land) tile.baseTerrain = Constants.grassland
+                else tile.baseTerrain = Constants.ocean
+                tile.setTransients()
+            }
+
+            //smooth
+            val grassland = Constants.grassland
+            val ocean = Constants.ocean
+
+            for (loop in 0..numSmooth) {
+                for (tileInfo in tileMap.values) {
+                    //if (HexMath.getDistance(Vector2.Zero, tileInfo.position) < mapRadius) {
                     val numberOfLandNeighbors = tileInfo.neighbors.count { it.baseTerrain == grassland }
                     if (tileInfo.baseTerrain == grassland) { // land tile
                         if (numberOfLandNeighbors < 3)
@@ -573,90 +682,36 @@ class MapLandmassGenerator {
                         if (numberOfLandNeighbors > 3)
                             tileInfo.baseTerrain = grassland
                     }
-                } else {
-                    tileInfo.baseTerrain = ocean
-                }
-            }
-
-            if (mapType == MapType.continents) { //keep a ocean column in the middle
-                for (y in -mapRadius..mapRadius) {
-                    tileMap.get(Vector2((y / 2).toFloat(), y.toFloat())).baseTerrain = ocean
-                    tileMap.get(Vector2((y / 2 + 1).toFloat(), y.toFloat())).baseTerrain = ocean
+                    /*} else {
+                        tileInfo.baseTerrain = ocean
+                    }*/
                 }
             }
         }
-    }
 
 
-    private fun getInitialTerrainCellularAutomata(tileInfo: TileInfo, mapRadius: Int, mapType: String): TerrainType {
+        private fun getInitialTerrainCellularAutomata(tileInfo: TileInfo, mapParameters: MapParameters): TerrainType {
+            val landProbability = mapParameters.landProbability
+            val mapRadius = mapParameters.size.radius
 
-        val landProbability = 0.55f
-
-        if (mapType == MapType.pangaea) {
-            val distanceFactor = (HexMath.getDistance(Vector2.Zero, tileInfo.position) * 1.8 / mapRadius).toFloat()
-            if (Random().nextDouble() < landProbability.pow(distanceFactor)) return TerrainType.Land
-            else return TerrainType.Water
-        }
-
-        if (mapType == MapType.continents) {
-            val distanceWeight = min(getDistanceWeightForContinents(Vector2(mapRadius.toFloat() / 2, 0f), tileInfo.position),
-                    getDistanceWeightForContinents(Vector2(-mapRadius.toFloat() / 2, 0f), tileInfo.position))
-            val distanceFactor = (distanceWeight * 1.8 / mapRadius).toFloat()
-            if (Random().nextDouble() < landProbability.pow(distanceFactor)) return TerrainType.Land
-            else return TerrainType.Water
-        }
-
-        // default
-        if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.9f * mapRadius) {
-            if (Random().nextDouble() < 0.1) return TerrainType.Land else return TerrainType.Water
-        }
-        if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.85f * mapRadius) {
-            if (Random().nextDouble() < 0.2) return TerrainType.Land else return TerrainType.Water
-        }
-        if (Random().nextDouble() < landProbability) return TerrainType.Land else return TerrainType.Water
-    }
-
-
-    private fun getDistanceWeightForContinents(origin: Vector2, destination: Vector2): Float {
-        val relative_x = 2 * (origin.x - destination.x)
-        val relative_y = origin.y - destination.y
-        if (relative_x * relative_y >= 0)
-            return max(abs(relative_x), abs(relative_y))
-        else
-            return (abs(relative_x) + abs(relative_y))
-    }
-
-
-    /**
-     * This generator simply generates Perlin noise,
-     * "spreads" it out according to the ratio in generateTile,
-     * and assigns it as the height of the various tiles.
-     * Tiles below a certain height threshold (determined in generateTile, currently 50%)
-     *   are considered water tiles, the rest are land tiles
-     */
-    fun generateLandPerlin(tileMap: TileMap) {
-        val mapRandomSeed = Random().nextDouble() // without this, all the "random" maps would look the same
-        for (tile in tileMap.values) {
-            val ratio = 1 / 10.0
-            val vector = tile.position
-            val height = Perlin.noise(vector.x * ratio, vector.y * ratio, mapRandomSeed)
-            +Perlin.noise(vector.x * ratio * 2, vector.y * ratio * 2, mapRandomSeed) / 2
-            +Perlin.noise(vector.x * ratio * 4, vector.y * ratio * 4, mapRandomSeed) / 4
-            when { // If we want to change water levels, we could raise or lower the >0
-                height > 0 -> tile.baseTerrain = Constants.grassland
-                else -> tile.baseTerrain = Constants.ocean
+            // default
+            if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.9f * mapRadius) {
+                if (RNG.nextDouble() < 0.1) return TerrainType.Land else return TerrainType.Water
             }
+            if (HexMath.getDistance(Vector2.Zero, tileInfo.position) > 0.85f * mapRadius) {
+                if (RNG.nextDouble() < 0.2) return TerrainType.Land else return TerrainType.Water
+            }
+            if (RNG.nextDouble() < landProbability) return TerrainType.Land else return TerrainType.Water
         }
-    }
 
+        // endregion
+    }
 }
-
-
 
 class Area(var terrain: String) {
     val tiles = ArrayList<TileInfo>()
     fun addTile(tileInfo: TileInfo) {
-        tiles+=tileInfo
+        tiles += tileInfo
         tileInfo.baseTerrain = terrain
     }
 }
