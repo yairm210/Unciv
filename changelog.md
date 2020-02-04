@@ -1,3 +1,17 @@
+## 3.5.10
+
+Resolved #1827 - can no longer see other (current) player's city production in multiplayer
+
+Resolved #1839 - Civs no longer declare war and offer things in the same turn
+
+AI no longer sends 'please don't settle cities near us' warnings when at war
+
+When disbanding carriers, transported air units move to nearby tiles if they can. If they can't then they're disbanded.
+
+Resolved #1457 - no AI-to-AI trades are 'automatically accepted'
+
+Translation updates
+
 ## 3.5.9
 
 Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated city states, as well as many other minor bugs
