@@ -352,8 +352,8 @@ class MapUnit {
             if(currentTurnsFortified<2)
                 action = action!!.replace(currentTurnsFortified.toString(),(currentTurnsFortified+1).toString(), true)
         }
-        if (hasUnique("Heal adjacent units for an additional 2 HP per turn"))
-            currentTile.neighbors.flatMap{ it.getUnits() }.forEach{ it.healBy(2) }
+        if (hasUnique("Heal adjacent units for an additional 15 HP per turn"))
+            currentTile.neighbors.flatMap{ it.getUnits() }.forEach{ it.healBy(15) }
     }
 
     private fun workOnImprovement() {
