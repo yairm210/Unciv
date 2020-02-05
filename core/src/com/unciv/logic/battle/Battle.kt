@@ -222,9 +222,9 @@ object Battle {
         if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarian())
             return
         var amountToAdd = amount
-        if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
+        if (thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
         if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) amountToAdd = (amountToAdd * 1.5f).toInt()
-        thisCombatant.unit.promotions.XP += amountToAdd
+        thisCombatant.unit.promotions.addXP(amountToAdd)
 
         if(thisCombatant.getCivInfo().nation.unique
                 == "Great general provides double combat bonus, and spawns 50% faster")

@@ -18,6 +18,10 @@ class UnitPromotions{
         return XP >= xpForNextPromotion()
     }
 
+    fun addXP(amount: Int) {
+        XP += amount
+    }
+
     fun addPromotion(promotionName: String, isFree: Boolean = false){
         if (!isFree) {
             XP -= xpForNextPromotion()
