@@ -45,7 +45,7 @@ class UncivGame(
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
-    val simulateUntilTurnForDebug: Int = 0
+    val simulateUntilTurnForDebug: Int = 300
 
     var rewriteTranslationFiles = false
 
