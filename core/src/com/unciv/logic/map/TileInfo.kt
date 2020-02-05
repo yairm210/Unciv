@@ -1,4 +1,4 @@
-package com.unciv.logic.map
+﻿package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -132,8 +132,19 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
+    fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner()
+        return when {
+            tileOwner == null -> false
+            tileOwner == civInfo -> true
+            !civInfo.knows(tileOwner) -> false
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
+        }
+    }
+
     fun getTerrainFeature(): Terrain? =
             if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
+
 
     fun isWorked(): Boolean {
         val city = getCity()
