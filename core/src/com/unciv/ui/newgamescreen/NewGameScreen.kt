@@ -93,6 +93,7 @@ class NewGameScreen: PickerScreen(){
                     rightSideButton.enable()
                     rightSideButton.setText("Start game!".tr())
                 }
+                Gdx.graphics.requestRendering()
             }
         }
     }
@@ -106,8 +107,9 @@ class NewGameScreen: PickerScreen(){
     var newGame:GameInfo?=null
 
     override fun render(delta: Float) {
-        if(newGame!=null){
+        if (newGame != null){
             game.loadGame(newGame!!)
+            UncivGame.Current.setWorldScreen()
         }
         super.render(delta)
     }
