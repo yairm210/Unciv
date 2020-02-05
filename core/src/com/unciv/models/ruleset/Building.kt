@@ -311,7 +311,7 @@ class Building : NamedStats(), IConstruction{
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                                && it.getTileResource().improvement == it.improvement
+                                && (it.getTileResource().improvement == it.improvement || it.improvement in Constants.greatImprovements)
                                 && it.getOwner() == civInfo
                     }
             if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
