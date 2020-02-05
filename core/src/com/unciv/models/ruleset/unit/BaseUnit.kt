@@ -10,7 +10,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
-import javax.xml.xpath.XPath
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
