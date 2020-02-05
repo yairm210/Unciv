@@ -344,14 +344,16 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             civGroup.center(group)
             civGroup.moveBy(vector.x*freeWidth/3, vector.y*freeHeight/3)
             civGroup.onClick {
-
+                // Count how many civilizations are disabled (have disabled lines)
+                // This counting also includes the "dead" civilizations which have no visible lines
                 val numberOfDisabled = civLines.values.count { it.firstOrNull()?.isVisible == false }
                 if (numberOfDisabled == 0)
                     // all enabled: disable all except current one
-                    civLines.forEach{ (s, set) -> set.forEach {it.isVisible = s == civ.civName} }
+                    civLines.forEach{ (civName, setOfCivLines) -> setOfCivLines.forEach {it.isVisible = civName == civ.civName} }
                 else {
-                    val chosenOn = civLines[civ.civName]?.firstOrNull()?.isVisible
-                    if (chosenOn != false && numberOfDisabled >= civLines.values.size-1)
+                    val selectedCivIsEnabled = civLines[civ.civName]?.firstOrNull()?.isVisible
+                    // check whether more than one civilization is enabled
+                    if (selectedCivIsEnabled != false && numberOfDisabled >= civLines.values.size-1)
                         // disabling last one: enable all
                         civLines.values.forEach {it.forEach { line: Actor -> line.isVisible = true }}
                     else
@@ -381,9 +383,9 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                     statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
                 }
 
-                if (civLines[civ.civName] == null)
+                if (!civLines.containsKey(civ.civName))
                     civLines[civ.civName] = mutableSetOf()
-                civLines[civ.civName]?.add(statusLine)
+                civLines[civ.civName]!!.add(statusLine)
 
                 group.addActor(statusLine)
                 statusLine.toBack()
