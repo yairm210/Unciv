@@ -378,10 +378,12 @@ class CityInfo {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, Color.GOLD)
 
         val oldCiv = civInfo
+        // must be before moving the city to the conquering civ,
+        // so the sum of population isn't 0 when conquering the last city of a civ
+        diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
         moveToCiv(conqueringCiv)
         Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
-        diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
 
         if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         reassignWorkers()
@@ -398,7 +400,8 @@ class CityInfo {
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
         val currentPopulation = population.population
-        val percentageOfCivPopulationInThatCity = currentPopulation * 100f / oldCiv.cities.sumBy { it.population.population }
+        val percentageOfCivPopulationInThatCity = currentPopulation * 100f /
+                oldCiv.cities.sumBy { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // How can you conquer a city but not know the civ you conquered it from?!
