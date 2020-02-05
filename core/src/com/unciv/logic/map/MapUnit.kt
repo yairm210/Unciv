@@ -663,14 +663,18 @@ class MapUnit {
         val applyCitadelDamage = currentTile.neighbors
                 .filter{ it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) }
                 .map{ it.getTileImprovement() }
-                .filter{ it != null && it.hasUnique("Deal 3 damage to adjacent enemy units") }
+                .filter{ it != null && it.hasUnique("Deal 30 damage to adjacent enemy units") }
                 .any()
 
         if (applyCitadelDamage) {
-            health -= 3
+            health -= 30
 
-            if (health <= 0)
+            if (health <= 0) {
+                civInfo.addNotification("An enemy [Citadel] has destroyed our [$name]", currentTile.position, Color.RED)
                 destroy()
+            } else {
+                civInfo.addNotification("An enemy [Citadel] has attacked our [$name]", currentTile.position, Color.RED)
+            }
         }
     }
 
