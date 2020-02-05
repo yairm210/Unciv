@@ -162,8 +162,8 @@
 	},
 	{
 		name: "Citadel",
-		uniques: ["Gives a defensive bonus of 100%", "Deal 3 damage to adjacent enemy units"]
-		// TODO (G&K): Deal 30 dmg and Adds every tile around it to your territory
+		uniques: ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
+		// TODO (G&K): adds every tile around it to your territory
 	},
 
 	//Civilization unique improvements
