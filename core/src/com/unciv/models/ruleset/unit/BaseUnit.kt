@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import javax.xml.xpath.XPath
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -151,9 +152,14 @@ class BaseUnit : INamed, IConstruction {
     override fun postBuildEvent(construction: CityConstructions) {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return // couldn't place the unit, so there's actually no unit =(
-        unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+
+        var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War"))
-            unit.promotions.XP += 15
+            XP += 15
+        if (unit.hasUnique("50% Bonus XP gain"))
+            XP = (XP * 1.5f).toInt()
+
+        unit.promotions.XP = XP
 
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))

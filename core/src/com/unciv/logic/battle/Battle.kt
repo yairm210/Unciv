@@ -223,6 +223,7 @@ object Battle {
             return
         var amountToAdd = amount
         if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
+        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) amountToAdd = (amountToAdd * 1.5f).toInt()
         thisCombatant.unit.promotions.XP += amountToAdd
 
         if(thisCombatant.getCivInfo().nation.unique
