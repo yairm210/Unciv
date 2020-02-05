@@ -109,7 +109,6 @@ class NewGameScreen: PickerScreen(){
     override fun render(delta: Float) {
         if (newGame != null){
             game.loadGame(newGame!!)
-            UncivGame.Current.setWorldScreen()
         }
         super.render(delta)
     }

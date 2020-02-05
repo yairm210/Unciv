@@ -59,7 +59,7 @@ class SaveGameScreen : PickerScreen() {
             rightSideButton.setText("Saving...".tr())
             thread(name="SaveGame"){
                 GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
-                Gdx.app.postRunnable { UncivGame.Current.setWorldScreen() }
+                UncivGame.Current.setWorldScreen()
             }
         }
         rightSideButton.enable()
