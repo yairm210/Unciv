@@ -127,6 +127,16 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
+    fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner()
+        return when {
+            tileOwner == null -> false
+            tileOwner == civInfo -> true
+            !civInfo.knows(tileOwner) -> false
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
+        }
+    }
+
     fun getTerrainFeature(): Terrain? {
         return if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
     }
