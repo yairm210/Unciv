@@ -261,9 +261,6 @@ class BattleDamage{
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        if (ratio.isNaN()) {
-            println("Gotcha")
-        }
         return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
