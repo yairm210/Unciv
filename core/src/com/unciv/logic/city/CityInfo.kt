@@ -379,8 +379,9 @@ class CityInfo {
 
         val oldCiv = civInfo
         // must be before moving the city to the conquering civ,
-        // so the sum of population isn't 0 when conquering the last city of a civ
+        // so the repercussions are properly checked
         diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
+
         moveToCiv(conqueringCiv)
         Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
