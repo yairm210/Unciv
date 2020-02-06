@@ -1,3 +1,19 @@
+## 3.5.11
+
+Rectangular maps and better map generation - by reversi
+
+Resolved #1847 - Civs defeated by a nuke are now properly destroyed
+
+Resolved #1844 - improved worker automation
+
+Resolved #1852 - buildings requiring an improved resource now accept resources with great improvements
+
+Solved the 'infinite warmongering penalty' bug
+
+Resolved #1858 - Automated workers build unique improvements
+
+Translation updates
+
 ## 3.5.10
 
 Resolved #1827 - can no longer see other (current) player's city production in multiplayer
