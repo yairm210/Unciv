@@ -182,14 +182,21 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> tile.getTileResource().improvement
         }
 
+        val uniqueImprovement = civInfo.gameInfo.ruleSet.tileImprovements.values
+                .firstOrNull { it.uniqueTo==civInfo.civName}
+
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress
             improvementStringForResource != null -> improvementStringForResource
             tile.containsGreatImprovement() -> null
             tile.containsUnfinishedGreatImprovement() -> null
-            tile.terrainFeature == Constants.jungle -> "Trading post"
-            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+
+            // I think we can assume that the unique improvement is better
+            uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
+            
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
+            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
