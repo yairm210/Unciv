@@ -1,17 +1,28 @@
 package com.unciv.models.metadata
 
-enum class GameSpeed{
+enum class GameSpeed {
     Quick,
     Standard,
     Epic,
     Marathon;
 
     fun getModifier(): Float {
-        when(this) {
-            Quick -> return 0.67f
-            Standard -> return 1f
-            Epic -> return 1.5f
-            Marathon -> return 3f
+        return when (this) {
+            Quick -> 0.67f
+            Standard -> 1f
+            Epic -> 1.5f
+            Marathon -> 3f
+        }
+    }
+
+    /** Time victory turn limit */
+    // https://gaming.stackexchange.com/a/9202
+    fun getTurnLimit(): Int {
+        return when (this) {
+            Quick -> 330
+            Standard -> 500
+            Epic -> 750
+            Marathon -> 1500
         }
     }
 }
