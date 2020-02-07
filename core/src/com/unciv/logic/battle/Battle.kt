@@ -221,18 +221,24 @@ object Battle {
         if(thisCombatant !is MapUnitCombatant) return
         if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarian())
             return
-        var amountToAdd = amount
-        if (thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
-        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) amountToAdd = (amountToAdd * 1.5f).toInt()
-        thisCombatant.unit.promotions.addXP(amountToAdd)
 
+        var XPModifier = 1f
+        if (thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) XPModifier += 0.5f
+        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f
+
+        val XPGained = (amount * XPModifier).toInt()
+        thisCombatant.unit.promotions.XP += XPGained
+
+
+        var greatGeneralPointsModifier = 1f
         if(thisCombatant.getCivInfo().nation.unique
                 == "Great general provides double combat bonus, and spawns 50% faster")
-            amountToAdd = (amountToAdd * 1.5f).toInt()
+            greatGeneralPointsModifier += 0.5f
         if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
-            amountToAdd *= 2
+            greatGeneralPointsModifier += 1f
 
-        thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += amountToAdd
+        val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
+        thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {

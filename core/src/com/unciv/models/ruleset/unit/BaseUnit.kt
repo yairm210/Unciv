@@ -154,8 +154,7 @@ class BaseUnit : INamed, IConstruction {
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War")) XP += 15
-        if (unit.hasUnique("50% Bonus XP gain")) XP = (XP * 1.5f).toInt()
-        unit.promotions.addXP(XP)
+        unit.promotions.XP = XP
 
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
