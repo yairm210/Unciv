@@ -97,7 +97,7 @@ class BaseUnit : INamed, IConstruction {
             productionCost *= civInfo.getDifficulty().unitCostModifier
         else
             productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
 

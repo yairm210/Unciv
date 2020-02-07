@@ -512,7 +512,7 @@ class CivilizationInfo {
             TechEra.Information, TechEra.Future -> 400
             else -> 0
         }
-        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {

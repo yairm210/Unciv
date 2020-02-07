@@ -205,7 +205,7 @@ class Building : NamedStats(), IConstruction{
                 productionCost *= civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
             }
         }
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
 

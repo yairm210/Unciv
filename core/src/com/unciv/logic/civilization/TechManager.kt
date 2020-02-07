@@ -57,7 +57,7 @@ class TechManager {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
-        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
@@ -127,7 +127,7 @@ class TechManager {
 
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
-        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun addCurrentScienceToScienceOfLast8Turns() {

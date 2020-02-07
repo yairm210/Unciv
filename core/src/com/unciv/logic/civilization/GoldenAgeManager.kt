@@ -30,7 +30,7 @@ class GoldenAgeManager{
         if(civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
             turnsToGoldenAge*=1.5
         if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5
-        turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge,""))

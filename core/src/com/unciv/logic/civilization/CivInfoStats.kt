@@ -30,8 +30,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
 
-        val turnLimit = civInfo.gameInfo.gameParameters.gameSpeed.getTurnLimit()
-        val gameProgress = civInfo.gameInfo.turns / turnLimit.toFloat() // as game progresses Maintenance cost rises
+        val gameProgress = civInfo.gameInfo.turns / civInfo.gameInfo.gameParameters.gameSpeed.turnLimit.toFloat() // as game progresses Maintenance cost rises
         var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!civInfo.isPlayerCivilization())
