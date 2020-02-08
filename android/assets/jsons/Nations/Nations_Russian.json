@@ -4,7 +4,7 @@
 		"name": "Babylon",
 		"translatedName": "Вавилон",
 		"leaderName": "Навуходоносор II",
-		"adjective": ["Babylonian"],
+		"adjective": ["Вавилонские"],
 		"startBias": ["Avoid Tundra"],
 		"preferredVictoryType": "Scientific",
 		
