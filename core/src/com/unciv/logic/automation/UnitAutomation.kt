@@ -44,7 +44,7 @@ class UnitAutomation {
             return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
-        if (unit.name == "Great General")
+        if (unit.name == unit.civInfo.getEquivalentUnit(Constants.greatGeneral).name)
             return SpecificUnitAutomation().automateGreatGeneral(unit)
 
         if (unit.type == UnitType.Fighter)

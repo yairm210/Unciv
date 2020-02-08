@@ -466,8 +466,9 @@ class CivilizationInfo {
     }
 
     fun addGreatPerson(greatPerson: String, city:CityInfo) {
-        placeUnitNearTile(city.location, greatPerson)
-        addNotification("A [$greatPerson] has been born in [${city.name}]!", city.location, Color.GOLD)
+        val greatPersonName = getEquivalentUnit(greatPerson).name
+        placeUnitNearTile(city.location, greatPersonName)
+        addNotification("A [$greatPersonName] has been born in [${city.name}]!", city.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String, removeImprovement: Boolean = false): MapUnit? {

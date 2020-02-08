@@ -630,12 +630,12 @@
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},
-	/*
 	{
 		"name": "Keshik",
 		"replaces": "Knight",
 		"uniqueTo": "Mongolia",
 		"unitType": "Mounted",
+		"range": 2,
 		"movement": 5,
 		"strength": 15,
 		"rangedStrength": 16,
@@ -643,13 +643,11 @@
 		"requiredTech": "Chivalry",
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
-		"obsoleteTech": "Military science",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","Combat very likely to create Great Generals","50% Bonus XP gain"],
 		"hurryCostModifier": 20,
 		"attackSound": "arrow"
-		//Mongolian unique unit.
+		// Keshik should have no penalty attacking cities
 	},
-	*/
 	
 	// Rennaisance Era
 
@@ -1328,7 +1326,18 @@
 		"name": "Great General",
 		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"] //todo : should be able to build mega-fort
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"],
+		//todo : should be able to build mega-fort
 		"movement": 2
+	},
+	{
+		"name": "Khan",
+		"unbuildable": true,
+		"unitType": "Civilian",
+		"uniqueTo": "Mongolia",
+		"replaces": "Great General",
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Heal adjacent units for an additional 15 HP per turn"],
+		//todo : should be able to build mega-fort
+		"movement": 5
 	}
 ]
