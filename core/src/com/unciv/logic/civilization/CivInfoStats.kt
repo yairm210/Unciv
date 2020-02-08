@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -30,8 +31,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
 
-
-        val gameProgress = civInfo.gameInfo.turns/400f // as game progresses Maintenance cost rises
+        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val gameProgress = civInfo.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
         var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!civInfo.isPlayerCivilization())

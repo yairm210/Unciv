@@ -282,7 +282,7 @@ class UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEra().ordinal) * unit.civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+                        var goldEarned = (350 + 50 * unit.civInfo.getEra().ordinal) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
                         if (unit.civInfo.policies.isAdopted("Commerce Complete"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
