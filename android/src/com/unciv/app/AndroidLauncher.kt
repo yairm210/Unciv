@@ -1,5 +1,6 @@
 package com.unciv.app
 
+import android.os.Build
 import android.os.Bundle
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
@@ -10,7 +11,10 @@ class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-		copyMods()
+		// Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			copyMods()
+		}
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
         val game = UncivGame(BuildConfig.VERSION_NAME,
