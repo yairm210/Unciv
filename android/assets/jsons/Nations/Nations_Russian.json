@@ -27,15 +27,15 @@
 		"hateYes": ["Да!"],
 		
 		"afterPeace": "Глупый, глупый - оставляешь меня в живых.",
-		"tradeRequest": "It appears that you do have a reason for existing – to make this deal with me.",
+		"tradeRequest": "Единственная причина по которой ты всё ещё существуешь, это совершить эту сделку со мной.",
 				
 		"outerColor": [27,53,63],
 		"innerColor": [213,249,255],
 		"uniqueName": "Ingenuity",
 		"unique": "Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
-		"cities": ["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
-			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+		"cities": ["Вавилон","Аккад","Дур-Куригалзу","Ниппур","Борсиппа","Сиппар","Опис","Мари","Шусхан","Эсхунна",
+			"Элласар","Эрэч","Кутха","Сирпурла","Нерибтум","Ашур","Нинвех","Нимруд","Арбела","Нузи",
+			"Аррапха","Тутуб","Шадуппум","Рапидум","Машхан Шапир","Туттул","Рамад","Ана","Харадум","Аграб"]
 	},
 	{
 		"name": "Greece",
