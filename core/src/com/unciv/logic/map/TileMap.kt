@@ -135,6 +135,7 @@ class TileMap {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
         fun isTileMovePotential(tileInfo:TileInfo): Boolean {
+            if(unit.type.isAirUnit()) return true
             if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()
             else return tileInfo.isLand
         }
