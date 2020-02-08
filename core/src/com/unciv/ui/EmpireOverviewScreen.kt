@@ -342,7 +342,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
             val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
-            civGroup.moveBy(vector.x*freeWidth/3, vector.y*freeHeight/3)
+            civGroup.moveBy(vector.x*freeWidth/2.5f, vector.y*freeHeight/2.5f)
             civGroup.onClick {
                 onCivClicked(civLines, civ.civName)
             }
@@ -358,18 +358,38 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 val civGroup = civGroups[civ.civName]!!
                 val otherCivGroup = civGroups[diplomacy.otherCivName]!!
 
+                if (!civLines.containsKey(civ.civName))
+                    civLines[civ.civName] = mutableSetOf()
+
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
 
-                if(diplomacy.diplomaticStatus == DiplomaticStatus.War)
-                    statusLine.color = Color.RED
-                else {
-                    val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
-                    statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
+                // draw a parallel line for additional relationships
+                if (diplomacy.hasOpenBorders ||
+                        diplomacy.diplomaticStatus == DiplomaticStatus.War ||
+                        diplomacy.totalOfScienceDuringRA > 0) {
+                    val lineAngle = (statusLine.rotation-90) * Math.PI / 180
+                    val shiftX = 4f*cos(lineAngle).toFloat()
+                    val shiftY = 4f*sin(lineAngle).toFloat()
+                    val secondaryLine = ImageGetter.getLine(civGroup.x+civGroup.width/2+shiftX,civGroup.y+civGroup.height/2+shiftY,
+                                otherCivGroup.x+otherCivGroup.width/2+shiftX,otherCivGroup.y+otherCivGroup.height/2+shiftY,2f)
+
+                    secondaryLine.color = when {
+                        diplomacy.diplomaticStatus == DiplomaticStatus.War -> Color.RED
+                        diplomacy.hasOpenBorders -> Color.CYAN
+                        diplomacy.totalOfScienceDuringRA > 0 -> Color.BLUE
+                        else -> Color.WHITE
+                    }
+
+                    civLines[civ.civName]!!.add(secondaryLine)
+
+                    group.addActor(secondaryLine)
+                    secondaryLine.toBack()
                 }
 
-                if (!civLines.containsKey(civ.civName))
-                    civLines[civ.civName] = mutableSetOf()
+                val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
+                statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
+
                 civLines[civ.civName]!!.add(statusLine)
 
                 group.addActor(statusLine)
