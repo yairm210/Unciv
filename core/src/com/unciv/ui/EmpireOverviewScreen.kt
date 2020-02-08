@@ -16,9 +16,9 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
-import kotlin.math.roundToInt
+import kotlin.math.*
 
-class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply {  defaults().pad(20f) }
 
@@ -291,7 +291,7 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
         return table
     }
 
-    fun getUnitTable(): Table {
+    private fun getUnitTable(): Table {
         val table=Table(skin).apply { defaults().pad(5f) }
         table.add("Name".tr())
         table.add("Action".tr())
@@ -324,17 +324,17 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
     }
 
 
-    fun playerKnows(civ:CivilizationInfo) = civ==viewingPlayer ||
+    private fun playerKnows(civ:CivilizationInfo) = civ==viewingPlayer ||
             viewingPlayer.diplomacy.containsKey(civ.civName)
 
-    fun getDiplomacyGroup(): Group {
+    private fun getDiplomacyGroup(): Group {
         val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val freeWidth = stage.width
         val freeHeight = stage.height - topTable.height
-        val groupSize = if (freeWidth > freeHeight) freeHeight else freeWidth
         val group = Group()
-        group.setSize(groupSize,groupSize)
+        group.setSize(freeWidth,freeHeight)
         val civGroups = HashMap<String, Actor>()
+        val civLines = HashMap<String, MutableSet<Actor>>()
         for(i in 0..relevantCivs.lastIndex){
             val civ = relevantCivs[i]
 
@@ -342,7 +342,10 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
 
             val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
-            civGroup.moveBy(vector.x*groupSize/3, vector.y*groupSize/3)
+            civGroup.moveBy(vector.x*freeWidth/3, vector.y*freeHeight/3)
+            civGroup.onClick {
+                onCivClicked(civLines, civ.civName)
+            }
 
             civGroups[civ.civName]=civGroup
             group.addActor(civGroup)
@@ -358,14 +361,65 @@ class EmpireOverviewScreen(val viewingPlayer:CivilizationInfo) : CameraStageBase
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
 
-                statusLine.color = if(diplomacy.diplomaticStatus== DiplomaticStatus.War) Color.RED
-                else Color.GREEN
+                if(diplomacy.diplomaticStatus == DiplomaticStatus.War)
+                    statusLine.color = Color.RED
+                else {
+                    val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
+                    statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
+                }
+
+                if (!civLines.containsKey(civ.civName))
+                    civLines[civ.civName] = mutableSetOf()
+                civLines[civ.civName]!!.add(statusLine)
 
                 group.addActor(statusLine)
                 statusLine.toBack()
             }
 
         return group
+    }
+
+    private fun onCivClicked(civLines: HashMap<String, MutableSet<Actor>>, name: String) {
+        // ignore the clicks on "dead" civilizations, and remember the selected one
+        val selectedLines = civLines[name] ?: return
+
+        // let's check whether lines of all civs are visible (except selected one)
+        var atLeastOneLineVisible = false
+        var allAreLinesInvisible = true
+        for (lines in civLines.values) {
+            // skip the civilization selected by user, and civilizations with no lines
+            if (lines == selectedLines || lines.isEmpty()) continue
+
+            val visibility = lines.first().isVisible
+            atLeastOneLineVisible = atLeastOneLineVisible || visibility
+            allAreLinesInvisible = allAreLinesInvisible && visibility
+
+            // check whether both visible and invisible lines are present
+            if (atLeastOneLineVisible && !allAreLinesInvisible) {
+                // invert visibility of the selected civ's lines
+                selectedLines.forEach{ it.isVisible = !it.isVisible }
+                return
+            }
+        }
+        
+        if (selectedLines.first().isVisible)
+            // invert visibility of all lines except selected one
+            civLines.filter{ it.key != name }.forEach{ it.value.forEach{line -> line.isVisible = !line.isVisible} }
+        else
+            // it happens only when all are visible except selected one
+            // invert visibility of the selected civ's lines
+            selectedLines.forEach{ it.isVisible = !it.isVisible }
+    }
+
+    private fun getColorForDiplomacyLevel(value: Float): Color {
+
+        var amplitude = min(1.0f,abs(value)/80) // 80 = RelationshipLevel.Ally
+        val shade = max(0.5f - amplitude, 0.0f)
+        amplitude = max(amplitude, 0.5f)
+
+        return Color( if (sign(value) < 0) amplitude else shade,
+                      if (sign(value) > 0) amplitude else shade,
+                      shade,1.0f)
     }
 
 
