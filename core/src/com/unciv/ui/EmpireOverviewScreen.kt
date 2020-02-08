@@ -344,22 +344,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             civGroup.center(group)
             civGroup.moveBy(vector.x*freeWidth/3, vector.y*freeHeight/3)
             civGroup.onClick {
-                // Count how many civilizations are disabled (have disabled lines)
-                // This counting also includes the "dead" civilizations which have no visible lines
-                val numberOfDisabled = civLines.values.count { it.firstOrNull()?.isVisible == false }
-                if (numberOfDisabled == 0)
-                    // all enabled: disable all except current one
-                    civLines.forEach{ (civName, setOfCivLines) -> setOfCivLines.forEach {it.isVisible = civName == civ.civName} }
-                else {
-                    val selectedCivIsEnabled = civLines[civ.civName]?.firstOrNull()?.isVisible
-                    // check whether more than one civilization is enabled
-                    if (selectedCivIsEnabled != false && numberOfDisabled >= civLines.values.size-1)
-                        // disabling last one: enable all
-                        civLines.values.forEach {it.forEach { line: Actor -> line.isVisible = true }}
-                    else
-                        // enable/disable another one
-                        civLines[civ.civName]?.forEach { it.isVisible = !it.isVisible }
-                }
+                onCivClicked(civLines, civ.civName)
             }
 
             civGroups[civ.civName]=civGroup
@@ -392,6 +377,38 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             }
 
         return group
+    }
+
+    private fun onCivClicked(civLines: HashMap<String, MutableSet<Actor>>, name: String) {
+        // ignore the clicks on "dead" civilizations, and remember the selected one
+        val selectedLines = civLines[name] ?: return
+
+        // let's check whether lines of all civs are visible (except selected one)
+        var atLeastOneLineVisible = false
+        var allAreLinesInvisible = true
+        for (lines in civLines.values) {
+            // skip the civilization selected by user, and civilizations with no lines
+            if (lines == selectedLines || lines.isEmpty()) continue
+
+            val visibility = lines.first().isVisible
+            atLeastOneLineVisible = atLeastOneLineVisible || visibility
+            allAreLinesInvisible = allAreLinesInvisible && visibility
+
+            // check whether both visible and invisible lines are present
+            if (atLeastOneLineVisible && !allAreLinesInvisible) {
+                // invert visibility of the selected civ's lines
+                selectedLines.forEach{ it.isVisible = !it.isVisible }
+                return
+            }
+        }
+        
+        if (selectedLines.first().isVisible)
+            // invert visibility of all lines except selected one
+            civLines.filter{ it.key != name }.forEach{ it.value.forEach{line -> line.isVisible = !line.isVisible} }
+        else
+            // it happens only when all are visible except selected one
+            // invert visibility of the selected civ's lines
+            selectedLines.forEach{ it.isVisible = !it.isVisible }
     }
 
     private fun getColorForDiplomacyLevel(value: Float): Color {
