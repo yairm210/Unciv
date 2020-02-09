@@ -84,7 +84,7 @@ class GameInfo {
             || UncivGame.Current.simulateUntilTurnForDebug > turns
                 // For multiplayer, if there are 3+ players and one is defeated,
                 // we'll want to skip over their turn
-                || thisPlayer.isDefeated()
+                || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation().automateCivMoves(thisPlayer)
