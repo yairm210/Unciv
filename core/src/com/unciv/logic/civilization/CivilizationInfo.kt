@@ -412,7 +412,8 @@ class CivilizationInfo {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.destroy()
                     civMilitaryUnits -= unitToDisband
-                    addNotification("Cannot provide unit upkeep for " + unitToDisband.name + " - unit has been disbanded!".tr(), null, Color.RED)
+                    val unitName = unitToDisband.name
+                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", null, Color.RED)
                 }
             }
         }
