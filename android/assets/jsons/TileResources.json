@@ -48,7 +48,7 @@
 	{
 		"name": "Stone",
 		"resourceType": "Bonus",
-		"terrainsCanBeFoundOn": ["Plains","Desert"],
+		"terrainsCanBeFoundOn": ["Plains","Desert","Snow"],
 		"production": 1,
 		"improvement": "Quarry",
 		"improvementStats": {"production": 1},

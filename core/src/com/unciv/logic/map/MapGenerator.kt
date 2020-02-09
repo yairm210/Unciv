@@ -556,6 +556,66 @@ class MapGenerator(val ruleset: Ruleset) {
         throw Exception("Couldn't choose suitable tiles for $numberOfResources resources!")
     }
 
+    private fun raiseMountainsAndHills(tileMap: TileMap) {
+        val elevationSeed = RNG.nextInt().toDouble()
+        tileMap.setTransients(ruleset)
+        for (tile in tileMap.values) {
+            if (tile.isWater) continue
+
+            var elevation = getPerlinNoise(tile, elevationSeed)
+
+            if (elevation < 0.15) continue
+            else if (elevation < 0.35) tile.baseTerrain = Constants.hill
+            else tile.baseTerrain = Constants.mountain
+        }
+    }
+
+    /**
+     *
+     *
+     * High temperature, low humidity -> Desert
+     *
+     * Low temperature, low humidity -> Tundra
+     * Low temperature, high humidity -> Snow
+     *
+     */
+    private fun applyHumidityAndTemperature(tileMap: TileMap) {
+        val humiditySeed = RNG.nextInt().toDouble()
+        val temperatureSeed = RNG.nextInt().toDouble()
+        val vegetationSeed = RNG.nextInt().toDouble()
+
+        tileMap.setTransients(ruleset)
+
+        val maxLatitude = tileMap.values.map { abs(HexMath.getLatitude(it.position)) }.max()!!
+
+        for (tile in tileMap.values) {
+            if (tile.isWater || tile.baseTerrain in arrayOf(Constants.mountain, Constants.hill))
+                continue
+
+            val humidity = (getPerlinNoise(tile, humiditySeed, scale=3.0, nOctaves = 1) + 1.0)/2.0
+
+            val randomTemperature = (getPerlinNoise(tile, temperatureSeed) + 1.0)/2.0
+            val latitudeTemperature = 1.0 - abs(HexMath.getLatitude(tile.position)) / maxLatitude
+            val temperature = (5.0 * latitudeTemperature + randomTemperature) / 6.0
+
+            when {
+                temperature < 0.2 -> tile.baseTerrain = Constants.tundra
+                temperature < 0.8 -> {
+                    when {
+                        humidity < 0.5 -> tile.baseTerrain = Constants.plains
+                        else -> tile.baseTerrain = Constants.grassland
+                    }
+                }
+                else -> {
+                    when {
+                        humidity < 0.5 -> tile.baseTerrain = Constants.desert
+                        else -> tile.baseTerrain = Constants.plains
+                    }
+                }
+            }
+        }
+    }
+
     companion object MapLandmassGenerator {
         var RNG = Random(42)
 

@@ -68,7 +68,6 @@
 		"impassable": true,
 		"RGB": [89, 45, 0]
 	},
-	/*
 	{
 		"name": "Snow",
 		"type": "Land",
@@ -76,7 +75,6 @@
 		"defenceBonus": -0.1,
 		"RGB": [153, 255, 255]
 	},
-	*/
 	
 	// Terrain features
 	{
@@ -138,6 +136,21 @@
 		"movementCost": 1,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"]
+	},
+	{
+		"name": "Ice",
+		"type": "TerrainFeature",
+		"impassable": true,
+		"overrideStats": true,
+		"occursOn": ["Ocean", "Coast"]
+	},
+	{
+		"name": "Atoll",
+		"type": "TerrainFeature",
+		"movementCost": 1,
+		"food": 1,
+		"production": 1,
+		"occursOn": ["Ocean", "Coast"]
 	},
  
 	// Natural Wonders
