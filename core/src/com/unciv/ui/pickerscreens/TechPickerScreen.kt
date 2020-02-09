@@ -65,12 +65,18 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         // per default show current/recent technology,
         // and possibly select it to show description,
         // which is very helpful when just discovered and clicking the notification
-        val tech = if (centerOnTech != null) centerOnTech else civInfo.tech.currentTechnology()
+        val tech = centerOnTech ?: civInfo.tech.currentTechnology()
         if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
                 selectTechnology(tech, true)
             else centerOnTechnology(tech)
+        } else {
+            // center on any possible technology which is ready for the research right now
+            val firstAvailable = researchableTechs.firstOrNull()
+            val firstAvailableTech = civInfo.gameInfo.ruleSet.technologies[firstAvailable]
+            if (firstAvailableTech != null)
+                centerOnTechnology(firstAvailableTech)
         }
 
     }
