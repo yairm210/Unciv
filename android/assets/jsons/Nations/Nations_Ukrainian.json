@@ -45,8 +45,8 @@
 		"startBias": ["Coast"],
 		// preferredVictoryType:"Diplomatic",
 
-		"startIntroPart1": "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea.",
-		"startIntroPart2": "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?",
+		"startIntroPart1": "Нехай вас благославлять боги, о великий царю Олександре! Ви є правителем могутньої грецької нації. Ваш народ стільки років жив в ізольованих містах-державах, легендарних містах, таких як Афіни, Спарта, Фіви – де вони дали світові багато чудових речей, таких як демократія, філософія, трагедія, мистецтво та архітектура, сам фундамент західної цивілізації . Незважаючи на їхню малу кількість і часто вороже ставлення одне до одного, у V столітті до нашої ери вони змогли перемогти свого значно більшого сусіда Персію на суші та морі.",
+		"startIntroPart2": "Олександре, ваш народ готовий піти на війну, поширити велику грецьку культуру на мільйони і принести вам вічну славу. Чи готові ви прийняти свою долю, короле Олександре? Чи поведете ви своїх людей до триумфу і величі? Чи зможете ви побудувати цивілізацію, яка витримає випробування часом?",
 		"declaringWar": "Ти - завада на моєму шляху. Тому я мушу знищити тебе.",
 		"attacked": "Власне, я занадто втомився від миру.",
 		"defeated": "Ти якимось чином зпромігся мого знищення! Що ти за тварина така?",
