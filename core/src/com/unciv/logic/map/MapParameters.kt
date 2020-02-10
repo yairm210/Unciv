@@ -45,4 +45,15 @@ class MapParameters {
     var resourceRichness = 0.10f
     var waterProbability = 0.05f
     var landProbability = 0.55f
+
+    fun resetAdvancedSettings() {
+        tilesPerBiomeArea = 6
+        maxCoastExtension = 2
+        mountainProbability = 0.10f
+        temperatureExtremeness = 0.30f
+        terrainFeatureRichness = 0.30f
+        resourceRichness = 0.10f
+        waterProbability = 0.05f
+        landProbability = 0.55f
+    }
 }
