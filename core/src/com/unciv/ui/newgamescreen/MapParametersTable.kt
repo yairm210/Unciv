@@ -237,7 +237,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add("Land percent".toLabel()).left()
         advancedSettingsTable.add(landPercentSlider).fillX().row()
 
-        val resetToDefaultButton = TextButton("Reset to default", skin)
+        val resetToDefaultButton = TextButton("Reset to default".tr(), skin)
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
             averageHeightSlider.value = mapParameters.mountainProbability
