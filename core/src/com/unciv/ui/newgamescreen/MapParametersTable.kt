@@ -236,5 +236,19 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         landPercentSlider.value = mapParameters.landProbability
         advancedSettingsTable.add("Land percent".toLabel()).left()
         advancedSettingsTable.add(landPercentSlider).fillX().row()
+
+        val resetToDefaultButton = TextButton("Reset to default", skin)
+        resetToDefaultButton.onClick {
+            mapParameters.resetAdvancedSettings()
+            averageHeightSlider.value = mapParameters.mountainProbability
+            tempExtremeSlider.value = mapParameters.temperatureExtremeness
+            resourceRichnessSlider.value = mapParameters.resourceRichness
+            terrainFeatureRichnessSlider.value = mapParameters.terrainFeatureRichness
+            maxCoastExtensionSlider.value = mapParameters.maxCoastExtension.toFloat()
+            tilesPerBiomeAreaSlider.value = mapParameters.tilesPerBiomeArea.toFloat()
+            waterPercentSlider.value = mapParameters.waterProbability
+            landPercentSlider.value = mapParameters.landProbability
+        }
+        advancedSettingsTable.add(resetToDefaultButton).colspan(2).row()
     }
 }
