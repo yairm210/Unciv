@@ -691,7 +691,7 @@ class MapGenerator(val ruleset: Ruleset) {
             val maxLongitude = abs(tileMap.values.map { abs(HexMath.getLongitude(it.position)) }.max()!!)
             val longitudeFactor = abs(HexMath.getLongitude(tileInfo.position))/maxLongitude
 
-            return min(0.0,-1.0 + (5.0 * longitudeFactor.pow(0.7f) + randomScale) / 3.0)
+            return min(0.2,-1.0 + (5.0 * longitudeFactor.pow(0.6f) + randomScale) / 3.0)
         }
 
         private fun percentualDistanceToCenter(tileInfo: TileInfo, tileMap: TileMap): Double {
