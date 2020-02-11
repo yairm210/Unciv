@@ -301,14 +301,14 @@ class CityConstructions {
     fun hasBuildableCultureBuilding(): Boolean {
         return getBasicCultureBuildings()
                 .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-                .filter { it.isBuildable(this) || it.name == currentConstruction}
+                .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
                 .any()
     }
 
     fun addCultureBuilding(): String? {
         val buildableCultureBuildings = getBasicCultureBuildings()
                 .map { cityInfo.civInfo.getEquivalentBuilding(it.name) }
-                .filter { it.isBuildable(this) || it.name == currentConstruction }
+                .filter { it.isBuildable(this) || isBeingConstructedOrEnqueued(it.name) }
 
         if (!buildableCultureBuildings.any())
             return null
@@ -316,8 +316,10 @@ class CityConstructions {
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
         constructionComplete(getConstruction(cultureBuildingToBuild))
 
-        if (currentConstruction == cultureBuildingToBuild)
+        if (isBeingConstructed(cultureBuildingToBuild))
             cancelCurrentConstruction()
+        else if (isEnqueued(cultureBuildingToBuild))
+            removeFromQueue(cultureBuildingToBuild)
 
         return cultureBuildingToBuild
     }
@@ -351,6 +353,11 @@ class CityConstructions {
             } else
                 constructionQueue.add(constructionName)
         }
+    }
+
+    fun removeFromQueue(constructionName: String) {
+        if (constructionName in constructionQueue)
+            constructionQueue.remove(constructionName)
     }
 
     fun removeFromQueue(constructionQueueIndex: Int) {
