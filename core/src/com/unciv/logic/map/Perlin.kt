@@ -66,9 +66,9 @@ object Perlin {
         var total = 0.0
         for (i in 0 until nOctaves) {
             var value = noise(
-                    i*437.0 + x * freq / scale,
-                    i*437.0 + y * freq / scale,
-                    i*437.0 + z * freq / scale)
+                    x * freq / scale,
+                    y * freq / scale,
+                    z * freq / scale)
             value = abs(value)
             total += amp * value
             max += amp
