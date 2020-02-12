@@ -411,7 +411,7 @@
 		"requiredNearbyImprovedResources": ["Iron"],
 		"resourceBonusStats": {"production": 1},
 		"requiredTech": "Metal Casting",
-		"uniques": ["+15% production of land units"]
+		"uniques": ["+15% production of land units", "Increases production of spaceship parts by 15%"]
 	},
 	{
 		"name": "Harbor",
