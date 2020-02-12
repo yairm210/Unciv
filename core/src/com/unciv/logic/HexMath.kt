@@ -7,7 +7,7 @@ import kotlin.math.*
 object HexMath {
 
     fun getVectorForAngle(angle: Float): Vector2 {
-        return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())
+        return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
     private fun getVectorByClockHour(hour: Int): Vector2 {
