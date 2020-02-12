@@ -300,8 +300,6 @@ class CityStats {
                 stats.production += 25
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 50%"))
                 stats.production += 50
-            if (cityInfo.containsBuildingUnique("+15% production of land units")) // Forge
-                stats.production += 15
         }
 
         if (currentConstruction is BaseUnit) {
