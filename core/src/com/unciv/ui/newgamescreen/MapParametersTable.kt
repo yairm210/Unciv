@@ -62,6 +62,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             MapType.pangaea,
             MapType.continents,
             MapType.perlin,
+            MapType.archipelago,
             if (isEmptyMapAllowed) MapType.empty else null
         )
 

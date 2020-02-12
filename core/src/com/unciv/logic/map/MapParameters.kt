@@ -17,6 +17,7 @@ object MapType {
     const val pangaea = "Pangaea"
     const val continents = "Continents"
     const val perlin = "Perlin"
+    const val archipelago = "Archipelago"
 
     // Cellular automata
     const val default = "Default"
