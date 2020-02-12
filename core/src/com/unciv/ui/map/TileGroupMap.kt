@@ -4,6 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
 import com.unciv.ui.tilegroups.TileGroup
+import kotlin.math.max
+import kotlin.math.min
 
 class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Float): Group(){
     var topX = -Float.MAX_VALUE
@@ -18,10 +20,10 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
             tileGroup.setPosition(positionalVector.x * 0.8f * groupSize.toFloat(),
                     positionalVector.y * 0.8f * groupSize.toFloat())
 
-            topX = Math.max(topX, tileGroup.x + groupSize)
-            topY = Math.max(topY, tileGroup.y + groupSize)
-            bottomX = Math.min(bottomX, tileGroup.x)
-            bottomY = Math.min(bottomY, tileGroup.y)
+            topX = max(topX, tileGroup.x + groupSize)
+            topY = max(topY, tileGroup.y + groupSize)
+            bottomX = min(bottomX, tileGroup.x)
+            bottomY = min(bottomY, tileGroup.y)
         }
 
         for (group in tileGroups) {
