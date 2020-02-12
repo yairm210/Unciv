@@ -235,23 +235,23 @@ open class TileInfo {
         return stats
     }
 
+    /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
-        if (isCityCenter() || improvement.name == this.improvement) return false
-        if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
-        if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
-
         val topTerrain = getLastTerrain()
-        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true
-
-        if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
-        if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
-        if(improvement.name == "Remove Road" && this.roadStatus===RoadStatus.Road) return true
-        if(improvement.name == "Remove Railroad" && this.roadStatus===RoadStatus.Railroad) return true
-
-        if("Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile()) return true
-        if (topTerrain.unbuildable && !(topTerrain.name==Constants.forest && improvement.name=="Camp")) return false
-        return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
-
+        return when {
+            isCityCenter() -> false
+            improvement.name == this.improvement -> false
+            improvement.uniqueTo?.equals(civInfo) == false -> false
+            improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
+            improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
+            improvement.name == "Road" && roadStatus == RoadStatus.None -> true
+            improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
+            improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
+            improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
+            topTerrain.unbuildable && !(topTerrain.name == Constants.forest && improvement.name == "Camp") -> false
+            "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
+            else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
+        }
     }
 
     fun hasImprovementInProgress() = improvementInProgress!=null

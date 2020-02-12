@@ -1,3 +1,19 @@
+## 3.5.12
+
+Mongolian civ added! - by reversi
+
+By Jack Rainy:
+- Improvements to the Diplomacy overview: better spread and can select specific civs
+- Research screen centered on current tech
+
+Resolved #1859 - skip defeated players' turns in multiplayer
+
+Fixed bug where air units in transports couldn't upgrade
+
+Tied the unit upkeep scaling to game speed - by lyrjie
+
+Translation updates
+
 ## 3.5.11
 
 Rectangular maps and better map generation - by reversi

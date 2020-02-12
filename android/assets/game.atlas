@@ -781,6 +781,20 @@ ImprovementIcons/Quarry
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Railroad
+  rotate: false
+  xy: 1124, 148
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TileSets/Default/Railroad
+  rotate: false
+  xy: 1124, 148
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Road
   rotate: false
   xy: 614, 112
@@ -1686,7 +1700,7 @@ TechIcons/Radio
   index: -1
 TechIcons/Railroad
   rotate: false
-  xy: 1124, 148
+  xy: 1226, 148
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1752,6 +1766,20 @@ TileSets/Default/CityOverlay
   xy: 1940, 1190
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+TileSets/Default/CrosshatchHexagon
+  rotate: false
+  xy: 583, 1800
+  size: 273, 236
+  orig: 273, 236
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/CrosshatchHexagon
+  rotate: false
+  xy: 583, 1800
+  size: 273, 236
+  orig: 273, 236
   offset: 0, 0
   index: -1
 TileSets/Default/FalloutOverlay
@@ -1824,37 +1852,9 @@ TileSets/Default/OasisOverlay
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/Default/Railroad
-  rotate: false
-  xy: 1430, 148
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Railroad
-  rotate: false
-  xy: 1430, 148
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/CrosshatchHexagon
-  rotate: false
-  xy: 583, 1800
-  size: 273, 236
-  orig: 273, 236
-  offset: 0, 0
-  index: -1
-TileSets/Default/CrosshatchHexagon
-  rotate: false
-  xy: 583, 1800
-  size: 273, 236
-  orig: 273, 236
-  offset: 0, 0
-  index: -1
 TileSets/FantasyHex/Railroad
   rotate: false
-  xy: 1226, 148
+  xy: 1430, 148
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -3032,6 +3032,20 @@ TechIcons/Writing
   xy: 410, 310
   size: 100, 100
   orig: 100, 100
+  offset: 0, 0
+  index: -1
+TileSets/Default/road
+  rotate: false
+  xy: 614, 603
+  size: 61, 11
+  orig: 61, 11
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/road
+  rotate: false
+  xy: 614, 603
+  size: 61, 11
+  orig: 61, 11
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tiles/Academy
@@ -4677,20 +4691,6 @@ TileSets/FantasyHex/Units/Work Boats
   xy: 1028, 437
   size: 32, 26
   orig: 32, 26
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/road
-  rotate: false
-  xy: 614, 603
-  size: 61, 11
-  orig: 61, 11
-  offset: 0, 0
-  index: -1
-TileSets/Default/road
-  rotate: false
-  xy: 614, 603
-  size: 61, 11
-  orig: 61, 11
   offset: 0, 0
   index: -1
 UnitIcons/Spearman
