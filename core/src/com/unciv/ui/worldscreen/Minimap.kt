@@ -40,7 +40,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-            val groupSize = mapHolder.worldScreen.stage.height / 8f / mapHolder.tileMap.mapParameters.size.radius
+            val groupSize = mapHolder.worldScreen.stage.height / 8f / mapHolder.tileMap.mapParameters.size.radius * (mapHolder.worldScreen.stage.height / 600f)
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
