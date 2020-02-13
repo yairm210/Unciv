@@ -199,25 +199,8 @@ open class TileInfo {
         }
 
         val improvement = getTileImprovement()
-        if (improvement != null) {
-            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
-                stats.add(getTileResource().improvementStats!!) // resource-specific improvement
-            else
-                stats.add(improvement) // basic improvement
-
-            if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
-                stats.science += 1f
-            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
-                stats.gold += 1f
-            if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
-                stats.add(improvement) // again, for the double effect
-            if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
-                stats.science += 2
-
-            if(improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
-                stats.culture += neighbors.count{it.improvement=="Moai"}
-        }
+        if (improvement != null)
+            stats.add(getImprovementStats(improvement, observingCiv, city))
 
         if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))
             stats.gold += 1
@@ -231,6 +214,29 @@ open class TileInfo {
             stats.gold++
 
         if (stats.production < 0) stats.production = 0f
+
+        return stats
+    }
+
+    fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
+        val stats =
+            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
+                getTileResource().improvementStats!!.clone() // resource-specific improvement
+            else
+                improvement.clone() // basic improvement
+
+        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
+        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
+            stats.science += 1f
+        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
+            stats.gold += 1f
+        if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
+            stats.add(improvement) // again, for the double effect
+        if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
+            stats.science += 2
+
+        if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
+            stats.culture += neighbors.count { it.improvement == "Moai" }
 
         return stats
     }
