@@ -289,7 +289,7 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "National Wonder is already built"
             if (requiredBuildingInAllCities!=null
-                    && civInfo.cities.any { !it.cityConstructions
+                    && civInfo.cities.any { !it.isPuppet && !it.cityConstructions
                             .containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
