@@ -80,21 +80,6 @@ class MultiplayerScreen() : PickerScreen() {
         }
     }
 
-    fun updateAllGames(){ //TODO anderer Name?
-        thread (name = "serialGameDownload"){
-            for (gameSaveName in GameSaver().getSaves(true)) {
-                try {
-                    var game = GameSaver().loadGameByName(gameSaveName)
-                    game = OnlineMultiplayer().tryDownloadGame(game.gameId.trim())
-                    GameSaver().saveGame(game, gameSaveName, true)
-                }
-                catch (ex: Exception){
-                    continue
-                }
-            }
-        }
-    }
-
     private fun downloadMultiplayerGame(gameId: String, saveName: String){
         val errorPopup = Popup(this)
         try {
