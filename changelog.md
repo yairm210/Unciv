@@ -1,3 +1,24 @@
+## 3.5.14
+
+Resolved #1926 - fixed unique improvements
+
+Resolved #1927- changing new game parameters and exiting the new game screen doesn't change the current game's parameters
+
+Resolved #1818 - Marble bonus now displayed in Civilopedia
+
+Resolved #1918 - added missing translations
+
+Fix tile yields in city screen when in multiplayer - by reversi
+
+By Jack Rainy:
+ - Forge increases production of spaceparts
+ - Preview tile improvements
+
+
+Minimap improvements - by lishaoxia1985
+
+Translation updates
+
 ## 3.5.13
 
 Moai no longer buildable on terrain features - by lyrjie
