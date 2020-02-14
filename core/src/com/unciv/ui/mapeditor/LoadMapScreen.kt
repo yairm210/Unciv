@@ -15,7 +15,7 @@ import com.unciv.ui.utils.*
 
 class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
     var chosenMap = ""
-    val deleteMapButton = TextButton("Delete map",skin)
+    val deleteMapButton = TextButton("Delete map".tr(),skin)
 
     init {
         rightSideButton.setText("Load map".tr())

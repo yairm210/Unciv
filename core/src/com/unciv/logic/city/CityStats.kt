@@ -87,7 +87,8 @@ class CityStats {
 
         if (construction is Building
                 && construction.isWonder
-                && cityInfo.civInfo.hasResource("Marble"))
+                && cityInfo.civInfo.getCivResources()
+                        .any { it.amount > 0 && it.resource.unique == "+15% production towards Wonder construction" })
             stats.production += 15f
 
         return stats
@@ -296,6 +297,8 @@ class CityStats {
             stats.culture += 25f
 
         if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
+            if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 15%"))
+                stats.production += 15
             if (cityInfo.civInfo.containsBuildingUnique("Increases production of spaceship parts by 25%"))
                 stats.production += 25
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 50%"))

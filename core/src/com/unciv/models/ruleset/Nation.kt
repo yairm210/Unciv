@@ -101,22 +101,22 @@ class Nation : INamed {
                 .filter { it.uniqueTo == name }) {
             val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
-            textList += building.name.tr() + " - {replaces} " + originalBuilding.name.tr()
+            textList += building.name.tr() + " - "+"Replaces [${originalBuilding.name}]".tr()
             val originalBuildingStatMap = originalBuilding.toHashMap()
             for (stat in building.toHashMap())
                 if (stat.value != originalBuildingStatMap[stat.key])
-                    textList += "  " + stat.key.toString().tr() + " " + stat.value.toInt() + " vs " + originalBuildingStatMap[stat.key]!!.toInt()
+                    textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
 
             for (unique in building.uniques.filter { it !in originalBuilding.uniques })
                 textList += "  " + unique.tr()
             if (building.maintenance != originalBuilding.maintenance)
-                textList += "  {Maintenance} " + building.maintenance + " vs " + originalBuilding.maintenance
+                textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
             if (building.cost != originalBuilding.cost)
-                textList += "  {Cost} " + building.cost + " vs " + originalBuilding.cost
+                textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
             if (building.cityStrength != originalBuilding.cityStrength)
-                textList += "  {City strength} " + building.cityStrength + " vs " + originalBuilding.cityStrength
+                textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
             if (building.cityHealth != originalBuilding.cityHealth)
-                textList += "  {City health} " + building.cityHealth + " vs " + originalBuilding.cityHealth
+                textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
             textList += ""
         }
     }
@@ -126,17 +126,17 @@ class Nation : INamed {
                 .filter { it.uniqueTo == name }) {
             val originalUnit = ruleset.units[unit.replaces!!]!!
 
-            textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
+            textList += unit.name.tr() + " - "+"Replaces [${originalUnit.name}]".tr()
             if (unit.cost != originalUnit.cost)
-                textList += "  {Cost} " + unit.cost + " vs " + originalUnit.cost
+                textList += "  {Cost} " + "[${unit.cost}] vs [${originalUnit.cost}]".tr()
             if (unit.strength != originalUnit.strength)
-                textList += "  {Strength} " + unit.strength + " vs " + originalUnit.strength
+                textList += "  {Strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
             if (unit.rangedStrength != originalUnit.rangedStrength)
-                textList += "  {Ranged strength} " + unit.rangedStrength + " vs " + originalUnit.rangedStrength
+                textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
             if (unit.range != originalUnit.range)
-                textList += "  {Range} " + unit.range + " vs " + originalUnit.range
+                textList += "  {Range} " + unit.range + "[${unit.range}] vs [${originalUnit.range}]".tr()
             if (unit.movement != originalUnit.movement)
-                textList += "  {Movement} " + unit.movement + " vs " + originalUnit.movement
+                textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
             if (originalUnit.requiredResource != null && unit.requiredResource == null)
                 textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
             for (unique in unit.uniques.filterNot { it in originalUnit.uniques })

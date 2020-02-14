@@ -1,3 +1,17 @@
+## 3.5.13
+
+Moai no longer buildable on terrain features - by lyrjie
+
+Resolved #1902 - buildings requiring worked resources can be built in cities that are built on that resource
+ 
+Resolved #1841 - Legalism grants enqueued buildings - by reversi
+
+Minimap can show the whole worldscreen and display cities better - by lishaoxia1985
+
+Captured Khans now automate properly
+
+Translation updates
+
 ## 3.5.12
 
 Mongolian civ added! - by reversi
