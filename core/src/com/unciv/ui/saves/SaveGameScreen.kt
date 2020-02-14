@@ -71,7 +71,6 @@ class SaveGameScreen : PickerScreen() {
                 .sortedByDescending { GameSaver().getSave(it).lastModified() }
         for (saveGameName in saves) {
             if(saveGameName.startsWith("Autosave") && !showAutosaves) continue
-            if(saveGameName.startsWith("MultiplayerSession")) continue
             val textButton = TextButton(saveGameName, skin)
             textButton.onClick {
                 textField.text = saveGameName
