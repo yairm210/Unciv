@@ -13,17 +13,17 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
-import com.unciv.ui.utils.Popup
 import java.util.*
 import kotlin.concurrent.thread
 
 class NewGameScreen: PickerScreen(){
 
-    val newGameParameters= UncivGame.Current.gameInfo.gameParameters
+    val newGameParameters= UncivGame.Current.gameInfo.gameParameters.clone()
     val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
     val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
