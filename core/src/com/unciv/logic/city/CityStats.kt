@@ -87,7 +87,8 @@ class CityStats {
 
         if (construction is Building
                 && construction.isWonder
-                && cityInfo.civInfo.hasResource("Marble"))
+                && cityInfo.civInfo.getCivResources()
+                        .any { it.amount > 0 && it.resource.unique == "+15% production towards Wonder construction" })
             stats.production += 15f
 
         return stats
