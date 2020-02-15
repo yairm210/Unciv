@@ -128,7 +128,7 @@ class MultiplayerScreen() : PickerScreen() {
                 // we need to run it in a different thread.
                 val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
                 if (gameName == "")
-                    GameSaver().saveGame(game, "Multiplayer-Game-${game.gameId}", true)
+                    GameSaver().saveGame(game, game.gameId, true)
                 else
                     GameSaver().saveGame(game, gameName, true)
 
@@ -167,14 +167,15 @@ class MultiplayerScreen() : PickerScreen() {
             leftSideTable.clear()
             for (gameSaveName in GameSaver().getSaves(true)) {
                 try {
-                    val game = GameSaver().loadGameByName(gameSaveName, true)//TODO TRY CATCH
+                    val gameTable = Table()
+                    val game = GameSaver().loadGameByName(gameSaveName, true)
                     if (isUsersTurn(game)) {
-                        leftSideTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f)).width(50f)
+                        gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f))
                     }else{
-                        leftSideTable.add()
+                        gameTable.add()
                     }
 
-                    leftSideTable.add(TextButton(gameSaveName, skin).apply {
+                    gameTable.add(TextButton(gameSaveName, skin).apply {
                         onClick {
                             selectedGame = game
                             selectedGameName = gameSaveName
@@ -189,6 +190,7 @@ class MultiplayerScreen() : PickerScreen() {
                             descriptionLabel.setText(descriptionText)
                         }
                     }).pad(5f).row()
+                    leftSideTable.add(gameTable).row()
                 }catch (ex: Exception) {
                     //skipping one save is not fatal
                     ResponsePopup("Could not refresh!".tr(), this)
@@ -229,6 +231,13 @@ class MultiplayerScreen() : PickerScreen() {
                         continue
                     }
                 }
+                //Reset UI
+                addGameButton.setText(addGameText)
+                addGameButton.enable()
+                refreshButton.setText(refreshText)
+                refreshButton.enable()
+                unselectGame()
+                reloadGameListUI()
             }
         }catch (ex: Exception) {
             Popup(this).apply {
@@ -239,12 +248,6 @@ class MultiplayerScreen() : PickerScreen() {
             }
             return
         }
-        addGameButton.setText(addGameText)
-        addGameButton.enable()
-        refreshButton.setText(refreshText)
-        refreshButton.enable()
-        reloadGameListUI()
-        unselectGame()
     }
 
     //It doesn't really unselect the game because selectedGame cant be null
