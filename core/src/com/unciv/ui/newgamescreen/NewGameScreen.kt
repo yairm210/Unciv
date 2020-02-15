@@ -70,16 +70,15 @@ class NewGameScreen: PickerScreen(){
                     if (newGameParameters.isOnlineMultiplayer) {
                         newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                         try {
-                            //Saved as Multiplayer game to show up in the session browser
-                            GameSaver().saveGame(newGame!!, "Multiplayer-Game-${newGame!!.gameId}",true)
-                            //Save gameId to clipboard because you have to do it anyway.
-                            Gdx.app.clipboard.contents = newGame!!.gameId
-
                             OnlineMultiplayer().tryUploadGame(newGame!!)
                             GameSaver().autoSave(newGame!!){}
 
+                            //Saved as Multiplayer game to show up in the session browser
+                            GameSaver().saveGame(newGame!!, newGame!!.gameId,true)
+                            //Save gameId to clipboard because you have to do it anyway.
+                            Gdx.app.clipboard.contents = newGame!!.gameId
                             //Popup to notify the User that the gameID got copied to the clipboard
-                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 3500)
+                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
                         } catch (ex: Exception) {
                             val cantUploadNewGamePopup = Popup(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")

@@ -164,7 +164,7 @@ class MultiplayerScreen() : PickerScreen() {
 
     fun reloadGameListUI(){
         try {
-            leftSideTable.clear()
+            val leftSubTable = Table()
             for (gameSaveName in GameSaver().getSaves(true)) {
                 try {
                     val gameTable = Table()
@@ -190,13 +190,15 @@ class MultiplayerScreen() : PickerScreen() {
                             descriptionLabel.setText(descriptionText)
                         }
                     }).pad(5f).row()
-                    leftSideTable.add(gameTable).row()
+                    leftSubTable.add(gameTable).row()
                 }catch (ex: Exception) {
                     //skipping one save is not fatal
                     ResponsePopup("Could not refresh!".tr(), this)
                     continue
                 }
             }
+            leftSideTable.clear()
+            leftSideTable.add(leftSubTable)
         }catch (ex: Exception) {
             Popup(this).apply {
                 addGoodSizedLabel("Could not refresh!".tr())
@@ -212,41 +214,40 @@ class MultiplayerScreen() : PickerScreen() {
     //redownload all games to update the list
     //can maybe replaced when notification support gets introduced
     fun redownloadAllGames(){
-        addGameButton.setText("Working...".tr())
         addGameButton.disable()
         refreshButton.setText("Working...".tr())
         refreshButton.disable()
-        try {
-            //One is thread for all downloads
-            thread (name = "multiplayerGameDownload") {
-                for (gameSaveName in GameSaver().getSaves(true)){
+
+        //One thread for all downloads
+        thread (name = "multiplayerGameDownload") {
+            try {
+                for (gameSaveName in GameSaver().getSaves(true)) {
                     try {
                         var game = GameSaver().loadGameByName(gameSaveName, true)
                         game = OnlineMultiplayer().tryDownloadGame(game.gameId.trim())
                         GameSaver().saveGame(game, gameSaveName, true)
-                    }catch (ex: Exception){
+                    } catch (ex: Exception) {
                         //skipping one is not fatal
                         //Trying to use as many prev. used strings as possible
-                        ResponsePopup("Could not download game!".tr() + " $gameSaveName",this)
+                        ResponsePopup("Could not download game!".tr() + " $gameSaveName", this)
                         continue
                     }
                 }
-                //Reset UI
-                addGameButton.setText(addGameText)
-                addGameButton.enable()
-                refreshButton.setText(refreshText)
-                refreshButton.enable()
-                unselectGame()
-                reloadGameListUI()
+            } catch (ex: Exception) {
+                Popup(this).apply {
+                    addGoodSizedLabel("Could not download game!".tr())
+                    row()
+                    addCloseButton()
+                    open()
+                }
             }
-        }catch (ex: Exception) {
-            Popup(this).apply {
-                addGoodSizedLabel("Could not download game!".tr())
-                row()
-                addCloseButton()
-                open()
-            }
-            return
+
+            //Reset UI
+            addGameButton.enable()
+            refreshButton.setText(refreshText)
+            refreshButton.enable()
+            unselectGame()
+            reloadGameListUI()
         }
     }
 
