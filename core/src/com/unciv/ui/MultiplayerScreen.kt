@@ -108,6 +108,7 @@ class MultiplayerScreen() : PickerScreen() {
         }
     }
 
+    //Adds a new Multiplayer game to the List
     fun addMultiplayerGame(gameId: String, gameName: String = ""){
         val errorPopup = Popup(this)
         try {
@@ -159,9 +160,9 @@ class MultiplayerScreen() : PickerScreen() {
             }
             return
         }
-
     }
 
+    //reloads all gameFiles to refresh UI
     fun reloadGameListUI(){
         try {
             val leftSubTable = Table()
@@ -175,6 +176,8 @@ class MultiplayerScreen() : PickerScreen() {
                         gameTable.add()
                     }
 
+                    //GameSaver().getSave() has to be outside of apply to be catched
+                    val lastModifiedMillis = GameSaver().getSave(gameSaveName, true).lastModified()
                     gameTable.add(TextButton(gameSaveName, skin).apply {
                         onClick {
                             selectedGame = game
@@ -184,12 +187,13 @@ class MultiplayerScreen() : PickerScreen() {
                             rightSideButton.enable()
 
                             //get Minutes since last modified
-                            val lastSavedMinutesAgo = (System.currentTimeMillis() - GameSaver().getSave(gameSaveName, true).lastModified()) / 60000
+                            val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
                             var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
                             descriptionText += "Current Turn:".tr() + " ${selectedGame.currentPlayer}\r\n"
                             descriptionLabel.setText(descriptionText)
                         }
                     }).pad(5f).row()
+
                     leftSubTable.add(gameTable).row()
                 }catch (ex: Exception) {
                     //skipping one save is not fatal
@@ -208,7 +212,6 @@ class MultiplayerScreen() : PickerScreen() {
             }
             return
         }
-
     }
 
     //redownload all games to update the list
