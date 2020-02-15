@@ -1,6 +1,7 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameInfo
@@ -18,14 +19,14 @@ class MultiplayerScreen() : PickerScreen() {
     private lateinit var selectedGameName: String
     private val rightSideTable = Table()
     private val leftSideTable = Table()
-    private var sessionCount = 1
 
-    private val editButtonText = "Edit Session Info".tr()
-    private val addSessionText = "Add Multiplayer Session".tr()
+    private val editButtonText = "Edit Game Info".tr()
+    private val addGameText = "Add Multiplayer Game".tr()
 
     private val editButton = TextButton(editButtonText, skin).apply { disable() }
-    private val addSessionButton = TextButton(addSessionText, skin)
+    private val addGameButton = TextButton(addGameText, skin)
     private val copyGameIdButton = TextButton("Copy Game ID".tr(), skin).apply { disable() }
+    private val copyUserIdButton = TextButton("Copy User ID".tr(), skin)
 
     init {
         setDefaultCloseAction()
@@ -45,33 +46,35 @@ class MultiplayerScreen() : PickerScreen() {
 
         //rightTable Setup
         rightSideTable.add(
-                TextButton("Copy User ID".tr(), skin).onClick {
+                copyUserIdButton.onClick {
                     Gdx.app.clipboard.contents = UncivGame.Current.settings.userId
-                    ResponsePopup("userID copied", this)
+                    ResponsePopup("userID copied to clipboard".tr(), this)
                 }
         ).pad(10f).row()
 
         rightSideTable.add(
                 copyGameIdButton.onClick {
                     Gdx.app.clipboard.contents = selectedGame.gameId
-                    ResponsePopup("gameID copied", this)
+                    ResponsePopup("gameID copied to clipboard".tr(), this)
                 }
         ).pad(10f).row()
 
         rightSideTable.add(
                 editButton.onClick {
-                    UncivGame.Current.setScreen(EditSessionScreen(selectedGame, selectedGameName, this))
+                    UncivGame.Current.setScreen(EditMultiplayerGameInfoScreen(selectedGame, selectedGameName, this))
+                    //game must be unselected in case the game gets deleted inside the EditScreen
+                    unselectGame()
                 }
         ).pad(10f).row()
 
         rightSideTable.add(
-                addSessionButton.onClick {
-                    downloadMultiplayerGame(Gdx.app.clipboard.contents, "Multiplayer-Game-$sessionCount")
+                addGameButton.onClick {
+                    addMultiplayerGame(Gdx.app.clipboard.contents)
                 }
         ).pad(10f).row()
 
-        //LeftTable Setup
-        reloadSessionListUI()
+        //leftTable Setup
+        reloadGameListUI()
 
         //RightSideButton Setup
         rightSideButton.setText("Join Game".tr())
@@ -80,9 +83,10 @@ class MultiplayerScreen() : PickerScreen() {
         }
     }
 
-    private fun downloadMultiplayerGame(gameId: String, saveName: String){
+    fun addMultiplayerGame(gameId: String, gameName: String = ""){
         val errorPopup = Popup(this)
         try {
+            //since the gameId is a String it can contain anything and has to be checked
             UUID.fromString(gameId.trim())
         } catch (ex: Exception) {
             errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
@@ -92,47 +96,48 @@ class MultiplayerScreen() : PickerScreen() {
             return
         }
         thread(name="MultiplayerDownload") {
+            addGameButton.setText("Working...".tr())
+            addGameButton.disable()
             try {
-                addSessionButton.setText("Working...".tr())//TODO Shouldnt be here
-                addSessionButton.disable()
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
                 val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
-                GameSaver().saveGame(game, saveName, true)
+                if (gameName == "")
+                    GameSaver().saveGame(game, "Multiplayer-Game-${game.gameId}", true)
+                else
+                    GameSaver().saveGame(game, gameName, true)
 
-                reloadSessionListUI()
-                addSessionButton.setText(addSessionText)
-                addSessionButton.enable()
+                reloadGameListUI()
+
             } catch (ex: Exception) {
-                    errorPopup.addGoodSizedLabel("Could not download game!".tr())
-                    errorPopup.row()
-                    errorPopup.addCloseButton()
-                    errorPopup.open()
-
-                    addSessionButton.setText(addSessionText)
-                    addSessionButton.enable()
+                errorPopup.addGoodSizedLabel("Could not download game!".tr())
+                errorPopup.row()
+                errorPopup.addCloseButton()
+                errorPopup.open()
             }
+            addGameButton.setText(addGameText)
+            addGameButton.enable()
         }
     }
 
+    //just loads the game from savefile
+    //the game will be downloaded opon joining it anyway
     private fun joinMultiplaerGame(){
         val errorPopup = Popup(this)
-        val gameId = selectedGame.gameId
         try {
-            UUID.fromString(gameId.trim())
+            UncivGame.Current.loadGame(selectedGame)
         } catch (ex: Exception) {
-            errorPopup.addGoodSizedLabel("Invalid game ID!".tr())//TODO closebutton should be in next row
+            errorPopup.addGoodSizedLabel("Could not download game!".tr())
             errorPopup.row()
             errorPopup.addCloseButton()
             errorPopup.open()
             return
         }
-        UncivGame.Current.loadGame(selectedGame)
+
     }
 
-    fun reloadSessionListUI(){
+    fun reloadGameListUI(){
         leftSideTable.clear()
-        sessionCount = 1
         for (gameSaveName in GameSaver().getSaves(true)) {
             leftSideTable.add(TextButton(gameSaveName, skin).apply {
                 onClick {
@@ -142,7 +147,6 @@ class MultiplayerScreen() : PickerScreen() {
                     editButton.enable()
                     rightSideButton.enable()
 
-                    //TODO ADD SESSION INFO
                     //get Minutes since last modified
                     var lastSavedMinutesAgo = (System.currentTimeMillis() - GameSaver().getSave(gameSaveName, true).lastModified()) / 60000
                     var descriptionText = "Last Game State Updated: $lastSavedMinutesAgo minutes ago \r\n"
@@ -150,22 +154,45 @@ class MultiplayerScreen() : PickerScreen() {
                     descriptionLabel.setText(descriptionText)
                 }
             }).pad(5f).row()
-            sessionCount++
         }
+    }
+
+    //It doesn't really unselect the game because selectedGame cant be null
+    //It just disables everything a selected game has set
+    private fun unselectGame(){
+        editButton.disable()
+        copyGameIdButton.disable()
+        rightSideButton.disable()
+        descriptionLabel.setText("")
     }
 }
 
-class EditSessionScreen(game: GameInfo, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
+//Subscreen of MultiplayerScreen to edit and delete saves
+//backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again
+class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
     init {
         var textField = TextField(gameName, skin)
 
         topTable.add(Label("Rename".tr(), skin)).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(backScreen.stage.width/2).row()
 
+        //TODO Change delete to "give up"
+            //->turn a player into an AI so everyone can still play without the user
+                //->should only be possible on the users turn because it has to be uploaded afterwards
         topTable.add(
-                TextButton("Delete", skin).onClick {
-
-                }
+                TextButton("Delete save".tr(), skin).onClick {
+                    var askPopup = Popup(this)
+                    askPopup.addGoodSizedLabel("Are you sure you want to delete this Game?").row()
+                    askPopup.addButton("Yes".tr()){
+                        GameSaver().deleteSave(gameName, true)
+                        UncivGame.Current.setScreen(backScreen)
+                        backScreen.reloadGameListUI()
+                    }
+                    askPopup.addButton("No".tr()){
+                        askPopup.close()
+                    }
+                    askPopup.open()
+                }.apply { color = Color.RED }
         )
 
         //CloseButton Setup
@@ -179,9 +206,11 @@ class EditSessionScreen(game: GameInfo, gameName: String, backScreen: Multiplaye
         rightSideButton.enable()
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
-            GameSaver().saveGame(game, textField.text, true)
+            //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
+            backScreen.addMultiplayerGame(game.gameId, textField.text)
+            GameSaver().deleteSave(gameName, true)
             UncivGame.Current.setScreen(backScreen)
-            backScreen.reloadSessionListUI()
+            backScreen.reloadGameListUI()
         }
     }
 }
