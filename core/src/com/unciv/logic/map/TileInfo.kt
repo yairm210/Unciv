@@ -247,7 +247,7 @@ open class TileInfo {
         return when {
             isCityCenter() -> false
             improvement.name == this.improvement -> false
-            improvement.uniqueTo?.let { it == civInfo.civName } == false -> false
+            improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
