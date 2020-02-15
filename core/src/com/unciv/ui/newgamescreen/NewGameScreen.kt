@@ -13,11 +13,8 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
-import com.unciv.ui.utils.Popup
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -73,8 +70,16 @@ class NewGameScreen: PickerScreen(){
                     if (newGameParameters.isOnlineMultiplayer) {
                         newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                         try {
+                            //Saved as Multiplayer game to show up in the session browser
+                            GameSaver().saveGame(newGame!!, "Multiplayer-Game-${newGame!!.gameId}",true)
+                            //Save gameId to clipboard because you have to do it anyway.
+                            Gdx.app.clipboard.contents = newGame!!.gameId
+
                             OnlineMultiplayer().tryUploadGame(newGame!!)
                             GameSaver().autoSave(newGame!!){}
+
+                            //Popup to notify the User that the gameID got copied to the clipboard
+                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 3500)
                         } catch (ex: Exception) {
                             val cantUploadNewGamePopup = Popup(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
