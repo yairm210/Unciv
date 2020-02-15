@@ -279,6 +279,7 @@ class CivilizationInfo {
     /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
     fun isDefeated()= cities.isEmpty()
             && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
+            && !isBarbarian() // Barbarians can be never defeated
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): TechEra {
