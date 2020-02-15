@@ -22,11 +22,15 @@ class MultiplayerScreen() : PickerScreen() {
 
     private val editButtonText = "Edit Game Info".tr()
     private val addGameText = "Add Multiplayer Game".tr()
+    private val copyGameIdText = "Copy Game ID".tr()
+    private val copyUserIdText = "Copy User ID".tr()
+    private val refreshText = "Refresh List".tr()
 
     private val editButton = TextButton(editButtonText, skin).apply { disable() }
     private val addGameButton = TextButton(addGameText, skin)
-    private val copyGameIdButton = TextButton("Copy Game ID".tr(), skin).apply { disable() }
-    private val copyUserIdButton = TextButton("Copy User ID".tr(), skin)
+    private val copyGameIdButton = TextButton(copyGameIdText, skin).apply { disable() }
+    private val copyUserIdButton = TextButton(copyUserIdText, skin)
+    private val refreshButton = TextButton(refreshText, skin)
 
     init {
         setDefaultCloseAction()
@@ -34,6 +38,21 @@ class MultiplayerScreen() : PickerScreen() {
         //Help Button Setup
         val tab = Table()
         val helpButton = TextButton("?", skin)
+        helpButton.onClick {
+            val helpPopup = Popup(this)
+            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.".tr()).row()
+            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.".tr()).row()
+            helpPopup.addGoodSizedLabel("").row()
+
+            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.".tr()).row()
+            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add Multiplayer Game' button".tr()).row()
+            helpPopup.addGoodSizedLabel("").row()
+
+            helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn".tr()).row()
+
+            helpPopup.addCloseButton()
+            helpPopup.open()
+        }
         tab.add(helpButton)
         tab.x = (stage.width - helpButton.width)
         tab.y = (stage.height - helpButton.height)
@@ -48,14 +67,14 @@ class MultiplayerScreen() : PickerScreen() {
         rightSideTable.add(
                 copyUserIdButton.onClick {
                     Gdx.app.clipboard.contents = UncivGame.Current.settings.userId
-                    ResponsePopup("userID copied to clipboard".tr(), this)
+                    ResponsePopup("UserID copied to clipboard".tr(), this)
                 }
-        ).pad(10f).row()
+        ).pad(10f).padBottom(30f).row()
 
         rightSideTable.add(
                 copyGameIdButton.onClick {
                     Gdx.app.clipboard.contents = selectedGame.gameId
-                    ResponsePopup("gameID copied to clipboard".tr(), this)
+                    ResponsePopup("GameID copied to clipboard".tr(), this)
                 }
         ).pad(10f).row()
 
@@ -70,6 +89,12 @@ class MultiplayerScreen() : PickerScreen() {
         rightSideTable.add(
                 addGameButton.onClick {
                     addMultiplayerGame(Gdx.app.clipboard.contents)
+                }
+        ).pad(10f).padBottom(30f).row()
+
+        rightSideTable.add(
+                refreshButton.onClick {
+                    redownloadAllGames()
                 }
         ).pad(10f).row()
 
@@ -123,38 +148,103 @@ class MultiplayerScreen() : PickerScreen() {
     //just loads the game from savefile
     //the game will be downloaded opon joining it anyway
     private fun joinMultiplaerGame(){
-        val errorPopup = Popup(this)
         try {
             UncivGame.Current.loadGame(selectedGame)
         } catch (ex: Exception) {
-            errorPopup.addGoodSizedLabel("Could not download game!".tr())
-            errorPopup.row()
-            errorPopup.addCloseButton()
-            errorPopup.open()
+            Popup(this).apply {
+                addGoodSizedLabel("Could not download game!".tr())
+                row()
+                addCloseButton()
+                open()
+            }
             return
         }
 
     }
 
     fun reloadGameListUI(){
-        leftSideTable.clear()
-        for (gameSaveName in GameSaver().getSaves(true)) {
-            leftSideTable.add(TextButton(gameSaveName, skin).apply {
-                onClick {
-                    selectedGame = GameSaver().loadGameByName(gameSaveName, true)
-                    selectedGameName = gameSaveName
-                    copyGameIdButton.enable()
-                    editButton.enable()
-                    rightSideButton.enable()
+        try {
+            leftSideTable.clear()
+            for (gameSaveName in GameSaver().getSaves(true)) {
+                try {
+                    val game = GameSaver().loadGameByName(gameSaveName, true)//TODO TRY CATCH
+                    if (isUsersTurn(game)) {
+                        leftSideTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f)).width(50f)
+                    }else{
+                        leftSideTable.add()
+                    }
 
-                    //get Minutes since last modified
-                    var lastSavedMinutesAgo = (System.currentTimeMillis() - GameSaver().getSave(gameSaveName, true).lastModified()) / 60000
-                    var descriptionText = "Last Game State Updated: $lastSavedMinutesAgo minutes ago \r\n"
-                    descriptionText += "Current Turn: " + selectedGame.currentPlayer + "\r\n"
-                    descriptionLabel.setText(descriptionText)
+                    leftSideTable.add(TextButton(gameSaveName, skin).apply {
+                        onClick {
+                            selectedGame = game
+                            selectedGameName = gameSaveName
+                            copyGameIdButton.enable()
+                            editButton.enable()
+                            rightSideButton.enable()
+
+                            //get Minutes since last modified
+                            val lastSavedMinutesAgo = (System.currentTimeMillis() - GameSaver().getSave(gameSaveName, true).lastModified()) / 60000
+                            var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
+                            descriptionText += "Current Turn:".tr() + " ${selectedGame.currentPlayer}\r\n"
+                            descriptionLabel.setText(descriptionText)
+                        }
+                    }).pad(5f).row()
+                }catch (ex: Exception) {
+                    //skipping one save is not fatal
+                    ResponsePopup("Could not refresh!".tr(), this)
+                    continue
                 }
-            }).pad(5f).row()
+            }
+        }catch (ex: Exception) {
+            Popup(this).apply {
+                addGoodSizedLabel("Could not refresh!".tr())
+                row()
+                addCloseButton()
+                open()
+            }
+            return
         }
+
+    }
+
+    //redownload all games to update the list
+    //can maybe replaced when notification support gets introduced
+    fun redownloadAllGames(){
+        addGameButton.setText("Working...".tr())
+        addGameButton.disable()
+        refreshButton.setText("Working...".tr())
+        refreshButton.disable()
+        try {
+            //One is thread for all downloads
+            thread (name = "multiplayerGameDownload") {
+                for (gameSaveName in GameSaver().getSaves(true)){
+                    try {
+                        var game = GameSaver().loadGameByName(gameSaveName, true)
+                        game = OnlineMultiplayer().tryDownloadGame(game.gameId.trim())
+                        GameSaver().saveGame(game, gameSaveName, true)
+                    }catch (ex: Exception){
+                        //skipping one is not fatal
+                        //Trying to use as many prev. used strings as possible
+                        ResponsePopup("Could not download game!".tr() + " $gameSaveName",this)
+                        continue
+                    }
+                }
+            }
+        }catch (ex: Exception) {
+            Popup(this).apply {
+                addGoodSizedLabel("Could not download game!".tr())
+                row()
+                addCloseButton()
+                open()
+            }
+            return
+        }
+        addGameButton.setText(addGameText)
+        addGameButton.enable()
+        refreshButton.setText(refreshText)
+        refreshButton.enable()
+        reloadGameListUI()
+        unselectGame()
     }
 
     //It doesn't really unselect the game because selectedGame cant be null
@@ -164,6 +254,13 @@ class MultiplayerScreen() : PickerScreen() {
         copyGameIdButton.disable()
         rightSideButton.disable()
         descriptionLabel.setText("")
+    }
+
+    //check if its the users turn
+    private fun isUsersTurn(game: GameInfo) : Boolean{
+        if (game.currentPlayerCiv.playerId == UncivGame.Current.settings.userId)
+            return true
+        return false
     }
 }
 
@@ -182,11 +279,16 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         topTable.add(
                 TextButton("Delete save".tr(), skin).onClick {
                     var askPopup = Popup(this)
-                    askPopup.addGoodSizedLabel("Are you sure you want to delete this Game?").row()
+                    askPopup.addGoodSizedLabel("Are you sure you want to delete this map?".tr()).row()
                     askPopup.addButton("Yes".tr()){
-                        GameSaver().deleteSave(gameName, true)
-                        UncivGame.Current.setScreen(backScreen)
-                        backScreen.reloadGameListUI()
+                        try {
+                            GameSaver().deleteSave(gameName, true)
+                            UncivGame.Current.setScreen(backScreen)
+                            backScreen.reloadGameListUI()
+                        }catch (ex: Exception) {
+                            askPopup.close()
+                            ResponsePopup("Could not delete game!".tr(), this)
+                        }
                     }
                     askPopup.addButton("No".tr()){
                         askPopup.close()
@@ -207,10 +309,19 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
-            backScreen.addMultiplayerGame(game.gameId, textField.text)
-            GameSaver().deleteSave(gameName, true)
-            UncivGame.Current.setScreen(backScreen)
-            backScreen.reloadGameListUI()
+            try {
+                backScreen.addMultiplayerGame(game.gameId, textField.text)
+                GameSaver().deleteSave(gameName, true)
+                UncivGame.Current.setScreen(backScreen)
+                backScreen.reloadGameListUI()
+            }catch (ex: Exception) {
+                Popup(this).apply {
+                    addGoodSizedLabel("Could not save game!".tr())
+                    row()
+                    addCloseButton()
+                    open()
+                }
+            }
         }
     }
 }
