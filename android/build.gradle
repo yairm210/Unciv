@@ -27,6 +27,11 @@ android {
         archivesBaseName = "Unciv"
     }
 
+    // necessary for Android Work lib
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
+
     // Had to add this crap for Travis to build, it wanted to sign the app
     // but couldn't create the debug keystore for some reason
 
@@ -45,7 +50,7 @@ android {
             aaptOptions {
                 ignoreAssetsPattern "!SaveFiles:!fonts:!maps:!music:!mods"
             }
-        
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -116,6 +121,11 @@ task run(type: Exec) {
     commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.unciv.app/AndroidLauncher'
 }
 
+dependencies {
+    implementation 'androidx.core:core:1.2.0'
+    implementation "androidx.work:work-runtime-ktx:2.3.1"
+}
+
 // sets up the Android Eclipse project, using the old Ant based build.
 eclipse {
     // need to specify Java source sets explicitly, SpringSource Gradle Eclipse plugin
@@ -132,8 +142,8 @@ eclipse {
     }
 
     classpath {
-        plusConfigurations += [ project.configurations.compile ]        
-        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'       
+        plusConfigurations += [ project.configurations.compile ]
+        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'
     }
 
     project {
@@ -151,7 +161,7 @@ eclipse {
 idea {
     module {
         sourceDirs += file("src")
-        scopes = [ COMPILE: [plus:[project.configurations.compile]]]        
+        scopes = [ COMPILE: [plus:[project.configurations.compile]]]
 
         iml {
             withXml {

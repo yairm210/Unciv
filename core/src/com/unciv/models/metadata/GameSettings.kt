@@ -26,6 +26,8 @@ class GameSettings {
     var nuclearWeaponEnabled = false
     var continuousRendering = true
     var userId = ""
+    var multiplayerTurnCheckerEnabled = true
+    var multiplayerTurnCheckerDelayInMinutes = 5L
 
     fun save(){
         GameSaver().setGeneralSettings(this)

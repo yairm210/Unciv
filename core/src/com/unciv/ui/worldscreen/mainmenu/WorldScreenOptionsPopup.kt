@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.mainmenu
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -89,7 +90,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
             update()
         }
 
-        innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).row()
+        innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
 
 
         innerTable.add("Check for idle units".toLabel())
@@ -125,14 +126,27 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         addAutosaveTurnsSelectBox(innerTable)
 
-        innerTable.add("Other options".toLabel(fontSize = 24)).colspan(2).row()
+        // at the moment the notification service only exists on Android
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            innerTable.add("Multiplayer options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
+
+            innerTable.add("Enable out-of-game turn notifications".toLabel())
+            addButton(innerTable, if (settings.multiplayerTurnCheckerEnabled) "Yes".tr() else "No".tr()) {
+                settings.multiplayerTurnCheckerEnabled = !settings.multiplayerTurnCheckerEnabled
+                update()
+            }
+
+            addMultiplayerTurnCheckerDelayBox(innerTable)
+        }
+
+        innerTable.add("Other options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
 
 
         addSoundEffectsVolumeSlider(innerTable)
         addMusicVolumeSlider(innerTable)
 
-        innerTable.add("Version".toLabel())
-        innerTable.add(UncivGame.Current.version.toLabel()).row()
+        innerTable.add("Version".toLabel()).pad(10f)
+        innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
 
 
         val scrollPane = ScrollPane(innerTable, skin)
@@ -167,7 +181,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 Sounds.play(UncivSound.Click)
             }
         })
-        innerTable.add(soundEffectsVolumeSlider).row()
+        innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
     }
 
     private fun addMusicVolumeSlider(innerTable: Table) {
@@ -184,7 +198,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                     UncivGame.Current.music?.volume = 0.4f * musicVolumeSlider.value
                 }
             })
-            innerTable.add(musicVolumeSlider).row()
+            innerTable.add(musicVolumeSlider).pad(10f).row()
         }
         else{
             val downloadMusicButton = TextButton("Download music".tr(),CameraStageBaseScreen.skin)
@@ -270,6 +284,26 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         autosaveTurnsSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UncivGame.Current.settings.turnsBetweenAutosaves= autosaveTurnsSelectBox.selected
+                UncivGame.Current.settings.save()
+                update()
+            }
+        })
+    }
+
+    private fun addMultiplayerTurnCheckerDelayBox(innerTable: Table) {
+        innerTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
+
+        val checkDelaySelectBox = SelectBox<Long>(skin)
+        val possibleDelaysArray = Array<Long>()
+        possibleDelaysArray.addAll(1L, 2L, 5L, 15L)
+        checkDelaySelectBox.items = possibleDelaysArray
+        checkDelaySelectBox.selected = UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes
+
+        innerTable.add(checkDelaySelectBox).pad(10f).row()
+
+        checkDelaySelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
                 UncivGame.Current.settings.save()
                 update()
             }
