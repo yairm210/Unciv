@@ -334,17 +334,24 @@ object Battle {
                 destroyIfDefeated(city.civInfo,attackingCiv)
             }
 
+            fun declareWar(civSuffered: CivilizationInfo) {
+                if (civSuffered != attackingCiv
+                        && civSuffered.knows(attackingCiv)
+                        && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
+                    civSuffered.getDiplomacyManager(attackingCiv).declareWar()
+                }
+            }
+
             for(unit in tile.getUnits()){
                 unit.destroy()
                 postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
-                if(unit.civInfo!=attackingCiv
-                        && unit.civInfo.knows(attackingCiv)
-                        && unit.civInfo.getDiplomacyManager(attackingCiv).canDeclareWar()){
-                    unit.civInfo.getDiplomacyManager(attackingCiv).declareWar()
-                }
-
+                declareWar(unit.civInfo)
                 destroyIfDefeated(unit.civInfo, attackingCiv)
             }
+
+            // this tile belongs to some civilization who is not happy of nuking it
+            if (city != null)
+                declareWar(city.civInfo)
 
             tile.improvement = null
             tile.improvementInProgress = null
