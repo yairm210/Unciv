@@ -34,6 +34,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
             val inputData = workDataOf(WORK_DATA_GAME_ID to gameId, WORK_DATA_FAIL_COUNT_INT to failCount)
 
             val constraints = Constraints.Builder()
+                    // If no internet is available, worker waits before becoming active.
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .build()
 
@@ -75,6 +76,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
             }
         }
 
+        /**
+         * The persistent notification is purely for informational reasons.
+         * It is not technically necessary for the Worker, since it is not a Service.
+         */
         fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: String) {
             val pendingIntent: PendingIntent =
                     Intent(appContext, AndroidLauncher::class.java).let { notificationIntent ->
@@ -160,7 +165,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
                 }
                 return Result.failure()
             } else {
-                enqueue(applicationContext, failCount, delayInMinutes, gameId)
+                // If check fails, retry in one minute.
+                // Makes sense, since checks only happen if Internet is available in principle.
+                // Therefore a failure means either a problem with the GameInfo or with Dropbox.
+                enqueue(applicationContext, failCount, 1, gameId)
                 updatePersistentNotification()
             }
         }
