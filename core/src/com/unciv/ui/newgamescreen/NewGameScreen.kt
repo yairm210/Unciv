@@ -29,11 +29,12 @@ class NewGameScreen: PickerScreen(){
 
     init {
         setDefaultCloseAction()
+        scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
         val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
         topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
-        topTable.add(playerPickerTable).pad(10f)
+        topTable.add(playerPickerTable).height(topTable.parent.height)
         topTable.pack()
         topTable.setFillParent(true)
 
