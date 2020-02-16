@@ -17,6 +17,7 @@ class MultiplayerScreen() : PickerScreen() {
 
     private lateinit var selectedGame: GameInfo
     private lateinit var selectedGameName: String
+    private var multiplayerGameList = mutableMapOf<String, String>()
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
@@ -59,9 +60,37 @@ class MultiplayerScreen() : PickerScreen() {
         stage.addActor(tab)
 
         //TopTable Setup
-        topTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).height(stage.height*2/3)
-        topTable.add(rightSideTable)
+        //Have to put it into a seperate Table to be able to add another copyGameID button
+        val mainTable = Table()
+        mainTable.add(ScrollPane(leftSideTable).apply { setScrollingDisabled(true, false) }).height(stage.height*2/3)
+        mainTable.add(rightSideTable)
+        topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
+
+        //leftTable Setup
+        reloadGameListUI()
+
+        //Button to add currently running game to list if not yet done
+        val currentlyRunningGame = UncivGame.Current.gameInfo
+        if (currentlyRunningGame.gameParameters.isOnlineMultiplayer && !gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId)) {
+            topTable.add(
+                    TextButton("Add Currently Running Game", skin).onClick {
+                        if (!gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId)){
+                            try {
+                                GameSaver().saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
+                                reloadGameListUI()
+                            } catch (ex: Exception) {
+                                Popup(this).apply {
+                                    addGoodSizedLabel("Could not save game!".tr())
+                                    row()
+                                    addCloseButton()
+                                    open()
+                                }
+                            }
+                        }
+                    }
+            )
+        }
 
         //rightTable Setup
         rightSideTable.add(
@@ -98,9 +127,6 @@ class MultiplayerScreen() : PickerScreen() {
                 }
         ).pad(10f).row()
 
-        //leftTable Setup
-        reloadGameListUI()
-
         //RightSideButton Setup
         rightSideButton.setText("Join Game".tr())
         rightSideButton.onClick {
@@ -110,15 +136,20 @@ class MultiplayerScreen() : PickerScreen() {
 
     //Adds a new Multiplayer game to the List
     fun addMultiplayerGame(gameId: String, gameName: String = ""){
-        val errorPopup = Popup(this)
+        if (gameIsAlreadySavedAsMultiplayer(gameId)) {
+            ResponsePopup("Game is already added".tr(), this)
+            return
+        }
         try {
             //since the gameId is a String it can contain anything and has to be checked
             UUID.fromString(gameId.trim())
         } catch (ex: Exception) {
-            errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
-            errorPopup.row()
-            errorPopup.addCloseButton()
-            errorPopup.open()
+            Popup(this).apply {
+                addGoodSizedLabel("Invalid game ID!".tr())
+                row()
+                addCloseButton()
+                open()
+            }
             return
         }
         thread(name="MultiplayerDownload") {
@@ -134,12 +165,13 @@ class MultiplayerScreen() : PickerScreen() {
                     GameSaver().saveGame(game, gameName, true)
 
                 reloadGameListUI()
-
             } catch (ex: Exception) {
-                errorPopup.addGoodSizedLabel("Could not download game!".tr())
-                errorPopup.row()
-                errorPopup.addCloseButton()
-                errorPopup.open()
+                Popup(this).apply {
+                    addGoodSizedLabel("Could not download game!".tr())
+                    row()
+                    addCloseButton()
+                    open()
+                }
             }
             addGameButton.setText(addGameText)
             addGameButton.enable()
@@ -162,22 +194,33 @@ class MultiplayerScreen() : PickerScreen() {
         }
     }
 
+    private fun gameIsAlreadySavedAsMultiplayer(gameId: String) : Boolean{
+        return multiplayerGameList.containsKey(gameId)
+    }
+
     //reloads all gameFiles to refresh UI
     fun reloadGameListUI(){
         try {
             val leftSubTable = Table()
-            for (gameSaveName in GameSaver().getSaves(true)) {
+            val gameSaver = GameSaver()
+
+            for (gameSaveName in gameSaver.getSaves(true)) {
                 try {
                     val gameTable = Table()
-                    val game = GameSaver().loadGameByName(gameSaveName, true)
+                    val game = gameSaver.loadGameByName(gameSaveName, true)
+
+                    //Add games to list so saves don't have to be loaded as Files so often
+                    if (!gameIsAlreadySavedAsMultiplayer(game.gameId))
+                        multiplayerGameList.put(game.gameId, gameSaveName)
+
                     if (isUsersTurn(game)) {
-                        gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f))
+                        gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 45f))
                     }else{
                         gameTable.add()
                     }
 
-                    //GameSaver().getSave() has to be outside of apply to be catched
-                    val lastModifiedMillis = GameSaver().getSave(gameSaveName, true).lastModified()
+                    //gameSaver.getSave() has to be outside of apply to be catched
+                    val lastModifiedMillis = gameSaver.getSave(gameSaveName, true).lastModified()
                     gameTable.add(TextButton(gameSaveName, skin).apply {
                         onClick {
                             selectedGame = game
@@ -216,32 +259,22 @@ class MultiplayerScreen() : PickerScreen() {
 
     //redownload all games to update the list
     //can maybe replaced when notification support gets introduced
-    fun redownloadAllGames(){
+    private fun redownloadAllGames(){
         addGameButton.disable()
         refreshButton.setText("Working...".tr())
         refreshButton.disable()
 
         //One thread for all downloads
         thread (name = "multiplayerGameDownload") {
-            try {
-                for (gameSaveName in GameSaver().getSaves(true)) {
-                    try {
-                        var game = GameSaver().loadGameByName(gameSaveName, true)
-                        game = OnlineMultiplayer().tryDownloadGame(game.gameId.trim())
-                        GameSaver().saveGame(game, gameSaveName, true)
-                    } catch (ex: Exception) {
-                        //skipping one is not fatal
-                        //Trying to use as many prev. used strings as possible
-                        ResponsePopup("Could not download game!".tr() + " $gameSaveName", this)
-                        continue
-                    }
-                }
-            } catch (ex: Exception) {
-                Popup(this).apply {
-                    addGoodSizedLabel("Could not download game!".tr())
-                    row()
-                    addCloseButton()
-                    open()
+            for (gameId in multiplayerGameList.keys) {
+                try {
+                    val game = OnlineMultiplayer().tryDownloadGame(gameId)
+                    GameSaver().saveGame(game, multiplayerGameList.getValue(gameId), true)
+                } catch (ex: Exception) {
+                    //skipping one is not fatal
+                    //Trying to use as many prev. used strings as possible
+                    ResponsePopup("Could not download game!".tr() + " ${multiplayerGameList.getValue(gameId)}", this)
+                    continue
                 }
             }
 
@@ -269,6 +302,10 @@ class MultiplayerScreen() : PickerScreen() {
             return true
         return false
     }
+
+    fun removeFromList(gameId: String){
+        multiplayerGameList.remove(gameId)
+    }
 }
 
 //Subscreen of MultiplayerScreen to edit and delete saves
@@ -287,7 +324,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 TextButton("Delete save".tr(), skin).onClick {
                     var askPopup = Popup(this)
                     askPopup.addGoodSizedLabel("Are you sure you want to delete this map?".tr()).row()
-                    askPopup.addButton("Yes".tr()){
+                    askPopup.addButton("Yes"){
                         try {
                             GameSaver().deleteSave(gameName, true)
                             UncivGame.Current.setScreen(backScreen)
@@ -297,7 +334,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                             ResponsePopup("Could not delete game!".tr(), this)
                         }
                     }
-                    askPopup.addButton("No".tr()){
+                    askPopup.addButton("No"){
                         askPopup.close()
                     }
                     askPopup.open()
@@ -315,8 +352,9 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         rightSideButton.enable()
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
-            //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
             try {
+                backScreen.removeFromList(game.gameId)
+                //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
                 backScreen.addMultiplayerGame(game.gameId, textField.text)
                 GameSaver().deleteSave(gameName, true)
                 UncivGame.Current.setScreen(backScreen)
