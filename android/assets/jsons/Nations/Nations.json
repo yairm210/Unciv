@@ -1106,7 +1106,7 @@
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
-		"defeated": "So this is how does it feel to die...",
+		"defeated": "So this is how it feels to die...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,0,255],
 		"cities": ["Hanoi"]
