@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.VictoryScreen
+import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.LoadMapScreen
 import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
@@ -39,20 +40,27 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Save game".tr()) {
+        addSquareButton("Save game".tr()){
             UncivGame.Current.setScreen(SaveGameScreen())
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Start new game".tr()){ UncivGame.Current.setScreen(NewGameScreen()) }.size(width,height)
+        addSquareButton("Start new game".tr()){ 
+            UncivGame.Current.setScreen(NewGameScreen()) 
+        }.size(width,height)
         addSeparator()
 
-
-        addSquareButton("Multiplayer".tr()) { openMultiplayerPopup() }.size(width,height)
+        addSquareButton("Multiplayer".tr()){
+            UncivGame.Current.setScreen(MultiplayerScreen()) 
+            close()
+        }.size(width,height)
         addSeparator()
 
-        addSquareButton("Victory status".tr()) { UncivGame.Current.setScreen(VictoryScreen()) }.size(width,height)
+        addSquareButton("Victory status".tr()){ 
+            UncivGame.Current.setScreen(VictoryScreen())
+            close()
+        }.size(width,height)
         addSeparator()
 
         addSquareButton("Options".tr()){
@@ -73,7 +81,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     }
 
 
-
+    @Deprecated("use MultiplayerScreen instead")
     fun openMultiplayerPopup(){
 
         close()

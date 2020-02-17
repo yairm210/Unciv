@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.mainmenu
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -39,38 +40,38 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         innerTable.add("Display options".toLabel(fontSize = 24)).colspan(2).row()
 
         innerTable.add("Show worked tiles".toLabel())
-        addButton(innerTable, if (settings.showWorkedTiles) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showWorkedTiles) "Yes" else "No") {
             settings.showWorkedTiles= !settings.showWorkedTiles
             update()
         }
 
         innerTable.add("Show resources and improvements".toLabel())
-        addButton(innerTable, if (settings.showResourcesAndImprovements) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showResourcesAndImprovements) "Yes" else "No") {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
             update()
         }
 
 
         innerTable.add("Show tutorials".toLabel())
-        addButton(innerTable, if (settings.showTutorials) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showTutorials) "Yes" else "No") {
             settings.showTutorials = !settings.showTutorials
             update()
         }
 
         innerTable.add("Show minimap".toLabel())
-        addButton(innerTable, if (settings.showMinimap) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showMinimap) "Yes" else "No") {
             settings.showMinimap = !settings.showMinimap
             update()
         }
 
         innerTable.add("Show pixel units".toLabel())
-        addButton(innerTable, if (settings.showPixelUnits) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showPixelUnits) "Yes" else "No") {
             settings.showPixelUnits = !settings.showPixelUnits
             update()
         }
 
         innerTable.add("Show pixel improvements".toLabel())
-        addButton(innerTable, if (settings.showPixelImprovements) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.showPixelImprovements) "Yes" else "No") {
             settings.showPixelImprovements = !settings.showPixelImprovements
             update()
         }
@@ -83,56 +84,76 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         // Do not add to template.properties yet please.
         innerTable.add("Continuous rendering\n(HIGHLY EXPERIMENTAL)".toLabel())
-        addButton(innerTable, if (settings.continuousRendering) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.continuousRendering) "Yes" else "No") {
             settings.continuousRendering = !settings.continuousRendering
             Gdx.graphics.isContinuousRendering = settings.continuousRendering
             update()
         }
 
-        innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).row()
+        innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
 
 
         innerTable.add("Check for idle units".toLabel())
-        addButton(innerTable, if (settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.checkForDueUnits) "Yes" else "No") {
             settings.checkForDueUnits = !settings.checkForDueUnits
             update()
         }
 
         innerTable.add("Move units with a single tap".toLabel())
-        addButton(innerTable, if (settings.singleTapMove) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.singleTapMove) "Yes" else "No") {
             settings.singleTapMove = !settings.singleTapMove
             update()
         }
 
         innerTable.add("Auto-assign city production".toLabel())
-        addButton(innerTable, if (settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.autoAssignCityProduction) "Yes" else "No") {
             settings.autoAssignCityProduction = !settings.autoAssignCityProduction
             update()
         }
 
         innerTable.add("Auto-build roads".toLabel())
-        addButton(innerTable, if (settings.autoBuildingRoads) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.autoBuildingRoads) "Yes" else "No") {
             settings.autoBuildingRoads = !settings.autoBuildingRoads
             update()
         }
 
 
         innerTable.add("Enable nuclear weapons".toLabel())
-        addButton(innerTable, if (settings.nuclearWeaponEnabled) "Yes".tr() else "No".tr()) {
+        addButton(innerTable, if (settings.nuclearWeaponEnabled) "Yes" else "No") {
             settings.nuclearWeaponEnabled = !settings.nuclearWeaponEnabled
             update()
         }
 
         addAutosaveTurnsSelectBox(innerTable)
 
-        innerTable.add("Other options".toLabel(fontSize = 24)).colspan(2).row()
+        // at the moment the notification service only exists on Android
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            innerTable.add("Multiplayer options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
+
+            innerTable.add("Enable out-of-game turn notifications".toLabel())
+            addButton(innerTable, if (settings.multiplayerTurnCheckerEnabled) "Yes" else "No") {
+                settings.multiplayerTurnCheckerEnabled = !settings.multiplayerTurnCheckerEnabled
+                update()
+            }
+            if (settings.multiplayerTurnCheckerEnabled) {
+                addMultiplayerTurnCheckerDelayBox(innerTable)
+
+                innerTable.add("Show persistent notification for turn notifier service".toLabel())
+                addButton(innerTable, if (settings.multiplayerTurnCheckerPermanentNotificationEnabled) "Yes" else "No") {
+                    settings.multiplayerTurnCheckerPermanentNotificationEnabled = !settings.multiplayerTurnCheckerPermanentNotificationEnabled
+                    update()
+                }
+            }
+        }
+
+        innerTable.add("Other options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
 
 
         addSoundEffectsVolumeSlider(innerTable)
         addMusicVolumeSlider(innerTable)
 
-        innerTable.add("Version".toLabel())
-        innerTable.add(UncivGame.Current.version.toLabel()).row()
+        innerTable.add("Version".toLabel()).pad(10f)
+        innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
 
 
         val scrollPane = ScrollPane(innerTable, skin)
@@ -167,7 +188,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 Sounds.play(UncivSound.Click)
             }
         })
-        innerTable.add(soundEffectsVolumeSlider).row()
+        innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
     }
 
     private fun addMusicVolumeSlider(innerTable: Table) {
@@ -184,7 +205,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                     UncivGame.Current.music?.volume = 0.4f * musicVolumeSlider.value
                 }
             })
-            innerTable.add(musicVolumeSlider).row()
+            innerTable.add(musicVolumeSlider).pad(10f).row()
         }
         else{
             val downloadMusicButton = TextButton("Download music".tr(),CameraStageBaseScreen.skin)
@@ -270,6 +291,26 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         autosaveTurnsSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UncivGame.Current.settings.turnsBetweenAutosaves= autosaveTurnsSelectBox.selected
+                UncivGame.Current.settings.save()
+                update()
+            }
+        })
+    }
+
+    private fun addMultiplayerTurnCheckerDelayBox(innerTable: Table) {
+        innerTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
+
+        val checkDelaySelectBox = SelectBox<Long>(skin)
+        val possibleDelaysArray = Array<Long>()
+        possibleDelaysArray.addAll(1L, 2L, 5L, 15L)
+        checkDelaySelectBox.items = possibleDelaysArray
+        checkDelaySelectBox.selected = UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes
+
+        innerTable.add(checkDelaySelectBox).pad(10f).row()
+
+        checkDelaySelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
                 UncivGame.Current.settings.save()
                 update()
             }

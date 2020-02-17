@@ -35,7 +35,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         add("Map options".toLabel(fontSize = 24)).colspan(2).row()
         addMapTypeSelection()
 
-        add("Game options".toLabel(fontSize = 24)).padTop(20f).colspan(2).row()
+        add("Game options".toLabel(fontSize = 24)).colspan(2).row()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
         addEraSelectBox()
