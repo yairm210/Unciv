@@ -8,6 +8,7 @@ import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import org.junit.Assert
 import org.junit.Before
@@ -203,5 +204,18 @@ class TranslationTests {
                 "This test will only pass when all translations' placeholders match those of the key",
                 allTranslationsHaveCorrectPlaceholders
         )
+    }
+
+    @Test
+    fun allTranslationsEndWithASpace() {
+        val templateLines = Gdx.files.internal(TranslationFileReader().templateFileLocation).reader().readLines()
+        var failed = false
+        for (line in templateLines) {
+            if (line.endsWith(" =")) {
+                println("$line ends without a space at the end")
+                failed=true
+            }
+        }
+        Assert.assertFalse(failed)
     }
 }
