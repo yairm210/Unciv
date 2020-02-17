@@ -74,7 +74,7 @@ class MultiplayerScreen() : PickerScreen() {
         val currentlyRunningGame = UncivGame.Current.gameInfo
         if (currentlyRunningGame.gameParameters.isOnlineMultiplayer && !gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId)) {
             topTable.add(
-                    TextButton("Add Currently Running Game", skin).onClick {
+                    TextButton("Add Currently Running Game".tr(), skin).onClick {
                         if (!gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId)){
                             try {
                                 GameSaver().saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
