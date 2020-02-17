@@ -7,6 +7,7 @@ import kotlin.collections.set
 class TranslationFileReader{
 
     private val percentagesFileLocation = "jsons/translationsByLanguage/completionPercentages.properties"
+    val templateFileLocation = "jsons/translationsByLanguage/template.properties"
     private val charset = Charset.forName("UTF-8").name()
 
     fun read(translationFile: String): LinkedHashMap<String, String> {
@@ -25,7 +26,7 @@ class TranslationFileReader{
     }
 
     private fun writeByTemplate(language:String, translations: HashMap<String, String>){
-        val templateFile = Gdx.files.internal("jsons/translationsByLanguage/template.properties")
+        val templateFile = Gdx.files.internal(templateFileLocation)
         val stringBuilder = StringBuilder()
         for(line in templateFile.reader().readLines()){
             if(!line.contains(" = ")){ // copy as-is
