@@ -785,7 +785,7 @@
 		"outerColor": [51,25,0],
 		"innerColor": [255,255,102],
 		"uniqueName": "Furia vichinga",
-		"unique": "Le unità pagano solo 1 punto movimento per imbarcarsi o sbarcare, e ottengono +1 punto movimento se imbarcate. Le unità ravvicinate possono saccheggiare senza costi di movimento.",
+		"unique": "Le unità pagano solo 1 punto movimento per imbarcarsi o sbarcare, e ottengono +1 punto movimento se imbarcate. Le unità da mischia possono saccheggiare senza costi di movimento.",
 		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
