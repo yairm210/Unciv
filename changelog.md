@@ -1,3 +1,19 @@
+## 3.6.0
+
+Massive multiplayer improvements!
+
+Multiplayer screen reworked - by GGGueni
+
+Added Multiplayer Turn Notification Service - by wrov/tobo
+
+UI of New Game screen updated - by lishaoxia1985
+
+Resolved #1930 - national wonders no longer require built buildings in puppeted cities
+
+Nuking a Civ's land is considered an act of war - by Jack Rainy
+
+Translation updates
+
 ## 3.5.14
 
 Resolved #1926 - fixed unique improvements
