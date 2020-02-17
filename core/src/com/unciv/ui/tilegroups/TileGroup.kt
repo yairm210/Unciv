@@ -277,7 +277,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
         updatePixelCivilianUnit(tileIsViewable)
 
-        icons.update(showResourcesAndImprovements, tileIsViewable, showMilitaryUnit)
+        icons.update(showResourcesAndImprovements, tileIsViewable, showMilitaryUnit,viewingCiv)
 
         updateCityImage()
         updateNaturalWonderImage()

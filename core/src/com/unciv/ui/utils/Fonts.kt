@@ -25,7 +25,7 @@ class Fonts {
                 "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛" +  // Thai
                 "İıÇŞşĞğ"+ /// turkish
                 "1234567890" +
-                "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.¡*|«»—∞"
+                "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.¡*|«»—∞✘✔"
         val charSet = HashSet<Char>()
         charSet.addAll(defaultText.asIterable())
 
@@ -53,7 +53,7 @@ class Fonts {
    fun getFont(size: Int): BitmapFont {
        val language = UncivGame.Current.settings.language
        val fontForLanguage ="Nativefont"
-       val isUniqueFont = language.contains("Chinese") || language == "Korean"
+       val isUniqueFont = language.contains("Chinese") || language == "Korean" || language=="Japanese"
        val keyForFont = if(!isUniqueFont) "$fontForLanguage $size" else "$fontForLanguage $size $language"
        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
 

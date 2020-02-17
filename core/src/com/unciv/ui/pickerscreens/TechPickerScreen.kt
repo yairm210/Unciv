@@ -26,7 +26,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
-            .filter { civTech.canBeResearched(it) }.toHashSet()
+            .filter { civTech.canBeResearched(it) && !civTech.isResearched(it) }.toHashSet()
 
     private val currentTechColor = colorFromRGB(7,46,43)
     private val researchedTechColor = colorFromRGB(133,112,39)
@@ -65,12 +65,18 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         // per default show current/recent technology,
         // and possibly select it to show description,
         // which is very helpful when just discovered and clicking the notification
-        val tech = if (centerOnTech != null) centerOnTech else civInfo.tech.currentTechnology()
+        val tech = centerOnTech ?: civInfo.tech.currentTechnology()
         if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
                 selectTechnology(tech, true)
             else centerOnTechnology(tech)
+        } else {
+            // center on any possible technology which is ready for the research right now
+            val firstAvailable = researchableTechs.firstOrNull()
+            val firstAvailableTech = civInfo.gameInfo.ruleSet.technologies[firstAvailable]
+            if (firstAvailableTech != null)
+                centerOnTechnology(firstAvailableTech)
         }
 
     }
@@ -116,7 +122,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 civTech.isResearched(techName) && techName != Constants.futureTech -> researchedTechColor
                 // if we're here to pick a free tech, show the current tech like the rest of the researchables so it'll be obvious what we can pick
                 tempTechsToResearch.firstOrNull() == techName && !isFreeTechPick -> currentTechColor
-                researchableTechs.contains(techName) && !civTech.isResearched(techName) -> researchableTechColor
+                researchableTechs.contains(techName) -> researchableTechColor
                 tempTechsToResearch.contains(techName) -> queuedTechColor
                 else -> Color.GRAY
             }
@@ -221,7 +227,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
-        if (researchableTechs.contains(tech.name)&& (!civTech.isResearched(tech.name) || tech.name==Constants.futureTech)) {
+        if (researchableTechs.contains(tech.name) || tech.name==Constants.futureTech) {
             pick("Pick [${selectedTech!!.name}] as free tech".tr())
         } else {
             rightSideButton.setText("Pick a free tech".tr())

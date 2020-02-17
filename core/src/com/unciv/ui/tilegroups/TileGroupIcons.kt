@@ -6,8 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.UnitGroup
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.toLabel
 
 /** Helper class for TileGroup, which was getting too full */
 class TileGroupIcons(val tileGroup: TileGroup){
@@ -18,12 +22,14 @@ class TileGroupIcons(val tileGroup: TileGroup){
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean) {
+    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
 
-        civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon, tileIsViewable, -20f)
-        militaryUnitIcon = newUnitIcon(tileGroup.tileInfo.militaryUnit, militaryUnitIcon, tileIsViewable && showMilitaryUnit, 20f)
+        civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
+                tileIsViewable, -20f, viewingCiv)
+        militaryUnitIcon = newUnitIcon(tileGroup.tileInfo.militaryUnit, militaryUnitIcon,
+                tileIsViewable && showMilitaryUnit, 20f, viewingCiv)
     }
 
     fun addPopulationIcon() {
@@ -43,7 +49,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
     }
 
 
-    fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float): UnitGroup? {
+    fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
         oldUnitGroup?.remove()
@@ -77,7 +83,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
 
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == UncivGame.Current.worldScreen.viewingCiv)
+            if (!unit.isIdle() && unit.civInfo == viewingCiv)
                 newImage.unitBaseImage.color.a = 0.5f
         }
         return newImage

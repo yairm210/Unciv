@@ -1,3 +1,103 @@
+## 3.5.14
+
+Resolved #1926 - fixed unique improvements
+
+Resolved #1927- changing new game parameters and exiting the new game screen doesn't change the current game's parameters
+
+Resolved #1818 - Marble bonus now displayed in Civilopedia
+
+Resolved #1918 - added missing translations
+
+Fix tile yields in city screen when in multiplayer - by reversi
+
+By Jack Rainy:
+ - Forge increases production of spaceparts
+ - Preview tile improvements
+
+
+Minimap improvements - by lishaoxia1985
+
+Translation updates
+
+## 3.5.13
+
+Moai no longer buildable on terrain features - by lyrjie
+
+Resolved #1902 - buildings requiring worked resources can be built in cities that are built on that resource
+ 
+Resolved #1841 - Legalism grants enqueued buildings - by reversi
+
+Minimap can show the whole worldscreen and display cities better - by lishaoxia1985
+
+Captured Khans now automate properly
+
+Translation updates
+
+## 3.5.12
+
+Mongolian civ added! - by reversi
+
+By Jack Rainy:
+- Improvements to the Diplomacy overview: better spread and can select specific civs
+- Research screen centered on current tech
+
+Resolved #1859 - skip defeated players' turns in multiplayer
+
+Fixed bug where air units in transports couldn't upgrade
+
+Tied the unit upkeep scaling to game speed - by lyrjie
+
+Translation updates
+
+## 3.5.11
+
+Rectangular maps and better map generation - by reversi
+
+Resolved #1847 - Civs defeated by a nuke are now properly destroyed
+
+Resolved #1844 - improved worker automation
+
+Resolved #1852 - buildings requiring an improved resource now accept resources with great improvements
+
+Solved the 'infinite warmongering penalty' bug
+
+Resolved #1858 - Automated workers build unique improvements
+
+Translation updates
+
+## 3.5.10
+
+Resolved #1827 - can no longer see other (current) player's city production in multiplayer
+
+Resolved #1839 - Civs no longer declare war and offer things in the same turn
+
+AI no longer sends 'please don't settle cities near us' warnings when at war
+
+When disbanding carriers, transported air units move to nearby tiles if they can. If they can't then they're disbanded.
+
+Resolved #1457 - no AI-to-AI trades are 'automatically accepted'
+
+Translation updates
+
+## 3.5.9
+
+Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated city states, as well as many other minor bugs
+
+By Jack Rainy:
+- Nuclear missile is able to target any tile within the range
+- Added "Sleep/Fortify until healed" functionality
+- Fixed relationship bug when capturing cities
+
+By lyrjie:
+- Notification when City-states advance an era disabled
+- Fixed bug pertaining to unit healing
+
+Half-ready Japanese translation added! - by paonty
+
+Show name when icon is tapped in resource overview in a label above the icon - by ltrcao
+
+Translation updates
+
 ## 3.5.8
 
 Buying current construction no longer removes other items from the queue - by reversi
@@ -9,6 +109,7 @@ Fixed crash in city-state influence notification
 Solved ANR when waiting for the list of maps
 
 Resolved #1808 - Disabled problematic declaration of friendship
+
 
 Translation updates
 

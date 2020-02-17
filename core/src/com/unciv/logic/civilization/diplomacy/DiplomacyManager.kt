@@ -226,8 +226,9 @@ class DiplomacyManager() {
      *  This includes friendly and allied city-states and the open border treaties.
      */
     fun isConsideredAllyTerritory(): Boolean {
-        return (hasOpenBorders)
-                || (civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+        if(civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+            return true
+        return hasOpenBorders
     }
     //endregion
 
@@ -442,7 +443,6 @@ class DiplomacyManager() {
         if (!otherCiv.isCityState()) {
             for (thirdCiv in otherCiv.getKnownCivs()) {
                 if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
-                        && !thirdCiv.isDefeated()
                         && thirdCiv.knows(civInfo)
                         && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
                     thirdCiv.getDiplomacyManager(civInfo).declareWar()

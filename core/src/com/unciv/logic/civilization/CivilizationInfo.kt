@@ -133,7 +133,8 @@ class CivilizationInfo {
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
-    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
+    /** Returns only undefeated civs, aka the ones we care about */
+    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }.filter { !it.isDefeated() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
@@ -278,6 +279,7 @@ class CivilizationInfo {
     /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
     fun isDefeated()= cities.isEmpty()
             && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
+            && !isBarbarian() // Barbarians can be never defeated
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): TechEra {
@@ -411,7 +413,8 @@ class CivilizationInfo {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.destroy()
                     civMilitaryUnits -= unitToDisband
-                    addNotification("Cannot provide unit upkeep for " + unitToDisband.name + " - unit has been disbanded!".tr(), null, Color.RED)
+                    val unitName = unitToDisband.name
+                    addNotification("Cannot provide unit upkeep for [$unitName] - unit has been disbanded!", null, Color.RED)
                 }
             }
         }
@@ -465,8 +468,9 @@ class CivilizationInfo {
     }
 
     fun addGreatPerson(greatPerson: String, city:CityInfo) {
-        placeUnitNearTile(city.location, greatPerson)
-        addNotification("A [$greatPerson] has been born in [${city.name}]!", city.location, Color.GOLD)
+        val greatPersonName = getEquivalentUnit(greatPerson).name
+        placeUnitNearTile(city.location, greatPersonName)
+        addNotification("A [$greatPersonName] has been born in [${city.name}]!", city.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String, removeImprovement: Boolean = false): MapUnit? {
@@ -511,7 +515,7 @@ class CivilizationInfo {
             TechEra.Information, TechEra.Future -> 400
             else -> 0
         }
-        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
@@ -530,7 +534,9 @@ class CivilizationInfo {
     fun updateAllyCivForCityState() {
         var newAllyName = ""
         if (!isCityState()) return
-        val maxInfluence = diplomacy.filter{ !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }.maxBy { it.value.influence }
+        val maxInfluence = diplomacy
+                .filter{ !it.value.otherCiv().isCityState() && !it.value.otherCiv().isDefeated() }
+                .maxBy { it.value.influence }
         if (maxInfluence != null && maxInfluence.value.influence >= 60) {
             newAllyName = maxInfluence.key
         }
@@ -539,15 +545,19 @@ class CivilizationInfo {
             val oldAllyName = allyCivName
             allyCivName = newAllyName
 
+            // If the city-state is captured by a civ, it stops being the ally of the civ it was previously an ally of.
+            //  This means that it will NOT HAVE a capital at that time, so if we run getCapital we'll get a crash!
+            val capitalLocation = if(cities.isNotEmpty()) getCapital().location else null
+
             if (newAllyName != "") {
                 val newAllyCiv = gameInfo.getCivilization(newAllyName)
-                newAllyCiv.addNotification("We have allied with [${civName}].", getCapital().location, Color.GREEN)
+                newAllyCiv.addNotification("We have allied with [${civName}].", capitalLocation, Color.GREEN)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
             }
             if (oldAllyName != "") {
                 val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
-                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", getCapital().location, Color.RED)
+                oldAllyCiv.addNotification("We have lost alliance with [${civName}].", capitalLocation, Color.RED)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()
             }

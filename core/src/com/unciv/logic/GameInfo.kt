@@ -82,8 +82,11 @@ class GameInfo {
 
         while (thisPlayer.playerType == PlayerType.AI
             || UncivGame.Current.simulateUntilTurnForDebug > turns
+                // For multiplayer, if there are 3+ players and one is defeated,
+                // we'll want to skip over their turn
+                || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
         ) {
-            if(thisPlayer.isBarbarian() || !thisPlayer.isDefeated()) {
+            if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation().automateCivMoves(thisPlayer)
 
                 // Placing barbarians after their turn

@@ -55,7 +55,7 @@ class PolicyManager {
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
-        policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)
     }

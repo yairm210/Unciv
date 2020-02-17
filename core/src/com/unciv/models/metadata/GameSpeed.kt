@@ -1,17 +1,14 @@
 package com.unciv.models.metadata
 
-enum class GameSpeed{
-    Quick,
-    Standard,
-    Epic,
-    Marathon;
+const val BASE_GAME_DURATION_TURNS = 500f
 
-    fun getModifier(): Float {
-        when(this) {
-            Quick -> return 0.67f
-            Standard -> return 1f
-            Epic -> return 1.5f
-            Marathon -> return 3f
-        }
-    }
+/** Game speed
+ *
+ *  @param modifier cost modifier
+ * */
+enum class GameSpeed(val modifier: Float) {
+    Quick(0.67f),
+    Standard(1f),
+    Epic(1.5f),
+    Marathon(3f);
 }

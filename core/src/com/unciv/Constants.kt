@@ -2,8 +2,9 @@ package com.unciv
 
 class Constants{
     companion object {
-        const val worker="Worker"
-        const val settler="Settler"
+        const val worker = "Worker"
+        const val settler = "Settler"
+        const val greatGeneral = "Great General"
 
         const val ocean="Ocean"
         const val mountain="Mountain"
@@ -41,6 +42,7 @@ class Constants{
 
         val unitActionSetUp = "Set Up"
         val unitActionSleep = "Sleep"
+        val unitActionSleepUntilHealed = "Sleep until healed"
         val unitActionAutomation = "Automate"
         val unitActionExplore = "Explore"
         val futureTech = "Future Tech"

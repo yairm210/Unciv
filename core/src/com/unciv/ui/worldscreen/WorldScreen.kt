@@ -45,7 +45,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
-    val bottomTileInfoTable = TileInfoTable(this)
+    val bottomTileInfoTable = TileInfoTable(viewingCiv)
     val battleTable = BattleTable(this)
     val unitActionsTable = UnitActionsTable(this)
 
@@ -290,7 +290,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
         if(!civInfo.isDefeated() && civInfo.getKnownCivs()
-                        .filterNot { it.isDefeated() || it==viewingCiv || it.isBarbarian() }
+                        .filterNot {  it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)
             val btn = TextButton("Diplomacy".tr(), skin)

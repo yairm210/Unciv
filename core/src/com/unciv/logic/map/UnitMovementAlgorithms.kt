@@ -235,7 +235,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
         if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
-        if(unit.isFortified() || unit.action==Constants.unitActionSetUp || unit.action==Constants.unitActionSleep)
+        if(unit.isFortified() || unit.action==Constants.unitActionSetUp || unit.isSleeping())
             unit.action=null // unfortify/setup after moving
 
         // If this unit is a carrier, keep record of its air payload whereabouts.

@@ -16,7 +16,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return get(text)!![language]!!
     }
 
-    fun hasTranslation(text:String,language:String): Boolean {
+    private fun hasTranslation(text:String,language:String): Boolean {
         return containsKey(text) && get(text)!!.containsKey(language)
     }
 

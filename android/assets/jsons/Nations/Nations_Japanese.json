@@ -2,77 +2,79 @@
 	{
 		//nations
 		"name": "Babylon",
-		"translatedName": "Вавилон",
-		"leaderName": "Навуходоносор II",
-		"adjective": ["Вавилонские"],
+		"leaderName": "ネブカドネザル2世",
+		"adjective": ["Babylonian"],
 		"startBias": ["Avoid Tundra"],
 		"preferredVictoryType": "Scientific",
 		
 		"startIntroPart1": "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
 		"startIntroPart2": "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
 		
-		"declaringWar": "Демон хочет крови солдат!",
-		"attacked": "Отлично, надеюсь ты знаешь что делаешь.",
-		"defeated": "Это конец. Ну теперь я хотя бы отдохну.",
-		"introduction": "Ты реален, или ты фантом?",
+		"declaringWar": "The demon wants the blood of soldiers!",
+		"attacked": "Oh well, I presume you know what you're doing.",
+		"defeated": "It is over. Perhaps now I shall have peace, at last.",
+		"introduction": "Are you real or a phantom?",
 		
-		"neutralHello": "Приветствую.",
-		"neutralLetsHearIt": ["Я слушаю.","Чего ты хочешь?"],
-		"neutralNo": ["Нет!","Точно нет.","Невозможно!"],
-		"neutralYes": ["Хорошо!","Да!","Согласен!"],
+		"neutralHello": "Greetings.",
+		"neutralLetsHearIt": ["I'm listening.","What do you want?"],
+		"neutralNo": ["No!","Certainly not.","Unacceptable!"],
+		"neutralYes": ["Completed!","Yes!","Agreed!"],
 
-		"hateHello": "Что ТЕБЕ тут нужно?!",
-		"hateLetsHearIt": ["Не очень внимательно, но я тебя слушаю.","Я слушаю!"],
-		"hateNo": ["Нет!","Точно нет.","Невозможно!"],
-		"hateYes": ["Да!"],
+		"hateHello": "What do YOU want?!",
+		"hateLetsHearIt": ["I'm certainly listening.","I'm listening!"],
+		"hateNo": ["No!","Certainly not!","Unacceptable!"],
+		"hateYes": ["Yes!"],
 		
-		"afterPeace": "Глупый, глупый - оставляешь меня в живых.",
-		"tradeRequest": "Единственная причина по которой ты всё ещё существуешь, это совершить эту сделку со мной.",
+		"afterPeace": "Foolish, foolish – letting me live.",
+		"tradeRequest": "It appears that you do have a reason for existing – to make this deal with me.",
 				
 		"outerColor": [27,53,63],
 		"innerColor": [213,249,255],
 		"uniqueName": "Ingenuity",
 		"unique": "Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
-		"cities": ["Вавилон","Аккад","Дур-Куригалзу","Ниппур","Борсиппа","Сиппар","Опис","Мари","Шусхан","Эсхунна",
-			"Элласар","Эрэч","Кутха","Сирпурла","Нерибтум","Ашур","Нинвех","Нимруд","Арбела","Нузи",
-			"Аррапха","Тутуб","Шадуппум","Рапидум","Машхан Шапир","Туттул","Рамад","Ана","Харадум","Аграб"]
+		"cities": ["バビロン","アッカド","ドゥル・クリガルズ","ニップール","ボルシッパ","シッパル","オピス","マリ","シュシャン","エシュヌンナ",
+			"エラサ","エレク","クーサ","シルプルラ","ネリブトゥム","アッシュール","ニネヴェ","ニムルド","アルベラ","ヌチ",
+			"アッラプカ","トゥトゥル","シャドゥプム","ラピクム","マシュカン・シャピル","トゥトゥル","ラマディ","アナ","ハラドゥム","アグラブ"]
 	},
 	{
 		"name": "Greece",
-		"translatedName": "Греция",
-		"leaderName": "Александр",
+		"leaderName": "アレクサンドロス",
 		"adjective": ["Greek"],
 		"startBias": ["Coast"],
 		// preferredVictoryType:"Diplomatic",
 		
 		"startIntroPart1": "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea.",
 		"startIntroPart2": "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?",
+		
 		"declaringWar": "You are in my way, you must be destroyed.",
 		"attacked": "As a matter of fact I too grow weary of peace.",
 		"defeated": "You have somehow become my undoing! What kind of beast are you?",
 		"introduction": "Hello stranger! I am Alexandros, son of kings and grandson of the gods!",
+		
 		"neutralHello": "Greetings!",
 		"neutralLetsHearIt": ["I'm listening.","Go on.","Yes?","Come."],
 		"neutralNo": ["We decline.","Certainly not.","It is necessary not to accept."],
 		"neutralYes": ["Certainly.","Very much.","The very best!"],
+
 		"hateHello": "What?",
 		"hateLetsHearIt": ["You say.","And?","Come on."],
 		"hateNo": ["This is not pleasant!","You're not being earnest!","Pardon me?"],
 		"hateYes": ["Oh, very well.","I suppose I must.","Well done."],
+		
 		"afterPeace": "I must congratulate you on your remarkable victory.",
 		"tradeRequest": "My friend, does this seem reasonable to you?",
+				
 		"outerColor": [181, 232, 232],
 		"innerColor": [68,142,249],
 		"uniqueName": "Hellenic League",
 		"unique": "City-State Influence degrades at half and recovers at twice the normal rate",
-		"cities": ["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
-			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
-			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
+		"cities": ["アテネ","スパルタ","コリントス","アルゴス","クノッソス","ミケーネ","ファルサロス","エフェソス","ハリカルナッソス","ローズ",
+			"エレトリア","ペルガモン","ミレトス","メガラ","ポカイア","シキュオン","ティリンス","サモス","ミティリーニ","キオス",
+			"パロス","エリス","シラクサ","ヘラクレイア","ゴルテュナ","カルキス","ピュロス","ペッラ","ナクソス"]
 	},
 	{
 		"name": "China",
-		"translatedName": "Китай",
-		"leaderName": "У Цзэтянь",
+		"leaderName": "武則天",
 		"adjective": ["Chinese"],
 		"preferredVictoryType": "Scientific",
 		
@@ -86,7 +88,7 @@
 		"neutralLetsHearIt": ["Continue.","What?","Keep going."],
 		"neutralNo": ["Nope.","Of course not.","Definitely not."],
 		"neutralYes": ["Of course.","I agree.","Excellent!"],
-		"hateHello": "А, это ты?",
+		"hateHello": "Oh. It's you?",
 		"hateLetsHearIt": ["And what else?","Keep talking."],
 		"hateNo": ["I cannot accept that.","Sorry, say that again.","Get out of my face!"],
 		"hateYes": ["I suppose I must accept.","Ah. Very good."],
@@ -96,14 +98,13 @@
 		"innerColor": [255,255,255],
 		"uniqueName": "Art of War",
 		"unique": "Great general provides double combat bonus, and spawns 50% faster",
-		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
-			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+		"cities": ["北京","上海","広州","南京","西安","成都","杭州","天津","マカオ","山東",
+			"開封","寧波","保定","揚州","ハルビン","重慶","洛陽","昆明","台北","瀋陽",
+			"太原","台南","大連","麗江","無錫","蘇州","茂名","韶関","陽江","河源"]
 	},
 	{
 		"name": "Egypt",
-		"translatedName": "Египет",
-		"leaderName": "Рамзес II",
+		"leaderName": "ラムセス2世",
 		"adjective": ["Egyptian"],
 		"startBias": ["Avoid Jungle","Avoid Forest"],
 		"preferredVictoryType": "Cultural",
@@ -113,7 +114,7 @@
 		
 		"declaringWar": "You are but a pest on this Earth, prepare to be eliminated!",
 		"attacked": "You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
-		"defeated": "Strike me down and my soul will torment yours forever – you have won nothing.",
+		"defeated": "Strike me down and my soul will torment yours forever, you have won nothing.",
 		"introduction": "Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
 		
 		"neutralHello": "Good day.",
@@ -133,14 +134,13 @@
 		"innerColor": [98,10,210],
 		"uniqueName": "Monument Builders",
 		"unique": "+20% production towards Wonder construction",
-		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
-			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
-			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+		"cities": ["テーベ","メンフィス","ヘリオポリス","エレファンティネ","アレクサンドリア","ピラメセス","ギザ","ビブロス","アケトアテン","ヒエラコンポリス",
+			"アビドス","アシュート","アヴァール","リシュト","ブト","エドフ","ピトム","ブシリス","カフン","アスリビス",
+			"メンデス","エル・アシュムネイン","タニス","ブバスティス","オリックス","セベニタス","アフミーム","カルナック","ルクソール","エル・カブ"]
 	},
 	{
 		"name": "England",
-		"translatedName": "Англия",
-		"leaderName": "Елизавета",
+		"leaderName": "エリザベス",
 		"adjective": ["English"],
 		"startBias": ["Coast"],
 		//preferredVictoryType:"Diplomatic",
@@ -165,14 +165,13 @@
 		"innerColor": [255,255,255],
 		"uniqueName": "Sun Never Sets",
 		"unique": "+2 movement for all naval units",
-		"cities": ["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
-			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
-			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+		"cities": ["ロンドン","ヨーク","ノッティンガム","ヘイスティングス","カンタベリー","コベントリ","ウォリック","ニューキャッスル","オックスフォード","リバプール",
+			"ドーバー","ブライトン","ノリッジ","リーズ","リーディング","バーミンガム","リッチモンド","エクセター","ケンブリッジ","グロスター",
+			"マンチェスター","ブリストル","レスター","カーライル","イプスウィッチ","ポーツマス","ベリック","バース","マンブルズ","サウサンプトン"]
 	},
 	{
 		"name": "France",
-		"translatedName": "Франция",
-		"leaderName": "Наполеон",
+		"leaderName": "ナポレオン",
 		"adjective": ["French"],
 		"preferredVictoryType": "Cultural",
 		
@@ -196,14 +195,13 @@
 		"innerColor": [239,236,148],
 		"uniqueName": "Ancien Régime",
 		"unique": "+2 Culture per turn from cities before discovering Steam Power",
-		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
-			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
-			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]
+		"cities": ["パリ","オルレアン","リヨン","トロワ","ツール","マルセイユ","シャルトル","アヴィニョン","ルーアン","グルノーブル",
+			"ディジョン","アミアン","シェルブール","ポアティエ","トゥールーズ","ベーヨン","ストラスブール","ブレスト","ボルドー","レンヌ",
+			"ニース","サンティティエンヌ","ナント","ランス","ル・マン","モンペリエ","リモージュ","ナンシー","リール","カン"]
 	},
 	{
 		"name": "Russia",
-		"translatedName": "Россия",
-		"leaderName": "Екатерина",
+		"leaderName": "Catherine",
 		"adjective": ["Russian"],
 		"startBias": ["Tundra"],
 		"preferredVictoryType": "Scientific",
@@ -214,28 +212,27 @@
 		"attacked": "You've mistaken my passion for a weakness, you'll regret about this.",
 		"defeated": "We were defeated, so this makes me your prisoner. I suppose there are worse fates.",
 		"introduction": "I greet you, stranger! If you are as intelligent and tactful as you are attractive, we'll get along just fine.",
-		"neutralHello": "Привет!",
-		"neutralLetsHearIt": ["Продолжай.","Говори."],
-		"neutralNo": ["Мы отклоняем.","Хах! Конечно же, нет!","Однозначно нет."],
-		"neutralYes": ["Конечно.","Я согласна.","Превосходно!"],
-		"hateHello": "Что вам надо?!",
-		"hateLetsHearIt": ["И?","Валяй.","Давай."],
-		"hateNo": ["Вы шутите?!","Простите?!","Это недопустимо."],
-		"hateYes": ["Я думаю...Я вынуждена согласиться.","О... Очень хорошо.","Годится."],
-		"afterPeace": "Настало время вкусить плоды мира.",
-		"tradeRequest": "Как вы смотрите, если я предложу вам эту сделку?",
+		"neutralHello": "Hello!",
+		"neutralLetsHearIt": ["Go on.","Speak."],
+		"neutralNo": ["We decline.","Ha! Of course not!","Certainly not."],
+		"neutralYes": ["Of course.","I agree.","Excellent!"],
+		"hateHello": "What do you need?!",
+		"hateLetsHearIt": ["And?","Forward.","Go on."],
+		"hateNo": ["Are you joking?!","I beg your pardon?!","This is unacceptable."],
+		"hateYes": ["I think...I shall agree.","Oh... Very good.","Deal."],
+		"afterPeace": "Now it's the time to enjoy the fruits of peace.",
+		"tradeRequest": "How would you like it if I propose this kind of exchange?",
 		"outerColor": [ 236, 178, 0],
 		"innerColor": [0,0,0],
-		"uniqueName": "Сибирское богатство",
-		"unique": "Стратегические ресурсы предоставляют +1 Производство, а также Лошади, Железо и Уран предоставляются в двойном количестве",
-		"cities": ["Москва","Санкт-Петербург","Новгород","Ростов","Ярославль","Екатеринбург","Якутск","Владивосток","Смоленск","Оренбург",
-			"Красноярск","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
+		"uniqueName": "Siberian Riches",
+		"unique": "Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
+		"cities": ["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
+			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
 			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
 	},
 	{
 		"name": "Rome",
-		"translatedName": "Рим",
-		"leaderName": "Август Цезарь",
+		"leaderName": "Augustus Caesar",
 		"adjective": ["Roman"],
 		"preferredVictoryType": "Scientific",
 		
@@ -265,8 +262,7 @@
 	},
 	{
 		"name": "Arabia",
-		"translatedName": "Аравия",
-		"leaderName": "Харун ар-Рашид",
+		"leaderName": "Harun al-Rashid",
 		"adjective": ["Arabian"],
 		"startBias": ["Desert"],
 		"preferredVictoryType": "Scientific",
@@ -297,8 +293,7 @@
 	},
 	{
 		"name": "America",
-		"translatedName": "Америка",
-		"leaderName": "Джордж Вашингтон",
+		"leaderName": "George Washington",
 		"adjective": ["American"],
 		"preferredVictoryType": "Scientific",
 		
@@ -328,8 +323,7 @@
 	},
 	{
 		"name": "Japan",
-		"translatedName": "Япония",
-		"leaderName": "Ода Нобунага",
+		"leaderName": "Oda Nobunaga",
 		"adjective": ["Japanese"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -361,8 +355,7 @@
 	},
 	{
 		"name": "India",
-		"translatedName": "Индия",
-		"leaderName": "Ганджи",
+		"leaderName": "Gandhi",
 		"adjective": ["Indian"],
 		"startBias": ["Grassland"],
 		"preferredVictoryType": "Cultural",
@@ -392,8 +385,7 @@
 	},
 	{
 		"name": "Germany",
-		"translatedName": "Германия",
-		"leaderName": "Отто фон Бисмарк",
+		"leaderName": "Otto von Bismark",
 		"adjective": ["German"],
 		"preferredVictoryType": "Scientific",
 		
@@ -428,8 +420,7 @@
 	
 	{
 		"name": "The Ottomans",
-		"translatedName": "Османы",
-		"leaderName": "Сулейман I",
+		"leaderName": "Suleiman I",
 		"adjective": ["Ottoman"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -461,8 +452,7 @@
 	},
 	{
 		"name": "Korea",
-		"translatedName": "Корея",
-		"leaderName": "Седжон",
+		"leaderName": "Sejong",
 		"adjective": ["Korean"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Scientific",
@@ -495,8 +485,7 @@
 	
 	{
 		"name": "Iroquois",
-		"translatedName": "Ирокезы",
-		"leaderName": "Гайавата",
+		"leaderName": "Hiawatha",
 		"adjective": ["Irochese"],
 		"startBias": ["Forest"],
 		"preferredVictoryType": "Scientific",
@@ -528,8 +517,7 @@
 	},
 	{
 		"name": "Persia",
-		"translatedName": "Персия",
-		"leaderName": "Дариус I",
+		"leaderName": "Darius I",
 		"adjective": ["Persian"],
 		"preferredVictoryType": "Scientific",
 		
@@ -563,8 +551,7 @@
 	},
 	{
 		"name": "Polynesia",
-		"translatedName": "Полинезия",
-		"leaderName": "Камеамеа I",
+		"leaderName": "Kamehameha I",
 		"adjective": ["Polynesia"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Cultural",
@@ -594,8 +581,7 @@
 	},
 	{
 		"name": "Siam",
-		"translatedName": "Сиам",
-		"leaderName": "Рамакхамхаенг",
+		"leaderName": "Ramkhamhaeng",
 		"adjective": ["Siamese"],
 		"startBias": ["Avoid Forest"],
 		//preferredVictoryType:"Diplomatic",
@@ -627,8 +613,7 @@
 	},
 	{
 		"name": "Spain",
-		"translatedName": "Испания",
-		"leaderName": "Изабелла",
+		"leaderName": "Isabella",
 		"adjective": ["Spanish"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -658,12 +643,43 @@
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
 			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
 	},
+	{
+		"name": "Songhai",
+		"leaderName": "Askia",
+		"adjective": ["Songhai"],
+		"startBias": ["Avoid Tundra"],
+		"preferredVictoryType": "Domination",
+
+		"startIntroPart1": "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen.",
+		"startIntroPart2": "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?",
+		"declaringWar": "You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!",
+		"attacked": "Fool! You have doomed your people to fire and destruction!",
+		"defeated": "We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!",
+		"introduction": "I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past.",
+		"neutralHello": "Greetings.",
+		"neutralLetsHearIt": ["Yes?","Proceed."],
+		"neutralNo": ["No","Of course not."],
+		"neutralYes": ["Very well.","Yes.","Fine."],
+		"hateHello": "Oh, it's you.",
+		"hateLetsHearIt": ["And?","Continue."],
+		"hateNo": ["You cannot be serious!","That's unacceptable!","We decline."],
+		"hateYes": ["Oh, very well.","Alright."],
+		"afterPeace": "We thank you for bringing an end to this pointless war.",
+		"tradeRequest": "Can I interest you in this deal?",
+		"outerColor": [214,145,19],
+		"innerColor": [90,0,10],
+		"uniqueName": "River Warlord",
+		// Vanilla unique: triple gold and embarked defense
+		"unique": "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.",
+		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
+			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+	},
 	/*
 	
 	{   // REQUIRES RIVERS
 		"name": "Aztecs",
-		"translatedName": "Ацтеки",
-		"leaderName": "Монтесума I",
+		"leaderName": "Montezuma I",
 		"adjective": ["Aztec"],
 		"startBias": ["Jungle"],
 		"preferredVictoryType": "Domination",
@@ -696,8 +712,7 @@
 	},
 	{
 		"name": "Mongolia",
-		"translatedName": "Монголия",
-		"leaderName": "Ченгиз Хан",
+		"leaderName": "Genghis Khan",
 		"adjective": ["Mongolian"],
 		"startBias": ["Plains"],
 		"preferredVictoryType": "Domination",
@@ -729,8 +744,7 @@
 	},
 	{
 		"name": "Incan",
-		"translatedName": "Инки",
-		"leaderName": "Пачакутек",
+		"leaderName": "Pachacuti",
 		"adjective": ["Incan"],
 		"startBias": ["Hill"],
 		"preferredVictoryType": "Cultural",
@@ -759,44 +773,11 @@
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
 			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
-	}
-	{
-		"name": "Songhai",
-		"translatedName": "Сонгай",
-		"leaderName": "Аския",
-		"adjective": ["Songhai"],
-		"startBias": ["Avoid Tundra"],
-		"preferredVictoryType": "Domination",
-		
-		"startIntroPart1": "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen.",
-		"startIntroPart2": "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?",
-		"declaringWar": "You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!",
-		"attacked": "Fool! You have doomed your people to fire and destruction!",
-		"defeated": "We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!",
-		"introduction": "I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past.",
-		"neutralHello": "Greetings.",
-		"neutralLetsHearIt": ["Yes?","Proceed."],
-		"neutralNo": ["No","Of course not."],
-		"neutralYes": ["Very well.","Yes.","Fine."],
-		"hateHello": "Oh, it's you.",
-		"hateLetsHearIt": ["And?","Continue."],
-		"hateNo": ["You cannot be serious!","That's unacceptable!","We decline."],
-		"hateYes": ["Oh, very well.","Alright."],
-		"afterPeace": "We thank you for bringing an end to this pointless war.",
-		"tradeRequest": "Can I interest you in this deal?",
-		"outerColor": [204,102,0],
-		"innerColor": [255,0,0],
-		"uniqueName": "River Warlord",
-		"unique": "Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
-		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
-			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
-			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
 	{
 		//NEEDS SNOW AND ICE
 		"name": "Denmark",
-		"translatedName": "Дания",
-		"leaderName": "Гарольд Синий Зуб",
+		"leaderName": "Harald Bluetooth",
 		"adjective": ["Danish"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -829,8 +810,7 @@
 	},
 	{        
 	    "name": "Sweden",
-		"translatedName": "Швеция",
-		"leaderName": "Густав Адольф",
+		"leaderName": "Gustavus Adolphus",
 		"adjective": ["Swedish"],
 		"startBias": ["Tundra"],
 		"preferredVictoryType": "Diplomatic",
@@ -867,345 +847,375 @@
 	//City states
 	{
 		"name": "Milan",
-		"translatedName": "Милан",
 		"adjective": ["Milan"],
 		"cityStateType": "Cultured",
 		
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "You fiend! History shall remember this!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [185,132,66],
-		"cities": ["Милан"]
+		"cities": ["Milan"]
 	},
 	{
 		"name": "Florence",
-		"translatedName": "Флоренция",
 		"adjective": ["Florence"],
 		"cityStateType": "Cultured",
 		
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "And so the flower of Florence falls to barbaric hands...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [62,197,252],
-		"cities": ["Флоренция"]
+		"cities": ["Florence"]
 	},
 	{
 		"name": "Rio de Janeiro",
-		"translatedName": "Рио-де-Жанейро",
 		"adjective": ["Rio de Janeiro"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
-		"defeated": "We shall have our revenge.",
+		"declaringWar": "I have to do this, for the sake of progress if nothing else. You must be opposed!",
+		"attacked": "You can see how fruitless this will be for you... right?",
+		"afterPeace": "This is why I prefer diplomacy to war.",
+		"defeated": "May God grant me these last wishes - peace and prosperity for Brazil.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [211, 220, 103],
-		"cities": ["Рио-де-Жанейро"]
+		"cities": ["Rio de Janeiro"]
 	},
 	{
 		"name": "Antwerp",
-		"translatedName": "Антверпен",
 		"adjective": ["Antwerp"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "They will write songs of this.... pray that they shall be in your favor.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [194,97,255],
-		"cities": ["Антверпен"]
+		"cities": ["Antwerp"]
 	},
 	{
 		"name": "Dublin",
-		"translatedName": "Дублин",
 		"adjective": ["Dublin"],
 		"cityStateType": "Militaristic",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
-		"defeated": "Hah! A fine victory.",
+		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
+		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
+		"afterPeace": "Wise to keep peace with your neighbors. Blood feuds are paid at great expense.",
+		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [211,180,113],
-		"cities": ["Дублин"]
+		"cities": ["Dublin"]
 	},
 	{
 		"name": "Tyre",
-		"translatedName": "Сур",
 		"adjective": ["Tyre"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "We never fully trusted you from the start.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,97,255],
-		"cities": ["Сур"]
+		"cities": ["Tyre"]
 	},
 	{
 		"name": "Ur",
-		"translatedName": "Ур",
 		"adjective": ["Ur"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
-		"defeated": "Oh Nanna, have mercy on us, and have the enemy be merciful on us!",
+		"declaringWar": "I will enjoy hearing your last breath as you witness the destruction of your realm!",
+		"attacked": "Why do we fight' Because Inanna demands it. Now, witness the power of the Sumerians!",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "What treachery has struck us? No, what evil?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,69,0],
-		"cities": ["Ур"]
+		"cities": ["Ur"]
 	},
 	{
 		"name": "Genoa",
-		"translatedName": "Генуя",
 		"adjective": ["Genoa"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "How barbaric. Those who live by the sword shall perish by the sword.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [45,255,86],
-		"cities": ["Генуя"]
+		"cities": ["Genoa"]
 	},
 	{
 		"name": "Venice",
-		"translatedName": "Венеция",
 		"adjective": ["Venice"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
-		"defeated": "If our legacy continues, you will never have truly won.",
+		"declaringWar": "You have revealed your purposes a bit too early, my friend...",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "I am glad that my plan has succeded.",
+		"defeated": "A wrong calculation, on my part.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [153,204,255],
-		"cities": ["Венеция"]
+		"cities": ["Venice"]
 	},
 	{
 		"name": "Brussels",
-		"translatedName": "Брюссель",
 		"adjective": ["Brussels"],
 		"cityStateType": "Cultured",
 		
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "I guess you weren't here for the sprouts after all...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [153,255,51],
-		"cities": ["Брюссель"]
+		"cities": ["Brussels"]
 	},
 	{
 		"name": "Kabul",
-		"translatedName": "Кабул",
 		"adjective": ["Kabul"],
 		"cityStateType": "Cultured",
 		
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "Unacceptable!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [153,0,76],
-		"cities": ["Кабул"]
+		"cities": ["Kabul"]
 	},
 	{
 		"name": "Sidon",
-		"translatedName": "Сидон",
 		"adjective": ["Sidon"],
 		"cityStateType": "Militaristic",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "What a fine battle! Sidon is willing to serve you!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [250,128,114],
-		"cities": ["Сидон"]
+		"cities": ["Sidon"]
 	},
 	{
 		"name": "Almaty",
-		"translatedName": "Алматы",
 		"adjective": ["Almaty"],
 		"cityStateType": "Militaristic",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "How could we fall to the likes of you?!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [102,0,51],
-		"cities": ["Алматы"]
+		"cities": ["Almaty"]
 	},
 	{
 		"name": "Edinburgh",
-		"translatedName": "Эдинбург",
 		"adjective": ["Edinburgh"],
 		"cityStateType": "Militaristic",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
-		"defeated": "There is no dishonor in losing to a worthier foe.",
+		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
+		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your head!",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Vile ruler, kow that you 'won' this war in name only!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
-		"cities": ["Эдинбург"]
+		"cities": ["Edinburgh"]
 	},
 	{
 		"name": "Singapore",
-		"translatedName": "Сингапур",
 		"adjective": ["Singapore"],
 		"cityStateType": "Mercantile",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "Perhaps, in another world, we could have been friends...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,255,0],
-		"cities": ["Сингапур"]
+		"cities": ["Singapore"]
 	},
 	{
 		"name": "Zanzibar",
-		"translatedName": "Занзибар",
 		"adjective": ["Zanzibar"],
 		"cityStateType": "Mercantile",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "May the Heavens forgive you for inflicting this humiliation to our people.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,153,255],
-		"cities": ["Занзибар"]
+		"cities": ["Zanzibar"]
 	},
 	{
 		"name": "Sydney",
-		"translatedName": "Сидней",
 		"adjective": ["Sydney"],
 		"cityStateType": "Maritime",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
+		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "The principles for which we have fought will survive longer than any nation you could ever build.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,204,204],
-		"cities": ["Сидней"]
+		"cities": ["Sydney"]
 	},
 	{
 		"name": "Cape Town",
-		"translatedName": "Кейптаун",
 		"adjective": ["Cape Town"],
 		"cityStateType": "Maritime",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "I have failed. May you, at least, know compassion towards our people.",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,153,153],
-		"cities": ["Кейптаун"]
+		"cities": ["Cape Town"]
 	},
 	{
 		"name": "Kathmandu",
-		"translatedName": "Катманду",
 		"adjective": ["Kathmandu"],
 		"cityStateType": "Mercantile",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "We... defeated? No... we had so much work to do!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [51,25,0],
-		"cities": ["Катманду"]
+		"cities": ["Kathmandu"]
 	},
 	{
 		"name": "Hanoi",
-		"translatedName": "Ханой",
 		"adjective": ["Hanoi"],
 		"cityStateType": "Cultured",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "So this is how does it feel to die...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,0,255],
-		"cities": ["Ханой"]
+		"cities": ["Hanoi"]
 	},
 	{
 		"name": "Quebec City",
-		"translatedName": "Квебек",
 		"adjective": ["Quebec City"],
 		"cityStateType": "Cultured",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "We were too weak to protect ourselves...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [51,102,0],
-		"cities": ["Квебек"]
+		"cities": ["Quebec City"]
 	},
 	{
 		"name": "Helsinki",
-		"translatedName": "Хельсинки",
 		"adjective": ["Helsinki"],
 		"cityStateType": "Maritime",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "The day of judgement has come to us. But rest assured, the same will go for you!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,178,102],
-		"cities": ["Хельсинки"]
+		"cities": ["Helsinki"]
 	},
 	{
 		"name": "Kuala Lumpur",
-		"translatedName": "Куала Лумпур",
 		"adjective": ["Kuala Lumpur"],
 		"cityStateType": "Cultured",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
 		"defeated": "Today, the Malay people obey you, but do not think this is over...",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
-		"cities": ["Куала Лумпур"]
+		"cities": ["Kuala Lumpur"]
 	},
 	{
 		"name": "Manila",
-		"translatedName": "Манила",
 		"adjective": ["Manila"],
 		"cityStateType": "Maritime",
 
-		"declaringWar": "Ты не оставил нам выбора. Войне быть.",
-		"attacked": "Очень хорошо, мы никогда не забудем это.",
-		"afterPeace": "Быть может мир будет на нашей земле всегда?",
-		"defeated": "О, боги! Почему вы покинули нас?",
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Ah, Gods! Why have you forsaken us?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [96,96,96],
-		"cities": ["Манила"]
+		"cities": ["Manila"]
+	},
+	{
+		"name": "Lhasa",
+		"translatedName": "Lhasa",
+		"adjective": ["tibetano"],
+		"cityStateType": "Cultured",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Perhaps now we will find peace in death...",
+		"outerColor": [0, 0, 0],
+		"innerColor": [204,102,0],
+		"cities": ["Lhasa"]
+	},
+	{
+		"name": "Vancouver",
+		"translatedName": "Vancouver",
+		"adjective": ["canadese"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "In responding to the unstinting malignancy that has heretofore defined your relationship with Canada, we can have no recourse but war!",
+		"attacked": "As we can reach no peaceful resolution with you, Canada must turn, with reluctance, to war.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "I regret not defending my country to the last, although it was not of use.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [0,255,128],
+		"cities": ["Vancouver"]
+	},
+	{
+		"name": "M'Banza-Kongo",
+		"adjective": ["M'Banza-Kongo"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
+		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "You are nothing but a glorified barbarian. Cruel, and ruthless.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,128,0],
+		"cities": ["M'Banza-Kongo"]
+	},
+	{
+		"name": "Mogadishu",
+		"adjective": ["Mogadishu"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "You leave us no choice. War it must be.",
+		"attacked": "Very well, this shall not be forgotten.",
+		"afterPeace": "May peace forever bless our lands.",
+		"defeated": "Congratulations, conquerer. This tribe serves you now.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [153,204,255],
+		"cities": ["Mogadishu"]
 	},
 	
 	        
@@ -1213,7 +1223,6 @@
 	//Barbarian
 	{
 		"name": "Barbarians",
-		"translatedName": "Варвары",
 		"outerColor": [0,0,0],
 		"innerColor": [182,0,0]
 	}

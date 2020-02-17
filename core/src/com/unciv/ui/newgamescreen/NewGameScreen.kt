@@ -20,17 +20,18 @@ import kotlin.concurrent.thread
 
 class NewGameScreen: PickerScreen(){
 
-    val newGameParameters= UncivGame.Current.gameInfo.gameParameters
+    val newGameParameters= UncivGame.Current.gameInfo.gameParameters.clone()
     val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
     val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
         setDefaultCloseAction()
+        scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
         val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
-        topTable.add(ScrollPane(newGameScreenOptionsTable)).height(topTable.parent.height)
-        topTable.add(playerPickerTable).pad(10f)
+        topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
+        topTable.add(playerPickerTable).height(topTable.parent.height)
         topTable.pack()
         topTable.setFillParent(true)
 
@@ -94,7 +95,10 @@ class NewGameScreen: PickerScreen(){
                     cantMakeThatMapPopup.addCloseButton()
                     cantMakeThatMapPopup.open()
                     Gdx.input.inputProcessor = stage
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
+                Gdx.graphics.requestRendering()
             }
         }
     }
@@ -108,7 +112,7 @@ class NewGameScreen: PickerScreen(){
     var newGame:GameInfo?=null
 
     override fun render(delta: Float) {
-        if(newGame!=null){
+        if (newGame != null){
             game.loadGame(newGame!!)
         }
         super.render(delta)

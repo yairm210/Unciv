@@ -83,10 +83,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         // 5 - heal the unit if needed
-        if (unit.health < 100) {
-            UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)
-            return
-        }
+        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
 
         // 6 - wander
         UnitAutomation().wander(unit, unitDistanceToTiles)
@@ -114,10 +111,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         // 4 - heal the unit if needed
-        if (unit.health < 100) {
-            UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)
-            return
-        }
+        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
 
         // 5 - wander
         UnitAutomation().wander(unit, unitDistanceToTiles)

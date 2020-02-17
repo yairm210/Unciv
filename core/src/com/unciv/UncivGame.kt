@@ -149,6 +149,7 @@ class UncivGame(
         if(screen != null && screen != worldScreen) screen.dispose()
         setScreen(worldScreen)
         worldScreen.shouldUpdate=true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
+        Gdx.graphics.requestRendering()
     }
 
     // This is ALWAYS called after create() on Android - google "Android life cycle"

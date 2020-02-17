@@ -199,25 +199,8 @@ open class TileInfo {
         }
 
         val improvement = getTileImprovement()
-        if (improvement != null) {
-            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
-                stats.add(getTileResource().improvementStats!!) // resource-specific improvement
-            else
-                stats.add(improvement) // basic improvement
-
-            if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
-                stats.science += 1f
-            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
-                stats.gold += 1f
-            if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
-                stats.add(improvement) // again, for the double effect
-            if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
-                stats.science += 2
-
-            if(improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
-                stats.culture += neighbors.count{it.improvement=="Moai"}
-        }
+        if (improvement != null)
+            stats.add(getImprovementStats(improvement, observingCiv, city))
 
         if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))
             stats.gold += 1
@@ -235,23 +218,46 @@ open class TileInfo {
         return stats
     }
 
+    fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
+        val stats =
+            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
+                getTileResource().improvementStats!!.clone() // resource-specific improvement
+            else
+                improvement.clone() // basic improvement
+
+        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
+        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
+            stats.science += 1f
+        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
+            stats.gold += 1f
+        if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
+            stats.add(improvement) // again, for the double effect
+        if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
+            stats.science += 2
+
+        if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
+            stats.culture += neighbors.count { it.improvement == "Moai" }
+
+        return stats
+    }
+
+    /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
-        if (isCityCenter() || improvement.name == this.improvement) return false
-        if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
-        if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
-
         val topTerrain = getLastTerrain()
-        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true
-
-        if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
-        if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
-        if(improvement.name == "Remove Road" && this.roadStatus===RoadStatus.Road) return true
-        if(improvement.name == "Remove Railroad" && this.roadStatus===RoadStatus.Railroad) return true
-
-        if("Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile()) return true
-        if (topTerrain.unbuildable && !(topTerrain.name==Constants.forest && improvement.name=="Camp")) return false
-        return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
-
+        return when {
+            isCityCenter() -> false
+            improvement.name == this.improvement -> false
+            improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
+            improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
+            improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
+            improvement.name == "Road" && roadStatus == RoadStatus.None -> true
+            improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
+            improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
+            improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
+            topTerrain.unbuildable && !(topTerrain.name == Constants.forest && improvement.name == "Camp") -> false
+            "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
+            else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
+        }
     }
 
     fun hasImprovementInProgress() = improvementInProgress!=null
@@ -288,17 +294,17 @@ open class TileInfo {
 
     fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
 
-    override fun toString(): String {
+    fun toString(viewingCiv: CivilizationInfo): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         val isViewableToPlayer = UncivGame.Current.viewEntireMapForDebug
-                || UncivGame.Current.gameInfo.getCurrentPlayerCivilization().viewableTiles.contains(this)
+                || viewingCiv.viewableTiles.contains(this)
 
         if (isCityCenter()) {
             val city = getCity()!!
             var cityString = city.name
             if(isViewableToPlayer) cityString += " ("+city.health+")"
             lineList += cityString
-            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
+            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()

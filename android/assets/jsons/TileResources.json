@@ -241,6 +241,7 @@
 		"gold": 2,
 		"improvement": "Quarry",
 		"improvementStats": {"gold": 1,"production": 1},
+		"unique": "+15% production towards Wonder construction",
 		"building": "Stone Works"
 	},
 	{

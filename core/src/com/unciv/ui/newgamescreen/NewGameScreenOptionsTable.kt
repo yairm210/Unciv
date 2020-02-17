@@ -1,12 +1,14 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
@@ -22,12 +24,18 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     val mapParameters = newGameScreen.mapParameters
     val ruleset = newGameScreen.ruleset
 
+    private var mapTypeSpecificTable = Table()
+    private val generatedMapOptionsTable = MapParametersTable(mapParameters)
+    private val savedMapOptionsTable = Table()
+
     init {
         pad(10f)
+        top()
+        defaults().pad(5f)
         add("Map options".toLabel(fontSize = 24)).colspan(2).row()
         addMapTypeSelection()
 
-        add("Game options".toLabel(fontSize = 24)).padTop(20f).colspan(2).row()
+        add("Game options".toLabel(fontSize = 24)).colspan(2).row()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
         addEraSelectBox()
@@ -36,8 +44,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         addBarbariansCheckbox()
         addOneCityChallengeCheckbox()
         addIsOnlineMultiplayerCheckbox()
-
-         addModCheckboxes()
+        addModCheckboxes()
 
         pack()
     }
@@ -45,33 +52,31 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private fun addMapTypeSelection() {
         add("{Map type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
-        if (MapSaver().getMaps().isNotEmpty()) mapTypes.add("Existing")
-
-        val mapFileLabel = "{Map file}:".toLabel()
-        val mapFileSelectBox = getMapFileSelectBox()
-        mapFileLabel.isVisible = false
-        mapFileSelectBox.isVisible = false
-
+        if (MapSaver().getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
-        val mapParameterTable = MapParametersTable(mapParameters)
+        val mapFileSelectBox = getMapFileSelectBox()
+        savedMapOptionsTable.defaults().pad(5f)
+        savedMapOptionsTable.add("{Map file}:".toLabel()).left()
+        // because SOME people gotta give the hugest names to their maps
+        savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
+                .right().row()
 
         fun updateOnMapTypeChange() {
-            mapParameters.type = mapTypeSelectBox.selected.value
-            if (mapParameters.type == "Existing") {
-                mapParameterTable.isVisible = false
-                mapFileSelectBox.isVisible = true
-                mapFileLabel.isVisible = true
+            mapTypeSpecificTable.clear()
+            if (mapTypeSelectBox.selected.value == MapType.custom) {
+                mapParameters.type = MapType.custom
                 mapParameters.name = mapFileSelectBox.selected
+                mapTypeSpecificTable.add(savedMapOptionsTable)
             } else {
-                mapParameterTable.isVisible = true
-                mapFileSelectBox.isVisible = false
-                mapFileLabel.isVisible = false
                 mapParameters.name = ""
+                mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
+                mapTypeSpecificTable.add(generatedMapOptionsTable)
             }
         }
 
-        updateOnMapTypeChange() // activate once, so when we had a file map before we'll have the right things set for another one
+        // activate once, so when we had a file map before we'll have the right things set for another one
+        updateOnMapTypeChange()
 
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -79,12 +84,8 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
             }
         })
 
-        add(mapTypeSelectBox).pad(10f).row()
-        add(mapParameterTable).colspan(2).row()
-
-        add(mapFileLabel)
-        add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2) // because SOME people gotta give the hugest names to their maps
-            .pad(10f).row()
+        add(mapTypeSelectBox).row()
+        add(mapTypeSpecificTable).colspan(2).row()
     }
 
 
@@ -147,7 +148,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         (0..ruleset.nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
-        add(cityStatesSelectBox).pad(10f).row()
+        add(cityStatesSelectBox).row()
         cityStatesSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.numberOfCityStates = cityStatesSelectBox.selected
@@ -163,7 +164,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                 newGameParameters.difficulty = difficultySelectBox.selected.value
             }
         })
-        add(difficultySelectBox).pad(10f).row()
+        add(difficultySelectBox).fillX().row()
     }
 
     private fun addGameSpeedSelectBox() {
@@ -174,7 +175,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                 newGameParameters.gameSpeed = GameSpeed.valueOf(gameSpeedSelectBox.selected.value)
             }
         })
-        add(gameSpeedSelectBox).pad(10f).row()
+        add(gameSpeedSelectBox).fillX().row()
     }
 
     private fun addEraSelectBox() {
@@ -187,16 +188,16 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                 newGameParameters.startingEra = TechEra.valueOf(eraSelectBox.selected.value.replace(" era", ""))
             }
         })
-        add(eraSelectBox).pad(10f).row()
+        add(eraSelectBox).fillX().row()
     }
 
 
     private fun addVictoryTypeCheckboxes() {
-        add("{Victory conditions}:".tr()).colspan(2).row()
+        add("{Victory conditions}:".toLabel()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
         var i = 0
-        val victoryConditionsTable = Table().apply { defaults().pad(10f) }
+        val victoryConditionsTable = Table().apply { defaults().pad(5f) }
         for (victoryType in VictoryType.values()) {
             if (victoryType == VictoryType.Neutral) continue
             val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
@@ -212,7 +213,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                     }
                 }
             })
-            victoryConditionsTable.add(victoryCheckbox)
+            victoryConditionsTable.add(victoryCheckbox).left()
             if (++i % 2 == 0) victoryConditionsTable.row()
         }
         add(victoryConditionsTable).colspan(2).row()
@@ -233,7 +234,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         }
 
         add("{Mods}:".tr()).colspan(2).row()
-        val modCheckboxTable = Table().apply { defaults().pad(10f) }
+        val modCheckboxTable = Table().apply { defaults().pad(5f) }
         for(mod in modRulesets){
             val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
             checkBox.addListener(object : ChangeListener() {

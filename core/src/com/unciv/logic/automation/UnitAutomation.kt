@@ -44,7 +44,7 @@ class UnitAutomation {
             return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
-        if (unit.name == "Great General")
+        if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
             return SpecificUnitAutomation().automateGreatGeneral(unit)
 
         if (unit.type == UnitType.Fighter)
@@ -362,40 +362,25 @@ class UnitAutomation {
     }
 
     internal fun tryExplore(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
-        if (tryGoToRuin(unit, unitDistanceToTiles)) {
-            if (unit.currentMovement == 0f) return true
-        }
+        if (tryGoToRuin(unit, unitDistanceToTiles) && unit.currentMovement == 0f) return true
 
-        for (tile in unit.currentTile.getTilesInDistance(5))
+        for (tile in unit.currentTile.getTilesInDistance(10))
             if (unit.movement.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
-                && unit.movement.canReach(tile)) {
+                && unit.movement.canReach(tile)
+                    && (tile.getOwner()==null || !tile.getOwner()!!.isCityState())) {
                 unit.movement.headTowards(tile)
                 return true
             }
         return false
     }
 
+    /** This is what a unit with the 'explore' action does.
+     It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         if (tryGoToRuin(unit, unitDistanceToTiles) && unit.currentMovement == 0f) return
-
-        if (unit.health < 80) {
-            tryHealUnit(unit, unitDistanceToTiles)
-            return
-        }
-
-        for (i in 1..10) {
-            val unexploredTilesAtDistance = unit.getTile().getTilesAtDistance(i)
-                    .filter {
-                        unit.movement.canMoveTo(it) && it.position !in unit.civInfo.exploredTiles
-                        && unit.movement.canReach(it)
-                                && (it.getOwner()==null || !it.getOwner()!!.isCityState())
-                    }
-            if (unexploredTilesAtDistance.isNotEmpty()) {
-                unit.movement.headTowards(unexploredTilesAtDistance.random())
-                return
-            }
-        }
+        if (unit.health < 80 && tryHealUnit(unit, unitDistanceToTiles)) return
+        if (tryExplore(unit, unit.movement.getDistanceToTiles())) return
         unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
     }
 

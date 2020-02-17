@@ -90,6 +90,9 @@ class BattleDamage{
                     && combatant.getCivInfo().goldenAges.isGoldenAge())
                 modifiers["Golden Age"] = 0.1f
 
+            if (combatant.getCivInfo().nation.unique == "Combat Strength +30% when fighting City-State units or attacking a City-State itself. All mounted units have +1 Movement."
+                    && enemy.getCivInfo().isCityState())
+                modifiers["Mongol Terror"] = 0.3f
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
@@ -234,7 +237,7 @@ class BattleDamage{
     /**
      * Includes attack modifiers
      */
-    fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
+    private fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,defender))
         return attacker.getAttackingStrength() * attackModifier
     }
@@ -243,7 +246,7 @@ class BattleDamage{
     /**
      * Includes defence modifiers
      */
-    fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
+    private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         var defenceModifier = 1f
         if(defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
         return defender.getDefendingStrength() * defenceModifier
@@ -261,7 +264,7 @@ class BattleDamage{
         return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
-    fun damageModifier(attackerToDefenderRatio:Float, damageToAttacker:Boolean): Float {
+    private fun damageModifier(attackerToDefenderRatio: Float, damageToAttacker:Boolean): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio = attackerToDefenderRatio.pow(if (attackerToDefenderRatio < 1) -1 else 1)
         var ratioModifier = ((((strongerToWeakerRatio + 3)/4).pow(4) +1)/2)

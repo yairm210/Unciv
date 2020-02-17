@@ -104,9 +104,13 @@ class MapUnit {
         if (type.isWaterUnit() && civInfo.nation.unique == "+2 movement for all naval units")
             movement += 2
 
-        if(civInfo.goldenAges.isGoldenAge() &&
+        if (type == UnitType.Mounted &&
+                civInfo.nation.unique == "Combat Strength +30% when fighting City-State units or attacking a City-State itself. All mounted units have +1 Movement.")
+            movement += 1
+
+        if (civInfo.goldenAges.isGoldenAge() &&
                 civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
-            movement+=1
+            movement += 1
 
         return movement
     }
@@ -166,6 +170,10 @@ class MapUnit {
         return action?.startsWith("Fortify") == true
     }
 
+    fun isSleeping(): Boolean {
+        return action?.startsWith("Sleep") == true
+    }
+
     fun getFortificationTurns(): Int {
         if(!isFortified()) return 0
         return action!!.split(" ")[1].toInt()
@@ -181,7 +189,7 @@ class MapUnit {
         if (name == Constants.worker && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
-        if (action==Constants.unitActionExplore || action==Constants.unitActionSleep
+        if (action==Constants.unitActionExplore || isSleeping()
                 || action == Constants.unitActionAutomation) return false
         return true
     }
@@ -268,13 +276,17 @@ class MapUnit {
         action = "Fortify 0"
     }
 
+    fun fortifyUntilHealed() {
+        action = "Fortify 0 until healed"
+    }
+
     fun fortifyIfCan() {
         if (canFortify()) {
             fortify()
         }
     }
 
-    fun adjacentHealingBonus():Int{
+    private fun adjacentHealingBonus():Int{
         var healingBonus = 0
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus +=5
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
@@ -334,11 +346,14 @@ class MapUnit {
     private fun doPostTurnAction() {
         if (name == Constants.worker && getTile().improvementInProgress != null) workOnImprovement()
         if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
-        if(currentMovement== getMaxMovement().toFloat()
+        if(currentMovement == getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()
-            if(currentTurnsFortified<2) action = "Fortify ${currentTurnsFortified+1}"
+            if(currentTurnsFortified<2)
+                action = action!!.replace(currentTurnsFortified.toString(),(currentTurnsFortified+1).toString(), true)
         }
+        if (hasUnique("Heal adjacent units for an additional 15 HP per turn"))
+            currentTile.neighbors.flatMap{ it.getUnits() }.forEach{ it.healBy(15) }
     }
 
     private fun workOnImprovement() {
@@ -389,10 +404,12 @@ class MapUnit {
     /** Returns the health points [MapUnit] will receive if healing on [tileInfo] */
     fun rankTileForHealing(tileInfo: TileInfo): Int {
         val tileOwner = tileInfo.getOwner()
-        val isAlliedTerritory = if (tileOwner != null)
-            tileOwner == civInfo || tileOwner.getDiplomacyManager(civInfo).isConsideredAllyTerritory()
-        else
-            false
+        val isAlliedTerritory = when {
+            tileOwner == null -> false
+            tileOwner == civInfo -> true
+            !civInfo.knows(tileOwner) -> false
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredAllyTerritory()
+        }
 
         var healing =  when {
             tileInfo.isCityCenter() -> 20
@@ -418,6 +435,10 @@ class MapUnit {
                 || getUniques().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
+        if(action != null && health > 99)
+            if (action!!.endsWith(" until healed")) {
+                action = null // wake up when healed
+            }
     }
 
     fun startTurn(){
@@ -426,7 +447,7 @@ class MapUnit {
         due = true
 
         // Wake sleeping units if there's an enemy nearby
-        if(action==Constants.unitActionSleep && currentTile.getTilesInDistance(2).any {
+        if(isSleeping() && currentTile.getTilesInDistance(2).any {
                     it.militaryUnit!=null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
                 })
             action=null
@@ -486,7 +507,7 @@ class MapUnit {
     private fun clearEncampment(tile: TileInfo) {
         tile.improvement = null
 
-        var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
         if (civInfo.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
             goldGained *= 3f
 
@@ -499,6 +520,14 @@ class MapUnit {
         if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
         if (civInfo.isDefeated()) civInfo.destroy()
+
+        for(unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
+            if (unit.movement.canMoveTo(currentTile)) continue // we disbanded a carrier in a city, it can still stay in the city
+            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange())
+                    .firstOrNull{unit.movement.canMoveTo(it)}
+            if(tileCanMoveTo!=null) unit.movement.moveToTile(tileCanMoveTo)
+            else unit.disband()
+        }
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {

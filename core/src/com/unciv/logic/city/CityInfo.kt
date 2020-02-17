@@ -4,9 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
@@ -379,13 +378,13 @@ class CityInfo {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, Color.GOLD)
 
         val oldCiv = civInfo
-        moveToCiv(conqueringCiv)
-        if(oldCiv.isDefeated()) {
-            oldCiv.destroy()
-            conqueringCiv.popupAlerts.add(PopupAlert(AlertType.Defeated,oldCiv.civName))
-        }
-
+        // must be before moving the city to the conquering civ,
+        // so the repercussions are properly checked
         diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
+
+        moveToCiv(conqueringCiv)
+        Battle.destroyIfDefeated(oldCiv, conqueringCiv)
+
 
         if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         reassignWorkers()
@@ -402,7 +401,8 @@ class CityInfo {
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
         val currentPopulation = population.population
-        val percentageOfCivPopulationInThatCity = currentPopulation * 100f / civInfo.cities.sumBy { it.population.population }
+        val percentageOfCivPopulationInThatCity = currentPopulation * 100f /
+                oldCiv.cities.sumBy { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // How can you conquer a city but not know the civ you conquered it from?!
@@ -415,7 +415,7 @@ class CityInfo {
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
-            if (thirdPartyCiv.isAtWarWith(civInfo)) // You annoyed our enemy?
+            if (thirdPartyCiv.isAtWarWith(oldCiv)) // You annoyed our enemy?
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)
                         .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
             else thirdPartyCiv.getDiplomacyManager(conqueringCiv)

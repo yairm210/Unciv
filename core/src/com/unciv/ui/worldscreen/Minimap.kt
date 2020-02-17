@@ -13,8 +13,11 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
+import kotlin.math.max
+import kotlin.math.min
 
 class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     val allTiles = Group()
@@ -27,6 +30,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     }
 
     init{
+        setScrollingDisabled(true,true)
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
@@ -36,7 +40,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-            val groupSize = 10f
+            val groupSize = mapHolder.worldScreen.stage.height / 8f / mapHolder.tileMap.mapParameters.size.radius * (mapHolder.worldScreen.stage.height / 600f)
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
@@ -47,10 +51,10 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             allTiles.addActor(hex)
             tileImages[tileInfo] = hex
 
-            topX = Math.max(topX, hex.x + groupSize)
-            topY = Math.max(topY, hex.y + groupSize)
-            bottomX = Math.min(bottomX, hex.x)
-            bottomY = Math.min(bottomY, hex.y)
+            topX = max(topX, hex.x + groupSize)
+            topY = max(topY, hex.y + groupSize)
+            bottomX = min(bottomX, hex.x)
+            bottomY = min(bottomY, hex.y)
         }
 
         for (group in allTiles.children) {
@@ -59,7 +63,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        allTiles.setSize(10 + topX - bottomX, 10 + topY - bottomY)
+        allTiles.setSize(topX - bottomX, topY - bottomY)
 
         actor = allTiles
         layout()
@@ -82,6 +86,15 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             else if (tileInfo.getCity() != null && !tileInfo.isWater)
                 hex.color = tileInfo.getOwner()!!.nation.getOuterColor()
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
+            if (tileInfo.isCityCenter() && tileInfo.owningCity!!.getTiles().any { cloneCivilization.exploredTiles.contains(it.position) }) {
+                val nationIcon= ImageGetter.getNationIndicator(tileInfo.owningCity!!.civInfo.nation,hex.width * 3)
+                nationIcon.setPosition(hex.x - nationIcon.width/3,hex.y - nationIcon.height/3)
+                nationIcon.onClick {
+                    mapHolder.setCenterPosition(tileInfo.position)
+                    setScrollTomapHolder()
+                }
+                allTiles.addActor(nationIcon)
+            }
         }
     }
 }
@@ -98,7 +111,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
 
     fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
-        internalMinimapWrapper.add(minimap).size(worldScreen.stage.width/5,worldScreen.stage.height/5)
+        internalMinimapWrapper.add(minimap)
         internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
         internalMinimapWrapper.pack()
 
