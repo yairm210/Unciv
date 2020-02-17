@@ -13,10 +13,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
@@ -76,6 +73,13 @@ class NewGameScreen: PickerScreen(){
                         try {
                             OnlineMultiplayer().tryUploadGame(newGame!!)
                             GameSaver().autoSave(newGame!!){}
+
+                            //Saved as Multiplayer game to show up in the session browser
+                            GameSaver().saveGame(newGame!!, newGame!!.gameId,true)
+                            //Save gameId to clipboard because you have to do it anyway.
+                            Gdx.app.clipboard.contents = newGame!!.gameId
+                            //Popup to notify the User that the gameID got copied to the clipboard
+                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
                         } catch (ex: Exception) {
                             val cantUploadNewGamePopup = Popup(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
