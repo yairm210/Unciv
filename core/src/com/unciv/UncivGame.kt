@@ -31,6 +31,7 @@ class UncivGame(
     constructor(version: String) : this(version, null)
 
     lateinit var gameInfo: GameInfo
+    fun isGameInfoInitialized() = ::gameInfo.isInitialized
     lateinit var settings : GameSettings
     lateinit var crashController: CrashController
     /**
