@@ -168,7 +168,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
     override fun doWork(): Result {
         try {
-            val latestGame = OnlineMultiplayer().tryDownloadGame("123")
+            val latestGame = OnlineMultiplayer().tryDownloadGame(gameId)
             if (latestGame.currentPlayerCiv.playerId == userId) {
                 notifyUserAboutTurn(applicationContext)
                 with(NotificationManagerCompat.from(applicationContext)) {
