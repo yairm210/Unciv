@@ -137,6 +137,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
             }
             if (settings.multiplayerTurnCheckerEnabled) {
                 addMultiplayerTurnCheckerDelayBox(innerTable)
+
+                innerTable.add("Show persistent notification for turn notifier service".toLabel())
+                addButton(innerTable, if (settings.multiplayerTurnCheckerPermanentNotificationEnabled) "Yes" else "No") {
+                    settings.multiplayerTurnCheckerPermanentNotificationEnabled = !settings.multiplayerTurnCheckerPermanentNotificationEnabled
+                    update()
+                }
             }
         }
 

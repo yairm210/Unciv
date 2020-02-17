@@ -5,34 +5,38 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
-import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.translations.tr
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: WorkerParameters)
+class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParameters)
     : Worker(appContext, workerParams) {
 
     companion object {
-        const val WORK_DATA_FAIL_COUNT_INT = "WORK_DATA_FAIL_COUNT_INT"
-        const val WORK_DATA_GAME_ID = "WORK_DATA_GAME_ID"
         const val WORK_TAG = "UNCIV_MULTIPLAYER_TURN_CHECKER_WORKER"
-        const val NOTIFICATION_CHANNEL_ID_INFO = "UNCIV_NOTIFICATION_CHANNEL_INFO"
-        const val NOTIFICATION_CHANNEL_ID_SERVICE = "UNCIV_NOTIFICATION_CHANNEL_SERVICE"
         const val NOTIFICATION_ID_SERVICE = 1
         const val NOTIFICATION_ID_INFO = 2
+        private const val NOTIFICATION_CHANNEL_ID_INFO = "UNCIV_NOTIFICATION_CHANNEL_INFO"
+        private const val NOTIFICATION_CHANNEL_ID_SERVICE = "UNCIV_NOTIFICATION_CHANNEL_SERVICE"
 
-        fun enqueue(appContext: Context, failCount: Int, delayInMinutes: Long, gameId: String) {
-            val inputData = workDataOf(WORK_DATA_GAME_ID to gameId, WORK_DATA_FAIL_COUNT_INT to failCount)
+        @Volatile private var failCount = 0
+        @Volatile private var gameId = ""
+        @Volatile private var userId = ""
+        @Volatile private var configuredDelay = 5L
+        @Volatile private var persistentNotificationEnabled = true
 
+        fun enqueue(appContext: Context, delayInMinutes: Long) {
             val constraints = Constraints.Builder()
                     // If no internet is available, worker waits before becoming active.
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -41,13 +45,19 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
             val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
                     .setConstraints(constraints)
                     .setInitialDelay(delayInMinutes, TimeUnit.MINUTES)
-                    .setInputData(inputData)
                     .addTag(WORK_TAG)
                     .build()
 
             WorkManager.getInstance(appContext).enqueue(checkTurnWork)
         }
 
+        /**
+         * Notification Channel for 'It's your turn' and error notifications.
+         *
+         * This code is necessary for API level >= 26
+         * API level < 26 does not support Notification Channels
+         * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
+         */
         fun createNotificationChannelInfo(appContext: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = "Unciv Multiplayer Turn Checker Alert"
@@ -55,22 +65,29 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
                 val importance = NotificationManager.IMPORTANCE_HIGH
                 val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
                 mChannel.description = descriptionText
+                mChannel.setShowBadge(true)
+                mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
                 val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.createNotificationChannel(mChannel)
             }
         }
 
+        /**
+         * Notification Channel for persistent service notification.
+         *
+         * This code is necessary for API level >= 26
+         * API level < 26 does not support Notification Channels
+         * For more infos: https://developer.android.com/training/notify-user/channels.html#CreateChannel
+         */
         fun createNotificationChannelService(appContext: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // Create the NotificationChannel
                 val name = "Unciv Multiplayer Turn Checker Persistent Status"
                 val descriptionText = "Shown constantly to inform you about background checking."
                 val importance = NotificationManager.IMPORTANCE_MIN
                 val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
                 mChannel.description = descriptionText
-                // Register the channel with the system; you can't change the importance
-                // or other notification behaviors after this
+
                 val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.createNotificationChannel(mChannel)
             }
@@ -81,26 +98,28 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
          * It is not technically necessary for the Worker, since it is not a Service.
          */
         fun showPersistentNotification(appContext: Context, lastTimeChecked: String, checkPeriod: String) {
-            val pendingIntent: PendingIntent =
-                    Intent(appContext, AndroidLauncher::class.java).let { notificationIntent ->
-                        PendingIntent.getActivity(appContext, 0, notificationIntent, 0)
-                    }
+            if (persistentNotificationEnabled) {
+                val pendingIntent: PendingIntent =
+                        Intent(appContext, AndroidLauncher::class.java).let { notificationIntent ->
+                            PendingIntent.getActivity(appContext, 0, notificationIntent, 0)
+                        }
 
-            val notification: NotificationCompat.Builder = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID_SERVICE)
-                    .setPriority(NotificationManagerCompat.IMPORTANCE_MIN) // it's only a status
-                    .setContentTitle("Unciv multiplayer turn service running".tr())
-                    .setStyle(NotificationCompat.BigTextStyle()
-                            .bigText("Unciv will inform you when it's your turn.".tr() + "\n" +
-                                    "Last checked: [$lastTimeChecked]. Checks ca. every [$checkPeriod] minute(s).".tr() + "\n" +
-                                    "This service can be configured in the Unciv options menu.".tr()))
-                    .setSmallIcon(R.drawable.uncivicon2)
-                    .setContentIntent(pendingIntent)
-                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
-                    .setOnlyAlertOnce(true)
-                    .setOngoing(true)
+                val notification: NotificationCompat.Builder = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID_SERVICE)
+                        .setPriority(NotificationManagerCompat.IMPORTANCE_MIN) // it's only a status
+                        .setContentTitle("Unciv multiplayer turn notifier running".tr())
+                        .setStyle(NotificationCompat.BigTextStyle()
+                                .bigText("Unciv will inform you when it's your turn.".tr() + "\n" +
+                                        "Last checked: [$lastTimeChecked]. Checks ca. every [$checkPeriod] minute(s) when Internet available.".tr()
+                                        + " " + "Configurable in Unciv options menu.".tr()))
+                        .setSmallIcon(R.drawable.uncivicon2)
+                        .setContentIntent(pendingIntent)
+                        .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                        .setOnlyAlertOnce(true)
+                        .setOngoing(true)
 
-            with(NotificationManagerCompat.from(appContext)) {
-                notify(NOTIFICATION_ID_INFO, notification.build())
+                with(NotificationManagerCompat.from(appContext)) {
+                    notify(NOTIFICATION_ID_INFO, notification.build())
+                }
             }
         }
 
@@ -110,10 +129,15 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
                         PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
                     }
 
+            val contentTitle = "Unciv - It's your turn!".tr()
             val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
                     .setPriority(NotificationManagerCompat.IMPORTANCE_HIGH) // people are waiting!
-                    .setContentTitle("Unciv - It's your turn!".tr())
+                    .setContentTitle(contentTitle)
                     .setContentText("Your friends are waiting on your turn.".tr())
+                    .setTicker(contentTitle)
+                    // without at least vibrate, some Android versions don't show a heads-up notification
+                    .setDefaults(DEFAULT_VIBRATE)
+                    .setLights(Color.YELLOW, 300, 100)
                     .setSmallIcon(R.drawable.uncivicon2)
                     .setContentIntent(pendingIntent)
                     .setCategory(NotificationCompat.CATEGORY_SOCIAL)
@@ -124,41 +148,39 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
             }
         }
 
-        fun startTurnChecker(applicationContext: Context, gameInfo: GameInfo) {
-            val settings = UncivGame.Current.settings
+        fun startTurnChecker(applicationContext: Context, gameInfo: GameInfo, settings: GameSettings) {
             if (gameInfo.currentPlayerCiv.playerId == settings.userId) {
                 // May be useful to remind a player that he forgot to complete his turn.
                 notifyUserAboutTurn(applicationContext)
             } else {
+                gameId = gameInfo.gameId
+                userId = settings.userId
+                configuredDelay = settings.multiplayerTurnCheckerDelayInMinutes
+                persistentNotificationEnabled = settings.multiplayerTurnCheckerPermanentNotificationEnabled
+
                 showPersistentNotification(applicationContext,
                         "—", settings.multiplayerTurnCheckerDelayInMinutes.toString())
                 // Initial check always happens after a minute, ignoring delay config. Better user experience this way.
-                enqueue(applicationContext, 0, 1, gameInfo.gameId)
+                enqueue(applicationContext, 1)
             }
         }
     }
 
-    val delayInMinutes = UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes
-
     override fun doWork(): Result {
-        var failCount = workerParams.inputData.getInt(WORK_DATA_FAIL_COUNT_INT, 0)
-        var gameId = workerParams.inputData.getString(WORK_DATA_GAME_ID)
-        if (null == gameId) {
-            gameId = ""
-        }
         try {
-            val latestGame = OnlineMultiplayer().tryDownloadGame(gameId)
-            if (latestGame.currentPlayerCiv.playerId == UncivGame.Current.settings.userId) {
+            val latestGame = OnlineMultiplayer().tryDownloadGame("123")
+            if (latestGame.currentPlayerCiv.playerId == userId) {
                 notifyUserAboutTurn(applicationContext)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
             } else {
-                enqueue(applicationContext, 0, delayInMinutes, gameId)
+                enqueue(applicationContext, configuredDelay)
                 updatePersistentNotification()
             }
+            failCount = 0
         } catch (ex: Exception) {
-            if (++failCount > 5) {
+            if (failCount++ > 3) {
                 showErrorNotification()
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
@@ -168,7 +190,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
                 // If check fails, retry in one minute.
                 // Makes sense, since checks only happen if Internet is available in principle.
                 // Therefore a failure means either a problem with the GameInfo or with Dropbox.
-                enqueue(applicationContext, failCount, 1, gameId)
+                enqueue(applicationContext, 1)
                 updatePersistentNotification()
             }
         }
@@ -185,7 +207,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
         val displayTime = "$hour:$minute"
 
         showPersistentNotification(applicationContext, displayTime,
-                delayInMinutes.toString())
+                configuredDelay.toString())
     }
 
     private fun showErrorNotification() {
@@ -199,6 +221,9 @@ class MultiplayerTurnCheckWorker(appContext: Context, private val workerParams: 
                 .setContentTitle("An error has occured".tr())
                 .setContentText("Multiplayer turn notifier service terminated".tr())
                 .setSmallIcon(R.drawable.uncivicon2)
+                // without at least vibrate, some Android versions don't show a heads-up notification
+                .setDefaults(DEFAULT_VIBRATE)
+                .setLights(Color.YELLOW, 300, 100)
                 .setContentIntent(pendingIntent)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setOngoing(false)
