@@ -156,7 +156,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 gameId = gameInfo.gameId
                 userId = settings.userId
                 configuredDelay = settings.multiplayerTurnCheckerDelayInMinutes
-                persistentNotificationEnabled = settings.multiplayerTurnCheckerPermanentNotificationEnabled
+                persistentNotificationEnabled = settings.multiplayerTurnCheckerPersistentNotificationEnabled
 
                 showPersistentNotification(applicationContext,
                         "—", settings.multiplayerTurnCheckerDelayInMinutes.toString())
@@ -185,6 +185,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
+                failCount = 0 // Otherwise the notification service would be forever stuck in error mode.
                 return Result.failure()
             } else {
                 // If check fails, retry in one minute.

@@ -1,5 +1,7 @@
 package com.unciv.models.metadata
 
+import com.badlogic.gdx.Application
+import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
 
 class GameSettings {
@@ -27,8 +29,15 @@ class GameSettings {
     var continuousRendering = true
     var userId = ""
     var multiplayerTurnCheckerEnabled = true
-    var multiplayerTurnCheckerPermanentNotificationEnabled = true
+    var multiplayerTurnCheckerPersistentNotificationEnabled = true
     var multiplayerTurnCheckerDelayInMinutes = 5L
+
+    init {
+        // 26 = Android Oreo. Version below may display permanent icon in notification bar.
+        if (Gdx.app.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
+            multiplayerTurnCheckerPersistentNotificationEnabled = false
+        }
+    }
 
     fun save(){
         GameSaver().setGeneralSettings(this)
