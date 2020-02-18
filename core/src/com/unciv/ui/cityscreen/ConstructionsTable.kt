@@ -13,6 +13,7 @@ import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
+import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
 import com.unciv.ui.utils.*
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -133,7 +134,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
             val productionButton = getProductionButton(unit.name,
-                    unit.name.tr() + "\r\n" + turnsToUnit + turnOrTurns(turnsToUnit),
+                    unit.name.tr() + turnOrTurns(turnsToUnit),
                     unit.getRejectionReason(cityConstructions))
             units.add(productionButton)
         }
@@ -141,7 +142,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions)}) {
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
             val productionTextButton = getProductionButton(building.name,
-                    building.name.tr() + "\r\n" + turnsToBuilding + turnOrTurns(turnsToBuilding),
+                    building.name.tr() + turnOrTurns(turnsToBuilding),
                     building.getRejectionReason(cityConstructions)
             )
             if (building.isWonder) buildableWonders += productionTextButton
@@ -149,10 +150,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             else buildableBuildings += productionTextButton
         }
 
-        for (specialConstruction in SpecialConstruction.getSpecialConstructions()
+        for (specialConstruction in SpecialConstruction.specialConstructionsMap.values
                 .filter { it.shouldBeDisplayed(cityConstructions) }) {
             specialConstructions += getProductionButton(specialConstruction.name,
-                    "Produce [${specialConstruction.name}]".tr())
+                    "Produce [${specialConstruction.name}]".tr()
+                            + specialConstruction.getProductionTooltip(city))
         }
 
         availableConstructionsTable.addCategory("Units", units)
@@ -175,7 +177,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
         val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
-        val text = name.tr() + "\r\n" + turnsToComplete + turnOrTurns(turnsToComplete)
+        val text = name.tr() + turnOrTurns(turnsToComplete)
 
         table.defaults().pad(2f).minWidth(40f)
         table.add(ImageGetter.getConstructionImage(name).surroundWithCircle(40f)).padRight(10f)
@@ -344,8 +346,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
         return tab
     }
-
-    private fun turnOrTurns(number: Int): String = if (number > 1) " {turns}".tr() else " {turn}".tr()
 
     private fun getHeader(title: String): Table {
         val headerTable = Table()
