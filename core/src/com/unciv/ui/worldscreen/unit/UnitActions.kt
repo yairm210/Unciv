@@ -222,17 +222,9 @@ class UnitActions {
     }
 
     private fun addWorkerActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo, worldScreen: WorldScreen, unitTable: UnitTable) {
-        if (!unit.hasUnique("Can build improvements on tiles") || unit.isEmbarked()) return
-        actionList += UnitAction(
-                type = UnitActionType.ConstructImprovement,
-                canAct = unit.currentMovement > 0
-                        && !tile.isCityCenter()
-                        && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
-                isCurrentAction = unit.currentTile.hasImprovementInProgress(),
-                action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null })
-                })
+        if (!unit.hasUnique("Can build improvements on tiles")) return
 
+        // Allow automate/unautomate when embarked, but not building improvements - see #1963
         if (Constants.unitActionAutomation == unit.action) {
             actionList += UnitAction(
                     type = UnitActionType.StopAutomation,
@@ -248,6 +240,18 @@ class UnitActions {
                         WorkerAutomation(unit).automateWorkerAction()
                     })
         }
+
+        if(unit.isEmbarked()) return
+
+        actionList += UnitAction(
+                type = UnitActionType.ConstructImprovement,
+                canAct = unit.currentMovement > 0
+                        && !tile.isCityCenter()
+                        && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
+                isCurrentAction = unit.currentTile.hasImprovementInProgress(),
+                action = {
+                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null })
+                })
     }
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
