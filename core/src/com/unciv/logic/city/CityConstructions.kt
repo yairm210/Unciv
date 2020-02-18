@@ -8,9 +8,11 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.cityscreen.ConstructionInfoTable
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
+import kotlin.math.roundToInt
 
 /**
  * City constructions manager.
@@ -88,11 +90,15 @@ class CityConstructions {
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstruction // See below
         var result = currentConstructionSnapshot.tr()
-        if (currentConstructionSnapshot!=""
-                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  }) {
-            val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
-            result += "\r\n" + turnsLeft + (if(turnsLeft>1) " {turns}".tr() else " {turn}".tr())
+        if (currentConstructionSnapshot != "") {
+            val construction = SpecialConstruction.specialConstructionsMap[currentConstructionSnapshot]
+            if (construction == null) {
+                val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
+                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
+                result += ConstructionInfoTable.turnOrTurns(turnsLeft)
+            } else {
+                result += construction.getProductionTooltip(cityInfo)
+            }
         }
         return result
     }
@@ -103,9 +109,9 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
-                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot }) {
+                && !SpecialConstruction.specialConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += "\r\n" + turnsLeft + (if(turnsLeft>1) " {turns}".tr() else " {turn}".tr())
+            result += ConstructionInfoTable.turnOrTurns(turnsLeft)
         }
         return result
     }
@@ -145,8 +151,7 @@ class CityConstructions {
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
             constructionName=="" -> return getConstruction("Nothing")
             else -> {
-                val special = SpecialConstruction.getSpecialConstructions()
-                        .firstOrNull{it.name==constructionName}
+                val special = SpecialConstruction.specialConstructionsMap[constructionName]
                 if(special!=null) return special
             }
         }
@@ -195,7 +200,7 @@ class CityConstructions {
             cityInfo.cityStats.update()
         }
 
-        var production = Math.round(cityStatsForConstruction.production)
+        var production = cityStatsForConstruction.production.roundToInt()
         if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
 
         return Math.ceil((workLeft / production.toDouble())).toInt()
@@ -232,7 +237,7 @@ class CityConstructions {
         validateConstructionQueue()
 
         if(getConstruction(currentConstruction) !is SpecialConstruction)
-            addProductionPoints(Math.round(cityStats.production))
+            addProductionPoints(cityStats.production.roundToInt())
     }
 
     private fun stopUnbuildableConstruction() {
