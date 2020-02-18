@@ -21,7 +21,7 @@ open class SpecialConstruction(override var name: String, val description: Strin
         return isBuildable(construction)
     }
     open fun getProductionTooltip(cityInfo: CityInfo) : String
-            = "\r\n$${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${"{turn}".tr()}"
+            = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${"{turn}".tr()}"
 
     companion object {
         const val CONVERSION_RATE: Int = 4
