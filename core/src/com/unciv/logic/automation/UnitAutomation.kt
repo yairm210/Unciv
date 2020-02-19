@@ -282,8 +282,9 @@ class UnitAutomation {
 
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-            val tileToHeadTo = closestReachableEnemyCity.getTilesAtDistance(3)
-                    .filter { it.isLand && it in suitableGatheringGroundTiles }
+            val tileToHeadTo = (closestReachableEnemyCity.getTilesAtDistance(3)
+                    .filter { it.isLand && it !in suitableGatheringGroundTiles }
+                    + suitableGatheringGroundTiles)
                     .sortedBy { it.arialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) } ?: closestReachableEnemyCity
 

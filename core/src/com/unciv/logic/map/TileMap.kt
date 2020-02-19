@@ -144,8 +144,7 @@ class TileMap {
                 .filter {
                     isTileMovePotential(it)
                             && it.neighbors.any { n -> n in viableTilesToPlaceUnitInAtDistance1 }
-                            && it in viableTilesToPlaceUnitInAtDistance1
-                }
+                } + viableTilesToPlaceUnitInAtDistance1
 
 
         unit.assignOwner(civInfo, false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
