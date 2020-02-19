@@ -68,9 +68,8 @@ open class TileInfo {
         return false
     }
 
-    fun containsUnique(unique: String): Boolean {
-        return isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
-    }
+    fun containsUnique(unique: String): Boolean =
+            isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
@@ -127,18 +126,15 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
-    fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
-    }
+    fun getTerrainFeature(): Terrain? =
+            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
 
     fun isWorked(): Boolean {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
     }
 
-    fun getTileStats(observingCiv: CivilizationInfo): Stats {
-        return getTileStats(getCity(), observingCiv)
-    }
+    fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
@@ -264,21 +260,20 @@ open class TileInfo {
 
     fun isCoastalTile() = neighbors.any { it.baseTerrain==Constants.coast }
 
-    fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
-        return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
-    }
+    fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
+            resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
 
-    fun getViewableTiles(distance:Int): List<TileInfo> {
-        return tileMap.getViewableTiles(position, distance)
-    }
+    fun getViewableTilesList(distance:Int, ignoreCurrentTileHeight: Boolean): List<TileInfo> =
+            tileMap.getViewableTiles(position, distance, ignoreCurrentTileHeight)
 
-    fun getTilesInDistance(distance:Int): Sequence<TileInfo> {
-        return tileMap.getTilesInDistance(position,distance)
-    }
+    fun getTilesInDistance(distance: Int): Sequence<TileInfo> =
+            tileMap.getTilesInDistance(position,distance)
 
-    fun getTilesAtDistance(distance:Int): Sequence<TileInfo> {
-        return tileMap.getTilesAtDistance(position,distance)
-    }
+    fun getTilesInDistanceRange(range: IntRange): Sequence<TileInfo> =
+            tileMap.getTilesInDistanceRange(position, range)
+
+    fun getTilesAtDistance(distance:Int): Sequence<TileInfo> =
+            tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(): Float {
         var bonus = getBaseTerrain().defenceBonus

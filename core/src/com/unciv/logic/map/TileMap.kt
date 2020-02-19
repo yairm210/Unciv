@@ -74,8 +74,11 @@ class TileMap {
     }
 
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+            getTilesInDistanceRange(origin, 0..distance)
+
+    fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<TileInfo> =
             sequence {
-                for (i in 0..distance)
+                for (i in range)
                     yield(getTilesAtDistance(origin, i))
             }.flatMap { it }
 
@@ -173,7 +176,10 @@ class TileMap {
     }
 
 
-    fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
+    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean)
+            : List<TileInfo> {
+        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance).toList()
+
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         val currentTileHeight = get(position).getHeight()
 

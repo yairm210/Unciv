@@ -1,7 +1,6 @@
 package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.utils.OrderedMap
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.battle.*
@@ -277,14 +276,11 @@ class UnitAutomation {
             val unitDistanceToTiles = unit.movement.getDistanceToTiles()
             val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
 
-            val suitableGatheringGroundTiles = closestReachableEnemyCity
-                    .getTilesAtDistance(4).filter { it.isLand }.toSet()
 
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
-            val tileToHeadTo = (closestReachableEnemyCity.getTilesAtDistance(3)
-                    .filter { it.isLand && it !in suitableGatheringGroundTiles }
-                    + suitableGatheringGroundTiles)
+            val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
+                    .filter { it.isLand }
                     .sortedBy { it.arialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) } ?: closestReachableEnemyCity
 
