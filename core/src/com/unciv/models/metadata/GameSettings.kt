@@ -30,7 +30,7 @@ class GameSettings {
     var userId = ""
     var multiplayerTurnCheckerEnabled = true
     var multiplayerTurnCheckerPersistentNotificationEnabled = true
-    var multiplayerTurnCheckerDelayInMinutes = 5L
+    var multiplayerTurnCheckerDelayInMinutes = 5
 
     init {
         // 26 = Android Oreo. Version below may display permanent icon in notification bar.

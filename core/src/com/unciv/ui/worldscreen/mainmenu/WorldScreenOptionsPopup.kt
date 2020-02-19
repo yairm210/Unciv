@@ -300,9 +300,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
     private fun addMultiplayerTurnCheckerDelayBox(innerTable: Table) {
         innerTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
 
-        val checkDelaySelectBox = SelectBox<Long>(skin)
-        val possibleDelaysArray = Array<Long>()
-        possibleDelaysArray.addAll(1L, 2L, 5L, 15L)
+        val checkDelaySelectBox = SelectBox<Int>(skin)
+        val possibleDelaysArray = Array<Int>()
+        possibleDelaysArray.addAll(1, 2, 5, 15)
         checkDelaySelectBox.items = possibleDelaysArray
         checkDelaySelectBox.selected = UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes
 

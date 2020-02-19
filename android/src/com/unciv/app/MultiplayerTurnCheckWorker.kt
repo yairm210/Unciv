@@ -33,10 +33,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         @Volatile private var failCount = 0
         @Volatile private var gameId = ""
         @Volatile private var userId = ""
-        @Volatile private var configuredDelay = 5L
+        @Volatile private var configuredDelay = 5
         @Volatile private var persistentNotificationEnabled = true
 
-        fun enqueue(appContext: Context, delayInMinutes: Long) {
+        fun enqueue(appContext: Context, delayInMinutes: Int) {
             val constraints = Constraints.Builder()
                     // If no internet is available, worker waits before becoming active.
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -44,7 +44,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
                     .setConstraints(constraints)
-                    .setInitialDelay(delayInMinutes, TimeUnit.MINUTES)
+                    .setInitialDelay(delayInMinutes.toLong(), TimeUnit.MINUTES)
                     .addTag(WORK_TAG)
                     .build()
 
