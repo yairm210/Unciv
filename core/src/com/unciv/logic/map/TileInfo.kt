@@ -106,10 +106,10 @@ open class TileInfo {
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @Transient private var internalNeighbors : List<TileInfo>?=null
     val neighbors: List<TileInfo>
-        get(){
-            if(internalNeighbors==null)
-                internalNeighbors = getTilesAtDistance(1)
-            return internalNeighbors!!
+        get() {
+            val ret = internalNeighbors ?: getTilesAtDistance(1).toList()
+            internalNeighbors = ret
+            return ret
         }
 
     fun getHeight(): Int {
@@ -269,14 +269,14 @@ open class TileInfo {
     }
 
     fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): List<TileInfo> {
-        return tileMap.getViewableTiles(this.position,distance,ignoreCurrentTileHeight)
+        return tileMap.getViewableTiles(position,distance,ignoreCurrentTileHeight)
     }
 
-    fun getTilesInDistance(distance:Int): List<TileInfo> {
+    fun getTilesInDistance(distance:Int): Sequence<TileInfo> {
         return tileMap.getTilesInDistance(position,distance)
     }
 
-    fun getTilesAtDistance(distance:Int): List<TileInfo> {
+    fun getTilesAtDistance(distance:Int): Sequence<TileInfo> {
         return tileMap.getTilesAtDistance(position,distance)
     }
 

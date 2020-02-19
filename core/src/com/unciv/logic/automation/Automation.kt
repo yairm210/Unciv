@@ -14,14 +14,6 @@ import kotlin.math.sqrt
 
 class Automation {
 
-    internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
-        if (tile == null) return 0f
-        val stats = tile.getTileStats(null, civInfo)
-        var rank = rankStatsValue(stats, civInfo)
-        if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.hasViewableResource(civInfo)) rank += 1.0f
-        return rank
-    }
 
     fun rankTileForCityWork(tile:TileInfo, city: CityInfo, foodWeight: Float = 1f): Float {
         val stats = tile.getTileStats(city, city.civInfo)
@@ -60,20 +52,6 @@ class Automation {
     internal fun rankSpecialist(stats: Stats, cityInfo: CityInfo): Float {
         var rank = rankStatsForCityWork(stats, cityInfo)
         rank += 0.3f //GPP bonus
-        return rank
-    }
-
-    fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
-        var rank = 0.0f
-        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
-        else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
-
-        if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
-        else rank += stats.gold / 3 // 3 gold is much worse than 2 production
-
-        rank += stats.production
-        rank += stats.science
-        rank += stats.culture
         return rank
     }
 
@@ -128,6 +106,32 @@ class Automation {
         }
     }
 
+    companion object {
+
+        internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
+            if (tile == null) return 0f
+            val stats = tile.getTileStats(null, civInfo)
+            var rank = rankStatsValue(stats, civInfo)
+            if (tile.improvement == null) rank += 0.5f // improvement potential!
+            if (tile.hasViewableResource(civInfo)) rank += 1.0f
+            return rank
+        }
+
+        @JvmStatic
+        fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
+            var rank = 0.0f
+            if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
+            else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+
+            if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
+            else rank += stats.gold / 3 // 3 gold is much worse than 2 production
+
+            rank += stats.production
+            rank += stats.science
+            rank += stats.culture
+            return rank
+        }
+    }
 }
 
 enum class ThreatLevel{

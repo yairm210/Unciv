@@ -73,51 +73,46 @@ class TileMap {
         return get(vector.x.toInt(), vector.y.toInt())
     }
 
-    fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        val tilesToReturn = mutableListOf<TileInfo>()
-        for (i in 0 .. distance) {
-            tilesToReturn += getTilesAtDistance(origin, i)
-        }
-        return tilesToReturn
-    }
+    fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+            sequence {
+                for (i in 0..distance)
+                    yield(getTilesAtDistance(origin, i))
+            }.flatMap { it }
 
-    fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        if(distance==0) return listOf(get(origin))
-        val tilesToReturn = ArrayList<TileInfo>()
+    fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+            if (distance <= 0) // silently take negatives.
+                sequenceOf(get(origin))
+            else
+                sequence {
+                    fun getIfTileExistsOrNull(x: Int, y: Int) = if (contains(x, y)) get(x, y) else null
 
-        fun addIfTileExists(x:Int,y:Int){
-            if(contains(x,y))
-                tilesToReturn += get(x,y)
-        }
+                    val centerX = origin.x.toInt()
+                    val centerY = origin.y.toInt()
 
-        val centerX = origin.x.toInt()
-        val centerY = origin.y.toInt()
+                    // Start from 6 O'clock point which means (-distance, -distance) away from the center point
+                    var currentX = centerX - distance
+                    var currentY = centerY - distance
 
-        // Start from 6 O'clock point which means (-distance, -distance) away from the center point
-        var currentX = centerX - distance
-        var currentY = centerY - distance
-
-        for (i in 0 until distance) { // From 6 to 8
-            addIfTileExists(currentX,currentY)
-            // We want to get the tile on the other side of the clock,
-            // so if we're at current = origin-delta we want to get to origin+delta.
-            // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
-            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
-            currentX += 1 // we're going upwards to the left, towards 8 o'clock
-        }
-        for (i in 0 until distance) { // 8 to 10
-            addIfTileExists(currentX,currentY)
-            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
-            currentX += 1
-            currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
-        }
-        for (i in 0 until distance) { // 10 to 12
-            addIfTileExists(currentX,currentY)
-            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
-            currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
-        }
-        return tilesToReturn
-    }
+                    for (i in 0 until distance) { // From 6 to 8
+                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        // We want to get the tile on the other side of the clock,
+                        // so if we're at current = origin-delta we want to get to origin+delta.
+                        // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
+                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        currentX += 1 // we're going upwards to the left, towards 8 o'clock
+                    }
+                    for (i in 0 until distance) { // 8 to 10
+                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        currentX += 1
+                        currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
+                    }
+                    for (i in 0 until distance) { // 10 to 12
+                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
+                    }
+                }.filterNotNull()
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
      *
@@ -134,22 +129,24 @@ class TileMap {
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
-        fun isTileMovePotential(tileInfo:TileInfo): Boolean {
-            if(unit.type.isAirUnit()) return true
-            if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()
-            else return tileInfo.isLand
-        }
+        fun isTileMovePotential(tileInfo: TileInfo): Boolean =
+                when {
+                    unit.type.isAirUnit() -> true
+                    unit.type.isWaterUnit() -> tileInfo.isWater || tileInfo.isCityCenter()
+                    else -> tileInfo.isLand
+                }
 
-        val viableTilesToPlaceUnitInAtDistance1 = getTilesInDistance(position, 1).filter { isTileMovePotential(it) }
+        val viableTilesToPlaceUnitInAtDistance1 = getTilesInDistance(position, 1).filter { isTileMovePotential(it) }.toSet()
         // This is so that units don't skip over non-potential tiles to go elsewhere -
         // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
         val viableTilesToPlaceUnitInAtDistance2 = getTilesAtDistance(position, 2)
-                .filter { isTileMovePotential(it) && it.neighbors.any { n->n in viableTilesToPlaceUnitInAtDistance1 } }
+                .filter { isTileMovePotential(it)
+                        && it.neighbors.any { n->n in viableTilesToPlaceUnitInAtDistance1 }
+                        && it in viableTilesToPlaceUnitInAtDistance1 }
 
-        val viableTilesToPlaceUnitIn = viableTilesToPlaceUnitInAtDistance1.union(viableTilesToPlaceUnitInAtDistance2)
 
         unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
+        val unitToPlaceTile = viableTilesToPlaceUnitInAtDistance2.firstOrNull { unit.movement.canMoveTo(it) }
 
         if(unitToPlaceTile!=null) {
             // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
@@ -176,8 +173,6 @@ class TileMap {
 
 
     fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean = false): List<TileInfo> {
-        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance)
-
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         val currentTileHeight = get(position).getHeight()
 
