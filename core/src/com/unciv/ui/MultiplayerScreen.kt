@@ -94,14 +94,6 @@ class MultiplayerScreen() : PickerScreen() {
         rightSideTable.add(editButton).pad(10f).row()
 
         addGameButton.onClick {
-            if (Gdx.app.clipboard.contents == null) {
-                val errorPopup = Popup(this)
-                errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
-                errorPopup.row()
-                errorPopup.addCloseButton()
-                errorPopup.open()
-                return@onClick
-            }
             addMultiplayerGame(Gdx.app.clipboard.contents)
         }
         rightSideTable.add(addGameButton).pad(10f).padBottom(30f).row()
@@ -119,14 +111,11 @@ class MultiplayerScreen() : PickerScreen() {
     }
 
     //Adds a new Multiplayer game to the List
-    fun addMultiplayerGame(gameId: String, gameName: String = ""){
-        if (gameIsAlreadySavedAsMultiplayer(gameId)) {
-            ResponsePopup("Game is already added".tr(), this)
-            return
-        }
+    //gameId must be nullable because clipboard content could be null
+    fun addMultiplayerGame(gameId: String?, gameName: String = ""){
         try {
             //since the gameId is a String it can contain anything and has to be checked
-            UUID.fromString(gameId.trim())
+            UUID.fromString(gameId!!.trim())
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
@@ -135,6 +124,12 @@ class MultiplayerScreen() : PickerScreen() {
             errorPopup.open()
             return
         }
+        
+        if (gameIsAlreadySavedAsMultiplayer(gameId)) {
+            ResponsePopup("Game is already added".tr(), this)
+            return
+        }
+        
         thread(name="MultiplayerDownload") {
             addGameButton.setText("Working...".tr())
             addGameButton.disable()
