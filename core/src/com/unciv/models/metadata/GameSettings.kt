@@ -33,7 +33,7 @@ class GameSettings {
     var multiplayerTurnCheckerDelayInMinutes = 5
 
     init {
-        // 26 = Android Oreo. Version below may display permanent icon in notification bar.
+        // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
         if (Gdx.app.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
             multiplayerTurnCheckerPersistentNotificationEnabled = false
         }
