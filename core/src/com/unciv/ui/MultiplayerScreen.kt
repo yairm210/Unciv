@@ -94,6 +94,14 @@ class MultiplayerScreen() : PickerScreen() {
         rightSideTable.add(editButton).pad(10f).row()
 
         addGameButton.onClick {
+            if (Gdx.app.clipboard.contents == null) {
+                val errorPopup = Popup(this)
+                errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
+                errorPopup.row()
+                errorPopup.addCloseButton()
+                errorPopup.open()
+                return@onClick
+            }
             addMultiplayerGame(Gdx.app.clipboard.contents)
         }
         rightSideTable.add(addGameButton).pad(10f).padBottom(30f).row()
