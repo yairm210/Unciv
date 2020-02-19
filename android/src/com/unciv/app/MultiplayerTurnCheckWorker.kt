@@ -30,13 +30,17 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         private const val NOTIFICATION_CHANNEL_ID_INFO = "UNCIV_NOTIFICATION_CHANNEL_INFO"
         private const val NOTIFICATION_CHANNEL_ID_SERVICE = "UNCIV_NOTIFICATION_CHANNEL_SERVICE"
 
+
+        // These fields need to be volatile because they are set by main thread but later accessed by worker thread.
+        // Classes used here need to be primitive or internally synchronized to avoid visibility issues.
+        // Long and double must not be used here because they have visibility issues: https://stackoverflow.com/a/9278798
         @Volatile private var failCount = 0
         @Volatile private var gameId = ""
         @Volatile private var userId = ""
-        @Volatile private var configuredDelay = 5L
+        @Volatile private var configuredDelay = 5
         @Volatile private var persistentNotificationEnabled = true
 
-        fun enqueue(appContext: Context, delayInMinutes: Long) {
+        fun enqueue(appContext: Context, delayInMinutes: Int) {
             val constraints = Constraints.Builder()
                     // If no internet is available, worker waits before becoming active.
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -44,7 +48,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
                     .setConstraints(constraints)
-                    .setInitialDelay(delayInMinutes, TimeUnit.MINUTES)
+                    .setInitialDelay(delayInMinutes.toLong(), TimeUnit.MINUTES)
                     .addTag(WORK_TAG)
                     .build()
 
