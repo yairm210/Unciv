@@ -206,7 +206,7 @@ class UnitActions {
                     unit.civInfo.gold -= goldCostOfUpgrade
                     val unitTile = unit.getTile()
                     unit.destroy()
-                    val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name) ?: throw Exception("got here")
+                    val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
                     newunit.health = unit.health
                     newunit.promotions = unit.promotions
 

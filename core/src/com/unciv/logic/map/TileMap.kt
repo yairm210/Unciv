@@ -136,37 +136,39 @@ class TileMap {
                     else -> tileInfo.isLand
                 }
 
-        val viableTilesToPlaceUnitInAtDistance1 = getTilesInDistance(position, 1).filter { isTileMovePotential(it) }.toSet()
+        val viableTilesToPlaceUnitInAtDistance1 = getTilesAtDistance(position, 1)
+                .filter { isTileMovePotential(it) }.toSet()
         // This is so that units don't skip over non-potential tiles to go elsewhere -
         // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
-        val viableTilesToPlaceUnitInAtDistance2 = getTilesAtDistance(position, 2)
-                .filter { isTileMovePotential(it)
-                        && it.neighbors.any { n->n in viableTilesToPlaceUnitInAtDistance1 }
-                        && it in viableTilesToPlaceUnitInAtDistance1 }
+        val viableTilesToPlaceUnitIn = getTilesAtDistance(position, 2)
+                .filter {
+                    isTileMovePotential(it)
+                            && it.neighbors.any { n -> n in viableTilesToPlaceUnitInAtDistance1 }
+                            && it in viableTilesToPlaceUnitInAtDistance1
+                }
 
 
-        unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        val unitToPlaceTile = viableTilesToPlaceUnitInAtDistance2.firstOrNull { unit.movement.canMoveTo(it) }
+        unit.assignOwner(civInfo, false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
+        val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
 
-        if(unitToPlaceTile!=null) {
-            // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
-            if (removeImprovement) unitToPlaceTile.improvement = null
-            // only once we know the unit can be placed do we add it to the civ's unit list
-            unit.putInTile(unitToPlaceTile)
-            unit.currentMovement = unit.getMaxMovement().toFloat()
-
-            // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
-            for(promotion in unit.baseUnit.promotions)
-                unit.promotions.addPromotion(promotion, true)
-
-            // And update civ stats, since the new unit changes both unit upkeep and resource consumption
-            civInfo.updateStatsForNextTurn()
-            civInfo.updateDetailedCivResources()
-        }
-        else {
+        if (unitToPlaceTile == null) {
             civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
+
+        // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
+        if (removeImprovement) unitToPlaceTile.improvement = null
+        // only once we know the unit can be placed do we add it to the civ's unit list
+        unit.putInTile(unitToPlaceTile)
+        unit.currentMovement = unit.getMaxMovement().toFloat()
+
+        // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
+        for (promotion in unit.baseUnit.promotions)
+            unit.promotions.addPromotion(promotion, true)
+
+        // And update civ stats, since the new unit changes both unit upkeep and resource consumption
+        civInfo.updateStatsForNextTurn()
+        civInfo.updateDetailedCivResources()
 
         return unit
     }
