@@ -102,11 +102,13 @@ open class TileInfo {
     fun isCityCenter(): Boolean = getCity()?.location == position
     fun isNaturalWonder() : Boolean = naturalWonder != null
 
-    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
-
+    fun getTileImprovement(): TileImprovement? =
+            if (improvement == null) null
+            else ruleset.tileImprovements[improvement!!]
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
+    @delegate:Transient
     val neighbors: List<TileInfo> by lazy { getTilesAtDistance(1).toList() }
 
     fun getHeight(): Int {
@@ -119,8 +121,7 @@ open class TileInfo {
     fun getBaseTerrain(): Terrain = baseTerrainObject
 
     fun getOwner(): CivilizationInfo? {
-        val containingCity = getCity()
-        if(containingCity==null) return null
+        val containingCity = getCity() ?: return null
         return containingCity.civInfo
     }
 
