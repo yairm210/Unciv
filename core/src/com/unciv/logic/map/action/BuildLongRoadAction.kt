@@ -76,12 +76,11 @@ class BuildLongRoadAction(
         return tile.roadStatus >= unit.civInfo.tech.getBestRoadAvailable()
     }
 
-    private fun getPath(destination: TileInfo): List<TileInfo> {
-        // BFS is not very efficient
-        return BFS(unit.currentTile) { isRoadableTile(it) }
+    // BFS is not very efficient
+    private fun getPath(destination: TileInfo): List<TileInfo> =
+            BFS(unit.currentTile) { isRoadableTile(it) }
                 .stepUntilDestination(destination)
-                .getPathTo(destination).reversed()
-    }
+                .getPathTo(destination, true)
 
     private fun isRoadableTile(it: TileInfo) = it.isLand && unit.movement.canPassThrough(it)
 

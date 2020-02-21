@@ -34,7 +34,8 @@ class WorkerAutomation(val unit: MapUnit) {
 
         if (currentTile.improvementInProgress == null && currentTile.isLand
                 && tileCanBeImproved(currentTile,unit.civInfo)) {
-            return currentTile.startWorkingOnImprovement(chooseImprovement(currentTile, unit.civInfo)!!, unit.civInfo)
+            currentTile.startWorkingOnImprovement(chooseImprovement(currentTile, unit.civInfo)!!, unit.civInfo)
+            return
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
@@ -69,45 +70,62 @@ class WorkerAutomation(val unit: MapUnit) {
 
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
-        val citiesThatNeedConnecting = unit.civInfo.cities
-                .filter { it.population.population>3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
-                    && !it.cityStats.isConnectedToCapital(targetRoad) }
-        if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
-
-        val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
-                .map { city -> BFS(city.getCenterTile()){it.isLand && unit.movement.canPassThrough(it)} }
-                .toMutableList()
-
-        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
-                .map { it.getCenterTile() }
-
-        while(citiesThatNeedConnectingBfs.any()){
-            for(bfs in citiesThatNeedConnectingBfs.toList()){
-                bfs.nextStep()
-                if(bfs.tilesToCheck.isEmpty()){ // can't get to any connected city from here
-                    citiesThatNeedConnectingBfs.remove(bfs)
-                    continue
+        val cities = unit.civInfo.cities
+        val isCityThatNeedConnecting = cities
+                .any {
+                    it.population.population > 3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
+                            && !it.cityStats.isConnectedToCapital(targetRoad)
                 }
-                for(city in connectedCities)
-                    if(bfs.tilesToCheck.contains(city)) { // we have a winner!
-                        val pathToCity = bfs.getPathTo(city)
-                        val roadableTiles = pathToCity.filter { it.roadStatus < targetRoad }
-                        val tileToConstructRoadOn :TileInfo
-                        if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
-                        else{
-                            val reachableTiles = roadableTiles
-                                    .filter {  unit.movement.canMoveTo(it)&& unit.movement.canReach(it)}
-                            if(reachableTiles.isEmpty()) continue
-                            tileToConstructRoadOn = reachableTiles.minBy { unit.movement.getShortestPath(it).size }!!
+        if (isCityThatNeedConnecting) return false // do nothing.
+
+        val citiesThatNeedConnectingBfs = cities.asSequence()
+                .filter {
+                    it.population.population > 3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
+                            && !it.cityStats.isConnectedToCapital(targetRoad)
+                }
+                .map { city ->
+                    val ret = BFS(city.getCenterTile()) { it.isLand && unit.movement.canPassThrough(it) }
+                    ret.nextStep()
+                    ret
+                }.filter { it.tilesToCheck.isNotEmpty() }
+                .toList()
+
+        val connectedCities = cities.asSequence()
+                .filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
+                .map { it.getCenterTile() }.toHashSet()
+
+        val removed = HashSet<Int>()
+        while (removed.size != citiesThatNeedConnectingBfs.size) {
+            for (i in citiesThatNeedConnectingBfs.indices) {
+                if (i in removed)
+                    continue
+                val bfs = citiesThatNeedConnectingBfs[i]
+                for (tile in bfs.tilesToCheck)
+                    if (tile in connectedCities) { // we have a winner!
+                        val pathToCity = bfs.getPathTo(tile)
+                        val roadableTiles = pathToCity.asSequence()
+                                .filter { it.roadStatus < targetRoad }.toSet()
+                        val tileToConstructRoadOn: TileInfo
+                        if (unit.currentTile in roadableTiles)
+                            tileToConstructRoadOn = unit.currentTile
+                        else {
+                            tileToConstructRoadOn = roadableTiles.asSequence()
+                                    .filter { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
+                                    .minBy { unit.movement.getShortestPath(it).size } ?: continue
                             unit.movement.headTowards(tileToConstructRoadOn)
+                            unit.civInfo.addNotification("[${unit.name}] is moving.", unit.currentTile.position, Color.GRAY)
                         }
-                        if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
-                                && unit.currentTile.improvementInProgress!=targetRoad.name) {
+                        if (unit.currentMovement > 0 && unit.currentTile == tileToConstructRoadOn
+                                && unit.currentTile.improvementInProgress != targetRoad.name) {
                             val improvement = targetRoad.improvement(unit.civInfo.gameInfo.ruleSet)!!
                             tileToConstructRoadOn.startWorkingOnImprovement(improvement, unit.civInfo)
+                            unit.civInfo.addNotification("[${unit.name}] is improving.", unit.currentTile.position, Color.GRAY)
                         }
                         return true
                     }
+                bfs.nextStep()
+                if (bfs.tilesToCheck.isEmpty())
+                    removed.add(i)
             }
         }
         return false

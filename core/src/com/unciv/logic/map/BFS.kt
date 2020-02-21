@@ -37,16 +37,18 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         tilesToCheck = newTilesToCheck
     }
 
-    fun getPathTo(destination: TileInfo): ArrayList<TileInfo> {
+    fun getPathTo(destination: TileInfo, reverse: Boolean = false): List<TileInfo> {
         val path = ArrayList<TileInfo>()
         path.add(destination)
         var currentNode = destination
         while(currentNode != startingPoint) {
-            val parent = tilesReached[currentNode]
-            if (parent == null) return ArrayList()// destination is not in our path
+            val parent = tilesReached[currentNode] ?: return listOf()
+            // destination is not in our path
             currentNode = parent
             path.add(currentNode)
         }
+        if (reverse)
+            path.reverse()
         return path
     }
 }

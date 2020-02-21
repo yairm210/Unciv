@@ -18,6 +18,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlinx.coroutines.*
 
 private const val CAN_BUILD_IMPROVEMENT = "Can build improvement: "
 
@@ -133,20 +134,11 @@ object UnitActions {
                 }
 
                 // Pillage Action
-                if (!unit.type.isCivilian() && tile.improvement != null)
+                if (!unit.type.isCivilian() && canPillage(unit, tile))
                     yield(UnitAction(
                             type = UnitActionType.Pillage,
-                            action = getLambdaOrNull(unit.currentMovement > 0 && canPillage(unit, tile)) {
-                                // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
-                                //    and I can't find any other sources so I'll go with that
-                                if (tile.isLand) {
-                                    tile.improvementInProgress = tile.improvement
-                                    tile.turnsToImprovement = 2
-                                }
-                                tile.improvement = null
-                                if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
-                                unit.healBy(25)
-                            }))
+                            action = getPillageAction(unit, tile)
+                    ))
 
                 // Setup Action
                 if (!unit.isEmbarked() && unit.hasUnique("Must set up to ranged attack")) {
@@ -161,6 +153,7 @@ object UnitActions {
                             }))
                 }
 
+                // Found city
                 if (!unit.isEmbarked() && unit.hasUnique("Founds a new city"))
                     yield(UnitAction(
                             type = UnitActionType.FoundCity,
@@ -179,7 +172,10 @@ object UnitActions {
                                     type = UnitActionType.Automate,
                                     action = getLambdaOrNull(unit.currentMovement > 0) {
                                         unit.action = Constants.unitActionAutomation
-                                        WorkerAutomation(unit).automateWorkerAction()
+                                        GlobalScope.launch {
+                                            WorkerAutomation(unit).automateWorkerAction()
+                                            UncivGame.Current.worldScreen.shouldUpdate = true
+                                        }
                                     })
                         )
 
@@ -270,10 +266,23 @@ object UnitActions {
             unit.destroy()
         }
 
+    fun getPillageAction(unit: MapUnit, tile: TileInfo): (() -> Unit)? =
+            getLambdaOrNull(unit.currentMovement > 0) {
+                            // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
+                            //    and I can't find any other sources so I'll go with that
+                            if (tile.isLand) {
+                                tile.improvementInProgress = tile.improvement
+                                tile.turnsToImprovement = 2
+                            }
+                            tile.improvement = null
+                            if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+                            unit.healBy(25)
+                        }
+
     private fun getLambdaOrNull(test: Boolean, lambda: () -> Unit):(() -> Unit)? =
             if (test) lambda else null
 
-    private fun getGreatPersonActions(unit: MapUnit, tile: TileInfo): Sequence<UnitAction> =
+    fun getGreatPersonActions(unit: MapUnit, tile: TileInfo): Sequence<UnitAction> =
             sequence {
                 yieldAll(unit.getUniques().asSequence()
                         .filter { it.startsWith(CAN_BUILD_IMPROVEMENT) }

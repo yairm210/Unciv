@@ -12,6 +12,7 @@ import com.unciv.models.UnitAction
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
+
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     init {
@@ -70,12 +71,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.title)).size(20f).pad(5f)
-        val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
+        val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         actionButton.pack()
         actionButton.onClick(unitAction.uncivSound) {
             unitAction.action?.invoke()
-            UncivGame.Current.worldScreen.shouldUpdate=true
+            UncivGame.Current.worldScreen.shouldUpdate = true
         }
         if (unitAction.action == null) actionButton.disable()
         return actionButton

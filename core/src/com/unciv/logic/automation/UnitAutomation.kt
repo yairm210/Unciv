@@ -189,17 +189,16 @@ class UnitAutomation {
 
     fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         if (unit.type.isCivilian()) return false
-        val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
-                .filter { it.value.totalDistance < unit.currentMovement }.keys
-                .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
+        val tileToPillage = unitDistanceToTiles.asSequence()
+                .filter { it.value.totalDistance < unit.currentMovement
+                        && unit.movement.canMoveTo(it.key) && UnitActions.canPillage(unit, it.key) }
+                .map { it.key }
+                .maxBy { it.getDefensiveBonus() } ?: return false
 
-        if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
-        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxBy { it.getDefensiveBonus() }!!
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActions.getUnitActions(unit, UncivGame.Current.worldScreen)
-                .first { it.type == UnitActionType.Pillage }.action?.invoke()
+        UnitActions.getPillageAction(unit, tileToPillage)?.invoke()
         return true
     }
 

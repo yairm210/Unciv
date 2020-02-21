@@ -177,8 +177,8 @@ class SpecificUnitAutomation {
                     .firstOrNull { unit.movement.canReach(it) } ?: continue // to another city
 
             unit.movement.headTowards(chosenTile)
-            if (unit.currentTile == chosenTile && unit.currentMovement > 0)
-                UnitActions.getUnitActions(unit, UncivGame.Current.worldScreen)
+            if (unit.currentTile == chosenTile)
+                UnitActions.getGreatPersonActions(unit, chosenTile)
                         .first { it.type == UnitActionType.Create }.action?.invoke()
             return
         }
