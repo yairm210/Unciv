@@ -293,7 +293,7 @@ class NextTurnAutomation{
         for(civ1city in civ1.cities)
             for(civ2city in civ2.cities)
                 cityDistances.add(CityDistance(civ1city,civ2city,
-                        civ1city.getCenterTile().arialDistanceTo(civ2city.getCenterTile())))
+                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
 
         return cityDistances.minBy { it.arialDistance }!!
     }

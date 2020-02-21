@@ -22,8 +22,10 @@ class WorkerAutomation(val unit: MapUnit) {
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
 
+        var triedConnecting = false
         if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
             if (tryConnectingCities(unit)) return
+            triedConnecting = true
         }
 
         if (tileToWork != currentTile) {
@@ -39,7 +41,7 @@ class WorkerAutomation(val unit: MapUnit) {
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
-        if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
+        if (!triedConnecting && tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
@@ -61,9 +63,9 @@ class WorkerAutomation(val unit: MapUnit) {
         unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
     }
 
+    private fun tryConnectingCities(unit: MapUnit): Boolean { // returns whether we actually did anything
+        if (unit.currentMovement == 0f) return false
 
-
-    private fun tryConnectingCities(unit: MapUnit):Boolean { // returns whether we actually did anything
         //Player can choose not to auto-build roads & railroads.
         if (unit.civInfo.isPlayerCivilization() && !UncivGame.Current.settings.autoBuildingRoads)
             return false
@@ -71,63 +73,57 @@ class WorkerAutomation(val unit: MapUnit) {
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
         val cities = unit.civInfo.cities
-        val isCityThatNeedConnecting = cities
-                .any {
-                    it.population.population > 3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
-                            && !it.cityStats.isConnectedToCapital(targetRoad)
+        val unitTile = unit.getTile()
+        var closestConnectedCity: TileInfo? = null
+        var closestUnconnectedCity: BFS? = null
+        var connectedDistance = Int.MAX_VALUE
+        var unconnectedDistance = Int.MAX_VALUE
+        for (city in cities) {
+            val targetTile = city.getCenterTile()
+            if (city.isCapital() || city.cityStats.isConnectedToCapital(targetRoad)) {
+                val distance = unitTile.aerialDistanceTo(targetTile)
+                if (closestConnectedCity == null || distance < connectedDistance) {
+                    closestConnectedCity = targetTile
+                    connectedDistance = distance
                 }
-        if (isCityThatNeedConnecting) return false // do nothing.
-
-        val citiesThatNeedConnectingBfs = cities.asSequence()
-                .filter {
-                    it.population.population > 3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
-                            && !it.cityStats.isConnectedToCapital(targetRoad)
-                }
-                .map { city ->
-                    val ret = BFS(city.getCenterTile()) { it.isLand && unit.movement.canPassThrough(it) }
-                    ret.nextStep()
-                    ret
-                }.filter { it.tilesToCheck.isNotEmpty() }
-                .toList()
-
-        val connectedCities = cities.asSequence()
-                .filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
-                .map { it.getCenterTile() }.toHashSet()
-
-        val removed = HashSet<Int>()
-        while (removed.size != citiesThatNeedConnectingBfs.size) {
-            for (i in citiesThatNeedConnectingBfs.indices) {
-                if (i in removed)
-                    continue
-                val bfs = citiesThatNeedConnectingBfs[i]
-                for (tile in bfs.tilesToCheck)
-                    if (tile in connectedCities) { // we have a winner!
-                        val pathToCity = bfs.getPathTo(tile)
-                        val roadableTiles = pathToCity.asSequence()
-                                .filter { it.roadStatus < targetRoad }.toSet()
-                        val tileToConstructRoadOn: TileInfo
-                        if (unit.currentTile in roadableTiles)
-                            tileToConstructRoadOn = unit.currentTile
-                        else {
-                            tileToConstructRoadOn = roadableTiles.asSequence()
-                                    .filter { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
-                                    .minBy { unit.movement.getShortestPath(it).size } ?: continue
-                            unit.movement.headTowards(tileToConstructRoadOn)
-                            unit.civInfo.addNotification("[${unit.name}] is moving.", unit.currentTile.position, Color.GRAY)
-                        }
-                        if (unit.currentMovement > 0 && unit.currentTile == tileToConstructRoadOn
-                                && unit.currentTile.improvementInProgress != targetRoad.name) {
-                            val improvement = targetRoad.improvement(unit.civInfo.gameInfo.ruleSet)!!
-                            tileToConstructRoadOn.startWorkingOnImprovement(improvement, unit.civInfo)
-                            unit.civInfo.addNotification("[${unit.name}] is improving.", unit.currentTile.position, Color.GRAY)
-                        }
-                        return true
-                    }
-                bfs.nextStep()
+            } else if (city.population.population > 3 && !city.isCapital() && !city.isBeingRazed) { //City being razed should not be connected.
+                val bfs = BFS(city.getCenterTile()) { it.isLand && unit.movement.canPassThrough(it) }.nextStep()
                 if (bfs.tilesToCheck.isEmpty())
-                    removed.add(i)
+                    continue
+
+                val distance = unitTile.aerialDistanceTo(targetTile)
+                if (closestUnconnectedCity == null || distance < unconnectedDistance) {
+                    closestUnconnectedCity = bfs
+                    unconnectedDistance = distance
+                }
             }
         }
+        if (closestConnectedCity == null || closestUnconnectedCity == null) return false
+
+        do {
+            for (tile in closestUnconnectedCity.tilesToCheck)
+                if (tile == closestConnectedCity) { // we have a winner!
+                    val pathToCity = closestUnconnectedCity.getPathTo(tile)
+                    val roadableTiles = pathToCity.asSequence()
+                            .filter { it.roadStatus < targetRoad }.toSet()
+                    val tileToConstructRoadOn: TileInfo
+                    if (unit.currentTile in roadableTiles)
+                        tileToConstructRoadOn = unit.currentTile
+                    else {
+                        tileToConstructRoadOn = roadableTiles.asSequence()
+                                .filter { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
+                                .minBy { unit.movement.getShortestPath(it).size } ?: continue
+                        unit.movement.headTowards(tileToConstructRoadOn)
+                    }
+                    if (unit.currentMovement > 0 && unit.currentTile == tileToConstructRoadOn
+                            && unit.currentTile.improvementInProgress != targetRoad.name) {
+                        val improvement = targetRoad.improvement(unit.civInfo.gameInfo.ruleSet)!!
+                        tileToConstructRoadOn.startWorkingOnImprovement(improvement, unit.civInfo)
+                    }
+                    return true
+                }
+            closestUnconnectedCity.nextStep()
+        } while (closestUnconnectedCity.tilesToCheck.isNotEmpty())
         return false
     }
 

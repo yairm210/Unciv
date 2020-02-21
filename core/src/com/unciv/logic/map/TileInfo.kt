@@ -107,13 +107,7 @@ open class TileInfo {
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
-    @Transient private var internalNeighbors : List<TileInfo>?=null
-    val neighbors: List<TileInfo>
-        get() {
-            val ret = internalNeighbors ?: getTilesAtDistance(1).toList()
-            internalNeighbors = ret
-            return ret
-        }
+    val neighbors: List<TileInfo> by lazy { getTilesAtDistance(1).toList() }
 
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
@@ -285,7 +279,7 @@ open class TileInfo {
         return bonus
     }
 
-    fun arialDistanceTo(otherTile:TileInfo): Int {
+    fun aerialDistanceTo(otherTile:TileInfo): Int {
         val xDelta = position.x-otherTile.position.x
         val yDelta = position.y-otherTile.position.y
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()

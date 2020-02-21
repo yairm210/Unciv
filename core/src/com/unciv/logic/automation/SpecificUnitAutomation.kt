@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.UncivGame
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -25,7 +24,7 @@ class SpecificUnitAutomation {
                 .flatMap { city -> city.getWorkableTiles() }
                 .filter { hasWorkableSeaResource(it, unit.civInfo)
                         && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
-                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
 
         when (closestReachableResource) {
@@ -64,7 +63,7 @@ class SpecificUnitAutomation {
 
         //if no unit to follow, take refuge in city.
         val cityToGarrison = unit.civInfo.cities.map { it.getCenterTile() }
-                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { it.civilianUnit == null && unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
 
         if (cityToGarrison != null) {

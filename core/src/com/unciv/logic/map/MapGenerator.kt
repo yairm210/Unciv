@@ -546,7 +546,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 val firstKeyWithTilesLeft = orderedKeys
                         .first { availableTiles.any { tile -> tile.baseTerrain== it} }
                 val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
-                availableTiles = availableTiles.filter { it.arialDistanceTo(chosenTile) > distanceBetweenResources }
+                availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
                 chosenTiles.add(chosenTile)
                 baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1
             }
