@@ -15,9 +15,13 @@ class TileSetStrings {
 
     val tilesLocation = tileSetLocation+"Tiles/"
     val cityTile = tilesLocation+"City"
-    val bottomRightRiver = tilesLocation+"River-BottomRight"
-    val bottomRiver = tilesLocation+"River-Bottom"
-    val bottomLeftRiver = tilesLocation+"River-BottomLeft"
+    val bottomRightRiver = tilesLocation + "River-BottomRight"
+    val bottomRiver = tilesLocation + "River-Bottom"
+    val bottomLeftRiver = tilesLocation + "River-BottomLeft"
+    val topLeftRiver = tilesLocation + "River-TopLeft"
+    val topRiver = tilesLocation + "River-Top"
+    val topRightRiver = tilesLocation + "River-TopRight"
+
 
     val unitsLocation = tileSetLocation+"Units/"
     val landUnit = unitsLocation+"LandUnit"

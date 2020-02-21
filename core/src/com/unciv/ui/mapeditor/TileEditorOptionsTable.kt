@@ -230,47 +230,47 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         terrainFeaturesTable.pack()
     }
 
-    private fun addRiverToggleOptions(baseTerrainTable: Table) {
-        baseTerrainTable.addSeparator()
-
-
-        val tileInfoBottomRightRiver = TileInfo()
-        tileInfoBottomRightRiver.baseTerrain = Constants.plains
-        tileInfoBottomRightRiver.hasBottomRightRiver = true
-        val tileGroupBottomRightRiver = makeTileGroup(tileInfoBottomRightRiver)
-        tileGroupBottomRightRiver.onClick {
-            clearSelection()
-            toggleBottomRightRiver = true
-            setCurrentHex(tileInfoBottomRightRiver, "Bottom right river")
-        }
-        baseTerrainTable.add(tileGroupBottomRightRiver).row()
-
-
-        val tileInfoBottomRiver = TileInfo()
-        tileInfoBottomRiver.baseTerrain = Constants.plains
-        tileInfoBottomRiver.hasBottomRiver = true
-        val tileGroupBottomRiver = makeTileGroup(tileInfoBottomRiver)
-        tileGroupBottomRiver.onClick {
-            clearSelection()
-            toggleBottomRiver = true
-            setCurrentHex(tileInfoBottomRiver, "Bottom river")
-        }
-        baseTerrainTable.add(tileGroupBottomRiver).row()
-
-
-        val tileInfoBottomLeftRiver = TileInfo()
-        tileInfoBottomLeftRiver.hasBottomLeftRiver = true
-        tileInfoBottomLeftRiver.baseTerrain = Constants.plains
-        val tileGroupBottomLeftRiver = makeTileGroup(tileInfoBottomLeftRiver)
-        tileGroupBottomLeftRiver.onClick {
-            clearSelection()
-            toggleBottomLeftRiver = true
-            setCurrentHex(tileInfoBottomLeftRiver, "Bottom left river")
-        }
-        baseTerrainTable.add(tileGroupBottomLeftRiver).row()
-
-        baseTerrainTable.pack()
-    }
+//    private fun addRiverToggleOptions(baseTerrainTable: Table) {
+//        baseTerrainTable.addSeparator()
+//
+//
+//        val tileInfoBottomRightRiver = TileInfo()
+//        tileInfoBottomRightRiver.baseTerrain = Constants.plains
+//        tileInfoBottomRightRiver.hasBottomRightRiver = true
+//        val tileGroupBottomRightRiver = makeTileGroup(tileInfoBottomRightRiver)
+//        tileGroupBottomRightRiver.onClick {
+//            clearSelection()
+//            toggleBottomRightRiver = true
+//            setCurrentHex(tileInfoBottomRightRiver, "Bottom right river")
+//        }
+//        baseTerrainTable.add(tileGroupBottomRightRiver).row()
+//
+//
+//        val tileInfoBottomRiver = TileInfo()
+//        tileInfoBottomRiver.baseTerrain = Constants.plains
+//        tileInfoBottomRiver.hasBottomRiver = true
+//        val tileGroupBottomRiver = makeTileGroup(tileInfoBottomRiver)
+//        tileGroupBottomRiver.onClick {
+//            clearSelection()
+//            toggleBottomRiver = true
+//            setCurrentHex(tileInfoBottomRiver, "Bottom river")
+//        }
+//        baseTerrainTable.add(tileGroupBottomRiver).row()
+//
+//
+//        val tileInfoBottomLeftRiver = TileInfo()
+//        tileInfoBottomLeftRiver.hasBottomLeftRiver = true
+//        tileInfoBottomLeftRiver.baseTerrain = Constants.plains
+//        val tileGroupBottomLeftRiver = makeTileGroup(tileInfoBottomLeftRiver)
+//        tileGroupBottomLeftRiver.onClick {
+//            clearSelection()
+//            toggleBottomLeftRiver = true
+//            setCurrentHex(tileInfoBottomLeftRiver, "Bottom left river")
+//        }
+//        baseTerrainTable.add(tileGroupBottomLeftRiver).row()
+//
+//        baseTerrainTable.pack()
+//    }
 
     private fun makeTileGroup(tileInfo: TileInfo): TileGroup {
         tileInfo.setTransients()
@@ -348,9 +348,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                         tileGroup.update()
                     }
             }
-            toggleBottomLeftRiver -> tileInfo.hasBottomLeftRiver = !tileInfo.hasBottomLeftRiver
-            toggleBottomRiver -> tileInfo.hasBottomRiver = !tileInfo.hasBottomRiver
-            toggleBottomRightRiver -> tileInfo.hasBottomRightRiver = !tileInfo.hasBottomRightRiver
+//            toggleBottomLeftRiver -> tileInfo.hasBottomLeftRiver = !tileInfo.hasBottomLeftRiver
+//            toggleBottomRiver -> tileInfo.hasBottomRiver = !tileInfo.hasBottomRiver
+//            toggleBottomRightRiver -> tileInfo.hasBottomRightRiver = !tileInfo.hasBottomRightRiver
         }
 
         normalizeTile(tileInfo)

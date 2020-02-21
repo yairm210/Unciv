@@ -6,8 +6,10 @@ import com.unciv.logic.HexMath
 import com.unciv.models.Counter
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.River
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.*
@@ -15,6 +17,8 @@ import kotlin.random.Random
 
 
 class MapGenerator(val ruleset: Ruleset) {
+
+    private val MAX_RIVER_LENGTH = 5
 
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapRadius = mapParameters.size.radius
@@ -38,6 +42,7 @@ class MapGenerator(val ruleset: Ruleset) {
         generateLand(map)
         divideIntoBiomes(map)
         spawnLakesAndCoasts(map)
+        createRivers(map)
         randomizeTiles(map)
         spreadResources(map)
         spreadAncientRuins(map)
@@ -95,6 +100,49 @@ class MapGenerator(val ruleset: Ruleset) {
             }
         }
     }
+
+    private fun createRivers(map: TileMap) {
+        // temporarily create a river at every mountain
+//        map.rivers = ArrayList(map.tileList
+//                .filter { tile -> tile.baseTerrain == Constants.mountain }
+//                .map { tile -> createRiver(tile.position, map) }
+//                .toList())
+        map.rivers = ArrayList(Collections.singletonList(createRiver(Vector2(0F, 0F), map)))
+    }
+
+    private fun createRiver(source: Vector2, map: TileMap): River {
+        val river = River()
+        var currentRiverTiles = generateFirstRiverPair(source)
+        var length = 0
+        while (areLegalRiverTiles(currentRiverTiles, map) && length < MAX_RIVER_LENGTH) {
+            length++
+            river.course.add(currentRiverTiles)
+            currentRiverTiles = generateNextRiverPair(currentRiverTiles)
+        }
+        return river
+    }
+
+    private fun generateFirstRiverPair(source: Vector2): Pair<Vector2, Vector2> {
+        return Pair(source, Vector2(source).add(1F, 0F))
+    }
+
+    private fun generateNextRiverPair(oldPair: Pair<Vector2, Vector2>): Pair<Vector2, Vector2> {
+        val newSecond: Vector2 = oldPair.first
+        val newFirst = if (oldPair.first.x + 1 == oldPair.second.x) {
+            Vector2(newSecond).sub(0F, 1F)
+        } else {
+            Vector2(newSecond).sub(1F, 0F)
+        }
+        return Pair(newFirst, newSecond)
+    }
+
+    private fun areLegalRiverTiles(currentRiverTiles: Pair<Vector2, Vector2>, map: TileMap): Boolean {
+        return (!(map[currentRiverTiles.first].isWater
+                || map[currentRiverTiles.second].isWater)
+                && map.contains(currentRiverTiles.first)
+                && map.contains(currentRiverTiles.second))
+    }
+
 
     private fun randomizeTiles(tileMap: TileMap) {
 

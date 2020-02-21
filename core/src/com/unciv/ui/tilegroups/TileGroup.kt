@@ -270,7 +270,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val showMilitaryUnit = viewingCiv == null || showMilitaryUnit(viewingCiv)
 
         updateTileImage(viewingCiv)
-        updateRivers(tileInfo.hasBottomRightRiver, tileInfo.hasBottomRiver, tileInfo.hasBottomLeftRiver)
+        updateRivers(tileInfo.hasBottomRightRiver(),
+                tileInfo.hasBottomRiver(),
+                tileInfo.hasBottomLeftRiver(),
+                tileInfo.hasTopLeftRiver(),
+                tileInfo.hasTopRiver(),
+                tileInfo.hasTopRightRiver())
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
 
@@ -548,17 +553,28 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     }
 
 
-    var bottomRightRiverImage :Image?=null
-    var bottomRiverImage :Image?=null
-    var bottomLeftRiverImage :Image?=null
+    private var bottomRightRiverImage :Image?=null
+    private var bottomRiverImage :Image?=null
+    private var bottomLeftRiverImage :Image?=null
+    private var topLeftRiverImage :Image?=null
+    private var topRiverImage :Image?=null
+    private var topRightRiverImage :Image?=null
 
-    fun updateRivers(displayBottomRight:Boolean,displayBottom:Boolean,displayBottomLeft:Boolean){
-        bottomRightRiverImage = updateRiver(bottomRightRiverImage,displayBottomRight,tileSetStrings.bottomRightRiver)
+    private fun updateRivers(displayBottomRight: Boolean,
+                             displayBottom: Boolean,
+                             displayBottomLeft: Boolean,
+                             displayTopLeft: Boolean,
+                             displayTop: Boolean,
+                             displayTopRight: Boolean) {
+        bottomRightRiverImage = updateRiver(bottomRightRiverImage, displayBottomRight, tileSetStrings.bottomRightRiver)
         bottomRiverImage = updateRiver(bottomRiverImage, displayBottom, tileSetStrings.bottomRiver)
-        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage,displayBottomLeft,tileSetStrings.bottomLeftRiver)
+        bottomLeftRiverImage = updateRiver(bottomLeftRiverImage, displayBottomLeft, tileSetStrings.bottomLeftRiver)
+        topLeftRiverImage = updateRiver(topLeftRiverImage, displayTopLeft, tileSetStrings.topLeftRiver)
+        topRiverImage = updateRiver(topRiverImage, displayTop, tileSetStrings.topRiver)
+        topRightRiverImage = updateRiver(topRightRiverImage, displayTopRight, tileSetStrings.topRightRiver)
     }
 
-    fun updateRiver(currentImage:Image?, shouldDisplay:Boolean,imageName:String): Image? {
+    private fun updateRiver(currentImage:Image?, shouldDisplay:Boolean, imageName:String): Image? {
         if(!shouldDisplay){
             currentImage?.remove()
             return null

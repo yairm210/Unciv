@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.River
 
 class TileMap {
 
@@ -19,6 +20,7 @@ class TileMap {
 
     var mapParameters = MapParameters()
     private var tileList = ArrayList<TileInfo>()
+    var rivers = ArrayList<River>()
 
     constructor()  // for json parsing, we need to have a default constructor
 
@@ -26,6 +28,7 @@ class TileMap {
         val toReturn = TileMap()
         toReturn.tileList.addAll(tileList.map { it.clone() })
         toReturn.mapParameters = mapParameters
+        toReturn.rivers.addAll(rivers.map(River::clone))
         return toReturn
     }
 
@@ -117,6 +120,18 @@ class TileMap {
             currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
         }
         return tilesToReturn
+    }
+
+    /**
+     * returns the tile that the parameter is sharing a river with.
+     * null if there is no river.
+     */
+    fun getRiverBuddy(tile: Vector2): Vector2? {
+        val pair = rivers
+                .flatMap { river -> river.course }
+                .findLast { riverBuddies -> riverBuddies.first == tile || riverBuddies.second == tile }
+                ?: return null
+        return if (pair.first == tile) pair.second else pair.first
     }
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
