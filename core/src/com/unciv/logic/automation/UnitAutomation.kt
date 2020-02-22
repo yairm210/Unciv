@@ -331,7 +331,7 @@ class UnitAutomation {
                     val unitType = it.getUnitType()
                     unitType == UnitType.Siege || unitType.isRanged()
                 }
-                .groupByTo(LinkedHashMap()) { it.getUnitType() }
+                .groupByTo(HashMap()) { it.getUnitType() }
         return (mappedTargets[UnitType.Siege]?.asSequence()
                 ?: mappedTargets.values.asSequence().flatMap { it.asSequence() })
                 .minBy { it.getHealth() }
