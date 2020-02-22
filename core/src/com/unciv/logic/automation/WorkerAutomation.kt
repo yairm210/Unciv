@@ -23,11 +23,9 @@ class WorkerAutomation(val unit: MapUnit) {
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
 
-        var triedConnecting = false
-        if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
+        val triedConnecting = getPriority(tileToWork, unit.civInfo) < 3
+        if (getPriority(tileToWork, unit.civInfo) < 3)
             if (tryConnectingCities(unit)) return
-            triedConnecting = true
-        }
 
         if (tileToWork != currentTile) {
             val reachedTile = unit.movement.headTowards(tileToWork)
@@ -42,7 +40,7 @@ class WorkerAutomation(val unit: MapUnit) {
         }
 
         if (currentTile.improvementInProgress != null) return // we're working!
-        if (!triedConnecting && tryConnectingCities(unit)) return //nothing to do, try again to connect cities
+        if (!triedConnecting && tryConnectingCities(unit)) return //nothing to do, try to connect cities
 
         val mostUndevelopedCity = unit.civInfo.cities.asSequence()
                 .map {

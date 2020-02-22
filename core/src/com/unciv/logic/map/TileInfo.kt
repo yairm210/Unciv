@@ -85,8 +85,9 @@ open class TileInfo {
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = terrainFeature?.let { ruleset.terrains.getValue(it) }
-            ?: naturalWonder?.let {ruleset.terrains.getValue(it)} ?: getBaseTerrain()
+    fun getLastTerrain(): Terrain = (terrainFeature ?: naturalWonder)
+            ?.let { ruleset.terrains.getValue(it) }
+            ?: getBaseTerrain()
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
