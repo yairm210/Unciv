@@ -617,7 +617,7 @@
 	{
 		"name": "Museum",
 		"culture": 5,
-		"specialistSlots": {"culture": 1},
+		"specialistSlots": {"culture": 2},
 		"requiredBuilding": "Opera House",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
@@ -694,7 +694,7 @@
 		"name": "Factory",
 		"production": 4,
 		"percentStatBonus": {"production": 10},
-		"specialistSlots": {"production": 1},
+		"specialistSlots": {"production": 2},
 		"requiredBuilding": "Workshop",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
