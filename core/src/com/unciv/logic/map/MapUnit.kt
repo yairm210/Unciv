@@ -462,6 +462,11 @@ class MapUnit {
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
+        // all transported units should be destroyed as well
+        if (type.isAircraftCarrierUnit() || type.isMissileCarrierUnit()) {
+            currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }
+                    .forEach { unit -> unit.destroy() }
+        }
     }
 
     fun removeFromTile(){
@@ -516,18 +521,29 @@ class MapUnit {
     }
 
     fun disband(){
+        // evacuation of transported units before disbanding, if possible
+        if (type.isAircraftCarrierUnit() || type.isMissileCarrierUnit()) {
+            for(unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
+                // we disbanded a carrier in a city, it can still stay in the city
+                if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
+                // if no "fuel" to escape, should be disbanded as well
+                if (unit.currentMovement < 0.1)
+                    unit.disband()
+                // let's find closest city or another carrier where it can be evacuated
+                val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange()).
+                        filterNot { it == currentTile }.firstOrNull{unit.movement.canMoveTo(it)}
+
+                if (tileCanMoveTo!=null)
+                    unit.movement.moveToTile(tileCanMoveTo)
+                else
+                    unit.disband()
+            }
+        }
+
         destroy()
         if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
         if (civInfo.isDefeated()) civInfo.destroy()
-
-        for(unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
-            if (unit.movement.canMoveTo(currentTile)) continue // we disbanded a carrier in a city, it can still stay in the city
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange())
-                    .firstOrNull{unit.movement.canMoveTo(it)}
-            if(tileCanMoveTo!=null) unit.movement.moveToTile(tileCanMoveTo)
-            else unit.disband()
-        }
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
