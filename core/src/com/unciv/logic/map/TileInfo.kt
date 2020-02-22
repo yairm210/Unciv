@@ -40,44 +40,56 @@ open class TileInfo {
     fun hasBottomRightRiver(): Boolean {
         // disable rivers in the map editor for now. otherwise the game crashes.
         if (!::tileMap.isInitialized) return false
-        val riverBuddy = tileMap.getRiverBuddy(this.position) ?: return false
-        return riverBuddy.x == this.position.x - 1
-                && riverBuddy.y == this.position.y
+        tileMap.getRiverBuddies(this.position)
+                .forEach { riverBuddy ->
+                    if (riverBuddy.x == this.position.x - 1 && riverBuddy.y == this.position.y) return true
+                }
+        return false
     }
 
     fun hasBottomRiver(): Boolean {
         if (!::tileMap.isInitialized) return false
-        val riverBuddy = tileMap.getRiverBuddy(this.position) ?: return false
-        return riverBuddy.x == this.position.x - 1
-                && riverBuddy.y == this.position.y - 1
+        tileMap.getRiverBuddies(this.position)
+                .forEach { riverBuddy ->
+                    if (riverBuddy.x == this.position.x - 1 && riverBuddy.y == this.position.y - 1) return true
+                }
+        return false
     }
 
     fun hasBottomLeftRiver(): Boolean {
         if (!::tileMap.isInitialized) return false
-        val riverBuddy = tileMap.getRiverBuddy(this.position) ?: return false
-        return riverBuddy.x == this.position.x
-                && riverBuddy.y == this.position.y - 1
+        tileMap.getRiverBuddies(this.position)
+                .forEach { riverBuddy ->
+                    if (riverBuddy.x == this.position.x && riverBuddy.y == this.position.y - 1) return true
+                }
+        return false
     }
 
     fun hasTopLeftRiver(): Boolean {
         if (!::tileMap.isInitialized) return false
-        val riverBuddy = tileMap.getRiverBuddy(this.position) ?: return false
-        return riverBuddy.x == this.position.x + 1
-                && riverBuddy.y == this.position.y
+        tileMap.getRiverBuddies(this.position)
+                .forEach { riverBuddy ->
+                    if (riverBuddy.x == this.position.x + 1 && riverBuddy.y == this.position.y) return true
+                }
+        return false
     }
 
     fun hasTopRiver(): Boolean {
         if (!::tileMap.isInitialized) return false
-        val riverBuddy = tileMap.getRiverBuddy(this.position) ?: return false
-        return riverBuddy.x == this.position.x + 1
-                && riverBuddy.y == this.position.y + 1
+        tileMap.getRiverBuddies(this.position)
+                .forEach { riverBuddy ->
+                    if (riverBuddy.x == this.position.x + 1 && riverBuddy.y == this.position.y + 1) return true
+                }
+        return false
     }
 
     fun hasTopRightRiver(): Boolean {
         if (!::tileMap.isInitialized) return false
-        val riverBuddy = tileMap.getRiverBuddy(this.position) ?: return false
-        return riverBuddy.x == this.position.x
-                && riverBuddy.y == this.position.y + 1
+        tileMap.getRiverBuddies(this.position)
+                .forEach { riverBuddy ->
+                    if (riverBuddy.x == this.position.x && riverBuddy.y == this.position.y + 1) return true
+                }
+        return false
     }
 
     fun clone(): TileInfo {
@@ -368,15 +380,6 @@ open class TileInfo {
             lineList += "[$defencePercentString] to unit defence".tr()
         }
         if(getBaseTerrain().impassable) lineList += "Impassible".tr()
-
-        // debug
-        lineList += position.toString()
-        if (hasBottomLeftRiver()) lineList += "bottom left river"
-        if (hasBottomRightRiver()) lineList += "bottom right river"
-        if (hasBottomRiver()) lineList += "bottom river"
-        if (hasTopLeftRiver()) lineList += "top left river"
-        if (hasTopRightRiver()) lineList += "top right river"
-        if (hasTopRiver()) lineList += "top river"
 
         return lineList.joinToString("\n")
     }

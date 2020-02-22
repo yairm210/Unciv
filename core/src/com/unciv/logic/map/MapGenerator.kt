@@ -18,7 +18,7 @@ import kotlin.random.Random
 
 class MapGenerator(val ruleset: Ruleset) {
 
-    private val MAX_RIVER_LENGTH = 5
+    private val MAX_RIVER_LENGTH = 10
 
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
         val mapRadius = mapParameters.size.radius
@@ -101,12 +101,12 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
+    /**
+     * generates a single river at the center of the map.
+     * this is a proof of concept to show that the spawning of rivers works
+     * and other aspects of the game can be adjusted to fully incorporate them.
+     */
     private fun createRivers(map: TileMap) {
-        // temporarily create a river at every mountain
-//        map.rivers = ArrayList(map.tileList
-//                .filter { tile -> tile.baseTerrain == Constants.mountain }
-//                .map { tile -> createRiver(tile.position, map) }
-//                .toList())
         map.rivers = ArrayList(Collections.singletonList(createRiver(Vector2(0F, 0F), map)))
     }
 

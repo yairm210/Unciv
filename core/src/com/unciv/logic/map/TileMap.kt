@@ -123,15 +123,15 @@ class TileMap {
     }
 
     /**
-     * returns the tile that the parameter is sharing a river with.
-     * null if there is no river.
+     * returns the tiles that the parameter is sharing a river with or
+     * an empty list if there is no river next to it.
      */
-    fun getRiverBuddy(tile: Vector2): Vector2? {
-        val pair = rivers
+    fun getRiverBuddies(tile: Vector2): List<Vector2> {
+        return rivers
                 .flatMap { river -> river.course }
-                .findLast { riverBuddies -> riverBuddies.first == tile || riverBuddies.second == tile }
-                ?: return null
-        return if (pair.first == tile) pair.second else pair.first
+                .filter { riverTilePair -> riverTilePair.toList().contains(tile) }
+                .flatMap { riverTilePair -> riverTilePair.toList() }
+                .filter { riverTile -> (riverTile != tile) }
     }
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
