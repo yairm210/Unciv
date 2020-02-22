@@ -189,8 +189,7 @@ class UnitAutomation {
         val tileToPillage = unitDistanceToTiles.asSequence()
                 .filter { it.value.totalDistance < unit.currentMovement
                         && unit.movement.canMoveTo(it.key) && UnitActions.canPillage(unit, it.key) }
-                .map { it.key }
-                .maxBy { it.getDefensiveBonus() } ?: return false
+                .maxBy { it.key.getDefensiveBonus() }?.key ?: return false
 
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
