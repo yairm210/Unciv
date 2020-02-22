@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
@@ -223,41 +224,39 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getCityInfoTable(): Table {
         val iconSize = 50f//if you set this too low, there is a chance that the tables will be misaligned
         val padding = 5f
+        var sortedBy = "City"
+
+        val cityInfoTableDetails = Table(skin)
+        cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
+
+        fun sortOnClick(iconName: String) {
+            val descending = sortedBy == iconName
+            sortedBy = iconName
+            // sort the table: clear and fill with sorted data
+            cityInfoTableDetails.clear()
+            fillCitiesTable(cityInfoTableDetails, iconName, descending)
+            // reset to return back for ascending next time
+            if (descending) sortedBy = ""
+        }
 
         val cityInfoTableIcons = Table(skin)
         cityInfoTableIcons.defaults().pad(padding).align(Align.center)
 
         cityInfoTableIcons.add("Cities".toLabel(fontSize = 24)).colspan(8).align(Align.center).row()
-        cityInfoTableIcons.add()
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Population")).size(iconSize)
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Food")).size(iconSize)
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Gold")).size(iconSize)
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Science")).size(iconSize)
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Production")).size(iconSize)
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Culture")).size(iconSize)
-        cityInfoTableIcons.add(ImageGetter.getStatIcon("Happiness")).size(iconSize)
+
+        val citySortIcon = ImageGetter.getUnitIcon("Settler").surroundWithCircle(iconSize)
+        citySortIcon.onClick { sortOnClick("City") }
+        cityInfoTableIcons.add(citySortIcon).align(Align.left)
+
+        val columnsNames = arrayListOf("Population", "Food", "Gold", "Science", "Production", "Culture", "Happiness")
+        for (name in columnsNames) {
+            val icon = ImageGetter.getStatIcon(name)
+            icon.onClick { sortOnClick(name) }
+            cityInfoTableIcons.add(icon).size(iconSize)
+        }
         cityInfoTableIcons.pack()
 
-        val cityInfoTableDetails = Table(skin)
-        cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
-
-        for (city in viewingPlayer.cities.sortedBy { it.name }) {
-            val button = Button(Label(city.name, skin), skin)
-            button.onClick {
-                UncivGame.Current.setScreen(CityScreen(city))
-            }
-            cityInfoTableDetails.add(button)
-            cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
-            cityInfoTableDetails.add(city.population.population.toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.add(city.cityStats.currentCityStats.food.roundToInt().toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.add(city.cityStats.currentCityStats.gold.roundToInt().toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.add(city.cityStats.currentCityStats.science.roundToInt().toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.add(city.cityStats.currentCityStats.production.roundToInt().toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.add(city.cityStats.currentCityStats.culture.roundToInt().toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.add(city.cityStats.currentCityStats.happiness.roundToInt().toString()).actor!!.setAlignment(Align.center)
-            cityInfoTableDetails.row()
-        }
-        cityInfoTableDetails.pack()
+        fillCitiesTable(cityInfoTableDetails, "City", false)
 
         val cityInfoScrollPane = ScrollPane(cityInfoTableDetails)
         cityInfoScrollPane.pack()
@@ -283,12 +282,52 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         //and thus, we can guarantee that the tables will be aligned
         table.defaults().pad(padding).align(Align.right)
 
+        // place the button for sorting by city name on top of the cities names
+        citySortIcon.width = max(iconSize, cityInfoTableDetails.width - (iconSize+padding) * 8)
+
         table.add(cityInfoTableIcons).row()
         table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).row()
         table.add(cityInfoTableTotal)
         table.pack()
 
         return table
+    }
+
+    private fun fillCitiesTable(citiesTable: Table, sortType: String, descending: Boolean) {
+
+        val sorter = Comparator {city2, city1 : CityInfo -> when (sortType) {
+            "Population" -> city1.population.population - city2.population.population
+            "Food" ->       (city1.cityStats.currentCityStats.food - city2.cityStats.currentCityStats.food).toInt()
+            "Gold" ->       (city1.cityStats.currentCityStats.gold - city2.cityStats.currentCityStats.gold).toInt()
+            "Science" ->    (city1.cityStats.currentCityStats.science - city2.cityStats.currentCityStats.science).toInt()
+            "Production" -> (city1.cityStats.currentCityStats.production - city2.cityStats.currentCityStats.production).toInt()
+            "Culture" ->    (city1.cityStats.currentCityStats.culture - city2.cityStats.currentCityStats.culture).toInt()
+            "Happiness" ->  (city1.cityStats.currentCityStats.happiness - city2.cityStats.currentCityStats.happiness).toInt()
+            else ->         city2.name.compareTo(city1.name)
+        } }
+
+        var cityList = viewingPlayer.cities.sortedWith(sorter)
+
+        if (descending)
+            cityList = cityList.reversed()
+
+        for (city in cityList) {
+            val button = Button(Label(city.name, skin), skin)
+            button.onClick {
+                UncivGame.Current.setScreen(CityScreen(city))
+            }
+            citiesTable.add(button)
+            citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
+            citiesTable.add(city.population.population.toString()).actor!!.setAlignment(Align.center)
+            citiesTable.add(city.cityStats.currentCityStats.food.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            citiesTable.add(city.cityStats.currentCityStats.gold.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            citiesTable.add(city.cityStats.currentCityStats.science.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            citiesTable.add(city.cityStats.currentCityStats.production.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            citiesTable.add(city.cityStats.currentCityStats.culture.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            citiesTable.add(city.cityStats.currentCityStats.happiness.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            citiesTable.row()
+        }
+        citiesTable.pack()
     }
 
     private fun getUnitTable(): Table {

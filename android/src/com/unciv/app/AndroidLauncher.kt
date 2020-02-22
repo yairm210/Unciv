@@ -56,8 +56,9 @@ class AndroidLauncher : AndroidApplication() {
 	}
 
     override fun onPause() {
-        if (UncivGame.Current.settings.multiplayerTurnCheckerEnabled
+        if (UncivGame.Companion.isCurrentInitialized()
                 && UncivGame.Current.isGameInfoInitialized()
+                && UncivGame.Current.settings.multiplayerTurnCheckerEnabled
                 && UncivGame.Current.gameInfo.gameParameters.isOnlineMultiplayer) {
             MultiplayerTurnCheckWorker.startTurnChecker(applicationContext, UncivGame.Current.gameInfo, UncivGame.Current.settings)
         }

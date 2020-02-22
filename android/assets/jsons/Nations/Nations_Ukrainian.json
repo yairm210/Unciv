@@ -244,7 +244,7 @@
 		"declaringWar": "Моя скарбниця зменшується, а мої солдати вже не можуть дочекатись... <зітхає> ...тому ти мусиш померти.",
 		"attacked": "Такий сміливий поступок, але такий дурний! Якби ж ваш мозок був таким же великим як і ваша мужність.",
 		"defeated": "Боги покинули нас. Ми програли.",
-		"introduction": "Вітаю тебе. Я Август, імператор та Великий понтифік риму. Якщо ви друг Риму, ми готові дружити з вами.",
+		"introduction": "Вітаю тебе. Я Август, імператор та великий понтифік Риму. Якщо ви друг Риму, ми готові дружити з вами.",
 		"neutralHello": "Привіт!",
 		"neutralLetsHearIt": ["Починай.","Продовжуй."],
 		"neutralNo": ["Ні.","Звісно ні!"],
@@ -356,8 +356,8 @@
 		"unique": "Підрозділи б'ються у повну силу, навіть коли поранені.",
 		"cities": ["Кіото","Осак","Токіо","Сацума","Каґосіма","Нара","Нагоя","Ідзумо","Нагасакі","Йокогама",
 			"Сімоносекі","Мацуяма","Саппоро","Хакодате","Ісе","Тояма","Фукусіма","Суо","Бідзен","Етідзен",
-			"Ідзумі","Омі","Ехіго","Козуке","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
-			"Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
+			"Ідзумі","Омі","Ехіго","Козуке","Садл","Кобе","Наґано","Хіросіма","Такаяма","Акіта","Фукуока","Аоморі",
+			"Камакура","Коті","Наха","Сендай","Ґіфу","Ямаґучі","Ота","Тотторі"]
 	},
 	{
 		"name": "India",
@@ -387,8 +387,8 @@
 		"innerColor": [255,153,51],
 		"unique": "Нещастя від кількості міст подвоєно, нещастя від кількості громадян вдвічі зменшено.",
 		"cities": ["Делі","Мумбаї","Віджаянагара","Патна","Варанасі","Агра","Колката","Лахо́р","Бенґалуру","Гайдарабад","Мадурай","Ахмедабад",
-			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Тіручірапаллі","Тханджавур",
-			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+			"Колхапур","Аллахабад","Айодх'я","Індрапрастха","Матхура","Удджайн","Гульбарга","Джаунпур ","Раджгір","Шравасті","Тіручірапаллі","Тханджавур",
+			"Bodhgaya","Kushinagar","Амараваті","Гаур","Гваліор","Джайпур","Карачі"]
 	},
 	{
 		"name": "Germany",
@@ -648,10 +648,10 @@
 		"hateNo": ["You cannot be serious!","That's unacceptable!","We decline."],
 		"hateYes": ["Oh, very well.","Alright."],
 		"afterPeace": "We thank you for bringing an end to this pointless war.",
-		"tradeRequest": "Can I interest you in this deal?",
+		"tradeRequest": "Чи я можу зацікавити вас цією угодою?",
 		"outerColor": [204,102,0],
 		"innerColor": [255,0,0],
-		"uniqueName": "River Warlord",
+		"uniqueName": "Воєначальник річок",
 		"unique": "Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
 		"cities": ["Гао","Томбукту","Єнне","Тегаза","Тондібі","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
 			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
@@ -659,9 +659,9 @@
 	},
 	{
 		"name": "Siam",
-    "translatedName": "Таїланд",
+    "translatedName": "Сіам",
 		"leaderName": "Рамакхамхаенг",
-		"adjective": ["Таїландський"],
+		"adjective": ["Сіамський"],
 		"startBias": ["Avoid Forest"],
 		//preferredVictoryType:"Diplomatic",
 
