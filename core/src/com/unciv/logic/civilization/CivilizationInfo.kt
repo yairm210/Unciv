@@ -126,8 +126,8 @@ class CivilizationInfo {
         if(!Gdx.files.internal(filePath).exists()) return nation
         val translatedNation = jsonParser.getFromJson(Array<Nation>::class.java, filePath)
                 .firstOrNull { it.name==civName}
-        if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
-            return nation      // default to english
+                ?: return nation// this language's trnaslation doesn't contain this nation yet,
+        // default to english
         return translatedNation
     }
 

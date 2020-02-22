@@ -24,7 +24,7 @@ class TileMap {
 
     fun clone(): TileMap {
         val toReturn = TileMap()
-        toReturn.tileList.addAll(tileList.map { it.clone() })
+        toReturn.tileList.addAll(tileList.asSequence().map { it.clone() })
         toReturn.mapParameters = mapParameters
         return toReturn
     }
@@ -51,9 +51,7 @@ class TileMap {
     }
 
 
-    operator fun contains(vector: Vector2): Boolean {
-        return contains(vector.x.toInt(), vector.y.toInt())
-    }
+    operator fun contains(vector: Vector2): Boolean = contains(vector.x.toInt(), vector.y.toInt())
 
     fun contains(x:Int, y:Int): Boolean {
         val arrayXIndex = x-leftX
@@ -69,9 +67,7 @@ class TileMap {
         return tileMatrix[arrayXIndex][arrayYIndex]!!
     }
 
-    operator fun get(vector: Vector2): TileInfo {
-        return get(vector.x.toInt(), vector.y.toInt())
-    }
+    operator fun get(vector: Vector2): TileInfo = get(vector.x.toInt(), vector.y.toInt())
 
     fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
             getTilesInDistanceRange(origin, 0..distance)
@@ -94,25 +90,28 @@ class TileMap {
                     var currentY = centerY - distance
 
                     for (i in 0 until distance) { // From 6 to 8
-                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        getIfTileExistsOrNull(currentX, currentY)?.also { yield(it) }
                         // We want to get the tile on the other side of the clock,
                         // so if we're at current = origin-delta we want to get to origin+delta.
                         // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
-                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
+                                ?.also { yield(it) }
                         currentX += 1 // we're going upwards to the left, towards 8 o'clock
                     }
                     for (i in 0 until distance) { // 8 to 10
-                        yield(getIfTileExistsOrNull(currentX, currentY))
-                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        getIfTileExistsOrNull(currentX, currentY)?.also { yield(it) }
+                        getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
+                                ?.also { yield(it) }
                         currentX += 1
                         currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
                     }
                     for (i in 0 until distance) { // 10 to 12
-                        yield(getIfTileExistsOrNull(currentX, currentY))
-                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        getIfTileExistsOrNull(currentX, currentY)?.also { yield(it) }
+                        getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY)
+                                ?.also { yield(it) }
                         currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
                     }
-                }.filterNotNull()
+                }
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
      *
@@ -205,7 +204,7 @@ class TileMap {
 
                 val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
                     val neighborHeight = it.getHeight()
-                    viewableTiles.contains(it) && (
+                    it in viewableTiles && (
                             currentTileHeight > neighborHeight // a>b
                                     || targetTileHeight > neighborHeight // c>b
                                     || neighborHeight == 0) // b==0

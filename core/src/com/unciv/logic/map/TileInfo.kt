@@ -74,26 +74,25 @@ open class TileInfo {
 
     /** Returns military, civilian and air units in tile */
     fun getUnits(): List<MapUnit> {
-        if(militaryUnit==null && civilianUnit==null && airUnits.isEmpty())
+        if (militaryUnit == null && civilianUnit == null && airUnits.isEmpty())
             return emptyList() // for performance reasons - costs much less to initialize than an empty ArrayList or list()
-        val list = ArrayList<MapUnit>(2)
-        if(militaryUnit!=null) list.add(militaryUnit!!)
-        if(civilianUnit!=null) list.add(civilianUnit!!)
+        val list = ArrayList<MapUnit>(2 + airUnits.size)
+        if (militaryUnit != null) list.add(militaryUnit!!)
+        if (civilianUnit != null) list.add(civilianUnit!!)
         list.addAll(airUnits)
         return list
     }
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if(naturalWonder != null) getNaturalWonder() else getBaseTerrain()
+    fun getLastTerrain(): Terrain = terrainFeature?.let { ruleset.terrains.getValue(it) }
+            ?: naturalWonder?.let {ruleset.terrains.getValue(it)} ?: getBaseTerrain()
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.tileResources[resource!!]!!
 
-    fun getTileResourceOrNull(): TileResource? =
-            if (resource == null) null
-            else ruleset.tileResources.getOrElse(resource!!) {null }
+    fun getTileResourceOrNull(): TileResource? = resource?.let { ruleset.tileResources[it] }
 
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
@@ -125,8 +124,7 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
-    fun getTerrainFeature(): Terrain? =
-            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
+    fun getTerrainFeature(): Terrain? = terrainFeature?.let { ruleset.terrains[it] }
 
     fun isWorked(): Boolean {
         val city = getCity()

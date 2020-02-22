@@ -183,7 +183,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()
-        return getShortestPath(destination).any()
+        return getShortestPath(destination).isNotEmpty()
     }
 
 
@@ -347,7 +347,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return true
     }
 
-    fun getDistanceToTiles(): PathsToTilesWithinTurn = getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement)
+    fun getDistanceToTiles(): PathsToTilesWithinTurn =
+            getDistanceToTilesWithinTurn(unit.currentTile.position, unit.currentMovement)
 
     fun getArialPathsToCities(): HashMap<TileInfo, ArrayList<TileInfo>> {
         var tilesToCheck = ArrayList<TileInfo>()
@@ -396,10 +397,11 @@ class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.Pa
         if (!containsKey(tile)) throw Exception("Can't reach this tile!")
         val reversePathList = ArrayList<TileInfo>()
         var currentTile = tile
-        while (get(currentTile)!!.parentTile != currentTile) {
+        while (getValue(currentTile).parentTile != currentTile) {
             reversePathList.add(currentTile)
-            currentTile = get(currentTile)!!.parentTile
+            currentTile = getValue(currentTile).parentTile
         }
-        return reversePathList.reversed()
+        reversePathList.reverse()
+        return reversePathList
     }
 }

@@ -136,7 +136,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                         val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
                         "$description: $percentage"
                     }
-                else listOf()
+                else emptyList()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
             if (attackerModifiers.size > i) add(attackerModifiers[i].toLabel(fontSize = 14)) else add()

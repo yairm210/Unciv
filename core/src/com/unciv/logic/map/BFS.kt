@@ -40,7 +40,7 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         var currentNode = destination
         while (currentNode != startingPoint) {
             path.add(currentNode)
-            val parent = tilesReached[currentNode] ?: return listOf()
+            val parent = tilesReached[currentNode] ?: return emptyList()
             // destination is not in our path
             currentNode = parent
         }

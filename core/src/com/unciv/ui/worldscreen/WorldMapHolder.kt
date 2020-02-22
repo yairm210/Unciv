@@ -267,7 +267,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         val unitType = unit.type
-        val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
+        val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) emptyList()
         else {
             val tiles = BattleHelper().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
             tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }

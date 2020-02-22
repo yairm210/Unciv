@@ -8,7 +8,7 @@ import java.util.*
 class TileResource : NamedStats() {
 
     var resourceType: ResourceType = ResourceType.Bonus
-    var terrainsCanBeFoundOn: List<String> = listOf()
+    var terrainsCanBeFoundOn: List<String> = emptyList()
     var improvement: String? = null
     var improvementStats: Stats? = null
 
