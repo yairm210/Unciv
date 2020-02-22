@@ -74,7 +74,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 // if this city belongs to you
                 if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
                     UncivGame.Current.setScreen(CityScreen(city))
-                } else {
+                } else if (UncivGame.Current.worldScreen.viewingCiv.knows(city.civInfo)) {
                     // If city doesn't belong to you, go directly to its owner's diplomacy screen.
                     val screen = DiplomacyScreen(UncivGame.Current.worldScreen.viewingCiv)
                     screen.updateRightSide(city.civInfo)
