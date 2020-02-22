@@ -70,13 +70,14 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
+                val currentCiv = UncivGame.Current.worldScreen.viewingCiv
                 // second tap on the button will go to the city screen
                 // if this city belongs to you
                 if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
                     UncivGame.Current.setScreen(CityScreen(city))
-                } else if (UncivGame.Current.worldScreen.viewingCiv.knows(city.civInfo)) {
+                } else if (currentCiv.knows(city.civInfo)) {
                     // If city doesn't belong to you, go directly to its owner's diplomacy screen.
-                    val screen = DiplomacyScreen(UncivGame.Current.worldScreen.viewingCiv)
+                    val screen = DiplomacyScreen(currentCiv)
                     screen.updateRightSide(city.civInfo)
                     UncivGame.Current.setScreen(screen)
                 }
