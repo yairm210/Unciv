@@ -267,7 +267,6 @@ class UnitAutomation {
         if (closestReachableEnemyCity != null) {
             val unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
-
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
@@ -294,15 +293,16 @@ class UnitAutomation {
                         unit.movement.headTowards(tileToMoveTo)
                 } else {
                     // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
-                    val militaryUnitsAroundEnemyCity =
+                    val tilesWithMilitaryUnitsAroundEnemyCity =
                             closestReachableEnemyCity.getTilesInDistance(3)
-                                    .map { it.militaryUnit }.filterNotNull()
-                                    .filter { it.civInfo == unit.civInfo }
+                                    .filter { it.militaryUnit?.civInfo == unit.civInfo }
                     //todo: use CONSTANT for 20
                     var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
                     val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)
-                    for (militaryUnit in militaryUnitsAroundEnemyCity) {
-                        totalAttackOnCityPerTurn += BattleDamage().calculateDamageToDefender(MapUnitCombatant(militaryUnit), enemyCityCombatant)
+                    for (tile in tilesWithMilitaryUnitsAroundEnemyCity) {
+                        totalAttackOnCityPerTurn += BattleDamage()
+                                .calculateDamageToDefender(MapUnitCombatant(tile.militaryUnit!!),
+                                        enemyCityCombatant)
                     }
                     if (totalAttackOnCityPerTurn * 3 > closestReachableEnemyCity.getCity()!!.health) // if we can defeat it in 3 turns with the current units,
                         unit.movement.headTowards(closestReachableEnemyCity) // go for it!
