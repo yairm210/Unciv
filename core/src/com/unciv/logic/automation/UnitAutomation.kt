@@ -342,9 +342,8 @@ class UnitAutomation {
                 }
                 .groupByTo(LinkedHashMap()) { it.getUnitType() }
 
-        var targets = mappedTargets[UnitType.Siege]?.asSequence()
-        if (targets == null)
-            targets = mappedTargets.values.asSequence().flatMap { it.asSequence() }
+        val targets = mappedTargets[UnitType.Siege]?.asSequence()
+                ?: mappedTargets.values.asSequence().flatMap { it.asSequence() }
 
         return targets.minBy { it.getHealth() }
     }
