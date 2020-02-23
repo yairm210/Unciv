@@ -240,7 +240,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         resolutionArray.addAll("750x500","900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UncivGame.Current.settings.resolution
-        innerTable.add(resolutionSelectBox).pad(10f).row()
+        innerTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
 
         resolutionSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -263,7 +263,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         for(tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = UncivGame.Current.settings.tileSet
-        innerTable.add(tileSetSelectBox).pad(10f).row()
+        innerTable.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
 
         tileSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -328,7 +328,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == UncivGame.Current.settings.language }
         languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
-        innerTable.add(languageSelectBox).pad(10f).row()
+        innerTable.add(languageSelectBox).minWidth(240f).pad(10f).row()
 
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
