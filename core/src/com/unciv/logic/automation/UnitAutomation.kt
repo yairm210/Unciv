@@ -37,8 +37,11 @@ class UnitAutomation {
         private fun tryGoToRuin(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
             if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
             val tileWithRuin = unitDistanceToTiles.keys
-                    .firstOrNull { it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it) }
-                    ?: return false
+                    .firstOrNull {
+                        it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it)
+                    }
+            if (tileWithRuin == null)
+                return false
             unit.movement.moveToTile(tileWithRuin)
             return true
         }
@@ -337,9 +340,12 @@ class UnitAutomation {
                     unitType == UnitType.Siege || unitType.isRanged()
                 }
                 .groupByTo(LinkedHashMap()) { it.getUnitType() }
-        return (mappedTargets[UnitType.Siege]?.asSequence()
-                ?: mappedTargets.values.asSequence().flatMap { it.asSequence() })
-                .minBy { it.getHealth() }
+
+        var targets = mappedTargets[UnitType.Siege]?.asSequence()
+        if (targets == null)
+            targets = mappedTargets.values.asSequence().flatMap { it.asSequence() }
+
+        return targets.minBy { it.getHealth() }
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {

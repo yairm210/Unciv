@@ -1,3 +1,21 @@
+## 3.6.1
+
+Resolved #1963 - can now unautomate embarked workers
+
+Resolved #1697 by adding information to the special production constructions - by Kentalot
+
+By Jack Rainy:
+ - Future Tech can't be picked as a free technology until requirements are met
+ - Can sort cities in overview by food, production etc
+
+Resolved #1962 - "infinite zoom" from capacative scrolling is no longer irrecoverable
+
+Resolved #1975 - Museum and Factory now give 2 specialist slots
+
+Fixed rare crashes when pausing
+
+Translation updates
+
 ## 3.6.0
 
 Massive multiplayer improvements!

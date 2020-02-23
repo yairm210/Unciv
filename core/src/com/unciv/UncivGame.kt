@@ -31,7 +31,7 @@ class UncivGame(
     constructor(version: String) : this(version, null)
 
     lateinit var gameInfo: GameInfo
-    fun isGameInfoInitialized() = ::gameInfo.isInitialized
+    fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings : GameSettings
     lateinit var crashController: CrashController
     /**
@@ -181,6 +181,7 @@ class UncivGame(
 
     companion object {
         lateinit var Current: UncivGame
+        fun isCurrentInitialized() = this::Current.isInitialized
     }
 }
 

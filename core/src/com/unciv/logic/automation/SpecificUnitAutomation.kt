@@ -211,7 +211,10 @@ class SpecificUnitAutomation {
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { key ->
                     key.getTilesInDistance(unit.getRange())
-                            .count { it.airUnits.firstOrNull()?.civInfo?.isAtWarWith(unit.civInfo) == true }
+                            .count {
+                                val firstAirUnit = it.airUnits.firstOrNull()
+                                firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
+                            }
                 }
 
         if (citiesByNearbyAirUnits.keys.any { it != 0 }) {
