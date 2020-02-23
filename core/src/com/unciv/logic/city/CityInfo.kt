@@ -277,7 +277,7 @@ class CityInfo {
     fun setTransients() {
         tileMap = civInfo.gameInfo.tileMap
         centerTileInfo = tileMap[location]
-        tilesInRange = getCenterTile().getTilesInDistance( 3).toHashSet()
+        tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()

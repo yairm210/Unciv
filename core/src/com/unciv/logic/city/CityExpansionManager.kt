@@ -62,17 +62,18 @@ class CityExpansionManager {
     fun chooseNewTileToOwn(): TileInfo? {
         for (i in 2..5) {
             val tiles = cityInfo.getCenterTile().getTilesInDistance(i)
-                    .filter {it.getOwner() == null && it.neighbors.any { tile->tile.getOwner()==cityInfo.civInfo }}
-            if (tiles.isEmpty()) continue
-            val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
-            return chosenTile
+                    .filter { it.getOwner() == null
+                            && it.neighbors.any { tile -> tile.getOwner() == cityInfo.civInfo } }
+            val chosenTile = tiles.maxBy { Automation.rankTile(it, cityInfo.civInfo) }
+            if (chosenTile != null)
+                return chosenTile
         }
         return null
     }
 
     //region state-changing functions
     fun reset() {
-        for(tile in cityInfo.getTiles())
+        for (tile in cityInfo.getTiles())
             relinquishOwnership(tile)
 
         // The only way to create a city inside an owned tile is if it's in your territory
@@ -80,10 +81,9 @@ class CityExpansionManager {
         // It becomes an invisible city and weird shit starts happening
         takeOwnership(cityInfo.getCenterTile())
 
-        cityInfo.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity()==null } // can't take ownership of owned tiles (by other cities)
-                .forEach { takeOwnership(it) }
-
+        for (tile in cityInfo.getCenterTile().getTilesInDistance(1)
+                .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
+            takeOwnership(tile)
     }
 
     private fun addNewTileWithCulture() {
