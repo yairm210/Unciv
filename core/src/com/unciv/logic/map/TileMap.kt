@@ -142,27 +142,16 @@ class TileMap {
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
 
-        val currentTile = get(position)
+        var unitToPlaceTile : TileInfo? = null
         // try to place at the original point (this is the most probable scenario)
-        val unitToPlaceTile = if (unit.movement.canMoveTo(currentTile)) currentTile
-            else {
-                // if it's not suitable, try to find another nearby
-                val viableTilesToPlaceUnitInAtDistance1 = getTilesAtDistance(position, 1)
-                        .filter { isTileMovePotential(it) }.toSet()
-                // This is so that units don't skip over non-potential tiles to go elsewhere -
-                // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
-                val viableTilesToPlaceUnitIn = getTilesAtDistance(position, 2)
-                        .filter {
-                            isTileMovePotential(it)
-                                    && it.neighbors.any { n -> n in viableTilesToPlaceUnitInAtDistance1 }
-                        } + viableTilesToPlaceUnitInAtDistance1
+        val currentTile = get(position)
+        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
-                viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
-            }
-
-        if (unitToPlaceTile == null) {
-            civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
-            return null // we didn't actually create a unit...
+        // if it's not suitable, try to find another tile nearby
+        var distance = 1
+        while (unitToPlaceTile == null) {
+            unitToPlaceTile = getTilesAtDistance(position, distance++)
+                    .filter { isTileMovePotential(it) && unit.movement.canMoveTo(it) }.firstOrNull()
         }
 
         // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
