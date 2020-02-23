@@ -248,7 +248,8 @@ class UnitAutomation {
                     val tile = it.currentTile
                     (it.name == Constants.settler || it.name in GreatPersonManager().statToGreatPersonMapping.values)
                             && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
-                } ?: return false
+                }
+        if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
     }

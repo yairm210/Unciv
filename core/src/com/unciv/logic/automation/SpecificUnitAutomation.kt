@@ -32,10 +32,12 @@ class SpecificUnitAutomation {
             null -> UnitAutomation.tryExplore(unit, unit.movement.getDistanceToTiles())
             else -> {
                 unit.movement.headTowards(closestReachableResource)
+
                 // could be either fishing boats or oil well
-                if (unit.currentTile == closestReachableResource)
+                val improvement = closestReachableResource.getTileResource().improvement
+                if (unit.currentTile == closestReachableResource && improvement != null)
                     UnitActions.getWaterImprovementAction(unit, closestReachableResource,
-                            closestReachableResource.getTileResourceOrNull()?.improvement)?.invoke()
+                        improvement)?.invoke()
             }
         }
     }
@@ -138,8 +140,8 @@ class SpecificUnitAutomation {
         }
 
         val foundCityAction = UnitActions.getFoundCityAction(unit, bestCityLocation)
-        if (foundCityAction == null) {
-            if (unit.currentMovement > 0)
+        if (foundCityAction == null) { // this means either currentMove == 0 or city within 3 tiles
+            if (unit.currentMovement > 0) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
         }
