@@ -12,7 +12,7 @@ import java.io.File
 class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        createNotificationChannels()
+        MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
 		// Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -24,14 +24,6 @@ class AndroidLauncher : AndroidApplication() {
                             CrashReportSenderAndroid(this))
                             {this.finish()}
         initialize(game, config)
-    }
-
-    /**
-     * Necessary for Multiplayer Turner Checker, starting with Android Oreo
-     */
-    private fun createNotificationChannels() {
-        MultiplayerTurnCheckWorker.createNotificationChannelInfo(context)
-        MultiplayerTurnCheckWorker.createNotificationChannelService(context)
     }
 
 	/**
