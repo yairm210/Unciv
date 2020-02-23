@@ -242,9 +242,10 @@
 		"innerColor": [238,201,9],
 		"uniqueName": "La Gloria di Roma",
 		"unique": "+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
-		"cities": ["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia","Satricum","Ardea",
-			"Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra","Signia",
-			"Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+		"cities": ["Roma","Anzio","Cuma","Napoli","Ravenna","Arezzo","Milano","Arpino","Circea","Sezia","Satricum","Ardea",
+			"Ostia","Velletri","Viroconium","Taranto","Brindisi","Cesaraugusta","Cesarea","Palmira","Signia",
+			"Aquileia","Clusium","Sutrium","Cremona","Piacenza","Hispalis","Artaxata","Aurelianorum","Nicopolis",
+			  "Agrippina","Verona","Corfinio","Treviri","Sirmium","Augustadorum","Curia","Interrama","Adria",]
 	},
 	{
 		"name": "Arabia",
