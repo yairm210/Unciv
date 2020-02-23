@@ -25,7 +25,7 @@ class SpecificUnitAutomation{
         val seaResourcesInCities = unit.civInfo.cities.asSequence()
                 .flatMap { city -> city.getWorkableTiles() }
                 .filter { hasWorkableSeaResource(it, unit.civInfo) && (unit.movement.canMoveTo(it) || unit.currentTile == it) }
-        val closestReachableResource = seaResourcesInCities.sortedBy { it.arialDistanceTo(unit.currentTile) }
+        val closestReachableResource = seaResourcesInCities.sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (closestReachableResource != null) {
@@ -60,7 +60,7 @@ class SpecificUnitAutomation{
 
         //if no unit to follow, take refuge in city.
         val cityToGarrison = unit.civInfo.cities.map {it.getCenterTile()}
-                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { it.civilianUnit == null && unit.movement.canMoveTo(it) && unit.movement.canReach(it)}
 
         if (cityToGarrison != null) {
@@ -204,7 +204,7 @@ class SpecificUnitAutomation{
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys
@@ -226,7 +226,7 @@ class SpecificUnitAutomation{
         }
 
         // no city needs fighters to defend, so let's attack stuff from the closest possible location
-        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
 
     }
 
@@ -248,12 +248,12 @@ class SpecificUnitAutomation{
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 
-    private fun tryMoveToCitiesToArialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
+    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
                 .filter {
                     it != airUnit.currentTile
@@ -288,9 +288,9 @@ class SpecificUnitAutomation{
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 
 }

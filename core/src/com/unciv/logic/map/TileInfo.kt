@@ -276,7 +276,7 @@ open class TileInfo {
         return bonus
     }
 
-    fun arialDistanceTo(otherTile:TileInfo): Int {
+    fun aerialDistanceTo(otherTile:TileInfo): Int {
         val xDelta = position.x-otherTile.position.x
         val yDelta = position.y-otherTile.position.y
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()

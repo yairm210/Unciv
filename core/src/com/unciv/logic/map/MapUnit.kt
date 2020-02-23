@@ -620,7 +620,7 @@ class MapUnit {
         if(attacksThisTurn>1) return false
         if(interceptChance()==0) return false
         if(attacksThisTurn>0 && !hasUnique("1 extra Interception may be made per turn")) return false
-        if(currentTile.arialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
+        if(currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
     }
 

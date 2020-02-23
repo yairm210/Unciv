@@ -45,7 +45,7 @@ class CityExpansionManager {
     fun getGoldCostOfTile(tileInfo: TileInfo): Int {
         val baseCost = 50
         val numTilesClaimed= cityInfo.tiles.size - 7
-        val distanceFromCenter = tileInfo.arialDistanceTo(cityInfo.getCenterTile())
+        val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5.0
 
         if (cityInfo.civInfo.containsBuildingUnique("Cost of acquiring new tiles reduced by 25%"))

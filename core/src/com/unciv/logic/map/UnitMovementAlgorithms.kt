@@ -180,7 +180,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReach(destination: TileInfo): Boolean {
         if(unit.type.isAirUnit())
-            return unit.currentTile.arialDistanceTo(destination) <= unit.getRange()
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()
         return getShortestPath(destination).isNotEmpty()
     }
 
@@ -347,7 +347,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun getDistanceToTiles(): PathsToTilesWithinTurn
             = getDistanceToTilesWithinTurn(unit.currentTile.position,unit.currentMovement)
 
-    fun getArialPathsToCities(): HashMap<TileInfo, ArrayList<TileInfo>> {
+    fun getAerialPathsToCities(): HashMap<TileInfo, ArrayList<TileInfo>> {
         var tilesToCheck = ArrayList<TileInfo>()
         /** each tile reached points to its parent tile, where we got to it from */
         val tilesReached = HashMap<TileInfo, TileInfo>()
