@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.DEFAULT_VIBRATE
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.work.*
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
@@ -27,16 +28,25 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
         const val WORK_TAG = "UNCIV_MULTIPLAYER_TURN_CHECKER_WORKER"
         const val NOTIFICATION_ID_SERVICE = 1
         const val NOTIFICATION_ID_INFO = 2
-        private const val NOTIFICATION_CHANNEL_ID_INFO = "UNCIV_NOTIFICATION_CHANNEL_INFO"
-        private const val NOTIFICATION_CHANNEL_ID_SERVICE = "UNCIV_NOTIFICATION_CHANNEL_SERVICE"
 
+        // Notification Channels can't be modified after creation.
+        // Therefore Unciv needs to create new ones and delete previously used ones.
+        // Add old channel names here when replacing them with new ones below.
+        private val HISTORIC_NOTIFICATION_CHANNELS = arrayOf("UNCIV_NOTIFICATION_CHANNEL_SERVICE")
+
+        private const val NOTIFICATION_CHANNEL_ID_INFO = "UNCIV_NOTIFICATION_CHANNEL_INFO"
+        private const val NOTIFICATION_CHANNEL_ID_SERVICE = "UNCIV_NOTIFICATION_CHANNEL_SERVICE_02"
+
+
+        // These fields need to be volatile because they are set by main thread but later accessed by worker thread.
+        // Classes used here need to be primitive or internally synchronized to avoid visibility issues.
         @Volatile private var failCount = 0
         @Volatile private var gameId = ""
         @Volatile private var userId = ""
-        @Volatile private var configuredDelay = 5L
+        @Volatile private var configuredDelay = 5
         @Volatile private var persistentNotificationEnabled = true
 
-        fun enqueue(appContext: Context, delayInMinutes: Long) {
+        fun enqueue(appContext: Context, delayInMinutes: Int) {
             val constraints = Constraints.Builder()
                     // If no internet is available, worker waits before becoming active.
                     .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -44,7 +54,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
             val checkTurnWork = OneTimeWorkRequestBuilder<MultiplayerTurnCheckWorker>()
                     .setConstraints(constraints)
-                    .setInitialDelay(delayInMinutes, TimeUnit.MINUTES)
+                    .setInitialDelay(delayInMinutes.toLong(), TimeUnit.MINUTES)
                     .addTag(WORK_TAG)
                     .build()
 
@@ -86,6 +96,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 val descriptionText = "Shown constantly to inform you about background checking."
                 val importance = NotificationManager.IMPORTANCE_MIN
                 val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
+                mChannel.setShowBadge(false)
+                mChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 mChannel.description = descriptionText
 
                 val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
@@ -106,16 +118,17 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
                 val notification: NotificationCompat.Builder = NotificationCompat.Builder(appContext, NOTIFICATION_CHANNEL_ID_SERVICE)
                         .setPriority(NotificationManagerCompat.IMPORTANCE_MIN) // it's only a status
-                        .setContentTitle("Unciv multiplayer turn notifier running".tr())
+                        .setContentTitle(("Last online turn check: [$lastTimeChecked]").tr())
                         .setStyle(NotificationCompat.BigTextStyle()
-                                .bigText("Unciv will inform you when it's your turn.".tr() + "\n" +
-                                        "Last checked: [$lastTimeChecked]. Checks ca. every [$checkPeriod] minute(s) when Internet available.".tr()
+                                .bigText("Unciv will inform you when it's your turn in multiplayer.".tr() + " " +
+                                        "Checks ca. every [$checkPeriod] minute(s) when Internet available.".tr()
                                         + " " + "Configurable in Unciv options menu.".tr()))
                         .setSmallIcon(R.drawable.uncivicon2)
                         .setContentIntent(pendingIntent)
                         .setCategory(NotificationCompat.CATEGORY_SERVICE)
                         .setOnlyAlertOnce(true)
                         .setOngoing(true)
+                        .setShowWhen(false)
 
                 with(NotificationManagerCompat.from(appContext)) {
                     notify(NOTIFICATION_ID_INFO, notification.build())
@@ -162,6 +175,30 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                         "—", settings.multiplayerTurnCheckerDelayInMinutes.toString())
                 // Initial check always happens after a minute, ignoring delay config. Better user experience this way.
                 enqueue(applicationContext, 1)
+            }
+        }
+
+        /**
+         * Necessary for Multiplayer Turner Checker, starting with Android Oreo
+         */
+        fun createNotificationChannels(appContext: Context) {
+            createNotificationChannelInfo(appContext)
+            createNotificationChannelService(appContext)
+            destroyOldChannels(appContext)
+        }
+
+        /**
+         *  Notification Channels can't be modified after creation.
+         *  Therefore Unciv needs to create new ones and delete legacy ones.
+         */
+        private fun destroyOldChannels(appContext: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationManager = appContext.getSystemService(AndroidApplication.NOTIFICATION_SERVICE) as NotificationManager
+                HISTORIC_NOTIFICATION_CHANNELS.forEach {
+                    if (null != notificationManager.getNotificationChannel(it)) {
+                        notificationManager.deleteNotificationChannel(it)
+                    }
+                }
             }
         }
     }

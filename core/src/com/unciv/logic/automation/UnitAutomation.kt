@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -34,8 +35,11 @@ class UnitAutomation {
         private fun tryGoToRuin(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
             if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
             val tileWithRuin = unitDistanceToTiles.keys
-                    .firstOrNull { it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it) }
-                    ?: return false
+                    .firstOrNull {
+                        it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it)
+                    }
+            if (tileWithRuin == null)
+                return false
             unit.movement.moveToTile(tileWithRuin)
             return true
         }
@@ -240,7 +244,8 @@ class UnitAutomation {
                     val tile = it.currentTile
                     (it.name == Constants.settler || it.name in GreatPersonManager().statToGreatPersonMapping.values)
                             && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
-                } ?: return false
+                }
+        if (settlerOrGreatPersonToAccompany == null) return false
         unit.movement.headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
     }
@@ -332,9 +337,11 @@ class UnitAutomation {
                     unitType == UnitType.Siege || unitType.isRanged()
                 }
                 .groupByTo(HashMap()) { it.getUnitType() }
-        return (mappedTargets[UnitType.Siege]?.asSequence()
-                ?: mappedTargets.values.asSequence().flatMap { it.asSequence() })
-                .minBy { it.getHealth() }
+
+        val targets = mappedTargets[UnitType.Siege]?.asSequence()
+                ?: mappedTargets.values.asSequence().flatMap { it.asSequence() }
+
+        return targets.minBy { it.getHealth() }
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {

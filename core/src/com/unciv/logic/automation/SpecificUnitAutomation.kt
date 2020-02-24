@@ -31,40 +31,45 @@ class SpecificUnitAutomation {
             null -> UnitAutomation.tryExplore(unit, unit.movement.getDistanceToTiles())
             else -> {
                 unit.movement.headTowards(closestReachableResource)
+
                 // could be either fishing boats or oil well
-                if (unit.currentTile == closestReachableResource)
+                val improvement = closestReachableResource.getTileResource().improvement
+                if (unit.currentTile == closestReachableResource && improvement != null)
                     UnitActions.getWaterImprovementAction(unit, closestReachableResource,
-                            closestReachableResource.getTileResourceOrNull()?.improvement)?.invoke()
+                        improvement)?.invoke()
             }
         }
     }
 
     fun automateGreatGeneral(unit: MapUnit) {
         //try to follow nearby units. Do not garrison in city if possible
-        val militaryUnitTilesInDistance = unit.movement.getDistanceToTiles().map { it.key }
+        val militaryUnitTilesInDistance = unit.movement.getDistanceToTiles().asSequence()
                 .filter {
-                    val militant = it.militaryUnit
+                    val militant = it.key.militaryUnit
                     militant != null && militant.civInfo == unit.civInfo
-                            && (it.civilianUnit == null || it.civilianUnit == unit)
-                            && militant.getMaxMovement() <= 2 && !it.isCityCenter()
+                            && (it.key.civilianUnit == null || it.key.civilianUnit == unit)
+                            && militant.getMaxMovement() <= 2 && !it.key.isCityCenter()
                 }
 
-        if (militaryUnitTilesInDistance.isNotEmpty()) {
-            val tilesSortedByAffectedTroops = militaryUnitTilesInDistance
-                    .sortedByDescending {
-                        it.getTilesInDistance(2).count {
-                            val militaryUnit = it.militaryUnit
+        val maxAffectedTroopsTile = militaryUnitTilesInDistance
+                .maxBy {
+                        it.key.getTilesInDistance(2).count {tile ->
+                            val militaryUnit = tile.militaryUnit
                             militaryUnit != null && militaryUnit.civInfo == unit.civInfo
                         }
-                    }
-            unit.movement.headTowards(tilesSortedByAffectedTroops.first())
+                    }?.key
+        if (maxAffectedTroopsTile != null) {
+            unit.movement.headTowards(maxAffectedTroopsTile)
             return
         }
 
         //if no unit to follow, take refuge in city.
-        val cityToGarrison = unit.civInfo.cities.map { it.getCenterTile() }
+        val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { it.civilianUnit == null && unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
+                .firstOrNull {
+                    it.civilianUnit == null && unit.movement.canMoveTo(it)
+                            && unit.movement.canReach(it)
+                }
 
         if (cityToGarrison != null) {
             unit.movement.headTowards(cityToGarrison)
@@ -88,7 +93,7 @@ class SpecificUnitAutomation {
                 .map { it.getTileResource() }.filter { it.resourceType == ResourceType.Luxury }.distinct()
         val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
         val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
-                .count { !luxuryResourcesAlreadyInCivArea.contains(it.name) }
+                .count { it.name !in luxuryResourcesAlreadyInCivArea }
         rank += luxuryResourcesNotYetInCiv * 10
 
         return rank
@@ -116,8 +121,8 @@ class SpecificUnitAutomation {
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
                 .filter {
                     val tileOwner = it.getOwner()
-                    it.isLand && (tileOwner == null || tileOwner == unit.civInfo) && // don't allow settler to settle inside other civ's territory
-                            (unit.movement.canMoveTo(it) || unit.currentTile == it)
+                    it.isLand && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
+                            && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
                 }
 
@@ -137,8 +142,8 @@ class SpecificUnitAutomation {
         }
 
         val foundCityAction = UnitActions.getFoundCityAction(unit, bestCityLocation)
-        if (foundCityAction == null) {
-            if (unit.currentMovement > 0)
+        if (foundCityAction == null) { // this means either currentMove == 0 or city within 3 tiles
+            if (unit.currentMovement > 0) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
         }
@@ -159,7 +164,7 @@ class SpecificUnitAutomation {
             stats.toHashMap()[relatedStat]!!
         }
         for (city in citiesByStatBoost) {
-            var pathToCity = unit.movement.getShortestPath(city.getCenterTile())
+            val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2) {
@@ -173,12 +178,12 @@ class SpecificUnitAutomation {
                         it.isLand && it.resource == null && !it.isCityCenter()
                                 && (unit.currentTile == it || unit.movement.canMoveTo(it))
                     }.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
-                    .firstOrNull { unit.movement.canReach(it) } ?: continue // to another city
+                    .firstOrNull { unit.movement.canReach(it) } // to another city
+            if (chosenTile == null) continue
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getGreatPersonActions(unit, chosenTile)
-                        .first { it.type == UnitActionType.Create }.action?.invoke()
+                UnitActions.getGreatPersonBuildActions(unit, chosenTile).firstOrNull()?.invoke()
             return
         }
     }
@@ -204,13 +209,16 @@ class SpecificUnitAutomation {
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { key ->
                     key.getTilesInDistance(unit.getRange())
-                            .count { it.airUnits.firstOrNull()?.civInfo?.isAtWarWith(unit.civInfo) == true }
+                            .count {
+                                val firstAirUnit = it.airUnits.firstOrNull()
+                                firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
+                            }
                 }
 
         if (citiesByNearbyAirUnits.keys.any { it != 0 }) {
@@ -223,7 +231,7 @@ class SpecificUnitAutomation {
         }
 
         // no city needs fighters to defend, so let's attack stuff from the closest possible location
-        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
 
     }
 
@@ -245,12 +253,12 @@ class SpecificUnitAutomation {
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 
-    private fun tryMoveToCitiesToArialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
+    private fun tryMoveToCitiesToAerialAttackFrom(pathsToCities: HashMap<TileInfo, ArrayList<TileInfo>>, airUnit: MapUnit) {
         val citiesThatCanAttackFrom = pathsToCities.keys
                 .filter {
                     it != airUnit.currentTile
@@ -283,8 +291,8 @@ class SpecificUnitAutomation {
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
-        tryMoveToCitiesToArialAttackFrom(pathsToCities, unit)
+        tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
 }

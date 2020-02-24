@@ -82,8 +82,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         addTileSetSelectBox(innerTable)
 
-        // Do not add to template.properties yet please.
-        innerTable.add("Continuous rendering\n(HIGHLY EXPERIMENTAL)".toLabel())
+        innerTable.add("Continuous rendering".toLabel())
         addButton(innerTable, if (settings.continuousRendering) "Yes" else "No") {
             settings.continuousRendering = !settings.continuousRendering
             Gdx.graphics.isContinuousRendering = settings.continuousRendering
@@ -241,7 +240,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         resolutionArray.addAll("750x500","900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UncivGame.Current.settings.resolution
-        innerTable.add(resolutionSelectBox).pad(10f).row()
+        innerTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
 
         resolutionSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -264,7 +263,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         for(tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = UncivGame.Current.settings.tileSet
-        innerTable.add(tileSetSelectBox).pad(10f).row()
+        innerTable.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
 
         tileSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -300,9 +299,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
     private fun addMultiplayerTurnCheckerDelayBox(innerTable: Table) {
         innerTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
 
-        val checkDelaySelectBox = SelectBox<Long>(skin)
-        val possibleDelaysArray = Array<Long>()
-        possibleDelaysArray.addAll(1L, 2L, 5L, 15L)
+        val checkDelaySelectBox = SelectBox<Int>(skin)
+        val possibleDelaysArray = Array<Int>()
+        possibleDelaysArray.addAll(1, 2, 5, 15)
         checkDelaySelectBox.items = possibleDelaysArray
         checkDelaySelectBox.selected = UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes
 
@@ -329,7 +328,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == UncivGame.Current.settings.language }
         languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
-        innerTable.add(languageSelectBox).pad(10f).row()
+        innerTable.add(languageSelectBox).minWidth(240f).pad(10f).row()
 
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
