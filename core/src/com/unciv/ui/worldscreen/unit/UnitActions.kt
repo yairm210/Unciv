@@ -94,14 +94,6 @@ object UnitActions {
                     }))
     }
 
-    private suspend fun SequenceScope<UnitAction>.yieldFoundCityAction(unit: MapUnit, tile: TileInfo) {
-        if (!unit.isEmbarked() && unit.hasUnique("Founds a new city"))
-            yield(UnitAction(
-                    type = UnitActionType.FoundCity,
-                    uncivSound = UncivSound.Chimes,
-                    action = getFoundCityAction(unit, tile)))
-    }
-
     fun getFoundCityAction(unit: MapUnit, tile: TileInfo): (() -> Unit)? =
             getLambdaOrNull(unit.currentMovement > 0
                     && !tile.getTilesInDistance(3).any { it.isCityCenter() }) {
@@ -110,6 +102,14 @@ object UnitActions {
                 tile.improvement = null
                 unit.destroy()
             }
+
+    private suspend fun SequenceScope<UnitAction>.yieldFoundCityAction(unit: MapUnit, tile: TileInfo) {
+        if (!unit.isEmbarked() && unit.hasUnique("Founds a new city"))
+            yield(UnitAction(
+                    type = UnitActionType.FoundCity,
+                    uncivSound = UncivSound.Chimes,
+                    action = getFoundCityAction(unit, tile)))
+    }
 
     private suspend fun SequenceScope<UnitAction>.yieldPromoteAction(unit: MapUnit) {
         // promotion does not consume movement points, so we can do it always
