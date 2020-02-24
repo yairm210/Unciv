@@ -139,7 +139,7 @@ class TileMap {
                     else -> tileInfo.isLand
                 }
 
-        val viableTilesToPlaceUnitInAtDistance1 = getTilesAtDistance(position, 1)
+        val viableTilesToPlaceUnitInAtDistance1 = getTilesInDistance(position, 1)
                 .filter { isTileMovePotential(it) }.toSet()
         // This is so that units don't skip over non-potential tiles to go elsewhere -
         // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
@@ -147,11 +147,12 @@ class TileMap {
                 .filter {
                     isTileMovePotential(it)
                             && it.neighbors.any { n -> n in viableTilesToPlaceUnitInAtDistance1 }
-                } + viableTilesToPlaceUnitInAtDistance1
-
-
+                }
+        
         unit.assignOwner(civInfo, false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
+        val unitToPlaceTile = viableTilesToPlaceUnitInAtDistance1
+                .firstOrNull { unit.movement.canMoveTo(it) }
+                ?: viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
 
         if (unitToPlaceTile == null) {
             civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
