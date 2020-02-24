@@ -18,7 +18,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         setNewViewableTiles()
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(civInfo.getCivUnits().asSequence()
+        newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
                 .filter { it.hasUnique("Can attack submarines") }
                 .flatMap { it.viewableTiles.asSequence() })
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
@@ -59,11 +59,11 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         // There are a LOT of tiles usually.
         // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
         // Ans so, sequences to the rescue!
-        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles().asSequence() }
+        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles() }
         newViewableTiles.addAll(ownedTiles)
         val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner() != civInfo } }
         newViewableTiles.addAll(neighboringUnownedTiles)
-        newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence() })
+        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence() })
 
         if (!civInfo.isCityState()) {
             for (otherCiv in civInfo.getKnownCivs()) {
