@@ -132,12 +132,8 @@ class TileMap {
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
-        fun isTileMovePotential(tileInfo: TileInfo): Boolean =
-                when {
-                    unit.type.isAirUnit() -> true
-                    unit.type.isWaterUnit() -> tileInfo.isWater || tileInfo.isCityCenter()
-                    else -> tileInfo.isLand
-                }
+        fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
+                getTilesAtDistance(tileInfo.position, 1).filter { unit.movement.canPassThrough(it) }.toSet()
 
         // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         unit.assignOwner(civInfo, false)
@@ -148,10 +144,22 @@ class TileMap {
         if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
 
         // if it's not suitable, try to find another tile nearby
-        var distance = 1
-        while (unitToPlaceTile == null) {
-            unitToPlaceTile = getTilesAtDistance(position, distance++)
-                    .filter { isTileMovePotential(it) && unit.movement.canMoveTo(it) }.firstOrNull()
+        if (unitToPlaceTile == null) {
+            var tryCount = 0
+            var potentialCandidates = getPassableNeighbours(currentTile)
+            while (unitToPlaceTile == null && tryCount++ < 10) {
+                unitToPlaceTile = potentialCandidates.firstOrNull { unit.movement.canMoveTo(it) }
+                if (unitToPlaceTile != null) continue
+                // if it's not found yet, let's check their neighbours
+                val newPotentialCandidates = mutableSetOf<TileInfo>()
+                potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
+                potentialCandidates = newPotentialCandidates
+            }
+        }
+
+        if (unitToPlaceTile == null) {
+            civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            return null // we didn't actually create a unit...
         }
 
         // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
