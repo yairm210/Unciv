@@ -26,7 +26,7 @@ class GameSettings {
     var showPixelImprovements: Boolean = true
     var showPixelResources: Boolean = true
     var nuclearWeaponEnabled = false
-    var continuousRendering = true
+    var continuousRendering = false
     var userId = ""
     var multiplayerTurnCheckerEnabled = true
     var multiplayerTurnCheckerPersistentNotificationEnabled = true

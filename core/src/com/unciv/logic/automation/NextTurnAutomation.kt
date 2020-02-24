@@ -284,18 +284,18 @@ class NextTurnAutomation{
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return getClosestCities(civ1,civ2).arialDistance
+        return getClosestCities(civ1,civ2).aerialDistance
     }
 
-    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val arialDistance: Int)
+    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val aerialDistance: Int)
     fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
         val cityDistances = arrayListOf<CityDistance>()
         for(civ1city in civ1.cities)
             for(civ2city in civ2.cities)
                 cityDistances.add(CityDistance(civ1city,civ2city,
-                        civ1city.getCenterTile().arialDistanceTo(civ2city.getCenterTile())))
+                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
 
-        return cityDistances.minBy { it.arialDistance }!!
+        return cityDistances.minBy { it.aerialDistance }!!
     }
 
     private fun offerDeclarationOfFriendship(civInfo: CivilizationInfo) {

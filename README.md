@@ -109,5 +109,17 @@ Since this is a Civ V clone, you can search Google for how to play Civ V and the
 
 Alternatively, you could [join us on Discord](https://discord.gg/bjrB4Xw) and ask there =D
 
+## Aren't you basically making a Civ V clone? Is that even legal?
+
+This is a subject that I've heard a lot of hearsay on but no solid sources of law.
+
+From what I gather, it is illegal:
+ - To use the Civilization name
+ - To impersonate the Civ games (so calling yourself civi|zation with a similar logo, for instance)
+ - To use any assets from the original game (images, sound etc) - they belong to Firaxis
+
+From what I understand, intellectual property rights apply to names, characters and settings. They do not apply to mechanics - as I'm sure you know, there are a billion Flappy Bird knockoffs
+
+If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
 # [Credits and 3rd parties](docs/Credits.md)

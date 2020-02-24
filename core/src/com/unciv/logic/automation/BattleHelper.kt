@@ -63,9 +63,10 @@ class BattleHelper {
             val tilesInAttackRange =
                     if (unit.hasUnique("Ranged attacks may be performed over obstacles") || unit.type.isAirUnit())
                         reachableTile.getTilesInDistance(rangeOfAttack)
-                    else reachableTile.getViewableTiles(rangeOfAttack, unit.type.isWaterUnit())
+                    else reachableTile.getViewableTilesList(rangeOfAttack, unit.type.isWaterUnit())
+                            .asSequence()
 
-            attackableTiles += tilesInAttackRange.asSequence().filter { it in tilesWithEnemies }
+            attackableTiles += tilesInAttackRange.filter { it in tilesWithEnemies }
                     .map { AttackableTile(reachableTile, it) }
         }
         return attackableTiles

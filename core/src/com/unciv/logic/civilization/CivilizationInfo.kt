@@ -292,8 +292,9 @@ class CivilizationInfo {
     }
 
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
-        if(otherCiv.isBarbarian() || isBarbarian()) return true
-        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
+        if (otherCiv.civName == civName) return false // never at war with itself
+        if (otherCiv.isBarbarian() || isBarbarian()) return true
+        if (!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
         return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
     }
