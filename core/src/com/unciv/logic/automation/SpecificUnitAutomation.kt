@@ -207,7 +207,7 @@ class SpecificUnitAutomation {
             }
         }
 
-        val pathsToCities = unit.movement.getaerialPathsToCities()
+        val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys
