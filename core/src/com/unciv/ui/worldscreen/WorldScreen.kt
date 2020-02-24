@@ -404,6 +404,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
             game.gameInfo = gameInfoClone
 
+            //If it's a Multiplayer Game: update the save file so MultiplayerScreen is up to date
+            if(gameInfo.gameParameters.isOnlineMultiplayer) {
+                try {
+                    GameSaver().saveGame(game.gameInfo, GameSaver.getMutliplayerGameList().getValue(game.gameInfo.gameId), true)
+                } catch (ex: Exception) {
+                    //Failure isn't critical
+                    ex.printStackTrace()
+                }
+            }
+
             val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 
             // create a new worldscreen to show the new stuff we've changed, and switch out the current screen.
