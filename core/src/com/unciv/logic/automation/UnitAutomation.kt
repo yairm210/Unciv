@@ -149,8 +149,8 @@ class UnitAutomation {
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
-        val encampmentsCloseToCities = knownEncampments.filter { cities.any { city -> city.getCenterTile().arialDistanceTo(it) < 6 } }
-                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+        val encampmentsCloseToCities = knownEncampments.filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
         val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movement.canReach(it) }
         if (encampmentToHeadTowards == null) {
             return false
@@ -170,7 +170,7 @@ class UnitAutomation {
 
         if (tilesByHealingRate.keys.none { it != 0 }) { // We can't heal here at all! We're probably embarked
             val reachableCityTile = unit.civInfo.cities.map { it.getCenterTile() }
-                    .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                    .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
             if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
             else wander(unit, unitDistanceToTiles)
@@ -233,7 +233,7 @@ class UnitAutomation {
         if (unit.type.isRanged())
             closeEnemies = closeEnemies.filterNot { it.tileToAttack.isCityCenter() && it.tileToAttack.getCity()!!.health == 1 }
 
-        val closestEnemy = closeEnemies.minBy { it.tileToAttack.arialDistanceTo(unit.getTile()) }
+        val closestEnemy = closeEnemies.minBy { it.tileToAttack.aerialDistanceTo(unit.getTile()) }
 
         if (closestEnemy != null) {
             unit.movement.headTowards(closestEnemy.tileToAttackFrom)
@@ -269,7 +269,7 @@ class UnitAutomation {
                 .asSequence().map { it.getCenterTile() }
                 .sortedBy { cityCenterTile ->
                     // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
-                    unit.civInfo.cities.asSequence().map { cityCenterTile.arialDistanceTo(it.getCenterTile()) }.min()!!
+                    unit.civInfo.cities.asSequence().map { cityCenterTile.aerialDistanceTo(it.getCenterTile()) }.min()!!
                 }
                 .firstOrNull { unit.movement.canReach(it) }
 
@@ -361,7 +361,7 @@ class UnitAutomation {
             for (enemyCivCity in unit.civInfo.diplomacy.values
                     .filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() }.flatMap { it.cities })
-                if (city.getCenterTile().arialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true // this is an edge city that needs defending
+                if (city.getCenterTile().aerialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true // this is an edge city that needs defending
             return false
         }
 
@@ -379,7 +379,7 @@ class UnitAutomation {
         }
 
         val closestReachableCityNeedsDefending = citiesToTry
-                .sortedBy { it.getCenterTile().arialDistanceTo(unit.currentTile) }
+                .sortedBy { it.getCenterTile().aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it.getCenterTile()) }
         if (closestReachableCityNeedsDefending == null) return false
         unit.movement.headTowards(closestReachableCityNeedsDefending.getCenterTile())
