@@ -1,3 +1,19 @@
+## 3.6.2
+
+Resolved #1982 - Can now pic civ-equivalent Great People in great person picker screen
+
+By Jack Rainy:
+- Fixed rare bug of clicking on an unknown civilizations
+- Display the current amount of gold in the "buy" prompt
+- Do not allow to purchase extra units requiring unavailable resources
+
+
+Removed pebble symbol from Unciv icon when showing persistent notification - by tobo
+
+Performance improvements - by Kentalot
+
+Translation updates
+
 ## 3.6.1
 
 Resolved #1963 - can now unautomate embarked workers
