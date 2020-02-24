@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -35,8 +36,8 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             accept(selectedImprovement)
         }
 
-        val regularImprovements = VerticalGroup()
-        regularImprovements.space(10f)
+        val regularImprovements = Table()
+        regularImprovements.defaults().pad(5f)
 
         for (improvement in tileInfo.tileMap.gameInfo.ruleSet.tileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
@@ -71,7 +72,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
                 accept(improvement)
             }
 
-            val improvementRow = Table()
+            val statIcons = Table()
 
             // get benefits of the new improvement
             val stats = tileInfo.getImprovementStats(improvement, currentPlayerCiv, tileInfo.getCity())
@@ -100,7 +101,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
             // icon for adding the resource by improvement
             if (provideResource)
-                improvementRow.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
+                statIcons.add(ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)).pad(3f)
 
             // icon for removing the resource by replacing improvement
             if (removeImprovement && tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == tileInfo.improvement) {
@@ -111,18 +112,17 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
                 val resourceIcon = ImageGetter.getResourceImage(tileInfo.resource.toString(), 30f)
                 crossedResource.addActor(resourceIcon)
                 crossedResource.addActor(cross)
-                improvementRow.add(crossedResource).padTop(30f).padRight(33f)
+                statIcons.add(crossedResource).padTop(30f).padRight(33f)
             }
 
-            improvementRow.add(statsTable).padLeft(13f)
+            statIcons.add(statsTable).padLeft(13f)
+            regularImprovements.add(statIcons).align(Align.right)
 
             val improvementButton = Button(skin)
-            improvementButton.add(group).padRight(10f).fillY()
-            improvementButton.addSeparatorVertical()
-            improvementButton.add(pickNow).padLeft(10f).fill()
-            improvementRow.add(improvementButton)
-
-            regularImprovements.addActor(improvementRow)
+            improvementButton.add(group).pad(5f).fillY()
+            regularImprovements.add(improvementButton)
+            regularImprovements.add(pickNow).padLeft(10f)
+            regularImprovements.row()
         }
         topTable.add(regularImprovements)
     }

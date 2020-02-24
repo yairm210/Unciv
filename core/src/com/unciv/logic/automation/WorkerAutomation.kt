@@ -14,8 +14,7 @@ class WorkerAutomation(val unit: MapUnit) {
     fun automateWorkerAction() {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
                 .filter {
-                    it.militaryUnit != null && it.militaryUnit!!.civInfo != unit.civInfo
-                            && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo)
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
                 }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
@@ -118,24 +117,25 @@ class WorkerAutomation(val unit: MapUnit) {
      * Returns the current tile if no tile to work was found
      */
     private fun findTileToWork(): TileInfo {
-        val currentTile=unit.getTile()
+        val currentTile = unit.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
-                    (it.civilianUnit== null || it == currentTile)
-                            && tileCanBeImproved(it, unit.civInfo) }
-                .sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
+                    (it.civilianUnit == null || it == currentTile)
+                            && tileCanBeImproved(it, unit.civInfo)
+                }
+                .sortedByDescending { getPriority(it, unit.civInfo) }
 
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
-        val selectedTile = workableTiles.firstOrNull{unit.movement.canReach(it) }
+        val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) }
 
-        if (selectedTile != null
-                && getPriority(selectedTile, unit.civInfo)>1
+        return if (selectedTile != null
+                && getPriority(selectedTile, unit.civInfo) > 1
                 && (!workableTiles.contains(currentTile)
                         || getPriority(selectedTile, unit.civInfo) > getPriority(currentTile, unit.civInfo)))
-            return selectedTile
-        else return currentTile
+            selectedTile
+        else currentTile
     }
 
     private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {

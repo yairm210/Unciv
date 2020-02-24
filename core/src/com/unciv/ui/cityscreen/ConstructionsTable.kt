@@ -288,7 +288,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
 
             button.onClick(UncivSound.Coin) {
-                YesNoPopup("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
+                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n\n" +
+                        "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
+                YesNoPopup(purchasePrompt, {
                     cityConstructions.purchaseConstruction(construction.name)
                     if (isSelectedQueueEntry()) {
                         // currentConstruction is removed from the queue by purchaseConstruction
