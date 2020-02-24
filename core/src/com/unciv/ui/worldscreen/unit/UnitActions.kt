@@ -236,28 +236,37 @@ object UnitActions {
             })
     }
 
-    private fun getLambdaOrNull(test: Boolean, lambda: () -> Unit):(() -> Unit)? =
+    private fun getLambdaOrNull(test: Boolean, lambda: () -> Unit): (() -> Unit)? =
             if (test) lambda else null
 
+    fun getGreatPersonBuildActions(unit: MapUnit, tile: TileInfo): Sequence<() -> Unit> =
+            getGreatPersonBuildActionsPair(unit, tile).map { it.second }
+
+    private fun getGreatPersonBuildActionsPair(unit: MapUnit, tile: TileInfo): Sequence<Pair<String, () -> Unit>> =
+        unit.getUniques().asSequence()
+        .filter { it.startsWith(CAN_BUILD_IMPROVEMENT) }
+        .map {
+            val improvement = it.substring(CAN_BUILD_IMPROVEMENT.length)
+            val action: (() -> Unit)? = getLambdaOrNull(unit.currentMovement > 0f
+                    && !tile.isWater && !tile.isCityCenter()
+                    && !tile.getLastTerrain().unbuildable) {
+                tile.terrainFeature = null // remove forest/jungle/marsh
+                tile.improvement = improvement
+                tile.improvementInProgress = null
+                tile.turnsToImprovement = 0
+            }
+            if (action == null) null else (improvement to action)
+        }.filterNotNull()
+
     private fun getGreatPersonActions(unit: MapUnit, tile: TileInfo): Sequence<UnitAction> = sequence {
-        yieldAll(unit.getUniques().asSequence()
-                .filter { it.startsWith(CAN_BUILD_IMPROVEMENT) }
+        yieldAll(getGreatPersonBuildActionsPair(unit, tile)
                 .map {
-                    val improvement = it.substring(CAN_BUILD_IMPROVEMENT.length)
                     UnitAction(
                             type = UnitActionType.Create,
-                            title = "Create [$improvement]",
+                            title = "Create [${it.first}]",
                             uncivSound = UncivSound.Chimes,
-                            action = getLambdaOrNull(unit.currentMovement > 0f
-                                    && !tile.isWater && !tile.isCityCenter()
-                                    && !tile.getLastTerrain().unbuildable) {
-                                tile.terrainFeature = null // remove forest/jungle/marsh
-                                tile.improvement = improvement
-                                tile.improvementInProgress = null
-                                tile.turnsToImprovement = 0
-                            })
+                            action = it.second)
                 })
-
 
         if (!unit.isEmbarked()) {
             when (unit.name) {

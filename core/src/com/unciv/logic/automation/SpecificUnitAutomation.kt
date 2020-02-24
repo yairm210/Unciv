@@ -44,30 +44,33 @@ class SpecificUnitAutomation {
 
     fun automateGreatGeneral(unit: MapUnit) {
         //try to follow nearby units. Do not garrison in city if possible
-        val militaryUnitTilesInDistance = unit.movement.getDistanceToTiles().map { it.key }
+        val militaryUnitTilesInDistance = unit.movement.getDistanceToTiles().asSequence()
                 .filter {
-                    val militant = it.militaryUnit
+                    val militant = it.key.militaryUnit
                     militant != null && militant.civInfo == unit.civInfo
-                            && (it.civilianUnit == null || it.civilianUnit == unit)
-                            && militant.getMaxMovement() <= 2 && !it.isCityCenter()
+                            && (it.key.civilianUnit == null || it.key.civilianUnit == unit)
+                            && militant.getMaxMovement() <= 2 && !it.key.isCityCenter()
                 }
 
-        if (militaryUnitTilesInDistance.isNotEmpty()) {
-            val tilesSortedByAffectedTroops = militaryUnitTilesInDistance
-                    .sortedByDescending {
-                        it.getTilesInDistance(2).count {
-                            val militaryUnit = it.militaryUnit
+        val maxAffectedTroopsTile = militaryUnitTilesInDistance
+                .maxBy {
+                        it.key.getTilesInDistance(2).count {tile ->
+                            val militaryUnit = tile.militaryUnit
                             militaryUnit != null && militaryUnit.civInfo == unit.civInfo
                         }
-                    }
-            unit.movement.headTowards(tilesSortedByAffectedTroops.first())
+                    }?.key
+        if (maxAffectedTroopsTile != null) {
+            unit.movement.headTowards(maxAffectedTroopsTile)
             return
         }
 
         //if no unit to follow, take refuge in city.
-        val cityToGarrison = unit.civInfo.cities.map { it.getCenterTile() }
+        val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull { it.civilianUnit == null && unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
+                .firstOrNull {
+                    it.civilianUnit == null && unit.movement.canMoveTo(it)
+                            && unit.movement.canReach(it)
+                }
 
         if (cityToGarrison != null) {
             unit.movement.headTowards(cityToGarrison)
@@ -91,7 +94,7 @@ class SpecificUnitAutomation {
                 .map { it.getTileResource() }.filter { it.resourceType == ResourceType.Luxury }.distinct()
         val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
         val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
-                .count { !luxuryResourcesAlreadyInCivArea.contains(it.name) }
+                .count { it.name !in luxuryResourcesAlreadyInCivArea }
         rank += luxuryResourcesNotYetInCiv * 10
 
         return rank
@@ -119,8 +122,8 @@ class SpecificUnitAutomation {
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
                 .filter {
                     val tileOwner = it.getOwner()
-                    it.isLand && (tileOwner == null || tileOwner == unit.civInfo) && // don't allow settler to settle inside other civ's territory
-                            (unit.movement.canMoveTo(it) || unit.currentTile == it)
+                    it.isLand && (tileOwner == null || tileOwner == unit.civInfo) // don't allow settler to settle inside other civ's territory
+                            && (unit.currentTile == it || unit.movement.canMoveTo(it))
                             && it !in tilesNearCities
                 }
 
@@ -162,7 +165,7 @@ class SpecificUnitAutomation {
             stats.toHashMap()[relatedStat]!!
         }
         for (city in citiesByStatBoost) {
-            var pathToCity = unit.movement.getShortestPath(city.getCenterTile())
+            val pathToCity = unit.movement.getShortestPath(city.getCenterTile())
 
             if (pathToCity.isEmpty()) continue
             if (pathToCity.size > 2) {
@@ -176,12 +179,12 @@ class SpecificUnitAutomation {
                         it.isLand && it.resource == null && !it.isCityCenter()
                                 && (unit.currentTile == it || unit.movement.canMoveTo(it))
                     }.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
-                    .firstOrNull { unit.movement.canReach(it) } ?: continue // to another city
+                    .firstOrNull { unit.movement.canReach(it) } // to another city
+            if (chosenTile == null) continue
 
             unit.movement.headTowards(chosenTile)
-            if (unit.currentTile == chosenTile && unit.currentMovement > 0)
-                UnitActions.getUnitActions(unit, UncivGame.Current.worldScreen)
-                        .first { it.type == UnitActionType.Create }.action?.invoke()
+            if (unit.currentTile == chosenTile)
+                UnitActions.getGreatPersonBuildActions(unit, chosenTile).firstOrNull()?.invoke()
             return
         }
     }
