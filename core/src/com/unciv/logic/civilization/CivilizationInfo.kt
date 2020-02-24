@@ -387,7 +387,7 @@ class CivilizationInfo {
         transients().setCitiesConnectedToCapitalTransients()
         for (city in cities) city.startTurn()
 
-        getCivUnits().toList().forEach { it.startTurn() }
+        for (unit in getCivUnits()) unit.startTurn()
 
         for(tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
