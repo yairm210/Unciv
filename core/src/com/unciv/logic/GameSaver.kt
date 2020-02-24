@@ -29,6 +29,8 @@ class GameSaver {
 
     fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
         json().toJson(game,getSave(GameName, multiplayer))
+        if (multiplayer)
+            addGameToList(game.gameId, GameName)
     }
 
     fun loadGameByName(GameName: String, multiplayer: Boolean = false) : GameInfo {
@@ -45,6 +47,16 @@ class GameSaver {
 
     fun deleteSave(GameName: String, multiplayer: Boolean = false){
         getSave(GameName, multiplayer).delete()
+        if (multiplayer)
+            removeGameFromListByValue(GameName)
+    }
+
+    fun deleteMultplayerGameById(gameId: String){
+        val fileName = multiplayerGameList[gameId]
+        if (fileName != null) {
+            getSave(fileName, true).delete()
+            removeGameFromList(gameId)
+        }
     }
 
     fun getGeneralSettingsFile(): FileHandle {
@@ -94,6 +106,72 @@ class GameSaver {
             }
         }
 
+    }
+
+    //The file manager allows easy access to the gameID and the name of its corresponding file for every saved multiplayer game
+    companion object MultiplayerFileManager{
+
+        private var multiplayerGameList = mutableMapOf<String, String>()
+
+        init {
+            loadAllGamesIntoList()
+        }
+
+        fun gameIsAlreadySavedAsMultiplayer(gameId: String) : Boolean{
+            return multiplayerGameList.containsKey(gameId)
+        }
+
+        //returns a read only map
+        fun getMutliplayerGameList(): Map<String, String>{
+            return multiplayerGameList.toMap()
+        }
+
+        private fun addGameToList(gameId: String, gameFileName: String){
+            val oldFileName = multiplayerGameList[gameId]
+            //There is already a game saved with this ID and file name got not changed so no need to change anything
+            if (oldFileName == gameFileName)
+                return
+
+            multiplayerGameList[gameId] = gameFileName
+            //Delete old save file if it just got renamed
+            if (oldFileName != null && oldFileName != gameFileName)
+                GameSaver().getSave(oldFileName, true).delete()
+        }
+
+        private fun removeGameFromList(gameId: String){
+            multiplayerGameList.remove(gameId)
+        }
+
+        private fun removeGameFromListByValue(gameFileName: String){
+            //This should always have just one entry because files can't have the same name
+            val keySet = multiplayerGameList.filterValues { it == gameFileName }.keys
+            //if its > 1 something crazy happened so we better don't delete anything
+            //if its < 1 then there was a SaveFile without list entry. This happens when File got renamed
+            if (keySet.size != 1)
+                return
+            multiplayerGameList.remove(keySet.elementAt(0))
+        }
+
+        private fun loadAllGamesIntoList(){
+            val gameFileNames : List<String>?
+
+            multiplayerGameList.clear()
+
+            try {
+                gameFileNames = GameSaver().getSaves(true)
+            }catch (ex: Exception) {
+                return
+            }
+
+            for (gameFileName in gameFileNames){
+                try {
+                    val game = GameSaver().loadGameByName(gameFileName, true)
+                    multiplayerGameList[game.gameId] = gameFileName
+                }catch (ex: Exception){
+                    continue
+                }
+            }
+        }
     }
 }
 
