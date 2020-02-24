@@ -25,7 +25,7 @@ class SpecificUnitAutomation {
                 .flatMap { city -> city.getWorkableTiles() }
                 .filter { hasWorkableSeaResource(it, unit.civInfo)
                         && (unit.currentTile == it || unit.movement.canMoveTo(it)) }
-                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { unit.movement.canReach(it) }
 
         when (closestReachableResource) {
@@ -66,7 +66,7 @@ class SpecificUnitAutomation {
 
         //if no unit to follow, take refuge in city.
         val cityToGarrison = unit.civInfo.cities.map { it.getCenterTile() }
-                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                 .firstOrNull { it.civilianUnit == null && unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
 
         if (cityToGarrison != null) {
@@ -207,7 +207,7 @@ class SpecificUnitAutomation {
             }
         }
 
-        val pathsToCities = unit.movement.getArialPathsToCities()
+        val pathsToCities = unit.movement.getaerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys

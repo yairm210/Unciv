@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -281,7 +280,7 @@ class UnitAutomation {
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
                     .filter { it.isLand }
-                    .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                    .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
 
             if (tileToHeadTo != null) // no need to worry, keep going as the movement alg. says
@@ -293,7 +292,7 @@ class UnitAutomation {
                     val tileToMoveTo =
                             unitDistanceToTiles.asSequence()
                                     .filter {
-                                        it.key.arialDistanceTo(closestReachableEnemyCity) <=
+                                        it.key.aerialDistanceTo(closestReachableEnemyCity) <=
                                                 unitRange && it.key !in tilesInBombardRange
                                     }
                                     .minBy { it.value.totalDistance }?.key

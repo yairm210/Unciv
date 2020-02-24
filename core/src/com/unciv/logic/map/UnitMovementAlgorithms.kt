@@ -182,7 +182,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit())
-            return unit.currentTile.arialDistanceTo(destination) <= unit.getRange()
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()
         return getShortestPath(destination).any()
     }
 
