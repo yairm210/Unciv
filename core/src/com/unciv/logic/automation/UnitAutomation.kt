@@ -200,8 +200,7 @@ class UnitAutomation {
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActions.getUnitActions(unit, UncivGame.Current.worldScreen)
-                .first { it.type == UnitActionType.Pillage }.action?.invoke()
+        UnitActions.getPillageAction(unit, tileToPillage)?.invoke()
         return true
     }
 

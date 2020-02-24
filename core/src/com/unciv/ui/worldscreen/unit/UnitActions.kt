@@ -137,21 +137,27 @@ object UnitActions {
     }
 
     private suspend fun SequenceScope<UnitAction>.yieldPillageAction(unit: MapUnit, tile: TileInfo) {
-        if (!unit.type.isCivilian() && tile.improvement != null)
-            yield(UnitAction(
+        if (!unit.type.isCivilian()) {
+            val action = getPillageAction(unit, tile)
+            if (action != null)
+                yield(UnitAction(
                     type = UnitActionType.Pillage,
-                    action = getLambdaOrNull(unit.currentMovement > 0 && canPillage(unit, tile)) {
-                        // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
-                        //    and I can't find any other sources so I'll go with that
-                        if (tile.isLand) {
-                            tile.improvementInProgress = tile.improvement
-                            tile.turnsToImprovement = 2
-                        }
-                        tile.improvement = null
-                        if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
-                        unit.healBy(25)
-                    }))
+                    action = action))
+        }
     }
+
+    fun getPillageAction(unit: MapUnit, tile: TileInfo): (() -> Unit)? =
+        getLambdaOrNull(unit.currentMovement > 0 && canPillage(unit, tile)) {
+            // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
+            //    and I can't find any other sources so I'll go with that
+            if (tile.isLand) {
+                tile.improvementInProgress = tile.improvement
+                tile.turnsToImprovement = 2
+            }
+            tile.improvement = null
+            if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+            unit.healBy(25)
+        }
 
     private suspend fun SequenceScope<UnitAction>.yieldExploreAction(unit: MapUnit) {
         if (!unit.type.isAirUnit())
