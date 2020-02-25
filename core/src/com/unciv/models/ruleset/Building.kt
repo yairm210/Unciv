@@ -180,7 +180,7 @@ class Building : NamedStats(), IConstruction{
             stats.science = 50f
 
         if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5*civInfo.citiesConnectedToCapital.count { it.key.civInfo.isCityState() }
+            stats.production += 5*civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
 
         return stats
     }

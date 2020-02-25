@@ -51,8 +51,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom = cityToConnectFrom,
                 transportType = road,
                 overridingTransportType = railroad,
-                tileFilter = { tile -> tile.hasRoad(civInfo) || tile.hasRailroad() || tile.owningCity?.getCenterTile() == tile },
-                cityFilter = { bfs, city -> bfs.tilesReached.containsKey(city.getCenterTile()) }
+                tileFilter = { tile -> tile.hasRoad(civInfo) || tile.hasRailroad() || tile.isCityCenter() }
         )
     }
 
@@ -60,8 +59,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         check(
                 cityToConnectFrom = cityToConnectFrom,
                 transportType = railroad,
-                tileFilter = { tile -> tile.hasRailroad() || tile.owningCity?.getCenterTile() == tile },
-                cityFilter = { bfs, city -> bfs.tilesReached.containsKey(city.getCenterTile()) }
+                tileFilter = { tile -> tile.hasRailroad() || tile.isCityCenter() }
         )
     }
 
@@ -70,10 +68,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom = cityToConnectFrom,
                 transportType = harbor,
                 tileFilter = { tile -> tile.isWater || tile.isCityCenter() },
-                cityFilter = { bfs, city ->
-                    bfs.tilesReached.containsKey(city.getCenterTile())
-                            && city.containsHarbor()
-                }
+                cityFilter = { city -> city.containsHarbor() }
         )
     }
 
@@ -84,21 +79,34 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                       transportType: String,
                       overridingTransportType: String? = null,
                       tileFilter: (TileInfo) -> Boolean,
-                      cityFilter: (BFS, CityInfo) -> Boolean) {
+                      cityFilter: (CityInfo) -> Boolean = { true }) {
         val bfs = BFS(cityToConnectFrom.getCenterTile(), tileFilter)
         bfs.stepToEnd()
-        val reachedCities = allCivCities.filter { cityFilter(bfs, it) }
-        for (reachedCity in reachedCities) {
-            if (!citiesReachedToMediums.containsKey(reachedCity)) {
-                newCitiesToCheck.add(reachedCity)
-                citiesReachedToMediums[reachedCity] = mutableSetOf()
-            }
-            if (reachedCity == cityToConnectFrom) continue
-            val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-            if (!cityReachedByMediums.contains(transportType)
-                    && !cityReachedByMediums.contains(overridingTransportType))
-                cityReachedByMediums.add(transportType)
+        val reachedCities = allCivCities.filter {
+            bfs.hasReachedTile(it.getCenterTile()) && cityFilter(it)
         }
+        for (reachedCity in reachedCities) {
+            addCityIfFirstEncountered(reachedCity)
+            if (reachedCity == cityToConnectFrom) continue
+            if (reachedCity.wasNotPreviouslyReached(transportType, overridingTransportType))
+                reachedCity.addMedium(transportType)
+        }
+    }
+
+    private fun addCityIfFirstEncountered(reachedCity: CityInfo) {
+        if (!citiesReachedToMediums.containsKey(reachedCity)) {
+            newCitiesToCheck.add(reachedCity)
+            citiesReachedToMediums[reachedCity] = mutableSetOf()
+        }
+    }
+
+    private fun CityInfo.wasNotPreviouslyReached(transportType: String, overridingTransportType: String?): Boolean {
+        val mediums = citiesReachedToMediums[this]!!
+        return !mediums.contains(transportType) && !mediums.contains(overridingTransportType)
+    }
+
+    private fun CityInfo.addMedium(transportType: String) {
+        citiesReachedToMediums[this]!!.add(transportType)
     }
 
 }

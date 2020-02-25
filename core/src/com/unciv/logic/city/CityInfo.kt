@@ -128,10 +128,10 @@ class CityInfo {
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
-    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}) =
-            civInfo.citiesConnectedToCapital[this]
-                    ?.let(connectionTypePredicate)
-                    ?: false
+    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
+        val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
+        return connectionTypePredicate(mediumTypes)
+    }
     fun isInResistance() = resistanceCounter>0
 
 
