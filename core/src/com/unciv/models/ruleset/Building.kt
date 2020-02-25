@@ -333,12 +333,12 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions) {
+    override fun postBuildEvent(construction: CityConstructions): Boolean {
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
-            return
+            return true
         }
         construction.addBuilding(name)
 
@@ -379,6 +379,8 @@ class Building : NamedStats(), IConstruction{
             civInfo.updateHasActiveGreatWall()
 
         if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
+
+        return true
     }
 
     fun isStatRelated(stat: Stat): Boolean {

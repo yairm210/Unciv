@@ -294,8 +294,11 @@ class CityConstructions {
     }
 
     fun purchaseConstruction(constructionName: String) {
+        if (!getConstruction(constructionName).postBuildEvent(this)) {
+            cityInfo.civInfo.addNotification("[${constructionName}] can not be purchased, because of unavailable space near the city. Sorry.", cityInfo.location, Color.RED)
+            return // nothing built - no pay
+        }
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
-        getConstruction(constructionName).postBuildEvent(this)
         if (currentConstruction == constructionName)
             cancelCurrentConstruction()
 
