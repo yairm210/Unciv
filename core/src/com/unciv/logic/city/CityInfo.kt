@@ -128,7 +128,10 @@ class CityInfo {
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
-    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
+    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
+        val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
+        return connectionTypePredicate(mediumTypes)
+    }
     fun isInResistance() = resistanceCounter>0
 
 
@@ -396,7 +399,7 @@ class CityInfo {
         // The city could be producing something that puppets shouldn't, like units
         cityConstructions.currentConstructionIsUserSet = false
         cityConstructions.constructionQueue.clear()
-        cityConstructions.chooseNextConstruction() 
+        cityConstructions.chooseNextConstruction()
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {

@@ -354,11 +354,17 @@ open class TileInfo {
         return false
     }
 
-    fun hasRoad(civInfo: CivilizationInfo): Boolean {
-        if(roadStatus != RoadStatus.None) return true
-        if(civInfo.nation.forestsAndJunglesAreRoads && (terrainFeature==Constants.jungle || terrainFeature==Constants.forest))
-            return true
-        return false
-    }
+    fun hasConnection(civInfo: CivilizationInfo) =
+            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+    fun hasRoad(civInfo: CivilizationInfo) =
+            roadStatus == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
+
+    fun hasRailroad() =
+            roadStatus == RoadStatus.Railroad
+
+    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
+            civInfo.nation.forestsAndJunglesAreRoads
+                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
     //endregion
 }
