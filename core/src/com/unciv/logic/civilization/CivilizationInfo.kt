@@ -45,7 +45,7 @@ class CivilizationInfo {
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
     /** Contains cities from ALL civilizations connected by trade routes to the capital */
-    @Transient var citiesConnectedToCapital = listOf<CityInfo>()
+    @Transient var citiesConnectedToCapital = mapOf<CityInfo, Set<String>>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false

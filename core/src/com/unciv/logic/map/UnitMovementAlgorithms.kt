@@ -21,7 +21,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
             return 1 / 10f + extraCost
 
-        if (from.hasRoad(civInfo) && to.hasRoad(civInfo))
+        if (from.hasConnection(civInfo) && to.hasConnection(civInfo))
         {
             if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
             else return 1 / 2f + extraCost
