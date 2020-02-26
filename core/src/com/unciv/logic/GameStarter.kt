@@ -75,9 +75,9 @@ class GameStarter {
             gameInfo.civilizations.add(playerCiv)
         }
 
-
         val cityStatesWithStartingLocations =
-                gameInfo.tileMap.values.filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+                gameInfo.tileMap.values
+                        .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
                         .map { it.improvement!!.replace("StartingLocation ", "") }
 
         val availableCityStatesNames = Stack<String>()
@@ -89,6 +89,12 @@ class GameStarter {
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
             gameInfo.civilizations.add(civ)
+        }
+
+        // remove starting locations one we're done
+        for(tile in gameInfo.tileMap.values){
+            if(tile.improvement!=null && tile.improvement!!.startsWith("StartingLocation "))
+                tile.improvement=null
         }
     }
 
