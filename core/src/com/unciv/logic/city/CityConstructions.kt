@@ -8,7 +8,9 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.ConstructionInfoTable
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -293,9 +295,14 @@ class CityConstructions {
         builtBuildings.remove(buildingName)
     }
 
-    fun purchaseConstruction(constructionName: String) {
+    fun purchaseConstruction(constructionName: String, cityScreen: CityScreen?) {
         if (!getConstruction(constructionName).postBuildEvent(this)) {
-            cityInfo.civInfo.addNotification("[${constructionName}] can not be purchased, because of unavailable space near the city. Sorry.", cityInfo.location, Color.RED)
+            if (cityScreen != null) // it can be null, because AI does not care about popups
+                Popup(cityScreen).apply {
+                    add("No space available to place [${constructionName}] near [${cityInfo.name}]".tr()).row()
+                    addCloseButton()
+                    open()
+                }
             return // nothing built - no pay
         }
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)

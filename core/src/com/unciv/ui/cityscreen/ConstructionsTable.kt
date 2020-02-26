@@ -292,7 +292,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n\n" +
                         "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
                 YesNoPopup(purchasePrompt, {
-                    cityConstructions.purchaseConstruction(construction.name)
+                    cityConstructions.purchaseConstruction(construction.name, cityScreen)
                     if (isSelectedQueueEntry()) {
                         // currentConstruction is removed from the queue by purchaseConstruction
                         // to avoid conflicts with NextTurnAutomation
