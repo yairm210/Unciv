@@ -49,4 +49,7 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         }
         return path
     }
+
+    fun hasReachedTile(tile: TileInfo) =
+            tilesReached.containsKey(tile)
 }

@@ -44,8 +44,8 @@ class CivilizationInfo {
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
-    /** Contains cities from ALL civilizations connected by trade routes to the capital */
-    @Transient var citiesConnectedToCapital = listOf<CityInfo>()
+    /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
+    @Transient var citiesConnectedToCapitalToMediums = mapOf<CityInfo, Set<String>>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
@@ -292,8 +292,9 @@ class CivilizationInfo {
     }
 
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
-        if(otherCiv.isBarbarian() || isBarbarian()) return true
-        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
+        if (otherCiv.civName == civName) return false // never at war with itself
+        if (otherCiv.isBarbarian() || isBarbarian()) return true
+        if (!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
         return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
     }
@@ -386,7 +387,7 @@ class CivilizationInfo {
         transients().setCitiesConnectedToCapitalTransients()
         for (city in cities) city.startTurn()
 
-        getCivUnits().toList().forEach { it.startTurn() }
+        for (unit in getCivUnits()) unit.startTurn()
 
         for(tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
