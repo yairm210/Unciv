@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv.ui.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -7,6 +7,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
+import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.addSeparator
@@ -204,7 +205,7 @@ class VictoryScreen : PickerScreen() {
                         .sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {
-            val civToBranchesHaveCompleted=EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
+            val civToBranchesHaveCompleted= EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
         }
         return policyVictoryColumn
