@@ -8,9 +8,7 @@ import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.ConstructionInfoTable
-import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -295,22 +293,17 @@ class CityConstructions {
         builtBuildings.remove(buildingName)
     }
 
-    fun purchaseConstruction(constructionName: String, cityScreen: CityScreen?) {
-        if (!getConstruction(constructionName).postBuildEvent(this)) {
-            if (cityScreen != null) // it can be null, because AI does not care about popups
-                Popup(cityScreen).apply {
-                    add("No space available to place [${constructionName}] near [${cityInfo.name}]".tr()).row()
-                    addCloseButton()
-                    open()
-                }
-            return // nothing built - no pay
-        }
+    fun purchaseConstruction(constructionName: String): Boolean {
+        if (!getConstruction(constructionName).postBuildEvent(this))
+            return false // nothing built - no pay
+
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
         if (currentConstruction == constructionName)
             cancelCurrentConstruction()
 
         cityInfo.cityStats.update()
         cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
+        return true
     }
 
     fun hasBuildableCultureBuilding(): Boolean {
