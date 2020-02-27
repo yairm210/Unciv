@@ -62,6 +62,9 @@ android {
             }
         }
     }
+    lintOptions {
+        disable 'MissingTranslation'
+    }
 }
 
 
@@ -123,7 +126,7 @@ task run(type: Exec) {
 
 dependencies {
     implementation 'androidx.core:core:1.2.0'
-    implementation "androidx.work:work-runtime-ktx:2.3.1"
+    implementation "androidx.work:work-runtime-ktx:2.3.2"
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
