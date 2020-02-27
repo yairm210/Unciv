@@ -118,7 +118,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                     .setContentTitle(appContext.resources.getString(R.string.Notify_Persist_Short) + " " + lastTimeChecked)
                     .setStyle(NotificationCompat.BigTextStyle()
                             .bigText(appContext.resources.getString(R.string.Notify_Persist_Long_P1) + " " +
-                                    appContext.resources.getString(R.string.Notify_Persist_Long_P2) + checkPeriod
+                                    appContext.resources.getString(R.string.Notify_Persist_Long_P2) + " " + checkPeriod + " "
                                     + appContext.resources.getString(R.string.Notify_Persist_Long_P3)
                                     + " " + appContext.resources.getString(R.string.Notify_Persist_Long_P4)))
                     .setSmallIcon(R.drawable.uncivicon2)
