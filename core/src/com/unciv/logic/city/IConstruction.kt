@@ -10,7 +10,7 @@ interface IConstruction : INamed {
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(construction: CityConstructions): Boolean
     fun shouldBeDisplayed(construction: CityConstructions): Boolean
-    fun postBuildEvent(construction: CityConstructions)  // Yes I'm hilarious.
+    fun postBuildEvent(construction: CityConstructions): Boolean  // Yes I'm hilarious.
     fun canBePurchased(): Boolean
 }
 
@@ -61,7 +61,7 @@ open class SpecialConstruction(override var name: String, val description: Strin
         throw Exception("Impossible!")
     }
 
-    override fun postBuildEvent(construction: CityConstructions) {
+    override fun postBuildEvent(construction: CityConstructions): Boolean {
         throw Exception("Impossible!")
     }
 

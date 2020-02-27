@@ -1,17 +1,11 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
-import kotlin.collections.set
 
 /** CivInfo class was getting too crowded */
-class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
+class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
     // This is a big performance
     fun updateViewableTiles() {
@@ -112,88 +106,29 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         }
     }
 
-    fun updateHasActiveGreatWall(){
+    fun updateHasActiveGreatWall() {
         civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
                 civInfo.containsBuildingUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
     }
 
 
-    fun setCitiesConnectedToCapitalTransients(initialSetup:Boolean=false){
-        if(civInfo.cities.isEmpty()) return // eg barbarians
+    fun setCitiesConnectedToCapitalTransients(initialSetup: Boolean = false) {
+        if (civInfo.cities.isEmpty()) return // eg barbarians
 
-        // We map which cities we've reached, to the mediums they've been reached by -
-        // this is so we know that if we've seen which cities can be connected by port A, and one
-        // of those is city B, then we don't need to check the cities that B can connect to by port,
-        // since we'll get the same cities we got from A, since they're connected to the same sea.
-        val citiesReachedToMediums = HashMap<CityInfo, ArrayList<String>>()
-        var citiesToCheck = mutableListOf(civInfo.getCapital())
-        citiesReachedToMediums[civInfo.getCapital()] = arrayListOf("Start")
-        val allCivCities = civInfo.gameInfo.getCities()
+        val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()
 
-        val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
+        if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
+            for (city in citiesReachedToMediums.keys)
+                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital())
+                    civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, Color.GOLD)
 
-        val road = "Road"
-        val harbor = "Harbor"
-
-        while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<allCivCities.size){
-            val newCitiesToCheck = mutableListOf<CityInfo>()
-            for(cityToConnectFrom in citiesToCheck){
-                val reachedMediums = citiesReachedToMediums[cityToConnectFrom]!!
-
-                // This is copypasta and can be cleaned up
-                if(theWheelIsResearched && !reachedMediums.contains(road)){
-
-                    val roadBfs = BFS(cityToConnectFrom.getCenterTile()) { it.hasRoad(civInfo) }
-                    roadBfs.stepToEnd()
-                    val reachedCities = allCivCities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
-                    for(reachedCity in reachedCities){
-                        if(!citiesReachedToMediums.containsKey(reachedCity)){
-                            newCitiesToCheck.add(reachedCity)
-                            citiesReachedToMediums[reachedCity] = arrayListOf()
-                        }
-                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if(!cityReachedByMediums.contains(road))
-                            cityReachedByMediums.add(road)
-                    }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add(road)
-                }
-
-                if(!reachedMediums.contains(harbor)
-                        && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent(harbor)){
-                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()) { it.isWater || it.isCityCenter() }
-                    seaBfs.stepToEnd()
-                    val reachedCities = allCivCities.filter {
-                        seaBfs.tilesReached.containsKey(it.getCenterTile())
-                                && it.cityConstructions.containsBuildingOrEquivalent(harbor)
-                    }
-                    for(reachedCity in reachedCities){
-                        if(!citiesReachedToMediums.containsKey(reachedCity)){
-                            newCitiesToCheck.add(reachedCity)
-                            citiesReachedToMediums[reachedCity] = arrayListOf()
-                        }
-                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if(!cityReachedByMediums.contains(harbor))
-                            cityReachedByMediums.add(harbor)
-                    }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add(harbor)
-                }
-            }
-            citiesToCheck = newCitiesToCheck
+            for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
+                if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo)
+                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!", city.location, Color.GOLD)
         }
 
-        if(!initialSetup){ // In the initial setup we're loading an old game state, so it doesn't really count
-            for(city in citiesReachedToMediums.keys)
-                if(city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo && city != civInfo.getCapital())
-                    civInfo.addNotification("[${city.name}] has been connected to your capital!",city.location, Color.GOLD)
-
-            for(city in civInfo.citiesConnectedToCapital)
-                if(!citiesReachedToMediums.containsKey(city) && city.civInfo==civInfo)
-                    civInfo.addNotification("[${city.name}] has been disconnected from your capital!",city.location, Color.GOLD)
-        }
-
-        civInfo.citiesConnectedToCapital = citiesReachedToMediums.keys.toList()
+        civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
     }
-
 
     fun updateDetailedCivResources() {
         val newDetailedCivResources = ResourceSupplyList()

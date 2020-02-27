@@ -1,12 +1,11 @@
 package com.unciv.models
 
 data class UnitAction(
-        var type: UnitActionType,
-        var canAct: Boolean,
-        var title: String = type.value,
-        var isCurrentAction: Boolean = false,
-        var uncivSound: UncivSound = UncivSound.Click,
-        var action: (() -> Unit)? = null
+        val type: UnitActionType,
+        val title: String = type.value,
+        val isCurrentAction: Boolean = false,
+        val uncivSound: UncivSound = UncivSound.Click,
+        val action: (() -> Unit)? = null
 )
 
 enum class UnitActionType(val value: String) {

@@ -293,14 +293,17 @@ class CityConstructions {
         builtBuildings.remove(buildingName)
     }
 
-    fun purchaseConstruction(constructionName: String) {
+    fun purchaseConstruction(constructionName: String): Boolean {
+        if (!getConstruction(constructionName).postBuildEvent(this))
+            return false // nothing built - no pay
+
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
-        getConstruction(constructionName).postBuildEvent(this)
         if (currentConstruction == constructionName)
             cancelCurrentConstruction()
 
         cityInfo.cityStats.update()
         cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
+        return true
     }
 
     fun hasBuildableCultureBuilding(): Boolean {

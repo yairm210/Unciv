@@ -91,6 +91,10 @@ open class TileInfo {
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.tileResources[resource!!]!!
 
+    fun getTileResourceOrNull(): TileResource? =
+            if (resource == null) null
+            else ruleset.tileResources.getOrElse(resource!!) {null }
+
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
@@ -354,11 +358,17 @@ open class TileInfo {
         return false
     }
 
-    fun hasRoad(civInfo: CivilizationInfo): Boolean {
-        if(roadStatus != RoadStatus.None) return true
-        if(civInfo.nation.forestsAndJunglesAreRoads && (terrainFeature==Constants.jungle || terrainFeature==Constants.forest))
-            return true
-        return false
-    }
+    fun hasConnection(civInfo: CivilizationInfo) =
+            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+    fun hasRoad(civInfo: CivilizationInfo) =
+            roadStatus == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
+
+    fun hasRailroad() =
+            roadStatus == RoadStatus.Railroad
+
+    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
+            civInfo.nation.forestsAndJunglesAreRoads
+                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
     //endregion
 }

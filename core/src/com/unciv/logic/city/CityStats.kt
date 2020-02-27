@@ -353,14 +353,7 @@ class CityStats {
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
-        if (roadType == RoadStatus.Road) return cityInfo.isConnectedToCapital() // this transient is not applicable to connection via railroad.
-
-        val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
-        val bfs = BFS(capitalTile) { it.roadStatus == roadType }
-
-        val cityTile = cityInfo.getCenterTile()
-        bfs.stepUntilDestination(cityTile)
-        return bfs.tilesReached.containsKey(cityTile)
+        return cityInfo.isConnectedToCapital { it.contains(roadType.name) || it.contains("Harbor") }
     }
     //endregion
 

@@ -61,7 +61,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         clear()
         if (unit == null) return
         if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
-        for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
+        for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
             add(button).colspan(2).padBottom(2f).row()
         pack()
     }
@@ -73,8 +73,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         actionButton.pack()
-        actionButton.onClick(unitAction.uncivSound) { unitAction.action?.invoke(); UncivGame.Current.worldScreen.shouldUpdate=true }
-        if (!unitAction.canAct) actionButton.disable()
+        actionButton.onClick(unitAction.uncivSound) {
+            unitAction.action?.invoke()
+            UncivGame.Current.worldScreen.shouldUpdate=true
+        }
+        if (unitAction.action == null) actionButton.disable()
         return actionButton
     }
 }
