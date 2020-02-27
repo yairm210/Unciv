@@ -18,7 +18,6 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
 import com.unciv.ui.worldscreen.WorldScreen
-import kotlinx.coroutines.*
 
 private const val CAN_BUILD_IMPROVEMENT = "Can build improvement: "
 

@@ -306,9 +306,9 @@ class UnitAutomation {
                     //todo: use CONSTANT for 20
                     var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
                     val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)
-                    for (unit in militaryUnitsAroundEnemyCity) {
+                    for (militaryUnit in militaryUnitsAroundEnemyCity) {
                         totalAttackOnCityPerTurn += BattleDamage()
-                                .calculateDamageToDefender(MapUnitCombatant(unit),
+                                .calculateDamageToDefender(MapUnitCombatant(militaryUnit),
                                         enemyCityCombatant)
                     }
                     if (totalAttackOnCityPerTurn * 3 > closestReachableEnemyCity.getCity()!!.health) // if we can defeat it in 3 turns with the current units,
