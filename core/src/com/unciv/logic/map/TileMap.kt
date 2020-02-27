@@ -77,10 +77,7 @@ class TileMap {
             getTilesInDistanceRange(origin, 0..distance)
 
     fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<TileInfo> =
-            sequence {
-                for (i in range)
-                    yield(getTilesAtDistance(origin, i))
-            }.flatMap { it }
+            range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
     fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
             if (distance <= 0) // silently take negatives.

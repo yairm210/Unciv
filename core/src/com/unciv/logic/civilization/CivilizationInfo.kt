@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -312,11 +313,21 @@ class CivilizationInfo {
     }
 
     fun canSignResearchAgreement(): Boolean {
+        if(!isMajorCiv()) return false
         if(!tech.getTechUniques().contains("Enables Research agreements")) return false
-        if(gold < getResearchAgreementCost()) return false
         if (gameInfo.ruleSet.technologies.values
                 .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true
+    }
+
+    fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
+        val diplomacyManager = getDiplomacyManager(otherCiv)
+        val cost = getResearchAgreementCost(otherCiv)
+        return canSignResearchAgreement() && otherCiv.canSignResearchAgreement()
+                && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+                && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
+                && gold >= cost && otherCiv.gold >= cost
     }
     //endregion
 
@@ -507,9 +518,10 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
-    fun getResearchAgreementCost(): Int {
+    fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val basicGoldCostOfSignResearchAgreement = when(getEra()){
+        val highestEra = sequenceOf(getEra(),otherCiv.getEra()).maxBy { it.ordinal }!!
+        val basicGoldCostOfSignResearchAgreement = when(highestEra){
             TechEra.Medieval, TechEra.Renaissance -> 250
             TechEra.Industrial -> 300
             TechEra.Modern -> 350

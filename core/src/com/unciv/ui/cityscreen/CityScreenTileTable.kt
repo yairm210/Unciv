@@ -68,8 +68,7 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         statsTable.defaults().pad(2f)
         for (entry in stats.toHashMap().filterNot { it.value == 0f }) {
             statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(entry.value.roundToInt().toString().toLabel())
-            statsTable.row()
+            statsTable.add(entry.value.roundToInt().toString().toLabel()).padRight(5f)
         }
         return statsTable
     }

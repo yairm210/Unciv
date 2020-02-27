@@ -91,6 +91,10 @@ open class TileInfo {
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.tileResources[resource!!]!!
 
+    fun getTileResourceOrNull(): TileResource? =
+            if (resource == null) null
+            else ruleset.tileResources.getOrElse(resource!!) {null }
+
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
