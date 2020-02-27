@@ -1,7 +1,6 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
@@ -10,7 +9,6 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
@@ -18,7 +16,7 @@ import com.unciv.ui.utils.toLabel
 
 class VictoryScreen : PickerScreen() {
 
-    val playerCivInfo = UncivGame.Current.gameInfo.getCurrentPlayerCivilization()
+    val playerCivInfo = UncivGame.Current.gameInfo.getPlayerToViewAs()
     val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
     val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
     val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
