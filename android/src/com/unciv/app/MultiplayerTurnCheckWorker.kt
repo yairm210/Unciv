@@ -68,8 +68,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          */
         fun createNotificationChannelInfo(appContext: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = "Unciv Multiplayer Turn Checker Alert"
-                val descriptionText = "Informs you when it's your turn in multiplayer."
+                val name = appContext.resources.getString(R.string.Notify_ChannelInfo_Short)
+                val descriptionText = appContext.resources.getString(R.string.Notify_ChannelInfo_Long)
                 val importance = NotificationManager.IMPORTANCE_HIGH
                 val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_INFO, name, importance)
                 mChannel.description = descriptionText
@@ -90,8 +90,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
          */
         fun createNotificationChannelService(appContext: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val name = "Unciv Multiplayer Turn Checker Persistent Status"
-                val descriptionText = "Shown constantly to inform you about background checking."
+                val name = appContext.resources.getString(R.string.Notify_ChannelService_Short)
+                val descriptionText = appContext.resources.getString(R.string.Notify_ChannelService_Long)
                 val importance = NotificationManager.IMPORTANCE_MIN
                 val mChannel = NotificationChannel(NOTIFICATION_CHANNEL_ID_SERVICE, name, importance)
                 mChannel.setShowBadge(false)
@@ -258,8 +258,6 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
         val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
                 .setPriority(NotificationManagerCompat.IMPORTANCE_DEFAULT) // No direct user action expected
-                // These two strings must not be translated,
-                // because the translation engine can be the cause of the exception.
                 .setContentTitle(applicationContext.resources.getString(R.string.Notify_Error_Short))
                 .setContentText(applicationContext.resources.getString(R.string.Notify_Error_Long))
                 .setSmallIcon(R.drawable.uncivicon2)

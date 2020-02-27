@@ -10,4 +10,8 @@
     <string name="Notify_Persist_Long_P2">Prüft etwa alle</string>
     <string name="Notify_Persist_Long_P3">Minute(n) wenn Internet vorhanden.</string>
     <string name="Notify_Persist_Long_P4">Konfigurierbar im Unciv Optionsmenü.</string>
+    <string name="Notify_ChannelInfo_Short">Unciv Multiplayer Zugprüfer Ereignis</string>
+    <string name="Notify_ChannelInfo_Long">Informiert dich, wenn du im Multiplayer am Zug bist.</string>
+    <string name="Notify_ChannelService_Short">Unciv Multiplayer Zugprüfer Persistenter Status</string>
+    <string name="Notify_ChannelService_Long">Permanent angezeigte Benachrichtigung, welche dich über die Hintergrundaktivität des Dienstes informiert.</string>
 </resources>

@@ -10,4 +10,8 @@
     <string name="Notify_Persist_Long_P2">Checks ca. every</string>
     <string name="Notify_Persist_Long_P3">minute(s) when Internet available.</string>
     <string name="Notify_Persist_Long_P4">Configurable in Unciv options menu.</string>
+    <string name="Notify_ChannelInfo_Short">Unciv Multiplayer Turn Checker Alert</string>
+    <string name="Notify_ChannelInfo_Long">Informs you when it\'s your turn in multiplayer.</string>
+    <string name="Notify_ChannelService_Short">Unciv Multiplayer Turn Checker Persistent Status</string>
+    <string name="Notify_ChannelService_Long">Shown constantly to inform you about background checking.</string>
 </resources>
