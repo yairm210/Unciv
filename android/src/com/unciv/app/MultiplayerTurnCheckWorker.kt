@@ -216,7 +216,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 enqueue(applicationContext, inputData.getInt(CONFIGURED_DELAY, 5), inputDataFailReset)
             }
         } catch (ex: Exception) {
-            if (inputData.getInt(FAIL_COUNT, 0) > 3) {
+            val failCount = inputData.getInt(FAIL_COUNT, 0)
+            if (failCount > 3) {
                 showErrorNotification()
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
@@ -226,9 +227,8 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 // If check fails, retry in one minute.
                 // Makes sense, since checks only happen if Internet is available in principle.
                 // Therefore a failure means either a problem with the GameInfo or with Dropbox.
-                val newErrorCount = inputData.getInt(FAIL_COUNT, 0) + 1
-                val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, newErrorCount).build()
-                enqueue(applicationContext, 1, inputDataFailReset)
+                val inputDataFailIncrease = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, failCount + 1).build()
+                enqueue(applicationContext, 1, inputDataFailIncrease)
                 // Persistent Notification is not updated, because user may think check succeed.
             }
         }
