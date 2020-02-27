@@ -128,27 +128,30 @@ class TileMap {
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
-        fun isTileMovePotential(tileInfo: TileInfo): Boolean =
-                when {
-                    unit.type.isAirUnit() -> true
-                    unit.type.isWaterUnit() -> tileInfo.isWater || tileInfo.isCityCenter()
-                    else -> tileInfo.isLand
-                }
+        fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
+                getTilesAtDistance(tileInfo.position, 1).filter { unit.movement.canPassThrough(it) }.toSet()
 
-        val viableTilesToPlaceUnitInAtDistance1 = getTilesInDistance(position, 1)
-                .filter { isTileMovePotential(it) }.toSet()
-        // This is so that units don't skip over non-potential tiles to go elsewhere -
-        // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
-        val viableTilesToPlaceUnitIn = getTilesAtDistance(position, 2)
-                .filter {
-                    isTileMovePotential(it)
-                            && it.neighbors.any { n -> n in viableTilesToPlaceUnitInAtDistance1 }
-                }
-        
-        unit.assignOwner(civInfo, false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        val unitToPlaceTile = viableTilesToPlaceUnitInAtDistance1
-                .firstOrNull { unit.movement.canMoveTo(it) }
-                ?: viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
+        // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
+        unit.assignOwner(civInfo, false)
+
+        var unitToPlaceTile : TileInfo? = null
+        // try to place at the original point (this is the most probable scenario)
+        val currentTile = get(position)
+        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
+
+        // if it's not suitable, try to find another tile nearby
+        if (unitToPlaceTile == null) {
+            var tryCount = 0
+            var potentialCandidates = getPassableNeighbours(currentTile)
+            while (unitToPlaceTile == null && tryCount++ < 10) {
+                unitToPlaceTile = potentialCandidates.firstOrNull { unit.movement.canMoveTo(it) }
+                if (unitToPlaceTile != null) continue
+                // if it's not found yet, let's check their neighbours
+                val newPotentialCandidates = mutableSetOf<TileInfo>()
+                potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
+                potentialCandidates = newPotentialCandidates
+            }
+        }
 
         if (unitToPlaceTile == null) {
             civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner

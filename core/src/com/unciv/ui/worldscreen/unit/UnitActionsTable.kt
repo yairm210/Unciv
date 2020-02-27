@@ -12,7 +12,6 @@ import com.unciv.models.UnitAction
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
-
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     init {

@@ -1,14 +1,8 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.city.CityInfo
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
-import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
-import kotlin.collections.set
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
@@ -18,7 +12,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         setNewViewableTiles()
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(civInfo.getCivUnits().asSequence()
+        newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
                 .filter { it.hasUnique("Can attack submarines") }
                 .flatMap { it.viewableTiles.asSequence() })
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
@@ -58,10 +52,17 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         // There are a LOT of tiles usually.
         // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
         // Ans so, sequences to the rescue!
-        val ownedAndNeighboringTiles = civInfo.cities.asSequence().flatMap {
-            it.getTiles().asSequence().flatMap {
-                tile -> tile.neighbors.asSequence()
-                    .filter { neighbor -> neighbor.getOwner() != civInfo }
+        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles() }
+        newViewableTiles.addAll(ownedTiles)
+        val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner() != civInfo } }
+        newViewableTiles.addAll(neighboringUnownedTiles)
+        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles.asSequence() })
+
+        if (!civInfo.isCityState()) {
+            for (otherCiv in civInfo.getKnownCivs()) {
+                if (otherCiv.getAllyCiv() == civInfo.civName) {
+                    newViewableTiles.addAll(otherCiv.cities.asSequence().flatMap { it.getTiles().asSequence() })
+                }
             }
         }
         newViewableTiles.addAll(ownedAndNeighboringTiles)
@@ -127,80 +128,20 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     fun setCitiesConnectedToCapitalTransients(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty()) return // eg barbarians
 
-        // We map which cities we've reached, to the mediums they've been reached by -
-        // this is so we know that if we've seen which cities can be connected by port A, and one
-        // of those is city B, then we don't need to check the cities that B can connect to by port,
-        // since we'll get the same cities we got from A, since they're connected to the same sea.
-        val citiesReachedToMediums = HashMap<CityInfo, ArrayList<String>>()
-        var citiesToCheck = mutableListOf(civInfo.getCapital())
-        citiesReachedToMediums[civInfo.getCapital()] = arrayListOf("Start")
-        val allCivCities = civInfo.gameInfo.getCities()
-
-        val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
-
-        val road = "Road"
-        val harbor = "Harbor"
-
-        while (citiesToCheck.isNotEmpty() && citiesReachedToMediums.size < allCivCities.size) {
-            val newCitiesToCheck = mutableListOf<CityInfo>()
-            for (cityToConnectFrom in citiesToCheck) {
-                val reachedMediums = citiesReachedToMediums[cityToConnectFrom]!!
-
-                // This is copypasta and can be cleaned up
-                if (theWheelIsResearched && !reachedMediums.contains(road)) {
-
-                    val roadBfs = BFS(cityToConnectFrom.getCenterTile()) { it.hasRoad(civInfo) }
-                    roadBfs.stepToEnd()
-                    val reachedCities = allCivCities.asSequence()
-                            .filter { roadBfs.tilesReached.containsKey(it.getCenterTile()) }
-                    for (reachedCity in reachedCities) {
-                        if (!citiesReachedToMediums.containsKey(reachedCity)) {
-                            newCitiesToCheck.add(reachedCity)
-                            citiesReachedToMediums[reachedCity] = arrayListOf()
-                        }
-                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if (!cityReachedByMediums.contains(road))
-                            cityReachedByMediums.add(road)
-                    }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add(road)
-                }
-
-                if (!reachedMediums.contains(harbor)
-                        && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent(harbor)) {
-                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()) { it.isWater || it.isCityCenter() }
-                    seaBfs.stepToEnd()
-                    val reachedCities = allCivCities.asSequence().filter {
-                        seaBfs.tilesReached.containsKey(it.getCenterTile())
-                                && it.cityConstructions.containsBuildingOrEquivalent(harbor)
-                    }
-                    for (reachedCity in reachedCities) {
-                        if (!citiesReachedToMediums.containsKey(reachedCity)) {
-                            newCitiesToCheck.add(reachedCity)
-                            citiesReachedToMediums[reachedCity] = arrayListOf()
-                        }
-                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if (!cityReachedByMediums.contains(harbor))
-                            cityReachedByMediums.add(harbor)
-                    }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add(harbor)
-                }
-            }
-            citiesToCheck = newCitiesToCheck
-        }
+        val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()
 
         if (!initialSetup) { // In the initial setup we're loading an old game state, so it doesn't really count
             for (city in citiesReachedToMediums.keys)
-                if (city !in civInfo.citiesConnectedToCapital && city.civInfo == civInfo && city != civInfo.getCapital())
+                if (city !in civInfo.citiesConnectedToCapitalToMediums && city.civInfo == civInfo && city != civInfo.getCapital())
                     civInfo.addNotification("[${city.name}] has been connected to your capital!", city.location, Color.GOLD)
 
-            for (city in civInfo.citiesConnectedToCapital)
+            for (city in civInfo.citiesConnectedToCapitalToMediums.keys)
                 if (!citiesReachedToMediums.containsKey(city) && city.civInfo == civInfo)
                     civInfo.addNotification("[${city.name}] has been disconnected from your capital!", city.location, Color.GOLD)
         }
 
-        civInfo.citiesConnectedToCapital = citiesReachedToMediums.keys.toList()
+        civInfo.citiesConnectedToCapitalToMediums = citiesReachedToMediums
     }
-
 
     fun updateDetailedCivResources() {
         val newDetailedCivResources = ResourceSupplyList()

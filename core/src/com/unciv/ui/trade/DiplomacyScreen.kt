@@ -229,12 +229,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 if(isNotPlayersTurn()) declareFriendshipButton.disable()
             }
 
-            if(diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                    && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                    && !otherCivDiplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
-                    && viewingCiv.canSignResearchAgreement()
-                    && otherCiv.canSignResearchAgreement()){
+            if(viewingCiv.canSignResearchAgreementsWith(otherCiv)){
                 val researchAgreementButton = TextButton("Research Agreement".tr(),skin)
+
+                val requiredGold = viewingCiv.getResearchAgreementCost(otherCiv)
                 researchAgreementButton.onClick {
                     val tradeTable = setTrade(otherCiv)
                     val duration = when(viewingCiv.gameInfo.gameParameters.gameSpeed) {
@@ -243,8 +241,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                         GameSpeed.Epic -> 45
                         GameSpeed.Marathon -> 90
                     }
-                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, viewingCiv.getResearchAgreementCost())
-                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -viewingCiv.getResearchAgreementCost())
+                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration)
+                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -requiredGold)
                     tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)

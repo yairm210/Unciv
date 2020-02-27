@@ -298,9 +298,10 @@ class UnitAutomation {
                         unit.movement.headTowards(tileToMoveTo)
                 } else {
                     // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
-                    val tilesWithMilitaryUnitsAroundEnemyCity =
+                    val militaryUnitsAroundEnemyCity =
                             closestReachableEnemyCity.getTilesInDistance(3)
-                                    .filter { it.militaryUnit?.civInfo == unit.civInfo }
+                                    .map { it.militaryUnit }.filterNotNull()
+                                    .filter { it.civInfo == unit.civInfo }
                     //todo: use CONSTANT for 20
                     var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
                     val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)

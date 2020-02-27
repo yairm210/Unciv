@@ -56,4 +56,7 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         tilesReached[startingPoint] = startingPoint
         return this
     }
+
+    fun hasReachedTile(tile: TileInfo) =
+            tilesReached.containsKey(tile)
 }
