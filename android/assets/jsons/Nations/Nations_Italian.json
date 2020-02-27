@@ -28,7 +28,8 @@
 		"unique": "Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
 		"cities": ["Babilonia","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninive","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
+			"Uqair","Gubba","Hafriyat","Nagar","Shubat Enlil","Urhai","Urkesh","Awan","Riblah","Tayma"]
 	},
 	{
 		"name": "Greece",
@@ -59,7 +60,9 @@
 		"unique": "L'Influenza delle Città-Stato cala il doppio più lentamente e cresce il doppio rispetto al normale.",
 		"cities": ["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
 			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
-			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
+			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos","Sicyon",
+			"Larissa","Apollonia","Messene","Orcomeno","Ambracia","Kos","Cnido","Anfipoli",
+			"Patrasso","Lamia","Nafplion","Apolyton"]
 	},
 	{
 		"name": "China",
@@ -70,7 +73,7 @@
 		"startIntroPart1": "Che la benedizione del cielo scenda su di te, imperatrice Wu Zetian, la più bella e la più fiera tra tutti i sovrani della Cina! O grande imperatrice, la cui sola ombra è sufficiente a far sbocciare i fiori e a far scorrere i fiumi! Tu sei a capo della civiltà cinese, la più antica e grandiosa mai prodotta dall'uomo. La storia della Cina si perde nelle nebbie del tempo e il suo popolo ha goduto di molte scoperte e invenzioni prima ancora che altre imberbi civiltà nascessero. Il contributo cinese alle arti e alle scienze è tale da non potervi rendere giustizia: la stampa, la polvere da sparo, le opere di Confucio... questi non sono che alcuni dei doni che la Cina ha offerto a questo mondo ingrato!",
 		"startIntroPart2": "O grande imperatrice, tu che, con astuzia e bellezza, da semplice concubina ascendesti al rango di divina imperatrice, ascolta il popolo che vuole essere guidato da te! La grande Cina è ancora una volta circondata dai barbari. Riuscirai a sconfiggere i tuoi numerosi nemici e a riportare il tuo paese alla grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Non ti permetterò più di infastidirmi. Preparati a incontrare Yama.",
-		"attacked": "Folle! Ti costringerò a guardare il tuo popolo venire massacrato!",
+		"attacked": "Hai chiesto la guerra, e io ti darò guerra!",
 		"defeated": "Ti sei dimostrato un avversario astuto e competente. Mi congratulo per la tua vittoria.",
 		"introduction": "Saluti! Sono l'imperatrice della Cina, Wu Zetian. La Cina desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione.",
 		"neutralHello": "Bella giornata, oggi, vero?",
@@ -89,7 +92,8 @@
 		"unique": "Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta.",
 		"cities": ["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macao","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
+			"Yichang","Yingtian","Xinyu","Xinzheng","Handan","Dunhuang","Gaoyu","Nantong","Weifang","Xikang"]
 	},
 	{
 		"name": "Egypt",
@@ -120,7 +124,9 @@
 		"unique": "+20% Produzione durante la costruzione di una Meraviglia",
 		"cities": ["Tebe","Menfi","Eliopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
 			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi","Mendes","Elashmunein",
-			"Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+			"Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
+			   "Balat","Ellahun","Hawara","Dashur","Damanhur","Ellahun","Busiri","Ellahun","Eracleopoli","Akoris",
+			   "Benihasan","Badari","Ermopoli","Amrah","Copto","Ombos","Naqada","Semna","Soleb"]
 	},
 	{
 		"name": "England",
@@ -151,7 +157,8 @@
 		"unique": "+2 movimento per tutte le unità navali",
 		"cities": ["Londra","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
-			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
+			"Sheffield","Salisbury","Colchester","Plymouth","Lancaster","Blackpool","Winchester","Hull"]
 	},
 	{
 		"name": "France",
@@ -182,7 +189,8 @@
 		"unique": "+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
 		"cities": ["Parigi","Orleans","Lione","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
-			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]
+			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen","Toulon",
+			"Le Havre","Lourdes","Cannes","Aix-En-Provence","La Rochelle","Bourges","Calais"]
 	},
 	{
 		"name": "Russia",
@@ -213,7 +221,8 @@
 		"unique": "+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
 		"cities": ["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk",
 			"Orenburg","Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita",
-			"Samara","Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+			"Samara","Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir",
+			"Perm","Voronezh","Pskov","Starayarussa","Kostoma","Nizhniy Novgorod","Sudzal","Magnitogorsk"]
 	},
 	{
 		"name": "Rome",
@@ -275,7 +284,7 @@
     		"unique": "+1 Oro per ogni rotta commerciale, e doppia quantita da Petrolio.",
 		"cities": ["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat","Aden","Yamama",
 			"Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul","Aydab","Bayt","Suhar","Taif","Hama",
-			"Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+			"Tabuk","Sana'a","Shihr","Tripoli","Tunisi","Kairouan","Algeri","Oran"]
 	},
 	{
 		"name": "America",
@@ -306,7 +315,9 @@
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles",
 			"Houston","Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati",
 			"Dallas","Memphis","Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque",
-			"Minneapolis","Pittsburgh"]
+			"Minneapolis","Pittsburgh","Oakland","Tampa Bay","Orlando","Tacoma","Santa Fe","Olympia","Hunt Valley",
+			"Springfield","Palo Alto","Centralia","Spokane","Jacksonville","Svannah","Charleston","San Antonio",
+			"Birmingham","Anchorage","Sacramento","Reno","Salt Lake City","Boise","Milwaukee","Santa Cruz","Little Rock"]
 	},
 	{
 		"name": "Japan",
