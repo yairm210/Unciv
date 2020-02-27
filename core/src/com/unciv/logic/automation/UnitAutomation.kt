@@ -193,7 +193,8 @@ class UnitAutomation {
         val tileToPillage = unitDistanceToTiles.asSequence()
                 .filter { it.value.totalDistance < unit.currentMovement
                         && unit.movement.canMoveTo(it.key) && UnitActions.canPillage(unit, it.key) }
-                .maxBy { it.key.getDefensiveBonus() }?.key ?: return false
+                .maxBy { it.key.getDefensiveBonus() }?.key
+        if (tileToPillage == null) return false
 
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
@@ -305,9 +306,9 @@ class UnitAutomation {
                     //todo: use CONSTANT for 20
                     var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
                     val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)
-                    for (tile in tilesWithMilitaryUnitsAroundEnemyCity) {
+                    for (unit in militaryUnitsAroundEnemyCity) {
                         totalAttackOnCityPerTurn += BattleDamage()
-                                .calculateDamageToDefender(MapUnitCombatant(tile.militaryUnit!!),
+                                .calculateDamageToDefender(MapUnitCombatant(unit),
                                         enemyCityCombatant)
                     }
                     if (totalAttackOnCityPerTurn * 3 > closestReachableEnemyCity.getCity()!!.health) // if we can defeat it in 3 turns with the current units,
