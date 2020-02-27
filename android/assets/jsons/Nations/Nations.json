@@ -848,7 +848,7 @@
 	//City states
 	{
 		"name": "Milan",
-		"adjective": ["Milan"],
+		"adjective": ["Milanese"],
 		"cityStateType": "Cultured",
 		
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -861,7 +861,7 @@
 	},
 	{
 		"name": "Florence",
-		"adjective": ["Florence"],
+		"adjective": ["Florentine"],
 		"cityStateType": "Cultured",
 		
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -874,7 +874,7 @@
 	},
 	{
 		"name": "Rio de Janeiro",
-		"adjective": ["Rio de Janeiro"],
+		"adjective": ["Carioca"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
@@ -902,7 +902,7 @@
 	},
 	{
 		"name": "Dublin",
-		"adjective": ["Dublin"],
+		"adjective": ["Dubliner"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
@@ -915,7 +915,7 @@
 	},
 	{
 		"name": "Tyre",
-		"adjective": ["Tyre"],
+		"adjective": ["Tyrian"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
@@ -943,7 +943,7 @@
 	},
 	{
 		"name": "Genoa",
-		"adjective": ["Genoa"],
+		"adjective": ["Genoese"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
 
@@ -957,7 +957,7 @@
 	},
 	{
 		"name": "Venice",
-		"adjective": ["Venice"],
+		"adjective": ["Venetian"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
 
@@ -971,7 +971,7 @@
 	},
 	{
 		"name": "Brussels",
-		"adjective": ["Brussels"],
+		"adjective": ["Bruxellois"],
 		"cityStateType": "Cultured",
 		
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1023,7 +1023,7 @@
 	},
 	{
 		"name": "Edinburgh",
-		"adjective": ["Edinburgh"],
+		"adjective": ["Edinburghensian"],
 		"cityStateType": "Militaristic",
 
 		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
@@ -1036,7 +1036,7 @@
 	},
 	{
 		"name": "Singapore",
-		"adjective": ["Singapore"],
+		"adjective": ["Singaporean"],
 		"cityStateType": "Mercantile",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1113,8 +1113,8 @@
 		"cities": ["Hanoi"]
 	},
 	{
-		"name": "Quebec City",
-		"adjective": ["Quebec City"],
+		"name": "Québec City",
+		"adjective": ["Québécois"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1140,7 +1140,7 @@
 	},
 	{
 		"name": "Kuala Lumpur",
-		"adjective": ["Kuala Lumpur"],
+		"adjective": ["KLite"],
 		"cityStateType": "Cultured",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1153,7 +1153,7 @@
 	},
 	{
 		"name": "Manila",
-		"adjective": ["Manila"],
+		"adjective": ["Manilan"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1181,7 +1181,7 @@
 	{
 		"name": "Vancouver",
 		"translatedName": "Vancouver",
-		"adjective": ["canadese"],
+		"adjective": ["Vancouverite"],
 		"cityStateType": "Maritime",
 
 		"declaringWar": "In responding to the unstinting malignancy that has heretofore defined your relationship with Canada, we can have no recourse but war!",
