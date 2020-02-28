@@ -4,9 +4,10 @@ import club.minnced.discord.rpc.DiscordEventHandlers
 import club.minnced.discord.rpc.DiscordRPC
 import club.minnced.discord.rpc.DiscordRichPresence
 import com.badlogic.gdx.Files
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
@@ -21,11 +22,11 @@ internal object DesktopLauncher {
 
         packImages()
 
-        val config = LwjglApplicationConfiguration()
+        val config = Lwjgl3ApplicationConfiguration()
         // Don't activate GL 3.0 because it causes problems for MacOS computers
-        config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
-        config.title = "Unciv"
-        config.useHDPI = true
+        config.setWindowIcon(Files.FileType.Internal, "ExtraImages/Icon.png")
+        config.setTitle("Unciv")
+        config.setHdpiMode(HdpiMode.Logical)
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion
 
@@ -34,7 +35,7 @@ internal object DesktopLauncher {
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
 
-        LwjglApplication(game, config)
+        Lwjgl3Application(game, config)
     }
 
     private fun packImages() {
