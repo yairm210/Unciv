@@ -1,3 +1,23 @@
+## 3.6.3
+
+Workers automate roads/railroads overseas, railroads connect through harbors - by przystasz
+
+Multiplayer Notification Fix - by tobo
+
+Fixed wrong placement of purchased/upgraded units - by Jack Rainy
+
+Tile stats in city now shown in a row - by reversi
+
+Refactor for unit actions - by Kentalot 
+
+Resolved #1986 - research agreement cost consistency
+
+Resolved #2012 - starting locations no longer visible
+
+Victory screen shows the viewing player in multiplayer games
+
+Translation updates
+
 ## 3.6.2
 
 Resolved #1982 - Can now pic civ-equivalent Great People in great person picker screen
