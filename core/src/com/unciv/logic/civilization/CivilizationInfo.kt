@@ -25,6 +25,8 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.victoryscreen.RankingManager
+import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -41,7 +43,7 @@ class CivilizationInfo {
      * Instead, we create a copy list with the change, and replace this list.
      * The other solution, casting toList() every "get", has a performance cost
      */
-    @Transient private var units=listOf<MapUnit>()
+    @Transient var units = listOf<MapUnit>()
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
@@ -165,7 +167,7 @@ class CivilizationInfo {
         statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
     }
 
-
+    fun getRanking(category: RankingType) = RankingManager(this).getRanking(category)
 
     fun getHappiness() = stats().getHappinessBreakdown().values.sum().roundToInt()
 

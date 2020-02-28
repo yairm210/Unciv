@@ -232,9 +232,19 @@ class VictoryScreen : PickerScreen() {
 
     private fun setCivRankingsTable() {
         val majorCivs = game.gameInfo.civilizations.filter { it.isMajorCiv() }
-        val civRankingsTable = Table().apply { defaults().pad(10f) }
+        val civRankingsTable = Table().apply { defaults().pad(5f) }
 
+        for( category in RankingType.values()) {
+            val column = Table().apply { defaults().pad(5f) }
+            column.add(category.value.toLabel()).row()
+            column.addSeparator()
 
+            for (civ in majorCivs.sortedByDescending { it.getRanking(category) }) {
+                column.add(EmpireOverviewScreen.getCivGroup(civ, " : " + civ.getRanking(category).toString(), playerCivInfo)).row()
+            }
+
+            civRankingsTable.add(column)
+        }
 
         contentsTable.clear()
         contentsTable.add(civRankingsTable)
