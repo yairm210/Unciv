@@ -1,9 +1,12 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Nation
+import java.lang.reflect.Modifier
+//import com.badlogic.gdx.utils.Array
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class Translations : LinkedHashMap<String, TranslationEntry>(){
@@ -124,12 +127,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         Gdx.files.internal("jsons/translationsByLanguage/template.properties")
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
+        val notTranslatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass,
+                "jsons/Nations/Nations.json")
+
         for(language in getLanguagesWithTranslationFile()){
             val translationFileName = "jsons/translationsByLanguage/$language.properties"
             var translationsOfThisLanguage=0
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
+
+            translationsOfThisLanguage += calculatePercentageForNationsFile(language, notTranslatedNations)
+
             percentComplete[language] = translationsOfThisLanguage*100/allTranslations
         }
 
@@ -139,6 +148,33 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return percentComplete
     }
 
+    private fun calculatePercentageForNationsFile(language: String, notTranslatedNations: Array<Nation>): Int {
+        val translationFileName = "jsons/Nations/Nations_$language.json"
+        val translationFile = Gdx.files.internal(translationFileName)
+        if (!translationFile.exists()) return 0
+
+        var translationsOfThisLanguage = 0
+
+        val translatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, translationFileName)
+
+        for (nation in notTranslatedNations)
+        {
+            val translatedNation = translatedNations.find { it.name == nation.name } ?: return 0
+
+            for (field in nation.javaClass.declaredFields.
+                    filter { it.type == String::class.java || it.type == ArrayList::class.java}) {
+                field.isAccessible = true
+                if (field.name in setOf("name", "startBias") ||
+                        field.get(nation) != field.get(translatedNation))
+                    translationsOfThisLanguage++
+                else
+                    println(nation.name + ": [" + field.name + "] " + field.get(nation))
+            }
+
+        }
+
+        return translationsOfThisLanguage
+    }
 
     companion object {
         fun translateBonusOrPenalty(unique:String): String {
