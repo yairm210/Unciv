@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.VictoryScreen
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.LoadMapScreen
 import com.unciv.ui.mapeditor.NewMapScreen
