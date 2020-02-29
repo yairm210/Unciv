@@ -177,7 +177,7 @@ class TranslationTests {
     @Test
     fun allTranslatedNationsFilesAreSerializable() {
         for (file in Gdx.files.internal("jsons/Nations").list()) {
-            jsonParser.getFromJson(Array<Nation>().javaClass, file.path())
+            jsonParser.getFromJson(emptyArray<Nation>().javaClass, file.path())
         }
         Assert.assertTrue("This test will only pass when there is a translation for all promotions",
                 true)
