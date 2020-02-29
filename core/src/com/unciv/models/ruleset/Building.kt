@@ -223,8 +223,10 @@ class Building : NamedStats(), IConstruction{
     }
 
 
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(construction)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        if (cityConstructions.isBeingConstructedOrEnqueued(name))
+            return false
+        val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason == "Wonder is being built elsewhere"
@@ -232,8 +234,6 @@ class Building : NamedStats(), IConstruction{
 
     fun getRejectionReason(construction: CityConstructions):String{
         if (construction.isBuilt(name)) return "Already built"
-        if (construction.isBeingConstructed(name)) return "Is being built"
-        if (construction.isEnqueued(name)) return "Already enqueued"
 
         val cityCenter = construction.cityInfo.getCenterTile()
         if ("Must be next to desert" in uniques
