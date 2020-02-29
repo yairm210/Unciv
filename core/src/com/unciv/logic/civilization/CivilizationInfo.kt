@@ -42,7 +42,7 @@ class CivilizationInfo {
      * Instead, we create a copy list with the change, and replace this list.
      * The other solution, casting toList() every "get", has a performance cost
      */
-    @Transient var units = listOf<MapUnit>()
+    @Transient private var units = listOf<MapUnit>()
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
