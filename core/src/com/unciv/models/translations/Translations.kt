@@ -170,9 +170,12 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             for (field in nation.javaClass.declaredFields.
                     filter { it.type == String::class.java || it.type == ArrayList::class.java}) {
                 field.isAccessible = true
+                val originalValue = field.get(nation)
                 if (translatedNation != null && // we could exit *before* this loop, however, we need it here to count not translated fields
                         (field.name in setOf("name", "startBias") || // skip fields which must not be translated
-                        field.get(nation) != field.get(translatedNation)))
+                        originalValue == null || originalValue == "" ||
+                        ((originalValue is ArrayList<*>) && originalValue.isEmpty()) ||
+                        originalValue != field.get(translatedNation)))
                     translationsOfThisLanguage++
 
                 allTranslations++
