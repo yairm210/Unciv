@@ -25,7 +25,6 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.victoryscreen.RankingManager
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
@@ -166,8 +165,6 @@ class CivilizationInfo {
     fun updateStatsForNextTurn(){
         statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
     }
-
-    fun getRanking(category: RankingType) = RankingManager(this).getRanking(category)
 
     fun getHappiness() = stats().getHappinessBreakdown().values.sum().roundToInt()
 
@@ -331,6 +328,21 @@ class CivilizationInfo {
                 && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
                 && gold >= cost && otherCiv.gold >= cost
     }
+
+    fun getStatForRanking(category: RankingType) : Int {
+        return when(category) {
+            RankingType.Population -> cities.sumBy { it.population.population }
+            RankingType.CropYield -> statsForNextTurn.food.roundToInt()
+            RankingType.Production -> statsForNextTurn.production.roundToInt()
+            RankingType.Gold -> gold
+            RankingType.Land -> cities.sumBy { it.tiles.size }
+            RankingType.Force -> units.sumBy { it.baseUnit.strength }
+            RankingType.Happiness -> getHappiness()
+            RankingType.Technologies -> tech.researchedTechnologies.size
+            RankingType.Culture -> policies.storedCulture
+        }
+    }
+
     //endregion
 
     //region state-changing functions
