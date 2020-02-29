@@ -147,7 +147,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return percentComplete
     }
 
-    private fun calculatePercentageForNationsFile(language: String, notTranslatedNations: Array<Nation>): Pair<Int, Int> {
+    private fun calculatePercentageForNationsFile(language: String, originalNations: Array<Nation>): Pair<Int, Int> {
 
         val translationFileName = "jsons/Nations/Nations_$language.json"
         val translationFile = Gdx.files.internal(translationFileName)
@@ -155,7 +155,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             // calculate how many fields are missing
             val allTranslatables = Nation::class.java.declaredFields.count {
                 it.type == String::class.java || it.type == ArrayList::class.java}
-            return Pair(0, allTranslatables*notTranslatedNations.size)
+            return Pair(0, allTranslatables*originalNations.size)
         }
 
         var translationsOfThisLanguage = 0
@@ -163,7 +163,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         val translatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, translationFileName)
 
-        for (nation in notTranslatedNations)
+        for (nation in originalNations)
         {
             val translatedNation = translatedNations.find { it.name == nation.name }
 
