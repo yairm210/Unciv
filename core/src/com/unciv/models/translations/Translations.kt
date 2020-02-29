@@ -1,9 +1,10 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Nation
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class Translations : LinkedHashMap<String, TranslationEntry>(){
@@ -124,13 +125,20 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         Gdx.files.internal("jsons/translationsByLanguage/template.properties")
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
+        val notTranslatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass,
+                "jsons/Nations/Nations.json")
+
         for(language in getLanguagesWithTranslationFile()){
             val translationFileName = "jsons/translationsByLanguage/$language.properties"
             var translationsOfThisLanguage=0
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
-            percentComplete[language] = translationsOfThisLanguage*100/allTranslations
+
+            val translatedAndTotal = calculatePercentageForNationsFile(language, notTranslatedNations)
+            translationsOfThisLanguage += translatedAndTotal.first
+
+            percentComplete[language] = translationsOfThisLanguage*100/(allTranslations+translatedAndTotal.second)
         }
 
 
@@ -139,6 +147,40 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return percentComplete
     }
 
+    private fun calculatePercentageForNationsFile(language: String, notTranslatedNations: Array<Nation>): Pair<Int, Int> {
+
+        val translationFileName = "jsons/Nations/Nations_$language.json"
+        val translationFile = Gdx.files.internal(translationFileName)
+        if (!translationFile.exists()) {
+            // calculate how many fields are missing
+            val allTranslatables = Nation::class.java.declaredFields.count {
+                it.type == String::class.java || it.type == ArrayList::class.java}
+            return Pair(0, allTranslatables*notTranslatedNations.size)
+        }
+
+        var translationsOfThisLanguage = 0
+        var allTranslations = 0
+
+        val translatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, translationFileName)
+
+        for (nation in notTranslatedNations)
+        {
+            val translatedNation = translatedNations.find { it.name == nation.name }
+
+            for (field in nation.javaClass.declaredFields.
+                    filter { it.type == String::class.java || it.type == ArrayList::class.java}) {
+                field.isAccessible = true
+                if (translatedNation != null && // we could exit *before* this loop, however, we need it here to count not translated fields
+                        (field.name in setOf("name", "startBias") || // skip fields which must not be translated
+                        field.get(nation) != field.get(translatedNation)))
+                    translationsOfThisLanguage++
+
+                allTranslations++
+            }
+        }
+
+        return Pair(translationsOfThisLanguage, allTranslations)
+    }
 
     companion object {
         fun translateBonusOrPenalty(unique:String): String {
