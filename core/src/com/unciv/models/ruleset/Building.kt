@@ -223,10 +223,10 @@ class Building : NamedStats(), IConstruction{
     }
 
 
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        if (construction.isBeingConstructed(name) || construction.isEnqueued(name))
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        if (cityConstructions.isBeingConstructedOrEnqueued(name))
             return false
-        val rejectionReason = getRejectionReason(construction)
+        val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason == "Wonder is being built elsewhere"
