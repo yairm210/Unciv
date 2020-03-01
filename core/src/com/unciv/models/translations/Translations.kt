@@ -1,7 +1,9 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Nation
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -151,6 +153,49 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                 val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
                 return translatedUnique
             }
+        }
+
+        fun translateCities(newLanguage: String) {
+            val currentGame = UncivGame.Current
+            val currentCities = getTranslatedListOfCities(currentGame.settings.language)
+            val newCities = getTranslatedListOfCities(newLanguage)
+            // iterate through all civilizations to translate all cities on the map
+            currentGame.gameInfo.civilizations.forEach { civ ->
+                civ.cities.forEach { city ->
+                    // find the city name in the lists of cities from the nations list
+                    var currentCityIndex = civ.nation.cities.indexOf(city.name)
+                    var currentNation = civ.nation.name
+                    if (currentCityIndex < 0)
+                        for (nation in currentCities.keys) {
+                            currentCityIndex = currentCities[nation]?.indexOf(city.name) ?: -1
+                            currentNation = nation
+                            if (currentCityIndex >= 0) break
+                        }
+                    // if the city is found, use its index to find it in the new translated lists
+                    if (currentCityIndex >= 0) {
+                        val nationCities = newCities[currentNation]
+                        if (nationCities != null)
+                            city.name = nationCities[currentCityIndex]
+                        else { // if the nation does not exist in the new nation file, let's try English
+                            val englishCities = getTranslatedListOfCities("English")
+                            val englishNationCities = englishCities[currentNation]
+                            if (englishNationCities != null)
+                                city.name = englishNationCities[currentCityIndex]
+                        }
+                    }
+                }
+            }
+        }
+
+        private fun getTranslatedListOfCities(language : String): Map<String,List<String>> {
+            var filePath = "jsons/Nations/Nations_$language.json"
+            if(!Gdx.files.internal(filePath).exists()) {
+                // try English
+                filePath = "jsons/Nations/Nations.json"
+            }
+
+            return JsonParser().getFromJson(emptyArray<Nation>()::class.java, filePath)
+                    .filterNot { it.isBarbarian() }.associate {Pair(it.name, it.cities)}
         }
     }
 }

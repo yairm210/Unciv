@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
+import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -17,7 +18,7 @@ import kotlin.concurrent.thread
 class Language(val language:String, val percentComplete:Int){
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
-        return "$spaceSplitLang- $percentComplete%"
+        return "$spaceSplitLang - $percentComplete%"
     }
 }
 
@@ -342,14 +343,19 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
     }
 
-    fun selectLanguage(){
-        UncivGame.Current.settings.language = selectedLanguage
-        UncivGame.Current.settings.save()
+    fun selectLanguage() {
+        val currentGame = UncivGame.Current
+        currentGame.translations.tryReadTranslationForLanguage(selectedLanguage)
 
-        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
+        Translations.translateCities(selectedLanguage)
+
+        currentGame.settings.language = selectedLanguage
+        currentGame.settings.save()
+
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
-        UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-        UncivGame.Current.setWorldScreen()
-        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        currentGame.worldScreen = WorldScreen(worldScreen.viewingCiv)
+        currentGame.setWorldScreen()
+        WorldScreenOptionsPopup(currentGame.worldScreen).open()
     }
+
 }
