@@ -274,6 +274,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     if(!(targetTile.getCity()?.civInfo?.getDiplomacyManager(attacker.getCivInfo())?.canDeclareWar() ?:true))
                     {
                         attacker.getCivInfo().notifications.add(Notification("You are not allowed to nuke this tile!", Color.RED))
+                        worldScreen.shouldUpdate = true
                     }
                     else {
                         Battle.nuke(attacker, targetTile)
