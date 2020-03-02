@@ -1,3 +1,14 @@
+## 3.6.4
+
+By Jack Rainy:
+- Civilization rankings (Richest, Strongest, Most Fertile, Largest, etc.)
+- Can now buy buildings from queue
+- Include Nations in the calculation of a translation's percentage
+
+Eiffel Tower effect changed to reflect original Civ - by lishaoxia1985
+
+Translation updates
+
 ## 3.6.3
 
 Workers automate roads/railroads overseas, railroads connect through harbors - by przystasz
