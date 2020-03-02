@@ -33,8 +33,8 @@ allprojects {
     version = '1.0.1'
     ext {
         appName = "Unciv"
-        appCodeNumber = 388
-        appVersion = "3.6.4"
+        appCodeNumber = 389
+        appVersion = "3.6.4-patch1"
 
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.1'
