@@ -260,6 +260,7 @@ object UnitActions {
                 tile.improvement = improvement
                 tile.improvementInProgress = null
                 tile.turnsToImprovement = 0
+                unit.destroy()
             }
             if (action == null) null else (improvement to action)
         }.filterNotNull()
