@@ -28,9 +28,10 @@ class GameSaver {
     }
 
     fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
-        json().toJson(game,getSave(GameName, multiplayer))
+        var name = GameName
         if (multiplayer)
-            addGameToList(game.gameId, GameName)
+            name = addGame(game.gameId, name)
+        json().toJson(game,getSave(name, multiplayer))
     }
 
     fun loadGameByName(GameName: String, multiplayer: Boolean = false) : GameInfo {
@@ -126,16 +127,41 @@ class GameSaver {
             return multiplayerGameList.toMap()
         }
 
-        private fun addGameToList(gameId: String, gameFileName: String){
+        //adds the given game to the file manager and returns the new filename in case the given name was already taken
+        private fun addGame(gameId: String, gameName: String): String{
             val oldFileName = multiplayerGameList[gameId]
-            //There is already a game saved with this ID and file name got not changed so no need to change anything
-            if (oldFileName == gameFileName)
-                return
+            var newFileName = gameName
+            //There is already a game saved with this ID and the filename got not changed so no need to change anything
+            if (oldFileName == gameName)
+                return gameName
 
-            multiplayerGameList[gameId] = gameFileName
-            //Delete old save file if it just got renamed
-            if (oldFileName != null && oldFileName != gameFileName)
+            val count = getNumberForUsedGameName(gameName)
+            //Check if there is already a game saved with this name
+            if (count != 0)
+                newFileName = "$newFileName($count)"
+
+            //Delete old save file since we will created a new file
+            if (oldFileName != null)
                 GameSaver().getSave(oldFileName, true).delete()
+
+            multiplayerGameList[gameId] = newFileName
+
+            return newFileName
+        }
+
+        //returns the first unused number for a already used fileName
+        private fun getNumberForUsedGameName(gameFileName: String): Int{
+            val gameNames = multiplayerGameList.values
+            //name is not used
+            if (!gameNames.contains(gameFileName))
+                return 0
+
+            //test for all games with a name like "[gamename]([count])"
+            var count = 1
+            while (gameNames.contains("$gameFileName($count)")){
+                count++
+            }
+            return count
         }
 
         private fun removeGameFromList(gameId: String){
