@@ -15,6 +15,9 @@ import com.badlogic.gdx.backends.android.AndroidApplication
 import com.unciv.logic.GameInfo
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.io.Writer
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -24,6 +27,7 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
 
     companion object {
         const val WORK_TAG = "UNCIV_MULTIPLAYER_TURN_CHECKER_WORKER"
+        const val CLIPBOARD_EXTRA = "CLIPBOARD_STRING"
         const val NOTIFICATION_ID_SERVICE = 1
         const val NOTIFICATION_ID_INFO = 2
 
@@ -202,58 +206,70 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
     }
 
     override fun doWork(): Result {
+        val showPersistNotific = inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)
+        val configuredDelay = inputData.getInt(CONFIGURED_DELAY, 5)
         try {
-            val latestGame = OnlineMultiplayer().tryDownloadGame(inputData.getString(GAME_ID)!!)
-            if (latestGame.currentPlayerCiv.playerId == inputData.getString(USER_ID)!!) {
+            val currentTurnPlayer = OnlineMultiplayer().tryDownloadCurrentTurnCiv(inputData.getString(GAME_ID)!!)
+            if (currentTurnPlayer.playerId == inputData.getString(USER_ID)!!) {
                 notifyUserAboutTurn(applicationContext)
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
             } else {
-                updatePersistentNotification(inputData)
+                if (showPersistNotific) { updatePersistentNotification(inputData) }
                 // We have to reset the fail counter since no exception appeared
                 val inputDataFailReset = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, 0).build()
-                enqueue(applicationContext, inputData.getInt(CONFIGURED_DELAY, 5), inputDataFailReset)
+                enqueue(applicationContext, configuredDelay, inputDataFailReset)
             }
         } catch (ex: Exception) {
             val failCount = inputData.getInt(FAIL_COUNT, 0)
             if (failCount > 3) {
-                showErrorNotification()
+                showErrorNotification(getStackTraceString(ex))
                 with(NotificationManagerCompat.from(applicationContext)) {
                     cancel(NOTIFICATION_ID_SERVICE)
                 }
                 return Result.failure()
             } else {
+                if (showPersistNotific) { showPersistentNotification(applicationContext,
+                        applicationContext.resources.getString(R.string.Notify_Error_Retrying), configuredDelay.toString()) }
                 // If check fails, retry in one minute.
                 // Makes sense, since checks only happen if Internet is available in principle.
                 // Therefore a failure means either a problem with the GameInfo or with Dropbox.
                 val inputDataFailIncrease = Data.Builder().putAll(inputData).putInt(FAIL_COUNT, failCount + 1).build()
                 enqueue(applicationContext, 1, inputDataFailIncrease)
-                // Persistent Notification is not updated, because user may think check succeed.
             }
         }
         return Result.success()
     }
 
-    private fun updatePersistentNotification(inputData: Data) {
-        if (inputData.getBoolean(PERSISTENT_NOTIFICATION_ENABLED, true)) {
-            val cal = GregorianCalendar.getInstance()
-            val hour = cal.get(GregorianCalendar.HOUR_OF_DAY).toString()
-            var minute = cal.get(GregorianCalendar.MINUTE).toString()
-            if (minute.length == 1) {
-                minute = "0$minute"
-            }
-            val displayTime = "$hour:$minute"
-
-            showPersistentNotification(applicationContext, displayTime,
-                    inputData.getInt(CONFIGURED_DELAY, 5).toString())
-        }
+    private fun getStackTraceString(ex: Exception): String {
+        val writer: Writer = StringWriter()
+        ex.printStackTrace(PrintWriter(writer))
+        return writer.toString()
     }
 
-    private fun showErrorNotification() {
-        val pendingIntent: PendingIntent =
+    private fun updatePersistentNotification(inputData: Data) {
+        val cal = GregorianCalendar.getInstance()
+        val hour = cal.get(GregorianCalendar.HOUR_OF_DAY).toString()
+        var minute = cal.get(GregorianCalendar.MINUTE).toString()
+        if (minute.length == 1) {
+            minute = "0$minute"
+        }
+        val displayTime = "$hour:$minute"
+
+        showPersistentNotification(applicationContext, displayTime,
+                inputData.getInt(CONFIGURED_DELAY, 5).toString())
+    }
+
+    private fun showErrorNotification(stackTraceString: String) {
+        val pendingLaunchGameIntent: PendingIntent =
                 Intent(applicationContext, AndroidLauncher::class.java).let { notificationIntent ->
                     PendingIntent.getActivity(applicationContext, 0, notificationIntent, 0)
+                }
+
+        val pendingCopyClipboardIntent: PendingIntent =
+                Intent(applicationContext, CopyToClipboardReceiver::class.java).putExtra(CLIPBOARD_EXTRA, stackTraceString)
+                        .let { notificationIntent -> PendingIntent.getBroadcast(applicationContext,0, notificationIntent, 0)
                 }
 
         val notification: NotificationCompat.Builder = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID_INFO)
@@ -264,9 +280,10 @@ class MultiplayerTurnCheckWorker(appContext: Context, workerParams: WorkerParame
                 // without at least vibrate, some Android versions don't show a heads-up notification
                 .setDefaults(DEFAULT_VIBRATE)
                 .setLights(Color.YELLOW, 300, 100)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(pendingLaunchGameIntent)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
                 .setOngoing(false)
+                .addAction(0, applicationContext.resources.getString(R.string.Notify_Error_CopyAction), pendingCopyClipboardIntent)
 
         with(NotificationManagerCompat.from(applicationContext)) {
             notify(NOTIFICATION_ID_INFO, notification.build())
