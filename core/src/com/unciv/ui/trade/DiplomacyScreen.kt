@@ -347,10 +347,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         relationshipTable.add("Our relationship: ".toLabel())
         val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
         val relationshipText = relationshipLevel.name.tr() + " ($opinionOfUs)"
-        val relationshipColor = when {
-            relationshipLevel == RelationshipLevel.Neutral -> Color.WHITE
-            relationshipLevel == RelationshipLevel.Favorable || relationshipLevel == RelationshipLevel.Friend
-                    || relationshipLevel == RelationshipLevel.Ally -> Color.GREEN
+        val relationshipColor = when (relationshipLevel) {
+            RelationshipLevel.Neutral -> Color.WHITE
+            RelationshipLevel.Favorable, RelationshipLevel.Friend,
+            RelationshipLevel.Ally -> Color.GREEN
             else -> Color.RED
         }
 
