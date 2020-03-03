@@ -26,7 +26,8 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        val closeButton = TextButton("Close".tr(), skin)
+        val closeButton = "×".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(30f).apply { circle.color=Color.RED }
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
