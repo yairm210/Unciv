@@ -48,8 +48,9 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
 
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, stat: Stat):Actor {
         if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
-        val assignButton = "+".toLabel(Color.BLACK,24).apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(30f).apply { circle.color= Color.GREEN }
+        val assignButton = "+".toLabel(Color.BLACK,24)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(30f).apply { circle.color= Color.GREEN.cpy().lerp(Color.BLACK,0.2f) }
         assignButton.onClick {
             cityInfo.population.specialists.add(stat, 1f)
             cityInfo.cityStats.update()
@@ -63,8 +64,9 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     private fun getUnassignButton(assignedSpecialists: Int, stat: Stat):Actor {
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) return Table()
 
-        val unassignButton = "-".toLabel(Color.BLACK,24).apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(30f).apply { circle.color= Color.RED }
+        val unassignButton = "-".toLabel(Color.BLACK,24)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(30f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) }
         unassignButton.onClick {
             cityInfo.population.specialists.add(stat, -1f)
             cityInfo.cityStats.update()

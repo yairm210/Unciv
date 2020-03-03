@@ -26,13 +26,13 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        val closeButton = "×".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(30f).apply { circle.color=Color.RED }
+        val closeButton = "×".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(50f).apply { circle.color = Color.RED.cpy().lerp(Color.BLACK, 0.1f) }
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
-        val setCityInfoButton = TextButton("Cities".tr(),skin)
+        val setCityInfoButton = TextButton("Cities".tr(), skin)
         val setCities = {
             centerTable.clear()
             centerTable.add(getCityInfoTable())
@@ -42,7 +42,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         setCityInfoButton.onClick(setCities)
         topTable.add(setCityInfoButton)
 
-        val setStatsInfoButton = TextButton("Stats".tr(),skin)
+        val setStatsInfoButton = TextButton("Stats".tr(), skin)
         setStatsInfoButton.onClick {
             game.settings.addCompletedTutorialTask("See your stats breakdown")
             centerTable.clear()
@@ -57,41 +57,41 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         }
         topTable.add(setStatsInfoButton)
 
-        val setCurrentTradesButton = TextButton("Trades".tr(),skin)
+        val setCurrentTradesButton = TextButton("Trades".tr(), skin)
         setCurrentTradesButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the navigation buttons
+            centerTable.add(ScrollPane(getTradesTable())).height(stage.height * 0.8f) // so it doesn't cover the navigation buttons
             centerTable.pack()
         }
         topTable.add(setCurrentTradesButton)
-        if(viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
+        if (viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
             setCurrentTradesButton.disable()
 
-        val setUnitsButton = TextButton("Units".tr(),skin)
+        val setUnitsButton = TextButton("Units".tr(), skin)
         setUnitsButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getUnitTable())).height(stage.height*0.8f)
+            centerTable.add(ScrollPane(getUnitTable())).height(stage.height * 0.8f)
             centerTable.pack()
         }
-        topTable.add(setUnitsButton )
+        topTable.add(setUnitsButton)
 
 
-        val setDiplomacyButton = TextButton("Diplomacy".tr(),skin)
+        val setDiplomacyButton = TextButton("Diplomacy".tr(), skin)
         setDiplomacyButton.onClick {
             centerTable.clear()
-            centerTable.add(getDiplomacyGroup()).height(stage.height*0.8f)
+            centerTable.add(getDiplomacyGroup()).height(stage.height * 0.8f)
             centerTable.pack()
         }
         topTable.add(setDiplomacyButton)
 
-        val setResourcesButton = TextButton("Resources".tr(),skin)
+        val setResourcesButton = TextButton("Resources".tr(), skin)
         setResourcesButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getResourcesTable())).size(stage.width*0.8f, stage.height*0.8f)
+            centerTable.add(ScrollPane(getResourcesTable())).size(stage.width * 0.8f, stage.height * 0.8f)
             centerTable.pack()
         }
         topTable.add(setResourcesButton)
-        if(viewingPlayer.detailedCivResources.isEmpty())
+        if (viewingPlayer.detailedCivResources.isEmpty())
             setResourcesButton.disable()
 
         topTable.pack()
