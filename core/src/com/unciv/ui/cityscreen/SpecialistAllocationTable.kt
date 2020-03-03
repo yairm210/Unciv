@@ -1,8 +1,9 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
@@ -47,29 +48,29 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
 
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, stat: Stat):Actor {
         if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
-        val assignButton = TextButton("+", skin)
-        assignButton.label.setFontSize(24)
+        val assignButton = "+".toLabel(Color.BLACK,24).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(30f).apply { circle.color= Color.GREEN }
         assignButton.onClick {
             cityInfo.population.specialists.add(stat, 1f)
             cityInfo.cityStats.update()
             cityScreen.update()
         }
         if (cityInfo.population.getFreePopulation() == 0 || !UncivGame.Current.worldScreen.isPlayersTurn)
-            assignButton.disable()
+            assignButton.clear()
         return assignButton
     }
 
     private fun getUnassignButton(assignedSpecialists: Int, stat: Stat):Actor {
         if (assignedSpecialists <= 0 || cityInfo.isPuppet) return Table()
 
-        val unassignButton = TextButton("-", skin)
-        unassignButton.label.setFontSize(24)
+        val unassignButton = "-".toLabel(Color.BLACK,24).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(30f).apply { circle.color= Color.RED }
         unassignButton.onClick {
             cityInfo.population.specialists.add(stat, -1f)
             cityInfo.cityStats.update()
             cityScreen.update()
         }
-        if (!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.disable()
+        if (!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.clear()
         return unassignButton
     }
 
