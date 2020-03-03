@@ -99,16 +99,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val ally = otherCiv.getAllyCiv()
         if (ally != "")
         {
-            diplomacyTable.add(("Ally: ".tr() + ally.tr() + " " + "Influence: ".tr()
-                    + otherCiv.getDiplomacyManager(ally).influence.toString().tr()).toLabel()).row()
+            val allyString = "{Ally: }{$ally} {Influence: }".tr() +
+                    otherCiv.getDiplomacyManager(ally).influence.toString()
+            diplomacyTable.add(allyString.toLabel()).row()
         }
-        val nextLevelString: String
-        if (otherCivDiplomacyManager.influence.toInt() < 30) {
-            nextLevelString = "Reach 30 for friendship."
-        } else if (ally == viewingCiv.civName) {
-            nextLevelString = ""
-        } else {
-            nextLevelString = "Reach highest influence above 60 for alliance."
+
+        val nextLevelString = when {
+            otherCivDiplomacyManager.influence.toInt() < 30 -> "Reach 30 for friendship."
+            ally == viewingCiv.civName -> ""
+            else -> "Reach highest influence above 60 for alliance."
         }
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
         if (nextLevelString != "") {
@@ -158,6 +157,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                     tradeLogic.acceptTrade()
                     updateLeftSideTable()
+                    updateRightSide(otherCiv)
                 }, this).open()
             }
             diplomacyTable.add(peaceButton).row()
