@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
@@ -41,11 +42,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         stage.addActor(splitPane)
 
 
-        val closeButton = TextButton("Close".tr(), skin)
+        val closeButton = "×".toLabel(Color.BLACK,24).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(24f).apply { circle.color=Color.RED }
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
-        closeButton.label.setFontSize(24)
-        closeButton.labelCell.pad(10f)
-        closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
         closeButton.x = 10f
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
