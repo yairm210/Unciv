@@ -237,11 +237,20 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-
+        var canNuke = true
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
             val defender = tryGetDefenderAtTile(tile, true)
             if (defender == null) continue
+
+            //To make sure we dont nuke civilisations we cant declare war with
+            val attackerciv = attacker.getCivInfo()
+            val defenderciv = tile.getCity()?.civInfo
+            if(defenderciv != null && defenderciv.diplomacy[attackerciv.civName]!= null) {
+                val canDeclareWar = attackerciv.getDiplomacyManager(defenderciv).canDeclareWar()
+                canNuke = canNuke && canDeclareWar
+            }
+
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->
@@ -264,7 +273,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach) {
+        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
