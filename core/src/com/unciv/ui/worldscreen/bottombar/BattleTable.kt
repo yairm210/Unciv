@@ -240,16 +240,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         var canNuke = true
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
-            val defender = tryGetDefenderAtTile(tile, true)
-            if (defender == null) continue
 
             //To make sure we dont nuke civilisations we cant declare war with
             val attackerciv = attacker.getCivInfo()
             val defenderciv = tile.getCity()?.civInfo
             if(defenderciv != null && defenderciv.diplomacy[attackerciv.civName]!= null) {
                 val canDeclareWar = attackerciv.getDiplomacyManager(defenderciv).canDeclareWar()
-                canNuke = canNuke && canDeclareWar
+                val alreadyinWar = attackerciv.isAtWarWith(defenderciv)
+                canNuke = canNuke && (canDeclareWar || alreadyinWar)
             }
+
+            val defender = tryGetDefenderAtTile(tile, true)
+            if (defender == null) continue
 
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
