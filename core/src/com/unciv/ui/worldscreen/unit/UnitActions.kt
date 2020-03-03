@@ -60,8 +60,7 @@ object UnitActions {
                 }))
     }
 
-    private suspend fun SequenceScope<UnitAction>.yieldCreateWaterImprovements(tile: TileInfo,
-                                                                               unit: MapUnit) {
+    private suspend fun SequenceScope<UnitAction>.yieldCreateWaterImprovements(tile: TileInfo, unit: MapUnit) {
         val improvement = tile.getTileResourceOrNull()?.improvement
         if (improvement != null && tile.isWater && tile.improvement == null
                 && unit.hasUnique("May create improvements on water resources")
@@ -375,11 +374,10 @@ object UnitActions {
             ))
     }
 
-    private suspend fun SequenceScope<UnitAction>.yieldSleepActions(unit: MapUnit,
-                                                                    unitTable: UnitTable) {
+    private suspend fun SequenceScope<UnitAction>.yieldSleepActions(unit: MapUnit, unitTable: UnitTable) {
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles")
                 && unit.currentTile.hasImprovementInProgress()
-        if (!workingOnImprovement && unit.currentMovement > 0 && !unit.canFortify()) {
+        if (!workingOnImprovement && unit.currentMovement > 0 && !unit.canFortify() && !unit.isFortified()) {
             yieldAll(sequence {
                 val isSleeping = unit.isSleeping()
 
