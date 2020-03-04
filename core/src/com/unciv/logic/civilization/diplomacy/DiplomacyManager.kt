@@ -23,6 +23,7 @@ enum class RelationshipLevel{
 enum class DiplomacyFlags{
     DeclinedLuxExchange,
     DeclinedPeace,
+    DeclinedResearchAgreement,
     DeclaredWar,
     DeclarationOfFriendship,
     ResearchAgreement,

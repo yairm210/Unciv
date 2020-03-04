@@ -156,11 +156,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             selectedUnitHasChanged = true
         }
         else {
-            separator.isVisible=false
-            unitNameLabel.setText("")
-            unitDescriptionTable.clear()
-            unitIconHolder.clear()
-            promotionsTable.clear()
+            isVisible = false
         }
 
         if(!selectedUnitHasChanged) return

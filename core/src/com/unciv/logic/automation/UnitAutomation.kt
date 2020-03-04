@@ -2,7 +2,6 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -10,7 +9,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -325,7 +323,8 @@ class UnitAutomation {
         return when {
             city.attackedThisTurn -> false
             else -> {
-                val enemy = chooseBombardTarget(city) ?: return false
+                val enemy = chooseBombardTarget(city)
+                if (enemy == null) return false
                 Battle.attack(CityCombatant(city), enemy)
                 true
             }
@@ -333,16 +332,17 @@ class UnitAutomation {
     }
 
     private fun chooseBombardTarget(city: CityInfo): ICombatant? {
-        val mappedTargets = getBombardTargets(city).map { Battle.getMapCombatantOfTile(it)!! }
-                .filter {
-                    val unitType = it.getUnitType()
-                    unitType == UnitType.Siege || unitType.isRanged()
-                }
-                .groupByTo(LinkedHashMap()) { it.getUnitType() }
+        var targets = getBombardTargets(city).map { Battle.getMapCombatantOfTile(it)!! }
+        if (targets.none()) return null
 
-        val targets = mappedTargets[UnitType.Siege]?.asSequence()
-                ?: mappedTargets.values.asSequence().flatMap { it.asSequence() }
-
+        val siegeUnits = targets
+                .filter { it.getUnitType() == UnitType.Siege }
+        if (siegeUnits.any()) targets = siegeUnits
+        else {
+            val rangedUnits = targets
+                    .filter { it.getUnitType().isRanged() }
+            if (rangedUnits.any()) targets = rangedUnits
+        }
         return targets.minBy { it.getHealth() }
     }
 

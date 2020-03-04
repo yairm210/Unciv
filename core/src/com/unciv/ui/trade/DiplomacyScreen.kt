@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
@@ -41,11 +42,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         stage.addActor(splitPane)
 
 
-        val closeButton = TextButton("Close".tr(), skin)
+        val closeButton = "×".toLabel(Color.BLACK,24).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(24f).apply { circle.color=Color.RED }
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
-        closeButton.label.setFontSize(24)
-        closeButton.labelCell.pad(10f)
-        closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
         closeButton.x = 10f
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
@@ -99,16 +98,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val ally = otherCiv.getAllyCiv()
         if (ally != "")
         {
-            diplomacyTable.add(("Ally: ".tr() + ally.tr() + " " + "Influence: ".tr()
-                    + otherCiv.getDiplomacyManager(ally).influence.toString().tr()).toLabel()).row()
+            val allyString = "{Ally: }{$ally} {Influence: }".tr() +
+                    otherCiv.getDiplomacyManager(ally).influence.toString()
+            diplomacyTable.add(allyString.toLabel()).row()
         }
-        val nextLevelString: String
-        if (otherCivDiplomacyManager.influence.toInt() < 30) {
-            nextLevelString = "Reach 30 for friendship."
-        } else if (ally == viewingCiv.civName) {
-            nextLevelString = ""
-        } else {
-            nextLevelString = "Reach highest influence above 60 for alliance."
+
+        val nextLevelString = when {
+            otherCivDiplomacyManager.influence.toInt() < 30 -> "Reach 30 for friendship."
+            ally == viewingCiv.civName -> ""
+            else -> "Reach highest influence above 60 for alliance."
         }
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
         if (nextLevelString != "") {
@@ -158,6 +156,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                     tradeLogic.acceptTrade()
                     updateLeftSideTable()
+                    updateRightSide(otherCiv)
                 }, this).open()
             }
             diplomacyTable.add(peaceButton).row()
@@ -347,10 +346,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         relationshipTable.add("Our relationship: ".toLabel())
         val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
         val relationshipText = relationshipLevel.name.tr() + " ($opinionOfUs)"
-        val relationshipColor = when {
-            relationshipLevel == RelationshipLevel.Neutral -> Color.WHITE
-            relationshipLevel == RelationshipLevel.Favorable || relationshipLevel == RelationshipLevel.Friend
-                    || relationshipLevel == RelationshipLevel.Ally -> Color.GREEN
+        val relationshipColor = when (relationshipLevel) {
+            RelationshipLevel.Neutral -> Color.WHITE
+            RelationshipLevel.Favorable, RelationshipLevel.Friend,
+            RelationshipLevel.Ally -> Color.GREEN
             else -> Color.RED
         }
 
