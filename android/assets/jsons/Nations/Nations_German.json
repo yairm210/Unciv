@@ -3,56 +3,55 @@
 		//nations
 		"name": "Babylon",
 		"leaderName": "Nebuchadnezzar II",
-		"adjective": ["Babylonian"],
-		"startBias": ["Avoid Tundra"],
+		"adjective": ["Babylonisch"],
+		"startBias": ["Vermeide Tundra"],
 		"preferredVictoryType": "Scientific",
 		
 		"startIntroPart1": "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
 		"startIntroPart2": "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
 		
-		"declaringWar": "The demon wants the blood of soldiers!",
-		"attacked": "Oh well, I presume you know what you're doing.",
-		"defeated": "It is over. Perhaps now I shall have peace, at last.",
-		"introduction": "Are you real or a phantom?",
+		"declaringWar": "Der Dämon will das Blut der Soldaten!",
+		"attacked": "Nun gut, ich nehme an Ihr wisst was Ihr tut.",
+		"defeated": "Es ist vorbei. Vielleicht soll ich jetzt meinen Frieden finden.",
+		"introduction": "Bist du real oder ein Phantom?",
 		
-		"neutralHello": "Greetings.",
-		"neutralLetsHearIt": ["I'm listening.","What do you want?"],
-		"neutralNo": ["No!","Certainly not.","Unacceptable!"],
-		"neutralYes": ["Completed!","Yes!","Agreed!"],
+		"neutralHello": "Grüße.",
+		"neutralLetsHearIt": ["ich höre.","Was wollt Ihr??"],
+		"neutralNo": ["Nein!","Sicherlich nicht.","Das ist nicht annehmbar!"],
+		"neutralYes": ["Abgemacht!","Ja!","Einverstanden!"],
 
-		"hateHello": "What do YOU want?!",
-		"hateLetsHearIt": ["I'm certainly listening.","I'm listening!"],
-		"hateNo": ["No!","Certainly not!","Unacceptable!"],
-		"hateYes": ["Yes!"],
+		"hateHello": "Was wollt IHR?!",
+		"hateLetsHearIt": ["Ich höre gewiss zu.","Ich höre!"],
+		"hateNo": ["Nein!","Sicherlich nicht!","Unerhört!"],
+		"hateYes": ["Ja!"],
 		
-		"afterPeace": "Foolish, foolish – letting me live.",
-		"tradeRequest": "It appears that you do have a reason for existing – to make this deal with me.",
+		"afterPeace": "Töricht, töricht, - mich am Leben zu lassen.",
+		"tradeRequest": "Es scheint, dass Ihr eine Existenzberechtigung habt – um diesen Handel mit mir zu machen.",
 				
 		"outerColor": [27,53,63],
 		"innerColor": [213,249,255],
-		"uniqueName": "Ingenuity",
-		"unique": "Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
+		"uniqueName": "Einfallsreichtum",
+		"unique": "Erhalte einen kostenlosen wissenschaftler bei Entdeckung der Schrift, Verdiene Große Wissenschaftler 50% schneller.",
 		"cities": ["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
-			"Uqair","Gubba","Hafriyat","Nagar","Shubat Enlil","Urhai","Urkesh","Awan","Riblah","Tayma"]
+			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
 	},
 	{
-		"name": "Greece",
+		"name": "Griechenland",
 		"leaderName": "Alexander",
-		"adjective": ["Greek"],
-		"startBias": ["Coast"],
+		"adjective": ["Grieschisch"],
+		"startBias": ["Küste"],
 		// preferredVictoryType:"Diplomatic",
 		
 		"startIntroPart1": "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea.",
 		"startIntroPart2": "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?",
 		
-		"declaringWar": "You are in my way, you must be destroyed.",
-		"attacked": "As a matter of fact I too grow weary of peace.",
-		"defeated": "You have somehow become my undoing! What kind of beast are you?",
-		"introduction": "Hello stranger! I am Alexandros, son of kings and grandson of the gods!",
+		"declaringWar": "Ihr stehst mir im Weg, Ihr müsst vernichtet werden.",
+		"attacked": "Tatsächlich werde auch ich des Friedens müde.",
+		"defeated": "Irgendwie seid Ihr mein Verhängnis geworden! Was für eine Bestie seid Ihr?",
+		"introduction": "Hallo Fremder! Ich bin Alexandros, Sohn von Königen und Enkel der Götter!",
 		
-		"neutralHello": "Greetings!",
+		"neutralHello": "Seid gegrüßt!",
 		"neutralLetsHearIt": ["I'm listening.","Go on.","Yes?","Come."],
 		"neutralNo": ["We decline.","Certainly not.","It is necessary not to accept."],
 		"neutralYes": ["Certainly.","Very much.","The very best!"],
@@ -71,9 +70,7 @@
 		"unique": "City-State Influence degrades at half and recovers at twice the normal rate",
 		"cities": ["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
-			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
-			"Larissa","Apollonia","Messene","Orchomenos","Ambracia","Kos","Knidos","Amphipolis",
-			"Patras","Lamia","Nafplion","Apolyton"]
+			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
 	},
 	{
 		"name": "China",
@@ -103,8 +100,7 @@
 		"unique": "Great general provides double combat bonus, and spawns 50% faster",
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
-			"Yichang","Yingtian","Xinyu","Xinzheng","Handan","Dunhuang","Gaoyu","Nantong","Weifang","Xikang"]
+			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
 	},
 	{
 		"name": "Egypt",
@@ -138,11 +134,9 @@
 		"innerColor": [98,10,210],
 		"uniqueName": "Monument Builders",
 		"unique": "+20% production towards Wonder construction",
-		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten",
-			   "Hieraconpolis","Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
-			   "Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
-			   "Balat","Ellahun","Hawara","Dashur","Damanhur","Ellahun","Abusir","Ellahun","Herakleopolis","Akoris",
-			   "Benihasan","Badari","Hermopolis","Amrah","Koptos","Ombos","Naqada","Semna","Soleb"]
+		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
+			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
+			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
 	},
 	{
 		"name": "England",
@@ -173,8 +167,7 @@
 		"unique": "+2 movement for all naval units",
 		"cities": ["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
-			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
-			"Sheffield","Salisbury","Colchester","Plymouth","Lancaster","Blackpool","Winchester","Hull"]
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
 	},
 	{
 		"name": "France",
@@ -204,8 +197,7 @@
 		"unique": "+2 Culture per turn from cities before discovering Steam Power",
 		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
-			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen","Toulon",
-			"Le Havre","Lourdes","Cannes","Aix-En-Provence","La Rochelle","Bourges","Calais"]
+			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]
 	},
 	{
 		"name": "Russia",
@@ -236,8 +228,7 @@
 		"unique": "Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
 		"cities": ["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
-			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir","Perm",
-			"Voronezh","Pskov","Starayarussa","Kostoma","Nizhniy Novgorod","Sudzal","Magnitogorsk"]
+			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
 	},
 	{
 		"name": "Rome",
@@ -299,7 +290,7 @@
 		"unique": "+1 Gold from each Trade Route, Oil resources provide double quantity",
 		"cities": ["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
-			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis","Kairouan","Algiers","Oran"]
+			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
 	},
 	{
 		"name": "America",
@@ -329,10 +320,7 @@
 		"unique": "All land military units have +1 sight, 50% discount when purchasing tiles",
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
-			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh",
-			"Oakland","Tampa Bay","Orlando","Tacoma","Santa Fe","Olympia","Hunt Valley","Springfield","Palo Alto","Centralia",
-			"Spokane","Jacksonville","Svannah","Charleston","San Antonio","Birmingham","Anchorage","Sacramento","Reno",
-			"Salt Lake City","Boise","Milwaukee","Santa Cruz","Little Rock"]
+			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
 	},
 	{
 		"name": "Japan",
@@ -856,11 +844,10 @@
 	*/
 	
 	    
-
 	//City states
 	{
 		"name": "Milan",
-		"adjective": ["Milanese"],
+		"adjective": ["Milan"],
 		"cityStateType": "Cultured",
 		
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -873,7 +860,7 @@
 	},
 	{
 		"name": "Florence",
-		"adjective": ["Florentine"],
+		"adjective": ["Florence"],
 		"cityStateType": "Cultured",
 		
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -886,10 +873,9 @@
 	},
 	{
 		"name": "Rio de Janeiro",
-		"adjective": ["Carioca"],
+		"adjective": ["Rio de Janeiro"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
-
 		"declaringWar": "I have to do this, for the sake of progress if nothing else. You must be opposed!",
 		"attacked": "You can see how fruitless this will be for you... right?",
 		"afterPeace": "This is why I prefer diplomacy to war.",
@@ -903,7 +889,6 @@
 		"adjective": ["Antwerp"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -914,9 +899,8 @@
 	},
 	{
 		"name": "Dublin",
-		"adjective": ["Dubliner"],
+		"adjective": ["Dublin"],
 		"cityStateType": "Militaristic",
-
 		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
 		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
 		"afterPeace": "Wise to keep peace with your neighbors. Blood feuds are paid at great expense.",
@@ -927,10 +911,9 @@
 	},
 	{
 		"name": "Tyre",
-		"adjective": ["Tyrian"],
+		"adjective": ["Tyre"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -944,7 +927,6 @@
 		"adjective": ["Ur"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
-
 		"declaringWar": "I will enjoy hearing your last breath as you witness the destruction of your realm!",
 		"attacked": "Why do we fight' Because Inanna demands it. Now, witness the power of the Sumerians!",
 		"afterPeace": "May peace forever bless our lands.",
@@ -955,10 +937,9 @@
 	},
 	{
 		"name": "Genoa",
-		"adjective": ["Genoese"],
+		"adjective": ["Genoa"],
 		"cityStateType": "Mercantile",
 		"startBias": ["Coast"],
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -969,10 +950,9 @@
 	},
 	{
 		"name": "Venice",
-		"adjective": ["Venetian"],
+		"adjective": ["Venice"],
 		"cityStateType": "Maritime",
 		"startBias": ["Coast"],
-
 		"declaringWar": "You have revealed your purposes a bit too early, my friend...",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "I am glad that my plan has succeded.",
@@ -983,7 +963,7 @@
 	},
 	{
 		"name": "Brussels",
-		"adjective": ["Bruxellois"],
+		"adjective": ["Brussels"],
 		"cityStateType": "Cultured",
 		
 		"declaringWar": "You leave us no choice. War it must be.",
@@ -1011,7 +991,6 @@
 		"name": "Sidon",
 		"adjective": ["Sidon"],
 		"cityStateType": "Militaristic",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1024,7 +1003,6 @@
 		"name": "Almaty",
 		"adjective": ["Almaty"],
 		"cityStateType": "Militaristic",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1035,9 +1013,8 @@
 	},
 	{
 		"name": "Edinburgh",
-		"adjective": ["Edinburghensian"],
+		"adjective": ["Edinburgh"],
 		"cityStateType": "Militaristic",
-
 		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
 		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your head!",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1048,9 +1025,8 @@
 	},
 	{
 		"name": "Singapore",
-		"adjective": ["Singaporean"],
+		"adjective": ["Singapore"],
 		"cityStateType": "Mercantile",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1063,7 +1039,6 @@
 		"name": "Zanzibar",
 		"adjective": ["Zanzibar"],
 		"cityStateType": "Mercantile",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1076,7 +1051,6 @@
 		"name": "Sydney",
 		"adjective": ["Sydney"],
 		"cityStateType": "Maritime",
-
 		"declaringWar": "After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself, for war is upon us.",
 		"attacked": "We will mobilize every means of resistance to stop this transgression against our nation!",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1089,7 +1063,6 @@
 		"name": "Cape Town",
 		"adjective": ["Cape Town"],
 		"cityStateType": "Maritime",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1102,7 +1075,6 @@
 		"name": "Kathmandu",
 		"adjective": ["Kathmandu"],
 		"cityStateType": "Mercantile",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1115,7 +1087,6 @@
 		"name": "Hanoi",
 		"adjective": ["Hanoi"],
 		"cityStateType": "Cultured",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1126,9 +1097,8 @@
 	},
 	{
 		"name": "Quebec City",
-		"adjective": ["Québécois"],
+		"adjective": ["Quebec City"],
 		"cityStateType": "Cultured",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1141,7 +1111,6 @@
 		"name": "Helsinki",
 		"adjective": ["Helsinki"],
 		"cityStateType": "Maritime",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1152,9 +1121,8 @@
 	},
 	{
 		"name": "Kuala Lumpur",
-		"adjective": ["KLite"],
+		"adjective": ["Kuala Lumpur"],
 		"cityStateType": "Cultured",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1165,9 +1133,8 @@
 	},
 	{
 		"name": "Manila",
-		"adjective": ["Manilan"],
+		"adjective": ["Manila"],
 		"cityStateType": "Maritime",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1181,7 +1148,6 @@
 		"translatedName": "Lhasa",
 		"adjective": ["tibetano"],
 		"cityStateType": "Cultured",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1193,9 +1159,8 @@
 	{
 		"name": "Vancouver",
 		"translatedName": "Vancouver",
-		"adjective": ["Vancouverite"],
+		"adjective": ["canadese"],
 		"cityStateType": "Maritime",
-
 		"declaringWar": "In responding to the unstinting malignancy that has heretofore defined your relationship with Canada, we can have no recourse but war!",
 		"attacked": "As we can reach no peaceful resolution with you, Canada must turn, with reluctance, to war.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1208,7 +1173,6 @@
 		"name": "M'Banza-Kongo",
 		"adjective": ["M'Banza-Kongo"],
 		"cityStateType": "Militaristic",
-
 		"declaringWar": "Do you really think you can walk over us so easily? I will not let it happen. Not to Kongo - not to my people!",
 		"attacked": "We are no strangers to war. You have strayed from the right path, and now we will correct it.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1221,7 +1185,6 @@
 		"name": "Mogadishu",
 		"adjective": ["Mogadishu"],
 		"cityStateType": "Maritime",
-
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
 		"afterPeace": "May peace forever bless our lands.",
@@ -1232,7 +1195,6 @@
 	},
 	
 	        
-
 	//Barbarian
 	{
 		"name": "Barbarians",

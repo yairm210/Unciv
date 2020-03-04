@@ -1,16 +1,15 @@
-package com.unciv.ui
+package com.unciv.ui.victoryscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
+import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
@@ -18,14 +17,14 @@ import com.unciv.ui.utils.toLabel
 
 class VictoryScreen : PickerScreen() {
 
-    val playerCivInfo = UncivGame.Current.gameInfo.getCurrentPlayerCivilization()
+    private val playerCivInfo = UncivGame.Current.gameInfo.getPlayerToViewAs()
     val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
-    val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
-    val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
-    val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
+    private val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
+    private val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
+    private val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
 
 
-    val contentsTable = Table()
+    private val contentsTable = Table()
 
     init {
         val tabsTable = Table().apply { defaults().pad(10f) }
@@ -35,6 +34,9 @@ class VictoryScreen : PickerScreen() {
         val setGlobalVictoryButton = TextButton("Global status".tr(),skin)
         setGlobalVictoryButton .onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
+        val setCivRankingsButton = TextButton("Rankings".tr(),skin)
+        setCivRankingsButton.onClick { setCivRankingsTable() }
+        tabsTable.add(setCivRankingsButton)
         topTable.add(tabsTable)
         topTable.addSeparator()
         topTable.add(contentsTable)
@@ -74,7 +76,7 @@ class VictoryScreen : PickerScreen() {
     }
 
 
-    fun wonOrLost(description: String) {
+    private fun wonOrLost(description: String) {
 
         val endGameMessage = when(description){
             "You have won a cultural victory!" -> "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart."
@@ -100,7 +102,7 @@ class VictoryScreen : PickerScreen() {
     }
 
 
-    fun setMyVictoryTable(){
+    private fun setMyVictoryTable() {
         val myVictoryStatusTable = Table()
         myVictoryStatusTable.defaults().pad(10f)
         if(scientificVictoryEnabled) myVictoryStatusTable.add("Science victory".toLabel())
@@ -119,7 +121,7 @@ class VictoryScreen : PickerScreen() {
         contentsTable.add(myVictoryStatusTable)
     }
 
-    fun scienceVictoryColumn():Table{
+    private fun scienceVictoryColumn():Table {
         val t = Table()
         t.defaults().pad(5f)
         t.add(getMilestone("Built Apollo Program",playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
@@ -133,7 +135,7 @@ class VictoryScreen : PickerScreen() {
         return t
     }
 
-    fun culturalVictoryColumn():Table{
+    private fun culturalVictoryColumn():Table {
         val t=Table()
         t.defaults().pad(5f)
         for(branch in playerCivInfo.gameInfo.ruleSet.policyBranches.values) {
@@ -143,7 +145,7 @@ class VictoryScreen : PickerScreen() {
         return t
     }
 
-    fun conquestVictoryColumn():Table{
+    private fun conquestVictoryColumn():Table {
         val table=Table()
         table.defaults().pad(5f)
         for (civ in playerCivInfo.gameInfo.civilizations) {
@@ -203,7 +205,7 @@ class VictoryScreen : PickerScreen() {
                         .sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {
-            val civToBranchesHaveCompleted=EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
+            val civToBranchesHaveCompleted= EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
         }
         return policyVictoryColumn
@@ -226,6 +228,26 @@ class VictoryScreen : PickerScreen() {
             scientificVictoryColumn.add(civToPartsBeRemaining).row()
         }
         return scientificVictoryColumn
+    }
+
+    private fun setCivRankingsTable() {
+        val majorCivs = game.gameInfo.civilizations.filter { it.isMajorCiv() }
+        val civRankingsTable = Table().apply { defaults().pad(5f) }
+
+        for( category in RankingType.values()) {
+            val column = Table().apply { defaults().pad(5f) }
+            column.add(category.value.toLabel()).row()
+            column.addSeparator()
+
+            for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
+                column.add(EmpireOverviewScreen.getCivGroup(civ, " : " + civ.getStatForRanking(category).toString(), playerCivInfo)).row()
+            }
+
+            civRankingsTable.add(column)
+        }
+
+        contentsTable.clear()
+        contentsTable.add(civRankingsTable)
     }
 
 }

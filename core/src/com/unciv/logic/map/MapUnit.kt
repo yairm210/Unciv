@@ -141,10 +141,10 @@ class MapUnit {
     }
 
     fun updateVisibleTiles() {
-        if(type.isAirUnit()){
-            if(hasUnique("6 tiles in every direction always visible"))
-                viewableTiles = getTile().getTilesInDistance(6)  // it's that simple
-            else viewableTiles = listOf() // bomber units don't do recon
+        if(type.isAirUnit()) {
+            viewableTiles = if (hasUnique("6 tiles in every direction always visible"))
+                getTile().getTilesInDistance(6).toList()  // it's that simple
+            else listOf() // bomber units don't do recon
         }
         else {
             var visibilityRange = 2
@@ -161,7 +161,7 @@ class MapUnit {
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
 
-            viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+            viewableTiles = tile.getViewableTilesList(visibilityRange, type.isWaterUnit())
         }
         civInfo.updateViewableTiles() // for the civ
     }
@@ -388,9 +388,10 @@ class MapUnit {
         if (amountToHealBy == 0) return
 
         if (hasUnique("+10 HP when healing")) amountToHealBy += 10
-        val adjacentUnits = currentTile.getTilesInDistance(1).flatMap { it.getUnits() }
-        if (adjacentUnits.isNotEmpty())
-            amountToHealBy += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
+        val maxAdjacentHealingBonus = currentTile.getTilesInDistance(1)
+                .flatMap { it.getUnits().asSequence() }.map { it.adjacentHealingBonus() }.max()
+        if (maxAdjacentHealingBonus != null)
+            amountToHealBy += maxAdjacentHealingBonus
         if (hasUnique("All healing effects doubled"))
             amountToHealBy *= 2
         healBy(amountToHealBy)
@@ -441,19 +442,19 @@ class MapUnit {
             }
     }
 
-    fun startTurn(){
+    fun startTurn() {
         currentMovement = getMaxMovement().toFloat()
-        attacksThisTurn=0
+        attacksThisTurn = 0
         due = true
 
         // Wake sleeping units if there's an enemy nearby
-        if(isSleeping() && currentTile.getTilesInDistance(2).any {
-                    it.militaryUnit!=null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
+        if (isSleeping() && currentTile.getTilesInDistance(2).any {
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
                 })
-            action=null
+            action = null
 
         val tileOwner = getTile().getOwner()
-        if(tileOwner!=null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
+        if (tileOwner != null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
         doPreTurnAction()
     }
@@ -462,6 +463,11 @@ class MapUnit {
         removeFromTile()
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
+        // all transported units should be destroyed as well
+        if (type.isAircraftCarrierUnit() || type.isMissileCarrierUnit()) {
+            currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }
+                    .forEach { unit -> unit.destroy() }
+        }
     }
 
     fun removeFromTile(){
@@ -515,17 +521,34 @@ class MapUnit {
         civInfo.addNotification("We have captured a barbarian encampment and recovered [${goldGained.toInt()}] gold!", tile.position, Color.RED)
     }
 
-    fun disband(){
+    fun disband() {
+        // evacuation of transported units before disbanding, if possible
+        if (type.isAircraftCarrierUnit() || type.isMissileCarrierUnit()) {
+            for(unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
+                // we disbanded a carrier in a city, it can still stay in the city
+                if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
+                // if no "fuel" to escape, should be disbanded as well
+                if (unit.currentMovement < 0.1)
+                    unit.disband()
+                // let's find closest city or another carrier where it can be evacuated
+                val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange()).
+                        filterNot { it == currentTile }.firstOrNull{unit.movement.canMoveTo(it)}
+
+                if (tileCanMoveTo!=null)
+                    unit.movement.moveToTile(tileCanMoveTo)
+                else
+                    unit.disband()
+            }
+        }
         destroy()
-        if(currentTile.getOwner()==civInfo)
+        if (currentTile.getOwner() == civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
         if (civInfo.isDefeated()) civInfo.destroy()
-
-        for(unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
+        for (unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
             if (unit.movement.canMoveTo(currentTile)) continue // we disbanded a carrier in a city, it can still stay in the city
             val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange())
-                    .firstOrNull{unit.movement.canMoveTo(it)}
-            if(tileCanMoveTo!=null) unit.movement.moveToTile(tileCanMoveTo)
+                    .firstOrNull { unit.movement.canMoveTo(it) }
+            if (tileCanMoveTo != null) unit.movement.moveToTile(tileCanMoveTo)
             else unit.disband()
         }
     }
@@ -575,7 +598,7 @@ class MapUnit {
 
         // Map of the surrounding area
         actions.add {
-            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).random(tileBasedRandom)
+            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).toList().random(tileBasedRandom)
             val tilesToReveal = revealCenter
                 .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
                 .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
@@ -597,7 +620,7 @@ class MapUnit {
         if(attacksThisTurn>1) return false
         if(interceptChance()==0) return false
         if(attacksThisTurn>0 && !hasUnique("1 extra Interception may be made per turn")) return false
-        if(currentTile.arialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
+        if(currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
     }
 

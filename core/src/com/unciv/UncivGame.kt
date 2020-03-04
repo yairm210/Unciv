@@ -32,7 +32,7 @@ class UncivGame(
 
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
-    lateinit var settings : GameSettings
+    lateinit var settings: GameSettings
     lateinit var crashController: CrashController
     /**
      * This exists so that when debugging we can see the entire map.
@@ -42,7 +42,7 @@ class UncivGame(
     /** For when you need to test something in an advanced game and don't have time to faff around */
     val superchargedForDebug = false
 
-    /** Simulate until this turn on the first "Next turn" button press. 
+    /** Simulate until this turn on the first "Next turn" button press.
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
@@ -52,7 +52,7 @@ class UncivGame(
 
     lateinit var worldScreen: WorldScreen
 
-    var music : Music? =null
+    var music: Music? = null
     val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
 
@@ -76,7 +76,7 @@ class UncivGame(
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
-        thread(name="LoadJSON") {
+        thread(name = "LoadJSON") {
             RulesetCache.loadRulesets()
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
@@ -103,7 +103,7 @@ class UncivGame(
         crashController = CrashController.Impl(crashReportSender)
     }
 
-    fun autoLoadGame(){
+    fun autoLoadGame() {
         if (!GameSaver().getSave("Autosave").exists())
             return setScreen(LanguagePickerScreen())
         try {
@@ -113,13 +113,13 @@ class UncivGame(
         }
     }
 
-    fun startMusic(){
+    fun startMusic() {
 
         val musicFile = Gdx.files.local(musicLocation)
-        if(musicFile.exists()){
+        if (musicFile.exists()) {
             music = Gdx.audio.newMusic(musicFile)
-            music!!.isLooping=true
-            music!!.volume = 0.4f*settings.musicVolume
+            music!!.isLooping = true
+            music!!.volume = 0.4f * settings.musicVolume
             music!!.play()
         }
     }
@@ -129,7 +129,7 @@ class UncivGame(
         super.setScreen(screen)
     }
 
-    fun loadGame(gameInfo:GameInfo){
+    fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
         ImageGetter.ruleset = gameInfo.ruleSet
         ImageGetter.refreshAtlas()
@@ -137,35 +137,35 @@ class UncivGame(
         setWorldScreen()
     }
 
-    fun loadGame(gameName:String){
+    fun loadGame(gameName: String) {
         loadGame(GameSaver().loadGameByName(gameName))
     }
 
     fun startNewGame() {
-        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty="Chieftain" }, MapParameters())
+        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
         loadGame(newGame)
     }
 
     fun setWorldScreen() {
-        if(screen != null && screen != worldScreen) screen.dispose()
+        if (screen != null && screen != worldScreen) screen.dispose()
         setScreen(worldScreen)
-        worldScreen.shouldUpdate=true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
+        worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
     }
 
     // This is ALWAYS called after create() on Android - google "Android life cycle"
     override fun resume() {
         super.resume()
-        if(!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+        if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
         ImageGetter.refreshAtlas()
 
         // This is to solve a rare problem -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
         // Can happen if you resume to the language picker screen for instance.
-        if(!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
+        if (!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
             return autoLoadGame()
 
-        if(::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
+        if (::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
         loadGame(gameInfo)
     }
 
@@ -175,7 +175,7 @@ class UncivGame(
     }
 
     override fun dispose() {
-        if(::gameInfo.isInitialized)
+        if (::gameInfo.isInitialized)
             GameSaver().autoSave(gameInfo)
     }
 
@@ -185,15 +185,14 @@ class UncivGame(
     }
 }
 
-class LoadingScreen:CameraStageBaseScreen(){
-    init{
+class LoadingScreen:CameraStageBaseScreen() {
+    init {
         val happinessImage = ImageGetter.getImage("StatIcons/Happiness")
         happinessImage.center(stage)
         happinessImage.setOrigin(Align.center)
         happinessImage.addAction(Actions.sequence(
                 Actions.delay(1f),
-                Actions.rotateBy(360f,0.5f)))
+                Actions.rotateBy(360f, 0.5f)))
         stage.addActor(happinessImage)
     }
-
 }

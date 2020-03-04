@@ -20,7 +20,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
-import com.unciv.ui.VictoryScreen
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -247,7 +247,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     "\n Click 'Create improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if(!completedTasks.contains("Create a trade route")
-                && viewingCiv.citiesConnectedToCapital.any { it.civInfo==viewingCiv })
+                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civInfo==viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
         if(viewingCiv.cities.size>1 && !completedTasks.contains("Create a trade route"))
             return "Create a trade route!\nConstruct roads between your capital and another city" +

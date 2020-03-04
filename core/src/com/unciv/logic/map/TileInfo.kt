@@ -68,9 +68,8 @@ open class TileInfo {
         return false
     }
 
-    fun containsUnique(unique: String): Boolean {
-        return isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
-    }
+    fun containsUnique(unique: String): Boolean =
+            isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
@@ -92,6 +91,10 @@ open class TileInfo {
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.tileResources[resource!!]!!
 
+    fun getTileResourceOrNull(): TileResource? =
+            if (resource == null) null
+            else ruleset.tileResources.getOrElse(resource!!) {null }
+
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
@@ -104,13 +107,8 @@ open class TileInfo {
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
-    @Transient private var internalNeighbors : List<TileInfo>?=null
-    val neighbors: List<TileInfo>
-        get(){
-            if(internalNeighbors==null)
-                internalNeighbors = getTilesAtDistance(1)
-            return internalNeighbors!!
-        }
+    @delegate:Transient
+    val neighbors: List<TileInfo> by lazy { getTilesAtDistance(1).toList() }
 
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
@@ -127,18 +125,15 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
-    fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
-    }
+    fun getTerrainFeature(): Terrain? =
+            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
 
     fun isWorked(): Boolean {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
     }
 
-    fun getTileStats(observingCiv: CivilizationInfo): Stats {
-        return getTileStats(getCity(), observingCiv)
-    }
+    fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
@@ -264,21 +259,20 @@ open class TileInfo {
 
     fun isCoastalTile() = neighbors.any { it.baseTerrain==Constants.coast }
 
-    fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
-        return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
-    }
+    fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
+            resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
 
-    fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): List<TileInfo> {
-        return tileMap.getViewableTiles(this.position,distance,ignoreCurrentTileHeight)
-    }
+    fun getViewableTilesList(distance:Int, ignoreCurrentTileHeight: Boolean): List<TileInfo> =
+            tileMap.getViewableTiles(position, distance, ignoreCurrentTileHeight)
 
-    fun getTilesInDistance(distance:Int): List<TileInfo> {
-        return tileMap.getTilesInDistance(position,distance)
-    }
+    fun getTilesInDistance(distance: Int): Sequence<TileInfo> =
+            tileMap.getTilesInDistance(position,distance)
 
-    fun getTilesAtDistance(distance:Int): List<TileInfo> {
-        return tileMap.getTilesAtDistance(position,distance)
-    }
+    fun getTilesInDistanceRange(range: IntRange): Sequence<TileInfo> =
+            tileMap.getTilesInDistanceRange(position, range)
+
+    fun getTilesAtDistance(distance:Int): Sequence<TileInfo> =
+            tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(): Float {
         var bonus = getBaseTerrain().defenceBonus
@@ -286,7 +280,7 @@ open class TileInfo {
         return bonus
     }
 
-    fun arialDistanceTo(otherTile:TileInfo): Int {
+    fun aerialDistanceTo(otherTile:TileInfo): Int {
         val xDelta = position.x-otherTile.position.x
         val yDelta = position.y-otherTile.position.y
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
@@ -364,11 +358,17 @@ open class TileInfo {
         return false
     }
 
-    fun hasRoad(civInfo: CivilizationInfo): Boolean {
-        if(roadStatus != RoadStatus.None) return true
-        if(civInfo.nation.forestsAndJunglesAreRoads && (terrainFeature==Constants.jungle || terrainFeature==Constants.forest))
-            return true
-        return false
-    }
+    fun hasConnection(civInfo: CivilizationInfo) =
+            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+    fun hasRoad(civInfo: CivilizationInfo) =
+            roadStatus == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
+
+    fun hasRailroad() =
+            roadStatus == RoadStatus.Railroad
+
+    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
+            civInfo.nation.forestsAndJunglesAreRoads
+                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
     //endregion
 }

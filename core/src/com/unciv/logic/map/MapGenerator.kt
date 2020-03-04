@@ -8,8 +8,6 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -493,10 +491,10 @@ class MapGenerator(val ruleset: Ruleset) {
             val suitableTiles = mapToReturn.values
                     .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
 
-            val averageTilesPerResource = 15 * resourcesOfType.count()
-            val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } / averageTilesPerResource
+            val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } *
+                    mapToReturn.mapParameters.resourceRichness
 
-            val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
+            val locations = chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, distance)
 
             for (location in locations) location.resource = resource.name
         }
@@ -508,8 +506,9 @@ class MapGenerator(val ruleset: Ruleset) {
 
         val suitableTiles = mapToReturn.values
                 .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
-        val numberOfResources = (mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } * mapToReturn.mapParameters.resourceRichness).toInt()
-        val locations = chooseSpreadOutLocations(numberOfResources, suitableTiles, distance)
+        val numberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } *
+                mapToReturn.mapParameters.resourceRichness
+        val locations = chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, distance)
 
         val resourceToNumber = Counter<String>()
 
@@ -546,7 +545,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 val firstKeyWithTilesLeft = orderedKeys
                         .first { availableTiles.any { tile -> tile.baseTerrain== it} }
                 val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
-                availableTiles = availableTiles.filter { it.arialDistanceTo(chosenTile) > distanceBetweenResources }
+                availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
                 chosenTiles.add(chosenTile)
                 baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1
             }

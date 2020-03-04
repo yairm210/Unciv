@@ -284,18 +284,18 @@ class NextTurnAutomation{
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return getClosestCities(civ1,civ2).arialDistance
+        return getClosestCities(civ1,civ2).aerialDistance
     }
 
-    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val arialDistance: Int)
+    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val aerialDistance: Int)
     fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
         val cityDistances = arrayListOf<CityDistance>()
         for(civ1city in civ1.cities)
             for(civ2city in civ2.cities)
                 cityDistances.add(CityDistance(civ1city,civ2city,
-                        civ1city.getCenterTile().arialDistanceTo(civ2city.getCenterTile())))
+                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
 
-        return cityDistances.minBy { it.arialDistance }!!
+        return cityDistances.minBy { it.aerialDistance }!!
     }
 
     private fun offerDeclarationOfFriendship(civInfo: CivilizationInfo) {
@@ -315,16 +315,12 @@ class NextTurnAutomation{
     }
 
     private fun offerResearchAgreement(civInfo: CivilizationInfo) {
-        // if Civ has researched future tech, they will not want to sign RA.
-        if (!civInfo.canSignResearchAgreement()) return
+        if (!civInfo.canSignResearchAgreement()) return // don't waste your time
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
                 .asSequence()
-                .filter { it.isMajorCiv() }
-                .filter { civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }
-                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.ResearchAgreement) }
-                .filter { !it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.ResearchAgreement) }
-                .filter { it.canSignResearchAgreement() }
+                .filter { civInfo.canSignResearchAgreementsWith(it)
+                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement) }
                 .sortedByDescending { it.statsForNextTurn.science }
 
         val duration = when(civInfo.gameInfo.gameParameters.gameSpeed) {
@@ -338,8 +334,9 @@ class NextTurnAutomation{
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.getResearchAgreementCost()))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, civInfo.getResearchAgreementCost()))
+            val cost = civInfo.getResearchAgreementCost(otherCiv)
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, cost))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, cost))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }

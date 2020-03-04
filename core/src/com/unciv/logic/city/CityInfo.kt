@@ -128,7 +128,10 @@ class CityInfo {
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
-    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
+    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
+        val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
+        return connectionTypePredicate(mediumTypes)
+    }
     fun isInResistance() = resistanceCounter>0
 
 
@@ -277,7 +280,7 @@ class CityInfo {
     fun setTransients() {
         tileMap = civInfo.gameInfo.tileMap
         centerTileInfo = tileMap[location]
-        tilesInRange = getCenterTile().getTilesInDistance( 3).toHashSet()
+        tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()
@@ -396,7 +399,7 @@ class CityInfo {
         // The city could be producing something that puppets shouldn't, like units
         cityConstructions.currentConstructionIsUserSet = false
         cityConstructions.constructionQueue.clear()
-        cityConstructions.chooseNextConstruction() 
+        cityConstructions.chooseNextConstruction()
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
@@ -527,7 +530,7 @@ class CityInfo {
         val owningCity = newTileInfo.getCity()
         if (owningCity!=null && owningCity!=this
                 && newTileInfo.getOwner()!!.isCurrentPlayer()
-                && newTileInfo.arialDistanceTo(getCenterTile()) <= 3
+                && newTileInfo.aerialDistanceTo(getCenterTile()) <= 3
                 && newTileInfo.neighbors.any{it.getCity()==this}) {
             return true
         }
@@ -579,7 +582,7 @@ class CityInfo {
     private fun triggerCitiesSettledNearOtherCiv(){
         val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
                 .flatMap { it.cities }
-                .filter { it.getCenterTile().arialDistanceTo(getCenterTile()) <= 6 }
+                .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
         val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
                 .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for(otherCiv in civsWithCloseCities)

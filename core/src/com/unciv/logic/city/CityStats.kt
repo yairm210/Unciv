@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -222,8 +221,7 @@ class CityStats {
         if (civInfo.containsBuildingUnique("+1 happiness in each city"))
             newHappinessList["Wonders"] = 1f
 
-        if (baseStatList.containsKey("Tile yields"))
-            newHappinessList["Tile yields"] = baseStatList["Tile yields"]!!.happiness
+        newHappinessList["Tile yields"] = getStatsFromTiles().happiness
         
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
@@ -353,14 +351,7 @@ class CityStats {
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
-        if (roadType == RoadStatus.Road) return cityInfo.isConnectedToCapital() // this transient is not applicable to connection via railroad.
-
-        val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
-        val bfs = BFS(capitalTile) { it.roadStatus == roadType }
-
-        val cityTile = cityInfo.getCenterTile()
-        bfs.stepUntilDestination(cityTile)
-        return bfs.tilesReached.containsKey(cityTile)
+        return cityInfo.isConnectedToCapital { it.contains(roadType.name) || it.contains("Harbor") }
     }
     //endregion
 

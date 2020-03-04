@@ -180,7 +180,7 @@ class Building : NamedStats(), IConstruction{
             stats.science = 50f
 
         if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5*civInfo.citiesConnectedToCapital.count { it.civInfo.isCityState() }
+            stats.production += 5*civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
 
         return stats
     }
@@ -223,8 +223,10 @@ class Building : NamedStats(), IConstruction{
     }
 
 
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(construction)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        if (cityConstructions.isBeingConstructedOrEnqueued(name))
+            return false
+        val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason == "Wonder is being built elsewhere"
@@ -232,8 +234,6 @@ class Building : NamedStats(), IConstruction{
 
     fun getRejectionReason(construction: CityConstructions):String{
         if (construction.isBuilt(name)) return "Already built"
-        if (construction.isBeingConstructed(name)) return "Is being built"
-        if (construction.isEnqueued(name)) return "Already enqueued"
 
         val cityCenter = construction.cityInfo.getCenterTile()
         if ("Must be next to desert" in uniques
@@ -333,12 +333,12 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions) {
+    override fun postBuildEvent(construction: CityConstructions): Boolean {
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
-            return
+            return true
         }
         construction.addBuilding(name)
 
@@ -379,6 +379,8 @@ class Building : NamedStats(), IConstruction{
             civInfo.updateHasActiveGreatWall()
 
         if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
+
+        return true
     }
 
     fun isStatRelated(stat: Stat): Boolean {

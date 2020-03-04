@@ -196,7 +196,7 @@
 		"declaringWar": "Ti sei comportato molto male, lo sai? Credo che adesso dovrò insegnarti l'umiltà.",
 		"attacked": "Hai confuso la mia passione per una debolezza... temo che la pagherai assai cara.",
 		"defeated": "Ci hai sconfitti, e ciò mi rende prigioniera. Ma direi che ci sono destini peggiori, giusto?",
-		"introduction": "Ti saluto, straniero! Se sei intelligente e saggio tanto quanto sei bello, andremo d'accordo alla grande!",
+		"introduction": "È bello incontrare un altro giocatore che muove i pezzi sulla scacchiera del mondo. I sudditi sono sempre così servili da risultare infine noiosi, non trovi?",
 		"neutralHello": "Salve!",
 		"neutralLetsHearIt": ["Avanti.","Parla."],
 		"neutralNo": ["Rifiutiamo.","Ha! Certo che no!","No di certo."],
@@ -242,9 +242,10 @@
 		"innerColor": [238,201,9],
 		"uniqueName": "La Gloria di Roma",
 		"unique": "+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
-		"cities": ["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia","Satricum","Ardea",
-			"Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra","Signia",
-			"Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+		"cities": ["Roma","Anzio","Cuma","Napoli","Ravenna","Arezzo","Milano","Arpino","Circea","Sezia","Satricum","Ardea",
+			"Ostia","Velletri","Viroconium","Taranto","Brindisi","Cesaraugusta","Cesarea","Palmira","Signia",
+			"Aquileia","Clusium","Sutrium","Cremona","Piacenza","Hispalis","Artaxata","Aurelianorum","Nicopolis",
+			  "Agrippina","Verona","Corfinio","Treviri","Sirmium","Augustadorum","Curia","Interrama","Adria",]
 	},
 	{
 		"name": "Arabia",
@@ -683,7 +684,7 @@
 		"innerColor": [0,204,102],
 		"uniqueName": "Terrore mongolo",
 		"unique": "+1 Movimento per le unità a cavallo. +30% Forza quando assali una Città-Stato o ne attacchi le unità.",
-		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
+		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Sarai Antica","Sarai Nuova","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
 		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
 	},
@@ -698,12 +699,12 @@
 		"startBias": ["Jungle"],
 		"preferredVictoryType": "Domination",
 		
-		"startIntroPart1": "Welcome, O divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen.",
-		"startIntroPart2": "O great king Montezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?",
+		"startIntroPart1": "Benvenuto, o divino Montezuma! Ci prostriamo stupefatti dinanzi alla tua magnificenza! Che i cieli ti sommergano di ogni genere di beni per tutti i giorni della tua vita! Tu sei il capo del potente popolo azteco, che vaga nomade dopo aver abbandonato la propria terra nel nord stabilendosi nel XII secolo nella Mesa Central, nel cuore di quello che poi sarà chiamato Messico. Circondati da tribù in lotta per il controllo delle ricche terre intorno ai sacri laghi Texcoco, Xaltocan e Zumpango, grazie ad astute alleanze e alla loro prodezza militar, in soli duecento anni gli Aztechi giunsero a dominare il bacino dell'America centrale, ponendosi a capo di un impero che si estendeva da oceano a oceano. Il loro regno cadde infine sotto l'assalto di diavoli stranieri, i maledetti spagnoli, le cui armi, i tuoi fedeli guerrieri, non avevano mai visto prima.",
+		"startIntroPart2": "O grande re Montezuma! La tua gente desidera risollevarsi e vuole che sia tu a guidarli verso la gloria! Porta loro ricchezza e potenza e falli dominare sui rivali e sui nemici! Risponderai alla chiamata, o glorioso leader? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Morte, morte, morte!)",
 		"attacked": "Eccellente! Che il sangue scorra a fiumi!",
 		"defeated": "Mostro! Chi sei tu per osare distruggere la mia grandezza?",
-		"introduction": "Alt! Cosa vedo di fronte alla mia augusta presenza? Un altro cuore palpitante per il fuoco del sacrificio?.",
+		"introduction": "Alt! Cosa vedo di fronte alla mia augusta presenza? Un altro cuore palpitante per il fuoco del sacrificio?",
 		"neutralHello": "Cosa ti porta qui?",
 		"neutralLetsHearIt": ["Vai avanti.","Procedi.","Ti ascolto..."],
 		"neutralNo": ["Assolutamente no!","No!","Non lo accetto!"],
@@ -732,8 +733,8 @@
 		"startBias": ["Hill"],
 		"preferredVictoryType": "Cultural",
 		
-		"startIntroPart1": "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today.",
-		"startIntroPart2": "Oh King Pachacuti, truly are you called 'Earth Shaker'! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?",
+		"startIntroPart1": "O tu che ricrei il mondo, i tuoi fedeli sudditi ti salutano, re Pachacuti! Tu sei a capo del popolo inca. Partendo dal minuscolo stato di Cusco, gli Inca dimostrarono di possedere il potenziale di una grande nazione, marciando in guerra contro i loro numerosi nemici, annientandone gli eserciti e creando un impero esteso dall'Ecuador al Cile... invero, il più grande impero precolombiano d'America. Più che meri soldati, gli Inca furono anche grandi costruttori e artisti: quanto è rimasto delle loro opere stupisce e ispira ancora oggi.",
+		"startIntroPart2": "O re Pachacuti, a ragione sei chiamato "colui che scuote la terra"! Rievocherai il suolo affinché combatta nuovamente al tuo fianco? Le tue armate attendono un tuo segnale. Ripristinerai la gloria del tuo impero? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Resistere è inutile! Non puoi sperare di resistere di fronte al potente impero inca. Se non ti arrendi immediatamente, allora preparati alla guerra!",
 		"attacked": "TU dichiari guerra a ME?!? Non puoi, sono IO che dichiaro guerra a TE!",
 		"defeated": "Hai oscurato il sole...! Sono stato un sovrano diligente e misericordioso. Vedi di essere altrettanto diligente e misericordioso.",
@@ -766,8 +767,8 @@
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
 		
-		"startIntroPart1": "Honor and glory be yours, Harald Bluetooth Gormsson, mighty heir of King Gorm of the Old and Thryra Dannebod. Not only were you victorious on the battlefield against the armies of Norway, you also completed massive construction project across the land - numerous Ring Fortresses to protect the populace from invasion and internal strife. You successfully drove off waves of German settlers in 983 AD and sheltered your kingdom from unwanted foreign influence.",
-		"startIntroPart2": "Stalwart Viking, the time for greatness is upon you once more. You are called to rise up and lead your people to renewed power and trumph! Will you make the world shudder once more at the very thought of your great armies of the Northsmen? Will you let the Viking battle cry ring out across the crashing waved? Will you build a civilization to stand the test of time?",
+		"startIntroPart1": "A te l'onore e la gloria, Harald Gormsson Dente Blu, potente erede di re Gorm il Vecchio e di Thyra Dannebod. Tu hai sconfitto sul campo gli eserciti della Norvegia e hai completato la costruzione di numerose, enormi fortezze circolari in tutte le tue terre per proteggere la popolazione dalle invasioni e dalle tensioni interne. Nel 983 d.C. hai respinto con successo diverse ondate di invasori dalla Germania, chiudendo i confini del tuo regno a ogni influenza esterna.",
+		"startIntroPart2": "Gagliardo vichingo, il tempo della grandezza sta ritornando. Sei chiamato a sollevare il tuo popolo e a guidarlo ancora verso il potere e il trionfo! Il mondo tornerà a tremare al solo pensiero delle scorribande degli Uomini del Nord? Il grido di battaglia dei Vichinghi riecheggerà ancora una volta tra i marosi? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "A essere sinceri, sono stanco delle chiacchere. Risolviamo la questione in battaglia, da veri uomini. Forse gli skald canteranno del tuo valore... o del mio!",
 		"attacked": "Ahahah! Mostri qualche abilità da vero vichingo! Ma non basterà per salvarti!",
 		"defeated": "Loki deve averti aiutato, perché nessun uomo comune poteva sconfiggermi... Sta bene! Mi unirò agli einherjar nel banchetto del Valhalla, mentre tu ti riposi sui tuoi allori.",
@@ -785,7 +786,7 @@
 		"outerColor": [51,25,0],
 		"innerColor": [255,255,102],
 		"uniqueName": "Furia vichinga",
-		"unique": "Le unità pagano solo 1 punto movimento per imbarcarsi o sbarcare, e ottengono +1 punto movimento se imbarcate. Le unità ravvicinate possono saccheggiare senza costi di movimento.",
+		"unique": "Le unità pagano solo 1 punto movimento per imbarcarsi o sbarcare, e ottengono +1 punto movimento se imbarcate. Le unità da mischia possono saccheggiare senza costi di movimento.",
 		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
@@ -1161,6 +1162,34 @@
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,255,128],
 		"cities": ["Vancouver"]
+	},
+	{
+		"name": "M'Banza-Kongo",
+		"translatedName": "M'Banza-Kongo",
+		"adjective": ["M'Banza-Kongo"],
+		"cityStateType": "Militaristic",
+
+		"declaringWar": "Credi davvero di poter calpestarci così facilmente? Non permetterò che accada. Non a Kongo - non al mio popolo!",
+		"attacked": "Non siamo estranei alla guerra. Ti sei allontanato dalla retta via, e noi ti correggeremo.",
+		"afterPeace": "Possa la pace benedire in eterno i nostri reami.",
+		"defeated": "Non sei altro che un barbaro glorificato. Crudele e spietato.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [255,128,0],
+		"cities": ["M'Banza-Kongo"]
+	},
+	{
+		"name": "Mogadishu",
+		"translatedName": "Mogadiscio",
+		"adjective": ["Mogadishu"],
+		"cityStateType": "Maritime",
+
+		"declaringWar": "Non ci lasci altra scelta. Guerra sia.",
+		"attacked": "Benissimo, questo non lo dimenticheremo.",
+		"afterPeace": "Possa la pace benedire in eterno i nostri reami.",
+		"defeated": "Congratulazioni, conquistatore. Questa tribù serve te ora.",
+		"outerColor": [0, 0, 0],
+		"innerColor": [153,204,255],
+		"cities": ["Mogadishu"]
 	},
 	
 	//Barbarian

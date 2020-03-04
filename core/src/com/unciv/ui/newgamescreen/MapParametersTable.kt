@@ -166,7 +166,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add(tempExtremeSlider).fillX().row()
 
 
-        val resourceRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
+        val resourceRichnessSlider = Slider(0f,0.2f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     mapParameters.resourceRichness = this@apply.value

@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -24,6 +25,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -40,12 +42,12 @@ class CivilizationInfo {
      * Instead, we create a copy list with the change, and replace this list.
      * The other solution, casting toList() every "get", has a performance cost
      */
-    @Transient private var units=listOf<MapUnit>()
+    @Transient private var units = listOf<MapUnit>()
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
-    /** Contains cities from ALL civilizations connected by trade routes to the capital */
-    @Transient var citiesConnectedToCapital = listOf<CityInfo>()
+    /** Contains mapping of cities to travel mediums from ALL civilizations connected by trade routes to the capital */
+    @Transient var citiesConnectedToCapitalToMediums = mapOf<CityInfo, Set<String>>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
@@ -163,8 +165,6 @@ class CivilizationInfo {
     fun updateStatsForNextTurn(){
         statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
     }
-
-
 
     fun getHappiness() = stats().getHappinessBreakdown().values.sum().roundToInt()
 
@@ -292,8 +292,9 @@ class CivilizationInfo {
     }
 
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
-        if(otherCiv.isBarbarian() || isBarbarian()) return true
-        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
+        if (otherCiv.civName == civName) return false // never at war with itself
+        if (otherCiv.isBarbarian() || isBarbarian()) return true
+        if (!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
         return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
     }
@@ -311,12 +312,37 @@ class CivilizationInfo {
     }
 
     fun canSignResearchAgreement(): Boolean {
+        if(!isMajorCiv()) return false
         if(!tech.getTechUniques().contains("Enables Research agreements")) return false
-        if(gold < getResearchAgreementCost()) return false
         if (gameInfo.ruleSet.technologies.values
                 .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true
     }
+
+    fun canSignResearchAgreementsWith(otherCiv: CivilizationInfo): Boolean {
+        val diplomacyManager = getDiplomacyManager(otherCiv)
+        val cost = getResearchAgreementCost(otherCiv)
+        return canSignResearchAgreement() && otherCiv.canSignResearchAgreement()
+                && diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                && !diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement)
+                && !diplomacyManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement)
+                && gold >= cost && otherCiv.gold >= cost
+    }
+
+    fun getStatForRanking(category: RankingType) : Int {
+        return when(category) {
+            RankingType.Population -> cities.sumBy { it.population.population }
+            RankingType.CropYield -> statsForNextTurn.food.roundToInt()
+            RankingType.Production -> statsForNextTurn.production.roundToInt()
+            RankingType.Gold -> gold
+            RankingType.Land -> cities.sumBy { it.tiles.size }
+            RankingType.Force -> units.sumBy { it.baseUnit.strength }
+            RankingType.Happiness -> getHappiness()
+            RankingType.Technologies -> tech.researchedTechnologies.size
+            RankingType.Culture -> policies.storedCulture
+        }
+    }
+
     //endregion
 
     //region state-changing functions
@@ -386,7 +412,7 @@ class CivilizationInfo {
         transients().setCitiesConnectedToCapitalTransients()
         for (city in cities) city.startTurn()
 
-        getCivUnits().toList().forEach { it.startTurn() }
+        for (unit in getCivUnits()) unit.startTurn()
 
         for(tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
             val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
@@ -431,7 +457,7 @@ class CivilizationInfo {
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
-        diplomacy.values.forEach { it.nextTurn() }
+        diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
     }
@@ -506,9 +532,10 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
-    fun getResearchAgreementCost(): Int {
+    fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val basicGoldCostOfSignResearchAgreement = when(getEra()){
+        val highestEra = sequenceOf(getEra(),otherCiv.getEra()).maxBy { it.ordinal }!!
+        val basicGoldCostOfSignResearchAgreement = when(highestEra){
             TechEra.Medieval, TechEra.Renaissance -> 250
             TechEra.Industrial -> 300
             TechEra.Modern -> 350

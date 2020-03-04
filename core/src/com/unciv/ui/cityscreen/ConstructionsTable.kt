@@ -277,19 +277,21 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val button = TextButton("", CameraStageBaseScreen.skin)
 
         if (construction == null || !construction.canBePurchased()
+                || !construction.isBuildable(cityConstructions)
                 || !UncivGame.Current.worldScreen.isPlayersTurn
                 || city.isPuppet || city.isInResistance()) {
             button.setText("Buy".tr())
             button.disable()
         } else {
 
-            val constructionGoldCost = construction.getGoldCost(city.civInfo)
-            button.setText("Buy".tr() + " " + constructionGoldCost)
-            button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
-
-            button.onClick(UncivSound.Coin) {
-                YesNoPopup("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
-                    cityConstructions.purchaseConstruction(construction.name)
+            fun purchaseConstruction() {
+                if (!cityConstructions.purchaseConstruction(construction.name)) {
+                    Popup(cityScreen).apply {
+                        add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
+                        addCloseButton()
+                        open()
+                    }
+                } else {
                     if (isSelectedQueueEntry()) {
                         // currentConstruction is removed from the queue by purchaseConstruction
                         // to avoid conflicts with NextTurnAutomation
@@ -300,7 +302,17 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     }
                     if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
                     cityScreen.update()
-                }, cityScreen).open()
+                }
+            }
+
+            val constructionGoldCost = construction.getGoldCost(city.civInfo)
+            button.setText("Buy".tr() + " " + constructionGoldCost)
+            button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
+
+            button.onClick(UncivSound.Coin) {
+                val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n\n" +
+                        "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
+                YesNoPopup(purchasePrompt, { purchaseConstruction() }, cityScreen).open()
             }
 
             if (constructionGoldCost > city.civInfo.gold)

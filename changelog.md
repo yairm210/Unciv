@@ -1,3 +1,84 @@
+## 3.6.5
+
+Resolved #2065 - Units can no longer sleep while fortified - by Vladimir Tanakov
+
+Resolved #2033 - Happiness from tiles is always considered correctly in regards to food consumption
+
+Resolved #2035 - Strategic resources are affected by map generation parameters
+
+Resolved #2055 - cities once again bombard melee units
+
+Fixed rare crash when diplomacy values change while ending the turn
+
+UI updates - by lishaoxia1985
+
+Translation updates
+
+## 3.6.4
+
+By Jack Rainy:
+- Civilization rankings (Richest, Strongest, Most Fertile, Largest, etc.)
+- Can now buy buildings from queue
+- Include Nations in the calculation of a translation's percentage
+
+Eiffel Tower effect changed to reflect original Civ - by lishaoxia1985
+
+Translation updates
+
+## 3.6.3
+
+Workers automate roads/railroads overseas, railroads connect through harbors - by przystasz
+
+Multiplayer Notification Fix - by tobo
+
+Fixed wrong placement of purchased/upgraded units - by Jack Rainy
+
+Tile stats in city now shown in a row - by reversi
+
+Refactor for unit actions - by Kentalot 
+
+Resolved #1986 - research agreement cost consistency
+
+Resolved #2012 - starting locations no longer visible
+
+Victory screen shows the viewing player in multiplayer games
+
+Translation updates
+
+## 3.6.2
+
+Resolved #1982 - Can now pic civ-equivalent Great People in great person picker screen
+
+By Jack Rainy:
+- Fixed rare bug of clicking on an unknown civilizations
+- Display the current amount of gold in the "buy" prompt
+- Do not allow to purchase extra units requiring unavailable resources
+
+
+Removed pebble symbol from Unciv icon when showing persistent notification - by tobo
+
+Performance improvements - by Kentalot
+
+Translation updates
+
+## 3.6.1
+
+Resolved #1963 - can now unautomate embarked workers
+
+Resolved #1697 by adding information to the special production constructions - by Kentalot
+
+By Jack Rainy:
+ - Future Tech can't be picked as a free technology until requirements are met
+ - Can sort cities in overview by food, production etc
+
+Resolved #1962 - "infinite zoom" from capacative scrolling is no longer irrecoverable
+
+Resolved #1975 - Museum and Factory now give 2 specialist slots
+
+Fixed rare crashes when pausing
+
+Translation updates
+
 ## 3.6.0
 
 Massive multiplayer improvements!

@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.ImageGetter
 import java.io.File
@@ -109,6 +110,16 @@ class GameSaver {
 
     }
 
+    /**
+     * Returns current turn's player from GameInfo JSON-String for multiplayer.
+     * Does not initialize transitive GameInfo data.
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+     */
+    fun currentTurnCivFromString(gameData: String): CivilizationInfo {
+        val game = json().fromJson(GameInfo::class.java, gameData)
+        return game.getCivilization(game.currentPlayer)
+    }
+  
     //The file manager allows easy access to the gameID and the name of its corresponding file for every saved multiplayer game
     companion object MultiplayerFileManager{
 
@@ -197,7 +208,7 @@ class GameSaver {
                     continue
                 }
             }
-        }
+        }    
     }
 }
 

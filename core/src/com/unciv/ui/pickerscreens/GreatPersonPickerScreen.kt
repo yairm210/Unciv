@@ -5,8 +5,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.UncivSound
-import com.unciv.models.translations.tr
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
@@ -17,8 +17,11 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
     init {
         closeButton.isVisible=false
         rightSideButton.setText("Choose a free great person".tr())
-        for (unit in civInfo.gameInfo.ruleSet.units.values
-                .filter { it.name in GreatPersonManager().statToGreatPersonMapping.values || it.name == "Great General"})
+
+        val greatPersonNames = GreatPersonManager().statToGreatPersonMapping.values
+                .union(listOf("Great General"))
+        val greatPersonUnits = greatPersonNames.map { civInfo.getEquivalentUnit(it) }
+        for (unit in greatPersonUnits)
         {
             val button = Button(skin)
 

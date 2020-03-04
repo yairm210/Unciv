@@ -73,51 +73,46 @@ class TileMap {
         return get(vector.x.toInt(), vector.y.toInt())
     }
 
-    fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        val tilesToReturn = mutableListOf<TileInfo>()
-        for (i in 0 .. distance) {
-            tilesToReturn += getTilesAtDistance(origin, i)
-        }
-        return tilesToReturn
-    }
+    fun getTilesInDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+            getTilesInDistanceRange(origin, 0..distance)
 
-    fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        if(distance==0) return listOf(get(origin))
-        val tilesToReturn = ArrayList<TileInfo>()
+    fun getTilesInDistanceRange(origin: Vector2, range: IntRange): Sequence<TileInfo> =
+            range.asSequence().flatMap { getTilesAtDistance(origin, it) }
 
-        fun addIfTileExists(x:Int,y:Int){
-            if(contains(x,y))
-                tilesToReturn += get(x,y)
-        }
+    fun getTilesAtDistance(origin: Vector2, distance: Int): Sequence<TileInfo> =
+            if (distance <= 0) // silently take negatives.
+                sequenceOf(get(origin))
+            else
+                sequence {
+                    fun getIfTileExistsOrNull(x: Int, y: Int) = if (contains(x, y)) get(x, y) else null
 
-        val centerX = origin.x.toInt()
-        val centerY = origin.y.toInt()
+                    val centerX = origin.x.toInt()
+                    val centerY = origin.y.toInt()
 
-        // Start from 6 O'clock point which means (-distance, -distance) away from the center point
-        var currentX = centerX - distance
-        var currentY = centerY - distance
+                    // Start from 6 O'clock point which means (-distance, -distance) away from the center point
+                    var currentX = centerX - distance
+                    var currentY = centerY - distance
 
-        for (i in 0 until distance) { // From 6 to 8
-            addIfTileExists(currentX,currentY)
-            // We want to get the tile on the other side of the clock,
-            // so if we're at current = origin-delta we want to get to origin+delta.
-            // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
-            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
-            currentX += 1 // we're going upwards to the left, towards 8 o'clock
-        }
-        for (i in 0 until distance) { // 8 to 10
-            addIfTileExists(currentX,currentY)
-            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
-            currentX += 1
-            currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
-        }
-        for (i in 0 until distance) { // 10 to 12
-            addIfTileExists(currentX,currentY)
-            addIfTileExists(2*centerX - currentX, 2*centerY - currentY)
-            currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
-        }
-        return tilesToReturn
-    }
+                    for (i in 0 until distance) { // From 6 to 8
+                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        // We want to get the tile on the other side of the clock,
+                        // so if we're at current = origin-delta we want to get to origin+delta.
+                        // The simplest way to do this is 2*origin - current = 2*origin- (origin - delta) = origin+delta
+                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        currentX += 1 // we're going upwards to the left, towards 8 o'clock
+                    }
+                    for (i in 0 until distance) { // 8 to 10
+                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        currentX += 1
+                        currentY += 1 // we're going up the left side of the hexagon so we're going "up" - +1,+1
+                    }
+                    for (i in 0 until distance) { // 10 to 12
+                        yield(getIfTileExistsOrNull(currentX, currentY))
+                        yield(getIfTileExistsOrNull(2 * centerX - currentX, 2 * centerY - currentY))
+                        currentY += 1 // we're going up the top left side of the hexagon so we're heading "up and to the right"
+                    }
+                }.filterNotNull()
 
     /** Tries to place the [unitName] into the [TileInfo] closest to the given the [position]
      *
@@ -134,49 +129,57 @@ class TileMap {
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
-        fun isTileMovePotential(tileInfo:TileInfo): Boolean {
-            if(unit.type.isAirUnit()) return true
-            if(unit.type.isWaterUnit()) return tileInfo.isWater || tileInfo.isCityCenter()
-            else return tileInfo.isLand
+        fun getPassableNeighbours(tileInfo: TileInfo): Set<TileInfo> =
+                getTilesAtDistance(tileInfo.position, 1).filter { unit.movement.canPassThrough(it) }.toSet()
+
+        // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
+        unit.assignOwner(civInfo, false)
+
+        var unitToPlaceTile : TileInfo? = null
+        // try to place at the original point (this is the most probable scenario)
+        val currentTile = get(position)
+        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
+
+        // if it's not suitable, try to find another tile nearby
+        if (unitToPlaceTile == null) {
+            var tryCount = 0
+            var potentialCandidates = getPassableNeighbours(currentTile)
+            while (unitToPlaceTile == null && tryCount++ < 10) {
+                unitToPlaceTile = potentialCandidates.firstOrNull { unit.movement.canMoveTo(it) }
+                if (unitToPlaceTile != null) continue
+                // if it's not found yet, let's check their neighbours
+                val newPotentialCandidates = mutableSetOf<TileInfo>()
+                potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
+                potentialCandidates = newPotentialCandidates
+            }
         }
 
-        val viableTilesToPlaceUnitInAtDistance1 = getTilesInDistance(position, 1).filter { isTileMovePotential(it) }
-        // This is so that units don't skip over non-potential tiles to go elsewhere -
-        // e.g. a city 2 tiles away from a lake could spawn water units in the lake...Or spawn beyond a mountain range...
-        val viableTilesToPlaceUnitInAtDistance2 = getTilesAtDistance(position, 2)
-                .filter { isTileMovePotential(it) && it.neighbors.any { n->n in viableTilesToPlaceUnitInAtDistance1 } }
-
-        val viableTilesToPlaceUnitIn = viableTilesToPlaceUnitInAtDistance1.union(viableTilesToPlaceUnitInAtDistance2)
-
-        unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        val unitToPlaceTile = viableTilesToPlaceUnitIn.firstOrNull { unit.movement.canMoveTo(it) }
-
-        if(unitToPlaceTile!=null) {
-            // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
-            if (removeImprovement) unitToPlaceTile.improvement = null
-            // only once we know the unit can be placed do we add it to the civ's unit list
-            unit.putInTile(unitToPlaceTile)
-            unit.currentMovement = unit.getMaxMovement().toFloat()
-
-            // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
-            for(promotion in unit.baseUnit.promotions)
-                unit.promotions.addPromotion(promotion, true)
-
-            // And update civ stats, since the new unit changes both unit upkeep and resource consumption
-            civInfo.updateStatsForNextTurn()
-            civInfo.updateDetailedCivResources()
-        }
-        else {
+        if (unitToPlaceTile == null) {
             civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
             return null // we didn't actually create a unit...
         }
+
+        // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
+        if (removeImprovement) unitToPlaceTile.improvement = null
+        // only once we know the unit can be placed do we add it to the civ's unit list
+        unit.putInTile(unitToPlaceTile)
+        unit.currentMovement = unit.getMaxMovement().toFloat()
+
+        // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
+        for (promotion in unit.baseUnit.promotions)
+            unit.promotions.addPromotion(promotion, true)
+
+        // And update civ stats, since the new unit changes both unit upkeep and resource consumption
+        civInfo.updateStatsForNextTurn()
+        civInfo.updateDetailedCivResources()
 
         return unit
     }
 
 
-    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean = false): List<TileInfo> {
-        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance)
+    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean)
+            : List<TileInfo> {
+        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance).toList()
 
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         val currentTileHeight = get(position).getHeight()
