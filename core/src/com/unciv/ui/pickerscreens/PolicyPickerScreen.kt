@@ -49,7 +49,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
         topTable.row().pad(30f)
 
-        for (branch in viewingCiv.gameInfo.ruleSet.policyBranches.values) {
+        for (branch in UncivGame.Current.gameInfo.ruleSet.policyBranches.values) {
             if (branch.name == "Commerce") topTable.addSeparator()
             val branchGroup = Table()
             branchGroup.row().pad(20f)

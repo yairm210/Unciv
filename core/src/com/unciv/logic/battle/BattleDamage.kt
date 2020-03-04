@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
@@ -96,7 +97,7 @@ class BattleDamage{
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
-            modifiers["Difficulty"] = combatant.getCivInfo().gameInfo.getDifficulty().barbarianBonus
+            modifiers["Difficulty"] = UncivGame.Current.gameInfo.getDifficulty().barbarianBonus
             if (combatant.getCivInfo().policies.isAdopted("Honor"))
                 modifiers["vs Barbarians"] = 0.25f
         }

@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
@@ -41,7 +42,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         if(cityTile.baseTerrain== Constants.hill) strength+=5
         // as tech progresses so does city strength
         val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
-                getCivInfo().gameInfo.ruleSet.technologies.count()
+                UncivGame.Current.gameInfo.ruleSet.technologies.count()
         strength += (techsPercentKnown * 5.5).pow(2.8).toFloat()
 
         // The way all of this adds up...

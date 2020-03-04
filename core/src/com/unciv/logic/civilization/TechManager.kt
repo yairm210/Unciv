@@ -51,19 +51,19 @@ class TechManager {
         return toReturn
     }
 
-    fun getRuleset() = civInfo.gameInfo.ruleSet
+    fun getRuleset() = UncivGame.Current.gameInfo.ruleSet
 
     fun costOfTech(techName: String): Int {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
-        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        techCost *= UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
         val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        val worldSizeModifier = when(civInfo.gameInfo.tileMap.mapParameters.size) {
+        val worldSizeModifier = when(UncivGame.Current.gameInfo.tileMap.mapParameters.size) {
             MapSize.Medium -> floatArrayOf(1.1f, 0.05f)
             MapSize.Large -> floatArrayOf(1.2f, 0.03f)
             MapSize.Huge -> floatArrayOf(1.3f, 0.02f)
@@ -127,7 +127,7 @@ class TechManager {
 
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
-        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        return (scienceOfLast8Turns.sum() * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun addCurrentScienceToScienceOfLast8Turns() {
@@ -138,7 +138,7 @@ class TechManager {
             val totalBonusPercents= it.cityStats.statPercentBonusList.filter { it.key!="Policies" }.values.map { it.science }.sum()
             allCitiesScience += totalBaseScience*(1+totalBonusPercents/100)
         }
-        scienceOfLast8Turns[civInfo.gameInfo.turns%8] = allCitiesScience.toInt()
+        scienceOfLast8Turns[UncivGame.Current.gameInfo.turns%8] = allCitiesScience.toInt()
     }
 
     fun hurryResearch() {
@@ -238,7 +238,7 @@ class TechManager {
         }
 
         for(revealedResource in getRuleset().tileResources.values.filter{ techName == it.revealedBy }){
-            for (tileInfo in civInfo.gameInfo.tileMap.values
+            for (tileInfo in UncivGame.Current.gameInfo.tileMap.values
                     .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
                 val closestCityTile = tileInfo.getTilesInDistance(4)

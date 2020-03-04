@@ -1,6 +1,7 @@
 package com.unciv.logic.trade
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -109,7 +110,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                 }
                 if (offer.type == TradeType.Introduction)
-                    to.meetCivilization(to.gameInfo.getCivilization(offer.name))
+                    to.meetCivilization(UncivGame.Current.gameInfo.getCivilization(offer.name))
 
                 if (offer.type == TradeType.WarDeclaration) {
                     val nameOfCivToDeclareWarOn = offer.name

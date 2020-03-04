@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -56,7 +57,7 @@ class UnitAutomation {
         internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
             val upgradesTo = unit.baseUnit().upgradesTo ?: return false
 
-            val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units.getValue(upgradesTo)
+            val upgradedUnit = UncivGame.Current.gameInfo.ruleSet.units.getValue(upgradesTo)
             if (!upgradedUnit.isBuildable(unit.civInfo)) return false
 
             val upgradeAction = UnitActions.getUpgradeAction(unit, unit.getTile(), upgradedUnit, 0)
@@ -143,7 +144,7 @@ class UnitAutomation {
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if (unit.type == UnitType.Missile) return false // don't use missiles against barbarians...
-        val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
+        val knownEncampments = UncivGame.Current.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement == Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
         val encampmentsCloseToCities = knownEncampments.filter { cities.any { city -> city.getCenterTile().aerialDistanceTo(it) < 6 } }
@@ -253,7 +254,7 @@ class UnitAutomation {
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if (unit.civInfo.cities.isEmpty()) return false
 
-        var enemyCities = unit.civInfo.gameInfo.civilizations
+        var enemyCities = UncivGame.Current.gameInfo.civilizations
                 .filter { unit.civInfo.isAtWarWith(it) }
                 .flatMap { it.cities }.asSequence()
                 .filter { it.location in unit.civInfo.exploredTiles }

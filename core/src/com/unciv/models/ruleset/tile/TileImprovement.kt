@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
@@ -22,7 +23,7 @@ class TileImprovement : NamedStats() {
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
-        var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        var realTurnsToBuild = turnsToBuild.toFloat() * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
         if (civInfo.containsBuildingUnique("Worker construction increased 25%"))
             realTurnsToBuild *= 0.75f
         if (civInfo.policies.isAdopted("Citizenship"))

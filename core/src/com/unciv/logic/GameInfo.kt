@@ -238,7 +238,7 @@ class GameInfo {
 
         // this is separated into 2 loops because when we activate updateVisibleTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
-        for (civInfo in civilizations) civInfo.gameInfo = this
+        for (civInfo in civilizations) UncivGame.Current.gameInfo = this
 
         // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
         if(civilizations.all { it.playerType==PlayerType.AI })

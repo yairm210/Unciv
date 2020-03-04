@@ -3,6 +3,7 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.SpecialConstruction
@@ -64,7 +65,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
         if (construction is BaseUnit)
             description = construction.getDescription(true)
         else if (construction is Building)
-            description = construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
+            description = construction.getDescription(true, city.civInfo, UncivGame.Current.gameInfo.ruleSet)
         else if(construction is SpecialConstruction)
             description = construction.description.tr()
         else description="" // Should never happen

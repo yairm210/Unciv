@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.VictoryType
 import kotlin.math.min
@@ -55,7 +56,7 @@ class PolicyManager {
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
-        policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        policyCultureCost *= UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)
     }
@@ -76,7 +77,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
+        val hasAdoptablePolicies = UncivGame.Current.gameInfo.ruleSet.policyBranches.values
                 .flatMap { it.policies.union(listOf(it)) }
                 .any { civInfo.policies.isAdoptable(it) }
         return hasAdoptablePolicies
@@ -120,7 +121,7 @@ class PolicyManager {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"
                         VictoryType.Domination,VictoryType.Neutral ->
-                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
+                            UncivGame.Current.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
                     }
                     civInfo.addGreatPerson(greatPerson)
                 }

@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
@@ -271,7 +272,7 @@ class CityConstructions {
 
         if (construction is Building && construction.isWonder) {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
-            for (civ in cityInfo.civInfo.gameInfo.civilizations) {
+            for (civ in UncivGame.Current.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
                     civ.addNotification("[${construction.name}] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
                 else

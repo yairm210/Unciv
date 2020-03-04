@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
@@ -10,7 +11,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private var citiesToCheck = mutableListOf(civInfo.getCapital())
     private lateinit var newCitiesToCheck: MutableList<CityInfo>
 
-    private val allCivCities = civInfo.gameInfo.getCities()
+    private val allCivCities = UncivGame.Current.gameInfo.getCities()
 
     private val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
     private val railroadIsResearched = civInfo.tech.isResearched("Railroad")

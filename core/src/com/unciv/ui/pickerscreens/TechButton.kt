@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.TechManager
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -42,7 +43,7 @@ class TechButton(techName:String, val techManager: TechManager, isWorldScreen: B
         techEnabledIcons.defaults().pad(5f)
 
         val civName = techManager.civInfo.civName
-        val gameBasics = techManager.civInfo.gameInfo.ruleSet
+        val gameBasics = UncivGame.Current.gameInfo.ruleSet
 
         val tech = gameBasics.technologies[techName]!!
 

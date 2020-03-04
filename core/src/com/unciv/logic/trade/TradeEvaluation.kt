@@ -1,6 +1,7 @@
 package com.unciv.logic.trade
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
@@ -120,11 +121,11 @@ class TradeEvaluation{
             }
 
             TradeType.Technology ->
-                return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
-                        * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()*20
+                return (sqrt(UncivGame.Current.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
+                        * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
-                val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
+                val civToDeclareWarOn = UncivGame.Current.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
                 if(civInfo.isAtWarWith(civToDeclareWarOn)){
@@ -173,7 +174,7 @@ class TradeEvaluation{
             TradeType.Strategic_Resource -> {
                 if(!civInfo.isAtWar()) return 50*offer.amount
 
-                val canUseForUnits = civInfo.gameInfo.ruleSet.units.values
+                val canUseForUnits = UncivGame.Current.gameInfo.ruleSet.units.values
                         .any { it.requiredResource==offer.name && it.isBuildable(civInfo) }
                 if(!canUseForUnits) return 50*offer.amount
 
@@ -194,10 +195,10 @@ class TradeEvaluation{
                 }
                 return totalCost
             }
-            TradeType.Technology -> return sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt()*20
+            TradeType.Technology -> return sqrt(UncivGame.Current.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
-                val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
+                val civToDeclareWarOn = UncivGame.Current.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation().threatAssessment(civInfo, civToDeclareWarOn)
 
                 return when (threatToUs) {

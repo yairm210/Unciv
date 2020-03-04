@@ -176,7 +176,7 @@ class CityStats {
         val newHappinessList = LinkedHashMap<String, Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
         if (!civInfo.isPlayerCivilization())
-            unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
+            unhappinessModifier *= UncivGame.Current.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f
         if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
@@ -467,7 +467,7 @@ class CityStats {
         // Same here - will have a different UI display.
         var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
         if (!cityInfo.civInfo.isPlayerCivilization()) {
-            buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
+            buildingsMaintenance *= UncivGame.Current.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
         }
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 

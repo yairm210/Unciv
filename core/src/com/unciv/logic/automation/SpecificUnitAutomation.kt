@@ -103,7 +103,7 @@ class SpecificUnitAutomation {
     fun automateSettlerActions(unit: MapUnit) {
         if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
 
-        val tilesNearCities = unit.civInfo.gameInfo.getCities().asSequence()
+        val tilesNearCities = UncivGame.Current.gameInfo.getCities().asSequence()
                 .flatMap {
                     val distanceAwayFromCity =
                             if (unit.civInfo.knows(it.civInfo)

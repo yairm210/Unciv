@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -133,7 +134,7 @@ class Building : NamedStats(), IConstruction{
         val stats = this.clone()
         if(civInfo != null) {
             val adoptedPolicies = civInfo.policies.adoptedPolicies
-            val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
+            val baseBuildingName = getBaseBuilding(UncivGame.Current.gameInfo.ruleSet).name
 
             if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(baseBuildingName ))
                 stats.happiness += 1
@@ -171,7 +172,7 @@ class Building : NamedStats(), IConstruction{
         if(civInfo==null) return stats // initial stats
 
         val adoptedPolicies = civInfo.policies.adoptedPolicies
-        val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
+        val baseBuildingName = getBaseBuilding(UncivGame.Current.gameInfo.ruleSet).name
 
         if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
             stats.gold = 10f
@@ -200,12 +201,12 @@ class Building : NamedStats(), IConstruction{
             }
         } else {
             if(isWonder) {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiWonderCostModifier
+                productionCost *= UncivGame.Current.gameInfo.getDifficulty().aiWonderCostModifier
             } else {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
+                productionCost *= UncivGame.Current.gameInfo.getDifficulty().aiBuildingCostModifier
             }
         }
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        productionCost *= UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
 
@@ -268,12 +269,12 @@ class Building : NamedStats(), IConstruction{
 
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
+        if (UncivGame.Current.gameInfo.ruleSet.buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         // Regular wonders
         if (isWonder){
-            if(civInfo.gameInfo.getCities().any {it.cityConstructions.isBuilt(name)})
+            if(UncivGame.Current.gameInfo.getCities().any {it.cityConstructions.isBuilt(name)})
                 return "Wonder is already built"
 
             if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
@@ -322,7 +323,7 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
 
-        if(!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
+        if(!UncivGame.Current.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
             return "Can't construct spaceship parts if scientific victory is not enabled!"
 
@@ -345,7 +346,7 @@ class Building : NamedStats(), IConstruction{
         if (providesFreeBuilding != null && !construction.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
-            for(building in civInfo.gameInfo.ruleSet.buildings.values)
+            for(building in UncivGame.Current.gameInfo.ruleSet.buildings.values)
                 if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
                     buildingToAdd = building.name
 
@@ -367,7 +368,7 @@ class Building : NamedStats(), IConstruction{
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
             if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-            else civInfo.addGreatPerson(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
+            else civInfo.addGreatPerson(UncivGame.Current.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
         }
         if ("+1 population in each city" in uniques) {
             for(city in civInfo.cities){

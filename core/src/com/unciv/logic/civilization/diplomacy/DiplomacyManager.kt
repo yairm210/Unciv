@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
@@ -114,7 +115,7 @@ class DiplomacyManager() {
     }
 
     //region pure functions
-    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
+    fun otherCiv() = UncivGame.Current.gameInfo.getCivilization(otherCivName)
     fun otherCivDiplomacy() = otherCiv().getDiplomacyManager(civInfo)
 
     fun turnsToPeaceTreaty(): Int {
@@ -211,10 +212,10 @@ class DiplomacyManager() {
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.ruleSet.tileResources[offer.name]!!,-offer.amount,"Trade")
+                    counter.add(UncivGame.Current.gameInfo.ruleSet.tileResources[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.ruleSet.tileResources[offer.name]!!,offer.amount,"Trade")
+                    counter.add(UncivGame.Current.gameInfo.ruleSet.tileResources[offer.name]!!,offer.amount,"Trade")
         }
         return counter
     }

@@ -270,7 +270,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addFoodBuildingChoice() {
         val foodBuilding = buildableNotWonders.asSequence().filter { it.isStatRelated(Stat.Food)
-                || it.getBaseBuilding(civInfo.gameInfo.ruleSet).name == "Aqueduct" || it.getBaseBuilding(civInfo.gameInfo.ruleSet).name == "Medical Lab"}  // only stat related in unique
+                || it.getBaseBuilding(UncivGame.Current.gameInfo.ruleSet).name == "Aqueduct" || it.getBaseBuilding(UncivGame.Current.gameInfo.ruleSet).name == "Medical Lab"}  // only stat related in unique
                 .minBy { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f

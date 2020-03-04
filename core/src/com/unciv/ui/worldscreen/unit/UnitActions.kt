@@ -65,7 +65,7 @@ object UnitActions {
         if (improvement != null && tile.isWater && tile.improvement == null
                 && unit.hasUnique("May create improvements on water resources")
                 && unit.civInfo.tech.isResearched(
-                        unit.civInfo.gameInfo.ruleSet.tileImprovements[improvement]!!
+                        UncivGame.Current.gameInfo.ruleSet.tileImprovements[improvement]!!
                                 .techRequired!!))
             yield(UnitAction(
                     type = UnitActionType.Create,
@@ -84,7 +84,7 @@ object UnitActions {
                 && tile.improvementInProgress != "Road"
                 && tile.isLand
                 && unit.hasUnique("Can construct roads")
-                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet)!!.techRequired!!))
+                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(UncivGame.Current.gameInfo.ruleSet)!!.techRequired!!))
             yield(UnitAction(
                     type = UnitActionType.ConstructRoad,
                     action = getLambdaOrNull(unit.currentMovement > 0) {
@@ -235,7 +235,7 @@ object UnitActions {
                             isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                             action = getLambdaOrNull(unit.currentMovement > 0
                                     && !tile.isCityCenter()
-                                    && unit.civInfo.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }) {
+                                    && UncivGame.Current.gameInfo.ruleSet.tileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }) {
                                 worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null })
                             }))
             })
@@ -312,7 +312,7 @@ object UnitActions {
                                     && unit.currentMovement > 0) {
                                 // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                                 var goldEarned = (350 + 50 * unit.civInfo.getEra().ordinal) *
-                                        unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
+                                        UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
                                 if (unit.civInfo.policies.isAdopted("Commerce Complete"))
                                     goldEarned *= 2
                                 unit.civInfo.gold += goldEarned.toInt()

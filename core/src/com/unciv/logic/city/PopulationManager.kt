@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UncivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stat
@@ -40,7 +41,7 @@ class PopulationManager {
         // civ v math, civilization.wikia
         var foodRequired =  15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8))
         if(!cityInfo.civInfo.isPlayerCivilization())
-            foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
+            foodRequired *= UncivGame.Current.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
 

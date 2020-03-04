@@ -35,7 +35,6 @@ class CivilizationInfo {
 
     @Transient private val jsonParser = JsonParser()
 
-    @Transient lateinit var gameInfo: GameInfo
     @Transient lateinit var nation:Nation
     /**
      * We never add or remove from here directly, could cause comodification problems.
@@ -107,7 +106,7 @@ class CivilizationInfo {
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still led to concurrency prolems.
         // Cloning it  by iiterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
-        toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
+        toReturn.exploredTiles.addAll(UncivGame.Current.gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         toReturn.popupAlerts.addAll(popupAlerts)
@@ -118,8 +117,8 @@ class CivilizationInfo {
 
     //region pure functions
     fun getDifficulty():Difficulty {
-        if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return gameInfo.ruleSet.difficulties["Chieftain"]!!
+        if (isPlayerCivilization()) return UncivGame.Current.gameInfo.getDifficulty()
+        return UncivGame.Current.gameInfo.ruleSet.difficulties["Chieftain"]!!
     }
 
     fun getTranslatedNation(): Nation {
@@ -144,18 +143,18 @@ class CivilizationInfo {
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isOneCityChallenger() = (
             playerType==PlayerType.Human &&
-            gameInfo.gameParameters.oneCityChallenge)
-    fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
+                    UncivGame.Current.gameInfo.gameParameters.oneCityChallenge)
+    fun isCurrentPlayer() =  UncivGame.Current.gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
     fun isCityState(): Boolean = nation.isCityState()
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
 
     fun victoryType(): VictoryType {
-        if(gameInfo.gameParameters.victoryTypes.size==1)
-            return gameInfo.gameParameters.victoryTypes.first() // That is the most relevant one
+        if(UncivGame.Current.gameInfo.gameParameters.victoryTypes.size==1)
+            return UncivGame.Current.gameInfo.gameParameters.victoryTypes.first() // That is the most relevant one
         val victoryType = nation.preferredVictoryType
-        if(gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
+        if(UncivGame.Current.gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
         else return VictoryType.Neutral
     }
 
@@ -182,7 +181,7 @@ class CivilizationInfo {
      */
     fun getCivResourcesByName():HashMap<String,Int>{
         val hashMap = HashMap<String,Int>()
-        for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
+        for(resource in UncivGame.Current.gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
         return hashMap
@@ -240,19 +239,19 @@ class CivilizationInfo {
 
 
     fun getEquivalentBuilding(buildingName:String): Building {
-        val baseBuilding = gameInfo.ruleSet.buildings[buildingName]!!.getBaseBuilding(gameInfo.ruleSet)
+        val baseBuilding = UncivGame.Current.gameInfo.ruleSet.buildings[buildingName]!!.getBaseBuilding(UncivGame.Current.gameInfo.ruleSet)
 
-        for(building in gameInfo.ruleSet.buildings.values)
+        for(building in UncivGame.Current.gameInfo.ruleSet.buildings.values)
             if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
                 return building
         return baseBuilding
     }
 
     fun getEquivalentUnit(baseUnitName:String):BaseUnit {
-        for (unit in gameInfo.ruleSet.units.values)
+        for (unit in UncivGame.Current.gameInfo.ruleSet.units.values)
             if (unit.replaces == baseUnitName && unit.uniqueTo == civName)
                 return unit
-        return gameInfo.ruleSet.units[baseUnitName]!!
+        return UncivGame.Current.gameInfo.ruleSet.units[baseUnitName]!!
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
@@ -305,7 +304,7 @@ class CivilizationInfo {
         var leaderName = getTranslatedNation().getLeaderDisplayName().tr()
         if (playerType == PlayerType.AI)
             leaderName += " (" + "AI".tr() + ")"
-        else if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)
+        else if (UncivGame.Current.gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)
             leaderName += " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
         else leaderName += " (" + "Human".tr() + " - " + "Multiplayer".tr() + ")"
         return leaderName
@@ -314,7 +313,7 @@ class CivilizationInfo {
     fun canSignResearchAgreement(): Boolean {
         if(!isMajorCiv()) return false
         if(!tech.getTechUniques().contains("Enables Research agreements")) return false
-        if (gameInfo.ruleSet.technologies.values
+        if (UncivGame.Current.gameInfo.ruleSet.technologies.values
                 .none { tech.canBeResearched(it.name) && !tech.isResearched(it.name) }) return false
         return true
     }
@@ -352,7 +351,7 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.ruleSet.nations[civName]!!
+        nation = UncivGame.Current.gameInfo.ruleSet.nations[civName]!!
     }
 
     fun setTransients() {
@@ -415,7 +414,7 @@ class CivilizationInfo {
         for (unit in getCivUnits()) unit.startTurn()
 
         for(tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
-            val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
+            val offeringCiv = UncivGame.Current.gameInfo.getCivilization(tradeRequest.requestingCiv)
             if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade,this, offeringCiv)) {
                 tradeRequests.remove(tradeRequest)
                 // Yes, this is the right direction. I checked.
@@ -470,7 +469,7 @@ class CivilizationInfo {
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
         if(otherCiv==this) return true
-        if(nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles) return true
+        if(nation.isBarbarian() && UncivGame.Current.gameInfo.turns >= UncivGame.Current.gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles) return true
         if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
         if(isAtWarWith(otherCiv)) return true
@@ -500,7 +499,7 @@ class CivilizationInfo {
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String, removeImprovement: Boolean = false): MapUnit? {
-        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this, removeImprovement = removeImprovement)
+        return UncivGame.Current.gameInfo.tileMap.placeUnitNearTile(location, unitName, this, removeImprovement = removeImprovement)
     }
 
     fun addCity(location: Vector2) {
@@ -512,7 +511,7 @@ class CivilizationInfo {
     fun destroy(){
         val destructionText = if(isMajorCiv()) "The civilization of [$civName] has been destroyed!"
         else "The City-State of [$civName] has been destroyed!"
-        for(civ in gameInfo.civilizations)
+        for(civ in UncivGame.Current.gameInfo.civilizations)
             civ.addNotification(destructionText, null, Color.RED)
         getCivUnits().forEach { it.destroy() }
         tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
@@ -542,7 +541,7 @@ class CivilizationInfo {
             TechEra.Information, TechEra.Future -> 400
             else -> 0
         }
-        return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        return (basicGoldCostOfSignResearchAgreement * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
@@ -577,13 +576,13 @@ class CivilizationInfo {
             val capitalLocation = if(cities.isNotEmpty()) getCapital().location else null
 
             if (newAllyName != "") {
-                val newAllyCiv = gameInfo.getCivilization(newAllyName)
+                val newAllyCiv = UncivGame.Current.gameInfo.getCivilization(newAllyName)
                 newAllyCiv.addNotification("We have allied with [${civName}].", capitalLocation, Color.GREEN)
                 newAllyCiv.updateViewableTiles()
                 newAllyCiv.updateDetailedCivResources()
             }
             if (oldAllyName != "") {
-                val oldAllyCiv = gameInfo.getCivilization(oldAllyName)
+                val oldAllyCiv = UncivGame.Current.gameInfo.getCivilization(oldAllyName)
                 oldAllyCiv.addNotification("We have lost alliance with [${civName}].", capitalLocation, Color.RED)
                 oldAllyCiv.updateViewableTiles()
                 oldAllyCiv.updateDetailedCivResources()

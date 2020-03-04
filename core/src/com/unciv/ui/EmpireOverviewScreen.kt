@@ -368,7 +368,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             viewingPlayer.diplomacy.containsKey(civ.civName)
 
     private fun getDiplomacyGroup(): Group {
-        val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
+        val relevantCivs = UncivGame.Current.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val freeWidth = stage.width
         val freeHeight = stage.height - topTable.height
         val group = Group()

@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -51,7 +52,7 @@ class NextTurnAutomation{
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
         for(tradeRequest in civInfo.tradeRequests){
-            val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+            val otherCiv = UncivGame.Current.gameInfo.getCivilization(tradeRequest.requestingCiv)
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             tradeLogic.currentTrade.set(tradeRequest.trade)
             if(TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade,civInfo,otherCiv)){
@@ -68,7 +69,7 @@ class NextTurnAutomation{
     private fun respondToDemands(civInfo: CivilizationInfo) {
         for(popupAlert in civInfo.popupAlerts){
             if(popupAlert.type==AlertType.DemandToStopSettlingCitiesNear){  // we're called upon to make a decision
-                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                val demandingCiv = UncivGame.Current.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)
                 if(Automation().threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
                     diploManager.agreeNotToSettleNear()
@@ -123,7 +124,7 @@ class NextTurnAutomation{
     }
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
-        if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
+        if(!UncivGame.Current.gameInfo.getDifficulty().aisExchangeTechs) return
         val otherCivList = civInfo.getKnownCivs()
                 .filter { it.playerType == PlayerType.AI && it.isMajorCiv() && !civInfo.isAtWarWith(it) }
                 .sortedBy { it.tech.techsResearched.size }
@@ -174,7 +175,7 @@ class NextTurnAutomation{
 
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = civInfo.gameInfo.ruleSet.technologies.values
+            val researchableTechs = UncivGame.Current.gameInfo.ruleSet.technologies.values
                     .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
@@ -202,7 +203,7 @@ class NextTurnAutomation{
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
 
-            val adoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
+            val adoptablePolicies = UncivGame.Current.gameInfo.ruleSet.policyBranches.values
                     .flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
 
@@ -323,7 +324,7 @@ class NextTurnAutomation{
                         && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement) }
                 .sortedByDescending { it.statsForNextTurn.science }
 
-        val duration = when(civInfo.gameInfo.gameParameters.gameSpeed) {
+        val duration = when(UncivGame.Current.gameInfo.gameParameters.gameSpeed) {
             GameSpeed.Quick -> 25
             GameSpeed.Standard -> 30
             GameSpeed.Epic -> 45

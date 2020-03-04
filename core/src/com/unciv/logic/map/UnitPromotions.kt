@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.ruleset.unit.UnitType
 
@@ -36,7 +37,7 @@ class UnitPromotions{
     }
 
     fun getAvailablePromotions(): List<Promotion> {
-        return unit.civInfo.gameInfo.ruleSet.unitPromotions.values
+        return UncivGame.Current.gameInfo.ruleSet.unitPromotions.values
                 .filter { unit.type.toString() in it.unitTypes && it.name !in promotions }
                 .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
     }

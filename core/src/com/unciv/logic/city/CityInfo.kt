@@ -55,7 +55,7 @@ class CityInfo {
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
         foundingCiv = civInfo.civName
-        turnAcquired = civInfo.gameInfo.turns
+        turnAcquired = UncivGame.Current.gameInfo.turns
         this.location = cityLocation
         setTransients()
 
@@ -135,7 +135,7 @@ class CityInfo {
     fun isInResistance() = resistanceCounter>0
 
 
-    fun getRuleset() = civInfo.gameInfo.ruleSet
+    fun getRuleset() = UncivGame.Current.gameInfo.ruleSet
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
@@ -278,7 +278,7 @@ class CityInfo {
 
     //region state-changing functions
     fun setTransients() {
-        tileMap = civInfo.gameInfo.tileMap
+        tileMap = UncivGame.Current.gameInfo.tileMap
         centerTileInfo = tileMap[location]
         tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
         population.cityInfo = this
@@ -437,7 +437,7 @@ class CityInfo {
 
         diplomaticRepercussionsForLiberatingCity(conqueringCiv)
 
-        val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+        val foundingCiv = UncivGame.Current.gameInfo.civilizations.first { it.civName == foundingCiv }
 
         moveToCiv(foundingCiv)
         health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
@@ -452,7 +452,7 @@ class CityInfo {
 
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: CivilizationInfo) {
         val oldOwningCiv = civInfo
-        val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+        val foundingCiv = UncivGame.Current.gameInfo.civilizations.first { it.civName == foundingCiv }
         val percentageOfCivPopulationInThatCity = population.population *
                 100f / (foundingCiv.cities.sumBy { it.population.population } + population.population)
         val respecForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
@@ -488,7 +488,7 @@ class CityInfo {
         newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo = newCivInfo
         hasJustBeenConquered = false
-        turnAcquired = civInfo.gameInfo.turns
+        turnAcquired = UncivGame.Current.gameInfo.turns
 
         // now that the tiles have changed, we need to reassign population
         workedTiles.filterNot { tiles.contains(it) }
@@ -561,7 +561,7 @@ class CityInfo {
 
     fun getGoldForCapturingCity(conqueringCiv: CivilizationInfo): Int {
         val baseGold = 20 + 10 * population.population + Random().nextInt(40)
-        val turnModifier = max(0, min(50, civInfo.gameInfo.turns - turnAcquired)) / 50f
+        val turnModifier = max(0, min(50, UncivGame.Current.gameInfo.turns - turnAcquired)) / 50f
         val cityModifier = if (containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
         val conqueringCivModifier = if (conqueringCiv.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.") 3f else 1f
 
@@ -580,7 +580,7 @@ class CityInfo {
      There's a lot of triggering going on here.
      */
     private fun triggerCitiesSettledNearOtherCiv(){
-        val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
+        val citiesWithin6Tiles = UncivGame.Current.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
         val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()

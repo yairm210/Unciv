@@ -234,13 +234,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 val requiredGold = viewingCiv.getResearchAgreementCost(otherCiv)
                 researchAgreementButton.onClick {
                     val tradeTable = setTrade(otherCiv)
-                    val duration = when(viewingCiv.gameInfo.gameParameters.gameSpeed) {
+                    val duration = when(UncivGame.Current.gameInfo.gameParameters.gameSpeed) {
                         GameSpeed.Quick -> 25
                         GameSpeed.Standard -> 30
                         GameSpeed.Epic -> 45
                         GameSpeed.Marathon -> 90
                     }
-                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration)
+                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, requiredGold)
                     val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -requiredGold)
                     tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)

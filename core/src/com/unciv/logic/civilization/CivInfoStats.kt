@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
@@ -31,12 +32,12 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
 
-        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        val gameProgress = civInfo.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
+        val turnLimit = BASE_GAME_DURATION_TURNS * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
+        val gameProgress = UncivGame.Current.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
         var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!civInfo.isPlayerCivilization())
-            cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
+            cost *= UncivGame.Current.gameInfo.getDifficulty().aiUnitMaintenanceModifier
         if(civInfo.policies.isAdopted("Autocracy")) cost *= 0.66f
         return cost.toInt()
     }

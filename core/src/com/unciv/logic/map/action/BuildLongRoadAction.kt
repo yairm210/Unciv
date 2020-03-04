@@ -1,6 +1,7 @@
 package com.unciv.logic.map.action
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UncivGame
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -89,7 +90,7 @@ class BuildLongRoadAction(
         val tile = unit.currentTile
         if (unit.currentMovement > 0 && isRoadableTile(tile)) {
             val roadToBuild = unit.civInfo.tech.getBestRoadAvailable()
-            roadToBuild.improvement(unit.civInfo.gameInfo.ruleSet)?.let { improvement ->
+            roadToBuild.improvement(UncivGame.Current.gameInfo.ruleSet)?.let { improvement ->
                 if (tile.roadStatus < roadToBuild && tile.improvementInProgress != improvement.name) {
                     tile.startWorkingOnImprovement(improvement, unit.civInfo)
                     return true

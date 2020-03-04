@@ -96,8 +96,8 @@ class BaseUnit : INamed, IConstruction {
         if (civInfo.isPlayerCivilization())
             productionCost *= civInfo.getDifficulty().unitCostModifier
         else
-            productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
+            productionCost *= UncivGame.Current.gameInfo.getDifficulty().aiUnitCostModifier
+        productionCost *= UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
 
@@ -131,7 +131,7 @@ class BaseUnit : INamed, IConstruction {
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+        if (UncivGame.Current.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (!UncivGame.Current.settings.nuclearWeaponEnabled
                 && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))

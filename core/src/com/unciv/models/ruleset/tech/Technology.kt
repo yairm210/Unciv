@@ -67,7 +67,7 @@ class Technology {
     }
 
     fun getEnabledBuildings(civInfo: CivilizationInfo): List<Building> {
-        var enabledBuildings = civInfo.gameInfo.ruleSet.buildings.values.filter {
+        var enabledBuildings = UncivGame.Current.gameInfo.ruleSet.buildings.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
@@ -81,7 +81,7 @@ class Technology {
     }
 
     fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
-        var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
+        var enabledUnits = UncivGame.Current.gameInfo.ruleSet.units.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }

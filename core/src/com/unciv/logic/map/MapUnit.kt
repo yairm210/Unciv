@@ -513,7 +513,7 @@ class MapUnit {
     private fun clearEncampment(tile: TileInfo) {
         tile.improvement = null
 
-        var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier
         if (civInfo.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
             goldGained *= 3f
 

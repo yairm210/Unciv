@@ -18,7 +18,7 @@ import com.unciv.ui.utils.toLabel
 class VictoryScreen : PickerScreen() {
 
     private val playerCivInfo = UncivGame.Current.gameInfo.getPlayerToViewAs()
-    val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
+    val victoryTypes = UncivGame.Current.gameInfo.gameParameters.victoryTypes
     private val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
     private val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
     private val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
@@ -96,7 +96,7 @@ class VictoryScreen : PickerScreen() {
 
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
-            playerCivInfo.gameInfo.oneMoreTurnMode = true
+            UncivGame.Current.gameInfo.oneMoreTurnMode = true
             UncivGame.Current.setWorldScreen()
         }
     }
@@ -138,7 +138,7 @@ class VictoryScreen : PickerScreen() {
     private fun culturalVictoryColumn():Table {
         val t=Table()
         t.defaults().pad(5f)
-        for(branch in playerCivInfo.gameInfo.ruleSet.policyBranches.values) {
+        for(branch in UncivGame.Current.gameInfo.ruleSet.policyBranches.values) {
             val finisher = branch.policies.last().name
             t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }
@@ -148,7 +148,7 @@ class VictoryScreen : PickerScreen() {
     private fun conquestVictoryColumn():Table {
         val table=Table()
         table.defaults().pad(5f)
-        for (civ in playerCivInfo.gameInfo.civilizations) {
+        for (civ in UncivGame.Current.gameInfo.civilizations) {
             if (civ.isCurrentPlayer() || !civ.isMajorCiv()) continue
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName

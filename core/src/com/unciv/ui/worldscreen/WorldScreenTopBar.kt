@@ -105,7 +105,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
 
     internal fun update(civInfo: CivilizationInfo) {
-        val revealedStrategicResources = civInfo.gameInfo.ruleSet.tileResources.values
+        val revealedStrategicResources = UncivGame.Current.gameInfo.ruleSet.tileResources.values
                 .filter { it.resourceType == ResourceType.Strategic }
         val civResources = civInfo.getCivResources()
         for (resource in revealedStrategicResources) {
@@ -116,7 +116,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             else resourceLabels[resource.name]!!.setText(civResources.first { it.resource==resource }.amount.toString())
         }
 
-        val turns = civInfo.gameInfo.turns
+        val turns = UncivGame.Current.gameInfo.turns
         val year = when{
             turns<=75 -> -4000+turns*40
             turns<=135 -> -1000+(turns-75)*25
@@ -129,7 +129,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         val yearText = "["+ abs(year)+"] "+ if (year<0) "BC" else "AD"
-        turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ yearText.tr())
+        turnsLabel.setText("Turn".tr()+" " + UncivGame.Current.gameInfo.turns + " | "+ yearText.tr())
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"

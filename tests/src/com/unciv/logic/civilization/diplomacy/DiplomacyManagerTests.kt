@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization.diplomacy
 
+import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.testing.GdxTestRunner
@@ -35,7 +36,7 @@ class DiplomacyManagerTests {
         every { mockGameInfo.getCurrentPlayerCivilization() } returns CivilizationInfo()
 
         for (civ in civilizations.values) {
-            civ.gameInfo = mockGameInfo
+            UncivGame.Current.gameInfo = mockGameInfo
         }
     }
 

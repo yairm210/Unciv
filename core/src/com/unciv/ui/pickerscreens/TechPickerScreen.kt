@@ -25,7 +25,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private var lines=ArrayList<Image>()
 
     // All these are to counter performance problems when updating buttons for all techs.
-    private var researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
+    private var researchableTechs = UncivGame.Current.gameInfo.ruleSet.technologies.keys
             .filter { civTech.canBeResearched(it) && !civTech.isResearched(it) }.toHashSet()
 
     private val currentTechColor = colorFromRGB(7,46,43)
@@ -34,7 +34,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private val queuedTechColor = colorFromRGB(39,114,154)
 
 
-    private val turnsToTech = civInfo.gameInfo.ruleSet.technologies.values.associateBy ({ it.name },{civTech.turnsToTech(it.name)})
+    private val turnsToTech = UncivGame.Current.gameInfo.ruleSet.technologies.values.associateBy ({ it.name },{civTech.turnsToTech(it.name)})
 
     constructor(freeTechPick: Boolean, civInfo: CivilizationInfo) : this(civInfo) {
         isFreeTechPick = freeTechPick
@@ -74,7 +74,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         } else {
             // center on any possible technology which is ready for the research right now
             val firstAvailable = researchableTechs.firstOrNull()
-            val firstAvailableTech = civInfo.gameInfo.ruleSet.technologies[firstAvailable]
+            val firstAvailableTech = UncivGame.Current.gameInfo.ruleSet.technologies[firstAvailable]
             if (firstAvailableTech != null)
                 centerOnTechnology(firstAvailableTech)
         }
@@ -82,10 +82,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     }
 
     private fun createTechTable() {
-        val columns = civInfo.gameInfo.ruleSet.technologies.values.map { it.column!!.columnNumber}.max()!! +1
+        val columns = UncivGame.Current.gameInfo.ruleSet.technologies.values.map { it.column!!.columnNumber}.max()!! +1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
-        for (technology in civInfo.gameInfo.ruleSet.technologies.values) {
+        for (technology in UncivGame.Current.gameInfo.ruleSet.technologies.values) {
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
@@ -152,7 +152,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         for (line in lines) line.remove()
         lines.clear()
 
-        for (tech in civInfo.gameInfo.ruleSet.technologies.values) {
+        for (tech in UncivGame.Current.gameInfo.ruleSet.technologies.values) {
             val techButton = techNameToButton[tech.name]!!
             for (prerequisite in tech.prerequisites) {
                 val prerequisiteButton = techNameToButton[prerequisite]!!
@@ -183,7 +183,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private fun selectTechnology(tech: Technology?, center: Boolean = false, switchfromWorldScreen: Boolean = true) {
 
         selectedTech = tech
-        descriptionLabel.setText(tech?.getDescription(civInfo.gameInfo.ruleSet))
+        descriptionLabel.setText(tech?.getDescription(UncivGame.Current.gameInfo.ruleSet))
 
         if (!switchfromWorldScreen)
             return

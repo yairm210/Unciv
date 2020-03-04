@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 
@@ -85,7 +86,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
 
             var goldGained = 0
-            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }
+            val discoveredNaturalWonders = UncivGame.Current.gameInfo.civilizations.filter { it != civInfo }
                     .flatMap { it.naturalWonders }
             if (tile.containsUnique("Grants 500 Gold to the first civilization to discover it")
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {
@@ -144,7 +145,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         for (dip in civInfo.diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
         for(resource in civInfo.getCivUnits().mapNotNull { it.baseUnit.requiredResource }
-                .map { civInfo.gameInfo.ruleSet.tileResources[it]!! })
+                .map { UncivGame.Current.gameInfo.ruleSet.tileResources[it]!! })
             newDetailedCivResources.add(resource,-1,"Units")
         civInfo.detailedCivResources = newDetailedCivResources
     }

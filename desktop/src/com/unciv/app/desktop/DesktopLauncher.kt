@@ -96,7 +96,7 @@ internal object DesktopLauncher {
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         presence.details=currentPlayerCiv.getTranslatedNation().getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
-        presence.largeImageText ="Turn".tr()+" " + currentPlayerCiv.gameInfo.turns
+        presence.largeImageText ="Turn".tr()+" " + UncivGame.Current.gameInfo.turns
         DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
     }
 }
