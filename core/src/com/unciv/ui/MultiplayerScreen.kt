@@ -36,7 +36,7 @@ class MultiplayerScreen() : PickerScreen() {
     init {
         setDefaultCloseAction()
 
-        //Help Button Setup
+        //HelpButton Setup
         addHelpButton()
 
         //TopTable Setup
@@ -136,7 +136,7 @@ class MultiplayerScreen() : PickerScreen() {
     }
 
     //just loads the game from savefile
-    //the game will be downloaded opon joining it anyway
+    //the game will be downloaded upon joining it anyway
     private fun joinMultiplaerGame(){
         try {
             UncivGame.Current.loadGame(selectedGame)
@@ -200,12 +200,12 @@ class MultiplayerScreen() : PickerScreen() {
                 gameTable.add(gameButton).pad(5f).row()
                 leftSubTable.add(gameTable).row()
             }
+            leftSideTable.clear()
+            leftSideTable.add(leftSubTable)
         }
-        leftSideTable.clear()
-        leftSideTable.add(leftSubTable)
     }
 
-    /* Is this worth the translation afford? Seems definitely more polished if used
+    /* Is this worth the translation effort? Seems definitely more polished if used
 
     private fun getLastRefreshText(lastRefreshMinutesAgo: Long): String{
         var lastRefresh = lastRefreshMinutesAgo
@@ -230,6 +230,8 @@ class MultiplayerScreen() : PickerScreen() {
     //redownload all games to update the list
     private fun redownloadAllGames(){
         addGameButton.disable()
+        editButton.disable()
+        copyGameIdButton.disable()
         refreshButton.setText("Working...".tr())
         refreshButton.disable()
 
@@ -292,7 +294,7 @@ class MultiplayerScreen() : PickerScreen() {
         topTable.add(currentGameButton)
     }
 
-    //Adds a button
+    //Adds a button to help users understand the game UI
     private fun addHelpButton(){
         val tab = Table()
         val helpButton = TextButton("?", skin)
