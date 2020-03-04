@@ -37,27 +37,7 @@ class MultiplayerScreen() : PickerScreen() {
         setDefaultCloseAction()
 
         //Help Button Setup
-        val tab = Table()
-        val helpButton = TextButton("?", skin)
-        helpButton.onClick {
-            val helpPopup = Popup(this)
-            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.".tr()).row()
-            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.".tr()).row()
-            helpPopup.addGoodSizedLabel("").row()
-
-            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.".tr()).row()
-            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add Multiplayer Game' button".tr()).row()
-            helpPopup.addGoodSizedLabel("").row()
-
-            helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn".tr()).row()
-
-            helpPopup.addCloseButton()
-            helpPopup.open()
-        }
-        tab.add(helpButton)
-        tab.x = (stage.width - helpButton.width)
-        tab.y = (stage.height - helpButton.height)
-        stage.addActor(tab)
+        addHelpButton()
 
         //TopTable Setup
         //Have to put it into a separate Table to be able to add another copyGameID button
@@ -70,7 +50,7 @@ class MultiplayerScreen() : PickerScreen() {
         //leftTable Setup
         reloadGameListUI()
 
-        //A Button to add the currently running game to multiplayerGameList if not yet done
+        //A Button to add the currently running game to the multiplayerFileManager if not yet done
         addCurrentGameButton()
 
         //rightTable Setup
@@ -173,54 +153,79 @@ class MultiplayerScreen() : PickerScreen() {
     private fun reloadGameListUI(){
         val leftSubTable = Table()
 
-        for (entry in GameSaver.getMutliplayerGameList()) {
-            val gameTable = Table()
-            var game: GameInfo?
-            var gameFileHandle: FileHandle?
-            var lastModifiedMillis = 0L
+        //Threading results in a much faster loading time for the screen because loadGameByName() can take some time
+        thread (name = "reloadGameList") {
+            for (entry in GameSaver.getMutliplayerGameList()) {
+                val gameTable = Table()
+                var game: GameInfo?
+                var gameFileHandle: FileHandle?
+                var lastModifiedMillis = 0L
 
-            try {
-                game = GameSaver().loadGameByName(entry.value, true)
-            }catch (ex: Exception) {
-                //skipping one save is not fatal
-                ResponsePopup("Could not refresh!".tr(), this)
-                continue
+                try {
+                    game = GameSaver().loadGameByName(entry.value, true)
+                } catch (ex: Exception) {
+                    //skipping one save is not fatal
+                    ResponsePopup("Could not refresh!".tr(), this)
+                    continue
+                }
+
+                if (isUsersTurn(game)) {
+                    gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 45f))
+                } else {
+                    gameTable.add()
+                }
+
+                try {
+                    gameFileHandle = GameSaver().getSave(entry.value, true)
+                    lastModifiedMillis = gameFileHandle.lastModified()
+                } catch (ex: Exception) {
+                    //Just Catch. its not important if lastModifiedMillis is updated correctly
+                }
+
+                val gameButton = TextButton(entry.value, skin)
+                gameButton.onClick {
+                    selectedGame = game
+                    selectedGameName = entry.value
+                    copyGameIdButton.enable()
+                    editButton.enable()
+                    rightSideButton.enable()
+
+                    //get Minutes since last modified
+                    val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
+                    var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
+                    descriptionText += "Current Turn:".tr() + " ${selectedGame.currentPlayer}\r\n"
+                    descriptionLabel.setText(descriptionText)
+                }
+
+                gameTable.add(gameButton).pad(5f).row()
+                leftSubTable.add(gameTable).row()
             }
-
-            if (isUsersTurn(game)) {
-                gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 45f))
-            }else{
-                gameTable.add()
-            }
-
-            try {
-                gameFileHandle = GameSaver().getSave(entry.value, true)
-                lastModifiedMillis = gameFileHandle.lastModified()
-            }catch (ex: Exception) {
-                //Just Catch. its not important if lastModifiedMillis is updated correctly
-            }
-
-            val gameButton = TextButton(entry.value, skin)
-            gameButton.onClick {
-                selectedGame = game
-                selectedGameName = entry.value
-                copyGameIdButton.enable()
-                editButton.enable()
-                rightSideButton.enable()
-
-                //get Minutes since last modified
-                val lastSavedMinutesAgo = (System.currentTimeMillis() - lastModifiedMillis) / 60000
-                var descriptionText = "Last refresh: [$lastSavedMinutesAgo] minutes ago".tr() + "\r\n"
-                descriptionText += "Current Turn:".tr() + " ${selectedGame.currentPlayer}\r\n"
-                descriptionLabel.setText(descriptionText)
-            }
-
-            gameTable.add(gameButton).pad(5f).row()
-            leftSubTable.add(gameTable).row()
         }
         leftSideTable.clear()
         leftSideTable.add(leftSubTable)
     }
+
+    /* Is this worth the translation afford? Seems definitely more polished if used
+
+    private fun getLastRefreshText(lastRefreshMinutesAgo: Long): String{
+        var lastRefresh = lastRefreshMinutesAgo
+        if (lastRefresh < 60) {
+            if (lastRefresh == 1L)
+                return "Last refresh: [$lastRefresh] minute ago".tr()
+            return "Last refresh: [$lastRefresh] minutes ago".tr()
+        }
+        lastRefresh /= 60
+        if (lastRefresh < 24) {
+            if (lastRefresh == 1L)
+                return "Last refresh: [$lastRefresh] hour ago".tr()
+            return "Last refresh: [$lastRefresh] hours ago".tr()
+        }
+        lastRefresh /= 24
+        if (lastRefresh == 1L)
+            return "Last refresh: [$lastRefresh] day ago".tr()
+        return "Last refresh: [$lastRefresh] days ago".tr()
+    }
+    */
 
     //redownload all games to update the list
     private fun redownloadAllGames(){
@@ -243,15 +248,15 @@ class MultiplayerScreen() : PickerScreen() {
             }
 
             //Reset UI
+            unselectGame()
+            reloadGameListUI()
             addGameButton.enable()
             refreshButton.setText(refreshText)
             refreshButton.enable()
-            unselectGame()
-            reloadGameListUI()
         }
     }
 
-    //Adds a Button to add the currently running game to multiplayerGameList
+    //Adds a button to add the currently running game to the multiplayerFileManager
     private fun addCurrentGameButton(){
         val currentlyRunningGame = UncivGame.Current.gameInfo
         if (!currentlyRunningGame.gameParameters.isOnlineMultiplayer || GameSaver.gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
@@ -287,6 +292,31 @@ class MultiplayerScreen() : PickerScreen() {
         topTable.add(currentGameButton)
     }
 
+    //Adds a button
+    private fun addHelpButton(){
+        val tab = Table()
+        val helpButton = TextButton("?", skin)
+        helpButton.onClick {
+            val helpPopup = Popup(this)
+            helpPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.".tr()).row()
+            helpPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.".tr()).row()
+            helpPopup.addGoodSizedLabel("").row()
+
+            helpPopup.addGoodSizedLabel("Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players.".tr()).row()
+            helpPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add Multiplayer Game' button".tr()).row()
+            helpPopup.addGoodSizedLabel("").row()
+
+            helpPopup.addGoodSizedLabel("The symbol of your nation will appear next to the game when it's your turn".tr()).row()
+
+            helpPopup.addCloseButton()
+            helpPopup.open()
+        }
+        tab.add(helpButton)
+        tab.x = (stage.width - helpButton.width)
+        tab.y = (stage.height - helpButton.height)
+        stage.addActor(tab)
+    }
+
     //It doesn't really unselect the game because selectedGame cant be null
     //It just disables everything a selected game has set
     private fun unselectGame(){
@@ -310,7 +340,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameFileName: String): Picke
         topTable.add(Label("Rename".tr(), skin)).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
-        //TODO Change delete to "give up"
+        //TODO add "give up" button
             //->turn a player into an AI so everyone can still play without the user
                 //->should only be possible on the users turn because it has to be uploaded afterwards
         val deleteButton = TextButton("Delete save".tr(), skin)
