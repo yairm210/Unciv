@@ -1,3 +1,30 @@
+## 3.6.5
+
+Resolved #2065 - Units can no longer sleep while fortified - by Vladimir Tanakov
+
+Resolved #2033 - Happiness from tiles is always considered correctly in regards to food consumption
+
+Resolved #2035 - Strategic resources are affected by map generation parameters
+
+Resolved #2055 - cities once again bombard melee units
+
+Fixed rare crash when diplomacy values change while ending the turn
+
+UI updates - by lishaoxia1985
+
+Translation updates
+
+## 3.6.4
+
+By Jack Rainy:
+- Civilization rankings (Richest, Strongest, Most Fertile, Largest, etc.)
+- Can now buy buildings from queue
+- Include Nations in the calculation of a translation's percentage
+
+Eiffel Tower effect changed to reflect original Civ - by lishaoxia1985
+
+Translation updates
+
 ## 3.6.3
 
 Workers automate roads/railroads overseas, railroads connect through harbors - by przystasz

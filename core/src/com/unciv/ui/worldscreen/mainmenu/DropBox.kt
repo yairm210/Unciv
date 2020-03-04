@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.saves.Gzip
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -9,7 +10,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import java.nio.charset.StandardCharsets
+import java.nio.charset.Charset
 
 class DropBox {
 
@@ -27,7 +28,8 @@ class DropBox {
 
             try {
                 if (data != "") {
-                    val postData: ByteArray = data.toByteArray(StandardCharsets.UTF_8)
+                    // StandardCharsets.UTF_8 requires API 19
+                    val postData: ByteArray = data.toByteArray(Charset.forName("UTF-8"))
                     val outputStream = DataOutputStream(outputStream)
                     outputStream.write(postData)
                     outputStream.flush()
@@ -102,5 +104,15 @@ class OnlineMultiplayer {
     fun tryDownloadGame(gameId: String): GameInfo {
         val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
         return GameSaver().gameInfoFromString(Gzip.unzip(zippedGameInfo))
+    }
+
+    /**
+     * Returns current turn's player.
+     * Does not initialize transitive GameInfo data.
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
+     */
+    fun tryDownloadCurrentTurnCiv(gameId: String): CivilizationInfo {
+        val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
+        return GameSaver().currentTurnCivFromString(Gzip.unzip(zippedGameInfo))
     }
 }

@@ -319,7 +319,8 @@ class NextTurnAutomation{
 
         val canSignResearchAgreementCiv = civInfo.getKnownCivs()
                 .asSequence()
-                .filter { civInfo.canSignResearchAgreementsWith(it) }
+                .filter { civInfo.canSignResearchAgreementsWith(it)
+                        && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement) }
                 .sortedByDescending { it.statsForNextTurn.science }
 
         val duration = when(civInfo.gameInfo.gameParameters.gameSpeed) {

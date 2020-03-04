@@ -760,7 +760,7 @@
 		"culture": 1,
 		"happiness": 5,
 		"isWonder": true,
-		"uniques": ["Provides 1 happiness per social policy"],
+		"uniques": ["Provides 1 happiness per 2 additional social policies adopted"],
 		"requiredTech": "Radio",
 		"quote": "'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran"
 	},

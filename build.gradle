@@ -18,7 +18,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:3.6.0'
+        classpath 'com.android.tools.build:gradle:3.6.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
 
         // This is for wrapping the .jar file into a standalone executable
@@ -33,8 +33,8 @@ allprojects {
     version = '1.0.1'
     ext {
         appName = "Unciv"
-        appCodeNumber = 387
-        appVersion = "3.6.3-patch1"
+        appCodeNumber = 390
+        appVersion = "3.6.5"
 
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.1'
