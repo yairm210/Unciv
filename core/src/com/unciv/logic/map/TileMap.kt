@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
+import kotlin.math.abs
 
 class TileMap {
 
@@ -13,25 +14,21 @@ class TileMap {
     @Transient var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
     @Transient var leftX = 0
     @Transient var bottomY = 0
+    @delegate:Transient val maxLatitude: Float by lazy { values.map { abs(it.latitude) }.max() ?: 0f }
+    @delegate:Transient val maxLongitude: Float by lazy { values.map { abs(it.longitude) }.max() ?: 0f }
+
+    var mapParameters = MapParameters()
 
     @Deprecated("as of 2.7.10")
     private var tiles = HashMap<String, TileInfo>()
 
-    var mapParameters = MapParameters()
     private var tileList = ArrayList<TileInfo>()
-
-    constructor()  // for json parsing, we need to have a default constructor
-
-    fun clone(): TileMap {
-        val toReturn = TileMap()
-        toReturn.tileList.addAll(tileList.map { it.clone() })
-        toReturn.mapParameters = mapParameters
-        return toReturn
-    }
 
     val values: Collection<TileInfo>
         get() = tileList
 
+    /** for json parsing, we need to have a default constructor */
+    constructor()
 
     /** generates an hexagonal map of given radius */
     constructor(radius:Int, ruleset: Ruleset){
@@ -50,6 +47,12 @@ class TileMap {
         setTransients(ruleset)
     }
 
+    fun clone(): TileMap {
+        val toReturn = TileMap()
+        toReturn.tileList.addAll(tileList.map { it.clone() })
+        toReturn.mapParameters = mapParameters
+        return toReturn
+    }
 
     operator fun contains(vector: Vector2): Boolean {
         return contains(vector.x.toInt(), vector.y.toInt())
