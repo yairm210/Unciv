@@ -1,3 +1,19 @@
+## 3.6.5
+
+Resolved #2065 - Units can no longer sleep while fortified - by Vladimir Tanakov
+
+Resolved #2033 - Happiness from tiles is always considered correctly in regards to food consumption
+
+Resolved #2035 - Strategic resources are affected by map generation parameters
+
+Resolved #2055 - cities once again bombard melee units
+
+Fixed rare crash when diplomacy values change while ending the turn
+
+UI updates - by lishaoxia1985
+
+Translation updates
+
 ## 3.6.4
 
 By Jack Rainy:

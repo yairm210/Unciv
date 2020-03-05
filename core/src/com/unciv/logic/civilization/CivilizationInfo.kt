@@ -457,7 +457,7 @@ class CivilizationInfo {
 
         goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
-        diplomacy.values.forEach { it.nextTurn() }
+        diplomacy.values.toList().forEach { it.nextTurn() } // we copy the diplomacy values so if it changes in-loop we won't crash
         updateAllyCivForCityState()
         updateHasActiveGreatWall()
     }
