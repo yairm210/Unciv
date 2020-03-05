@@ -339,7 +339,7 @@ class CivilizationInfo {
             RankingType.Force -> units.sumBy { it.baseUnit.strength }
             RankingType.Happiness -> getHappiness()
             RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.storedCulture
+            RankingType.Culture -> policies.numberOfAdoptedPolicies
         }
     }
 
