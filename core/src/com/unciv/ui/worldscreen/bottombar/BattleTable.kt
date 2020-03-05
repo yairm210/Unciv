@@ -256,7 +256,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
             if( defenderUnitCiv.knows(attackerCiv))
             {
-                val defenderUnitCiv = defender.getCivInfo()
                 val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
                 canNuke = canNuke && canAttackDefenderUnitCiv
             }
