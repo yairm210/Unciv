@@ -243,19 +243,20 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
             //To make sure we dont nuke civilisations we cant declare war with
             val attackerCiv = attacker.getCivInfo()
-            val defenderCiv = tile.getCity()?.civInfo
+            val defenderTileCiv = tile.getCity()?.civInfo
             val defender = tryGetDefenderAtTile(tile, true)
 
-            if(defenderCiv != null && defenderCiv.knows(attackerCiv)) {
-                val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderCiv).canAttack()
+            if(defenderTileCiv != null && defenderTileCiv.knows(attackerCiv)) {
+                val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderTileCiv).canAttack()
                 canNuke = canNuke && canAttackDefenderCiv
-                if(defender != null && defender.getCivInfo().knows(attackerCiv))
-                {
-                    val defenderUnitCiv = defender.getCivInfo()
-                    val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
-                    canNuke = canNuke && canAttackDefenderUnitCiv
-                }
             }
+            if(defender != null && defender.getCivInfo().knows(attackerCiv))
+            {
+                val defenderUnitCiv = defender.getCivInfo()
+                val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
+                canNuke = canNuke && canAttackDefenderUnitCiv
+            }
+
 
             if (defender == null) continue
 
