@@ -12,6 +12,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
+import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.translations.tr
@@ -236,11 +237,29 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-
+        var canNuke = true
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
+
+            //To make sure we dont nuke civilisations we cant declare war with
+            val attackerCiv = attacker.getCivInfo()
+            val defenderTileCiv = tile.getCity()?.civInfo
+
+            if(defenderTileCiv != null && defenderTileCiv.knows(attackerCiv)) {
+                val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderTileCiv).canAttack()
+                canNuke = canNuke && canAttackDefenderCiv
+            }
             val defender = tryGetDefenderAtTile(tile, true)
+
             if (defender == null) continue
+            val defenderUnitCiv = defender.getCivInfo()
+
+            if( defenderUnitCiv.knows(attackerCiv))
+            {
+                val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
+                canNuke = canNuke && canAttackDefenderUnitCiv
+            }
+
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->
@@ -263,16 +282,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach) {
+        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
         else {
             attackButton.onClick {
                 try {
-                    Battle.nuke(attacker, targetTile)
-                    worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
-                    worldScreen.shouldUpdate = true
+                        Battle.nuke(attacker, targetTile)
+                        worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                        worldScreen.shouldUpdate = true
+
                 }
                 catch (ex:Exception){
                     openBugReportPopup()

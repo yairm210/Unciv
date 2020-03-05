@@ -185,6 +185,8 @@ class DiplomacyManager() {
     }
 
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
+    //Used for nuke
+    fun canAttack() = (turnsToPeaceTreaty()==0)
 
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
