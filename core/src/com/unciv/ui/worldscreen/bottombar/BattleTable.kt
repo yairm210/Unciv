@@ -242,15 +242,21 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
 
             //To make sure we dont nuke civilisations we cant declare war with
-            val attackerciv = attacker.getCivInfo()
-            val defenderciv = tile.getCity()?.civInfo
-            if(defenderciv != null && defenderciv.diplomacy[attackerciv.civName]!= null) {
-                val canDeclareWar = attackerciv.getDiplomacyManager(defenderciv).canDeclareWar()
-                val alreadyinWar = attackerciv.isAtWarWith(defenderciv)
-                canNuke = canNuke && (canDeclareWar || alreadyinWar)
+            val attackerCiv = attacker.getCivInfo()
+            val defenderCiv = tile.getCity()?.civInfo
+            val defender = tryGetDefenderAtTile(tile, true)
+
+            if(defenderCiv != null && defenderCiv.knows(attackerCiv)) {
+                val canAttackDefenderCiv = attackerCiv.getDiplomacyManager(defenderCiv).canAttack()
+                canNuke = canNuke && canAttackDefenderCiv
+                if(defender != null && defender.getCivInfo().knows(attackerCiv))
+                {
+                    val defenderUnitCiv = defender.getCivInfo()
+                    val canAttackDefenderUnitCiv = attackerCiv.getDiplomacyManager(defenderUnitCiv).canAttack()
+                    canNuke = canNuke && canAttackDefenderUnitCiv
+                }
             }
 
-            val defender = tryGetDefenderAtTile(tile, true)
             if (defender == null) continue
 
             val defenderLabel = Label(defender.getName().tr(), skin)
@@ -282,16 +288,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else {
             attackButton.onClick {
                 try {
-                    if(!(targetTile.getCity()?.civInfo?.getDiplomacyManager(attacker.getCivInfo())?.canDeclareWar() ?:true))
-                    {
-                        attacker.getCivInfo().notifications.add(Notification("You are not allowed to nuke this tile!", Color.RED))
-                        worldScreen.shouldUpdate = true
-                    }
-                    else {
                         Battle.nuke(attacker, targetTile)
                         worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                         worldScreen.shouldUpdate = true
-                    }
+
                 }
                 catch (ex:Exception){
                     openBugReportPopup()
