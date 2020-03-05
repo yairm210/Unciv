@@ -237,11 +237,22 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
-
+        var canNuke = true
         val defenderNameWrapper = Table()
         for (tile in targetTile.getTilesInDistance(Battle.NUKE_RADIUS)) {
+
+            //To make sure we dont nuke civilisations we cant declare war with
+            val attackerciv = attacker.getCivInfo()
+            val defenderciv = tile.getCity()?.civInfo
+            if(defenderciv != null && defenderciv.diplomacy[attackerciv.civName]!= null) {
+                val canDeclareWar = attackerciv.getDiplomacyManager(defenderciv).canDeclareWar()
+                val alreadyinWar = attackerciv.isAtWarWith(defenderciv)
+                canNuke = canNuke && (canDeclareWar || alreadyinWar)
+            }
+
             val defender = tryGetDefenderAtTile(tile, true)
             if (defender == null) continue
+
             val defenderLabel = Label(defender.getName().tr(), skin)
             when (defender) {
                 is MapUnitCombatant ->
@@ -264,7 +275,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
-        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach) {
+        if (!worldScreen.isPlayersTurn || !attacker.canAttack() || !canReach || !canNuke) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
@@ -274,6 +285,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     if(!(targetTile.getCity()?.civInfo?.getDiplomacyManager(attacker.getCivInfo())?.canDeclareWar() ?:true))
                     {
                         attacker.getCivInfo().notifications.add(Notification("You are not allowed to nuke this tile!", Color.RED))
+                        worldScreen.shouldUpdate = true
                     }
                     else {
                         Battle.nuke(attacker, targetTile)
