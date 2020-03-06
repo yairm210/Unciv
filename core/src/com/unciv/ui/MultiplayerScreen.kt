@@ -17,7 +17,6 @@ class MultiplayerScreen() : PickerScreen() {
 
     private lateinit var selectedGame: GameInfo
     private lateinit var selectedGameName: String
-    private var multiplayerGameList = mutableMapOf<String, String>()
     private val rightSideTable = Table()
     private val leftSideTable = Table()
 
@@ -125,7 +124,7 @@ class MultiplayerScreen() : PickerScreen() {
             return
         }
         
-        if (gameIsAlreadySavedAsMultiplayer(gameId)) {
+        if (GameSaver.gameIsAlreadySavedAsMultiplayer(gameId)) {
             ResponsePopup("Game is already added".tr(), this)
             return
         }
@@ -169,35 +168,14 @@ class MultiplayerScreen() : PickerScreen() {
         }
     }
 
-    private fun gameIsAlreadySavedAsMultiplayer(gameId: String) : Boolean{
-        return multiplayerGameList.containsKey(gameId)
-    }
-
     //reloads all gameFiles to refresh UI
     fun reloadGameListUI(){
         val leftSubTable = Table()
-        val gameSaver = GameSaver()
-        var savedGames : List<String>?
 
-        try {
-            savedGames = gameSaver.getSaves(true)
-        }catch (ex: Exception) {
-            val errorPopup = Popup(this)
-            errorPopup.addGoodSizedLabel("Could not refresh!".tr())
-            errorPopup.row()
-            errorPopup.addCloseButton()
-            errorPopup.open()
-            return
-        }
-
-        for (gameSaveName in savedGames) {
+        for (entry in GameSaver.getMutliplayerGameList()) {
             try {
                 val gameTable = Table()
-                val game = gameSaver.loadGameByName(gameSaveName, true)
-
-                //Add games to list so saves don't have to be loaded as Files so often
-                if (!gameIsAlreadySavedAsMultiplayer(game.gameId))
-                    multiplayerGameList.put(game.gameId, gameSaveName)
+                val game = GameSaver().loadGameByName(entry.value, true)
 
                 if (isUsersTurn(game)) {
                     gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 45f))
@@ -205,11 +183,11 @@ class MultiplayerScreen() : PickerScreen() {
                     gameTable.add()
                 }
 
-                val lastModifiedMillis = gameSaver.getSave(gameSaveName, true).lastModified()
-                val gameButton = TextButton(gameSaveName, skin)
+                val lastModifiedMillis = GameSaver().getSave(entry.value, true).lastModified()
+                val gameButton = TextButton(entry.value, skin)
                 gameButton.onClick {
                     selectedGame = game
-                    selectedGameName = gameSaveName
+                    selectedGameName = entry.value
                     copyGameIdButton.enable()
                     editButton.enable()
                     rightSideButton.enable()
@@ -242,14 +220,14 @@ class MultiplayerScreen() : PickerScreen() {
 
         //One thread for all downloads
         thread (name = "multiplayerGameDownload") {
-            for (gameId in multiplayerGameList.keys) {
+            for (entry in GameSaver.getMutliplayerGameList()) {
                 try {
-                    val game = OnlineMultiplayer().tryDownloadGame(gameId)
-                    GameSaver().saveGame(game, multiplayerGameList.getValue(gameId), true)
+                    val game = OnlineMultiplayer().tryDownloadGame(entry.key)
+                    GameSaver().saveGame(game, entry.value, true)
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
-                    ResponsePopup("Could not download game!".tr() + " ${multiplayerGameList.getValue(gameId)}", this)
+                    ResponsePopup("Could not download game!".tr() + " ${entry.value}", this)
                     continue
                 }
             }
@@ -266,12 +244,12 @@ class MultiplayerScreen() : PickerScreen() {
     //Adds a Button to add the currently running game to multiplayerGameList
     private fun addCurrentGameButton(){
         val currentlyRunningGame = UncivGame.Current.gameInfo
-        if (!currentlyRunningGame.gameParameters.isOnlineMultiplayer || gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
+        if (!currentlyRunningGame.gameParameters.isOnlineMultiplayer || GameSaver.gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
             return
 
         val currentGameButton = TextButton("Add Currently Running Game".tr(), skin)
         currentGameButton.onClick {
-            if (gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
+            if (GameSaver.gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
                 return@onClick
             try {
                 GameSaver().saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
@@ -300,10 +278,6 @@ class MultiplayerScreen() : PickerScreen() {
     //check if its the users turn
     private fun isUsersTurn(game: GameInfo) : Boolean{
         return (game.currentPlayerCiv.playerId == UncivGame.Current.settings.userId)
-    }
-
-    fun removeFromList(gameId: String){
-        multiplayerGameList.remove(gameId)
     }
 }
 
@@ -353,12 +327,8 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             try {
-                backScreen.removeFromList(game.gameId)
-                //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
-                backScreen.addMultiplayerGame(game.gameId, textField.text)
-                GameSaver().deleteSave(gameName, true)
-                UncivGame.Current.setScreen(backScreen)
-                backScreen.reloadGameListUI()
+                GameSaver().saveGame(game, textField.text, true)
+                UncivGame.Current.setScreen(MultiplayerScreen())
             }catch (ex: Exception) {
                 val errorPopup = Popup(this)
                 errorPopup.addGoodSizedLabel("Could not save game!".tr())
