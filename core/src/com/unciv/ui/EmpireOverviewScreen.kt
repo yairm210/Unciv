@@ -1,8 +1,9 @@
-package com.unciv.ui
+﻿package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -26,8 +27,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        val closeButton = "×".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(50f).apply { circle.color = Color.RED.cpy().lerp(Color.BLACK, 0.1f) }
+        val closeButton = TextButton("Close".tr(), skin)
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
@@ -383,6 +383,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
             civGroup.moveBy(vector.x*freeWidth/2.5f, vector.y*freeHeight/2.5f)
+            civGroup.touchable = Touchable.enabled
             civGroup.onClick {
                 onCivClicked(civLines, civ.civName)
             }
