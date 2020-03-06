@@ -1,4 +1,4 @@
-package com.unciv.ui
+﻿package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -26,8 +26,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        val closeButton = "×".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(50f).apply { circle.color = Color.RED.cpy().lerp(Color.BLACK, 0.1f) }
+        val closeButton = TextButton("Close".tr(), skin)
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
