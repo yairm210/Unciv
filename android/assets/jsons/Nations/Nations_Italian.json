@@ -189,7 +189,7 @@
 		"unique": "+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
 		"cities": ["Parigi","Orleans","Lione","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
-			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]				"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen","Toulon",
+			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen",				"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen","Toulon",
 			"Le Havre","Lourdes","Cannes","Aix-En-Provence","La Rochelle","Bourges","Calais"]
 	},
 	{
