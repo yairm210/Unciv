@@ -177,10 +177,7 @@ class TileMap {
     }
 
 
-    fun getViewableTiles(position: Vector2, sightDistance: Int, ignoreCurrentTileHeight: Boolean)
-            : List<TileInfo> {
-        if (ignoreCurrentTileHeight) return getTilesInDistance(position, sightDistance).toList()
-
+    fun getViewableTiles(position: Vector2, sightDistance: Int): List<TileInfo> {
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         val currentTileHeight = get(position).getHeight()
 

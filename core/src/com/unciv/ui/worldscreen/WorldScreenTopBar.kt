@@ -57,6 +57,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
+        resourceTable.add(turnsLabel).padRight(20f)
         val revealedStrategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
@@ -74,7 +75,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getStatsTable(): Table {
         val statsTable = Table()
         statsTable.defaults().pad(3f)//.align(Align.top)
-        statsTable.add(turnsLabel).padRight(20f)
         statsTable.add(goldLabel)
         statsTable.add(ImageGetter.getStatIcon("Gold")).padRight(20f).size(20f)
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)

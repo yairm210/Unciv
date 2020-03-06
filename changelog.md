@@ -1,3 +1,22 @@
+## 3.6.6
+
+Resolved #2071 - AI will wait 20 turns between proposing research agreements if declined
+
+Ranking by culture is by number of adopted policies
+
+Player cannot nuke a civilization it has a peace treaty with - by EdinCitaku
+
+Resolved #2074 - Fixed domination victory
+
+Resolved #2040 - Moved the turn counter on the top bar to the second level, to even out both levels
+Water units can no longer see over hills etc.
+
+By Jack Rainy:
+- Keshiks are ranged units
+- Distinct color for Korea
+
+Translation updates
+
 ## 3.6.5
 
 Resolved #2065 - Units can no longer sleep while fortified - by Vladimir Tanakov

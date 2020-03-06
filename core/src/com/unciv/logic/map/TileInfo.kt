@@ -262,8 +262,8 @@ open class TileInfo {
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
             resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
 
-    fun getViewableTilesList(distance:Int, ignoreCurrentTileHeight: Boolean): List<TileInfo> =
-            tileMap.getViewableTiles(position, distance, ignoreCurrentTileHeight)
+    fun getViewableTilesList(distance:Int): List<TileInfo> =
+            tileMap.getViewableTiles(position, distance)
 
     fun getTilesInDistance(distance: Int): Sequence<TileInfo> =
             tileMap.getTilesInDistance(position,distance)

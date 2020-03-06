@@ -161,7 +161,7 @@ class MapUnit {
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
 
-            viewableTiles = tile.getViewableTilesList(visibilityRange, type.isWaterUnit())
+            viewableTiles = tile.getViewableTilesList(visibilityRange)
         }
         civInfo.updateViewableTiles() // for the civ
     }

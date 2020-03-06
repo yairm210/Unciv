@@ -33,7 +33,6 @@ script:
     ./gradlew desktop:packrLinux32;
     ./gradlew desktop:packrLinux64;
     ./gradlew desktop:zipLinuxFilesForJar;
-    ./gradlew android:assembleRelease;
   fi
     
 deploy:
@@ -49,7 +48,6 @@ deploy:
     - deploy/Unciv-Windows32.zip
     - deploy/Unciv-Windows64.zip
     - deploy/linuxFilesForJar.zip
-    - android/build/outputs/apk/release/Unciv-release-unsigned.apk
   on:
     repo: yairm210/Unciv
     tags: true
