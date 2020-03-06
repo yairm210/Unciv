@@ -466,7 +466,7 @@
 		"hateYes": ["Hm... very well, fine.","I suppose I should agree...","Niech będzie..."],
 		"afterPeace": "It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie.",
 		"tradeRequest": "We have many things to discuss and have much to benefit from each other.",
-		"outerColor": [20,25,73],
+		"outerColor": [20,25,173],
 		"innerColor": [187,33,51],
 		"uniqueName": "Uczniowie Jade Hall ",
 		"unique": "+2 do Nauki za wszystkich specjalistów i ulepszenia pól Wielkiej Osoby",
