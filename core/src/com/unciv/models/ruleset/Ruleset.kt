@@ -159,7 +159,12 @@ object RulesetCache :HashMap<String,Ruleset>(){
         }
     }
 
-    fun getBaseRuleset() = this[""]!!
+    //Do a null check in case loadRulesets() wasn't called before getBaseRuleset(). We can't rely on that.
+    fun getBaseRuleset(): Ruleset{
+        if (this[""] == null)
+            this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
+        return this[""]!!
+    }
 
     fun getComplexRuleset(mods:Collection<String>): Ruleset {
         val newRuleset = Ruleset()
