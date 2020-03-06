@@ -634,7 +634,7 @@
 		"name": "Keshik",
 		"replaces": "Knight",
 		"uniqueTo": "Mongolia",
-		"unitType": "Mounted",
+		"unitType": "Ranged",
 		"range": 2,
 		"movement": 5,
 		"strength": 15,
