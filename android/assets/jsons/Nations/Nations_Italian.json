@@ -28,7 +28,8 @@
 		"unique": "Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
 		"cities": ["Babilonia","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninive","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
+			"Uqair","Gubba","Hafriyat","Nagar","Shubat Enlil","Urhai","Urkesh","Awan","Riblah","Tayma"]
 	},
 	{
 		"name": "Greece",
@@ -41,8 +42,8 @@
 		"startIntroPart2": "Alessandro, il tuo popolo è pronto a marciare in guerra per diffondere la cultura greca tra le genti del mondo e donarti gloria imperitura. Sei pronto ad accettare il tuo destino, re Alessandro? Guiderai il tuo popolo verso il trionfo e la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Sei sulla mia strada, e pertanto devo distruggerti.",
 		"attacked": "Ad essere onesto, mi sono stancato di starmene impalato e di riposare sugli allori. Vieni, le mie armate ti accoglieranno a braccia aperte!",
-		"defeated": "Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine.",
-		"introduction": "Benvenuto, straniero! Sono Alexandros, erede di Eracle, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?",
+		"defeated": "In questo mondo sono finito. Forse avrò la mia vendetta nel prossimo",
+		"introduction": "Io, Alessandro, erede di Eracle e Zeus, ti saluto. Possa tu dimostrarti un alleato fedele o un degno avversario!",
 		"neutralHello": "Saluti...",
 		"neutralLetsHearIt": ["Ti ascolto.","Avanti.","Sì?","Parla."],
 		"neutralNo": ["Rifiutiamo.","Certo che no.","Non reputo saggio accettarlo."],
@@ -59,7 +60,9 @@
 		"unique": "L'Influenza delle Città-Stato cala il doppio più lentamente e cresce il doppio rispetto al normale.",
 		"cities": ["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
 			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
-			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
+			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos","Sicyon",
+			"Larissa","Apollonia","Messene","Orcomeno","Ambracia","Kos","Cnido","Anfipoli",
+			"Patrasso","Lamia","Nafplion","Apolyton"]
 	},
 	{
 		"name": "China",
@@ -70,9 +73,9 @@
 		"startIntroPart1": "Che la benedizione del cielo scenda su di te, imperatrice Wu Zetian, la più bella e la più fiera tra tutti i sovrani della Cina! O grande imperatrice, la cui sola ombra è sufficiente a far sbocciare i fiori e a far scorrere i fiumi! Tu sei a capo della civiltà cinese, la più antica e grandiosa mai prodotta dall'uomo. La storia della Cina si perde nelle nebbie del tempo e il suo popolo ha goduto di molte scoperte e invenzioni prima ancora che altre imberbi civiltà nascessero. Il contributo cinese alle arti e alle scienze è tale da non potervi rendere giustizia: la stampa, la polvere da sparo, le opere di Confucio... questi non sono che alcuni dei doni che la Cina ha offerto a questo mondo ingrato!",
 		"startIntroPart2": "O grande imperatrice, tu che, con astuzia e bellezza, da semplice concubina ascendesti al rango di divina imperatrice, ascolta il popolo che vuole essere guidato da te! La grande Cina è ancora una volta circondata dai barbari. Riuscirai a sconfiggere i tuoi numerosi nemici e a riportare il tuo paese alla grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Non ti permetterò più di infastidirmi. Preparati a incontrare Yama.",
-		"attacked": "Folle! Ti costringerò a guardare il tuo popolo venire massacrato!",
-		"defeated": "Ti sei dimostrato un avversario astuto e competente. Mi congratulo per la tua vittoria.",
-		"introduction": "Saluti! Sono l'imperatrice della Cina, Wu Zetian. La Cina desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione.",
+		"attacked": "Hai chiesto la guerra, e io ti darò guerra!",
+		"defeated": "Ti sei dimostrato un avversario astuto e valoroso. Mi congratulo per la tua vittoria. Se in queste circostanze i ruoli fossero stati invertiti, sarei stata ben contenta di fare lo stesso a te.",
+		"introduction": "Benvenuti. Sono Wu Zetian, imperatrice della Cina. Il mio regno desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione.",
 		"neutralHello": "Bella giornata, oggi, vero?",
 		"neutralLetsHearIt": ["Continua.","Ebbene?","Dunque?"],
 		"neutralNo": ["No.","No di certo.","Certo che no."],
@@ -89,7 +92,8 @@
 		"unique": "Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta.",
 		"cities": ["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macao","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
+			"Yichang","Yingtian","Xinyu","Xinzheng","Handan","Dunhuang","Gaoyu","Nantong","Weifang","Xikang"]
 	},
 	{
 		"name": "Egypt",
@@ -101,9 +105,9 @@
 		"startIntroPart1": "Salute a te, o grande Ramses, Faraone d'Egitto, che fai sorgere il sole e scorrere il Nilo, e che benedici il suo popolo con ogni cosa buona della vita! O grande capo, da tempo immemore il tuo popolo ha vissuto lungo le sponde del fiume Nilo, dove ha concepito la scrittura e approfondito la matematica, la scultura e l'architettura, creando migliaia di anni fa i grandi monumenti che ancora oggi si erigono alti e fieri.",
 		"startIntroPart2": "O Ramses, il tuo popolo è sopravvissuto al tempo, mentre altre insignificanti nazioni sono cresciute e sono morte. Adesso il tuo popolo vuole che lo guidi verso la grandezza. Riuscirai a onorare gli dei e a ridare all'Egitto il ruolo che merita, quello di centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Sei solo una peste sulla Terra! Possa Amon-Ra guidare le mie armate!",
-		"attacked": "Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà! Osiride sarà lieto di dare il suo benvenuto ai miei nemici!",
-		"defeated": "Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno.",
-		"introduction": "Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà." //Also:"Salve. Io sono Ramses, signore del potente Egitto. E sono anche un dio. Mostrate di avere molto coraggio presentandovi davanti a me.",
+		"attacked": "Ah! Osiride sarà lieto di dare il suo benvenuto ai miei nemici!",
+		"defeated": "Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno!",
+		"introduction": "Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà. Le stelle avevano previsto il vostro arrivo",
 		"neutralHello": "Buongiorno.",
 		"neutralLetsHearIt": ["Avanti, parla.","Parla.","Sono tutto orecchi."],
 		"neutralNo": ["No.","No di certo."],
@@ -113,14 +117,16 @@
 		"hateNo": ["Ciò è inaccettabile.","La tua richiesta dev'essere uno scherzo di cattivo gusto."],
 		"hateYes": ["Oh, molto bene.","Credo dovrò accettare."],
 		"afterPeace": "Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa, e mi sento magnanimo.",
-		"tradeRequest": "Il generoso regno d'Egitto ti fa quest'offerta.",
-		"outerColor": [ 231, 213, 0],
+		"tradeRequest": "Ti offro i ricchi doni delle terre del Nilo, e chiedo di ricevere in cambio doni di equal valore.",
+		"outerColor": [231, 213, 0],
 		"innerColor": [98,10,210],
 		"uniqueName": "Costruttori di Monumenti",
 		"unique": "+20% Produzione durante la costruzione di una Meraviglia",
 		"cities": ["Tebe","Menfi","Eliopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
 			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi","Mendes","Elashmunein",
-			"Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+			"Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
+			   "Balat","Ellahun","Hawara","Dashur","Damanhur","Ellahun","Busiri","Ellahun","Eracleopoli","Akoris",
+			   "Benihasan","Badari","Ermopoli","Amrah","Copto","Ombos","Naqada","Semna","Soleb"]
 	},
 	{
 		"name": "England",
@@ -151,7 +157,8 @@
 		"unique": "+2 movimento per tutte le unità navali",
 		"cities": ["Londra","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
-			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
+			"Sheffield","Salisbury","Colchester","Plymouth","Lancaster","Blackpool","Winchester","Hull"]
 	},
 	{
 		"name": "France",
@@ -162,8 +169,8 @@
 		
 		"startIntroPart1": "Lunga vita e trionfi a te, primo console e imperatore di Francia, Napoleone I, capo del popolo francese. La Francia giace nel cuore dell'Europa. Per lungo tempo Parigi è stata al centro del mondo in fatto di cultura, arti e letteratura. Anche se circondata da nazioni concorrenti, e spesso nemiche, la Francia è sempre emersa a testa alta. I suoi eserciti hanno marciati trionfalmente da un capo all'altro del mondo e i suoi soldati e i suoi generali si sono rivelati tra i migliori della storia.",
 		"startIntroPart2": "Napoleone Bonaparte, la Francia vuole che ti ricostruisca il tuo impero, che la guidi nuovamente verso la gloria e la grandezza, facendola tornare ad essere il centro della cultura e della raffinatezza. Imperatore, tornerai a cavalcare contro i tuoi nemici? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
-		"declaringWar": "Temo proprio che la gloria spetti a me, e a me soltanto. Non c'è posto per i perdenti in questo mondo.",
-		"attacked": "Sei caduto dritto nella mia trappola. Preparati a essere seppellito!",
+		"declaringWar": "Temo proprio che la gloria spetti a me, e a me soltanto. Non c'è posto per i vinti in questo mondo.",
+		"attacked": "Patetico. Hai commesso un errore fatale!",
 		"defeated": "Mi congratulo per la tua vittoria. Sei riuscito a superarmi, impresa in cui altri avevano fallito.",
 		"introduction": "Benvenuto, straniero. Sono Napoleone, Imperatore di Francia. Sono leale con gli amici, ma mortale con i nemici. Voi cosa vi dichiarate?",
 		"neutralHello": "Salve.",
@@ -182,7 +189,8 @@
 		"unique": "+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
 		"cities": ["Parigi","Orleans","Lione","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
-			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]
+			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]				"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen","Toulon",
+			"Le Havre","Lourdes","Cannes","Aix-En-Provence","La Rochelle","Bourges","Calais"]
 	},
 	{
 		"name": "Russia",
@@ -195,7 +203,7 @@
 		"startIntroPart2": "Caterina, il tuo popolo vuole tornare ai gloriosi giorni della grande Russia, vuole rivitalizzarne la terra e rivivere la meraviglia dell'Illuminismo. Tornerai a guidare la tua gente verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Ti sei comportato molto male, lo sai? Credo che adesso dovrò insegnarti l'umiltà.",
 		"attacked": "Hai confuso la mia passione per una debolezza... temo che la pagherai assai cara.",
-		"defeated": "Ci hai sconfitti, e ciò mi rende prigioniera. Ma direi che ci sono destini peggiori, giusto?",
+		"defeated": "Ci hai sconfitti, e ciò rende me una tua prigioniera. Ma direi che esistono destini peggiori, dico bene?",
 		"introduction": "È bello incontrare un altro giocatore che muove i pezzi sulla scacchiera del mondo. I sudditi sono sempre così servili da risultare infine noiosi, non trovi?",
 		"neutralHello": "Salve!",
 		"neutralLetsHearIt": ["Avanti.","Parla."],
@@ -213,7 +221,8 @@
 		"unique": "+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
 		"cities": ["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk",
 			"Orenburg","Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita",
-			"Samara","Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+			"Samara","Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir",
+			"Perm","Voronezh","Pskov","Starayarussa","Kostoma","Nizhniy Novgorod","Sudzal","Magnitogorsk"]
 	},
 	{
 		"name": "Rome",
@@ -275,7 +284,7 @@
     		"unique": "+1 Oro per ogni rotta commerciale, e doppia quantita da Petrolio.",
 		"cities": ["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat","Aden","Yamama",
 			"Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul","Aydab","Bayt","Suhar","Taif","Hama",
-			"Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+			"Tabuk","Sana'a","Shihr","Tripoli","Tunisi","Kairouan","Algeri","Oran"]
 	},
 	{
 		"name": "America",
@@ -287,7 +296,7 @@
 		"startIntroPart2": "Gli Stati Uniti sono una nazione di immigrati, pieni di ottimismo e determinazione. Quello che manca loro è soltanto un leader che li aiuti a realizzare il loro potenziale. Presidente Washington, saprai guidare l'America verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Speravo di non arrivare a questo punto... ma la tua idea di pace non mi da' altra scelta!",
 		"attacked": "Hai confuso il nostro amore per la pace per debolezza. Se devo scegliere tra giustizia e pace... scelgo la giustizia!",
-		"defeated": "Complimenti. Al posto degli Stati Uniti d'America, sarà la tua nazione ad andare lontano. Spero che ti dimostrerai misericordioso nel tuo trionfo.",
+		"defeated": "Tutto è perduto, fuorché l'onore. Spero che ti dimostrerai misericordioso nel tuo trionfo.",
 		"introduction": "Vi dò il benvenuto da parte dei cittadini degli Stati Uniti d'America.",
 		"neutralHello": "Buongiorno.",
 		"neutralLetsHearIt": ["Procedi.","Va avanti.","Sto ascoltando."],
@@ -306,7 +315,9 @@
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles",
 			"Houston","Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati",
 			"Dallas","Memphis","Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque",
-			"Minneapolis","Pittsburgh"]
+			"Minneapolis","Pittsburgh","Oakland","Tampa Bay","Orlando","Tacoma","Santa Fe","Olympia","Hunt Valley",
+			"Springfield","Palo Alto","Centralia","Spokane","Jacksonville","Svannah","Charleston","San Antonio",
+			"Birmingham","Anchorage","Sacramento","Reno","Salt Lake City","Boise","Milwaukee","Santa Cruz","Little Rock"]
 	},
 	{
 		"name": "Japan",
@@ -413,8 +424,8 @@
 		"startIntroPart2": "Potente Solimano, ascolta la voce del tuo popolo! Riporta il tuo impero alla potenza e alla gloria passate e ancora una volta il mondo tornerà a guardarti con stupore e ammirazione. Accetterai la sfida, grande imperatore? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?",
 		"declaringWar": "Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra.",
 		"attacked": "Bene. Il mondo sarà testimone dell'inconstastabile potenza dell'esercito del glorioso impero ottomano.",
-		"defeated": "Morte! Rovina! Istanbul diventa l'Iram dei Pilastri, ricordata solo dai poeti malinconici.",
-		"introduction": "Dalla magnificenza del Topkapi, gli ottomani ti salutano, straniero! Io sono il sultano Solimano, Kayser-I Rum, e ti porgo i miei saluti!",
+		"defeated": "È tutto vero o sto vivendo un incubo? I miei eserciti sono stati spazzati via, Instanbul è in rovina... tutto è perduto. Come è possibile?",
+		"introduction": "Per la mia barba e la mia pancia, sono felice di incontrarvi! Sono Solimano, Kayser-I Rum, capo dei potenti Ottomani!",
 		"neutralHello": "Saluti!",
 		"neutralLetsHearIt": ["Ti ascolto.","Vai avanti."],
 		"neutralNo": ["No.","Certo che no!","Mi rifiuto."],
@@ -445,7 +456,7 @@
 		"declaringWar": "Jip-hyun-jun (la Sala dei Giusti) non tollera più la tua insolenza. Libereremo i tuoi cittadini oppressi anche con la forza, e li illumineremo!",
 		"attacked": "Sciocca progenie di una megera! Sarete distrutti dalla magnifica potenza scientifica del mio paese!",
 		"defeated": "Ora resta da vedere chi proteggerà il mio popolo... Il buio è giunto.",
-		"introduction": "Benvenuto nel palazzo dei Choson, onorato straniero. Io sono il re Sejong l'Istruito, condottiero illuminato e sovrano di queste terre e di questo popolo.",
+		"introduction": "Benvenuto alla corte dei Choson, onorato straniero. Io sono il re Sejong l'Istruito, condottiero illuminato e sovrano di queste terre e di questo popolo. Io ho fatto molto per il mio popolo: tu puoi dire lo stesso?",
 		"neutralHello": "Salve.",
 		"neutralLetsHearIt": ["Sentiamo.","Vai avanti","Continue."],
 		"neutralNo": ["Non posso farlo.","Spiacente, ma non posso accettare."],
@@ -475,7 +486,7 @@
 		"declaringWar": "Sei una peste per Madre Terra! Preparati a combattere!",
 		"attacked": "Creatura maligna! I miei prodi ti massacreranno!",
 		"defeated": "Ci avrai anche sconfitti, e io accetto il mio destino... ma i nostri spiriti sono immortali! Tra cento, mille anni, noi torneremo!",
-		"introduction": "Saluti, straniero. Sono Hiawatha, e parlo per il popolo degli Irochesi. Cerchiamo la pace con tutti, ma siamo anche abili guerrieri.",
+		"introduction": "La pace sia con te. Sono Hiawatha, e parlo a nome del popolo degli Irochesi. Cerchiamo la pace con tutti, ma siamo anche abili guerrieri.",
 		"neutralHello": "Buongiorno.",
 		"neutralLetsHearIt": ["Sì?","Ti ascolto."],
 		"neutralNo": ["No.","Certo che no."],
@@ -542,7 +553,7 @@
 		"declaringWar": "L'antico fuoco che s'illumina nel cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente, speravo in un altro esito.",
 		"attacked": "È evidente: ho valutato male te e i tuoi veri intenti.",
 		"defeated": "Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me.",
-		"introduction": "Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno.",
+		"introduction": "Ah, un compagno viaggiatore! Benvenuto nelle grandi isole della Polinesia! Io sono Kamehameha il grande e ti invito a unirti alla festa accanto al fuoco.",
 		"neutralHello": "Benvenuto, amico!",
 		"neutralLetsHearIt": ["Procedi.","E?","Cosa c'è?"],
 		"hateNo": ["Certamente no.","Dobbiamo rifiutare."],
@@ -669,7 +680,7 @@
 		"declaringWar": "Sei sulla strada dei miei eserciti. Se non ti vuoi sottomettere con le buone, allora risolviamola come guerrieri!",
 		"attacked": "Basta con le parole. Oggi, la Mongolia marcia per la tua sconfitta!",
 		"defeated": "Hai sottomesso i clan della Mongolia. Il mio rispetto per te è quasi uguale al mio disprezzo. Attendo la tua giustizia.",
-		"introduction": "Io sono Temujin, conquistatore di città e paesi. Davanti a me si estendono le future terre mongole. Dietro di me cavalca la tempesta.",
+		"introduction": "Io sono Temujin, conquistatore di città e paesi. Davanti a me si estendono le future terre mongole. Dietro di me cavalca la tempesta. Puoi prostrarti terrorizzato, se vuoi.",
 		"neutralHello": "Salve.",
 		"neutralLetsHearIt": ["Ti ascolto.","Che c'è?"],
 		"neutralNo": ["No.","Certo che no!"],
@@ -772,7 +783,7 @@
 		"declaringWar": "A essere sinceri, sono stanco delle chiacchere. Risolviamo la questione in battaglia, da veri uomini. Forse gli skald canteranno del tuo valore... o del mio!",
 		"attacked": "Ahahah! Mostri qualche abilità da vero vichingo! Ma non basterà per salvarti!",
 		"defeated": "Loki deve averti aiutato, perché nessun uomo comune poteva sconfiggermi... Sta bene! Mi unirò agli einherjar nel banchetto del Valhalla, mentre tu ti riposi sui tuoi allori.",
-		"introduction": "Harad Bluetooth ti da il benvenuto nelle sue terre, un vichingo come mai si è mai visto in tutti i mari e tutte le terre! Che ti prende, hai paura?",
+		"introduction": "Harad Bluetooth ti da il benvenuto nelle sue terre, un vichingo come mai si è mai visto in tutti i mari e tutte le terre! Ti piace la mia nave lunga? Ha schiacciato sotto la chiglia mille dei miei nemici!",
 		"neutralHello": "Buonsalve.",
 		"neutralLetsHearIt": ["Sentiamo.","Va' avanti.","Sto ascoltando"],
 		"neutralNo": ["No.","Non oggi, temo.","Devo rifiutare."],
