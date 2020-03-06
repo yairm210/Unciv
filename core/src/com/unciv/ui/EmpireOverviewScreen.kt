@@ -3,6 +3,7 @@
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -382,6 +383,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
             civGroup.moveBy(vector.x*freeWidth/2.5f, vector.y*freeHeight/2.5f)
+            civGroup.touchable = Touchable.enabled
             civGroup.onClick {
                 onCivClicked(civLines, civ.civName)
             }
