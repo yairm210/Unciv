@@ -650,6 +650,14 @@ class MapGenerator(val ruleset: Ruleset) {
             }
         }
 
+        /**
+         * Generates a perlin noise channel combining multiple octaves
+         *
+         * [nOctaves] is the number of octaves
+         * [persistence] is the scaling factor of octave amplitudes
+         * [lacunarity] is the scaling factor of octave frequencies
+         * [scale] is the distance the noise is observed from
+         */
         private fun getPerlinNoise(tile: TileInfo, seed: Double,
                                    nOctaves: Int = 6,
                                    persistence: Double = 0.5,
@@ -659,6 +667,9 @@ class MapGenerator(val ruleset: Ruleset) {
             return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
         }
 
+        /**
+         * Generates ridged perlin noise. As for parameters see [getPerlinNoise]
+         */
         private fun getRidgedPerlinNoise(tile: TileInfo, seed: Double,
                                          nOctaves: Int = 10,
                                          persistence: Double = 0.5,
@@ -721,12 +732,3 @@ class MapGenerator(val ruleset: Ruleset) {
         // endregion
     }
 }
-
-class Area(var terrain: String) {
-    val tiles = ArrayList<TileInfo>()
-    fun addTile(tileInfo: TileInfo) {
-        tiles += tileInfo
-        tileInfo.baseTerrain = terrain
-    }
-}
-

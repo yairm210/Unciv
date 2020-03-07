@@ -14,8 +14,8 @@ class TileMap {
     @Transient var tileMatrix = ArrayList<ArrayList<TileInfo?>>() // this works several times faster than a hashmap, the performance difference is really astounding
     @Transient var leftX = 0
     @Transient var bottomY = 0
-    @delegate:Transient val maxLatitude: Float by lazy { values.map { abs(it.latitude) }.max() ?: 0f }
-    @delegate:Transient val maxLongitude: Float by lazy { values.map { abs(it.longitude) }.max() ?: 0f }
+    @delegate:Transient val maxLatitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.latitude) }.max()!! }
+    @delegate:Transient val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
 
     var mapParameters = MapParameters()
 
