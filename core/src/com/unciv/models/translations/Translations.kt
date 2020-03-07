@@ -32,7 +32,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
 
-    fun tryReadTranslationForLanguage(language: String){
+    private fun tryReadTranslationForLanguage(language: String){
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -65,7 +65,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
-    fun getLanguagesWithTranslationFile(): List<String> {
+    private fun getLanguagesWithTranslationFile(): List<String> {
 
         val languages = ArrayList<String>()
         // So apparently the Locales don't work for everyone, which is horrendous
@@ -122,7 +122,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationStart = System.currentTimeMillis()
 
         var allTranslations = 0
-        Gdx.files.internal("jsons/translations/template.properties")
+        Gdx.files.internal(TranslationFileReader().templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
         val notTranslatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass,
@@ -248,7 +248,6 @@ fun String.tr(): String {
         return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
 
-    val translation = UncivGame.Current.translations
-            .get(this, UncivGame.Current.settings.language) // single word
-    return translation
+    return UncivGame.Current.translations
+            .get(this, UncivGame.Current.settings.language)
 }
