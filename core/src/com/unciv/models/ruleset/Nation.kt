@@ -85,8 +85,10 @@ class Nation : INamed {
     fun getUniqueString(ruleset: Ruleset): String {
         val textList = ArrayList<String>()
 
-        textList += unique!!.verbose.tr()
-        textList += ""
+        if (unique != null) {
+            textList += unique!!.description.tr()
+            textList += ""
+        }
 
         addUniqueBuildingsText(textList,ruleset)
         addUniqueUnitsText(textList,ruleset)

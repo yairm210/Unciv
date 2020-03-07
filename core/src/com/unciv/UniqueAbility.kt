@@ -1,6 +1,6 @@
 package com.unciv
 
-enum class UniqueAbility(val verbose: String, val displayName: String) {
+enum class UniqueAbility(val description: String, val displayName: String) {
     GREAT_EXPANSE("Founded cities start with additional territory, Units receive a combat bonus when fighting within their own territory (+15% unit strength)", "Great Expanse"),
     INGENUITY("Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster", "Ingenuity"),
     HELLENIC_LEAGUE("City-State Influence degrades at half and recovers at twice the normal rate", "Hellenic League"),
@@ -26,6 +26,6 @@ enum class UniqueAbility(val verbose: String, val displayName: String) {
     SACRIFICIAL_CAPTIVES("Gain Culture for the empire from each enemy unit killed.", "Sacrificial Captives"),
     GREAT_ANDEAN_ROAD("Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.", "Great Andean Road"),
     VIKING_FURY("+1 Movement to all embarked units, units pay only 1 movement point to embark and disembark. Melee units pay no movement cost to pillage.", "Viking Fury"),
-    LION_OF_THE_NORTH("Gain 90 Influence with a Great Person gift to a City-State,When declaring friendship, Sweden and their friend gain a +10% boost to Great Person generation", "The Lion of the North,"),
+    LION_OF_THE_NORTH("Gain 90 Influence with a Great Person gift to a City-State,When declaring friendship, Sweden and their friend gain a +10% boost to Great Person generation", "The Lion of the North"),
     POPULATION_GROWTH("Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.", "Population Growth")
 }

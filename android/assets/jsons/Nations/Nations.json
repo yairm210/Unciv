@@ -725,7 +725,7 @@
 		"tradeRequest": " Accept this agreement or suffer the consequences.",
 		"outerColor": [255,51,51],
 		"innerColor": [153,255,255],
-		"unique": "SACRIFICIAL CAPTIVES",
+		"unique": "SACRIFICIAL_CAPTIVES",
 		"cities": ["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
 			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
 			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
