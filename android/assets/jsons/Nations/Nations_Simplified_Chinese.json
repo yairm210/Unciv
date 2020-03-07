@@ -29,8 +29,7 @@
 				
 		"outerColor": [27,53,63],
 		"innerColor": [213,249,255],
-		"uniqueName": "智慧创新",
-		"unique": "发明文字后立即获得一个大科学家，大科学家点数积累速率+50%",
+		"unique": "INGENUITY",
 		"cities": ["巴比伦","阿卡德","杜尔-库里加尔祖","尼普尔","博尔西帕","西帕尔","俄庇斯","马里","苏萨","埃什努那",
 			"以拉撒","乌鲁克","库塔","拉格什","内里布图","亚述","尼尼微","尼姆鲁德","埃尔比勒","努济",
 			"阿拉普哈","图图布","沙杜普姆","腊皮库姆","马什干-沙皮尔","图图尔","拉马迪","阿奈","哈拉杜姆","阿格拉布"]
@@ -62,6 +61,8 @@
 		
 		"afterPeace": "在通向胜利前偶尔也可以停下来欣赏风景。",
 		"tradeRequest": "我的朋友，这笔交易对你还算公平吧？",
+
+		"unique": "HELLENIC_LEAGUE",
 				
 		"outerColor": [181, 232, 232],
 		"innerColor": [68,142,249],
@@ -98,8 +99,7 @@
 				
 		"outerColor": [9, 112, 84],
 		"innerColor": [255,255,255],
-		"uniqueName": "兵法韬略",
-		"unique": "大军事家提供双倍战斗力加成，大军事家产生速率+50%",
+		"unique": "ART_OF_WAR",
 		"cities": ["北京","上海","广州","南京","西安","成都","杭州","天津","澳门","山东",
 			"开封","宁波","保定","扬州","哈尔滨","重庆","洛阳","昆明","台北","沈阳",
 			"太原","台南","大连","丽江","无锡","苏州","茂名","韶关","阳江","河源"]
@@ -134,8 +134,7 @@
 		
 		"outerColor": [ 231, 213, 0],
 		"innerColor": [98,10,210],
-		"uniqueName": "永恒建筑",
-		"unique": "建造奇观时产能积累速率+20%",
+		"unique": "MONUMENT_BUILDERS",
 		"cities": ["底比斯","孟斐斯","赫利奥波利斯","埃勒凡他尼","亚历山大","塔尔-拉美西斯","吉萨","比布鲁斯","阿肯塔顿","希拉孔波利斯",
 			"奥比都斯","艾斯尤特","阿瓦瑞斯","利斯特","布托","伊徳夫","皮索姆","布西里斯","卡洪","阿斯比斯",
 			"门迭斯","阿什穆嫩","塔尼斯","布巴斯提斯","奥里克斯","塞苯尼陀斯","阿赫姆","卡纳克","卢克索","艾尔卡布"]
@@ -170,8 +169,7 @@
 		
 		"outerColor": [ 114, 0, 0],
 		"innerColor": [255,255,255],
-		"uniqueName": "日不落",
-		"unique": "所有海军单位+2移动力",
+		"unique": "SUN_NEVER_SETS",
 		"cities": ["伦敦","约克","诺丁汉","海斯汀","坎特伯雷","考文垂","华威","纽卡斯尔","牛津","利物浦",
 			"多佛","博尔顿","诺维奇","利兹","雷丁","伯明翰","里士满(北约克)","埃克塞特","剑桥","格洛斯特",
 			"曼彻斯特","布里斯托","莱斯特","卡莱尔","伊普斯维奇","朴茨茅斯","贝里克","巴斯","马姆波利斯","南安普顿"]
@@ -205,8 +203,7 @@
 		
 		"outerColor": [ 38, 98, 255],
 		"innerColor": [239,236,148],
-		"uniqueName": "传统制度",
-		"unique": "获得蒸汽机科技前每个城市每回合+2文化",
+		"unique": "ANCIEN_REGIME",
 		"cities": ["巴黎","奥尔良","里昂","特鲁瓦","图尔","马赛","沙特尔","阿维尼翁","卢昂","格勒诺布尔",
 			"第戎","亚眠","瑟堡","普瓦捷","图卢兹","巴约纳","斯特拉斯堡","布雷斯特","波尔多","雷恩",
 			"尼斯","圣埃蒂安","南特","兰斯","勒芒","蒙彼利埃","利摩日","南锡","里尔","卡昂"]
@@ -241,8 +238,7 @@
 				
 		"outerColor": [ 236, 178, 0],
 		"innerColor": [0,0,0],
-		"uniqueName": "自然财富",
-		"unique": "每处战略资源+1产能，每处马、铁和铀资源储量加倍",
+		"unique": "SIBERIAN_RICHES",
 		"cities": ["莫斯科","圣彼得堡","诺夫哥罗德","罗斯托夫","雅罗斯拉夫尔","叶卡捷琳堡","雅库茨克","符拉迪沃斯托克","斯摩棱斯克","奥伦堡",
 			"克亚斯诺亚尔斯克","哈巴罗夫斯克","布良斯克","特维尔","新西伯利亚","马加丹","摩尔曼斯克","伊尔库兹克","赤塔","萨马拉",
 			"阿尔汉格尔斯克","车里雅宾斯克","托博尔斯克","沃洛格达","鄂木斯克","阿斯特拉罕","库尔斯克","萨拉托夫","图拉","弗拉基米尔"]
@@ -276,8 +272,7 @@
 				
 		"outerColor": [ 53,0,87],
 		"innerColor": [238,201,9],
-		"uniqueName": "罗马荣耀",
-		"unique": "在其他城市建造首都已有建筑时+25%产能积累",
+		"unique": "GLORY_OF_ROME",
 		"cities": ["罗马","阿提乌姆","库迈","那不勒斯","拉维纳","亚雷提乌姆","米兰","阿尔庇努姆","科尔切伊","赛提亚",
 			"赛崔克穆","阿尔黛雅","奥斯提亚","维丽特莱","韦洛克尼姆","塔伦图姆","布林迪西姆","凯撒奥古斯塔","凯撒利亚","帕尔米拉",
 			"锡耶纳","阿奎莱亚","克鲁西姆","苏特留姆","克雷莫纳","普拉什提亚","斯帕里斯","阿萨克塔萨","奥瑞拉诺茹姆","尼科波利斯"]
@@ -312,8 +307,7 @@
 				
 		"outerColor": [ 41,83,42],
 		"innerColor": [146,221,9],
-		"uniqueName": "沙漠之舟",
-		"unique": "每条贸易路线+1金钱，石油资源储量加倍",
+		"unique": "TRADE_CARAVANS",
 		"cities": ["麦加","麦地那","大马士革","巴格达","那基兰","库费","巴士拉","呼罗珊","安嘉尔","福斯塔",
 			"亚丁","叶麻默","马斯喀特","曼苏拉","布哈拉","菲斯","西拉兹","梅尔维","巴尔赫","摩苏尔",
 			"艾达布","贝特","苏哈尔","塔伊夫","哈玛","塔布克","萨纳","斯遏","的黎波里","突尼斯"]
@@ -347,8 +341,7 @@
 				
 		"outerColor": [ 28,51,119],
 		"innerColor": [255,255,255],
-		"uniqueName": "昭昭天命",
-		"unique": "陆军单位+1视野，购买地块费用-50%",
+		"unique": "MANIFEST_DESTINY",
 		"cities": ["华盛顿","纽约","波士顿","费城","亚特兰大","芝加哥","西雅图","旧金山","洛杉矶","休斯敦",
 			"波特兰","圣路易斯","迈阿密","布法罗","底特律","新奥尔良","巴尔的摩","丹佛","辛辛那提","达拉斯","孟菲斯",
 			"克里夫兰","肯萨斯城","圣地亚哥","里士满","拉斯维加斯","菲尼克斯","阿尔伯克基","明尼阿波丽斯","匹兹堡"]
@@ -383,8 +376,7 @@
 				
 		"outerColor": [215,225,225],
 		"innerColor": [185,0,0],
-		"uniqueName": "武士道",
-		"unique": "受伤单位造成的伤害不减",
+		"unique": "BUSHIDO",
 		"cities": ["京都","大阪","东京","萨摩","鹿儿岛","奈良","名古屋","出云","长崎","横滨","下关","松山","札幌","函馆","伊势","富山","福岛","周防","备前","越前","和泉","近江","越后","高崎","佐渡","神户","长野","广岛","高山","秋田","福冈","青森","镰仓","高知","那霸","仙台","岐阜","山口","大田","鸟取"]
 	},
 	
@@ -412,8 +404,7 @@
 		"tradeRequest": "It would be in your best interest, to carefully consider this proposal.",
 		"outerColor": [224,224,224],
 		"innerColor": [64,64,64],
-		"uniqueName": "Furor Teutonicus",
-		"unique": "击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%",
+		"unique": "FUROR_TEUTONICUS",
 		"cities": ["柏林","汉堡","慕尼黑","科隆","法兰克福","埃森","多特蒙德","斯图加特","杜塞尔多夫","不来梅",
 			"汉诺威","杜伊斯堡","莱比锡","德累斯顿","波恩","波鸿","比勒菲尔德","卡尔斯鲁厄","盖尔森基兴","威斯巴登",
 			"芒斯特","罗斯托克","开姆尼斯","布伦瑞克","哈雷","门兴格拉德巴赫","基尔","伍珀塔尔","弗莱堡","哈根",
@@ -446,7 +437,7 @@
 		"tradeRequest": "My friend, are you interested in this arrangement?",
 		"outerColor": [0,255,0],
 		"innerColor": [255,153,51],
-		"unique": "城市数量导致的不满加倍，市民数量导致的不满减半",
+		"unique": "POPULATION_GROWTH",
 		"cities": ["德里","孟买","毗奢耶那伽罗","华氏城","瓦拉纳西","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
@@ -476,7 +467,7 @@
 		"tradeRequest": " Accept this agreement or suffer the consequences.",
 		"outerColor": [255,51,51],
 		"innerColor": [153,255,255],
-		"unique": "Gain Culture for the empire from each enemy unit killed.",
+		"unique": "SACRIFICIAL_CAPTIVES",
 		"cities": ["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
 	},
 	{
@@ -503,7 +494,7 @@
 		"tradeRequest": "I am not always this generous, but we hope you take this rare opportunity we give you.",
 		"outerColor": [51,0,0],
 		"innerColor": [0,204,102],
-		"unique": "All mounted units have +1 Movement. +30% when assaulting cities,",
+		"unique": "MONGOL_TERROR",
 		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan","Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
 	},
 	{
@@ -528,7 +519,7 @@
 		"tradeRequest": "The Incan people offer this fair trade.",
 		"outerColor": [255,255,51],
 		"innerColor": [0,204,102],
-		"unique": "Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
+		"unique": "GREAT_ANDEAN_ROAD.",
 		"cities": ["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	},
 	*/
@@ -557,7 +548,7 @@
 		"tradeRequest": "We have many things to discuss and have much to benefit from each other.",
 		"outerColor": [20,25,173],
 		"innerColor": [187,33,51],
-		"unique": "所有专业人员和伟人设施+2科研",
+		"unique": "SCHOLARS_OF_THE_JADE_HALL",
 		"cities": ["首尔","釜山","全州","大邱","平壤","开城","水原","光州","江陵","咸兴","原州","蔚山","昌原","安东","公州","海州","清州","木浦","东豆川","巨济","顺天","晋州","尚州","罗先","庆州","忠州","泗川","金堤","安州"]
 	},
 	/*
@@ -583,7 +574,7 @@
 		"tradeRequest": "Can I interest you in this deal?",
 		"outerColor": [204,102,0],
 		"innerColor": [255,0,0],
-		"unique": "Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
+		"unique": "RIVER_WARLORD",
 		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
 	*/
@@ -612,7 +603,7 @@
 		"tradeRequest": "Let us do business! Would you be interested?",
 		"outerColor": [204,255,229],
 		"innerColor": [0,102,0],
-		"unique": "海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位",
+		"unique": "BARBARY_CORSAIRS",
 		"cities": ["伊斯坦布尔","埃迪尔内","安卡拉","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
 	},
 	{
@@ -641,8 +632,7 @@
 		"tradeRequest": "Does this trade work for you, my friend?",
 		"outerColor": [54,72,72],
 		"innerColor": [246,205,137],
-		"uniqueName": "The Great Warpath",
-		"unique": "单位在己方森林和丛林地块上移动时视同在道路上移动，此类地块在研究轮子科技后可建立城市连接",
+		"unique": "GREAT_WARPATH",
 		"cities": ["奥内达加","奥斯尼卡","格兰德里弗","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
@@ -673,8 +663,7 @@
 		"tradeRequest": "In my endless magnanimity, I am making you this offer. You agree, of course?",
 		"outerColor": [153,5,3],
 		"innerColor": [244,232,54],
-		"uniqueName": "Achaemenid Legacy",
-		"unique": "黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力",
+		"unique": "ACHAEMENID_LEGACY",
 		"cities": ["波斯波利斯","帕萨加迪","苏萨","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
@@ -709,8 +698,7 @@
 		"tradeRequest": "Come, let our people feast together!",
 		"outerColor": [225,105,0],
 		"innerColor": [255,255,78],
-		"uniqueName": "Wayfinding",
-		"unique": "单位初始就拥有船运能力，可进入海滨和海洋地块，单位处于船运状态时+1视野。摩艾石像群周围2格内单位+10%战斗力",
+		"unique": "WAYFINDING",
 		"cities": ["火奴鲁鲁","萨摩亚","汤加","努库希瓦","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
@@ -742,8 +730,7 @@
 		"tradeRequest": "Greetings. I believe this is a fair proposal for both parties. What do you think?",
 		"outerColor": [228,208,43],
 		"innerColor": [193,21,17],
-		"uniqueName": "Father Governs Children",
-		"unique": "友好城邦提供的食物和文化增加50%",
+		"unique": "FATHER_GOVERNS_CHILDREN",
 		"cities": ["素可泰","西萨查那莱","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
@@ -772,7 +759,7 @@
 		"tradeRequest": "This is a fine deal! Even a drunk beggar would agree!",
 		"outerColor": [51,25,0],
 		"innerColor": [255,255,102],
-		"unique": "+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa.",
+		"unique": "VIKING_FURY",
 		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
 	*/

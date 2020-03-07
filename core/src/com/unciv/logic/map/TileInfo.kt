@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
@@ -165,7 +166,7 @@ open class TileInfo {
             stats.add(wonder)
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.") {
+            if (city != null && city.civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD) {
                 stats.add(wonder)
             }
         }
@@ -178,7 +179,7 @@ open class TileInfo {
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic
-                    && observingCiv.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
+                    && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
                 stats.production+=1
             if(resource.name=="Oil" && city!=null
                     && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
@@ -227,7 +228,7 @@ open class TileInfo {
             stats.gold += 1f
         if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
             stats.add(improvement) // again, for the double effect
-        if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
+        if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science += 2
 
         if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))

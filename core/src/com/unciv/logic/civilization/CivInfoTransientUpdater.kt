@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UniqueAbility
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 
@@ -92,7 +93,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 goldGained += 500
             }
 
-            if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.") {
+            if (civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD) {
                 if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
                     goldGained += 500
                 else goldGained += 100

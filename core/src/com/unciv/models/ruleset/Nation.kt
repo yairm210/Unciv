@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
@@ -48,7 +49,7 @@ class Nation : INamed {
     var afterPeace=""
 
     lateinit var outerColor: List<Int>
-    var unique:String?=null
+    var unique:UniqueAbility?=null
     var innerColor: List<Int>?=null
     var startBias = ArrayList<String>()
 
@@ -72,7 +73,7 @@ class Nation : INamed {
         if(innerColor==null) innerColorObject = Color.BLACK
         else innerColorObject = colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
 
-        if(unique == "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
+        if(unique == UniqueAbility.GREAT_WARPATH)
             forestsAndJunglesAreRoads = true
     }
 
@@ -85,7 +86,7 @@ class Nation : INamed {
         val textList = ArrayList<String>()
 
         if (unique != null) {
-            textList += unique!!.tr()
+            textList += unique!!.description.tr()
             textList += ""
         }
 
