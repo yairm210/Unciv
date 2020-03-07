@@ -54,15 +54,16 @@ class UnitAutomation {
         }
 
         internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-            val upgradesTo = unit.baseUnit().upgradesTo ?: return false
+            val upgradesTo = unit.baseUnit().upgradesTo
+            if (upgradesTo == null) return false
 
             val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units.getValue(upgradesTo)
             if (!upgradedUnit.isBuildable(unit.civInfo)) return false
 
-            val upgradeAction = UnitActions.getUpgradeAction(unit, unit.getTile(), upgradedUnit, 0)
-                    ?: return false
+            val upgradeAction = UnitActions.getUpgradeAction(unit)
+            if (upgradeAction == null) return false
 
-            upgradeAction.invoke()
+            upgradeAction.action?.invoke()
             return true
         }
     }
@@ -198,7 +199,7 @@ class UnitAutomation {
         if (unit.getTile() != tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
-        UnitActions.getPillageAction(unit, tileToPillage)?.invoke()
+        UnitActions.getPillageAction(unit)?.action?.invoke()
         return true
     }
 
