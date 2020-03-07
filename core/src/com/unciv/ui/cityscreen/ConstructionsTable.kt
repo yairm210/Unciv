@@ -275,11 +275,13 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val cityConstructions = city.cityConstructions
 
         val button = TextButton("", CameraStageBaseScreen.skin)
-
         if (construction == null || !construction.canBePurchased()
                 || !construction.isBuildable(cityConstructions)
                 || !UncivGame.Current.worldScreen.isPlayersTurn
-                || city.isPuppet || city.isInResistance()) {
+                || city.isPuppet || city.isInResistance()
+                || !city.canPurchase(construction)
+        )
+        {
             button.setText("Buy".tr())
             button.disable()
         } else {
@@ -300,7 +302,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                         selectedQueueEntry = -2
                         cityScreen.selectedConstruction = null
                     }
-                    if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
+                    if (!construction.shouldBeDisplayed(cityConstructions))
+                        cityScreen.selectedConstruction = null
                     cityScreen.update()
                 }
             }

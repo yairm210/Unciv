@@ -17,6 +17,8 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -587,6 +589,23 @@ class CityInfo {
                 .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for(otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
+    }
+
+    private fun hasUnitOfType(type: UnitType) : Boolean
+    {
+        for(unit in getCenterTile().getUnits()) {
+            if(unit.type == type) return true
+        }
+        return false
+    }
+
+    fun canPurchase(construction : IConstruction) : Boolean
+    {
+        when(construction)
+        {
+            is BaseUnit -> return !(hasUnitOfType(construction.unitType))
+            else -> return true
+        }
     }
     //endregion
 }

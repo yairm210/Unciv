@@ -160,6 +160,9 @@ class BaseUnit : INamed, IConstruction {
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
 
+        //movement penalty
+        if(unit.name != "Landsknecht")
+        unit.currentMovement = 0f
         return true
     }
 
