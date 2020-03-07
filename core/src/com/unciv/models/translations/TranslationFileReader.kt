@@ -1,6 +1,8 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.JsonParser
+import com.unciv.models.ruleset.Nation
 import java.nio.charset.Charset
 import kotlin.collections.set
 
@@ -47,6 +49,7 @@ class TranslationFileReader{
 
 
     fun writeNewTranslationFiles(translations: Translations) {
+
         for (language in translations.getLanguages()) {
             val languageHashmap = HashMap<String, String>()
 
@@ -78,6 +81,30 @@ class TranslationFileReader{
             hashmap[splitLine[0]]=splitLine[1].toInt()
         }
         return hashmap
+    }
+
+    private fun generateNationsStrings(): Collection<String> {
+
+        val nations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations/Nations.json")
+        val strings = mutableSetOf<String>() // using set to avoid duplicates
+
+        for (nation in nations) {
+            for (field in nation.javaClass.declaredFields
+                    .filter { it.type == String::class.java || it.type == java.util.ArrayList::class.java }) {
+                field.isAccessible = true
+                val fieldValue = field.get(nation)
+                if (field.name != "startBias" && // skip fields which must not be translated
+                        fieldValue != null && fieldValue != "") {
+
+                    if (fieldValue is ArrayList<*>) {
+                        for (item in fieldValue)
+                            strings.add("$item = ")
+                    } else
+                        strings.add("$fieldValue = ")
+                }
+            }
+        }
+        return strings
     }
 
 }

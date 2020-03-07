@@ -76,7 +76,7 @@ class Nation : INamed {
             forestsAndJunglesAreRoads = true
     }
 
-    lateinit var cities: List<String>
+    lateinit var cities: ArrayList<String>
 
 
 
