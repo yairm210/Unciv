@@ -35,7 +35,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     fun tryReadTranslationForLanguage(language: String){
         val translationStart = System.currentTimeMillis()
 
-        val translationFileName = "jsons/translationsByLanguage/$language.properties"
+        val translationFileName = "jsons/translations/$language.properties"
         if (!Gdx.files.internal(translationFileName).exists()) return
 
         val languageTranslations:HashMap<String,String>
@@ -71,7 +71,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // So apparently the Locales don't work for everyone, which is horrendous
         // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
         try{
-            for(file in Gdx.files.internal("jsons/translationsByLanguage").list())
+            for(file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
         catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
@@ -90,7 +90,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         return languages.distinct()
                 .filter { it!="Thai" &&
-                        Gdx.files.internal("jsons/translationsByLanguage/$it.properties").exists() }
+                        Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
     fun readAllLanguagesTranslation() {
@@ -122,14 +122,14 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationStart = System.currentTimeMillis()
 
         var allTranslations = 0
-        Gdx.files.internal("jsons/translationsByLanguage/template.properties")
+        Gdx.files.internal("jsons/translations/template.properties")
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
         val notTranslatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass,
                 "jsons/Nations/Nations.json")
 
         for(language in getLanguagesWithTranslationFile()){
-            val translationFileName = "jsons/translationsByLanguage/$language.properties"
+            val translationFileName = "jsons/translations/$language.properties"
             var translationsOfThisLanguage=0
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))

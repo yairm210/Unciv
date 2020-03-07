@@ -6,8 +6,8 @@ import kotlin.collections.set
 
 class TranslationFileReader{
 
-    private val percentagesFileLocation = "jsons/translationsByLanguage/completionPercentages.properties"
-    val templateFileLocation = "jsons/translationsByLanguage/template.properties"
+    private val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
+    val templateFileLocation = "jsons/translations/template.properties"
     private val charset = Charset.forName("UTF-8").name()
 
     fun read(translationFile: String): LinkedHashMap<String, String> {
@@ -41,7 +41,7 @@ class TranslationFileReader{
                     " = "+ translationValue.replace("\n","\\n")
             stringBuilder.appendln(lineToWrite)
         }
-        Gdx.files.local("jsons/translationsByLanguage/$language.properties")
+        Gdx.files.local("jsons/translations/$language.properties")
                 .writeString(stringBuilder.toString(),false,charset)
     }
 
