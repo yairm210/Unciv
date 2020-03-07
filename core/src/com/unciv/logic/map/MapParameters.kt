@@ -39,21 +39,21 @@ class MapParameters {
     var seed: Long = 0
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2
-    var mountainProbability = 0.10f
-    var temperatureExtremeness = 0.30f
-    var terrainFeatureRichness = 0.30f
+    var elevationExponent = 0.8f
+    var temperatureExtremeness = 0.70f
+    var vegetationRichness = 0.4f
+    var rareFeaturesRichness = 0.05f
     var resourceRichness = 0.10f
-    var waterProbability = 0.05f
-    var landProbability = 0.55f
+    var waterThreshold = 0f
 
     fun resetAdvancedSettings() {
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
-        mountainProbability = 0.10f
-        temperatureExtremeness = 0.30f
-        terrainFeatureRichness = 0.30f
+        elevationExponent = 0.8f
+        temperatureExtremeness = 0.70f
+        vegetationRichness = 0.4f
+        rareFeaturesRichness = 0.05f
         resourceRichness = 0.10f
-        waterProbability = 0.05f
-        landProbability = 0.55f
+        waterThreshold = 0f
     }
 }
