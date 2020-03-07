@@ -121,7 +121,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val percentComplete = HashMap<String,Int>()
         val translationStart = System.currentTimeMillis()
 
-        var allTranslations = 0
+        var allTranslations = TranslationFileReader().generateNationsStrings().size
         Gdx.files.internal(TranslationFileReader().templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 

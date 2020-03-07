@@ -28,9 +28,15 @@ class TranslationFileReader{
     }
 
     private fun writeByTemplate(language:String, translations: HashMap<String, String>){
+
         val templateFile = Gdx.files.internal(templateFileLocation)
+        val linesFromTemplates = mutableListOf<String>()
+        linesFromTemplates.addAll(templateFile.reader().readLines())
+        linesFromTemplates.add("\n#################### Lines from Nations.json ####################\n")
+        linesFromTemplates.addAll(generateNationsStrings())
+
         val stringBuilder = StringBuilder()
-        for(line in templateFile.reader().readLines()){
+        for(line in linesFromTemplates){
             if(!line.contains(" = ")){ // copy as-is
                 stringBuilder.appendln(line)
                 continue
@@ -83,7 +89,7 @@ class TranslationFileReader{
         return hashmap
     }
 
-    private fun generateNationsStrings(): Collection<String> {
+    fun generateNationsStrings(): Collection<String> {
 
         val nations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations/Nations.json")
         val strings = mutableSetOf<String>() // using set to avoid duplicates
