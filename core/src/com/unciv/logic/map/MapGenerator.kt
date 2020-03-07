@@ -603,12 +603,8 @@ class MapGenerator(val ruleset: Ruleset) {
         private fun createArchipelago(tileMap: TileMap) {
             val elevationSeed = RNG.nextInt().toDouble()
             for (tile in tileMap.values) {
-                var elevation = getRidgedPerlinNoise(tile, elevationSeed)-0.25
-
-                when {
-                    elevation < 0 -> tile.baseTerrain = Constants.ocean
-                    else -> tile.baseTerrain = Constants.grassland
-                }
+                var elevation = getRidgedPerlinNoise(tile, elevationSeed)
+                spawnLandOrWater(tile, elevation, 0.25 + tileMap.mapParameters.waterThreshold.toDouble())
             }
         }
 
