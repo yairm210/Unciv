@@ -40,20 +40,20 @@ class MapParameters {
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2
     var elevationExponent = 0.8f
-    var temperatureExtremeness = 0.70f
+    var temperatureExtremeness = 0.6f
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
-    var resourceRichness = 0.10f
+    var resourceRichness = 0.1f
     var waterThreshold = 0f
 
     fun resetAdvancedSettings() {
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
         elevationExponent = 0.8f
-        temperatureExtremeness = 0.70f
+        temperatureExtremeness = 0.6f
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f
-        resourceRichness = 0.10f
+        resourceRichness = 0.1f
         waterThreshold = 0f
     }
 }

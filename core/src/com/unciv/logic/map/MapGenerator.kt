@@ -387,7 +387,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
     /**
      * Spreads resources of type [resourceType] picking locations at [distance] from each other.
-     * [resourceRichness] (0 to 1) used to control how many resources to spawn.
+     * [MapParameters.resourceRichness] used to control how many resources to spawn.
      */
     private fun spreadResources(tileMap: TileMap, distance: Int, resourceType: ResourceType) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == resourceType }
@@ -444,7 +444,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     /**
-     * [elevationExponent] is the parameter for height? 0.05 (super mountaneous) to 1 (plainish)?
+     * [MapParameters.elevationExponent] favors high elevation
      */
     private fun raiseMountainsAndHills(tileMap: TileMap) {
         val elevationSeed = RNG.nextInt().toDouble()
@@ -460,8 +460,8 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     /**
-     * [scale] to set "biomes" size
-     * [temperatureExtremeness] to favor very high and very low temperatures
+     * [MapParameters.tilesPerBiomeArea] to set biomes size
+     * [MapParameters.temperatureExtremeness] to favor very high and very low temperatures
      */
     private fun applyHumidityAndTemperature(tileMap: TileMap) {
         val humiditySeed = RNG.nextInt().toDouble()
@@ -511,7 +511,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     /**
-     * [vegetationOccurrance] is the parameter threshold
+     * [MapParameters.vegetationOccurrance] is the threshold for vegetation spawn
      */
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = RNG.nextInt().toDouble()
@@ -524,7 +524,7 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
     /**
-     * [rareFeaturesProbability]
+     * [MapParameters.rareFeaturesProbability] is the probability of spawning a rare feature
      */
     private fun spawnRareFeatures(tileMap: TileMap) {
         val rareFeatures = ruleset.terrains.values.filter {
@@ -542,7 +542,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     /**
-     * [temperatureExtremeness] as in [applyHumidityAndTemperature]
+     * [MapParameters.temperatureExtremeness] as in [applyHumidityAndTemperature]
      */
     private fun spawnIce(tileMap: TileMap) {
         tileMap.setTransients(ruleset)
@@ -551,10 +551,11 @@ class MapGenerator(val ruleset: Ruleset) {
             if (tile.baseTerrain !in Constants.sea || tile.terrainFeature != null)
                 continue
 
-            val randomTemperature = (getPerlinNoise(tile, temperatureSeed, nOctaves = 1) + 1.0)/2.0
-            val latitudeTemperature = 1.0 - abs(tile.latitude) / tileMap.maxLatitude
-            val temperature = ((5.0 * latitudeTemperature + randomTemperature) / 6.0).pow(1.0 - tileMap.mapParameters.temperatureExtremeness.toDouble())
-            if (temperature < 0.2)
+            val randomTemperature = getPerlinNoise(tile, temperatureSeed, scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble(), nOctaves = 1)
+            val latitudeTemperature = 1.0 - 2.0 * abs(tile.latitude) / tileMap.maxLatitude
+            var temperature = ((latitudeTemperature + randomTemperature) / 2.0)
+            temperature = abs(temperature).pow(1.0 - tileMap.mapParameters.temperatureExtremeness) * temperature.sign
+            if (temperature < -0.8)
                 tile.terrainFeature = Constants.ice
         }
     }
