@@ -22,14 +22,14 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
     init{
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
         val nation = requestingCiv.nation
-        val otherCivLeaderName = "[${nation.leaderName}] of [${nation.getNameTranslation()}]".tr()
+        val otherCivLeaderName = "[${nation.leaderName}] of [${nation.name}]".tr()
 
         add(otherCivLeaderName.toLabel())
         addSeparator()
 
         val trade = tradeRequest.trade
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
-        tradeOffersTable.add("[${nation.getNameTranslation()}]'s trade offer".toLabel())
+        tradeOffersTable.add("[${nation.name}]'s trade offer".toLabel())
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
         for(i in 0..max(trade.theirOffers.lastIndex, trade.ourOffers.lastIndex)){

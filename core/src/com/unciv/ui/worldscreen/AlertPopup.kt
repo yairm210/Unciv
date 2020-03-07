@@ -48,7 +48,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val nation = civInfo.nation
                 if (civInfo.isCityState()) {
                     addLeaderName(civInfo)
-                    addGoodSizedLabel("We have encountered the City-State of [${nation.getNameTranslation()}]!").row()
+                    addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
                     addLeaderName(civInfo)

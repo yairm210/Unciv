@@ -16,15 +16,10 @@ enum class VictoryType{
 
 class Nation : INamed {
     override lateinit var name: String
-    var translatedName=""
-    fun getNameTranslation(): String {
-        if(translatedName!="") return translatedName
-        else return name
-    }
 
     var leaderName=""
-    fun getLeaderDisplayName() = if(isCityState()) getNameTranslation()
-        else "[$leaderName] of [${getNameTranslation()}]"
+    fun getLeaderDisplayName() = if(isCityState()) name
+        else "[$leaderName] of [$name]"
 
     var cityStateType: CityStateType?=null
     var preferredVictoryType:VictoryType = VictoryType.Neutral
