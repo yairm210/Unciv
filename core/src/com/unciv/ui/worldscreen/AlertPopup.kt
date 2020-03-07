@@ -31,7 +31,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.WarDeclaration -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
-                addGoodSizedLabel(civInfo.getTranslatedNation().declaringWar).row()
+                addGoodSizedLabel(civInfo.nation.declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
@@ -40,19 +40,19 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.Defeated -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
-                addGoodSizedLabel(civInfo.getTranslatedNation().defeated).row()
+                addGoodSizedLabel(civInfo.nation.defeated).row()
                 add(getCloseButton("Farewell."))
             }
             AlertType.FirstContact -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val translatedNation = civInfo.getTranslatedNation()
+                val nation = civInfo.nation
                 if (civInfo.isCityState()) {
                     addLeaderName(civInfo)
-                    addGoodSizedLabel("We have encountered the City-State of [${translatedNation.getNameTranslation()}]!").row()
+                    addGoodSizedLabel("We have encountered the City-State of [${nation.getNameTranslation()}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
                     addLeaderName(civInfo)
-                    addGoodSizedLabel(translatedNation.introduction).row()
+                    addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
                 }
             }

@@ -125,9 +125,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         Gdx.files.internal(TranslationFileReader().templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
-        val notTranslatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass,
-                "jsons/Nations/Nations.json")
-
         for(language in getLanguagesWithTranslationFile()){
             val translationFileName = "jsons/translations/$language.properties"
             var translationsOfThisLanguage=0
@@ -135,54 +132,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
 
-            val translatedAndTotal = calculatePercentageForNationsFile(language, notTranslatedNations)
-            translationsOfThisLanguage += translatedAndTotal.first
-
-            percentComplete[language] = translationsOfThisLanguage*100/(allTranslations+translatedAndTotal.second)
+            percentComplete[language] = translationsOfThisLanguage*100/allTranslations
         }
 
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Calculating percentage complete of languages - "+translationFilesTime+"ms")
         return percentComplete
-    }
-
-    private fun calculatePercentageForNationsFile(language: String, originalNations: Array<Nation>): Pair<Int, Int> {
-
-        val translationFileName = "jsons/Nations/Nations_$language.json"
-        val translationFile = Gdx.files.internal(translationFileName)
-        if (!translationFile.exists()) {
-            // calculate how many fields are missing
-            val allTranslatables = Nation::class.java.declaredFields.count {
-                it.type == String::class.java || it.type == ArrayList::class.java}
-            return Pair(0, allTranslatables*originalNations.size)
-        }
-
-        var translationsOfThisLanguage = 0
-        var allTranslations = 0
-
-        val translatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, translationFileName)
-
-        for (nation in originalNations)
-        {
-            val translatedNation = translatedNations.find { it.name == nation.name }
-
-            for (field in nation.javaClass.declaredFields.
-                    filter { it.type == String::class.java || it.type == ArrayList::class.java}) {
-                field.isAccessible = true
-                val originalValue = field.get(nation)
-                if (translatedNation != null && // we could exit *before* this loop, however, we need it here to count not translated fields
-                        (field.name in setOf("name", "startBias") || // skip fields which must not be translated
-                        originalValue == null || originalValue == "" ||
-                        ((originalValue is ArrayList<*>) && originalValue.isEmpty()) ||
-                        originalValue != field.get(translatedNation)))
-                    translationsOfThisLanguage++
-
-                allTranslations++
-            }
-        }
-
-        return Pair(translationsOfThisLanguage, allTranslations)
     }
 
     companion object {

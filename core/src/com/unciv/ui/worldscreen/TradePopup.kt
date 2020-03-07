@@ -21,15 +21,15 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
     init{
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
-        val translatedNation = requestingCiv.getTranslatedNation()
-        val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
+        val nation = requestingCiv.nation
+        val otherCivLeaderName = "[${nation.leaderName}] of [${nation.getNameTranslation()}]".tr()
 
         add(otherCivLeaderName.toLabel())
         addSeparator()
 
         val trade = tradeRequest.trade
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
-        tradeOffersTable.add("[${translatedNation.getNameTranslation()}]'s trade offer".toLabel())
+        tradeOffersTable.add("[${nation.getNameTranslation()}]'s trade offer".toLabel())
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
         for(i in 0..max(trade.theirOffers.lastIndex, trade.ourOffers.lastIndex)){
@@ -44,7 +44,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height/2)
         add(ScrollPane(tradeOffersTable)).height(scrollHeight).row()
 
-        addGoodSizedLabel(translatedNation.tradeRequest).colspan(columns).row()
+        addGoodSizedLabel(nation.tradeRequest).colspan(columns).row()
 
         addButton("Sounds good!"){
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)

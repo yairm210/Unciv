@@ -91,7 +91,7 @@ class TranslationFileReader{
 
     fun generateNationsStrings(): Collection<String> {
 
-        val nations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations/Nations.json")
+        val nations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations.json")
         val strings = mutableSetOf<String>() // using set to avoid duplicates
 
         for (nation in nations) {

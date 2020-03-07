@@ -174,15 +174,6 @@ class TranslationTests {
         return allStringsHaveTranslation
     }
 
-    @Test
-    fun allTranslatedNationsFilesAreSerializable() {
-        for (file in Gdx.files.internal("jsons/Nations").list()) {
-            jsonParser.getFromJson(emptyArray<Nation>().javaClass, file.path())
-        }
-        Assert.assertTrue("This test will only pass when there is a translation for all promotions",
-                true)
-    }
-
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
     fun allTranslationsHaveCorrectPlaceholders() {
