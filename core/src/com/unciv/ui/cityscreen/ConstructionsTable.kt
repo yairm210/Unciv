@@ -310,9 +310,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
 
             button.onClick(UncivSound.Coin) {
+                button.disable()
+                cityScreen.closeAllPopups()
+
                 val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n\n" +
                         "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
-                YesNoPopup(purchasePrompt, { purchaseConstruction() }, cityScreen).open()
+                YesNoPopup(purchasePrompt, { purchaseConstruction() }, cityScreen, { cityScreen.update() }).open()
             }
 
             if (constructionGoldCost > city.civInfo.gold)
