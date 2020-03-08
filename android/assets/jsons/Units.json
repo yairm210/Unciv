@@ -29,6 +29,20 @@
 		"attackSound": "nonmetalhit"
 	},
 	{
+		"name": "Pathfinder",
+		"unitType": "Scout",
+		"uniqueTo": "Shoshone",
+		"replaces": "Scout",
+		"movement": 2,
+		"strength": 8,
+		"cost": 45,
+		"hurryCostModifier": 20,
+		"uniques": ["Ignores terrain cost"],
+		"obsoleteTech": "Metal Casting",
+		"upgradesTo": "Bowman",
+		"attackSound": "nonmetalhit"
+	},
+	{
 		"name": "Warrior",
 		"unitType": "Melee",
 		"movement": 2,
@@ -924,6 +938,21 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		"hurryCostModifier": 20,
+		"attackSound": "horse"
+	},
+	{
+		"name": "Comanche Riders",
+		"unitType": "Mounted",
+		"replaces": "Cavalry",
+		"uniqueTo": "Shoshone",
+		"movement": 5,
+		"strength": 34,
+		"cost": 200,
+		"requiredTech": "Military Science",
+		"requiredResource": "Horses",
+		"upgradesTo": "Landship",
+		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%"],
 		"hurryCostModifier": 20,
 		"attackSound": "horse"
 	},

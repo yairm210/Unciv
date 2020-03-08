@@ -96,6 +96,15 @@ class CityExpansionManager {
         }
     }
 
+    fun addTilesArbitrarily(numOfTiles: Int) {
+        for (i in 1..numOfTiles) {
+            val chosenTile = chooseNewTileToOwn()
+            if(chosenTile!=null){
+                takeOwnership(chosenTile)
+            }
+        }
+    }
+
     fun relinquishOwnership(tileInfo: TileInfo){
         cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
         if(cityInfo.workedTiles.contains(tileInfo.position))

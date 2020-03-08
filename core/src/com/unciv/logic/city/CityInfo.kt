@@ -85,6 +85,8 @@ class CityInfo {
             civInfo.policies.tryAddLegalismBuildings()
 
         expansion.reset()
+        if (civInfo.nation.unique == UniqueAbility.GREAT_EXPANSE)
+            expansion.addTilesArbitrarily(8);
 
         val tile = getCenterTile()
 

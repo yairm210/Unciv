@@ -698,6 +698,39 @@
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor",
 			"Har-Ayrag","Nalayh","Tes"]
 	},
+	{
+		"name": "Shoshone",
+		"leaderName": "Pocatello",
+		"adjective": ["Shoshonese"],
+		"startBias": ["None"],
+//		"preferredVictoryType": "Diplomatic",
+
+		"startIntroPart1": "Blessings be upon you, wise and fearsome Chief Pocatello, revered leader of the Shoshone people. As the young chieftain of the Shoshone, you rose to face a wave of encroaching American settlements across the western United States. Forced to defend the Shoshone ancestral lands from a seemingly endless stream of new emigrants, your war band struck fear into those who would claim the sacred lands of your people. After years of strife, you skillfully avoided a direct conflict with the armies of the U.S. government, and negotiated a series of treaties in the hopes of establishing a lasting peace for the Shoshone.",
+		"startIntroPart2": "Most esteemed Pocatello, your people once again look to you for guidance. Will you conquer your enemies, driving them far from your lands? Or will you seek out peaceful diplomacy and trade? Will you build a civilization that stands the test of time?",
+
+		"declaringWar": "Shoshone, we will kill the white man!",
+		"attacked": "You are clearly unfit to be the ruler of even the most pathetic kingdom.",
+		"defeated": "This will not be the end of my people, I assure you.",
+		"introduction": "Welcome! Let us remember this day when we met in peace.",
+
+		"neutralHello": "Greetings.",
+		"neutralLetsHearIt": ["What do you propose?","Let's hear your offer."],
+		"neutralNo": ["Are you offering deals you know I won't accept?","Certainly not.","Unacceptable."],
+		"neutralYes": ["I must accept.","Your offer is generous, and I accept."],
+
+		"hateHello": "What do YOU want?!",
+		"hateLetsHearIt": ["I'm certainly listening.","I'm listening!"],
+		"hateNo": ["No!", "Perhaps no", "Be alert, foreigner."],
+		"hateYes": ["Yes, I must!", "This is the one you ask for."],
+
+		"afterPeace": "This loss will do little to dampen our spirit.",
+		"tradeRequest": "Would you listen to my proposal?",
+
+		"innerColor": [72, 242, 221],
+		"outerColor": [43, 41, 31],
+		"unique": "GREAT_EXPANSE",
+		"cities": ["Moson Kahni","Te-Moak","Agaidika","Goshute" ,"Pohokwi" ,"Washakie","Timbisha" ,"Hukandeka","Duckwater" ,"Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Nampa","Bannock","Yahandeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca	City","Skull Valley","Big Pine","Duck Valley"]
+	},
 	/*
 	
 	{   // REQUIRES RIVERS

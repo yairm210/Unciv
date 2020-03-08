@@ -1,7 +1,6 @@
 package com.unciv
 
 enum class UniqueAbility(val description: String, val displayName: String) {
-    GREAT_EXPANSE("Founded cities start with additional territory, Units receive a combat bonus when fighting within their own territory (+15% unit strength)", "Great Expanse"),
     INGENUITY("Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster", "Ingenuity"),
     HELLENIC_LEAGUE("City-State Influence degrades at half and recovers at twice the normal rate", "Hellenic League"),
     ART_OF_WAR("Great general provides double combat bonus, and spawns 50% faster", "Art of War"),
@@ -23,6 +22,7 @@ enum class UniqueAbility(val description: String, val displayName: String) {
     SEVEN_CITIES_OF_GOLD("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.", "Seven Cities of Gold"),
     RIVER_WARLORD("Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves", "River Warlord"),
     MONGOL_TERROR("Combat Strength +30% when fighting City-State units or attacking a City-State itself. All mounted units have +1 Movement.", "Mongol Terror"),
+    GREAT_EXPANSE("Founded cities start with additional territory, Units receive a combat bonus when fighting within their own territory (+15% unit strength)", "Great Expanse"),
     SACRIFICIAL_CAPTIVES("Gain Culture for the empire from each enemy unit killed.", "Sacrificial Captives"),
     GREAT_ANDEAN_ROAD("Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.", "Great Andean Road"),
     VIKING_FURY("+1 Movement to all embarked units, units pay only 1 movement point to embark and disembark. Melee units pay no movement cost to pillage.", "Viking Fury"),

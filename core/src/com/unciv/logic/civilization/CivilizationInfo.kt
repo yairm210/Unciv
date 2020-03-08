@@ -12,6 +12,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.map.AncientRuins
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
@@ -81,6 +82,8 @@ class CivilizationInfo {
     var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
+    var blockedRuinsBonus = HashMap<AncientRuins.RuinBonus, Int>();
+
     constructor()
 
     constructor(civName: String) {
@@ -113,6 +116,7 @@ class CivilizationInfo {
         toReturn.popupAlerts.addAll(popupAlerts)
         toReturn.tradeRequests.addAll(tradeRequests)
         toReturn.naturalWonders.addAll(naturalWonders)
+        toReturn.blockedRuinsBonus = blockedRuinsBonus
         return toReturn
     }
 
@@ -591,5 +595,15 @@ class CivilizationInfo {
         }
     }
 
+    // Can't get ruins bonuses several times in a row - only once every 3 ruins
+    fun recordPickRuinBonus(bonus: AncientRuins.RuinBonus) {
+        blockedRuinsBonus[bonus] = 2
+    }
+
+    fun updateAndGetBlockedRuinsBonus(): Set<AncientRuins.RuinBonus> {
+        blockedRuinsBonus.forEach { (s, i) -> blockedRuinsBonus[s] = blockedRuinsBonus[s]!! - 1}
+        blockedRuinsBonus = blockedRuinsBonus.filter { e -> e.value >= 0 } as HashMap<AncientRuins.RuinBonus, Int>
+        return blockedRuinsBonus.keys
+    }
     //endregion
 }

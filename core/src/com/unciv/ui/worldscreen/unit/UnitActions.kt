@@ -176,10 +176,10 @@ object UnitActions {
 
     private suspend fun SequenceScope<UnitAction>.yieldUpgradeAction(unit: MapUnit, tile: TileInfo) {
         if (unit.baseUnit().upgradesTo != null && tile.getOwner() == unit.civInfo
-                && unit.canUpgrade()) {
+                && unit.canUpgrade(false)) {
 
             val goldCostOfUpgrade = unit.getCostOfUpgrade()
-            val upgradedUnit = unit.getUnitToUpgradeTo()
+            val upgradedUnit = unit.getUnitToUpgradeTo(false)
 
             yield(UnitAction(
                     type = UnitActionType.Upgrade,
@@ -189,12 +189,16 @@ object UnitActions {
         }
     }
 
+    fun getUpgradeAction(unit: MapUnit, unitTile: TileInfo, upgradedUnit: BaseUnit,
+                         goldCostOfUpgrade: Int): (() -> Unit)? = {
+        getUpgradeAction(unit, unitTile, upgradedUnit, goldCostOfUpgrade, false)
+    }
 
     fun getUpgradeAction(unit: MapUnit, unitTile: TileInfo, upgradedUnit: BaseUnit,
-                         goldCostOfUpgrade: Int): (() -> Unit)? =
-            getLambdaOrNull(unit.civInfo.gold >= goldCostOfUpgrade
+                         goldCostOfUpgrade: Int, fromRuins: Boolean): (() -> Unit)? =
+            getLambdaOrNull((unit.civInfo.gold >= goldCostOfUpgrade || fromRuins)
             && !unit.isEmbarked()
-            && unit.currentMovement == unit.getMaxMovement().toFloat()) {
+            && (unit.currentMovement == unit.getMaxMovement().toFloat() || fromRuins)) {
                 unit.civInfo.gold -= goldCostOfUpgrade
                 unit.destroy()
                 val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
@@ -208,6 +212,9 @@ object UnitActions {
                 newunit.updateUniques()
                 newunit.updateVisibleTiles()
                 newunit.currentMovement = 0f
+
+                //TODO: record previous incarnations of a unit, so that special abilities are not lost
+                //When checking type of unit, call something like isOrWas(unitType) rather than just checking name
             }
 
     private suspend fun SequenceScope<UnitAction>.yieldWorkerActions(unit: MapUnit, tile: TileInfo,

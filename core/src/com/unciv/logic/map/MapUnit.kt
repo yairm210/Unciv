@@ -66,11 +66,6 @@ class MapUnit {
     var due: Boolean = true
     var isTransported: Boolean = false
 
-    companion object {
-        private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
-        private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
-        private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
-    }
 
     //region pure functions
     fun clone(): MapUnit {
@@ -228,22 +223,32 @@ class MapUnit {
         return movement
     }
 
-    fun getUnitToUpgradeTo(): BaseUnit {
+    fun getUnitToUpgradeTo(fromRuins: Boolean): BaseUnit {
         var unit = baseUnit()
+        
+        // Pathfinder can only be upgraded via ruins
+        if (unit.name == "Pathfinder") {
+            return unit
+        }
+
+        // if we're upgrading from ruins, we can upgrade to the direct upgrade unit regardless of techs
+        if (fromRuins && unit.upgradesTo != null) {
+            return unit.getDirectUpgradeUnit(civInfo)
+        }
 
         // Go up the upgrade tree until you find the last one which is buildable
-        while (unit.upgradesTo!=null && civInfo.tech.isResearched(unit.getDirectUpgradeUnit(civInfo).requiredTech!!))
+        while (unit.upgradesTo != null && civInfo.tech.isResearched(unit.getDirectUpgradeUnit(civInfo).requiredTech!!))
             unit = unit.getDirectUpgradeUnit(civInfo)
         return unit
     }
 
-    fun canUpgrade(): Boolean {
+    fun canUpgrade(fromRuins: Boolean): Boolean {
         // We need to remove the unit from the civ for this check,
         // because if the unit requires, say, horses, and so does its upgrade,
         // and the civ currently has 0 horses,
         // if we don't remove the unit before the check it's return false!
 
-        val unitToUpgradeTo = getUnitToUpgradeTo()
+        val unitToUpgradeTo = getUnitToUpgradeTo(fromRuins)
         if (name == unitToUpgradeTo.name) return false
         civInfo.removeUnit(this)
         val canUpgrade = unitToUpgradeTo.isBuildable(civInfo)
@@ -252,7 +257,7 @@ class MapUnit {
     }
 
     fun getCostOfUpgrade(): Int {
-        val unitToUpgradeTo = getUnitToUpgradeTo()
+        val unitToUpgradeTo = getUnitToUpgradeTo(false)
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
         if (civInfo.policies.isAdopted("Professional Army"))
             goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
@@ -555,60 +560,8 @@ class MapUnit {
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
-        tile.improvement=null
-        val tileBasedRandom = Random(tile.position.toString().hashCode())
-        val actions: ArrayList<() -> Unit> = ArrayList()
-        if(civInfo.cities.isNotEmpty()) actions.add {
-            val city = civInfo.cities.random(tileBasedRandom)
-            city.population.population++
-            city.population.autoAssignPopulation()
-            civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",tile.position, Color.GREEN)
-        }
-        val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
-                .filter {
-                    !civInfo.tech.isResearched(it.name)
-                            && civInfo.tech.canBeResearched(it.name)
-                            && it.era() == TechEra.Ancient
-                }
-        if(researchableAncientEraTechs.isNotEmpty())
-            actions.add {
-                val tech = researchableAncientEraTechs.random(tileBasedRandom).name
-                civInfo.tech.addTechnology(tech)
-                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",tile.position, Color.BLUE)
-            }
-
-        actions.add {
-            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random(tileBasedRandom)
-            if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City states and OCC don't get settler from ruins
-                civInfo.placeUnitNearTile(tile.position, chosenUnit)
-                civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
-            }
-        }
-
-        if(!type.isCivilian())
-            actions.add {
-                promotions.XP+=10
-                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",tile.position, Color.RED)
-            }
-
-        actions.add {
-            val amount = listOf(25,60,100).random(tileBasedRandom)
-            civInfo.gold+=amount
-            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
-        }
-
-        // Map of the surrounding area
-        actions.add {
-            val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).toList().random(tileBasedRandom)
-            val tilesToReveal = revealCenter
-                .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
-                .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
-                .map { it.position }
-            civInfo.exploredTiles.addAll(tilesToReveal)
-            civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
-        }
-
-        (actions.random(tileBasedRandom))()
+        var ruinsManager = AncientRuins(civInfo, tile, this)
+        ruinsManager.doRuinsBonus()
     }
 
     fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true){
