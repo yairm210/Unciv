@@ -174,6 +174,14 @@ class TranslationTests {
         return allStringsHaveTranslation
     }
 
+    @Test
+    fun nationsFileIsSerializable() {
+        jsonParser.getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations.json")
+
+        Assert.assertTrue("This test will only pass when there Nations.json file is serializable",
+                true)
+    }
+
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
     fun allTranslationsHaveCorrectPlaceholders() {

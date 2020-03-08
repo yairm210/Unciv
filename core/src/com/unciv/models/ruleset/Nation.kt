@@ -22,7 +22,7 @@ class Nation : INamed {
     fun getLeaderDisplayName() = if(isCityState()) name
         else "[$leaderName] of [$name]"
 
-    var cityStateType: CityStateType?=null
+    var cityStateType: CityStateType? = null
     var preferredVictoryType:VictoryType = VictoryType.Neutral
     var declaringWar=""
     var attacked=""
@@ -33,19 +33,9 @@ class Nation : INamed {
     var neutralHello=""
     var hateHello=""
 
-    var neutralLetsHearIt = ArrayList<String>()
-    var neutralYes = ArrayList<String>()
-    var neutralNo = ArrayList<String>()
-
-    var hateLetsHearIt = ArrayList<String>()
-    var hateYes = ArrayList<String>()
-    var hateNo = ArrayList<String>()
-
-    var afterPeace=""
-
     lateinit var outerColor: List<Int>
-    var unique:UniqueAbility?=null
-    var innerColor: List<Int>?=null
+    var unique: UniqueAbility? = null
+    var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 
     @Transient private lateinit var outerColorObject:Color
