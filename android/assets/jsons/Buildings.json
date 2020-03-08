@@ -356,7 +356,7 @@
 		"isNationalWonder": true,
 		"percentStatBonus": {"science": 50},
 		"requiredBuildingInAllCities": "Library",
-		"requiredTech": "Civil Service"
+		"requiredTech": "Philosophy"
 	},
 	{
 		"name": "Manhattan Project",
