@@ -177,6 +177,17 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add("Resource richness".toLabel()).left()
         advancedSettingsTable.add(resourceRichnessSlider).fillX().row()
 
+        val strategicResourceRichnessSlider = Slider(0f,0.2f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.strategicResourceRichness = this@apply.value
+                }
+            })
+        }
+        strategicResourceRichnessSlider.value = mapParameters.strategicResourceRichness
+        advancedSettingsTable.add("Strategic Resource richness".toLabel()).left()
+        advancedSettingsTable.add(strategicResourceRichnessSlider).fillX().row()
+
 
         val terrainFeatureRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
@@ -188,6 +199,18 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         terrainFeatureRichnessSlider.value = mapParameters.terrainFeatureRichness
         advancedSettingsTable.add("Terrain Features richness".toLabel()).left()
         advancedSettingsTable.add(terrainFeatureRichnessSlider).fillX().row()
+
+
+        val ruinsRichnessSlider = Slider(0f,10f,1f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.ruinsRichness = this@apply.value
+                }
+            })
+        }
+        ruinsRichnessSlider.value = mapParameters.ruinsRichness
+        advancedSettingsTable.add("Ancient Ruin density".toLabel()).left()
+        advancedSettingsTable.add(ruinsRichnessSlider).fillX().row()
 
 
         val maxCoastExtensionSlider = Slider(0f,5f,1f, false, skin).apply {
@@ -243,7 +266,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             averageHeightSlider.value = mapParameters.mountainProbability
             tempExtremeSlider.value = mapParameters.temperatureExtremeness
             resourceRichnessSlider.value = mapParameters.resourceRichness
+            strategicResourceRichnessSlider.value = mapParameters.strategicResourceRichness
             terrainFeatureRichnessSlider.value = mapParameters.terrainFeatureRichness
+            ruinsRichnessSlider.value = mapParameters.ruinsRichness
             maxCoastExtensionSlider.value = mapParameters.maxCoastExtension.toFloat()
             tilesPerBiomeAreaSlider.value = mapParameters.tilesPerBiomeArea.toFloat()
             waterPercentSlider.value = mapParameters.waterProbability

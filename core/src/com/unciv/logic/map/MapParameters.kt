@@ -43,6 +43,8 @@ class MapParameters {
     var temperatureExtremeness = 0.30f
     var terrainFeatureRichness = 0.30f
     var resourceRichness = 0.10f
+    var strategicResourceRichness = 0.10f
+    var ruinsRichness = 1f
     var waterProbability = 0.05f
     var landProbability = 0.55f
 
@@ -53,6 +55,8 @@ class MapParameters {
         temperatureExtremeness = 0.30f
         terrainFeatureRichness = 0.30f
         resourceRichness = 0.10f
+        strategicResourceRichness = 0.10f
+        ruinsRichness = 1f
         waterProbability = 0.05f
         landProbability = 0.55f
     }

@@ -212,7 +212,7 @@ class MapGenerator(val ruleset: Ruleset) {
         if(map.mapParameters.noRuins)
             return
         val suitableTiles = map.values.filter { it.isLand && !it.getBaseTerrain().impassable }
-        val locations = chooseSpreadOutLocations(suitableTiles.size/100,
+        val locations = chooseSpreadOutLocations( (map.mapParameters.ruinsRichness.pow(2)).toInt() * suitableTiles.size/100,
                 suitableTiles, 10)
         for(tile in locations)
             tile.improvement = Constants.ancientRuins
@@ -488,7 +488,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spreadStrategicResources(mapToReturn: TileMap, distance: Int) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         val totalNumberOfResources = mapToReturn.values.count { it.isLand && !it.getBaseTerrain().impassable } *
-                mapToReturn.mapParameters.resourceRichness
+                mapToReturn.mapParameters.strategicResourceRichness
         val resourcesPerType = (totalNumberOfResources/resourcesOfType.size).toInt()
         for (resource in resourcesOfType) {
             val suitableTiles = mapToReturn.values
