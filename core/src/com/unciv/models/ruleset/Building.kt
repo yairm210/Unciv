@@ -162,6 +162,10 @@ class Building : NamedStats(), IConstruction{
                 stats.culture+=2
                 stats.gold+=3
             }
+
+            if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
+                stats.happiness += 3
+
         }
         return stats
     }
@@ -192,19 +196,23 @@ class Building : NamedStats(), IConstruction{
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
+
         if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
             productionCost *= 0.85f
+
+        if (name == "Courthouse" && civInfo.policies.isAdopted("Police State"))
+            productionCost *= 0.5f
+
         if (civInfo.isPlayerCivilization()) {
-            if(!isWonder) {
+            if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
-            }
         } else {
-            if(isWonder) {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiWonderCostModifier
-            } else {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
-            }
+            productionCost *= if(isWonder)
+                civInfo.gameInfo.getDifficulty().aiWonderCostModifier
+            else
+                civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
         }
+
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
