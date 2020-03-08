@@ -1,13 +1,11 @@
 package com.unciv.logic.automation
 
-import com.unciv.UncivGame
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
@@ -36,8 +34,7 @@ class SpecificUnitAutomation {
                 // could be either fishing boats or oil well
                 val improvement = closestReachableResource.getTileResource().improvement
                 if (unit.currentTile == closestReachableResource && improvement != null)
-                    UnitActions.getWaterImprovementAction(unit, closestReachableResource,
-                        improvement)?.invoke()
+                    UnitActions.getWaterImprovementAction(unit)?.action?.invoke()
             }
         }
     }
@@ -143,7 +140,7 @@ class SpecificUnitAutomation {
         }
 
         val foundCityAction = UnitActions.getFoundCityAction(unit, bestCityLocation)
-        if (foundCityAction == null) { // this means either currentMove == 0 or city within 3 tiles
+        if (foundCityAction?.action == null) { // this means either currentMove == 0 or city within 3 tiles
             if (unit.currentMovement > 0) // therefore, city within 3 tiles
                 throw Exception("City within distance")
             return
@@ -151,7 +148,7 @@ class SpecificUnitAutomation {
 
         unit.movement.headTowards(bestCityLocation)
         if (unit.getTile() == bestCityLocation)
-            foundCityAction.invoke()
+            foundCityAction.action.invoke()
     }
 
     fun automateGreatPerson(unit: MapUnit) {
@@ -184,7 +181,7 @@ class SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getGreatPersonBuildActions(unit, chosenTile).firstOrNull()?.invoke()
+                UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
             return
         }
     }
