@@ -74,12 +74,12 @@ class AncientRuins {
             }
         }
 
-        if(!unit.type.isCivilian() && !blockedActions.contains(RuinBonus.PROMOTION) && unit.getUnitToUpgradeTo(true) != unit.baseUnit()) {
-            actions.add(RuinAction(RuinBonus.PROMOTION) {
+        if(!unit.type.isCivilian() && !blockedActions.contains(RuinBonus.UPGRADE) && unit.getUnitToUpgradeTo(true) != unit.baseUnit()) {
+            actions.add(RuinAction(RuinBonus.UPGRADE) {
                 UnitActions.getUpgradeAction(unit, true)?.action?.invoke()
                 val unitName = unit.name;
                 civInfo.addNotification("An ancient tribe trains our [$unitName] in their ways of combat!", tile.position, Color.RED)
-                civInfo.recordPickRuinBonus(RuinBonus.PROMOTION)
+                civInfo.recordPickRuinBonus(RuinBonus.UPGRADE)
             })
         }
 
@@ -138,7 +138,7 @@ class AncientRuins {
         JOIN_SETTLER("Convince the lost tribe to become a Settler for your civilization"),
         JOIN_WORKER("Convince the lost tribe to become a Worker for your civilization"),
         TECH("Study their tools to discover a new technology"),
-        PROMOTION("Use equipment around the tribe to upgrade your unit"),
+        UPGRADE("Use equipment around the tribe to upgrade your unit"),
         GOLD("Trade with the lost tribe for gold"),
         CULTURE("Use this contact with the lost tribe to enhance your culture"),
         MAPS("Have a look at their maps")
