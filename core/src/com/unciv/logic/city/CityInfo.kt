@@ -601,11 +601,9 @@ class CityInfo {
 
     fun canPurchase(construction : IConstruction) : Boolean
     {
-        when(construction)
-        {
-            is BaseUnit -> return !(hasUnitOfType(construction.unitType))
-            else -> return true
-        }
+        if(construction is BaseUnit)
+            return !(hasUnitOfType(construction.unitType))
+        return true
     }
     //endregion
 }
