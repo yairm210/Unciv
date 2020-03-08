@@ -15,7 +15,8 @@ import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
-
+import kotlin.math.PI
+import kotlin.math.atan
 
 
 open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : Group() {
@@ -385,8 +386,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 val images = mutableListOf<Image>()
                 borderImages[neighbor] = images
                 for (i in -2..2) {
-                    val image = ImageGetter.getCircle()
+                    val image = ImageGetter.getTriangle()
+                    val sign = if (relativeWorldPosition.x < 0) -1 else 1
+                    val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0)
+
                     image.setSize(5f, 5f)
+                    image.setOrigin(image.width/2,image.height/2)
+                    image.rotateBy(angle.toFloat())
                     image.center(this)
                     // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
                     // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
