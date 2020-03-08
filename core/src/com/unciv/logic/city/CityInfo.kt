@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -188,10 +189,9 @@ class CityInfo {
             if(resource.resourceType == ResourceType.Strategic){
                 amountToAdd = 2
                 if(civInfo.policies.isAdopted("Fascism")) amountToAdd*=2
-                if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
-                        && resource.name in listOf("Horses","Iron","Uranium"))
+                if(civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses","Iron","Uranium"))
                     amountToAdd *= 2
-                if(resource.name=="Oil" && civInfo.nation.unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
+                if(resource.name=="Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
                     amountToAdd *= 2
             }
             if(resource.resourceType == ResourceType.Luxury
@@ -248,7 +248,7 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for(entry in stats){
-            if(civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
+            if(civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
             if (civInfo.policies.isAdopted("Entrepreneurship"))
                 entry.value.gold *= 1.25f
@@ -563,7 +563,7 @@ class CityInfo {
         val baseGold = 20 + 10 * population.population + Random().nextInt(40)
         val turnModifier = max(0, min(50, civInfo.gameInfo.turns - turnAcquired)) / 50f
         val cityModifier = if (containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.") 3f else 1f
+        val conqueringCivModifier = if (conqueringCiv.nation.unique == UniqueAbility.RIVER_WARLORD) 3f else 1f
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()

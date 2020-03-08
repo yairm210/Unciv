@@ -91,11 +91,6 @@ class GameStarter {
             gameInfo.civilizations.add(civ)
         }
 
-        // remove starting locations one we're done
-        for(tile in gameInfo.tileMap.values){
-            if(tile.improvement!=null && tile.improvement!!.startsWith("StartingLocation "))
-                tile.improvement=null
-        }
     }
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
@@ -103,6 +98,12 @@ class GameStarter {
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
+
+        // remove starting locations one we're done
+        for(tile in gameInfo.tileMap.values){
+            if(tile.improvement!=null && tile.improvement!!.startsWith("StartingLocation "))
+                tile.improvement=null
+        }
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
@@ -127,6 +128,7 @@ class GameStarter {
                 }
             }
         }
+
     }
 
     private fun getStartingLocations(civs:List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {

@@ -184,6 +184,7 @@ object ImageGetter {
     fun getBlue() = Color(0x004085bf)
 
     fun getCircle() = getImage("OtherIcons/Circle")
+    fun getTriangle() = getImage("OtherIcons/Triangle")
 
     fun getBackground(color:Color): Drawable {
         val drawable = getDrawable("OtherIcons/TableBackground")
