@@ -90,12 +90,18 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
 
                     sellBuildingButton.onClick {
+                        sellBuildingButton.disable()
+                        cityScreen.closeAllPopups()
+
                         YesNoPopup("Are you sure you want to sell this [${building.name}]?".tr(),
                                 {
                                     cityScreen.city.sellBuilding(building.name)
                                     cityScreen.city.cityStats.update()
                                     cityScreen.update()
-                                }, cityScreen).open()
+                                }, cityScreen,
+                                {
+                                    cityScreen.update()
+                                }).open()
                     }
                     if (cityScreen.city.hasSoldBuildingThisTurn || cityScreen.city.isPuppet
                             || !UncivGame.Current.worldScreen.isPlayersTurn)
