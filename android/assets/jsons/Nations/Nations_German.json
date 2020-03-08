@@ -95,10 +95,8 @@
 		"outerColor": [9, 112, 84],
 		"innerColor": [255,255,255],
 
-		"uniqueName": "Kunst des Krieges",
-		"unique": "Große Generäle gewähren einen doppelt so hohen Kampfbonus und erscheinen 50% schneller.",
-
-		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
+		"unique": "ART_OF_WAR",
+			"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
 	},
@@ -133,8 +131,7 @@
 		"outerColor": [ 231, 213, 0],
 		"innerColor": [98,10,210],
 
-		"uniqueName": "Monumentbauer",
-		"unique": "+20% Produktion für die Wundererzeugung",
+		"unique": "MONUMENT_BUILDERS",
 		"cities": ["Theben","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
 			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
