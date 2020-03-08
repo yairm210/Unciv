@@ -153,9 +153,6 @@ class Building : NamedStats(), IConstruction{
             if (adoptedPolicies.contains("Constitution") && isWonder)
                 stats.culture += 2f
 
-            if (adoptedPolicies.contains("Autocracy Complete") && cityStrength > 0)
-                stats.happiness += 1
-
             if (baseBuildingName == "Castle"
                     && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
