@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UniqueAbility
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
@@ -53,7 +54,7 @@ class CityExpansionManager {
         if(cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cost *= 0.75 // Specialty of Krepost
 
-        if(cityInfo.civInfo.nation.unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
+        if(cityInfo.civInfo.nation.unique == UniqueAbility.MANIFEST_DESTINY)
             cost /= 2
         return cost.toInt()
     }

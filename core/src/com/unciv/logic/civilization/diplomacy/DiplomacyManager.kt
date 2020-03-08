@@ -2,6 +2,7 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
@@ -170,8 +171,7 @@ class DiplomacyManager() {
             return otherCivDiplomacy().getTurnsToRelationshipChange()
 
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
-            val hasCityStateInfluenceBonus =
-                    otherCiv().nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+            val hasCityStateInfluenceBonus = otherCiv().nation.unique == UniqueAbility.HELLENIC_LEAGUE
             val dropPerTurn = if(hasCityStateInfluenceBonus) .5f else 1f
 
             if (relationshipLevel() >= RelationshipLevel.Ally)
@@ -283,8 +283,7 @@ class DiplomacyManager() {
     private fun nextTurnCityStateInfluence() {
         val initialRelationshipLevel = relationshipLevel()
 
-        val hasCityStateInfluenceBonus =
-                otherCiv().nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+        val hasCityStateInfluenceBonus = otherCiv().nation.unique == UniqueAbility.HELLENIC_LEAGUE
         val increment = if (hasCityStateInfluenceBonus) 2f else 1f
         val decrement = if (hasCityStateInfluenceBonus) .5f else 1f
 

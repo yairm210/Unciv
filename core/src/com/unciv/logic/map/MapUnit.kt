@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
@@ -101,15 +102,15 @@ class MapUnit {
                 && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
-        if (type.isWaterUnit() && civInfo.nation.unique == "+2 movement for all naval units")
+        if (type.isWaterUnit() && civInfo.nation.unique == UniqueAbility.SUN_NEVER_SETS)
             movement += 2
 
         if (type == UnitType.Mounted &&
-                civInfo.nation.unique == "Combat Strength +30% when fighting City-State units or attacking a City-State itself. All mounted units have +1 Movement.")
+                civInfo.nation.unique == UniqueAbility.MONGOL_TERROR)
             movement += 1
 
         if (civInfo.goldenAges.isGoldenAge() &&
-                civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
+                civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY)
             movement += 1
 
         return movement
@@ -151,12 +152,12 @@ class MapUnit {
             visibilityRange += getUniques().count { it == "+1 Visibility Range" }
             if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
-            if (civInfo.nation.unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
+            if (civInfo.nation.unique == UniqueAbility.MANIFEST_DESTINY)
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
                     && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
                 visibilityRange += 1
-            if (isEmbarked() && civInfo.nation.unique == "Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+            if (isEmbarked() && civInfo.nation.unique == UniqueAbility.WAYFINDING)
                 visibilityRange += 1
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
@@ -514,7 +515,7 @@ class MapUnit {
         tile.improvement = null
 
         var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
+        if (civInfo.nation.unique == UniqueAbility.RIVER_WARLORD)
             goldGained *= 3f
 
         civInfo.gold += goldGained.toInt()
