@@ -161,7 +161,7 @@ class BaseUnit : INamed, IConstruction {
             unit.promotions.addPromotion("Drill I", isFree = true)
 
         //movement penalty
-        if(unit.name != "Landsknecht")
+        if(!unit.hasUnique("Starts with no movement penalty"))
         unit.currentMovement = 0f
         return true
     }
