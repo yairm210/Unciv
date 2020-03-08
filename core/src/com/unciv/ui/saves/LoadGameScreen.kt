@@ -22,15 +22,15 @@ import java.util.*
 
 class LoadGameScreen : PickerScreen() {
     lateinit var selectedSave:String
-    val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard".tr(),skin)
-    val saveTable = Table()
-    val deleteSaveButton = TextButton("Delete save".tr(), skin)
+    private val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard".tr(),skin)
+    private val saveTable = Table()
+    private val deleteSaveButton = TextButton("Delete save".tr(), skin)
+    private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
 
     init {
         setDefaultCloseAction()
 
-        rightSideButton.setText("Load game".tr())
-        updateLoadableGames(false)
+        resetWindowState()
         topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
 
         val rightSideTable = getRightSideTable()
@@ -75,11 +75,10 @@ class LoadGameScreen : PickerScreen() {
 
         deleteSaveButton.onClick {
             GameSaver().deleteSave(selectedSave)
-            UncivGame.Current.setScreen(LoadGameScreen())
+            resetWindowState()
         }
         deleteSaveButton.disable()
         rightSideTable.add(deleteSaveButton).row()
-
 
         copySavedGameToClipboardButton.disable()
         copySavedGameToClipboardButton.onClick {
@@ -89,8 +88,6 @@ class LoadGameScreen : PickerScreen() {
         }
         rightSideTable.add(copySavedGameToClipboardButton).row()
 
-
-        val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
         showAutosavesCheckbox.isChecked = false
         showAutosavesCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -99,6 +96,15 @@ class LoadGameScreen : PickerScreen() {
         })
         rightSideTable.add(showAutosavesCheckbox).row()
         return rightSideTable
+    }
+
+    private fun resetWindowState() {
+        updateLoadableGames(showAutosavesCheckbox.isChecked)
+        deleteSaveButton.disable()
+        copySavedGameToClipboardButton.disable()
+        rightSideButton.setText("Load game".tr())
+        rightSideButton.disable()
+        descriptionLabel.setText("")
     }
 
     private fun updateLoadableGames(showAutosaves:Boolean) {
