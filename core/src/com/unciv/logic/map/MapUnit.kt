@@ -227,7 +227,7 @@ class MapUnit {
         var unit = baseUnit()
         
         // Pathfinder can only be upgraded via ruins
-        if (unit.name == "Pathfinder") {
+        if (unit.name == "Pathfinder" && !fromRuins) {
             return unit
         }
 
@@ -251,7 +251,7 @@ class MapUnit {
         val unitToUpgradeTo = getUnitToUpgradeTo(fromRuins)
         if (name == unitToUpgradeTo.name) return false
         civInfo.removeUnit(this)
-        val canUpgrade = unitToUpgradeTo.isBuildable(civInfo)
+        val canUpgrade = unitToUpgradeTo.isBuildable(civInfo) || fromRuins;
         civInfo.addUnit(this)
         return canUpgrade
     }

@@ -204,11 +204,15 @@ object UnitActions {
     }
 
     fun getUpgradeAction(unit: MapUnit): UnitAction? {
+        return getUpgradeAction(unit, false)
+    }
+    
+    fun getUpgradeAction(unit: MapUnit, fromRuins: Boolean): UnitAction? {
         val tile = unit.currentTile
-        if (unit.baseUnit().upgradesTo == null || tile.getOwner() != unit.civInfo
-                || !unit.canUpgrade()) return null
-        val goldCostOfUpgrade = unit.getCostOfUpgrade()
-        val upgradedUnit = unit.getUnitToUpgradeTo()
+        if (unit.baseUnit().upgradesTo == null || (tile.getOwner() != unit.civInfo && !fromRuins)
+                || !unit.canUpgrade(fromRuins)) return null
+        val goldCostOfUpgrade = if (fromRuins) 0 else unit.getCostOfUpgrade()
+        val upgradedUnit = unit.getUnitToUpgradeTo(fromRuins)
 
         return UnitAction(
                 type = UnitActionType.Upgrade,
@@ -230,8 +234,8 @@ object UnitActions {
                     newunit.updateVisibleTiles()
                     newunit.currentMovement = 0f
                 }.takeIf {
-                    unit.civInfo.gold >= goldCostOfUpgrade && !unit.isEmbarked()
-                            && unit.currentMovement == unit.getMaxMovement().toFloat()
+                    (unit.civInfo.gold >= goldCostOfUpgrade && !unit.isEmbarked()
+                            && unit.currentMovement == unit.getMaxMovement().toFloat()) || fromRuins
                 })
     }
 

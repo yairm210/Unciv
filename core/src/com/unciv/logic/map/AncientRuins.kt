@@ -76,7 +76,7 @@ class AncientRuins {
 
         if(!unit.type.isCivilian() && !blockedActions.contains(RuinBonus.PROMOTION) && unit.getUnitToUpgradeTo(true) != unit.baseUnit()) {
             actions.add(RuinAction(RuinBonus.PROMOTION) {
-                UnitActions.getUpgradeAction(unit, tile, unit.getUnitToUpgradeTo(true), 0, true)?.invoke()
+                UnitActions.getUpgradeAction(unit, true)?.action?.invoke()
                 val unitName = unit.name;
                 civInfo.addNotification("An ancient tribe trains our [$unitName] in their ways of combat!", tile.position, Color.RED)
                 civInfo.recordPickRuinBonus(RuinBonus.PROMOTION)

@@ -212,7 +212,7 @@ class MapGenerator(val ruleset: Ruleset) {
         if(map.mapParameters.noRuins)
             return
         val suitableTiles = map.values.filter { it.isLand && !it.getBaseTerrain().impassable }
-        val locations = chooseSpreadOutLocations(suitableTiles.size / 100, suitableTiles, 10)
+        val locations = chooseSpreadOutLocations(suitableTiles.size / 5, suitableTiles, 10)
         for(tile in locations)
             tile.improvement = Constants.ancientRuins
     }

@@ -39,7 +39,7 @@
 		"hurryCostModifier": 20,
 		"uniques": ["Ignores terrain cost"],
 		"obsoleteTech": "Metal Casting",
-		"upgradesTo": "Bowman",
+		"upgradesTo": "Composite Bowman",
 		"attackSound": "nonmetalhit"
 	},
 	{
@@ -303,7 +303,6 @@
 		"hurryCostModifier": 20,
 		"attackSound": "throw"
 	},
-	/*
 	{
 		"name": "Composite Bowman",
 		"unitType": "Ranged",
@@ -317,7 +316,6 @@
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
-	*/
 	{
 		"name": "Swordsman",
 		"unitType": "Melee",
