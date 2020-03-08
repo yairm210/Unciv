@@ -107,6 +107,7 @@ class BattleDamage{
 
     fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
         val modifiers = getGeneralModifiers(attacker, defender)
+        val policies = attacker.getCivInfo().policies
 
         if(attacker is MapUnitCombatant) {
             modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
@@ -132,10 +133,13 @@ class BattleDamage{
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             }
+
+            if (policies.isAdopted("Autocracy Complete") && (policies.autocracyCompletedTurns > 0))
+                modifiers["Autocracy Complete"] = 0.2f
         }
 
         else if (attacker is CityCombatant) {
-            if (attacker.getCivInfo().policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
+            if (policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
         }
 

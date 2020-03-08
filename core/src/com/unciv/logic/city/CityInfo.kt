@@ -360,16 +360,10 @@ class CityInfo {
     }
 
     fun annexCity() {
-        if(!civInfo.policies.isAdopted("Police State")) {
-            expansion.cultureStored = 0
-            expansion.reset()
-            reassignWorkers()
-        }
-
-        isPuppet=false
+        isPuppet = false
         cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         cityStats.update()
-        UncivGame.Current.worldScreen.shouldUpdate=true
+        UncivGame.Current.worldScreen.shouldUpdate = true
     }
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
