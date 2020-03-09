@@ -5,6 +5,7 @@ import com.unciv.JsonParser
 import com.unciv.models.ruleset.Nation
 import java.nio.charset.Charset
 import kotlin.collections.set
+import com.badlogic.gdx.utils.Array
 
 object TranslationFileReader {
 
@@ -34,6 +35,8 @@ object TranslationFileReader {
         linesFromTemplates.addAll(templateFile.reader().readLines())
         linesFromTemplates.add("\n#################### Lines from Nations.json ####################\n")
         linesFromTemplates.addAll(generateNationsStrings())
+        linesFromTemplates.add("\n#################### Lines from Tutorials.json ####################\n")
+        linesFromTemplates.addAll(generateTutorialsStrings())
 
         val stringBuilder = StringBuilder()
         for(line in linesFromTemplates){
@@ -109,6 +112,19 @@ object TranslationFileReader {
                         strings.add("$fieldValue = ")
                 }
             }
+        }
+        return strings
+    }
+
+    fun generateTutorialsStrings(): Collection<String> {
+
+        val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<Array<String>>>().javaClass, "jsons/Tutorials.json")
+        val strings = mutableSetOf<String>() // using set to avoid duplicates
+
+        for (tutorial in tutorials) {
+            for (array in tutorial.value)
+                for (str in array)
+                    if (str != "") strings.add("$str = ")
         }
         return strings
     }

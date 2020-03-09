@@ -121,6 +121,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationStart = System.currentTimeMillis()
 
         var allTranslations = TranslationFileReader.generateNationsStrings().size
+        allTranslations += TranslationFileReader.generateTutorialsStrings().size
         Gdx.files.internal(TranslationFileReader.templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
