@@ -11,6 +11,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
@@ -304,7 +305,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     }
                     if (!construction.shouldBeDisplayed(cityConstructions))
                         cityScreen.selectedConstruction = null
-                    city.boughtPlaneThisRound = true
+                    if(construction is BaseUnit)
+                        city.typeOfUnitsBought.add(construction.unitType)
                     cityScreen.update()
                 }
             }

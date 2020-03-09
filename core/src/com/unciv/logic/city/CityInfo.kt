@@ -54,7 +54,7 @@ class CityInfo {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
 
-    var boughtPlaneThisRound = false
+    val typeOfUnitsBought = mutableListOf<UnitType>()
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
@@ -588,10 +588,7 @@ class CityInfo {
 
     private fun hasUnitOfType(type: UnitType) : Boolean
     {
-        for(unit in getCenterTile().getUnits()) {
-            if(unit.type == type) true
-        }
-        return false
+        return getCenterTile().getUnits().any{it.type==type}
     }
 
     fun CanStationAdditionalAirUnit() : Boolean
@@ -602,8 +599,10 @@ class CityInfo {
     fun canPurchase(construction : IConstruction) : Boolean
     {
         if(construction is BaseUnit)
-            if(construction.unitType.isAirUnit())
-                return !boughtPlaneThisRound && CanStationAdditionalAirUnit()
+            if(construction.unitType.isAirUnit()) {
+                val alreadyBoughtPlane = typeOfUnitsBought.any { it.isAirUnit() }
+                return alreadyBoughtPlane && CanStationAdditionalAirUnit()
+            }
         else
             return !(hasUnitOfType(construction.unitType))
         return true
