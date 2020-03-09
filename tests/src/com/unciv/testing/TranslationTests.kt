@@ -207,7 +207,7 @@ class TranslationTests {
 
     @Test
     fun allTranslationsEndWithASpace() {
-        val templateLines = Gdx.files.internal(TranslationFileReader().templateFileLocation).reader().readLines()
+        val templateLines = Gdx.files.internal(TranslationFileReader.templateFileLocation).reader().readLines()
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {

@@ -6,10 +6,10 @@ import com.unciv.models.ruleset.Nation
 import java.nio.charset.Charset
 import kotlin.collections.set
 
-class TranslationFileReader{
+object TranslationFileReader {
 
-    private val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
-    val templateFileLocation = "jsons/translations/template.properties"
+    private const val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
+    const val templateFileLocation = "jsons/translations/template.properties"
     private val charset = Charset.forName("UTF-8").name()
 
     fun read(translationFile: String): LinkedHashMap<String, String> {
