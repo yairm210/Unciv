@@ -11,14 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.tr
 import com.unciv.ui.tutorials.TutorialController
-import com.unciv.ui.tutorials.TutorialMiner
-import com.unciv.ui.tutorials.TutorialRender
 import kotlin.concurrent.thread
 
 open class CameraStageBaseScreen : Screen {
@@ -26,9 +23,7 @@ open class CameraStageBaseScreen : Screen {
     var game: UncivGame = UncivGame.Current
     var stage: Stage
 
-    val tutorialController by lazy {
-        TutorialController(TutorialMiner(JsonParser()), TutorialRender(this))
-    }
+    protected val tutorialController by lazy { TutorialController(this) }
 
     init {
         val width:Float
@@ -66,9 +61,7 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun displayTutorial(tutorial: Tutorial) {
-        tutorialController.showTutorial(tutorial)
-    }
+    fun displayTutorial(tutorial: Tutorial) = tutorialController.showTutorial(tutorial)
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
@@ -90,7 +83,7 @@ open class CameraStageBaseScreen : Screen {
 
     /** It returns the assigned [InputListener] */
     fun onBackButtonClicked(action:()->Unit): InputListener {
-        var listener = object : InputListener(){
+        val listener = object : InputListener(){
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                 if(keycode == Input.Keys.BACK){
                     action()

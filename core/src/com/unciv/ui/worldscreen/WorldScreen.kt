@@ -517,7 +517,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // remove current listener for the "BACK" button to avoid showing the dialog twice
         stage.removeListener( backButtonListener )
 
-        var promptWindow = Popup(this)
+        val promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
         promptWindow.addButton("Yes"){game.exitEvent?.invoke()}

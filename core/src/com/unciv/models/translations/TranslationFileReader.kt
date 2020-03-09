@@ -118,12 +118,11 @@ object TranslationFileReader {
 
     fun generateTutorialsStrings(): Collection<String> {
 
-        val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<Array<String>>>().javaClass, "jsons/Tutorials.json")
+        val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
         val strings = mutableSetOf<String>() // using set to avoid duplicates
 
         for (tutorial in tutorials) {
-            for (array in tutorial.value)
-                for (str in array)
+            for (str in tutorial.value)
                     if (str != "") strings.add("$str = ")
         }
         return strings
