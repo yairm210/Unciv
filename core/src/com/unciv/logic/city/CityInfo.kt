@@ -54,6 +54,7 @@ class CityInfo {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
 
+    var boughtPlaneThisRound = false
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
@@ -588,14 +589,22 @@ class CityInfo {
     private fun hasUnitOfType(type: UnitType) : Boolean
     {
         for(unit in getCenterTile().getUnits()) {
-            if(unit.type == type) return true
+            if(unit.type == type) true
         }
         return false
+    }
+
+    private fun CanPurchaseAirUnit() : Boolean
+    {
+        return getCenterTile().airUnits.filter { !it.isTransported }.size < 6
     }
 
     fun canPurchase(construction : IConstruction) : Boolean
     {
         if(construction is BaseUnit)
+            if(construction.unitType.isAirUnit())
+                return !boughtPlaneThisRound && CanPurchaseAirUnit()
+        else
             return !(hasUnitOfType(construction.unitType))
         return true
     }

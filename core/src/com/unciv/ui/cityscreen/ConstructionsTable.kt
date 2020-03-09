@@ -304,6 +304,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     }
                     if (!construction.shouldBeDisplayed(cityConstructions))
                         cityScreen.selectedConstruction = null
+                    city.boughtPlaneThisRound = true
                     cityScreen.update()
                 }
             }
