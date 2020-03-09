@@ -127,16 +127,14 @@ class TradeEvaluation{
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
-                if(civInfo.isAtWarWith(civToDeclareWarOn)){
-                    when (threatToThem) {
-                        ThreatLevel.VeryLow -> return 0
-                        ThreatLevel.Low -> return 0
-                        ThreatLevel.Medium -> return 100
-                        ThreatLevel.High -> return 500
-                        ThreatLevel.VeryHigh -> return 1000
-                    }
+                if (!civInfo.isAtWarWith(civToDeclareWarOn)) return 0 // why should we pay you to go fight someone...?
+                else when (threatToThem) {
+                    ThreatLevel.VeryLow -> return 0
+                    ThreatLevel.Low -> return 0
+                    ThreatLevel.Medium -> return 100
+                    ThreatLevel.High -> return 500
+                    ThreatLevel.VeryHigh -> return 1000
                 }
-                else return 0 // why should we pay you to go fight someone...?
             }
             TradeType.City -> {
                 val city = tradePartner.cities.first { it.id==offer.name }
