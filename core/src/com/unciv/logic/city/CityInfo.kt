@@ -594,7 +594,7 @@ class CityInfo {
         return false
     }
 
-    private fun CanPurchaseAirUnit() : Boolean
+    fun CanStationAdditionalAirUnit() : Boolean
     {
         return getCenterTile().airUnits.filter { !it.isTransported }.size < 6
     }
@@ -603,7 +603,7 @@ class CityInfo {
     {
         if(construction is BaseUnit)
             if(construction.unitType.isAirUnit())
-                return !boughtPlaneThisRound && CanPurchaseAirUnit()
+                return !boughtPlaneThisRound && CanStationAdditionalAirUnit()
         else
             return !(hasUnitOfType(construction.unitType))
         return true
