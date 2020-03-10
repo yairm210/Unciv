@@ -178,11 +178,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
 
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
-        val translatedNation = otherCiv.getTranslatedNation()
         if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
-            diplomacyTable.add(translatedNation.hateHello.toLabel()).row()
+            diplomacyTable.add(otherCiv.nation.hateHello.toLabel()).row()
         else
-            diplomacyTable.add(translatedNation.neutralHello.toLabel()).row()
+            diplomacyTable.add(otherCiv.nation.neutralHello.toLabel()).row()
         diplomacyTable.addSeparator()
 
         if(!viewingCiv.isAtWarWith(otherCiv)) {
@@ -369,7 +368,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         declareWarButton.onClick {
             YesNoPopup("Declare war on [${otherCiv.civName}]?".tr(), {
                 diplomacyManager.declareWar()
-                setRightSideFlavorText(otherCiv, otherCiv.getTranslatedNation().attacked, "Very well.")
+                setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
             }, this).open()
         }
