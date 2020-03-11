@@ -291,6 +291,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
+        if (city.attackedThisTurn) return
+
         val attackableTiles = UnitAutomation().getBombardTargets(city)
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
