@@ -1,3 +1,19 @@
+## 3.6.7
+
+By Reversi:
+- Fixed city buy/sell exploits
+- Snow, Ice, Atoll & Map Generation
+- Borders made of oriented triangles rather than circles
+
+By Jack Rainy:
+- Major translation changes
+- Minor UI changes
+- Brought specific things more in line with Civ V
+
+Starting locations work again =)
+
+Translation updates
+
 ## 3.6.6
 
 Resolved #2071 - AI will wait 20 turns between proposing research agreements if declined
