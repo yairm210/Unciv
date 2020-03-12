@@ -153,8 +153,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             peaceButton.onClick {
                 YesNoPopup("Peace with [${otherCiv.civName}]?".tr(), {
                     val tradeLogic = TradeLogic(viewingCiv, otherCiv)
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
-                    tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                    tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                     tradeLogic.acceptTrade()
                     updateLeftSideTable()
                     updateRightSide(otherCiv)
@@ -200,7 +200,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             val negotiatePeaceButton = TextButton("Negotiate Peace".tr(),skin)
             negotiatePeaceButton.onClick {
                 val tradeTable = setTrade(otherCiv)
-                val peaceTreaty = TradeOffer(Constants.peaceTreaty,TradeType.Treaty,30)
+                val peaceTreaty = TradeOffer(Constants.peaceTreaty,TradeType.Treaty)
                 tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
                 tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
                 tradeTable.offerColumnsTable.update()
@@ -234,14 +234,8 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 val requiredGold = viewingCiv.getResearchAgreementCost(otherCiv)
                 researchAgreementButton.onClick {
                     val tradeTable = setTrade(otherCiv)
-                    val duration = when(viewingCiv.gameInfo.gameParameters.gameSpeed) {
-                        GameSpeed.Quick -> 25
-                        GameSpeed.Standard -> 30
-                        GameSpeed.Epic -> 45
-                        GameSpeed.Marathon -> 90
-                    }
-                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, requiredGold)
-                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, 0, -requiredGold)
+                    val researchAgreement = TradeOffer(Constants.researchAgreement, TradeType.Treaty, requiredGold)
+                    val goldCostOfSignResearchAgreement = TradeOffer("Gold".tr(), TradeType.Gold, -requiredGold)
                     tradeTable.tradeLogic.currentTrade.theirOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(researchAgreement)
                     tradeTable.tradeLogic.ourAvailableOffers.add(goldCostOfSignResearchAgreement)

@@ -213,18 +213,17 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(buttonText.toLabel()).expandX().fillX().left()
 
         // no rejection reason means we can build it!
-        if(rejectionReason == "") {
-            pickProductionButton.onClick {
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(construction)
-                cityScreen.selectedTile = null
-                selectedQueueEntry = -2
-                cityScreen.update()
-            }
-        } else {
+        if(rejectionReason != "") {
             pickProductionButton.color = Color.GRAY
             pickProductionButton.row()
             pickProductionButton.add(rejectionReason.toLabel(Color.RED).apply{ setWrap(true)} )
                     .colspan(pickProductionButton.columns).fillX().left().padTop(2f)
+        }
+        pickProductionButton.onClick {
+            cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(construction)
+            cityScreen.selectedTile = null
+            selectedQueueEntry = -2
+            cityScreen.update()
         }
 
         return pickProductionButton

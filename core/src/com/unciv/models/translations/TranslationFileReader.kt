@@ -5,11 +5,12 @@ import com.unciv.JsonParser
 import com.unciv.models.ruleset.Nation
 import java.nio.charset.Charset
 import kotlin.collections.set
+import com.badlogic.gdx.utils.Array
 
-class TranslationFileReader{
+object TranslationFileReader {
 
-    private val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
-    val templateFileLocation = "jsons/translations/template.properties"
+    private const val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
+    const val templateFileLocation = "jsons/translations/template.properties"
     private val charset = Charset.forName("UTF-8").name()
 
     fun read(translationFile: String): LinkedHashMap<String, String> {
@@ -34,6 +35,8 @@ class TranslationFileReader{
         linesFromTemplates.addAll(templateFile.reader().readLines())
         linesFromTemplates.add("\n#################### Lines from Nations.json ####################\n")
         linesFromTemplates.addAll(generateNationsStrings())
+        linesFromTemplates.add("\n#################### Lines from Tutorials.json ####################\n")
+        linesFromTemplates.addAll(generateTutorialsStrings())
 
         val stringBuilder = StringBuilder()
         for(line in linesFromTemplates){
@@ -109,6 +112,18 @@ class TranslationFileReader{
                         strings.add("$fieldValue = ")
                 }
             }
+        }
+        return strings
+    }
+
+    fun generateTutorialsStrings(): Collection<String> {
+
+        val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
+        val strings = mutableSetOf<String>() // using set to avoid duplicates
+
+        for (tutorial in tutorials) {
+            for (str in tutorial.value)
+                    if (str != "") strings.add("$str = ")
         }
         return strings
     }
