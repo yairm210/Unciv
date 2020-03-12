@@ -122,7 +122,7 @@ object UnitActions {
     }
 
     fun getFoundCityAction(unit:MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique("Founds a new city") || unit.isEmbarked()) return null
+        if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
         return UnitAction(
                 type = UnitActionType.FoundCity,
                 uncivSound = UncivSound.Chimes,

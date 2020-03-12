@@ -202,7 +202,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.baseTerrain == Constants.hill -> "Mine"
             tile.baseTerrain in listOf(Constants.grassland,Constants.desert,Constants.plains) -> "Farm"
             tile.baseTerrain == Constants.tundra -> "Trading post"
-            else -> throw Exception("No improvement found for "+tile.baseTerrain)
+            else -> null
         }
         if (improvementString == null) return null
         return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
