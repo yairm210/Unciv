@@ -49,7 +49,8 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UncivGame.Current.worldScreen.isPlayersTurn)
                 buyTileButton.disable()
 
-            innerTable.add(buyTileButton)
+            innerTable.add(buyTileButton).row()
+            innerTable.add("You have [${city.civInfo.gold}] gold".toLabel(Color.YELLOW, 16)).padTop(2f)
         }
         if(city.canAcquireTile(selectedTile)) {
             val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
