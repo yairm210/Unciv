@@ -41,8 +41,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val languageTranslations:HashMap<String,String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
-             languageTranslations = TranslationFileReader()
-                    .read(translationFileName)
+             languageTranslations = TranslationFileReader.read(translationFileName)
         }catch (ex:Exception){
             return
         }
@@ -111,7 +110,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     fun loadPercentageCompleteOfLanguages(){
         val startTime = System.currentTimeMillis()
 
-        percentCompleteOfLanguages = TranslationFileReader().readLanguagePercentages()
+        percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
 
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
@@ -121,8 +120,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val percentComplete = HashMap<String,Int>()
         val translationStart = System.currentTimeMillis()
 
-        var allTranslations = TranslationFileReader().generateNationsStrings().size
-        Gdx.files.internal(TranslationFileReader().templateFileLocation)
+        var allTranslations = TranslationFileReader.generateNationsStrings().size
+        allTranslations += TranslationFileReader.generateTutorialsStrings().size
+        Gdx.files.internal(TranslationFileReader.templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
         for(language in getLanguagesWithTranslationFile()){

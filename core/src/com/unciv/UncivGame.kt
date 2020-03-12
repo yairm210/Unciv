@@ -81,7 +81,7 @@ class UncivGame(
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
-                TranslationFileReader().writeNewTranslationFiles(translations)
+                TranslationFileReader.writeNewTranslationFiles(translations)
             } else {
                 translations.tryReadTranslationForCurrentLanguage()
             }
