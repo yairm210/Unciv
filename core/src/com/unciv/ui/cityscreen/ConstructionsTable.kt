@@ -329,7 +329,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
+        tab.add("↑".toLabel(Color.BLACK, 24)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(40f).apply { circle.color= Color.GREEN.cpy().lerp(Color.BLACK,0.1f) })
         if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
@@ -346,7 +348,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
+        tab.add("↓".toLabel(Color.BLACK,  24)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(40f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) })
         if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
