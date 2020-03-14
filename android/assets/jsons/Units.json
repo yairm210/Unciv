@@ -553,7 +553,7 @@
 	{
 		"name": "Knight",
 		"unitType": "Mounted",
-		"movement": 3,
+		"movement": 4,
 		"strength": 20,
 		"cost": 120,
 		"requiredTech": "Chivalry",
