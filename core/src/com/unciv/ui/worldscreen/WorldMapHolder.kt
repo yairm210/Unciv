@@ -278,16 +278,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             tileGroups[attackableTile]!!.showCrosshair()
         }
 
-        // Fade out less relevant images if a military unit is selected
-        val fadeout = if (unit.type.isCivilian()) 1f
-        else 0.5f
-        for (tile in tileGroups.values) {
-            if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
-            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
-                    && tile.tileInfo.improvement != Constants.ancientRuins)
-                tile.icons.improvementIcon!!.color.a = fadeout
-            if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
-        }
     }
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
