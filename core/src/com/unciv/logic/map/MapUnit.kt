@@ -545,13 +545,6 @@ class MapUnit {
         if (currentTile.getOwner() == civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
         if (civInfo.isDefeated()) civInfo.destroy()
-        for (unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
-            if (unit.movement.canMoveTo(currentTile)) continue // we disbanded a carrier in a city, it can still stay in the city
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange()*2)
-                    .firstOrNull { unit.movement.canMoveTo(it) }
-            if (tileCanMoveTo != null) unit.movement.moveToTile(tileCanMoveTo)
-            else unit.disband()
-        }
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
