@@ -1,6 +1,6 @@
 Like most open-source projects, Unciv is developed at Github, so if you don't have a user you'll first have to create one.
 
-The translation files are at https://github.com/yairm210/UnCiv/tree/master/android/assets/jsons/translationsByLanguage
+The translation files are at https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/translations
 
 If you're adding a new language, you'll need to create a new file ('Create a new file' to the right of the folder name in the UI), and copy into it the contents of template.properties
 
@@ -15,9 +15,5 @@ Do as much as you're comfortable with - it's a big game with a lot of named obje
 You don't need to download anything, all translation work can be done on the Github website :)
 
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
-
-Beyond the regular translations, there are 2 more files that contain special translations: the [Tutorials](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Tutorials) and the [Nations](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons/Nations) json files.
-
-Both of these are much more rigorous in their type-checking, but the basic instructions are the same - copy the base file (Nations, Tutorials_English) to a new file with your language.
 
 If you're done with all of that, then there's always the Google Play page to translate... ;)
