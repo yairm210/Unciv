@@ -196,7 +196,7 @@ class SpecificUnitAutomation {
 
         // TODO Implement consideration for landing on aircraft carrier
 
-        val immediatelyReachableCities = tilesInRange
+        val immediatelyReachableCities = unit.currentTile.getTilesInDistance(unit.getRange()*2)
                 .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCities) {
@@ -212,7 +212,7 @@ class SpecificUnitAutomation {
 
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { key ->
-                    key.getTilesInDistance(unit.getRange())
+                    key.getTilesInDistance(unit.getRange()*2)
                             .count {
                                 val firstAirUnit = it.airUnits.firstOrNull()
                                 firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
@@ -236,7 +236,7 @@ class SpecificUnitAutomation {
     fun automateBomber(unit: MapUnit) {
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
 
         // TODO Implement consideration for landing on aircraft carrier
 
@@ -276,7 +276,7 @@ class SpecificUnitAutomation {
     fun automateMissile(unit: MapUnit) {
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
 
         val immediatelyReachableCities = tilesInRange
                 .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
