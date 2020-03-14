@@ -194,18 +194,7 @@ class SpecificUnitAutomation {
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
-        // TODO Implement consideration for landing on aircraft carrier
-
-        val immediatelyReachableCities = unit.currentTile.getTilesInDistance(unit.getRange()*2)
-                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
-
-        for (city in immediatelyReachableCities) {
-            if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
-                unit.movement.moveToTile(city)
-                return
-            }
-        }
+        if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
@@ -236,20 +225,7 @@ class SpecificUnitAutomation {
     fun automateBomber(unit: MapUnit) {
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
-
-        // TODO Implement consideration for landing on aircraft carrier
-
-        val immediatelyReachableCities = tilesInRange
-                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
-
-        for (city in immediatelyReachableCities) {
-            if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
-                unit.movement.moveToTile(city)
-                return
-            }
-        }
+        if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
@@ -279,7 +255,8 @@ class SpecificUnitAutomation {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
 
         val immediatelyReachableCities = tilesInRange
-                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
+                .filter { unit.movement.canMoveTo(it) && ((it.isCityCenter() && it.getOwner() == unit.civInfo) ||
+                        (it.getUnits().any { mapUnit -> mapUnit.type.isMissileCarrierUnit() && mapUnit.civInfo == unit.civInfo }))}
 
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
@@ -293,4 +270,20 @@ class SpecificUnitAutomation {
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
+
+    private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
+        val immediatelyReachableCitiesAndCarriers = unit.currentTile.getTilesInDistance(unit.getRange()*2)
+                .filter {  unit.movement.canMoveTo(it) && ((it.isCityCenter() && it.getOwner() == unit.civInfo) ||
+                        (it.getUnits().any { mapUnit -> mapUnit.type.isAircraftCarrierUnit() && mapUnit.civInfo == unit.civInfo })) }
+
+        for (city in immediatelyReachableCitiesAndCarriers) {
+            if (city.getTilesInDistance(unit.getRange())
+                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                unit.movement.moveToTile(city)
+                return true
+            }
+        }
+        return false
+    }
+
 }
