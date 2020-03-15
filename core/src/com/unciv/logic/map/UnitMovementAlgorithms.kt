@@ -318,7 +318,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
-        if (tile.terrainFeature == Constants.ice && !unit.type.isSubMarine())
+        if (tile.terrainFeature == Constants.ice
+                && !unit.baseUnit.uniques.contains("Can enter ice tiles"))
             return false
 
         if (tile.isWater && unit.type.isLandUnit()) {

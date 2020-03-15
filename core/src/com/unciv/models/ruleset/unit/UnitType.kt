@@ -21,62 +21,50 @@ enum class UnitType{
     Bomber,
     Missile;
 
-    fun isMelee(): Boolean {
-        return this == Melee
+    fun isMelee() =
+                this == Melee
                 || this == Mounted
                 || this == Armor
                 || this == Scout
                 || this == WaterMelee
-    }
-    fun isRanged(): Boolean {
-        return this == Ranged
+
+    fun isRanged() =
+                this == Ranged
                 || this == Siege
                 || this == WaterRanged
                 || this == WaterSubmarine
                 || this == City
                 || this.isAirUnit()
-    }
 
-    fun isLandUnit(): Boolean {
-        return this == Civilian
+    fun isLandUnit() =
+                this == Civilian
                 || this == Melee
                 || this == Mounted
                 || this == Armor
                 || this == Scout
                 || this == Ranged
                 || this == Siege
-    }
 
-    fun isCivilian(): Boolean {
-        return this == Civilian
-            || this == WaterCivilian
-    }
+    fun isCivilian() = this == Civilian || this == WaterCivilian
 
-    fun isMilitary(): Boolean {
-        return this != Civilian
-                && this != WaterCivilian
-    }
+    fun isMilitary() = this != Civilian && this != WaterCivilian
 
-    fun isWaterUnit(): Boolean {
-        return this==WaterSubmarine
-                || this==WaterRanged
-                || this==WaterMelee
-                || this==WaterCivilian
-                || this==WaterAircraftCarrier
-                || this==WaterMissileCarrier
-    }
+    fun isWaterUnit() =
+                this == WaterSubmarine
+                || this == WaterRanged
+                || this == WaterMelee
+                || this == WaterCivilian
+                || this == WaterAircraftCarrier
+                || this == WaterMissileCarrier
 
-    fun isAirUnit():Boolean{
-        return this==Bomber
-                || this==Fighter
-                || this==Missile
-    }
+    fun isAirUnit() =
+                this == Bomber
+                || this == Fighter
+                || this == Missile
 
-    fun isMissile():Boolean = this == Missile
+    fun isMissile() = this == Missile
 
-    fun isSubMarine():Boolean = this == WaterSubmarine
+    fun isAircraftCarrierUnit() = this == WaterAircraftCarrier
 
-    fun isAircraftCarrierUnit():Boolean = this == WaterAircraftCarrier
-
-    fun isMissileCarrierUnit():Boolean = this == WaterMissileCarrier
+    fun isMissileCarrierUnit() = this == WaterMissileCarrier
 }
