@@ -1,0 +1,21 @@
++ Legalism should apply only to cities founded by the civ in question, and be blocked for cities in resistance
++ World screen unit promotions display: deterministic order
++ Overview screen: Units: predictable sorting within a unit type
++ Overview screen: Units: columns for promotions+promotability+upgradability / health
++ Overview screen: Resources: row for 'untapped' resources (those where sending a worker should help)
++ Cities needlessly put land units in water and vice versa
+
+Get Inca mod working
+Keyboard shortcuts
+Buying - has civ5 no discount for accumulated production?
+Tradition Complete: Should give free Acqueducts in first 4 cities, not +2 Food everywhere
+Razing: Own /Capitals should not be razable: https://civilization.fandom.com/wiki/Conquered_cities_%28Civ5%29
+Garrison: What *is* a garrison? Only land units should count. I doubt any military unit that happens to be present even if moving should count (https://civilization.fandom.com/wiki/City_combat_%28Civ5%29)
+Cities should be able to harbor a military sea unit in addition to a land unit (https://civilization.fandom.com/wiki/Combat_strategy_%28Civ5%29)
+Check whether city conquering rules (https://civilization.fandom.com/wiki/City_combat_%28Civ5%29) are properly followed
+Check Marble Wonder bonus (https://civilization.fandom.com/wiki/Building_%28Civ5%29)
+Selling limits as per https://civilization.fandom.com/wiki/Building_%28Civ5%29
+Conquering a city should destroy buildings - all defensive + random
+Check: Does cutting forests yield production?
+Check: https://civilization.fandom.com/wiki/Building_%28Civ5%29 says losing a wonder race yields gold
+Pillaging does not yield gold
