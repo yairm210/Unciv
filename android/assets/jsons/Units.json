@@ -1098,7 +1098,7 @@
 		"rangedStrength": 60,
 		"cost": 325,
 		"requiredTech": "Refrigeration",
-		"uniques": ["Bonus as Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines"],
+		"uniques": ["Bonus as Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines", "Can enter ice tiles"],
 		"hurryCostModifier": 20
 	},
 	{
