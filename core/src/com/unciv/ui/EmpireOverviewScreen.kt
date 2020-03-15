@@ -13,9 +13,11 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import kotlin.math.*
@@ -339,10 +341,12 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         table.add("Ranged strength".tr())
         table.add("Movement".tr())
         table.add("Closest city".tr())
+        table.add("Promotions".tr())
+        table.add("Health".tr())
         table.row()
         table.addSeparator()
 
-        for(unit in viewingPlayer.getCivUnits().sortedBy { it.name }){
+        for(unit in viewingPlayer.getCivUnits().sortedWith(compareBy({it.name},{!it.due},{it.currentMovement<0.1f},{abs(it.currentTile.position.x)+abs(it.currentTile.position.y)}))) {
             val baseUnit = unit.baseUnit()
             val button = TextButton(unit.name.tr(), skin)
             button.onClick {
@@ -357,6 +361,19 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
             if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
+            val promotionsTable = Table()
+            val promotionsForUnit = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter { unit.promotions.promotions.contains(it.name) }     // force same sorting as on picker (.sorted() would be simpler code, but...)
+            for(promotion in promotionsForUnit)
+                promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
+            if (unit.promotions.canBePromoted()) promotionsTable.add(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLDENROD }).size(24f).padLeft(8f)
+            if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(baseUnit.upgradesTo!!, Color.GREEN)).size(28f).padLeft(8f)
+            promotionsTable.onClick {
+                if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
+                    UncivGame.Current.setScreen(PromotionPickerScreen(unit))
+                }
+            }
+            table.add(promotionsTable)
+            if (unit.health in 1..99) table.add(unit.health.toString()) else table.add()
             table.row()
         }
         table.pack()
@@ -486,12 +503,15 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
     private fun getResourcesTable(): Table {
         val resourcesTable=Table().apply { defaults().pad(10f) }
-        val resourceDrilldown = viewingPlayer.detailedCivResources
+        val resourceDrilldown = ResourceSupplyList()
+        resourceDrilldown.add(viewingPlayer.detailedCivResources)
+        for (city in viewingPlayer.cities) resourceDrilldown.add(city.getCityUntappedResources())
 
         // First row of table has all the icons
         resourcesTable.add()
         val resources = resourceDrilldown.map { it.resource }
-                .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
+                .filter { it.resourceType!=ResourceType.Bonus }.distinct()
+                .sortedWith(compareBy({it.resourceType},{it.name}))
 
         var visibleLabel: Label? = null
         for(resource in resources) {
@@ -540,7 +560,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
         resourcesTable.add("Total".toLabel())
         for(resource in resources){
-            val sum = resourceDrilldown.filter { it.resource==resource }.sumBy { it.amount }
+            val sum = resourceDrilldown.filter { it.resource==resource && it.amount > 0 }.sumBy { it.amount }       // negatives used for untapped tiles
             resourcesTable.add(sum.toString().toLabel())
         }
 

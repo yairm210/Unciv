@@ -171,6 +171,19 @@ class CityInfo {
         return cityResources
     }
 
+    fun getCityUntappedResources(): ResourceSupplyList {
+        val cityResources = ResourceSupplyList()
+
+        // count missed chances: resource is known, tile owned, but not improved or improvement not matching / not active
+        for (tileInfo in getTiles().filter { it.resource != null }) {
+            val resource = tileInfo.getTileResource()
+            if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
+            if (getTileResourceAmount(tileInfo)==0)
+                cityResources.add(resource, -1, "Untapped")
+        }
+        return cityResources
+    }
+
     fun getTileResourceAmount(tileInfo: TileInfo): Int {
         if (tileInfo.resource == null) return 0
         val resource = tileInfo.getTileResource()
