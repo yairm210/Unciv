@@ -167,8 +167,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
             unitIconHolder.add(UnitGroup(selectedUnit!!,30f)).pad(5f)
-            for(promotion in selectedUnit!!.promotions.promotions)
-                promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
+            val promotionsForUnit = selectedUnit!!.civInfo.gameInfo.ruleSet.unitPromotions.values.filter { selectedUnit!!.promotions.promotions.contains(it.name) }
+            for(promotion in promotionsForUnit)
+                promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
 
             // Since Clear also clears the listeners, we need to re-add it every time
             promotionsTable.onClick {
