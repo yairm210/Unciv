@@ -30,7 +30,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         for(entry in civInfo.getCivResources()
-                .filterNot { it.resource.resourceType == ResourceType.Bonus }) {
+                .filterNot { it.resource.resourceType == ResourceType.Bonus }
+                .sortedWith(compareBy({it.resource.resourceType},{it.resource.name}))) {
             val resourceTradeType = if(entry.resource.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.resource.name, resourceTradeType, entry.amount))
@@ -38,7 +39,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
             for (entry in civInfo.tech.techsResearched
                     .filterNot { otherCivilization.tech.isResearched(it) }
-                    .filter { otherCivilization.tech.canBeResearched(it) }) {
+                    .filter { otherCivilization.tech.canBeResearched(it) }.sortedBy { it }) {
                 offers.add(TradeOffer(entry, TradeType.Technology))
             }
         }
@@ -48,7 +49,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState() && !otherCivilization.isCityState()) {
-            for (city in civInfo.cities.filterNot { it.isCapital() })
+            for (city in civInfo.cities.filterNot { it.isCapital() }.sortedBy { it.name })
                 offers.add(TradeOffer(city.id, TradeType.City))
         }
 
@@ -57,7 +58,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
 
-        for (thirdCiv in civsWeKnowAndTheyDont) {
+        for (thirdCiv in civsWeKnowAndTheyDont.sortedBy { it.civName }) {
             offers.add(TradeOffer(thirdCiv.civName, TradeType.Introduction))
         }
 
@@ -66,7 +67,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
                     .filter { civInfo.getDiplomacyManager(it).diplomaticStatus == DiplomaticStatus.Peace }
-            for (thirdCiv in civsWeArentAtWarWith) {
+            for (thirdCiv in civsWeArentAtWarWith.sortedBy { it.civName }) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeType.WarDeclaration))
             }
         }
