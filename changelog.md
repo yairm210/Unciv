@@ -1,3 +1,18 @@
+## 3.6.8
+
+Loads of stuff by Jack Rainy!
+
+- UI improvements
+- Energy saving for music and sound
+- Allow selection of non-buildable items
+- Sort overview resources by name and amount
+- Turn number of trades changes with game speed
+- Filter for the custom maps
+- Ice is impassible for all except submarines
+
+Translation updates
+
+
 ## 3.6.7
 
 By Reversi:
