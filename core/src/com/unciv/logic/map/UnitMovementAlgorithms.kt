@@ -19,16 +19,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (toOwner != null && to.isLand && toOwner.hasActiveGreatWall && civInfo.isAtWarWith(toOwner))
             extraCost += 1
 
-        if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
-            return 1 / 10f + extraCost
-
-        if (from.hasConnection(civInfo) && to.hasConnection(civInfo))
-        {
+        if (from.hasConnection(civInfo) && to.hasConnection(civInfo)) {
+            if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
+                return 1 / 10f + extraCost
             if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
             else return 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (unit.doubleMovementInForestAndJungle && (to.baseTerrain == Constants.forest || to.baseTerrain == Constants.jungle))
+            return 1f + extraCost
+        if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
             return 1f + extraCost
 
         if (unit.roughTerrainPenalty

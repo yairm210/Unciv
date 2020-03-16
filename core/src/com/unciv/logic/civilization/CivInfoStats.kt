@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
@@ -44,17 +45,25 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
     private fun getTransportationUpkeep(): Int {
         var transportationUpkeep = 0
+        var hillsUpkeep = 0
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
         for (city  in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                when (tile.roadStatus) {
-                    RoadStatus.Road -> transportationUpkeep += 1
-                    RoadStatus.Railroad -> transportationUpkeep += 2
-                }
+                val tileUpkeep =
+                    when (tile.roadStatus) {
+                        RoadStatus.Road -> 1
+                        RoadStatus.Railroad -> 2
+                        RoadStatus.None -> 0
+                    }
+                transportationUpkeep += tileUpkeep
+                if (tile.baseTerrain == Constants.hill) hillsUpkeep += tileUpkeep
             }
         }
+        // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
+        if (civInfo.nation.greatAndeanRoad)
+            transportationUpkeep = (transportationUpkeep - hillsUpkeep) / 2
         if (civInfo.policies.isAdopted("Trade Unions"))
             transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
         return transportationUpkeep

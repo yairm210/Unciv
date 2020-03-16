@@ -6,9 +6,13 @@
 + Cities needlessly put land units in water and vice versa
 
 Get Inca mod working
+	Mountains->Terrace farm+
+	Forbid Terrace farm on resource
+Hide 'untapped' row if sum==0
+Freshy built mine will not always contribute resources
 Keyboard shortcuts
 Buying - has civ5 no discount for accumulated production?
-Tradition Complete: Should give free Acqueducts in first 4 cities, not +2 Food everywhere
+Tradition Complete: Should give free Acqueducts in first 4 cities, not +2 Food everywhere (no: Civ5 2011-06 patch changed this)
 Razing: Own /Capitals should not be razable: https://civilization.fandom.com/wiki/Conquered_cities_%28Civ5%29
 Garrison: What *is* a garrison? Only land units should count. I doubt any military unit that happens to be present even if moving should count (https://civilization.fandom.com/wiki/City_combat_%28Civ5%29)
 Cities should be able to harbor a military sea unit in addition to a land unit (https://civilization.fandom.com/wiki/Combat_strategy_%28Civ5%29)
@@ -19,3 +23,4 @@ Conquering a city should destroy buildings - all defensive + random
 Check: Does cutting forests yield production?
 Check: https://civilization.fandom.com/wiki/Building_%28Civ5%29 says losing a wonder race yields gold
 Pillaging does not yield gold
+Check: Improvements except roads/remove cannot be built outside own territory (https://civilization.fandom.com/wiki/Worker_%28Civ5%29)
