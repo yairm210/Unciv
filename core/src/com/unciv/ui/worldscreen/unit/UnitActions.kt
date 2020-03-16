@@ -176,8 +176,11 @@ object UnitActions {
                         tile.turnsToImprovement = 2
                     }
                     tile.improvement = null
+                    if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
                     if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+                    //Todo: heal only once per unit and turn (https://steamcommunity.com/app/8930/discussions/0/828934723979753880/)
                     unit.healBy(25)
+                    //Todo: earn gold (i think 10 per era)
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
     }
 
