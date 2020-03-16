@@ -4,12 +4,16 @@
 + Overview screen: Units: columns for promotions+promotability+upgradability / health
 + Overview screen: Resources: row for 'untapped' resources (those where sending a worker should help)
 + Cities needlessly put land units in water and vice versa
-
-Get Inca mod working
-	Mountains->Terrace farm+
-	Forbid Terrace farm on resource
-Hide 'untapped' row if sum==0
++ Get Inca mod working: Mountains->Terrace farm+, Forbid Terrace farm on resource: done
+Civilopedia: Terrace farm / Moai omits uniques and uniqueTo
+Civilopedia: Nation should display Uniques icons, nation ability title, Start bias, Leader name
+Inca translations: "Terrace farm", "Slinger", "May withdraw before melee", "+1 Food for each adjacent Mountain", "Cannot improve a resource", Great Andean Road
+Overview translations: "Promotions", "Health", "Untapped"
+#Hide 'untapped' row if sum==0
 Freshy built mine will not always contribute resources
+	transient detailedCivResources out of date:
+	civInfo.updateDetailedCivResources()
+	MapUnit.workOnImprovement, pillage
 Keyboard shortcuts
 Buying - has civ5 no discount for accumulated production?
 Tradition Complete: Should give free Acqueducts in first 4 cities, not +2 Food everywhere (no: Civ5 2011-06 patch changed this)
@@ -22,5 +26,5 @@ Selling limits as per https://civilization.fandom.com/wiki/Building_%28Civ5%29
 Conquering a city should destroy buildings - all defensive + random
 Check: Does cutting forests yield production?
 Check: https://civilization.fandom.com/wiki/Building_%28Civ5%29 says losing a wonder race yields gold
-Pillaging does not yield gold
+Pillaging does not yield gold, and should allow only one heal per turn and unit. Is pillaging your own tiles allowed?
 Check: Improvements except roads/remove cannot be built outside own territory (https://civilization.fandom.com/wiki/Worker_%28Civ5%29)

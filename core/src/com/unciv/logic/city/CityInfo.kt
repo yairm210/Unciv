@@ -177,6 +177,7 @@ class CityInfo {
         // count missed chances: resource is known, tile owned, but not improved or improvement not matching / not active
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
+            if (resource.resourceType==ResourceType.Bonus) continue
             if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (getTileResourceAmount(tileInfo)==0)
                 cityResources.add(resource, -1, "Untapped")
