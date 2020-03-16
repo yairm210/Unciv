@@ -54,7 +54,6 @@ class CityInfo {
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
 
-    val typeOfUnitsBought = mutableListOf<UnitType>()
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
@@ -586,25 +585,16 @@ class CityInfo {
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
     }
 
-    private fun hasUnitOfType(type: UnitType) : Boolean
-    {
-        return getCenterTile().getUnits().any{it.type==type}
-    }
-
-    fun CanStationAdditionalAirUnit() : Boolean
-    {
-        return getCenterTile().airUnits.filter { !it.isTransported }.size < 6
-    }
-
-    fun canPurchase(construction : IConstruction) : Boolean
-    {
-        if(construction is BaseUnit)
-            if(construction.unitType.isAirUnit()) {
-                val alreadyBoughtPlane = typeOfUnitsBought.any { it.isAirUnit() }
-                return alreadyBoughtPlane && CanStationAdditionalAirUnit()
-            }
-        else
-            return !(hasUnitOfType(construction.unitType))
+    fun canPurchase(construction : IConstruction) : Boolean {
+        if (construction is BaseUnit)
+        {
+            val tile = getCenterTile()
+            if (construction.unitType.isCivilian())
+                return tile.civilianUnit == null
+            if (construction.unitType.isAirUnit())
+                return tile.airUnits.filter { !it.isTransported }.size < 6
+            else return tile.militaryUnit == null
+        }
         return true
     }
     //endregion

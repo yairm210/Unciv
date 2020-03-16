@@ -295,7 +295,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {
         // landing in the city
         if (tile.isCityCenter()) {
-            if (tile.getCity()!!.CanStationAdditionalAirUnit() && tile.getCity()?.civInfo == unit.civInfo)
+            if (tile.airUnits.filter { !it.isTransported }.size < 6 && tile.getCity()?.civInfo == unit.civInfo)
                 return true // if city is free - no problem, get in
         } // let's check whether it enters city on carrier now...
 

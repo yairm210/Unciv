@@ -148,7 +148,7 @@ class BaseUnit : INamed, IConstruction {
         return getRejectionReason(construction) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return false // couldn't place the unit, so there's actually no unit =(
 
@@ -161,8 +161,9 @@ class BaseUnit : INamed, IConstruction {
             unit.promotions.addPromotion("Drill I", isFree = true)
 
         //movement penalty
-        if(!unit.hasUnique("Starts with no movement penalty"))
-        unit.currentMovement = 0f
+        if(!unit.hasUnique("Starts with no movement penalty") && wasBought)
+            unit.currentMovement = 0f
+
         return true
     }
 

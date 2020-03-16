@@ -305,8 +305,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     }
                     if (!construction.shouldBeDisplayed(cityConstructions))
                         cityScreen.selectedConstruction = null
-                    if(construction is BaseUnit)
-                        city.typeOfUnitsBought.add(construction.unitType)
                     cityScreen.update()
                 }
             }
