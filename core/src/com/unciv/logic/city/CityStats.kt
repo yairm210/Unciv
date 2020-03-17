@@ -2,9 +2,9 @@ package com.unciv.logic.city
 
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -48,7 +48,7 @@ class CityStats {
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            if (civInfo.nation.unique == "+1 Gold from each Trade Route, Oil resources provide double quantity") goldFromTradeRoute += 1
+            if (civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS) goldFromTradeRoute += 1
             if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2
             if (civInfo.containsBuildingUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
@@ -63,8 +63,6 @@ class CityStats {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
-                if (cityInfo.civInfo.containsBuildingUnique("Production to science conversion in cities increased by 33%"))
-                    scienceProduced *= 1.33f
                 if (cityInfo.civInfo.policies.isAdopted("Rationalism")) scienceProduced *= 1.33f
                 stats.science += scienceProduced
             }
@@ -89,7 +87,8 @@ class CityStats {
 
         if (construction is Building
                 && construction.isWonder
-                && cityInfo.civInfo.hasResource("Marble"))
+                && cityInfo.civInfo.getCivResources()
+                        .any { it.amount > 0 && it.resource.unique == "+15% production towards Wonder construction" })
             stats.production += 15f
 
         return stats
@@ -110,8 +109,7 @@ class CityStats {
         val stats = Stats()
 
         val civUnique = cityInfo.civInfo.nation.unique
-        if (civUnique == "+2 Culture per turn from cities before discovering Steam Power"
-            && !cityInfo.civInfo.tech.isResearched("Steam Power"))
+        if (civUnique == UniqueAbility.ANCIEN_REGIME && !cityInfo.civInfo.tech.isResearched("Steam Power"))
             stats.culture += 2
 
         return stats
@@ -126,7 +124,7 @@ class CityStats {
                 if (cityInfo.isCapital()) stats.food += 3
                 else stats.food += 1
 
-                if (cityInfo.civInfo.nation.unique == "Food and Culture from Friendly City-States are increased by 50%")
+                if (cityInfo.civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
                     stats.food *= 1.5f
             }
         }
@@ -139,13 +137,13 @@ class CityStats {
 
         val civUnique = cityInfo.civInfo.nation.unique
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
-        if (civUnique == "+25% Production towards any buildings that already exist in the Capital"
+        if (civUnique == UniqueAbility.GLORY_OF_ROME
                 && currentConstruction is Building
                 && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings
                         .contains(currentConstruction.name))
             stats.production += 25f
 
-        if (civUnique == "+20% production towards Wonder construction"
+        if (civUnique == UniqueAbility.MONUMENT_BUILDERS
                 && currentConstruction is Building && currentConstruction.isWonder)
             stats.production += 20
 
@@ -181,7 +179,7 @@ class CityStats {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f
-        if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
+        if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
             unhappinessFromCity *= 2f//doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
@@ -198,7 +196,7 @@ class CityStats {
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
-        if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
+        if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
             unhappinessFromCitizens *= 0.5f //halved for the Indian
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
@@ -223,8 +221,7 @@ class CityStats {
         if (civInfo.containsBuildingUnique("+1 happiness in each city"))
             newHappinessList["Wonders"] = 1f
 
-        if (baseStatList.containsKey("Tile yields"))
-            newHappinessList["Tile yields"] = baseStatList["Tile yields"]!!.happiness
+        newHappinessList["Tile yields"] = getStatsFromTiles().happiness
         
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
@@ -245,7 +242,7 @@ class CityStats {
         if (policies.contains("Secularism")) stats.science += 2
         if (cityInfo.civInfo.containsBuildingUnique("+1 Production from specialists"))
             stats.production += 1
-        if(cityInfo.civInfo.nation.unique=="+2 Science for all specialists and Great Person tile improvements")
+        if(cityInfo.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science+=2
         return stats
     }
@@ -291,20 +288,32 @@ class CityStats {
     }
 
     private fun getStatPercentBonusesFromBuildings(): Stats {
-        val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-        if (cityInfo.civInfo.containsBuildingUnique("Culture in all cities increased by 25%")) stats.culture += 25f
-
+        val stats               = cityInfo.cityConstructions.getStatPercentBonuses()
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
+
+        if (cityInfo.civInfo.containsBuildingUnique("Culture in all cities increased by 25%"))
+            stats.culture += 25f
+
         if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
+            if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 15%"))
+                stats.production += 15
             if (cityInfo.civInfo.containsBuildingUnique("Increases production of spaceship parts by 25%"))
                 stats.production += 25
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 50%"))
                 stats.production += 50
         }
 
-        if (currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted
-                && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
-            stats.production += 15
+        if (currentConstruction is BaseUnit) {
+            if (currentConstruction.unitType == UnitType.Mounted
+                    && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
+                stats.production += 15
+            if (currentConstruction.unitType.isLandUnit()
+                    && cityInfo.containsBuildingUnique("+15% production of land units"))
+                stats.production += 15
+            if (currentConstruction.unitType.isWaterUnit()
+                    && cityInfo.containsBuildingUnique("+15% production of naval units"))
+                stats.production += 15
+        }
 
         return stats
     }
@@ -342,14 +351,7 @@ class CityStats {
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
-        if (roadType == RoadStatus.Road) return cityInfo.isConnectedToCapital() // this transient is not applicable to connection via railroad.
-
-        val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
-        val bfs = BFS(capitalTile) { it.roadStatus == roadType }
-
-        val cityTile = cityInfo.getCenterTile()
-        bfs.stepUntilDestination(cityTile)
-        return bfs.tilesReached.containsKey(cityTile)
+        return cityInfo.isConnectedToCapital { it.contains(roadType.name) || it.contains("Harbor") }
     }
     //endregion
 

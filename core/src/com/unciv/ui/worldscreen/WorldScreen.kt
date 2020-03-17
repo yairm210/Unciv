@@ -20,7 +20,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
-import com.unciv.ui.VictoryScreen
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -30,8 +30,7 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
-import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlin.concurrent.thread
@@ -39,25 +38,25 @@ import kotlin.concurrent.thread
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
-    var waitingForAutosave = false
+    private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
-    val minimapWrapper = MinimapHolder(mapHolder)
+    private val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
-    val bottomTileInfoTable = TileInfoTable(this)
-    val battleTable = BattleTable(this)
-    val unitActionsTable = UnitActionsTable(this)
+    private val bottomTileInfoTable = TileInfoTable(viewingCiv)
+    private val battleTable = BattleTable(this)
+    private val unitActionsTable = UnitActionsTable(this)
 
     private val techPolicyAndVictoryHolder = Table()
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
-    private val tutorialTaskTable=Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
+    private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
-    var shouldUpdate=false
+    var shouldUpdate = false
 
     private var backButtonListener : InputListener
 
@@ -111,7 +110,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val tileToCenterOn: Vector2 =
                 when {
                     viewingCiv.cities.isNotEmpty() -> viewingCiv.getCapital().location
-                    viewingCiv.getCivUnits().isNotEmpty() -> viewingCiv.getCivUnits().first().getTile().position
+                    viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
         mapHolder.setCenterPosition(tileToCenterOn,true)
@@ -137,7 +136,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun loadLatestMultiplayerState(){
-        val loadingGamePopup = PopupTable(this)
+        val loadingGamePopup = Popup(this)
         loadingGamePopup.add("Loading latest game state...")
         loadingGamePopup.open()
         thread(name="MultiplayerLoad") {
@@ -153,7 +152,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
             } catch (ex: Exception) {
                 loadingGamePopup.close()
-                val couldntDownloadLatestGame = PopupTable(this)
+                val couldntDownloadLatestGame = Popup(this)
                 couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
                 couldntDownloadLatestGame.addCloseButton()
                 couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
@@ -204,17 +203,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
 
-        if (!hasVisibleDialogs() && isPlayersTurn) {
+        if (!hasOpenPopups() && isPlayersTurn) {
             when {
                 !gameInfo.oneMoreTurnMode && viewingCiv.isDefeated() -> game.setScreen(VictoryScreen())
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
                 viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy() -> game.setScreen(PolicyPickerScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
-                viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
-                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
+                viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
+                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
             }
         }
-        updateNextTurnButton(hasVisibleDialogs()) // This must be before the notifications update, since its position is based on it
+        updateNextTurnButton(hasOpenPopups()) // This must be before the notifications update, since its position is based on it
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
@@ -248,7 +247,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     "\n Click 'Create improvement' (above the unit table, bottom left)" +
                     "\n > Choose the farm > \n Leave the worker there until it's finished"
         if(!completedTasks.contains("Create a trade route")
-                && viewingCiv.citiesConnectedToCapital.any { it.civInfo==viewingCiv })
+                && viewingCiv.citiesConnectedToCapitalToMediums.any { it.key.civInfo==viewingCiv })
             game.settings.addCompletedTutorialTask("Create a trade route")
         if(viewingCiv.cities.size>1 && !completedTasks.contains("Create a trade route"))
             return "Create a trade route!\nConstruct roads between your capital and another city" +
@@ -257,7 +256,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return "Conquer a city!\nBring an enemy city down to low health > " +
                     "\nEnter the city with a melee unit"
         if(viewingCiv.getCivUnits().any { it.type.isAirUnit() } && !completedTasks.contains("Move an air unit"))
-            return "Move an air unit!\nSelect an air unit > select another city withing range > " +
+            return "Move an air unit!\nSelect an air unit > select another city within range > " +
                     "\nMove the unit to the other city"
         if(!completedTasks.contains("See your stats breakdown"))
             return "See your stats breakdown!\nEnter the Overview screen (top right corner) >" +
@@ -291,7 +290,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
         if(!civInfo.isDefeated() && civInfo.getKnownCivs()
-                        .filterNot { it.isDefeated() || it==viewingCiv || it.isBarbarian() }
+                        .filterNot {  it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)
             val btn = TextButton("Diplomacy".tr(), skin)
@@ -389,7 +388,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     try {
                         OnlineMultiplayer().tryUploadGame(gameInfoClone)
                     } catch (ex: Exception) {
-                        val cantUploadNewGamePopup = PopupTable(this)
+                        val cantUploadNewGamePopup = Popup(this)
                         cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
@@ -518,7 +517,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // remove current listener for the "BACK" button to avoid showing the dialog twice
         stage.removeListener( backButtonListener )
 
-        var promptWindow = PopupTable(this)
+        val promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
         promptWindow.addButton("Yes"){game.exitEvent?.invoke()}

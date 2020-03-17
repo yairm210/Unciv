@@ -36,10 +36,8 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
     }
 
     private fun automateEncampment(unit: MapUnit) {
-        val unitActions = UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
-
         // 1 - trying to upgrade
-        if (tryUpgradeUnit(unit, unitActions)) return
+        if (UnitAutomation.tryUpgradeUnit(unit)) return
 
         // 2 - trying to attack somebody
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
@@ -49,7 +47,6 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
     }
 
     private fun automateCombatUnit(unit: MapUnit) {
-        val unitActions = UnitActions().getUnitActions(unit, UncivGame.Current.worldScreen)
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val nearEnemyTiles = battleHelper.getAttackableEnemies(unit, unitDistanceToTiles)
 
@@ -64,17 +61,15 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
             val possibleHeal = unit.rankTileForHealing(unit.currentTile)
             if (possibleDamage > possibleHeal) {
                 // run
-                val furthestTile = findFurthestTile(unit, unitDistanceToTiles, nearEnemyTiles)
-                unit.movement.moveToTile(furthestTile)
-            } else {
-                // heal
-                unit.fortifyIfCan()
+                val furthestTile = findFurthestTileCanMoveTo(unit, unitDistanceToTiles, nearEnemyTiles)
+                if(furthestTile!=null) unit.movement.moveToTile(furthestTile)
             }
+            unit.fortifyIfCan()
             return
         }
 
         // 2 - trying to upgrade
-        if (tryUpgradeUnit(unit, unitActions)) return
+        if (UnitAutomation.tryUpgradeUnit(unit)) return
 
         // 3 - trying to attack enemy
         // if a embarked melee unit can land and attack next turn, do not attack from water.
@@ -85,13 +80,10 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         // 5 - heal the unit if needed
-        if (unit.health < 100) {
-            UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)
-            return
-        }
+        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
 
         // 6 - wander
-        UnitAutomation().wander(unit, unitDistanceToTiles)
+        UnitAutomation.wander(unit, unitDistanceToTiles)
     }
 
     private fun automateScout(unit: MapUnit) {
@@ -101,8 +93,8 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // 1 - heal or run if death is near
         if (unit.health < 50) {
             if (nearEnemyTiles.isNotEmpty()) {
-                val furthestTile = findFurthestTile(unit, unitDistanceToTiles, nearEnemyTiles)
-                unit.movement.moveToTile(furthestTile)
+                val furthestTile = findFurthestTileCanMoveTo(unit, unitDistanceToTiles, nearEnemyTiles)
+                if(furthestTile!=null) unit.movement.moveToTile(furthestTile)
             }
             unit.fortifyIfCan()
 
@@ -116,21 +108,19 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         // 4 - heal the unit if needed
-        if (unit.health < 100) {
-            UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)
-            return
-        }
+        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
 
         // 5 - wander
-        UnitAutomation().wander(unit, unitDistanceToTiles)
+        UnitAutomation.wander(unit, unitDistanceToTiles)
     }
 
-    private fun findFurthestTile(
+    private fun findFurthestTileCanMoveTo(
             unit: MapUnit,
             unitDistanceToTiles: PathsToTilesWithinTurn,
             nearEnemyTiles: List<AttackableTile>
-    ): TileInfo {
+    ): TileInfo? {
         val possibleTiles = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
+        if(possibleTiles.isEmpty()) return null
         val enemies = nearEnemyTiles.mapNotNull { it.tileToAttack.militaryUnit }
         var furthestTile: Pair<TileInfo, Float> = possibleTiles.random() to 0f
         for (enemy in enemies) {
@@ -143,20 +133,4 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         }
         return furthestTile.first
     }
-
-
-    private fun tryUpgradeUnit(unit: MapUnit, unitActions: List<UnitAction>): Boolean {
-        if (unit.baseUnit().upgradesTo != null) {
-            val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units[unit.baseUnit().upgradesTo!!]!!
-            if (upgradedUnit.isBuildable(unit.civInfo)) {
-                val upgradeAction = unitActions.firstOrNull { it.type == UnitActionType.Upgrade }
-                if (upgradeAction != null && upgradeAction.canAct) {
-                    upgradeAction.action?.invoke()
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
 }

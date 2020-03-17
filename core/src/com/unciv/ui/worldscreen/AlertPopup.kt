@@ -7,9 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 
-class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): PopupTable(worldScreen){
+class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen){
     fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
         val button = TextButton(text.tr(), skin)
         button.onClick {
@@ -32,7 +31,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.WarDeclaration -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
-                addGoodSizedLabel(civInfo.getTranslatedNation().declaringWar).row()
+                addGoodSizedLabel(civInfo.nation.declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
@@ -41,19 +40,19 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.Defeated -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 addLeaderName(civInfo)
-                addGoodSizedLabel(civInfo.getTranslatedNation().defeated).row()
+                addGoodSizedLabel(civInfo.nation.defeated).row()
                 add(getCloseButton("Farewell."))
             }
             AlertType.FirstContact -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val translatedNation = civInfo.getTranslatedNation()
+                val nation = civInfo.nation
                 if (civInfo.isCityState()) {
                     addLeaderName(civInfo)
-                    addGoodSizedLabel("We have encountered the City-State of [${translatedNation.getNameTranslation()}]!").row()
+                    addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
                     addLeaderName(civInfo)
-                    addGoodSizedLabel(translatedNation.introduction).row()
+                    addGoodSizedLabel(nation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
                 }
             }
@@ -119,7 +118,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addGoodSizedLabel("Destroying the city instantly razes the city to the ground.").row()
 
                 }
-                
+
             }
             AlertType.BorderConflict -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
@@ -179,13 +178,10 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Close"))
             }
         }
-        open()
-        worldScreen.hasPopupOpen = true
     }
 
     override fun close(){
         worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
-        worldScreen.hasPopupOpen = false
         super.close()
     }
 }

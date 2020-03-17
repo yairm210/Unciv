@@ -13,27 +13,25 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
 
 class NewGameScreen: PickerScreen(){
 
-    val newGameParameters= UncivGame.Current.gameInfo.gameParameters
+    val newGameParameters= UncivGame.Current.gameInfo.gameParameters.clone()
     val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
     val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
         setDefaultCloseAction()
+        scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
         val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
-        topTable.add(ScrollPane(newGameScreenOptionsTable)).height(topTable.parent.height)
-        topTable.add(playerPickerTable).pad(10f)
+        topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
+        topTable.add(playerPickerTable).height(topTable.parent.height)
         topTable.pack()
         topTable.setFillParent(true)
 
@@ -41,7 +39,7 @@ class NewGameScreen: PickerScreen(){
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
             if (newGameParameters.players.none { it.playerType == PlayerType.Human }) {
-                val noHumanPlayersPopup = PopupTable(this)
+                val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
@@ -53,7 +51,7 @@ class NewGameScreen: PickerScreen(){
                     try {
                         UUID.fromString(player.playerId)
                     } catch (ex: Exception) {
-                        val invalidPlayerIdPopup = PopupTable(this)
+                        val invalidPlayerIdPopup = Popup(this)
                         invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
                         invalidPlayerIdPopup.addCloseButton()
                         invalidPlayerIdPopup.open()
@@ -75,8 +73,15 @@ class NewGameScreen: PickerScreen(){
                         try {
                             OnlineMultiplayer().tryUploadGame(newGame!!)
                             GameSaver().autoSave(newGame!!){}
+
+                            //Saved as Multiplayer game to show up in the session browser
+                            GameSaver().saveGame(newGame!!, newGame!!.gameId,true)
+                            //Save gameId to clipboard because you have to do it anyway.
+                            Gdx.app.clipboard.contents = newGame!!.gameId
+                            //Popup to notify the User that the gameID got copied to the clipboard
+                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
                         } catch (ex: Exception) {
-                            val cantUploadNewGamePopup = PopupTable(this)
+                            val cantUploadNewGamePopup = Popup(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
                             cantUploadNewGamePopup.addCloseButton()
                             cantUploadNewGamePopup.open()
@@ -84,13 +89,16 @@ class NewGameScreen: PickerScreen(){
                         }
                     }
                 } catch (exception: Exception) {
-                    val cantMakeThatMapPopup = PopupTable(this)
+                    val cantMakeThatMapPopup = Popup(this)
                     cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
                     cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
                     cantMakeThatMapPopup.addCloseButton()
                     cantMakeThatMapPopup.open()
                     Gdx.input.inputProcessor = stage
+                    rightSideButton.enable()
+                    rightSideButton.setText("Start game!".tr())
                 }
+                Gdx.graphics.requestRendering()
             }
         }
     }
@@ -104,7 +112,7 @@ class NewGameScreen: PickerScreen(){
     var newGame:GameInfo?=null
 
     override fun render(delta: Float) {
-        if(newGame!=null){
+        if (newGame != null){
             game.loadGame(newGame!!)
         }
         super.render(delta)

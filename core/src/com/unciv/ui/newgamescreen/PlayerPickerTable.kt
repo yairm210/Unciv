@@ -15,16 +15,16 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.utils.Popup
 import java.util.*
 
 class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters: GameParameters): Table() {
     val playerListTable = Table()
-    val nationsPopupWidth = newGameScreen.stage.width / 2.5f
+    val nationsPopupWidth = newGameScreen.stage.width / 2f
 
     init {
-        add(ScrollPane(playerListTable)).width(newGameScreen.stage.width/2)
-                .height(newGameScreen.stage.height * 0.6f)
+        top()
+        add(ScrollPane(playerListTable).apply{setOverscroll(false,false)}).width(newGameScreen.stage.width/2)
         update()
     }
 
@@ -38,14 +38,14 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         }
         if(newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
             playerListTable.add("+".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
-                    .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
+                    .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
         }
         newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size>1)
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
         val playerTable = Table()
-        playerTable.pad(20f)
+        playerTable.pad(5f)
         playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.8f))
 
         val nationTable = getNationTable(player)
@@ -58,49 +58,43 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             else player.playerType = PlayerType.AI
             update()
         }
-        playerTable.add(playerTypeTextbutton).pad(20f)
-        playerTable.add(TextButton("Remove".tr(), CameraStageBaseScreen.skin)
-                .onClick { newGameParameters.players.remove(player); update() }).row()
+        playerTable.add(playerTypeTextbutton).width(100f).pad(5f)
+        playerTable.add("-".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(40f)
+                .onClick { newGameParameters.players.remove(player); update() }).pad(5f).row()
         if(newGameParameters.isOnlineMultiplayer && player.playerType==PlayerType.Human) {
-            val playerIdTable = Table()
-            playerIdTable.add("Player ID:".toLabel())
 
             val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
-            playerIdTable.add(playerIdTextfield).colspan(2)
-            val errorLabel = "Not a valid user id!".toLabel(Color.RED)
-            errorLabel.isVisible=false
-            playerIdTable.add(errorLabel)
+            playerIdTextfield.messageText = "Please input Player ID!".tr()
+            playerTable.add(playerIdTextfield).colspan(2).fillX().pad(5f)
+            var errorLabel = "✘".toLabel(Color.RED)
+            playerTable.add(errorLabel).pad(5f).row()
 
             fun onPlayerIdTextUpdated(){
                 try {
                     val uuid = UUID.fromString(playerIdTextfield.text)
                     player.playerId = playerIdTextfield.text
-                    errorLabel.isVisible=false
+                    errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
                 } catch (ex: Exception) {
-                    errorLabel.isVisible=true
+                    errorLabel.apply { setText("✘");setFontColor(Color.RED) }
                 }
             }
 
             playerIdTextfield.addListener { onPlayerIdTextUpdated(); true }
-
-            playerIdTable.row()
-
             val currentUserId = UncivGame.Current.settings.userId
             val setCurrentUserButton = TextButton("Set current user".tr(), CameraStageBaseScreen.skin)
             setCurrentUserButton.onClick {
                 playerIdTextfield.text = currentUserId
                 onPlayerIdTextUpdated()
             }
-            playerIdTable.add(setCurrentUserButton)
+            playerTable.add(setCurrentUserButton).colspan(3).fillX().pad(5f).row()
 
             val copyFromClipboardButton = TextButton("Player ID from clipboard".tr(),CameraStageBaseScreen.skin)
             copyFromClipboardButton.onClick {
                 playerIdTextfield.text = Gdx.app.clipboard.contents
                 onPlayerIdTextUpdated()
             }
-            playerIdTable.add(copyFromClipboardButton).pad(5f)
-
-            playerTable.add(playerIdTable).colspan(playerTable.columns)
+            playerTable.add(copyFromClipboardButton).colspan(3).fillX().pad(5f)
         }
 
         return playerTable
@@ -108,12 +102,13 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.BLACK,30)
+        val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.WHITE,25)
                 .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(50f)
-        else ImageGetter.getNationIndicator(newGameScreen.ruleset.nations[player.chosenCiv]!!, 50f)
-        nationTable.add(nationImage)
-        nationTable.add(player.chosenCiv.toLabel()).pad(20f)
+                .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
+                .surroundWithCircle(40f,false).apply { circle.color = Color.WHITE }
+        else ImageGetter.getNationIndicator(newGameScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+        nationTable.add(nationImage).pad(5f)
+        nationTable.add(player.chosenCiv.toLabel()).width(230f).pad(5f)
         nationTable.touchable = Touchable.enabled
         nationTable.onClick {
             popupNationPicker(player)
@@ -122,15 +117,16 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
     }
 
     private fun popupNationPicker(player: Player) {
-        val nationsPopup = PopupTable(newGameScreen)
+        val nationsPopup = Popup(newGameScreen)
         val nationListTable = Table()
 
         val randomPlayerTable = Table()
         randomPlayerTable.background = ImageGetter.getBackground(Color.BLACK)
 
-        randomPlayerTable.add("?".toLabel(Color.BLACK, 30)
+        randomPlayerTable.add("?".toLabel(Color.WHITE, 30)
                 .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(50f)).pad(10f)
+                .surroundWithCircle(45f).apply { circle.color = Color.BLACK }
+                .surroundWithCircle(50f,false).apply { circle.color = Color.WHITE }).pad(10f)
         randomPlayerTable.add("Random".toLabel())
         randomPlayerTable.touchable = Touchable.enabled
         randomPlayerTable.onClick {

@@ -9,27 +9,27 @@ import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.toLabel
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 import kotlin.math.max
 import kotlin.math.min
 
-class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
-    init{
-        val viewingCiv = worldScreen.viewingCiv
-        val tradeRequest = viewingCiv.tradeRequests.first()
+class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
+    val viewingCiv = worldScreen.viewingCiv
+    val tradeRequest = viewingCiv.tradeRequests.first()
 
+    init{
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
-        val translatedNation = requestingCiv.getTranslatedNation()
-        val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
+        val nation = requestingCiv.nation
+        val otherCivLeaderName = "[${nation.leaderName}] of [${nation.name}]".tr()
 
         add(otherCivLeaderName.toLabel())
         addSeparator()
 
         val trade = tradeRequest.trade
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
-        tradeOffersTable.add("[${translatedNation.getNameTranslation()}]'s trade offer".toLabel())
+        tradeOffersTable.add("[${nation.name}]'s trade offer".toLabel())
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
         for(i in 0..max(trade.theirOffers.lastIndex, trade.ourOffers.lastIndex)){
@@ -44,15 +44,14 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
         val scrollHeight = min(tradeOffersTable.height, worldScreen.stage.height/2)
         add(ScrollPane(tradeOffersTable)).height(scrollHeight).row()
 
-        addGoodSizedLabel(translatedNation.tradeRequest).colspan(columns).row()
+        addGoodSizedLabel(nation.tradeRequest).colspan(columns).row()
 
         addButton("Sounds good!"){
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
-            viewingCiv.tradeRequests.remove(tradeRequest)
             close()
-            PopupTable(worldScreen).apply {
+            Popup(worldScreen).apply {
                 add(otherCivLeaderName.toLabel()).colspan(2)
                 addSeparator()
                 addGoodSizedLabel("Excellent!").row()
@@ -67,11 +66,11 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", Color.GOLD)
         }
         addButton("Not this time.".tr()){
-            viewingCiv.tradeRequests.remove(tradeRequest)
-
             val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
+            if(trade.ourOffers.any { it.type==TradeType.Agreement && it.name==Constants.researchAgreement })
+                diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20) // offer again in 20 turns
 
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name== Constants.peaceTreaty })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
@@ -82,7 +81,6 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             worldScreen.shouldUpdate=true
         }
         addButton("How about something else...".tr()){
-            viewingCiv.tradeRequests.remove(tradeRequest)
             close()
 
             val diplomacyScreen= DiplomacyScreen(viewingCiv)
@@ -92,6 +90,10 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             worldScreen.game.setScreen(diplomacyScreen)
             worldScreen.shouldUpdate=true
         }
-        open()
+    }
+
+    override fun close() {
+        viewingCiv.tradeRequests.remove(tradeRequest)
+        super.close()
     }
 }

@@ -3,6 +3,8 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
+import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
@@ -41,6 +43,11 @@ open class TileInfo {
     var hasBottomRiver = false
     var hasBottomLeftRiver = false
 
+    val latitude: Float
+        get() = HexMath.getLatitude(position)
+    val longitude: Float
+        get() = HexMath.getLongitude(position)
+
     fun clone(): TileInfo {
         val toReturn = TileInfo()
         if(militaryUnit!=null) toReturn.militaryUnit=militaryUnit!!.clone()
@@ -68,9 +75,8 @@ open class TileInfo {
         return false
     }
 
-    fun containsUnique(unique: String): Boolean {
-        return isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
-    }
+    fun containsUnique(unique: String): Boolean =
+            isNaturalWonder() && getNaturalWonder().uniques.contains(unique)
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
@@ -92,6 +98,10 @@ open class TileInfo {
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.tileResources[resource!!]!!
 
+    fun getTileResourceOrNull(): TileResource? =
+            if (resource == null) null
+            else ruleset.tileResources.getOrElse(resource!!) {null }
+
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
@@ -104,13 +114,8 @@ open class TileInfo {
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
-    @Transient private var internalNeighbors : List<TileInfo>?=null
-    val neighbors: List<TileInfo>
-        get(){
-            if(internalNeighbors==null)
-                internalNeighbors = getTilesAtDistance(1)
-            return internalNeighbors!!
-        }
+    @delegate:Transient
+    val neighbors: List<TileInfo> by lazy { getTilesAtDistance(1).toList() }
 
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
@@ -127,18 +132,15 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
-    fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
-    }
+    fun getTerrainFeature(): Terrain? =
+            if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
 
     fun isWorked(): Boolean {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
     }
 
-    fun getTileStats(observingCiv: CivilizationInfo): Stats {
-        return getTileStats(getCity(), observingCiv)
-    }
+    fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
@@ -170,7 +172,7 @@ open class TileInfo {
             stats.add(wonder)
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.") {
+            if (city != null && city.civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD) {
                 stats.add(wonder)
             }
         }
@@ -183,7 +185,7 @@ open class TileInfo {
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic
-                    && observingCiv.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
+                    && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
                 stats.production+=1
             if(resource.name=="Oil" && city!=null
                     && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
@@ -199,25 +201,8 @@ open class TileInfo {
         }
 
         val improvement = getTileImprovement()
-        if (improvement != null) {
-            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
-                stats.add(getTileResource().improvementStats!!) // resource-specific improvement
-            else
-                stats.add(improvement) // basic improvement
-
-            if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
-                stats.science += 1f
-            if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
-                stats.gold += 1f
-            if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
-                stats.add(improvement) // again, for the double effect
-            if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
-                stats.science += 2
-
-            if(improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
-                stats.culture += neighbors.count{it.improvement=="Moai"}
-        }
+        if (improvement != null)
+            stats.add(getImprovementStats(improvement, observingCiv, city))
 
         if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))
             stats.gold += 1
@@ -235,44 +220,66 @@ open class TileInfo {
         return stats
     }
 
+    fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
+        val stats =
+            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
+                getTileResource().improvementStats!!.clone() // resource-specific improvement
+            else
+                improvement.clone() // basic improvement
+
+        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
+        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
+            stats.science += 1f
+        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
+            stats.gold += 1f
+        if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
+            stats.add(improvement) // again, for the double effect
+        if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
+            stats.science += 2
+
+        if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
+            stats.culture += neighbors.count { it.improvement == "Moai" }
+
+        return stats
+    }
+
+    /** Returns true if the [improvement] can be built on this [TileInfo] */
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
-        if (isCityCenter() || improvement.name == this.improvement) return false
-        if(improvement.uniqueTo!=null && improvement.uniqueTo!=civInfo.civName) return false
-        if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
-
         val topTerrain = getLastTerrain()
-        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true
-
-        if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
-        if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
-        if(improvement.name == "Remove Road" && this.roadStatus===RoadStatus.Road) return true
-        if(improvement.name == "Remove Railroad" && this.roadStatus===RoadStatus.Railroad) return true
-
-        if("Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile()) return true
-        if (topTerrain.unbuildable && !(topTerrain.name==Constants.forest && improvement.name=="Camp")) return false
-        return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
-
+        return when {
+            isCityCenter() -> false
+            improvement.name == this.improvement -> false
+            improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
+            improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
+            improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
+            improvement.name == "Road" && roadStatus == RoadStatus.None -> true
+            improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
+            improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
+            improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
+            topTerrain.unbuildable && !(topTerrain.name == Constants.forest && improvement.name == "Camp") -> false
+            "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
+            else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
+        }
     }
 
     fun hasImprovementInProgress() = improvementInProgress!=null
 
     fun isCoastalTile() = neighbors.any { it.baseTerrain==Constants.coast }
 
-    fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
-        return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
-    }
+    fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
+            resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
 
-    fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): List<TileInfo> {
-        return tileMap.getViewableTiles(this.position,distance,ignoreCurrentTileHeight)
-    }
+    fun getViewableTilesList(distance:Int): List<TileInfo> =
+            tileMap.getViewableTiles(position, distance)
 
-    fun getTilesInDistance(distance:Int): List<TileInfo> {
-        return tileMap.getTilesInDistance(position,distance)
-    }
+    fun getTilesInDistance(distance: Int): Sequence<TileInfo> =
+            tileMap.getTilesInDistance(position,distance)
 
-    fun getTilesAtDistance(distance:Int): List<TileInfo> {
-        return tileMap.getTilesAtDistance(position,distance)
-    }
+    fun getTilesInDistanceRange(range: IntRange): Sequence<TileInfo> =
+            tileMap.getTilesInDistanceRange(position, range)
+
+    fun getTilesAtDistance(distance:Int): Sequence<TileInfo> =
+            tileMap.getTilesAtDistance(position, distance)
 
     fun getDefensiveBonus(): Float {
         var bonus = getBaseTerrain().defenceBonus
@@ -280,7 +287,7 @@ open class TileInfo {
         return bonus
     }
 
-    fun arialDistanceTo(otherTile:TileInfo): Int {
+    fun aerialDistanceTo(otherTile:TileInfo): Int {
         val xDelta = position.x-otherTile.position.x
         val yDelta = position.y-otherTile.position.y
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
@@ -288,17 +295,17 @@ open class TileInfo {
 
     fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
 
-    override fun toString(): String {
+    fun toString(viewingCiv: CivilizationInfo): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         val isViewableToPlayer = UncivGame.Current.viewEntireMapForDebug
-                || UncivGame.Current.gameInfo.getCurrentPlayerCivilization().viewableTiles.contains(this)
+                || viewingCiv.viewableTiles.contains(this)
 
         if (isCityCenter()) {
             val city = getCity()!!
             var cityString = city.name
             if(isViewableToPlayer) cityString += " ("+city.health+")"
             lineList += cityString
-            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
+            if(UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()
@@ -358,11 +365,17 @@ open class TileInfo {
         return false
     }
 
-    fun hasRoad(civInfo: CivilizationInfo): Boolean {
-        if(roadStatus != RoadStatus.None) return true
-        if(civInfo.nation.forestsAndJunglesAreRoads && (terrainFeature==Constants.jungle || terrainFeature==Constants.forest))
-            return true
-        return false
-    }
+    fun hasConnection(civInfo: CivilizationInfo) =
+            roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
+
+    fun hasRoad(civInfo: CivilizationInfo) =
+            roadStatus == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
+
+    fun hasRailroad() =
+            roadStatus == RoadStatus.Railroad
+
+    private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
+            civInfo.nation.forestsAndJunglesAreRoads
+                    && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
     //endregion
 }

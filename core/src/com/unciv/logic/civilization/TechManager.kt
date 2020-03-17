@@ -4,6 +4,8 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
+import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -30,6 +32,7 @@ class TechManager {
     var freeTechs = 0
     /** For calculating Great Scientist yields - see https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)  */
     var scienceOfLast8Turns = IntArray(8){0}
+    var scienceFromResearchAgreements = 0
     var techsResearched = HashSet<String>()
     /** When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
@@ -44,6 +47,7 @@ class TechManager {
         toReturn.techsInProgress.putAll(techsInProgress)
         toReturn.techsToResearch.addAll(techsToResearch)
         toReturn.scienceOfLast8Turns=scienceOfLast8Turns.clone()
+        toReturn.scienceFromResearchAgreements=scienceFromResearchAgreements
         toReturn.overflowScience=overflowScience
         return toReturn
     }
@@ -54,17 +58,17 @@ class TechManager {
         var techCost = getRuleset().technologies[techName]!!.cost.toFloat()
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
-        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
         val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        val worldSizeModifier = when(civInfo.gameInfo.tileMap.mapParameters.radius) {
-            20 -> floatArrayOf(1.1f, 0.05f) // Medium Size
-            30 -> floatArrayOf(1.2f, 0.03f) // Large Size
-            40 -> floatArrayOf(1.3f, 0.02f) // Huge Size
-            else -> floatArrayOf(1f, 0.05f) // Tiny and Small Size
+        val worldSizeModifier = when(civInfo.gameInfo.tileMap.mapParameters.size) {
+            MapSize.Medium -> floatArrayOf(1.1f, 0.05f)
+            MapSize.Large -> floatArrayOf(1.2f, 0.03f)
+            MapSize.Huge -> floatArrayOf(1.3f, 0.02f)
+            else -> floatArrayOf(1f, 0.05f)
         }
         techCost *= worldSizeModifier[0]
         techCost *= 1 + (civInfo.cities.size -1) * worldSizeModifier[1]
@@ -124,7 +128,7 @@ class TechManager {
 
     fun getScienceFromGreatScientist(): Int {
         // https://civilization.fandom.com/wiki/Great_Scientist_(Civ5)
-        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()
+        return (scienceOfLast8Turns.sum() * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
     }
 
     fun addCurrentScienceToScienceOfLast8Turns() {
@@ -160,13 +164,28 @@ class TechManager {
                 getRuleset().technologies[currentTechnologyName()]!!.cost))
     }
 
+    private fun scienceFromResearchAgreements(): Int {
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        var researchAgreementModifier = 0.5f
+        if (civInfo.policies.isAdopted("Scientific Revolution"))
+            researchAgreementModifier += 0.25f
+        if (civInfo.containsBuildingUnique("Science gained from research agreements +50%"))
+            researchAgreementModifier += 0.25f
+        return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
+    }
+
     fun nextTurn(scienceForNewTurn: Int) {
         addCurrentScienceToScienceOfLast8Turns()
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
+        if (scienceFromResearchAgreements != 0){
+            techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + scienceFromResearchAgreements()
+            scienceFromResearchAgreements = 0
+        }
         if (overflowScience != 0){ // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
-            val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
+            val techsResearchedKnownCivs = civInfo.getKnownCivs()
+                    .count { it.isMajorCiv() && it.tech.isResearched(currentTechnologyName()!!) }
             val undefeatedCivs = UncivGame.Current.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
             techsInProgress[currentTechnology] = techsInProgress[currentTechnology]!! + ((1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f)* overflowScience).toInt()
             overflowScience = 0
@@ -206,8 +225,14 @@ class TechManager {
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
             civInfo.addNotification("You have entered the [$currentEra era]!", null, Color.GOLD)
-            civInfo.getKnownCivs().forEach {
-                it.addNotification("[${civInfo.civName}] has entered the [$currentEra era]!", null, Color.BLUE)
+            if (civInfo.isMajorCiv()) {
+                for (knownCiv in civInfo.getKnownCivs()) {
+                    knownCiv.addNotification(
+                        "[${civInfo.civName}] has entered the [$currentEra era]!",
+                        null,
+                        Color.BLUE
+                    )
+                }
             }
             getRuleset().policyBranches.values.filter { it.era == currentEra }
                     .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE) }
@@ -234,7 +259,7 @@ class TechManager {
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
 
-        if(techName=="Writing" && civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
+        if(techName=="Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY
                 && civInfo.cities.any())
             civInfo.addGreatPerson("Great Scientist")
     }
@@ -269,12 +294,11 @@ class TechManager {
     }
 
     fun updateTransientBooleans(){
-        if(researchedTechUniques.contains("Enables embarkation for land units")
-                || civInfo.nation.unique=="Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+        val wayfinding = civInfo.nation.unique == UniqueAbility.WAYFINDING
+        if(researchedTechUniques.contains("Enables embarkation for land units") || wayfinding)
             unitsCanEmbark=true
 
-        if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")
-                || civInfo.nation.unique=="Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai.")
+        if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles") || wayfinding)
             embarkedUnitsCanEnterOcean=true
 
         if(researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true

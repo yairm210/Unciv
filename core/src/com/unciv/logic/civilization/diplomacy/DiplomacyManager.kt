@@ -2,10 +2,8 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.civilization.AlertType
-import com.unciv.logic.civilization.CityStateType
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
+import com.unciv.UniqueAbility
+import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
@@ -26,8 +24,10 @@ enum class RelationshipLevel{
 enum class DiplomacyFlags{
     DeclinedLuxExchange,
     DeclinedPeace,
+    DeclinedResearchAgreement,
     DeclaredWar,
     DeclarationOfFriendship,
+    ResearchAgreement,
     Denunceation,
     BorderConflict,
     SettledCitiesNearUs,
@@ -60,6 +60,12 @@ enum class DiplomaticModifiers{
 }
 
 class DiplomacyManager() {
+    
+    companion object {
+        /** The value city-state influence can't go below */
+        const val MINIMUM_INFLUENCE = -60f
+    }
+    
     @Transient lateinit var civInfo: CivilizationInfo
     // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
     @Transient var hasOpenBorders=false
@@ -78,11 +84,16 @@ class DiplomacyManager() {
      * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
     var diplomaticModifiers = HashMap<String,Float>()
 
-    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy. */
+    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy.
+     *  Won't go below [MINIMUM_INFLUENCE] */
     var influence = 0f
+        set(value) { field = max(value, MINIMUM_INFLUENCE) }
 
     /** For city-states. Resting point is the value of Influence at which it ceases changing by itself */
     var restingPoint = 0f
+
+    /** Total of each turn Science during Research Agreement */
+    var totalOfScienceDuringRA = 0
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
@@ -93,6 +104,7 @@ class DiplomacyManager() {
         toReturn.restingPoint = restingPoint
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
+        toReturn.totalOfScienceDuringRA=totalOfScienceDuringRA
         return toReturn
     }
 
@@ -159,8 +171,7 @@ class DiplomacyManager() {
             return otherCivDiplomacy().getTurnsToRelationshipChange()
 
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
-            val hasCityStateInfluenceBonus =
-                    otherCiv().nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+            val hasCityStateInfluenceBonus = otherCiv().nation.unique == UniqueAbility.HELLENIC_LEAGUE
             val dropPerTurn = if(hasCityStateInfluenceBonus) .5f else 1f
 
             if (relationshipLevel() >= RelationshipLevel.Ally)
@@ -174,6 +185,8 @@ class DiplomacyManager() {
     }
 
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
+    //Used for nuke
+    fun canAttack() = (turnsToPeaceTreaty()==0)
 
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
@@ -184,6 +197,15 @@ class DiplomacyManager() {
                 goldPerTurnForUs += offer.amount
         }
         return goldPerTurnForUs
+    }
+
+    fun sciencefromResearchAgreement(){
+        // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
+        val scienceFromResearchAgreement = min(totalOfScienceDuringRA, otherCivDiplomacy().totalOfScienceDuringRA)
+        civInfo.tech.scienceFromResearchAgreements += scienceFromResearchAgreement
+        otherCiv().tech.scienceFromResearchAgreements += scienceFromResearchAgreement
+        totalOfScienceDuringRA = 0
+        otherCivDiplomacy().totalOfScienceDuringRA = 0
     }
 
     fun resourcesFromTrade(): ResourceSupplyList {
@@ -202,6 +224,15 @@ class DiplomacyManager() {
     /** Returns the [civilizations][CivilizationInfo] that know about both sides ([civInfo] and [otherCiv]) */
     fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs())
 
+    /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
+     * 
+     *  This includes friendly and allied city-states and the open border treaties.
+     */
+    fun isConsideredAllyTerritory(): Boolean {
+        if(civInfo.isCityState() && relationshipLevel() >= RelationshipLevel.Friend)
+            return true
+        return hasOpenBorders
+    }
     //endregion
 
     //region state-changing functions
@@ -252,8 +283,7 @@ class DiplomacyManager() {
     private fun nextTurnCityStateInfluence() {
         val initialRelationshipLevel = relationshipLevel()
 
-        val hasCityStateInfluenceBonus =
-                otherCiv().nation.unique == "City-State Influence degrades at half and recovers at twice the normal rate"
+        val hasCityStateInfluenceBonus = otherCiv().nation.unique == UniqueAbility.HELLENIC_LEAGUE
         val increment = if (hasCityStateInfluenceBonus) 2f else 1f
         val decrement = if (hasCityStateInfluenceBonus) .5f else 1f
 
@@ -263,17 +293,23 @@ class DiplomacyManager() {
             influence = min(restingPoint, influence + increment)
         else influence = restingPoint
 
+        val civCapitalLocation = if(civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
         if (getTurnsToRelationshipChange() == 1)
-            otherCiv().addNotification("Your relationship with [${civInfo.civName}] is about to degrade", null, Color.GOLD)
+            otherCiv().addNotification("Your relationship with [${civInfo.civName}] is about to degrade", civCapitalLocation, Color.GOLD)
 
         if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel())
-            otherCiv().addNotification("Your relationship with [${civInfo.civName}] degraded", null, Color.GOLD)
+            otherCiv().addNotification("Your relationship with [${civInfo.civName}] degraded", civCapitalLocation, Color.GOLD)
     }
 
     private fun nextTurnFlags() {
         for (flag in flagsCountdown.keys.toList()) {
+            if (flag == DiplomacyFlags.ResearchAgreement.name){
+                totalOfScienceDuringRA += civInfo.statsForNextTurn.science.toInt()
+            }
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if (flagsCountdown[flag] == 0) {
+                if (flag == DiplomacyFlags.ResearchAgreement.name && !otherCivDiplomacy().hasFlag(DiplomacyFlags.ResearchAgreement))
+                    sciencefromResearchAgreement()
                 if (flag == DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                     continue
                 flagsCountdown.remove(flag)
@@ -389,6 +425,12 @@ class DiplomacyManager() {
             }
         }
         otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+        if(hasFlag(DiplomacyFlags.ResearchAgreement)) {
+            removeFlag(DiplomacyFlags.ResearchAgreement)
+            totalOfScienceDuringRA = 0
+            otherCivDiplomacy.totalOfScienceDuringRA = 0
+        }
+        otherCivDiplomacy.removeFlag(DiplomacyFlags.ResearchAgreement)
         if (otherCiv.isCityState()) otherCiv.updateAllyCivForCityState()
 
         if (!civInfo.isCityState()) {
@@ -403,7 +445,6 @@ class DiplomacyManager() {
         if (!otherCiv.isCityState()) {
             for (thirdCiv in otherCiv.getKnownCivs()) {
                 if (thirdCiv.isCityState() && thirdCiv.getAllyCiv() == otherCiv.civName
-                        && !thirdCiv.isDefeated()
                         && thirdCiv.knows(civInfo)
                         && thirdCiv.getDiplomacyManager(civInfo).canDeclareWar()) {
                     thirdCiv.getDiplomacyManager(civInfo).declareWar()
@@ -471,6 +512,8 @@ class DiplomacyManager() {
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclarationOfFriendship,35f)
         setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
         otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
+        if (otherCiv().playerType == PlayerType.Human)
+            otherCiv().addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
@@ -517,6 +560,7 @@ class DiplomacyManager() {
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-15f)
         otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", Color.MAROON)
     }
+
 
     //endregion
 }

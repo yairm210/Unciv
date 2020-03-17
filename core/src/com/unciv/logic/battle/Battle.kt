@@ -3,8 +3,10 @@ package com.unciv.logic.battle
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
@@ -31,7 +33,8 @@ object Battle {
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
-        println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+defender.getCivInfo().civName+" "+defender.getName())
+        println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+
+                defender.getCivInfo().civName+" "+defender.getName())
         val attackedTile = defender.getTile()
 
         if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()){
@@ -42,10 +45,7 @@ object Battle {
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
-        if (attacker.getUnitType()==UnitType.Missile) {
-            nuclearBlast(attacker, defender)
-        }
-        else if(defender.getUnitType().isCivilian() && attacker.isMelee()){
+        if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
         }
         else if (attacker.isRanged()) {
@@ -152,7 +152,7 @@ object Battle {
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if (defender.isDefeated() && defender.getCivInfo().isBarbarian()
                 && attackedTile.improvement == Constants.barbarianEncampment
-                && attacker.getCivInfo().nation.unique == "67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."
+                && attacker.getCivInfo().nation.unique == UniqueAbility.FUROR_TEUTONICUS
                 && Random().nextDouble() > 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
@@ -161,7 +161,7 @@ object Battle {
 
         // Similarly, Ottoman unique
         if (defender.isDefeated() && defender.getUnitType().isWaterUnit() && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                && attacker.getCivInfo().nation.unique == "Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units."
+                && attacker.getCivInfo().nation.unique == UniqueAbility.BARBARY_CORSAIRS
                 && Random().nextDouble() > 0.33) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
         }
@@ -204,7 +204,7 @@ object Battle {
                     unit.useMovementPoints(1f)
             } else unit.currentMovement = 0f
             unit.attacksThisTurn += 1
-            if (unit.isFortified() || unit.action == Constants.unitActionSleep)
+            if (unit.isFortified() || unit.isSleeping())
                 attacker.unit.action = null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
             attacker.city.attackedThisTurn = true
@@ -224,17 +224,23 @@ object Battle {
         if(thisCombatant !is MapUnitCombatant) return
         if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarian())
             return
-        var amountToAdd = amount
-        if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
-        thisCombatant.unit.promotions.XP += amountToAdd
 
-        if(thisCombatant.getCivInfo().nation.unique
-                == "Great general provides double combat bonus, and spawns 50% faster")
-            amountToAdd = (amountToAdd * 1.5f).toInt()
+        var XPModifier = 1f
+        if (thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) XPModifier += 0.5f
+        if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f
+
+        val XPGained = (amount * XPModifier).toInt()
+        thisCombatant.unit.promotions.XP += XPGained
+
+
+        var greatGeneralPointsModifier = 1f
+        if(thisCombatant.getCivInfo().nation.unique == UniqueAbility.ART_OF_WAR)
+            greatGeneralPointsModifier += 0.5f
         if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
-            amountToAdd *= 2
+            greatGeneralPointsModifier += 1f
 
-        thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += amountToAdd
+        val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
+        thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
@@ -281,10 +287,8 @@ object Battle {
             return
         }
 
-        if (defender.getCivInfo().isDefeated()) {//Last settler captured
-            defender.getCivInfo().destroy()
-            attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,defender.getCivInfo().civName))
-        }
+        // need to save this because if the unit is captured its owner wil be overwritten
+        val defenderCiv = defender.getCivInfo()
 
         val capturedUnit = (defender as MapUnitCombatant).unit
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
@@ -300,14 +304,25 @@ object Battle {
             capturedUnit.civInfo.removeUnit(capturedUnit)
             capturedUnit.assignOwner(attacker.getCivInfo())
         }
+
+        destroyIfDefeated(defenderCiv,attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
     }
 
-    private fun nuclearBlast(attacker: ICombatant, defender: ICombatant) {
+    fun destroyIfDefeated(attackedCiv:CivilizationInfo, attacker: CivilizationInfo){
+        if (attackedCiv.isDefeated()) {
+            attackedCiv.destroy()
+            attacker.popupAlerts.add(PopupAlert(AlertType.Defeated, attackedCiv.civName))
+        }
+    }
+
+    const val NUKE_RADIUS = 2
+
+    fun nuke(attacker: ICombatant, targetTile: TileInfo) {
         val attackingCiv = attacker.getCivInfo()
-        for (tile in defender.getTile().getTilesInDistance(2)) {
-            if (tile.isCityCenter()) { //duantao: To Do
-                val city = tile.getCity()!!
+        for (tile in targetTile.getTilesInDistance(NUKE_RADIUS)) {
+            val city = tile.getCity()
+            if (city != null && city.location == tile.position) {
                 city.health = 1
                 if (city.population.population <= 5) {
                     city.destroyCity()
@@ -316,20 +331,28 @@ object Battle {
                     city.population.unassignExtraPopulation()
                     continue
                 }
+                destroyIfDefeated(city.civInfo,attackingCiv)
+            }
+
+            fun declareWar(civSuffered: CivilizationInfo) {
+                if (civSuffered != attackingCiv
+                        && civSuffered.knows(attackingCiv)
+                        && civSuffered.getDiplomacyManager(attackingCiv).canDeclareWar()) {
+                    civSuffered.getDiplomacyManager(attackingCiv).declareWar()
+                }
             }
 
             for(unit in tile.getUnits()){
                 unit.destroy()
                 postBattleNotifications(attacker, MapUnitCombatant(unit), unit.currentTile)
-                if(unit.civInfo!=attackingCiv
-                        && unit.civInfo.knows(attackingCiv)
-                        && unit.civInfo.getDiplomacyManager(attackingCiv).canDeclareWar()){
-                    unit.civInfo.getDiplomacyManager(attackingCiv).declareWar()
-                }
+                declareWar(unit.civInfo)
+                destroyIfDefeated(unit.civInfo, attackingCiv)
             }
 
-            if (tile.militaryUnit != null) tile.militaryUnit!!.destroy()
-            if (tile.civilianUnit != null) tile.civilianUnit!!.destroy()
+            // this tile belongs to some civilization who is not happy of nuking it
+            if (city != null)
+                declareWar(city.civInfo)
+
             tile.improvement = null
             tile.improvementInProgress = null
             tile.turnsToImprovement = 0
@@ -341,6 +364,9 @@ object Battle {
             civ.getDiplomacyManager(attackingCiv)
                     .setModifier(DiplomaticModifiers.UsedNuclearWeapons,-50f)
         }
+
+        // Instead of postBattleAction() just destroy the missile, all other functions are not relevant
+        (attacker as MapUnitCombatant).unit.destroy()
     }
 
     private fun tryInterceptAirAttack(attacker:MapUnitCombatant, defender: ICombatant) {

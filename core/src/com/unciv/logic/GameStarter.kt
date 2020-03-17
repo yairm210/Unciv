@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
 
-class GameStarter{
+class GameStarter {
 
     fun startNewGame(newGameParameters: GameParameters, mapParameters: MapParameters): GameInfo {
         val gameInfo = GameInfo()
@@ -19,9 +19,9 @@ class GameStarter{
         gameInfo.gameParameters = newGameParameters
         val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
-        if(mapParameters.name!="")
+        if(mapParameters.name != "")
             gameInfo.tileMap = MapSaver().loadMap(mapParameters.name)
-        else gameInfo.tileMap = MapGenerator().generateMap(mapParameters, ruleset)
+        else gameInfo.tileMap = MapGenerator(ruleset).generateMap(mapParameters)
         gameInfo.tileMap.mapParameters = mapParameters
 
         gameInfo.tileMap.setTransients(ruleset)
@@ -75,9 +75,9 @@ class GameStarter{
             gameInfo.civilizations.add(playerCiv)
         }
 
-
         val cityStatesWithStartingLocations =
-                gameInfo.tileMap.values.filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+                gameInfo.tileMap.values
+                        .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
                         .map { it.improvement!!.replace("StartingLocation ", "") }
 
         val availableCityStatesNames = Stack<String>()
@@ -90,6 +90,7 @@ class GameStarter{
             val civ = CivilizationInfo(cityStateName)
             gameInfo.civilizations.add(civ)
         }
+
     }
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
@@ -97,6 +98,12 @@ class GameStarter{
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
+
+        // remove starting locations one we're done
+        for(tile in gameInfo.tileMap.values){
+            if(tile.improvement!=null && tile.improvement!!.startsWith("StartingLocation "))
+                tile.improvement=null
+        }
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
@@ -121,6 +128,7 @@ class GameStarter{
                 }
             }
         }
+
     }
 
     private fun getStartingLocations(civs:List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {

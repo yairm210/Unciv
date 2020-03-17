@@ -17,7 +17,7 @@ class IdleUnitButton (
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
-    fun hasIdleUnits() = unitTable.worldScreen.viewingCiv.getIdleUnits().isNotEmpty()
+    fun hasIdleUnits() = unitTable.worldScreen.viewingCiv.getIdleUnits().any()
 
     init {
         val imageSize = 25f
@@ -31,17 +31,17 @@ class IdleUnitButton (
         onClick {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.getIdleUnits()
-            if(idleUnits.isEmpty()) return@onClick
+            if(idleUnits.none()) return@onClick
 
             val unitToSelect: MapUnit
             if (unitTable.selectedUnit==null || !idleUnits.contains(unitTable.selectedUnit!!))
-                unitToSelect = idleUnits[0]
+                unitToSelect = idleUnits.first()
             else {
                 var index = idleUnits.indexOf(unitTable.selectedUnit!!)
                 if(previous) index-- else index++
-                index += idleUnits.size
-                index %= idleUnits.size // for looping
-                unitToSelect = idleUnits[index]
+                index += idleUnits.count()
+                index %= idleUnits.count() // for looping
+                unitToSelect = idleUnits.elementAt(index)
             }
 
             unitToSelect.due = false

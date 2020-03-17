@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UniqueAbility
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
@@ -45,7 +46,7 @@ class CityExpansionManager {
     fun getGoldCostOfTile(tileInfo: TileInfo): Int {
         val baseCost = 50
         val numTilesClaimed= cityInfo.tiles.size - 7
-        val distanceFromCenter = tileInfo.arialDistanceTo(cityInfo.getCenterTile())
+        val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
         var cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5.0
 
         if (cityInfo.civInfo.containsBuildingUnique("Cost of acquiring new tiles reduced by 25%"))
@@ -53,7 +54,7 @@ class CityExpansionManager {
         if(cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cost *= 0.75 // Specialty of Krepost
 
-        if(cityInfo.civInfo.nation.unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
+        if(cityInfo.civInfo.nation.unique == UniqueAbility.MANIFEST_DESTINY)
             cost /= 2
         return cost.toInt()
     }
@@ -62,17 +63,18 @@ class CityExpansionManager {
     fun chooseNewTileToOwn(): TileInfo? {
         for (i in 2..5) {
             val tiles = cityInfo.getCenterTile().getTilesInDistance(i)
-                    .filter {it.getOwner() == null && it.neighbors.any { tile->tile.getOwner()==cityInfo.civInfo }}
-            if (tiles.isEmpty()) continue
-            val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
-            return chosenTile
+                    .filter { it.getOwner() == null
+                            && it.neighbors.any { tile -> tile.getOwner() == cityInfo.civInfo } }
+            val chosenTile = tiles.maxBy { Automation.rankTile(it, cityInfo.civInfo) }
+            if (chosenTile != null)
+                return chosenTile
         }
         return null
     }
 
     //region state-changing functions
     fun reset() {
-        for(tile in cityInfo.getTiles())
+        for (tile in cityInfo.getTiles())
             relinquishOwnership(tile)
 
         // The only way to create a city inside an owned tile is if it's in your territory
@@ -80,10 +82,9 @@ class CityExpansionManager {
         // It becomes an invisible city and weird shit starts happening
         takeOwnership(cityInfo.getCenterTile())
 
-        cityInfo.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity()==null } // can't take ownership of owned tiles (by other cities)
-                .forEach { takeOwnership(it) }
-
+        for (tile in cityInfo.getCenterTile().getTilesInDistance(1)
+                .filter { it.getCity() == null }) // can't take ownership of owned tiles (by other cities)
+            takeOwnership(tile)
     }
 
     private fun addNewTileWithCulture() {

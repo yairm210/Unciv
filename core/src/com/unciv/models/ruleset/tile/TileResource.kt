@@ -1,24 +1,11 @@
 package com.unciv.models.ruleset.tile
 
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import java.util.*
 
 class TileResource : NamedStats() {
-    fun getDescription(): String {
-            val stringBuilder = StringBuilder()
-            stringBuilder.appendln(this.clone().toString())
-            val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()
-            for (i in terrainsCanBeFoundOn) {
-                terrainsCanBeBuiltOnString.add(i.tr())
-            }
-            stringBuilder.appendln("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
-            stringBuilder.appendln()
-            stringBuilder.appendln("Improved by [$improvement]".tr())
-            stringBuilder.appendln("Bonus stats for improvement: ".tr()+"$improvementStats".tr())
-            return stringBuilder.toString()
-        }
 
     var resourceType: ResourceType = ResourceType.Bonus
     var terrainsCanBeFoundOn: List<String> = listOf()
@@ -30,6 +17,21 @@ class TileResource : NamedStats() {
      */
     var building: String? = null
     var revealedBy: String? = null
+    var unique: String? = null
+
+
+    fun getDescription(): String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.appendln(this.clone().toString())
+        val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
+        terrainsCanBeBuiltOnString.addAll(terrainsCanBeFoundOn.map { it.tr() })
+        stringBuilder.appendln("Can be found on ".tr() + terrainsCanBeBuiltOnString.joinToString(", "))
+        stringBuilder.appendln()
+        stringBuilder.appendln("Improved by [$improvement]".tr())
+        stringBuilder.appendln("Bonus stats for improvement: ".tr() + "$improvementStats".tr())
+        if(unique!=null) stringBuilder.appendln(unique!!.tr())
+        return stringBuilder.toString()
+    }
 }
 
 data class ResourceSupply(val resource:TileResource,var amount:Int, val origin:String)

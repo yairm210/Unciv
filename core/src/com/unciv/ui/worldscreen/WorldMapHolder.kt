@@ -125,20 +125,27 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if(moveHereDto!=null)
             table.add(getMoveHereButton(moveHereDto))
 
+        var unitList = ArrayList<MapUnit>()
         if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
-            for (unit in tileInfo.getCity()!!.getCenterTile().getUnits()) {
-                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
-                unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
-                if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
-                unitGroup.touchable = Touchable.enabled
-                unitGroup.onClick {
-                    worldScreen.bottomUnitTable.selectedUnit = unit
-                    worldScreen.bottomUnitTable.selectedCity = null
-                    worldScreen.shouldUpdate = true
-                    unitActionOverlay?.remove()
-                }
-                table.add(unitGroup)
+            unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
+        } else if (tileInfo.militaryUnit!=null &&
+                (tileInfo.militaryUnit!!.type.isAircraftCarrierUnit() || tileInfo.militaryUnit!!.type.isMissileCarrierUnit()) &&
+                 tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && tileInfo.airUnits.isNotEmpty()) {
+            unitList.addAll(tileInfo.getUnits())
+        }
+
+        for (unit in unitList) {
+            val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+            unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
+            if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+            unitGroup.touchable = Touchable.enabled
+            unitGroup.onClick {
+                worldScreen.bottomUnitTable.selectedUnit = unit
+                worldScreen.bottomUnitTable.selectedCity = null
+                worldScreen.shouldUpdate = true
+                unitActionOverlay?.remove()
             }
+            table.add(unitGroup)
         }
 
         addOverlayOnTileGroup(tileInfo, table)
@@ -244,18 +251,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         tileGroups[unit.getTile()]!!.selectUnit(unit)
 
         val isAirUnit = unit.type.isAirUnit()
-        val tilesInMoveRange = if(isAirUnit) unit.getTile().getTilesInDistance(unit.getRange())
-        else unit.movement.getDistanceToTiles().keys
+        val tilesInMoveRange =
+                if (isAirUnit)
+                    unit.getTile().getTilesInDistance(unit.getRange())
+                else
+                    unit.movement.getDistanceToTiles().keys.asSequence()
 
-        if(isAirUnit)
-            for(tile in tilesInMoveRange)
-                tileGroups[tile]!!.showCircle(Color.BLUE,0.3f)
-
-        for (tile: TileInfo in tilesInMoveRange)
+        for (tile in tilesInMoveRange) {
+            val tileToColor = tileGroups.getValue(tile)
+            if (isAirUnit)
+                tileToColor.showCircle(Color.BLUE, 0.3f)
             if (unit.movement.canMoveTo(tile))
-                tileGroups[tile]!!.showCircle(Color.WHITE,
+                tileToColor.showCircle(Color.WHITE,
                         if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
-
+        }
 
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
@@ -274,16 +283,18 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         else 0.5f
         for (tile in tileGroups.values) {
             if (tile.icons.populationIcon != null) tile.icons.populationIcon!!.color.a = fadeout
-            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement!=Constants.barbarianEncampment
-                    && tile.tileInfo.improvement!=Constants.ancientRuins)
+            if (tile.icons.improvementIcon != null && tile.tileInfo.improvement != Constants.barbarianEncampment
+                    && tile.tileInfo.improvement != Constants.ancientRuins)
                 tile.icons.improvementIcon!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }
     }
 
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
-        val attackableTiles: List<TileInfo> = UnitAutomation().getBombardTargets(city)
-                    .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+        if (city.attackedThisTurn) return
+
+        val attackableTiles = UnitAutomation().getBombardTargets(city)
+                .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
             tileGroups[attackableTile]!!.showCrosshair()

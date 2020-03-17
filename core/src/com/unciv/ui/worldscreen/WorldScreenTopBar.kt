@@ -10,11 +10,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
-import com.unciv.models.translations.tr
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.WorldScreenMenuTable
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -57,6 +57,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
+        resourceTable.add(turnsLabel).padRight(20f)
         val revealedStrategicResources = worldScreen.gameInfo.ruleSet.tileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && currentPlayerCivInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
@@ -74,7 +75,6 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private fun getStatsTable(): Table {
         val statsTable = Table()
         statsTable.defaults().pad(3f)//.align(Align.top)
-        statsTable.add(turnsLabel).padRight(20f)
         statsTable.add(goldLabel)
         statsTable.add(ImageGetter.getStatIcon("Gold")).padRight(20f).size(20f)
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
@@ -95,8 +95,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.onClick {
-            if(worldScreen.stage.actors.none { it is WorldScreenMenuTable })
-                WorldScreenMenuTable(worldScreen)
+            if(worldScreen.popups.none { it is WorldScreenMenuPopup })
+                WorldScreenMenuPopup(worldScreen).open(force = true)
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y

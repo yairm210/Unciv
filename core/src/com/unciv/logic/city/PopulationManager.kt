@@ -78,7 +78,7 @@ class PopulationManager {
 
         //evaluate tiles
         val bestTile: TileInfo? = cityInfo.getTiles()
-                .filter { it.arialDistanceTo(cityInfo.getCenterTile()) <= 3 }
+                .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
                 .maxBy { Automation().rankTileForCityWork(it,cityInfo, foodWeight) }
         val valueBestTile = if(bestTile==null) 0f
@@ -112,7 +112,7 @@ class PopulationManager {
         for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] }) {
             if (tile.getCity() != cityInfo)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
-            if(tile.arialDistanceTo(cityInfo.getCenterTile()) > 3) // AutoAssignPopulation used to assign pop outside of allowed range, fixed as of 2.10.4
+            if(tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3) // AutoAssignPopulation used to assign pop outside of allowed range, fixed as of 2.10.4
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
         }
 

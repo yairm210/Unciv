@@ -21,4 +21,19 @@ class GameParameters { // Default values are the default new game
 
     var isOnlineMultiplayer = false
     var mods = HashSet<String>()
+
+    fun clone(): GameParameters {
+        val parameters=GameParameters()
+        parameters.difficulty=difficulty
+        parameters.gameSpeed=gameSpeed
+        parameters.players= ArrayList(players)
+        parameters.numberOfCityStates=numberOfCityStates
+        parameters.noBarbarians=noBarbarians
+        parameters.oneCityChallenge=oneCityChallenge
+        parameters.victoryTypes= ArrayList(victoryTypes)
+        parameters.startingEra=startingEra
+        parameters.isOnlineMultiplayer=isOnlineMultiplayer
+        parameters.mods= HashSet(mods)
+        return parameters
+    }
 }

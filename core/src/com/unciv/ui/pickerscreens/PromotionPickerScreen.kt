@@ -38,8 +38,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         if(!canBePromoted)
             rightSideButton.disable()
 
-        val availablePromotionsGroup = VerticalGroup()
-        availablePromotionsGroup.space(10f)
+        val availablePromotionsGroup = Table()
+        availablePromotionsGroup.defaults().pad(5f)
 
         val unitType = unit.type
         val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
@@ -67,9 +67,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                 descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
             }
 
-            val promotionTable = Table()
-            promotionTable.add(selectPromotionButton)
-
+            availablePromotionsGroup.add(selectPromotionButton)
 
             if(canBePromoted && isPromotionAvailable) {
                 val pickNow = "Pick now!".toLabel()
@@ -77,12 +75,13 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
                 pickNow.onClick {
                     acceptPromotion(promotion)
                 }
-                promotionTable.add(pickNow).padLeft(10f).fillY()
+                availablePromotionsGroup.add(pickNow).padLeft(10f).fillY()
             }
             else if(unitHasPromotion) selectPromotionButton.color= Color.GREEN
             else selectPromotionButton.color= Color.GRAY
 
-            availablePromotionsGroup.addActor(promotionTable)
+            availablePromotionsGroup.row()
+
         }
         topTable.add(availablePromotionsGroup)
     }

@@ -99,6 +99,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
 * [Manhattan Project](https://thenounproject.com/search/?q=Nuclear%20Bomb&i=2041074) By corpus delicti, GR
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
+* Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
 
 ### Great People
 
@@ -431,6 +432,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Water](https://thenounproject.com/term/water/1762848/) By Kozan for Marsh
 * [Harvest](https://thenounproject.com/term/harvest/1022373/) By Made for Flood plains
 * [Puddle](https://thenounproject.com/search/?q=puddle&i=1138155) By Bakunetsu Kaito for Lakes
+* [Island](https://thenounproject.com/search/?q=island&i=1546376) By Chanut is Industries for Atoll
+* [Iceberg](https://thenounproject.com/search/?q=iceberg&i=44820) By Jaime Carrion for Ice
 
 ## Nations
 
@@ -447,9 +450,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Star and Crecent](https://thenounproject.com/search/?q=star%20and%20crescent&i=2552427) for Arabia
 * [Family Crest Komon](https://thenounproject.com/search/?q=oda&i=2293528) by sahua d for Japan
 * [Ashika Chakra](https://thenounproject.com/search/?q=ashoka%20chakra&i=2328559) by sahua d for India
-* Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
+* Variation on [crescent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
-* Two [Sword] Scimitars(https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) by Those Icons for Persia
+* Two [Sword](https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) Scimitars by Those Icons for Persia
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
 
@@ -480,6 +483,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Submarine](https://thenounproject.com/search/?q=submarines&i=96833) by Lloyd Humphreys for Wolfpack
 * [Axe](https://thenounproject.com/search/?q=axe&i=14290) by Brian Oppenlander for Woodsman
 * [Competition](https://thenounproject.com/search/?q=move%20fast&i=1743826) by luca fruzza
+* Icon for Flight Deck is made by [JackRainy](https://github.com/JackRainy)
+* Icon for Armor Plating is made by [JackRainy](https://github.com/JackRainy)
 
 ## Others 
 

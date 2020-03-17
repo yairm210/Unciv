@@ -2,13 +2,15 @@ package com.unciv.logic.city
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.INamed
+import com.unciv.models.translations.tr
+import kotlin.math.roundToInt
 
 interface IConstruction : INamed {
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(construction: CityConstructions): Boolean
     fun shouldBeDisplayed(construction: CityConstructions): Boolean
-    fun postBuildEvent(construction: CityConstructions)  // Yes I'm hilarious.
+    fun postBuildEvent(construction: CityConstructions): Boolean  // Yes I'm hilarious.
     fun canBePurchased(): Boolean
 }
 
@@ -18,26 +20,29 @@ open class SpecialConstruction(override var name: String, val description: Strin
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         return isBuildable(construction)
     }
+    open fun getProductionTooltip(cityInfo: CityInfo) : String
+            = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${"{turn}".tr()}"
 
     companion object {
-        val science =  object:SpecialConstruction("Science", "Convert production to science at a rate of 4 to 1"){
+        const val CONVERSION_RATE: Int = 4
+        val science = object : SpecialConstruction("Science", "Convert production to science at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(construction: CityConstructions): Boolean {
                 return construction.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to science")
             }
         }
-        val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
+        val gold = object : SpecialConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(construction: CityConstructions): Boolean {
                 return construction.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to gold")
             }
         }
-        val idle =  object:SpecialConstruction("Nothing", "The city will not produce anything."){
-            override fun isBuildable(construction: CityConstructions): Boolean {
-                return true
-            }
+        val idle = object : SpecialConstruction("Nothing", "The city will not produce anything.") {
+            override fun isBuildable(construction: CityConstructions): Boolean = true
+
+            override fun getProductionTooltip(cityInfo: CityInfo): String = ""
         }
-        fun getSpecialConstructions(): List<SpecialConstruction> {
-            return listOf(science,gold,idle)
-        }
+
+        val specialConstructionsMap: Map<String, SpecialConstruction>
+                = mapOf(science.name to science, gold.name to gold, idle.name to idle)
     }
 
     override fun canBePurchased(): Boolean {
@@ -56,7 +61,7 @@ open class SpecialConstruction(override var name: String, val description: Strin
         throw Exception("Impossible!")
     }
 
-    override fun postBuildEvent(construction: CityConstructions) {
+    override fun postBuildEvent(construction: CityConstructions): Boolean {
         throw Exception("Impossible!")
     }
 

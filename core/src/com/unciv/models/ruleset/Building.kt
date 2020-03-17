@@ -102,6 +102,15 @@ class Building : NamedStats(), IConstruction{
             if (gpp.science != 0f) stringBuilder.appendln("+" + gpp.science.toInt() + " "+"[Great Scientist] points".tr())
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
+
+        if (this.specialistSlots != null) {
+            val ss = this.specialistSlots!!
+            if (ss.production != 0f) stringBuilder.appendln("+" + ss.production.toInt() + " " + "[Engineer specialist] slots".tr())
+            if (ss.gold       != 0f) stringBuilder.appendln("+" + ss.gold      .toInt() + " " + "[Merchant specialist] slots".tr())
+            if (ss.science    != 0f) stringBuilder.appendln("+" + ss.science   .toInt() + " " + "[Scientist specialist] slots".tr())
+            if (ss.culture    != 0f) stringBuilder.appendln("+" + ss.culture   .toInt() + " " + "[Artist specialist] slots".tr())
+        }
+
         if (resourceBonusStats != null) {
             val resources = ruleset.tileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
@@ -144,15 +153,16 @@ class Building : NamedStats(), IConstruction{
             if (adoptedPolicies.contains("Constitution") && isWonder)
                 stats.culture += 2f
 
-            if (adoptedPolicies.contains("Autocracy Complete") && cityStrength > 0)
-                stats.happiness += 1
-
             if (baseBuildingName == "Castle"
                     && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
                 stats.gold+=3
             }
+
+            if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
+                stats.happiness += 3
+
         }
         return stats
     }
@@ -171,7 +181,7 @@ class Building : NamedStats(), IConstruction{
             stats.science = 50f
 
         if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5*civInfo.citiesConnectedToCapital.count { it.civInfo.isCityState() }
+            stats.production += 5*civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
 
         return stats
     }
@@ -183,20 +193,24 @@ class Building : NamedStats(), IConstruction{
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
+
         if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
             productionCost *= 0.85f
+
+        if (name == "Courthouse" && civInfo.policies.isAdopted("Police State"))
+            productionCost *= 0.5f
+
         if (civInfo.isPlayerCivilization()) {
-            if(!isWonder) {
+            if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
-            }
         } else {
-            if(isWonder) {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiWonderCostModifier
-            } else {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
-            }
+            productionCost *= if(isWonder)
+                civInfo.gameInfo.getDifficulty().aiWonderCostModifier
+            else
+                civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
         }
-        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
 
@@ -214,8 +228,10 @@ class Building : NamedStats(), IConstruction{
     }
 
 
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        val rejectionReason = getRejectionReason(construction)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        if (cityConstructions.isBeingConstructedOrEnqueued(name))
+            return false
+        val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
                 || rejectionReason == "Wonder is being built elsewhere"
@@ -223,27 +239,31 @@ class Building : NamedStats(), IConstruction{
 
     fun getRejectionReason(construction: CityConstructions):String{
         if (construction.isBuilt(name)) return "Already built"
-        if (construction.isBeingConstructed(name)) return "Is being built"
-        if (construction.isEnqueued(name)) return "Already enqueued"
 
+        val cityCenter = construction.cityInfo.getCenterTile()
         if ("Must be next to desert" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
+                && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
             return "Must be next to desert"
 
         if ("Must be next to mountain" in uniques
-                && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain == Constants.mountain })
+                && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
             return "Must be next to mountain"
 
+        if("Must have an owned mountain within 2 tiles" in uniques
+                && !cityCenter.getTilesInDistance(2)
+                        .any { it.baseTerrain==Constants.mountain && it.getOwner()==construction.cityInfo.civInfo })
+            return "Must be within 2 tiles of an owned mountain"
+
         if("Must not be on plains" in uniques
-                && construction.cityInfo.getCenterTile().baseTerrain==Constants.plains)
+                && cityCenter.baseTerrain==Constants.plains)
             return "Must not be on plains"
 
         if("Must not be on hill" in uniques
-                && construction.cityInfo.getCenterTile().baseTerrain==Constants.hill)
+                && cityCenter.baseTerrain==Constants.hill)
             return "Must not be on hill"
 
         if("Can only be built in coastal cities" in uniques
-                && !construction.cityInfo.getCenterTile().isCoastalTile())
+                && !cityCenter.isCoastalTile())
             return "Can only be built in coastal cities"
 
         if("Can only be built in annexed cities" in uniques
@@ -258,8 +278,7 @@ class Building : NamedStats(), IConstruction{
 
         // Regular wonders
         if (isWonder){
-            if(civInfo.gameInfo.getCities()
-                            .any {it.cityConstructions.isBuilt(name)})
+            if(civInfo.gameInfo.getCities().any {it.cityConstructions.isBuilt(name)})
                 return "Wonder is already built"
 
             if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
@@ -275,7 +294,7 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "National Wonder is already built"
             if (requiredBuildingInAllCities!=null
-                    && civInfo.cities.any { !it.cityConstructions
+                    && civInfo.cities.any { !it.isPuppet && !it.cityConstructions
                             .containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
@@ -297,8 +316,8 @@ class Building : NamedStats(), IConstruction{
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                                && it.getTileResource().improvement == it.improvement
                                 && it.getOwner() == civInfo
+                                && (it.getTileResource().improvement == it.improvement || it.improvement in Constants.greatImprovements || it.isCityCenter())
                     }
             if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
         }
@@ -319,12 +338,12 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions) {
+    override fun postBuildEvent(construction: CityConstructions): Boolean {
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
-            return
+            return true
         }
         construction.addBuilding(name)
 
@@ -365,6 +384,8 @@ class Building : NamedStats(), IConstruction{
             civInfo.updateHasActiveGreatWall()
 
         if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
+
+        return true
     }
 
     fun isStatRelated(stat: Stat): Boolean {

@@ -7,8 +7,10 @@ import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
+import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import kotlin.math.roundToInt
 
 class CityScreenTileTable(val city: CityInfo): Table(){
     val innerTable = Table()
@@ -30,17 +32,10 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         val stats = selectedTile.getTileStats(city, city.civInfo)
         innerTable.pad(20f)
 
-        innerTable.add(selectedTile.toString().toLabel()).colspan(2)
+        innerTable.add(selectedTile.toString(city.civInfo).toLabel()).colspan(2)
         innerTable.row()
+        innerTable.add(getTileStatsTable(stats)).row()
 
-        val statsTable = Table()
-        statsTable.defaults().pad(2f)
-        for (entry in stats.toHashMap().filterNot { it.value==0f }) {
-            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(Math.round(entry.value).toString().toLabel())
-            statsTable.row()
-        }
-        innerTable.add(statsTable).row()
 
         if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}
             && selectedTile in city.tilesInRange){
@@ -54,7 +49,8 @@ class CityScreenTileTable(val city: CityInfo): Table(){
             if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UncivGame.Current.worldScreen.isPlayersTurn)
                 buyTileButton.disable()
 
-            innerTable.add(buyTileButton)
+            innerTable.add(buyTileButton).row()
+            innerTable.add("You have [${city.civInfo.gold}] gold".toLabel(Color.YELLOW, 16)).padTop(2f)
         }
         if(city.canAcquireTile(selectedTile)) {
             val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
@@ -66,5 +62,15 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         }
         innerTable.pack()
         pack()
+    }
+
+    private fun getTileStatsTable(stats: Stats): Table {
+        val statsTable = Table()
+        statsTable.defaults().pad(2f)
+        for (entry in stats.toHashMap().filterNot { it.value == 0f }) {
+            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
+            statsTable.add(entry.value.roundToInt().toString().toLabel()).padRight(5f)
+        }
+        return statsTable
     }
 }

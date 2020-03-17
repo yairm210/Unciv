@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.ImageGetter
 import java.io.File
@@ -10,24 +11,29 @@ import kotlin.concurrent.thread
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
+    private val multiplayerFilesFolder = "MultiplayerGames"
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
 
-    fun getSave(GameName: String): FileHandle {
+    fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
+        if (multiplayer)
+            return Gdx.files.local("$multiplayerFilesFolder/$GameName")
         return Gdx.files.local("$saveFilesFolder/$GameName")
     }
 
-    fun getSaves(): List<String> {
+    fun getSaves(multiplayer: Boolean = false): List<String> {
+        if (multiplayer)
+            return Gdx.files.local(multiplayerFilesFolder).list().map { it.name() }
         return Gdx.files.local(saveFilesFolder).list().map { it.name() }
     }
 
-    fun saveGame(game: GameInfo, GameName: String) {
-        json().toJson(game,getSave(GameName))
+    fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
+        json().toJson(game,getSave(GameName, multiplayer))
     }
 
-    fun loadGameByName(GameName: String) : GameInfo {
-        val game = json().fromJson(GameInfo::class.java, getSave(GameName))
+    fun loadGameByName(GameName: String, multiplayer: Boolean = false) : GameInfo {
+        val game = json().fromJson(GameInfo::class.java, getSave(GameName, multiplayer))
         game.setTransients()
         return game
     }
@@ -38,8 +44,8 @@ class GameSaver {
         return game
     }
 
-    fun deleteSave(GameName: String){
-        getSave(GameName).delete()
+    fun deleteSave(GameName: String, multiplayer: Boolean = false){
+        getSave(GameName, multiplayer).delete()
     }
 
     fun getGeneralSettingsFile(): FileHandle {
@@ -89,6 +95,16 @@ class GameSaver {
             }
         }
 
+    }
+
+    /**
+     * Returns current turn's player from GameInfo JSON-String for multiplayer.
+     * Does not initialize transitive GameInfo data.
+     * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike gameInfoFromString().
+     */
+    fun currentTurnCivFromString(gameData: String): CivilizationInfo {
+        val game = json().fromJson(GameInfo::class.java, gameData)
+        return game.getCivilization(game.currentPlayer)
     }
 }
 

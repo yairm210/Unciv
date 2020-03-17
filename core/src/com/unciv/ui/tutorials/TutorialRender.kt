@@ -2,14 +2,15 @@ package com.unciv.ui.tutorials
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Array
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 
-data class TutorialForRender(val tutorial: Tutorial, val texts: List<String>)
+data class TutorialForRender(val tutorial: Tutorial, val texts: Array<String>)
 
 class TutorialRender(private val screen: CameraStageBaseScreen) {
 
@@ -17,26 +18,27 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
         showDialog(tutorial.tutorial.name, tutorial.texts, closeAction)
     }
 
-    private fun showDialog(tutorialName: String, texts: List<String>, closeAction: () -> Unit) {
+    private fun showDialog(tutorialName: String, texts: Array<String>, closeAction: () -> Unit) {
         val text = texts.firstOrNull()
         if (text == null) {
             closeAction()
         } else {
-            val tutorialTable = PopupTable(screen)
+            val tutorialPopup = Popup(screen)
 
             if (Gdx.files.internal("ExtraImages/$tutorialName").exists()) {
-                tutorialTable.add(ImageGetter.getExternalImage(tutorialName)).row()
+                tutorialPopup.add(ImageGetter.getExternalImage(tutorialName)).row()
             }
 
-            tutorialTable.addGoodSizedLabel(texts[0]).row()
+            tutorialPopup.addGoodSizedLabel(texts[0]).row()
 
             val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)
             button.onClick {
-                tutorialTable.remove()
-                showDialog(tutorialName, texts - text, closeAction)
+                tutorialPopup.remove()
+                texts.removeIndex(0)
+                showDialog(tutorialName, texts, closeAction)
             }
-            tutorialTable.add(button).pad(10f)
-            tutorialTable.open()
+            tutorialPopup.add(button).pad(10f)
+            tutorialPopup.open()
         }
     }
 }

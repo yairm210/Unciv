@@ -18,40 +18,42 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         touchable = Touchable.enabled
     }
     
-    fun getIconForUnitAction(unitAction:String): Actor {
-        if(unitAction.startsWith("Upgrade to")){
-            // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
-            // What you find between the first [ and the first ] that comes after it, will be group no. 1
-            val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
-            return ImageGetter.getUnitIcon(unitToUpgradeTo)
-        }
-        when(unitAction){
-            "Move unit" -> return ImageGetter.getStatIcon("Movement")
-            "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
-            "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
-            "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
-            "Construct improvement" -> return ImageGetter.getUnitIcon(Constants.worker)
-            "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
-            "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
-            "Found city" -> return ImageGetter.getUnitIcon(Constants.settler)
-            "Hurry Research" -> return ImageGetter.getUnitIcon("Great Scientist")
-            "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
-            "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
-            "Construct Landmark" -> return ImageGetter.getImprovementIcon("Landmark")
-            "Hurry Wonder" -> return ImageGetter.getUnitIcon("Great Engineer")
-            "Construct Manufactory" -> return ImageGetter.getImprovementIcon("Manufactory")
-            "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")
-            "Construct Customs House" -> return ImageGetter.getImprovementIcon("Customs house")
-            "Set up" -> return ImageGetter.getUnitIcon("Catapult")
-            "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit")
-            "Sleep" -> return ImageGetter.getImage("OtherIcons/Sleep")
-            "Explore" -> return ImageGetter.getUnitIcon("Scout")
-            "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop")
-            "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
-            "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
-            "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
-            "Construct road" -> return ImageGetter.getImprovementIcon("Road")
-            else -> return ImageGetter.getImage("OtherIcons/Star")
+    private fun getIconForUnitAction(unitAction:String): Actor {
+        when {
+            unitAction.startsWith("Upgrade to") -> {
+                // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
+                // What you find between the first [ and the first ] that comes after it, will be group no. 1
+                val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
+                return ImageGetter.getUnitIcon(unitToUpgradeTo)
+            }
+            unitAction.startsWith("Sleep") -> return ImageGetter.getImage("OtherIcons/Sleep")
+            unitAction.startsWith("Fortify") -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
+            else -> when(unitAction){
+                "Move unit" -> return ImageGetter.getStatIcon("Movement")
+                "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
+                "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
+                "Construct improvement" -> return ImageGetter.getUnitIcon(Constants.worker)
+                "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
+                "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
+                "Found city" -> return ImageGetter.getUnitIcon(Constants.settler)
+                "Hurry Research" -> return ImageGetter.getUnitIcon("Great Scientist")
+                "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
+                "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
+                "Construct Landmark" -> return ImageGetter.getImprovementIcon("Landmark")
+                "Hurry Wonder" -> return ImageGetter.getUnitIcon("Great Engineer")
+                "Construct Manufactory" -> return ImageGetter.getImprovementIcon("Manufactory")
+                "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")
+                "Construct Customs House" -> return ImageGetter.getImprovementIcon("Customs house")
+                "Set up" -> return ImageGetter.getUnitIcon("Catapult")
+                "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit")
+                "Explore" -> return ImageGetter.getUnitIcon("Scout")
+                "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop")
+                "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
+                "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
+                "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
+                "Construct road" -> return ImageGetter.getImprovementIcon("Road")
+                else -> return ImageGetter.getImage("OtherIcons/Star")
+            }
         }
     }
 
@@ -59,7 +61,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         clear()
         if (unit == null) return
         if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
-        for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
+        for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
             add(button).colspan(2).padBottom(2f).row()
         pack()
     }
@@ -71,8 +73,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         actionButton.pack()
-        actionButton.onClick(unitAction.uncivSound) { unitAction.action?.invoke(); UncivGame.Current.worldScreen.shouldUpdate=true }
-        if (!unitAction.canAct) actionButton.disable()
+        actionButton.onClick(unitAction.uncivSound) {
+            unitAction.action?.invoke()
+            UncivGame.Current.worldScreen.shouldUpdate=true
+        }
+        if (unitAction.action == null) actionButton.disable()
         return actionButton
     }
 }

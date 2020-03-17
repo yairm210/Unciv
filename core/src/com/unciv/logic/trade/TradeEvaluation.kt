@@ -49,7 +49,7 @@ class TradeEvaluation{
 
         // If we're making a peace treaty, don't try to up the bargain for people you don't like.
         // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
-        if(trade.ourOffers.none { it.name==Constants.peaceTreaty }) {
+        if(trade.ourOffers.none { it.name==Constants.peaceTreaty || it.name==Constants.researchAgreement }) {
             val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipLevel()
             if (relationshipLevel == RelationshipLevel.Enemy) sumOfTheirOffers = (sumOfTheirOffers * 1.5).toInt()
             else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfTheirOffers *= 2
@@ -64,9 +64,12 @@ class TradeEvaluation{
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
             TradeType.Treaty -> {
-                if (offer.name == Constants.peaceTreaty)
-                    return evaluatePeaceCostForThem(civInfo,tradePartner) // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
-                else return 1000
+                return when (offer.name) {
+                    // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
+                    Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo,tradePartner)
+                    Constants.researchAgreement -> evaluateResearchAgreementCostForThem(civInfo, tradePartner)
+                    else -> 1000
+                }
             }
 
             TradeType.Luxury_Resource -> {
@@ -118,22 +121,20 @@ class TradeEvaluation{
 
             TradeType.Technology ->
                 return (sqrt(civInfo.gameInfo.ruleSet.technologies[offer.name]!!.cost.toDouble())
-                        * civInfo.gameInfo.gameParameters.gameSpeed.getModifier()).toInt()*20
+                        * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
-                if(civInfo.isAtWarWith(civToDeclareWarOn)){
-                    when (threatToThem) {
-                        ThreatLevel.VeryLow -> return 0
-                        ThreatLevel.Low -> return 0
-                        ThreatLevel.Medium -> return 100
-                        ThreatLevel.High -> return 500
-                        ThreatLevel.VeryHigh -> return 1000
-                    }
+                if (!civInfo.isAtWarWith(civToDeclareWarOn)) return 0 // why should we pay you to go fight someone...?
+                else when (threatToThem) {
+                    ThreatLevel.VeryLow -> return 0
+                    ThreatLevel.Low -> return 0
+                    ThreatLevel.Medium -> return 100
+                    ThreatLevel.High -> return 500
+                    ThreatLevel.VeryHigh -> return 1000
                 }
-                else return 0 // why should we pay you to go fight someone...?
             }
             TradeType.City -> {
                 val city = tradePartner.cities.first { it.id==offer.name }
@@ -155,14 +156,17 @@ class TradeEvaluation{
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
             TradeType.Treaty -> {
-                if (offer.name == Constants.peaceTreaty)
-                    return evaluatePeaceCostForThem(civInfo,tradePartner) // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
-                else return 1000
+                return when (offer.name) {
+                    // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
+                    Constants.peaceTreaty -> evaluatePeaceCostForThem(civInfo, tradePartner)
+                    Constants.researchAgreement -> evaluateResearchAgreementCostForThem(civInfo, tradePartner)
+                    else -> 1000
+                }
             }
             TradeType.Luxury_Resource -> {
-                if(civInfo.getCivResourcesByName()[offer.name]!!>1)
-                    return 250 // fair price
-                else return 500 // you want to take away our last lux of this type?!
+                return if(civInfo.getCivResourcesByName()[offer.name]!!>1)
+                    250 // fair price
+                else 500 // you want to take away our last lux of this type?!
             }
             TradeType.Strategic_Resource -> {
                 if(!civInfo.isAtWar()) return 50*offer.amount
@@ -194,12 +198,12 @@ class TradeEvaluation{
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
                 val threatToUs = Automation().threatAssessment(civInfo, civToDeclareWarOn)
 
-                when (threatToUs) {
-                    ThreatLevel.VeryLow -> return 100
-                    ThreatLevel.Low -> return 250
-                    ThreatLevel.Medium -> return 500
-                    ThreatLevel.High -> return 1000
-                    ThreatLevel.VeryHigh -> return 10000 // no way boyo
+                return when (threatToUs) {
+                    ThreatLevel.VeryLow -> 100
+                    ThreatLevel.Low -> 250
+                    ThreatLevel.Medium -> 500
+                    ThreatLevel.High -> 1000
+                    ThreatLevel.VeryHigh -> 10000 // no way boyo
                 }
             }
 
@@ -211,12 +215,12 @@ class TradeEvaluation{
             }
             TradeType.Agreement -> {
                 if(offer.name == Constants.openBorders){
-                    when(civInfo.getDiplomacyManager(tradePartner).relationshipLevel()){
-                        RelationshipLevel.Unforgivable -> return 10000
-                        RelationshipLevel.Enemy -> return 2000
-                        RelationshipLevel.Competitor -> return 500
-                        RelationshipLevel.Neutral -> return 200
-                        RelationshipLevel.Favorable,RelationshipLevel.Friend,RelationshipLevel.Ally -> return 100
+                    return when(civInfo.getDiplomacyManager(tradePartner).relationshipLevel()){
+                        RelationshipLevel.Unforgivable -> 10000
+                        RelationshipLevel.Enemy -> 2000
+                        RelationshipLevel.Competitor -> 500
+                        RelationshipLevel.Neutral -> 200
+                        RelationshipLevel.Favorable,RelationshipLevel.Friend,RelationshipLevel.Ally -> 100
                     }
                 }
                 throw Exception("Invalid agreement type!")
@@ -242,4 +246,7 @@ class TradeEvaluation{
         }
     }
 
+    fun evaluateResearchAgreementCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
+        return -100 * (ourCivilization.getEra().ordinal-otherCivilization.getEra().ordinal)
+    }
 }

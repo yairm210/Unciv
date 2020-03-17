@@ -73,7 +73,6 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0 && !gameParameters.noBarbarians) placeBarbarians()
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -81,9 +80,20 @@ class GameInfo {
 
         switchTurn()
 
-        while(thisPlayer.playerType==PlayerType.AI){
-            if(thisPlayer.isBarbarian() || !thisPlayer.isDefeated())
+        while (thisPlayer.playerType == PlayerType.AI
+            || UncivGame.Current.simulateUntilTurnForDebug > turns
+                // For multiplayer, if there are 3+ players and one is defeated,
+                // we'll want to skip over their turn
+                || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
+        ) {
+            if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation().automateCivMoves(thisPlayer)
+
+                // Placing barbarians after their turn
+                if (thisPlayer.isBarbarian()
+                        && !gameParameters.noBarbarians
+                        && turns % 10 == 0) placeBarbarians()
+            }
             switchTurn()
         }
 
@@ -141,7 +151,7 @@ class GameInfo {
         }
 
         val totalBarbariansAllowedOnMap = encampments.size * 3
-        var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().size
+        var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().count()
 
         for (tile in tileMap.values.filter { it.improvement == Constants.barbarianEncampment }) {
             if (extraBarbarians <= 0) break
@@ -154,11 +164,12 @@ class GameInfo {
         // Barbarians will only spawn in places that no one can see
         val allViewableTiles = civilizations.filterNot { it.isBarbarian() }
                 .flatMap { it.viewableTiles }.toHashSet()
-        val tilesWithin3ofExistingEncampment = existingEncampments.flatMap { it.getTilesInDistance(3) }
+        val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
+                .flatMap { it.getTilesInDistance(3) }.toSet()
         val viableTiles = tileMap.values.filter {
             !it.getBaseTerrain().impassable && it.isLand
-                    && it.terrainFeature==null
-                    && it.naturalWonder==null
+                    && it.terrainFeature == null
+                    && it.naturalWonder == null
                     && it !in tilesWithin3ofExistingEncampment
                     && it !in allViewableTiles
         }

@@ -10,7 +10,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
-import com.unciv.ui.worldscreen.optionstable.PopupTable
+import com.unciv.ui.utils.Popup
 
 class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
@@ -53,7 +53,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         val currentCityLabel = city.name.toLabel(fontSize = 30)
         currentCityLabel.onClick {
-            val editCityNamePopup = PopupTable(cityScreen)
+            val editCityNamePopup = Popup(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
             textArea.alignment = Align.center
             editCityNamePopup.add(textArea).colspan(2).row()

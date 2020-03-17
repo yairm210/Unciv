@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
@@ -16,17 +17,12 @@ enum class VictoryType{
 
 class Nation : INamed {
     override lateinit var name: String
-    var translatedName=""
-    fun getNameTranslation(): String {
-        if(translatedName!="") return translatedName
-        else return name
-    }
 
     var leaderName=""
-    fun getLeaderDisplayName() = if(isCityState()) getNameTranslation()
-        else "[$leaderName] of [${getNameTranslation()}]"
+    fun getLeaderDisplayName() = if(isCityState()) name
+        else "[$leaderName] of [$name]"
 
-    var cityStateType: CityStateType?=null
+    var cityStateType: CityStateType? = null
     var preferredVictoryType:VictoryType = VictoryType.Neutral
     var declaringWar=""
     var attacked=""
@@ -37,19 +33,9 @@ class Nation : INamed {
     var neutralHello=""
     var hateHello=""
 
-    var neutralLetsHearIt = ArrayList<String>()
-    var neutralYes = ArrayList<String>()
-    var neutralNo = ArrayList<String>()
-
-    var hateLetsHearIt = ArrayList<String>()
-    var hateYes = ArrayList<String>()
-    var hateNo = ArrayList<String>()
-
-    var afterPeace=""
-
     lateinit var outerColor: List<Int>
-    var unique:String?=null
-    var innerColor: List<Int>?=null
+    var unique: UniqueAbility? = null
+    var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 
     @Transient private lateinit var outerColorObject:Color
@@ -72,11 +58,11 @@ class Nation : INamed {
         if(innerColor==null) innerColorObject = Color.BLACK
         else innerColorObject = colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
 
-        if(unique == "All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.")
+        if(unique == UniqueAbility.GREAT_WARPATH)
             forestsAndJunglesAreRoads = true
     }
 
-    lateinit var cities: List<String>
+    lateinit var cities: ArrayList<String>
 
 
 
@@ -85,7 +71,7 @@ class Nation : INamed {
         val textList = ArrayList<String>()
 
         if (unique != null) {
-            textList += unique!!.tr()
+            textList += unique!!.description.tr()
             textList += ""
         }
 
@@ -101,22 +87,22 @@ class Nation : INamed {
                 .filter { it.uniqueTo == name }) {
             val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
-            textList += building.name.tr() + " - {replaces} " + originalBuilding.name.tr()
+            textList += building.name.tr() + " - "+"Replaces [${originalBuilding.name}]".tr()
             val originalBuildingStatMap = originalBuilding.toHashMap()
             for (stat in building.toHashMap())
                 if (stat.value != originalBuildingStatMap[stat.key])
-                    textList += "  " + stat.key.toString().tr() + " " + stat.value.toInt() + " vs " + originalBuildingStatMap[stat.key]!!.toInt()
+                    textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
 
             for (unique in building.uniques.filter { it !in originalBuilding.uniques })
                 textList += "  " + unique.tr()
             if (building.maintenance != originalBuilding.maintenance)
-                textList += "  {Maintenance} " + building.maintenance + " vs " + originalBuilding.maintenance
+                textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
             if (building.cost != originalBuilding.cost)
-                textList += "  {Cost} " + building.cost + " vs " + originalBuilding.cost
+                textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
             if (building.cityStrength != originalBuilding.cityStrength)
-                textList += "  {City strength} " + building.cityStrength + " vs " + originalBuilding.cityStrength
+                textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
             if (building.cityHealth != originalBuilding.cityHealth)
-                textList += "  {City health} " + building.cityHealth + " vs " + originalBuilding.cityHealth
+                textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
             textList += ""
         }
     }
@@ -126,17 +112,17 @@ class Nation : INamed {
                 .filter { it.uniqueTo == name }) {
             val originalUnit = ruleset.units[unit.replaces!!]!!
 
-            textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
+            textList += unit.name.tr() + " - "+"Replaces [${originalUnit.name}]".tr()
             if (unit.cost != originalUnit.cost)
-                textList += "  {Cost} " + unit.cost + " vs " + originalUnit.cost
+                textList += "  {Cost} " + "[${unit.cost}] vs [${originalUnit.cost}]".tr()
             if (unit.strength != originalUnit.strength)
-                textList += "  {Strength} " + unit.strength + " vs " + originalUnit.strength
+                textList += "  {Strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
             if (unit.rangedStrength != originalUnit.rangedStrength)
-                textList += "  {Ranged strength} " + unit.rangedStrength + " vs " + originalUnit.rangedStrength
+                textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
             if (unit.range != originalUnit.range)
-                textList += "  {Range} " + unit.range + " vs " + originalUnit.range
+                textList += "  {Range} " + unit.range + "[${unit.range}] vs [${originalUnit.range}]".tr()
             if (unit.movement != originalUnit.movement)
-                textList += "  {Movement} " + unit.movement + " vs " + originalUnit.movement
+                textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
             if (originalUnit.requiredResource != null && unit.requiredResource == null)
                 textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
             for (unique in unit.uniques.filterNot { it in originalUnit.uniques })

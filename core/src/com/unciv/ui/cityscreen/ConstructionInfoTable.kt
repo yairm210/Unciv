@@ -48,10 +48,14 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
 
         var buildingText = construction.name.tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name == construction.name  }) {
+        val specialConstruction = SpecialConstruction.specialConstructionsMap[construction.name]
+        if (specialConstruction == null) {
             val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
             buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
-            buildingText += "\r\n" + turnsToComplete + turnOrTurns(turnsToComplete)
+            buildingText += turnOrTurns(turnsToComplete)
+        }
+        else {
+            buildingText += specialConstruction.getProductionTooltip(city)
         }
         selectedConstructionTable.add(buildingText.toLabel()).row()
 
@@ -74,5 +78,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
     }
 
-    private fun turnOrTurns(number: Int): String = if(number > 1) " {turns}".tr() else " {turn}".tr()
+    companion object {
+        internal fun turnOrTurns(turns: Int): String = "\r\n$turns ${(if (turns > 1) " {turns}" else " {turn}").tr()}"
+    }
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
@@ -49,16 +50,17 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         addActor(whiteHalo)
         whiteHalo.toBack()
 
-
-        val spinningCircle = if (blackSpinningCircle != null) blackSpinningCircle!!
-        else ImageGetter.getCircle()
-        spinningCircle.setSize(5f, 5f)
-        spinningCircle.color = Color.BLACK
-        spinningCircle.center(this)
-        spinningCircle.x += whiteHaloSize / 2 // to edge of white halo
-        spinningCircle.setOrigin(spinningCircle.width / 2 - whiteHaloSize / 2, spinningCircle.height / 2)
-        addActor(spinningCircle)
-        spinningCircle.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(90f, 1f)))
-        blackSpinningCircle = spinningCircle
+        if (UncivGame.Current.settings.continuousRendering) {
+            val spinningCircle = if (blackSpinningCircle != null) blackSpinningCircle!!
+            else ImageGetter.getCircle()
+            spinningCircle.setSize(5f, 5f)
+            spinningCircle.color = Color.BLACK
+            spinningCircle.center(this)
+            spinningCircle.x += whiteHaloSize / 2 // to edge of white halo
+            spinningCircle.setOrigin(spinningCircle.width / 2 - whiteHaloSize / 2, spinningCircle.height / 2)
+            addActor(spinningCircle)
+            spinningCircle.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(90f, 1f)))
+            blackSpinningCircle = spinningCircle
+        }
     }
 }

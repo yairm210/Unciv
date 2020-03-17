@@ -14,8 +14,7 @@ class WorkerAutomation(val unit: MapUnit) {
     fun automateWorkerAction() {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
                 .filter {
-                    it.militaryUnit != null && it.militaryUnit!!.civInfo != unit.civInfo
-                            && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo)
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
                 }
 
         if (enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
@@ -32,28 +31,26 @@ class WorkerAutomation(val unit: MapUnit) {
             if (reachedTile != currentTile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
-        if (currentTile.improvementInProgress == null && currentTile.isLand) {
-            val improvement = chooseImprovement(currentTile, unit.civInfo)
-            if (improvement != null && currentTile.canBuildImprovement(improvement, unit.civInfo)) {
-                // What if we're stuck on this tile but can't build there?
-                currentTile.startWorkingOnImprovement(improvement, unit.civInfo)
-                return
-            }
+
+        if (currentTile.improvementInProgress == null && currentTile.isLand
+                && tileCanBeImproved(currentTile,unit.civInfo)) {
+            return currentTile.startWorkingOnImprovement(chooseImprovement(currentTile, unit.civInfo)!!, unit.civInfo)
         }
+
         if (currentTile.improvementInProgress != null) return // we're working!
         if (tryConnectingCities(unit)) return //nothing to do, try again to connect cities
 
         val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
-            citiesToNumberOfUnimprovedTiles[city.id] =
-                    city.getTiles().count { it.isLand && it.civilianUnit == null
-                            && tileCanBeImproved(it, unit.civInfo) }
+            citiesToNumberOfUnimprovedTiles[city.id] = city.getTiles()
+                    .count { it.isLand && it.civilianUnit == null && tileCanBeImproved(it, unit.civInfo) }
         }
 
-        val mostUndevelopedCity = unit.civInfo.cities
+        val mostUndevelopedCity = unit.civInfo.cities.asSequence()
                 .filter { citiesToNumberOfUnimprovedTiles[it.id]!! > 0 }
                 .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.id] }
                 .firstOrNull { unit.movement.canReach(it.getCenterTile()) } //goto most undeveloped city
+
         if (mostUndevelopedCity != null && mostUndevelopedCity != unit.currentTile.owningCity) {
             val reachedTile = unit.movement.headTowards(mostUndevelopedCity.getCenterTile())
             if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
@@ -120,24 +117,25 @@ class WorkerAutomation(val unit: MapUnit) {
      * Returns the current tile if no tile to work was found
      */
     private fun findTileToWork(): TileInfo {
-        val currentTile=unit.getTile()
+        val currentTile = unit.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
-                    (it.civilianUnit== null || it == currentTile)
-                            && tileCanBeImproved(it, unit.civInfo) }
-                .sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
+                    (it.civilianUnit == null || it == currentTile)
+                            && tileCanBeImproved(it, unit.civInfo)
+                }
+                .sortedByDescending { getPriority(it, unit.civInfo) }
 
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
-        val selectedTile = workableTiles.firstOrNull{unit.movement.canReach(it) }
+        val selectedTile = workableTiles.firstOrNull { unit.movement.canReach(it) }
 
-        if (selectedTile != null
-                && getPriority(selectedTile, unit.civInfo)>1
+        return if (selectedTile != null
+                && getPriority(selectedTile, unit.civInfo) > 1
                 && (!workableTiles.contains(currentTile)
                         || getPriority(selectedTile, unit.civInfo) > getPriority(currentTile, unit.civInfo)))
-            return selectedTile
-        else return currentTile
+            selectedTile
+        else currentTile
     }
 
     private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
@@ -152,12 +150,10 @@ class WorkerAutomation(val unit: MapUnit) {
             val chosenImprovement = chooseImprovement(tile, civInfo)
             if(chosenImprovement!=null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
         }
-        else{
-            if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
-                    && tile.getTileResource().improvement != tile.improvement
-                    && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
-                return true
-        }
+        else if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
+                && tile.getTileResource().improvement != tile.improvement
+                && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
+            return true
 
         return false // cou;dn't find anything to construct here
     }
@@ -186,20 +182,27 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> tile.getTileResource().improvement
         }
 
+        val uniqueImprovement = civInfo.gameInfo.ruleSet.tileImprovements.values
+                .firstOrNull { it.uniqueTo==civInfo.civName}
+
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress
             improvementStringForResource != null -> improvementStringForResource
             tile.containsGreatImprovement() -> null
             tile.containsUnfinishedGreatImprovement() -> null
-            tile.terrainFeature == Constants.jungle -> "Trading post"
-            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+
+            // I think we can assume that the unique improvement is better
+            uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
+            
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
+            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
             tile.baseTerrain in listOf(Constants.grassland,Constants.desert,Constants.plains) -> "Farm"
             tile.baseTerrain == Constants.tundra -> "Trading post"
-            else -> throw Exception("No improvement found for "+tile.baseTerrain)
+            else -> null
         }
         if (improvementString == null) return null
         return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!

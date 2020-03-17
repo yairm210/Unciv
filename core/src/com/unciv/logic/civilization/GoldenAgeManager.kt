@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UniqueAbility
 
 class GoldenAgeManager{
     @Transient
@@ -27,10 +28,10 @@ class GoldenAgeManager{
     fun enterGoldenAge() {
         var turnsToGoldenAge = 10.0
         if (civInfo.containsBuildingUnique("Golden Age length increases +50%")) turnsToGoldenAge *= 1.5
-        if(civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
+        if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY )
             turnsToGoldenAge*=1.5
         if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5
-        turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge,""))

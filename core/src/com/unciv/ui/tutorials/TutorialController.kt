@@ -1,16 +1,18 @@
 package com.unciv.ui.tutorials
 
+import com.badlogic.gdx.utils.Array
+import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
+import com.unciv.ui.utils.CameraStageBaseScreen
 
-class TutorialController(
-        private val tutorialMiner: TutorialMiner,
-        private val tutorialRender: TutorialRender
-) {
+class TutorialController(screen: CameraStageBaseScreen) {
 
     private val tutorialQueue = mutableSetOf<Tutorial>()
     private var isTutorialShowing = false
     var allTutorialsShowedCallback: (() -> Unit)? = null
+    private val tutorialRender = TutorialRender(screen)
+    private val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
     fun showTutorial(tutorial: Tutorial) {
         if (!UncivGame.Current.settings.showTutorials) return
@@ -20,15 +22,13 @@ class TutorialController(
         showTutorialIfNeeded()
     }
 
-    fun isTutorialShowing(): Boolean = isTutorialShowing
-
     private fun showTutorialIfNeeded() {
         val tutorial = tutorialQueue.firstOrNull()
         if (tutorial == null) {
             allTutorialsShowedCallback?.invoke()
         } else if (!isTutorialShowing) {
             isTutorialShowing = true
-            val texts = tutorialMiner.getTutorial(tutorial, UncivGame.Current.settings.language)
+            val texts = getTutorial(tutorial)
             tutorialRender.showTutorial(TutorialForRender(tutorial, texts)) {
                 tutorialQueue.remove(tutorial)
                 isTutorialShowing = false
@@ -41,5 +41,14 @@ class TutorialController(
                 showTutorialIfNeeded()
             }
         }
+    }
+
+    fun getCivilopediaTutorials(): Map<String, Array<String>> {
+        return tutorials.filter { Tutorial.findByName(it.key)!!.isCivilopedia }
+    }
+
+    private fun getTutorial(tutorial: Tutorial): Array<String> {
+
+        return tutorials[tutorial.value] ?: Array()
     }
 }

@@ -19,7 +19,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
 
 
-    val expanderTabs = HashMap<TradeType, ExpanderTab>()
+    private val expanderTabs = HashMap<TradeType, ExpanderTab>()
 
     fun update(offersToDisplay:TradeOffersList) {
         table.clear()
@@ -41,12 +41,13 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
         }
 
-        for (offertype in values()) {
-            val offersOfType = offersToDisplay.filter { it.type == offertype }
+        for (offerType in values()) {
+            val offersOfType = offersToDisplay.filter { it.type == offerType }.
+                                    sortedBy { it.name }.sortedByDescending { it.amount }
 
-            if (expanderTabs.containsKey(offertype)) {
-                expanderTabs[offertype]!!.innerTable.clear()
-                table.add(expanderTabs[offertype]!!).row()
+            if (expanderTabs.containsKey(offerType)) {
+                expanderTabs[offerType]!!.innerTable.clear()
+                table.add(expanderTabs[offerType]!!).row()
             }
 
             for (offer in offersOfType) {
@@ -54,7 +55,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1
-                if (offer.amount > 0 && offer.name != Constants.peaceTreaty) // can't disable peace treaty!
+                if (offer.amount > 0 && offer.name != Constants.peaceTreaty && offer.name != Constants.researchAgreement) // can't disable peace treaty!
                     tradeButton.onClick {
                         val amountTransferred = min(amountPerClick, offer.amount)
                         onOfferClicked(offer.copy(amount = amountTransferred))
@@ -62,12 +63,12 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
                 else tradeButton.disable()  // for instance we have negative gold
 
 
-                if (expanderTabs.containsKey(offertype))
-                    expanderTabs[offertype]!!.innerTable.add(tradeButton).row()
+                if (expanderTabs.containsKey(offerType))
+                    expanderTabs[offerType]!!.innerTable.add(tradeButton).row()
                 else table.add(tradeButton).row()
             }
         }
-        widget = table
+        actor = table
     }
 
 }

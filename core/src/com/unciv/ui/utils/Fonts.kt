@@ -23,17 +23,13 @@ class Fonts {
                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +  // Greek
                 "ÀÄĂÂĎÊĚÉÈÍÎŁĹĽÔÓÖƠŘŔŚŤƯŮÚÜÝŻŹäâąďêęěłĺľńňñôöơřŕśťưůýżźáèìíóûú" +
                 "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛" +  // Thai
+                "İıÇŞşĞğ"+ /// turkish
                 "1234567890" +
-                "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.¡*|«»—∞"
+                "‘?ʼ’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.…¡*|«»—∞✘✔"
         val charSet = HashSet<Char>()
         charSet.addAll(defaultText.asIterable())
 
         if (language != "") {
-            if (Gdx.files.internal("jsons/Nations/Nations_$language.json").exists())
-                charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_$language.json").readString().asIterable())
-            if (Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").exists())
-                charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_$language.json").readString().asIterable())
-
             for (entry in UncivGame.Current.translations.entries) {
                 for (lang in entry.value) {
                     if (lang.key == language) charSet.addAll(lang.value.asIterable())
@@ -52,7 +48,7 @@ class Fonts {
    fun getFont(size: Int): BitmapFont {
        val language = UncivGame.Current.settings.language
        val fontForLanguage ="Nativefont"
-       val isUniqueFont = language.contains("Chinese") || language == "Korean"
+       val isUniqueFont = language.contains("Chinese") || language == "Korean" || language=="Japanese"
        val keyForFont = if(!isUniqueFont) "$fontForLanguage $size" else "$fontForLanguage $size $language"
        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
 

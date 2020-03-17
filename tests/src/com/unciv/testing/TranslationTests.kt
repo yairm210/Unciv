@@ -4,9 +4,11 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
+import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import org.junit.Assert
 import org.junit.Before
@@ -50,6 +52,20 @@ class TranslationTests {
         val allStringsHaveTranslation = allStringAreTranslated(strings)
         Assert.assertTrue("This test will only pass when there is a translation for all units uniques",
                 allStringsHaveTranslation)
+    }
+
+    @Test
+    fun allUnitActionsHaveTranslation() {
+        val actions: MutableSet<String> = HashSet()
+        for (action in UnitActionType.values()) {
+            if (action == UnitActionType.Upgrade)
+                actions.add("Upgrade to [unitType] ([goldCost] gold)")
+            else
+                actions.add(action.value)
+        }
+        val allUnitActionsHaveTranslation = allStringAreTranslated(actions)
+        Assert.assertTrue("This test will only pass when there is a translation for all unit actions",
+                allUnitActionsHaveTranslation)
     }
 
     @Test
@@ -159,12 +175,11 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslatedNationsFilesAreSerializable() {
-        for (file in Gdx.files.internal("jsons/Nations").list()) {
-            jsonParser.getFromJson(Array<Nation>().javaClass, file.path())
-        }
-        Assert.assertTrue("This test will only pass when there is a translation for all promotions",
-                true)
+    fun nationsFileIsSerializable() {
+        val array = jsonParser.getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations.json")
+
+        Assert.assertTrue("This test will only pass when there Nations.json file is serializable",
+                array.isNotEmpty())
     }
 
     /** For every translatable string find its placeholders and check if all translations have them */
@@ -188,5 +203,18 @@ class TranslationTests {
                 "This test will only pass when all translations' placeholders match those of the key",
                 allTranslationsHaveCorrectPlaceholders
         )
+    }
+
+    @Test
+    fun allTranslationsEndWithASpace() {
+        val templateLines = Gdx.files.internal(TranslationFileReader.templateFileLocation).reader().readLines()
+        var failed = false
+        for (line in templateLines) {
+            if (line.endsWith(" =")) {
+                println("$line ends without a space at the end")
+                failed=true
+            }
+        }
+        Assert.assertFalse(failed)
     }
 }

@@ -1,9 +1,10 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.unciv.JsonParser
 import com.unciv.UncivGame
+import com.unciv.models.ruleset.Nation
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class Translations : LinkedHashMap<String, TranslationEntry>(){
@@ -16,7 +17,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         return get(text)!![language]!!
     }
 
-    fun hasTranslation(text:String,language:String): Boolean {
+    private fun hasTranslation(text:String,language:String): Boolean {
         return containsKey(text) && get(text)!!.containsKey(language)
     }
 
@@ -31,17 +32,16 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
 
-    fun tryReadTranslationForLanguage(language: String){
+    private fun tryReadTranslationForLanguage(language: String){
         val translationStart = System.currentTimeMillis()
 
-        val translationFileName = "jsons/translationsByLanguage/$language.properties"
+        val translationFileName = "jsons/translations/$language.properties"
         if (!Gdx.files.internal(translationFileName).exists()) return
 
         val languageTranslations:HashMap<String,String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
-             languageTranslations = TranslationFileReader()
-                    .read(translationFileName)
+             languageTranslations = TranslationFileReader.read(translationFileName)
         }catch (ex:Exception){
             return
         }
@@ -64,13 +64,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
-    fun getLanguagesWithTranslationFile(): List<String> {
+    private fun getLanguagesWithTranslationFile(): List<String> {
 
         val languages = ArrayList<String>()
         // So apparently the Locales don't work for everyone, which is horrendous
         // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
         try{
-            for(file in Gdx.files.internal("jsons/translationsByLanguage").list())
+            for(file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
         catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
@@ -89,7 +89,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         return languages.distinct()
                 .filter { it!="Thai" &&
-                        Gdx.files.internal("jsons/translationsByLanguage/$it.properties").exists() }
+                        Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
     fun readAllLanguagesTranslation() {
@@ -110,7 +110,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     fun loadPercentageCompleteOfLanguages(){
         val startTime = System.currentTimeMillis()
 
-        percentCompleteOfLanguages = TranslationFileReader().readLanguagePercentages()
+        percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
 
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
@@ -120,16 +120,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val percentComplete = HashMap<String,Int>()
         val translationStart = System.currentTimeMillis()
 
-        var allTranslations = 0
-        Gdx.files.internal("jsons/translationsByLanguage/template.properties")
+        var allTranslations = TranslationFileReader.generateNationsStrings().size
+        allTranslations += TranslationFileReader.generateTutorialsStrings().size
+        Gdx.files.internal(TranslationFileReader.templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
         for(language in getLanguagesWithTranslationFile()){
-            val translationFileName = "jsons/translationsByLanguage/$language.properties"
+            val translationFileName = "jsons/translations/$language.properties"
             var translationsOfThisLanguage=0
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
+
             percentComplete[language] = translationsOfThisLanguage*100/allTranslations
         }
 
@@ -138,7 +140,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         println("Calculating percentage complete of languages - "+translationFilesTime+"ms")
         return percentComplete
     }
-
 
     companion object {
         fun translateBonusOrPenalty(unique:String): String {
@@ -203,7 +204,6 @@ fun String.tr(): String {
         return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
 
-    val translation = UncivGame.Current.translations
-            .get(this, UncivGame.Current.settings.language) // single word
-    return translation
+    return UncivGame.Current.translations
+            .get(this, UncivGame.Current.settings.language)
 }

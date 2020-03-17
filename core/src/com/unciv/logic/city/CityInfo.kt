@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.civilization.AlertType
+import com.unciv.UniqueAbility
+import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
@@ -60,7 +60,7 @@ class CityInfo {
         this.location = cityLocation
         setTransients()
 
-        val nationCities = civInfo.getTranslatedNation().cities
+        val nationCities = civInfo.nation.cities
         val cityNameIndex = civInfo.citiesCreated % nationCities.size
         val cityName = nationCities[cityNameIndex]
 
@@ -76,11 +76,13 @@ class CityInfo {
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
 
-        if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")
             cityConstructions.currentConstruction = Constants.worker // Default for first city only!
         }
+
+        if (civInfo.policies.isAdopted("Legalism"))
+            civInfo.policies.tryAddLegalismBuildings()
 
         expansion.reset()
 
@@ -127,7 +129,10 @@ class CityInfo {
     fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
-    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
+    fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
+        val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
+        return connectionTypePredicate(mediumTypes)
+    }
     fun isInResistance() = resistanceCounter>0
 
 
@@ -184,10 +189,9 @@ class CityInfo {
             if(resource.resourceType == ResourceType.Strategic){
                 amountToAdd = 2
                 if(civInfo.policies.isAdopted("Fascism")) amountToAdd*=2
-                if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
-                        && resource.name in listOf("Horses","Iron","Uranium"))
+                if(civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses","Iron","Uranium"))
                     amountToAdd *= 2
-                if(resource.name=="Oil" && civInfo.nation.unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
+                if(resource.name=="Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
                     amountToAdd *= 2
             }
             if(resource.resourceType == ResourceType.Luxury
@@ -244,7 +248,7 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for(entry in stats){
-            if(civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
+            if(civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
             if (civInfo.policies.isAdopted("Entrepreneurship"))
                 entry.value.gold *= 1.25f
@@ -276,7 +280,7 @@ class CityInfo {
     fun setTransients() {
         tileMap = civInfo.gameInfo.tileMap
         centerTileInfo = tileMap[location]
-        tilesInRange = getCenterTile().getTilesInDistance( 3).toHashSet()
+        tilesInRange = getCenterTile().getTilesInDistance(3).toHashSet()
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()
@@ -356,16 +360,10 @@ class CityInfo {
     }
 
     fun annexCity() {
-        if(!civInfo.policies.isAdopted("Police State")) {
-            expansion.cultureStored = 0
-            expansion.reset()
-            reassignWorkers()
-        }
-
-        isPuppet=false
+        isPuppet = false
         cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         cityStats.update()
-        UncivGame.Current.worldScreen.shouldUpdate=true
+        UncivGame.Current.worldScreen.shouldUpdate = true
     }
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
@@ -377,13 +375,13 @@ class CityInfo {
         conqueringCiv.addNotification("Received [$goldPlundered] Gold for capturing [$name]", centerTileInfo.position, Color.GOLD)
 
         val oldCiv = civInfo
-        moveToCiv(conqueringCiv)
-        if(oldCiv.isDefeated()) {
-            oldCiv.destroy()
-            conqueringCiv.popupAlerts.add(PopupAlert(AlertType.Defeated,oldCiv.civName))
-        }
-
+        // must be before moving the city to the conquering civ,
+        // so the repercussions are properly checked
         diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
+
+        moveToCiv(conqueringCiv)
+        Battle.destroyIfDefeated(oldCiv, conqueringCiv)
+
 
         if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         reassignWorkers()
@@ -395,12 +393,13 @@ class CityInfo {
         // The city could be producing something that puppets shouldn't, like units
         cityConstructions.currentConstructionIsUserSet = false
         cityConstructions.constructionQueue.clear()
-        cityConstructions.chooseNextConstruction() 
+        cityConstructions.chooseNextConstruction()
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
         val currentPopulation = population.population
-        val percentageOfCivPopulationInThatCity = currentPopulation * 100f / civInfo.cities.sumBy { it.population.population }
+        val percentageOfCivPopulationInThatCity = currentPopulation * 100f /
+                oldCiv.cities.sumBy { it.population.population }
         val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
 
         // How can you conquer a city but not know the civ you conquered it from?!
@@ -413,7 +412,7 @@ class CityInfo {
 
         for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
             val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
-            if (thirdPartyCiv.isAtWarWith(civInfo)) // You annoyed our enemy?
+            if (thirdPartyCiv.isAtWarWith(oldCiv)) // You annoyed our enemy?
                 thirdPartyCiv.getDiplomacyManager(conqueringCiv)
                         .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
             else thirdPartyCiv.getDiplomacyManager(conqueringCiv)
@@ -464,8 +463,8 @@ class CityInfo {
             foundingCiv.getDiplomacyManager(conqueringCiv).influence = 90f
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                 tradeLogic.acceptTrade()
             }
         }
@@ -520,11 +519,12 @@ class CityInfo {
         tryUpdateRoadStatus()
     }
 
+    // Acquiring in this context means transferring ownership to another city of the same civ
     fun canAcquireTile(newTileInfo: TileInfo): Boolean {
         val owningCity = newTileInfo.getCity()
         if (owningCity!=null && owningCity!=this
-                && newTileInfo.getOwner()!!.isPlayerCivilization()
-                && newTileInfo.arialDistanceTo(getCenterTile()) <= 3
+                && newTileInfo.getOwner()!!.isCurrentPlayer()
+                && newTileInfo.aerialDistanceTo(getCenterTile()) <= 3
                 && newTileInfo.neighbors.any{it.getCity()==this}) {
             return true
         }
@@ -557,7 +557,7 @@ class CityInfo {
         val baseGold = 20 + 10 * population.population + Random().nextInt(40)
         val turnModifier = max(0, min(50, civInfo.gameInfo.turns - turnAcquired)) / 50f
         val cityModifier = if (containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.") 3f else 1f
+        val conqueringCivModifier = if (conqueringCiv.nation.unique == UniqueAbility.RIVER_WARLORD) 3f else 1f
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()
@@ -576,7 +576,7 @@ class CityInfo {
     private fun triggerCitiesSettledNearOtherCiv(){
         val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
                 .flatMap { it.cities }
-                .filter { it.getCenterTile().arialDistanceTo(getCenterTile()) <= 6 }
+                .filter { it.getCenterTile().aerialDistanceTo(getCenterTile()) <= 6 }
         val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
                 .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for(otherCiv in civsWithCloseCities)

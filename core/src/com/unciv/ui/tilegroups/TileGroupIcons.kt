@@ -3,11 +3,15 @@ package com.unciv.ui.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
+import com.unciv.ui.utils.toLabel
 
 /** Helper class for TileGroup, which was getting too full */
 class TileGroupIcons(val tileGroup: TileGroup){
@@ -18,12 +22,14 @@ class TileGroupIcons(val tileGroup: TileGroup){
     var civilianUnitIcon: UnitGroup? = null
     var militaryUnitIcon: UnitGroup? = null
 
-    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean) {
+    fun update(showResourcesAndImprovements: Boolean, tileIsViewable: Boolean, showMilitaryUnit: Boolean, viewingCiv:CivilizationInfo?) {
         updateResourceIcon(showResourcesAndImprovements)
         updateImprovementIcon(showResourcesAndImprovements)
 
-        civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon, tileIsViewable, -20f)
-        militaryUnitIcon = newUnitIcon(tileGroup.tileInfo.militaryUnit, militaryUnitIcon, tileIsViewable && showMilitaryUnit, 20f)
+        civilianUnitIcon = newUnitIcon(tileGroup.tileInfo.civilianUnit, civilianUnitIcon,
+                tileIsViewable, -20f, viewingCiv)
+        militaryUnitIcon = newUnitIcon(tileGroup.tileInfo.militaryUnit, militaryUnitIcon,
+                tileIsViewable && showMilitaryUnit, 20f, viewingCiv)
     }
 
     fun addPopulationIcon() {
@@ -43,14 +49,14 @@ class TileGroupIcons(val tileGroup: TileGroup){
     }
 
 
-    fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float): UnitGroup? {
+    fun newUnitIcon(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float, viewingCiv: CivilizationInfo?): UnitGroup? {
         var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
         oldUnitGroup?.remove()
 
         if (unit != null && isViewable) { // Tile is visible
             newImage = UnitGroup(unit, 25f)
-            if (oldUnitGroup?.blackSpinningCircle != null) {
+            if (UncivGame.Current.settings.continuousRendering && oldUnitGroup?.blackSpinningCircle != null) {
                 newImage.blackSpinningCircle = ImageGetter.getCircle()
                         .apply { rotation = oldUnitGroup.blackSpinningCircle!!.rotation }
             }
@@ -58,9 +64,26 @@ class TileGroupIcons(val tileGroup: TileGroup){
             newImage.center(tileGroup)
             newImage.y += yFromCenter
 
+            // Display number of carried air units
+            if ((unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit())
+                    && !unit.getTile().airUnits.isEmpty() && !unit.getTile().isCityCenter()) {
+                val holder = Table()
+                val secondarycolor = unit.civInfo.nation.getInnerColor()
+                val airUnitTable = Table().apply { defaults().pad(5f) }
+                airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(unit.civInfo.nation.getOuterColor())
+                val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
+                aircraftImage.color = secondarycolor
+                airUnitTable.add(aircraftImage).size(15f)
+                airUnitTable.add(unit.getTile().airUnits.size.toString().toLabel(secondarycolor, 14))
+                holder.add(airUnitTable).row()
+                holder.setOrigin(Align.center)
+                holder.center(tileGroup)
+                newImage.addActor(holder)
+            }
+
             // Instead of fading out the entire unit with its background, we just fade out its central icon,
             // that way it remains much more visible on the map
-            if (!unit.isIdle() && unit.civInfo == UncivGame.Current.worldScreen.viewingCiv)
+            if (!unit.isIdle() && unit.civInfo == viewingCiv)
                 newImage.unitBaseImage.color.a = 0.5f
         }
         return newImage

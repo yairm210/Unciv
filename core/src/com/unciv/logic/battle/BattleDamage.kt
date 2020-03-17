@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
+import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
@@ -42,6 +43,7 @@ class BattleDamage{
             modifiers[text]=modifiers[text]!!+BDM.modificationAmount
         }
 
+        val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
             for (BDM in getBattleDamageModifiersOfUnit(combatant.unit)) {
                 if (BDM.vs == enemy.getUnitType().toString())
@@ -57,22 +59,22 @@ class BattleDamage{
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            val civHappiness = combatant.getCivInfo().getHappiness()
+            val civHappiness = civInfo.getHappiness()
             if (civHappiness < 0)
                 modifiers["Unhappiness"] = max(0.02f * civHappiness, -0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if (combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100) {
+            if (civInfo.policies.isAdopted("Populism") && combatant.getHealth() < 100) {
                 modifiers["Populism"] = 0.25f
             }
 
-            if (combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
+            if (civInfo.policies.isAdopted("Discipline") && combatant.isMelee()
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo == combatant.getCivInfo() && !it.type.isCivilian() && !it.type.isAirUnit() })
+                            .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
-            if (requiredResource != null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!! < 0
-                    && !combatant.getCivInfo().isBarbarian()) {
+            if (requiredResource != null && civInfo.getCivResourcesByName()[requiredResource]!! < 0
+                    && !civInfo.isBarbarian()) {
                 modifiers["Missing resource"] = -0.25f
             }
 
@@ -80,21 +82,23 @@ class BattleDamage{
                     .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
                     .map { it.civilianUnit }
             if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier = if (combatant.unit.civInfo.nation.unique ==
-                        "Great general provides double combat bonus, and spawns 50% faster") 0.3f
-                else 0.15f
+                val greatGeneralModifier = if (combatant.unit.civInfo.nation.unique == UniqueAbility.ART_OF_WAR) 0.3f else 0.15f
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            if(combatant.getCivInfo().nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength"
-                    && combatant.getCivInfo().goldenAges.isGoldenAge())
-                modifiers["Golden Age"] = 0.1f
+            if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY && civInfo.goldenAges.isGoldenAge())
+                modifiers[UniqueAbility.ACHAEMENID_LEGACY.displayName] = 0.1f
 
+            if (civInfo.nation.unique == UniqueAbility.MONGOL_TERROR && enemy.getCivInfo().isCityState())
+                modifiers[UniqueAbility.MONGOL_TERROR.displayName] = 0.3f
+
+            if (civInfo.nation.unique == UniqueAbility.GREAT_EXPANSE && civInfo.cities.map { it.getTiles() }.any { it.contains(combatant.getTile()) })
+                modifiers[UniqueAbility.GREAT_EXPANSE.displayName] = 0.15f
         }
 
         if (enemy.getCivInfo().isBarbarian()) {
-            modifiers["Difficulty"] = combatant.getCivInfo().gameInfo.getDifficulty().barbarianBonus
-            if (combatant.getCivInfo().policies.isAdopted("Honor"))
+            modifiers["Difficulty"] = civInfo.gameInfo.getDifficulty().barbarianBonus
+            if (civInfo.policies.isAdopted("Honor"))
                 modifiers["vs Barbarians"] = 0.25f
         }
         
@@ -103,6 +107,7 @@ class BattleDamage{
 
     fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
         val modifiers = getGeneralModifiers(attacker, defender)
+        val policies = attacker.getCivInfo().policies
 
         if(attacker is MapUnitCombatant) {
             modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
@@ -128,10 +133,13 @@ class BattleDamage{
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             }
+
+            if (policies.isAdopted("Autocracy Complete") && (policies.autocracyCompletedTurns > 0))
+                modifiers["Autocracy Complete"] = 0.2f
         }
 
         else if (attacker is CityCombatant) {
-            if (attacker.getCivInfo().policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
+            if (policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
         }
 
@@ -146,8 +154,8 @@ class BattleDamage{
         if (defender.unit.isEmbarked()) {
             // embarked units get no defensive modifiers apart from this unique
             if (defender.unit.hasUnique("Defense bonus when embarked") ||
-                    defender.getCivInfo().nation.unique == "Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.")
-                modifiers["Embarkation"] = 1f
+                    defender.getCivInfo().nation.unique == UniqueAbility.RIVER_WARLORD)
+                modifiers[UniqueAbility.RIVER_WARLORD.displayName] = 1f
 
             return modifiers
         }
@@ -166,6 +174,9 @@ class BattleDamage{
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
+        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it == "+25% Combat Bonus when defending" }
+        if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
+
 
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()
@@ -182,8 +193,7 @@ class BattleDamage{
             modifiers["Foreign Land"] = 0.2f
 
 
-        if(unit.getCivInfo().nation.unique == "Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai."
-                && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
+        if(unit.getCivInfo().nation.unique == UniqueAbility.WAYFINDING && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
             modifiers["Moai"] = 0.1f
 
         if(tile.neighbors.flatMap { it.getUnits() }
@@ -222,7 +232,7 @@ class BattleDamage{
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         return if(combatant.getUnitType() == UnitType.City
-                || combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged" && !combatant.getUnitType().isAirUnit())
+                || combatant.getCivInfo().nation.unique == UniqueAbility.BUSHIDO && !combatant.getUnitType().isAirUnit())
             1f
         else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
     }
@@ -231,7 +241,7 @@ class BattleDamage{
     /**
      * Includes attack modifiers
      */
-    fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
+    private fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,defender))
         return attacker.getAttackingStrength() * attackModifier
     }
@@ -240,7 +250,7 @@ class BattleDamage{
     /**
      * Includes defence modifiers
      */
-    fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
+    private fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         var defenceModifier = 1f
         if(defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
         return defender.getDefendingStrength() * defenceModifier
@@ -258,7 +268,7 @@ class BattleDamage{
         return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
-    fun damageModifier(attackerToDefenderRatio:Float, damageToAttacker:Boolean): Float {
+    private fun damageModifier(attackerToDefenderRatio: Float, damageToAttacker:Boolean): Float {
         // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
         val strongerToWeakerRatio = attackerToDefenderRatio.pow(if (attackerToDefenderRatio < 1) -1 else 1)
         var ratioModifier = ((((strongerToWeakerRatio + 3)/4).pow(4) +1)/2)

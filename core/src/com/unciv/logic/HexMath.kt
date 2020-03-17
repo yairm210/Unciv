@@ -7,11 +7,37 @@ import kotlin.math.*
 object HexMath {
 
     fun getVectorForAngle(angle: Float): Vector2 {
-        return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())
+        return Vector2(sin(angle.toDouble()).toFloat(), cos(angle.toDouble()).toFloat())
     }
 
     private fun getVectorByClockHour(hour: Int): Vector2 {
         return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
+    }
+
+    /** returns the number of tiles in a hexagonal map of radius size*/
+    fun getNumberOfTilesInHexagon(size: Int): Int {
+        if (size < 0) return 0
+        return 1 + 6 * size * (size + 1) / 2
+    }
+
+    /* In our reference system latitude, i.e. how distant from equator we are is proportional to x + y*/
+    fun getLatitude(vector: Vector2): Float {
+        return vector.x + vector.y
+    }
+    fun getLongitude(vector: Vector2): Float {
+        return vector.x - vector.y
+    }
+
+    /** returns a vector containing width and height a rectangular map should have to have
+     * approximately the same number of tiles as an hexagonal map given a height/width ratio */
+    fun getEquivalentRectangularSize(size: Int, ratio: Float = 0.65f): Vector2 {
+        if (size < 0)
+            return Vector2.Zero
+
+        val nTiles = getNumberOfTilesInHexagon(size)
+        val width = round(sqrt(nTiles.toFloat()/ratio))
+        val height = round(width * ratio)
+        return Vector2(width, height)
     }
 
     fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
@@ -57,6 +83,20 @@ object HexMath {
 
     fun cubic2HexCoords(cubicCoord: Vector3): Vector2 {
         return Vector2(cubicCoord.y, -cubicCoord.z)
+    }
+
+    fun cubic2EvenQCoords(cubicCoord: Vector3): Vector2 {
+        return Vector2(cubicCoord.x, cubicCoord.z + (cubicCoord.x + (cubicCoord.x.toInt() and 1)) / 2)
+    }
+    fun evenQ2CubicCoords(evenQCoord: Vector2): Vector3 {
+        val x = evenQCoord.x
+        val z = evenQCoord.y - (evenQCoord.x + (evenQCoord.x.toInt() and 1)) / 2
+        val y = -x-z
+        return Vector3(x,y,z)
+    }
+
+    fun evenQ2HexCoords(evenQCoord: Vector2): Vector2 {
+        return cubic2HexCoords(evenQ2CubicCoords(evenQCoord))
     }
 
     fun roundCubicCoords(cubicCoords: Vector3): Vector3 {

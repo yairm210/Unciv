@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization
 
+import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.StatMap
@@ -18,16 +20,20 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         val freeUnits = 3
         var unitsToPayFor = civInfo.getCivUnits()
         if(civInfo.policies.isAdopted("Oligarchy"))
-            unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
+            // Only land military units can truly "garrison"
+            unitsToPayFor = unitsToPayFor.filterNot {
+                it.getTile().isCityCenter()
+                        && it.canGarrison()
+            }
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
-        if(civInfo.nation.unique=="67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."){
+        if(civInfo.nation.unique == UniqueAbility.FUROR_TEUTONICUS){
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
 
-
-        val gameProgress = civInfo.gameInfo.turns/400f // as game progresses Maintenance cost rises
+        val turnLimit = BASE_GAME_DURATION_TURNS * civInfo.gameInfo.gameParameters.gameSpeed.modifier
+        val gameProgress = civInfo.gameInfo.turns / turnLimit // as game progresses Maintenance cost rises
         var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!civInfo.isPlayerCivilization())
@@ -67,7 +73,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
                 var culture = 3f * (civInfo.getEra().ordinal+1)
-                if(civInfo.nation.unique=="Food and Culture from Friendly City-States are increased by 50%")
+                if(civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
                     culture*=1.5f
                 cultureBonus.add(Stat.Culture, culture)
                 statMap.add("City States",cultureBonus)
@@ -120,14 +126,14 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             }
         }
 
-        if (civInfo.containsBuildingUnique("Provides 1 happiness per social policy")) {
+        if (civInfo.containsBuildingUnique("Provides 1 happiness per 2 additional social policies adopted")) {
             if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
             statMap["Policies"] = statMap["Policies"]!! +
-                    civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
+                    civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") } / 2
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.nation.unique == "100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled.")
+        if (civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD)
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size

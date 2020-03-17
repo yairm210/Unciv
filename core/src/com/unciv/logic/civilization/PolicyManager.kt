@@ -19,6 +19,7 @@ class PolicyManager {
     var shouldOpenPolicyPicker = false
             get() = field && canAdoptPolicy()
     var legalismState = HashMap<String, String>()
+    var autocracyCompletedTurns = 0
 
     fun clone(): PolicyManager {
         val toReturn = PolicyManager()
@@ -28,6 +29,7 @@ class PolicyManager {
         toReturn.shouldOpenPolicyPicker = shouldOpenPolicyPicker
         toReturn.storedCulture = storedCulture
         toReturn.legalismState.putAll(legalismState)
+        toReturn.autocracyCompletedTurns = autocracyCompletedTurns
         return toReturn
     }
 
@@ -41,6 +43,8 @@ class PolicyManager {
         storedCulture += culture
         if (!couldAdoptPolicyBefore && canAdoptPolicy())
             shouldOpenPolicyPicker = true
+        if (autocracyCompletedTurns > 0)
+            autocracyCompletedTurns -= 1
     }
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -55,7 +59,7 @@ class PolicyManager {
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
-        policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)
     }
@@ -110,7 +114,6 @@ class PolicyManager {
                 civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.settler)
             "Citizenship" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
             "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
-            "Scientific Revolution" -> civInfo.tech.freeTechs += 2
             "Legalism" -> tryAddLegalismBuildings()
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
@@ -126,6 +129,7 @@ class PolicyManager {
                     civInfo.addGreatPerson(greatPerson)
                 }
             }
+            "Autocracy Complete" -> autocracyCompletedTurns = 30
         }
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
@@ -135,7 +139,7 @@ class PolicyManager {
         if(!canAdoptPolicy()) shouldOpenPolicyPicker=false
     }
 
-    private fun tryAddLegalismBuildings() {
+    fun tryAddLegalismBuildings() {
         val candidateCities = civInfo.cities
                 .sortedBy { it.turnAcquired }
                 .subList(0, min(4, civInfo.cities.size))

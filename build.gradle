@@ -1,6 +1,6 @@
 buildscript {
 
-    ext.kotlinVersion = '1.3.50'
+    ext.kotlinVersion = '1.3.61'
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
@@ -18,7 +18,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.6.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
 
         // This is for wrapping the .jar file into a standalone executable
@@ -33,6 +33,9 @@ allprojects {
     version = '1.0.1'
     ext {
         appName = "Unciv"
+        appCodeNumber = 396
+        appVersion = "3.6.8"
+
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.1'
         box2DLightsVersion = '1.4'
@@ -41,11 +44,11 @@ allprojects {
     }
 
     repositories {
-        // Chinese mirrors for quicker loading for chinese devs
-        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
-        maven{ url 'https://maven.aliyun.com/repository/google'}
-        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
-        maven{ url 'https://maven.aliyun.com/repository/public'}
+        // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
+        // maven{ url 'https://maven.aliyun.com/repository/jcenter'}
+        // maven{ url 'https://maven.aliyun.com/repository/google'}
+        // maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        // maven{ url 'https://maven.aliyun.com/repository/public'}
         google()
         jcenter()
         mavenLocal()

@@ -293,7 +293,7 @@
 			},
 			{
 				"name": "Scientific Revolution",
-				"description": "Gain 2 free technologies",
+				"description": "Science gained from research agreements +50%",
 				"requires": ["Free Thought"],
 				"row": 3,
 				"column": 1
@@ -416,7 +416,7 @@
 			},
 			{
 				"name": "Police State",
-				"description": "Captured cities retain their previous borders",
+				"description": "+3 Happiness from every Courthouse. Build Courthouses in half the usual time.",
 				"requires": ["Militarism"],
 				"row": 2,
 				"column": 5
@@ -430,7 +430,7 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"description": "+1 happiness from each Walls, Castle and Arsenal"
+				"description": "+20% attack bonus to all Military Units for 30 turns"
 			}
 		]
 	}
