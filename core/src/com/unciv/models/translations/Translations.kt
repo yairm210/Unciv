@@ -1,9 +1,7 @@
 package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
-import com.unciv.JsonParser
 import com.unciv.UncivGame
-import com.unciv.models.ruleset.Nation
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -120,9 +118,9 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val percentComplete = HashMap<String,Int>()
         val translationStart = System.currentTimeMillis()
 
-        var allTranslations = TranslationFileReader.generateNationsStrings().size
-        allTranslations += TranslationFileReader.generateTutorialsStrings().size
-        Gdx.files.internal(TranslationFileReader.templateFileLocation)
+        var allTranslations = TranslationFileWriter.generateNationsStrings().size
+        allTranslations += TranslationFileWriter.generateTutorialsStrings().size
+        Gdx.files.internal(TranslationFileWriter.templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
         for(language in getLanguagesWithTranslationFile()){

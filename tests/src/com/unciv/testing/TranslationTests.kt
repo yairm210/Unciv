@@ -2,13 +2,12 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileReader
+import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import org.junit.Assert
 import org.junit.Before
@@ -207,7 +206,7 @@ class TranslationTests {
 
     @Test
     fun allTranslationsEndWithASpace() {
-        val templateLines = Gdx.files.internal(TranslationFileReader.templateFileLocation).reader().readLines()
+        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {
