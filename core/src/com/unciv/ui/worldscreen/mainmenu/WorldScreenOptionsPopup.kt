@@ -76,6 +76,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
             update()
         }
 
+        innerTable.add("Order trade offers by amount".toLabel())
+        addButton(innerTable, if (settings.orderTradeOffersByAmount) "Yes" else "No") {
+            settings.orderTradeOffersByAmount = !settings.orderTradeOffersByAmount
+            update()
+        }
+
         addLanguageSelectBox(innerTable)
 
         addResolutionSelectBox(innerTable)
