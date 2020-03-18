@@ -139,6 +139,60 @@ class TileMap {
         unit.assignOwner(civInfo, false)
 
         var unitToPlaceTile : TileInfo? = null
+        // New algorithm: keep two dictionaries of tiles: one for checked tiles and another for new ones.
+        // Keys are the tile coords or for simplicity the tile instances themselves,
+        // value is a struct with the movement cost to get there and a flag if there's room for the unit.
+        // Each step joins new into checked, creates a new 'new' called next containing tiles passable to the unit
+        // and adjacent to the tiles in the old new except those already in checked - new candidates.
+        // Movement cost for the new tiles is calculated (each for all neighbors in old new, best one wins)
+        // A tally count of viable tiles is maintained and once it reaches a threshold or a number of loops, seach stops.
+        // Finally the first viable tile with the smallest move cost is selected.
+        // A potential optimization would be to abort on finding a viable at distance 0.1 (railorad next to city, can't get better) - not worth the reduced code readability
+        val currentTile = get(position)
+        if (unit.movement.canMoveTo(currentTile)) {
+            unitToPlaceTile = currentTile
+        } else {
+            data class TileCheckResult(val distance: Float, val viable: Boolean)
+            val checkedTiles = mutableMapOf<TileInfo,TileCheckResult>()
+            var newTiles = mutableMapOf<TileInfo,TileCheckResult>(Pair(get(position),TileCheckResult(0f,false)))
+            var stepCount = 0
+            var viableTilesChecked = 0
+            while (true) {          // there are two loop exits later on
+                // merge newTiles into checkedTiles reducing to min(distance) and counting viable ones
+                for (tile in newTiles) {
+                    if (tile.value.viable) viableTilesChecked++
+                    checkedTiles[tile.key] = tile.value
+                }
+                if (++stepCount > 10 || viableTilesChecked >= 18) break
+                // scan neighbors of the now otherwise obsolete 'newTiles'
+                val nextTiles = mutableMapOf<TileInfo,TileCheckResult>()
+                for (tile in newTiles) {
+                    for (neighbor in getPassableNeighbours(tile.key)) {
+                        val distance = tile.value.distance + unit.movement.getMovementCostBetweenAdjacentTiles(tile.key,neighbor,civInfo)
+                        val viable = unit.movement.canMoveTo(neighbor)
+                        val checkedTile = TileCheckResult(distance,viable)
+                        if (checkedTiles.containsKey(neighbor)) {
+                            // not a new tile - check for unlikely cost reduction. viability must be unchanged.
+                            if (distance < checkedTiles[neighbor]!!.distance) checkedTiles[neighbor] = checkedTile
+                            continue
+                        }
+                        // this is a new tile we had not yet reached
+                        nextTiles[neighbor] = checkedTile
+                    }
+                }
+                // did we reach any new tile?
+                if (nextTiles.isEmpty()) break
+                newTiles = nextTiles
+            }
+            // checkedTiles is now out collected knowledge about passable tiles with distance and viablity
+            // remember: passable depends on terrain and base unit properties,
+            // viable depends on the tile not on pathing and means the unit is compatible and there is room
+            if (viableTilesChecked > 0) {
+                unitToPlaceTile = checkedTiles.minBy{ (_,v) -> if (v.viable) v.distance else 99999f }?.key
+            }
+        }
+
+/*
         // try to place at the original point (this is the most probable scenario), then move through passable tiles outwards
         // this is done using a set, initializing it with the given position, testing whether any tile in the set is
         // suitable (unit can move to), and if not expanding the set with all neighbors the unit could pass through, repeat.
@@ -165,6 +219,7 @@ class TileMap {
             if (unitToPlaceTile != null || !isLand || allowEmbark) break
             allowEmbark = true
         }
+*/
 
         if (unitToPlaceTile == null) {
             civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
