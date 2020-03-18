@@ -67,14 +67,14 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         categoryToEntries["Terrains"] = ruleset.terrains.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset)) }
         categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset,false),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
         categoryToEntries["Units"] = ruleset.units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name)) }
         categoryToEntries["Nations"] = ruleset.nations.values
                 .filter { it.isMajorCiv() }
-                .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset),
+                .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset,false),
                         ImageGetter.getNationIndicator(it,50f)) }
         categoryToEntries["Technologies"] = ruleset.technologies.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),

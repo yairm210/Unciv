@@ -67,10 +67,10 @@ class Nation : INamed {
 
 
 
-    fun getUniqueString(ruleset: Ruleset): String {
+    fun getUniqueString(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val textList = ArrayList<String>()
 
-        if (leaderName.isNotEmpty()){
+        if (leaderName.isNotEmpty() && !forPickerScreen){
             textList += getLeaderDisplayName().tr()
             textList += ""
         }

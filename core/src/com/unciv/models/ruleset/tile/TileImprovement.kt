@@ -30,10 +30,10 @@ class TileImprovement : NamedStats() {
         return realTurnsToBuild.roundToInt()
     }
 
-    fun getDescription(ruleset: Ruleset): String {
+    fun getDescription(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val stringBuilder = StringBuilder()
         if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
-        if (uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
+        if (uniqueTo!=null && !forPickerScreen) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeBuiltOn) {
