@@ -371,6 +371,7 @@ class MapUnit {
                         && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
                     tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                    if (tile.resource!=null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if(tile.improvementInProgress=="Remove Road" || tile.improvementInProgress=="Remove Railroad")
                     tile.roadStatus = RoadStatus.None
@@ -378,7 +379,10 @@ class MapUnit {
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
-            else -> tile.improvement = tile.improvementInProgress
+            else -> {
+                tile.improvement = tile.improvementInProgress
+                if (tile.resource!=null) civInfo.updateDetailedCivResources()
+            }
         }
         tile.improvementInProgress = null
     }
