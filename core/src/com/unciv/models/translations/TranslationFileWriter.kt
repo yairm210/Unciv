@@ -23,10 +23,12 @@ object TranslationFileWriter {
         val templateFile = Gdx.files.internal(templateFileLocation)
         val linesFromTemplates = mutableListOf<String>()
         linesFromTemplates.addAll(templateFile.reader().readLines())
-        linesFromTemplates.add("\n#################### Lines from Nations.json ####################\n")
-        linesFromTemplates.addAll(generateNationsStrings())
-        linesFromTemplates.add("\n#################### Lines from Tutorials.json ####################\n")
-        linesFromTemplates.addAll(generateTutorialsStrings())
+
+        generateStringsFromJSONs()
+        for (key in generatedStrings.keys) {
+            linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
+            linesFromTemplates.addAll(generatedStrings.getValue(key))
+        }
 
         val stringBuilder = StringBuilder()
         for(line in linesFromTemplates){
@@ -70,40 +72,20 @@ object TranslationFileWriter {
         Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(),false)
     }
 
-    fun generateNationsStrings(): Collection<String> {
+    private fun generateTutorialsStrings(): Collection<String> {
 
-        val nations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations.json")
-        val strings = mutableSetOf<String>() // using set to avoid duplicates
+        if (generatedStrings.containsKey("Tutorials"))
+            return generatedStrings.getValue("Tutorials")
 
-        for (nation in nations) {
-            for (field in nation.javaClass.declaredFields
-                    .filter { it.type == String::class.java || it.type == java.util.ArrayList::class.java }) {
-                field.isAccessible = true
-                val fieldValue = field.get(nation)
-                if (field.name != "startBias" && // skip fields which must not be translated
-                        fieldValue != null && fieldValue != "") {
-
-                    if (fieldValue is ArrayList<*>) {
-                        for (item in fieldValue)
-                            strings.add("$item = ")
-                    } else
-                        strings.add("$fieldValue = ")
-                }
-            }
-        }
-        return strings
-    }
-
-    fun generateTutorialsStrings(): Collection<String> {
-
+        generatedStrings["Tutorials"] = mutableSetOf()
+        val tutorialsStrings = generatedStrings["Tutorials"]
         val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
-        val strings = mutableSetOf<String>() // using set to avoid duplicates
 
         for (tutorial in tutorials) {
             for (str in tutorial.value)
-                if (str != "") strings.add("$str = ")
+                if (str != "") tutorialsStrings!!.add("$str = ")
         }
-        return strings
+        return tutorialsStrings!!
     }
 
     fun getGeneratedStringsSize(): Int {
