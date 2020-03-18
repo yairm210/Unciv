@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
+import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
@@ -486,12 +487,15 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
     private fun getResourcesTable(): Table {
         val resourcesTable=Table().apply { defaults().pad(10f) }
-        val resourceDrilldown = viewingPlayer.detailedCivResources
+        val resourceDrilldown = ResourceSupplyList()
+        resourceDrilldown.add(viewingPlayer.detailedCivResources)
+        for (city in viewingPlayer.cities) resourceDrilldown.add(city.getCityUntappedResources())
 
         // First row of table has all the icons
         resourcesTable.add()
         val resources = resourceDrilldown.map { it.resource }
-                .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
+                .filter { it.resourceType!=ResourceType.Bonus }.distinct()
+                .sortedWith(compareBy({it.resourceType},{it.name}))
 
         var visibleLabel: Label? = null
         for(resource in resources) {
@@ -540,7 +544,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
         resourcesTable.add("Total".toLabel())
         for(resource in resources){
-            val sum = resourceDrilldown.filter { it.resource==resource }.sumBy { it.amount }
+            val sum = resourceDrilldown.filter { it.resource==resource && it.amount > 0 }.sumBy { it.amount }       // negatives used for untapped tiles
             resourcesTable.add(sum.toString().toLabel())
         }
 
