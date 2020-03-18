@@ -139,22 +139,31 @@ class TileMap {
         unit.assignOwner(civInfo, false)
 
         var unitToPlaceTile : TileInfo? = null
-        // try to place at the original point (this is the most probable scenario)
-        val currentTile = get(position)
-        if (unit.movement.canMoveTo(currentTile)) unitToPlaceTile = currentTile
-
-        // if it's not suitable, try to find another tile nearby
-        if (unitToPlaceTile == null) {
+        // try to place at the original point (this is the most probable scenario), then move through passable tiles outwards
+        // this is done using a set, initializing it with the given position, testing whether any tile in the set is
+        // suitable (unit can move to), and if not expanding the set with all neighbors the unit could pass through, repeat.
+        // The loop is potentially done twice for land units, the first time allowing only land tiles
+        // and if this fails a second pass allows embarkment
+        val potentialCandidates = mutableSetOf<TileInfo>()
+        val isLand = unit.baseUnit.unitType.isLandUnit()
+        var allowEmbark = unit.baseUnit.unitType.isWaterUnit()
+        val isOther = !(isLand || allowEmbark)      // air and ..? to be safe, no domain check
+        while (true){
+            potentialCandidates.clear()
+            potentialCandidates.add(get(position))
             var tryCount = 0
-            var potentialCandidates = getPassableNeighbours(currentTile)
-            while (unitToPlaceTile == null && tryCount++ < 10) {
-                unitToPlaceTile = potentialCandidates.firstOrNull { unit.movement.canMoveTo(it) }
-                if (unitToPlaceTile != null) continue
-                // if it's not found yet, let's check their neighbours
+            while (tryCount++ < 10) {
+                unitToPlaceTile = potentialCandidates.firstOrNull { (potentialCandidates.size==1 || isLand && it.isLand || allowEmbark && it.isWater || isOther) && unit.movement.canMoveTo(it) }
+                if (unitToPlaceTile != null) break
+                // if it's not suitable, try to find another tile nearby
                 val newPotentialCandidates = mutableSetOf<TileInfo>()
                 potentialCandidates.forEach { newPotentialCandidates.addAll(getPassableNeighbours(it)) }
-                potentialCandidates = newPotentialCandidates
+                newPotentialCandidates.subtract(potentialCandidates)
+                if (newPotentialCandidates.size==0) break  // abort search if no new tiles found
+                potentialCandidates.addAll(newPotentialCandidates)
             }
+            if (unitToPlaceTile != null || !isLand || allowEmbark) break
+            allowEmbark = true
         }
 
         if (unitToPlaceTile == null) {
