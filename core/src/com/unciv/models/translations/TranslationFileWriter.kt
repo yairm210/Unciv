@@ -1,13 +1,22 @@
-package com.unciv.models.translations
+﻿package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
-import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.*
+import com.unciv.models.ruleset.tech.TechColumn
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TileImprovement
+import com.unciv.models.ruleset.tile.TileResource
+import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.stats.NamedStats
+import java.lang.reflect.Field
 
 object TranslationFileWriter {
 
     const val templateFileLocation = "jsons/translations/template.properties"
+    private val generatedStrings = mutableMapOf<String,MutableSet<String>>()
 
     private fun writeByTemplate(language:String, translations: HashMap<String, String>){
 
@@ -95,6 +104,89 @@ object TranslationFileWriter {
                 if (str != "") strings.add("$str = ")
         }
         return strings
+    }
+
+    fun getGeneratedStringsSize(): Int {
+        if (generatedStrings.isEmpty())
+            generateStringsFromJSONs()
+        return generatedStrings.values.sumBy { it.size }
+    }
+
+    private fun generateStringsFromJSONs() {
+
+        if (generatedStrings.isNotEmpty())
+            return // do not regenerate if the strings are ready
+
+        val jsonParser = JsonParser()
+        val folderHandler = Gdx.files.internal("jsons")
+        val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
+        for (jsonFile in listOfJSONFiles)
+        {
+            val filename = jsonFile.nameWithoutExtension()
+            // Tutorials are a bit special
+            if (filename == "Tutorials") {
+                generateTutorialsStrings()
+                continue
+            }
+
+            val javaClass = getJavaClassByName(filename)
+            if (javaClass == this.javaClass)
+                continue // unknown JSON, let's skip it
+
+            val array = jsonParser.getFromJson(javaClass, jsonFile.path())
+
+            generatedStrings[filename] = mutableSetOf()
+            val resultStrings = generatedStrings[filename]
+
+            fun serializeElement(element: Any) {
+                val allFields = (element.javaClass.declaredFields + element.javaClass.fields).
+                                    filter { it.type == String::class.java ||
+                                             it.type == java.util.ArrayList::class.java ||
+                                             it.type == java.util.HashSet::class.java }
+                for (field in allFields) {
+                    field.isAccessible = true
+                    val fieldValue = field.get(element)
+                    if (isFieldTranslatable(field, fieldValue)) { // skip fields which must not be translated
+                        // this field can contain sub-objects, let's serialize them as well
+                        if (fieldValue is java.util.AbstractCollection<*>) {
+                            for (item in fieldValue)
+                                if (item is String) resultStrings!!.add("$item = ") else serializeElement(item!!)
+                        } else
+                            resultStrings!!.add("$fieldValue = ")
+                    }
+                }
+            }
+
+            if (array is kotlin.Array<*>)
+                for (element in array)
+                    serializeElement(element!!) // let's serialize the strings recursively
+        }
+    }
+
+    private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
+        return  fieldValue != null &&
+                fieldValue != "" &&
+                field.name !in setOf("startBias", "requiredTech", "uniqueTo",
+                "aiFreeTechs", "aiFreeUnits", "techRequired", "improvingTech", "promotions",
+                "building", "revealedBy", "attackSound", "requiredResource", "obsoleteTech")
+    }
+
+    private fun getJavaClassByName(name: String): Class<Any> {
+        return when (name) {
+            "Buildings" -> emptyArray<Building>().javaClass
+            "Difficulties" -> emptyArray<Difficulty>().javaClass
+            "GreatPeopleNames" -> this.javaClass // dummy value
+            "Nations" -> emptyArray<Nation>().javaClass
+            "Policies" -> emptyArray<PolicyBranch>().javaClass
+            "Techs" -> emptyArray<TechColumn>().javaClass
+            "Terrains" -> emptyArray<Terrain>().javaClass
+            "TileImprovements" -> emptyArray<TileImprovement>().javaClass
+            "TileResources" -> emptyArray<TileResource>().javaClass
+            "Tutorials" -> this.javaClass // dummy value
+            "UnitPromotions" -> emptyArray<Promotion>().javaClass
+            "Units" -> emptyArray<BaseUnit>().javaClass
+            else -> this.javaClass // dummy value
+        }
     }
 
 }
