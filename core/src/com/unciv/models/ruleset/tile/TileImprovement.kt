@@ -33,6 +33,7 @@ class TileImprovement : NamedStats() {
     fun getDescription(ruleset: Ruleset): String {
         val stringBuilder = StringBuilder()
         if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
+        if (uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeBuiltOn) {
@@ -52,6 +53,9 @@ class TileImprovement : NamedStats() {
         }
 
         if (techRequired != null) stringBuilder.appendln("Required tech: [$techRequired]".tr())
+
+        for(unique in uniques)
+            stringBuilder.appendln (unique.tr())
 
         return stringBuilder.toString()
     }

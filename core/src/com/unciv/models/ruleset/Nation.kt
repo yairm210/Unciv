@@ -70,11 +70,20 @@ class Nation : INamed {
     fun getUniqueString(ruleset: Ruleset): String {
         val textList = ArrayList<String>()
 
-        if (unique != null) {
-            textList += unique!!.description.tr()
+        if (leaderName.isNotEmpty()){
+            textList += getLeaderDisplayName().tr()
             textList += ""
         }
+        if (unique != null) {
+            textList += unique!!.displayName.tr() + ":"
+            textList += "  " + unique!!.description.tr()
 
+            textList += ""
+        }
+        if (startBias.isNotEmpty()) {
+            textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
+            textList += ""
+        }
         addUniqueBuildingsText(textList,ruleset)
         addUniqueUnitsText(textList,ruleset)
         addUniqueImprovementsText(textList,ruleset)
