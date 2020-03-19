@@ -3,9 +3,10 @@ package com.unciv.ui
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.logic.GameSaver
-import com.unciv.logic.GameInfo
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
+import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -115,7 +116,7 @@ class MultiplayerScreen() : PickerScreen() {
     fun addMultiplayerGame(gameId: String?, gameName: String = ""){
         try {
             //since the gameId is a String it can contain anything and has to be checked
-            UUID.fromString(gameId!!.trim())
+            UUID.fromString(IdChecker.checkAndReturnGameUuid(gameId!!))
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Invalid game ID!".tr())

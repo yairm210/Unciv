@@ -9,13 +9,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.Popup
 import java.util.*
 
 class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters: GameParameters): Table() {
@@ -72,8 +72,8 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
             fun onPlayerIdTextUpdated(){
                 try {
-                    val uuid = UUID.fromString(playerIdTextfield.text)
-                    player.playerId = playerIdTextfield.text
+                    UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextfield.text))
+                    player.playerId = playerIdTextfield.text.trim()
                     errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
                 } catch (ex: Exception) {
                     errorLabel.apply { setText("✘");setFontColor(Color.RED) }
