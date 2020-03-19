@@ -1,3 +1,45 @@
+## 3.6.9
+
+By rh-github-2015:
+- Trade offers better sorting with user choice 
+- Resources always stay up-to-date
+- Promotion and health columns in units overview
+
+Preparation for recognizing ID types - by tobo
+
+Translation updates
+
+## 3.6.8
+
+Loads of stuff by Jack Rainy!
+
+- UI improvements
+- Energy saving for music and sound
+- Allow selection of non-buildable items
+- Sort overview resources by name and amount
+- Turn number of trades changes with game speed
+- Filter for the custom maps
+- Ice is impassible for all except submarines
+
+Translation updates
+
+
+## 3.6.7
+
+By Reversi:
+- Fixed city buy/sell exploits
+- Snow, Ice, Atoll & Map Generation
+- Borders made of oriented triangles rather than circles
+
+By Jack Rainy:
+- Major translation changes
+- Minor UI changes
+- Brought specific things more in line with Civ V
+
+Starting locations work again =)
+
+Translation updates
+
 ## 3.6.6
 
 Resolved #2071 - AI will wait 20 turns between proposing research agreements if declined

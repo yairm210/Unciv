@@ -22,6 +22,12 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         mapNameEditor.addListener{ mapEditorScreen.mapName=mapNameEditor.text; true }
         add(mapNameEditor).row()
 
+        val newMapButton = TextButton("New map".tr(),skin)
+        newMapButton.onClick {
+            UncivGame.Current.setScreen(NewMapScreen())
+        }
+        add(newMapButton).row()
+
         val clearCurrentMapButton = TextButton("Clear current map".tr(),skin)
         clearCurrentMapButton.onClick {
             for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values)

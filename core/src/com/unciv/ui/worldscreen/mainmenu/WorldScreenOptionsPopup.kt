@@ -76,6 +76,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
             update()
         }
 
+        innerTable.add("Order trade offers by amount".toLabel())
+        addButton(innerTable, if (settings.orderTradeOffersByAmount) "Yes" else "No") {
+            settings.orderTradeOffersByAmount = !settings.orderTradeOffersByAmount
+            update()
+        }
+
         addLanguageSelectBox(innerTable)
 
         addResolutionSelectBox(innerTable)
@@ -201,7 +207,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
                     UncivGame.Current.settings.save()
-                    UncivGame.Current.music?.volume = 0.4f * musicVolumeSlider.value
+
+                    val music = UncivGame.Current.music
+                    if (music == null) // restart music, if it was off at the app start
+                        thread(name="Music") { UncivGame.Current.startMusic() }
+
+                    music?.volume = 0.4f * musicVolumeSlider.value
                 }
             })
             innerTable.add(musicVolumeSlider).pad(10f).row()

@@ -2,6 +2,7 @@ package com.unciv.ui.tutorials
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Array
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -9,7 +10,7 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.onClick
 
-data class TutorialForRender(val tutorial: Tutorial, val texts: List<String>)
+data class TutorialForRender(val tutorial: Tutorial, val texts: Array<String>)
 
 class TutorialRender(private val screen: CameraStageBaseScreen) {
 
@@ -17,7 +18,7 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
         showDialog(tutorial.tutorial.name, tutorial.texts, closeAction)
     }
 
-    private fun showDialog(tutorialName: String, texts: List<String>, closeAction: () -> Unit) {
+    private fun showDialog(tutorialName: String, texts: Array<String>, closeAction: () -> Unit) {
         val text = texts.firstOrNull()
         if (text == null) {
             closeAction()
@@ -33,7 +34,8 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
             val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)
             button.onClick {
                 tutorialPopup.remove()
-                showDialog(tutorialName, texts - text, closeAction)
+                texts.removeIndex(0)
+                showDialog(tutorialName, texts, closeAction)
             }
             tutorialPopup.add(button).pad(10f)
             tutorialPopup.open()

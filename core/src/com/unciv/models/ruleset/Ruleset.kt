@@ -127,7 +127,7 @@ class Ruleset() {
             }
         }
 
-        val nationsFile = folderHandle.child("Nations/Nations.json")
+        val nationsFile = folderHandle.child("Nations.json")
         if(nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
@@ -155,7 +155,9 @@ object RulesetCache :HashMap<String,Ruleset>(){
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
             }
-            catch (ex:Exception){}
+            catch (ex:Exception){
+                println( "Exception loading " + modFolder.name() + ": " + ex.message )
+            }
         }
     }
 

@@ -147,7 +147,7 @@ class NextTurnAutomation{
                     tradeLogic.currentTrade.theirOffers.add(theirOffer)
                 } else if (ourGold / 2 >= theirValue) {
                     //try to buy tech with money, not spending more than 1/3 of treasury
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, theirValue))
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, theirValue))
                     tradeLogic.currentTrade.theirOffers.add(theirOffer)
                     ourGold -= theirValue
                 }
@@ -322,20 +322,13 @@ class NextTurnAutomation{
                         && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedResearchAgreement) }
                 .sortedByDescending { it.statsForNextTurn.science }
 
-        val duration = when (civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Quick -> 25
-            GameSpeed.Standard -> 30
-            GameSpeed.Epic -> 45
-            GameSpeed.Marathon -> 90
-        }
-
         for (otherCiv in canSignResearchAgreementCiv) {
             // Default setting is 5, this will be changed according to different civ.
             if ((1..10).random() > 5) continue
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             val cost = civInfo.getResearchAgreementCost(otherCiv)
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, cost))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, duration, cost))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.researchAgreement, TradeType.Treaty, cost))
 
             otherCiv.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
         }
@@ -360,8 +353,8 @@ class NextTurnAutomation{
             // pay for peace
             val tradeLogic = TradeLogic(civInfo, enemy)
 
-            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
-            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
 
             if (civInfo.gold > 0) {
                 var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
@@ -369,7 +362,7 @@ class NextTurnAutomation{
                     moneyWeNeedToPay = civInfo.gold
                 }
                 if (moneyWeNeedToPay > 0) {
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, moneyWeNeedToPay))
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, moneyWeNeedToPay))
                 }
             }
 

@@ -62,7 +62,7 @@ class CityInfo {
         this.location = cityLocation
         setTransients()
 
-        val nationCities = civInfo.getTranslatedNation().cities
+        val nationCities = civInfo.nation.cities
         val cityNameIndex = civInfo.citiesCreated % nationCities.size
         val cityName = nationCities[cityNameIndex]
 
@@ -465,8 +465,8 @@ class CityInfo {
             foundingCiv.getDiplomacyManager(conqueringCiv).influence = 90f
             if (foundingCiv.isAtWarWith(conqueringCiv)) {
                 val tradeLogic = TradeLogic(foundingCiv, conqueringCiv)
-                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
-                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+                tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
+                tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
                 tradeLogic.acceptTrade()
             }
         }

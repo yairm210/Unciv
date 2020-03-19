@@ -122,7 +122,7 @@ object UnitActions {
     }
 
     fun getFoundCityAction(unit:MapUnit, tile: TileInfo): UnitAction? {
-        if (!unit.hasUnique("Founds a new city") || unit.isEmbarked()) return null
+        if (!unit.hasUnique("Founds a new city") || tile.isWater) return null
         return UnitAction(
                 type = UnitActionType.FoundCity,
                 uncivSound = UncivSound.Chimes,
@@ -176,6 +176,7 @@ object UnitActions {
                         tile.turnsToImprovement = 2
                     }
                     tile.improvement = null
+                    if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
                     if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
                     unit.healBy(25)
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })

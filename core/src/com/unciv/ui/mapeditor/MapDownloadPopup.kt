@@ -1,33 +1,55 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.ui.saves.Gzip
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.DropBox
 import kotlin.concurrent.thread
 
 class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
-    val contentTable = Table()
+    private val contentTable = Table()
+    private val header = Table()
+    private val listOfMaps = mutableListOf<TextButton>()
+    private val scrollableMapTable = Table()
+    private val loadingLabel = "Loading...".toLabel()
+
     init {
+        add(header).row()
+        add(loadingLabel).row()
         thread(name="LoadMapList") { loadContent() }
         add(contentTable).row()
         addCloseButton()
     }
 
-    fun loadContent() {
+    private fun createHeader() {
+        header.defaults().pad(5f)
+        header.add("Filter:".toLabel())
+        val filter = TextField("", skin)
+        val listener = TextField.TextFieldListener{ textField: TextField, _: Char -> updateList(textField.text) }
+        filter.setTextFieldListener(listener)
+        header.add(filter).row()
+        header.addSeparator().row()
+        pack()
+    }
+
+    private fun updateList(filterText : String) {
+        scrollableMapTable.clear()
+        listOfMaps.forEach { if (it.text.contains(filterText)) scrollableMapTable.add(it).row() }
+        contentTable.pack()
+    }
+
+    private fun loadContent() {
         try {
             val folderList = DropBox().getFolderList("/Maps")
             Gdx.app.postRunnable {
-                val scrollableMapTable = Table().apply { defaults().pad(10f) }
+                scrollableMapTable.apply { defaults().pad(10f) }
                 for (downloadableMap in folderList.entries) {
                     val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
+                    listOfMaps.add(downloadMapButton)
                     downloadMapButton.onClick {
                         thread(name = "MapDownload") { loadMap(downloadableMap) }
                     }
@@ -36,6 +58,10 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
                 contentTable.add(ScrollPane(scrollableMapTable)).height(screen.stage.height * 2 / 3).row()
                 pack()
                 close()
+                // the list is loaded and ready to be shown
+                removeActor(loadingLabel)
+                // create the header with a filter tool
+                createHeader()
                 open()
             }
         } catch (ex: Exception) {
@@ -43,7 +69,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
         }
     }
 
-    fun loadMap(downloadableMap: DropBox.FolderListEntry) {
+    private fun loadMap(downloadableMap: DropBox.FolderListEntry) {
 
         try {
             val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)

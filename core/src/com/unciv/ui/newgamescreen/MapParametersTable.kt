@@ -62,6 +62,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             MapType.pangaea,
             MapType.continents,
             MapType.perlin,
+            MapType.archipelago,
             if (isEmptyMapAllowed) MapType.empty else null
         )
 
@@ -142,19 +143,19 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         }
 
 
-        val averageHeightSlider = Slider(0f,1f,0.01f, false, skin).apply {
+        val elevationExponentSlider = Slider(0.5f,1f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.mountainProbability = this@apply.value
+                    mapParameters.elevationExponent = this@apply.value
                 }
             })
         }
-        averageHeightSlider.value = mapParameters.mountainProbability
+        elevationExponentSlider.value = mapParameters.elevationExponent
         advancedSettingsTable.add("Map Height".toLabel()).left()
-        advancedSettingsTable.add(averageHeightSlider).fillX().row()
+        advancedSettingsTable.add(elevationExponentSlider).fillX().row()
 
 
-        val tempExtremeSlider = Slider(0f,1f,0.01f, false, skin).apply {
+        val tempExtremeSlider = Slider(0.4f,0.8f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     mapParameters.temperatureExtremeness = this@apply.value
@@ -166,7 +167,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add(tempExtremeSlider).fillX().row()
 
 
-        val resourceRichnessSlider = Slider(0f,0.2f,0.01f, false, skin).apply {
+        val resourceRichnessSlider = Slider(0f,0.5f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     mapParameters.resourceRichness = this@apply.value
@@ -177,17 +178,27 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add("Resource richness".toLabel()).left()
         advancedSettingsTable.add(resourceRichnessSlider).fillX().row()
 
-
-        val terrainFeatureRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
+        val vegetationRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.terrainFeatureRichness = this@apply.value
+                    mapParameters.vegetationRichness = this@apply.value
                 }
             })
         }
-        terrainFeatureRichnessSlider.value = mapParameters.terrainFeatureRichness
-        advancedSettingsTable.add("Terrain Features richness".toLabel()).left()
-        advancedSettingsTable.add(terrainFeatureRichnessSlider).fillX().row()
+        vegetationRichnessSlider.value = mapParameters.vegetationRichness
+        advancedSettingsTable.add("Vegetation richness".toLabel()).left()
+        advancedSettingsTable.add(vegetationRichnessSlider).fillX().row()
+
+        val rareFeaturesRichnessSlider = Slider(0f,0.5f,0.01f, false, skin).apply {
+            addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    mapParameters.rareFeaturesRichness = this@apply.value
+                }
+            })
+        }
+        rareFeaturesRichnessSlider.value = mapParameters.rareFeaturesRichness
+        advancedSettingsTable.add("Rare features richness".toLabel()).left()
+        advancedSettingsTable.add(rareFeaturesRichnessSlider).fillX().row()
 
 
         val maxCoastExtensionSlider = Slider(0f,5f,1f, false, skin).apply {
@@ -202,7 +213,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add(maxCoastExtensionSlider).fillX().row()
 
 
-        val tilesPerBiomeAreaSlider = Slider(0f,15f,1f, false, skin).apply {
+        val tilesPerBiomeAreaSlider = Slider(1f,15f,1f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     mapParameters.tilesPerBiomeArea = this@apply.value.toInt()
@@ -214,40 +225,28 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         advancedSettingsTable.add(tilesPerBiomeAreaSlider).fillX().row()
 
 
-        val waterPercentSlider = Slider(0f,1f,0.01f, false, skin).apply {
+        val waterThresholdSlider = Slider(-0.1f,0.1f,0.01f, false, skin).apply {
             addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.waterProbability = this@apply.value
+                    mapParameters.waterThreshold = this@apply.value
                 }
             })
         }
-        waterPercentSlider.value = mapParameters.waterProbability
-        advancedSettingsTable.add("Water percent".toLabel()).left()
-        advancedSettingsTable.add(waterPercentSlider).fillX().row()
-
-
-        val landPercentSlider = Slider(0f,1f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.landProbability = this@apply.value
-                }
-            })
-        }
-        landPercentSlider.value = mapParameters.landProbability
-        advancedSettingsTable.add("Land percent".toLabel()).left()
-        advancedSettingsTable.add(landPercentSlider).fillX().row()
+        waterThresholdSlider.value = mapParameters.waterThreshold
+        advancedSettingsTable.add("Water level".toLabel()).left()
+        advancedSettingsTable.add(waterThresholdSlider).fillX().row()
 
         val resetToDefaultButton = TextButton("Reset to default".tr(), skin)
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
-            averageHeightSlider.value = mapParameters.mountainProbability
+            elevationExponentSlider.value = mapParameters.elevationExponent
             tempExtremeSlider.value = mapParameters.temperatureExtremeness
             resourceRichnessSlider.value = mapParameters.resourceRichness
-            terrainFeatureRichnessSlider.value = mapParameters.terrainFeatureRichness
+            vegetationRichnessSlider.value = mapParameters.vegetationRichness
+            rareFeaturesRichnessSlider.value = mapParameters.rareFeaturesRichness
             maxCoastExtensionSlider.value = mapParameters.maxCoastExtension.toFloat()
             tilesPerBiomeAreaSlider.value = mapParameters.tilesPerBiomeArea.toFloat()
-            waterPercentSlider.value = mapParameters.waterProbability
-            landPercentSlider.value = mapParameters.landProbability
+            waterThresholdSlider.value = mapParameters.waterThreshold
         }
         advancedSettingsTable.add(resetToDefaultButton).colspan(2).row()
     }

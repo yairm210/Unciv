@@ -214,18 +214,17 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(buttonText.toLabel()).expandX().fillX().left()
 
         // no rejection reason means we can build it!
-        if(rejectionReason == "") {
-            pickProductionButton.onClick {
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(construction)
-                cityScreen.selectedTile = null
-                selectedQueueEntry = -2
-                cityScreen.update()
-            }
-        } else {
+        if(rejectionReason != "") {
             pickProductionButton.color = Color.GRAY
             pickProductionButton.row()
             pickProductionButton.add(rejectionReason.toLabel(Color.RED).apply{ setWrap(true)} )
                     .colspan(pickProductionButton.columns).fillX().left().padTop(2f)
+        }
+        pickProductionButton.onClick {
+            cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(construction)
+            cityScreen.selectedTile = null
+            selectedQueueEntry = -2
+            cityScreen.update()
         }
 
         return pickProductionButton
@@ -271,44 +270,49 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return button
     }
 
+
+    fun purchaseConstruction(construction: IConstruction) {
+        val city = cityScreen.city
+        val cityConstructions = city.cityConstructions
+        // We can't trust the isSelectedQueueEntry because that fails when we have the same unit as both the current construction and in the queue,
+        // and then we purchase the unit from the queue - see #2157
+        val constructionIsCurrentConstruction = construction.name==cityConstructions.currentConstruction
+
+        if (!cityConstructions.purchaseConstruction(construction.name)) {
+            Popup(cityScreen).apply {
+                add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
+                addCloseButton()
+                open()
+            }
+            return
+        }
+        if (isSelectedQueueEntry()) {
+            // currentConstruction is removed from the queue by purchaseConstruction
+            // to avoid conflicts with NextTurnAutomation
+            if (!constructionIsCurrentConstruction && cityConstructions.constructionQueue[selectedQueueEntry] == construction.name)
+                cityConstructions.removeFromQueue(selectedQueueEntry)
+            selectedQueueEntry = -2
+            cityScreen.selectedConstruction = null
+        }
+        if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
+        cityScreen.update()
+    }
+
     private fun getBuyButton(construction: IConstruction?): TextButton {
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
         val button = TextButton("", CameraStageBaseScreen.skin)
+
         if (construction == null || !construction.canBePurchased()
                 || !construction.isBuildable(cityConstructions)
                 || !UncivGame.Current.worldScreen.isPlayersTurn
                 || city.isPuppet || city.isInResistance()
                 || !city.canPurchase(construction)
-        )
-        {
+        ) {
             button.setText("Buy".tr())
             button.disable()
         } else {
-
-            fun purchaseConstruction() {
-                if (!cityConstructions.purchaseConstruction(construction.name)) {
-                    Popup(cityScreen).apply {
-                        add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
-                        addCloseButton()
-                        open()
-                    }
-                } else {
-                    if (isSelectedQueueEntry()) {
-                        // currentConstruction is removed from the queue by purchaseConstruction
-                        // to avoid conflicts with NextTurnAutomation
-                        if (!isSelectedCurrentConstruction() && cityConstructions.constructionQueue[selectedQueueEntry] == construction.name)
-                            cityConstructions.removeFromQueue(selectedQueueEntry)
-                        selectedQueueEntry = -2
-                        cityScreen.selectedConstruction = null
-                    }
-                    if (!construction.shouldBeDisplayed(cityConstructions))
-                        cityScreen.selectedConstruction = null
-                    cityScreen.update()
-                }
-            }
-
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
             button.setText("Buy".tr() + " " + constructionGoldCost)
             button.add(ImageGetter.getStatIcon(Stat.Gold.name)).size(20f).padBottom(2f)
@@ -319,12 +323,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
                 val purchasePrompt = "Currently you have [${city.civInfo.gold}] gold.".tr() + "\n\n" +
                         "Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr()
-                YesNoPopup(purchasePrompt, { purchaseConstruction() }, cityScreen, { cityScreen.update() }).open()
+                YesNoPopup(purchasePrompt, { purchaseConstruction(construction) }, cityScreen, { cityScreen.update() }).open()
             }
 
             if (constructionGoldCost > city.civInfo.gold)
                 button.disable()
-
         }
 
         button.labelCell.pad(5f)

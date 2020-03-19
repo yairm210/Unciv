@@ -81,7 +81,7 @@ class UncivGame(
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
-                TranslationFileReader().writeNewTranslationFiles(translations)
+                TranslationFileReader.writeNewTranslationFiles(translations)
             } else {
                 translations.tryReadTranslationForCurrentLanguage()
             }
@@ -96,7 +96,7 @@ class UncivGame(
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
                 autoLoadGame()
-                thread { startMusic() }
+                thread(name="Music") { startMusic() }
                 isInitialized = true
             }
         }
@@ -114,6 +114,7 @@ class UncivGame(
     }
 
     fun startMusic() {
+        if (settings.musicVolume < 0.01) return
 
         val musicFile = Gdx.files.local(musicLocation)
         if (musicFile.exists()) {

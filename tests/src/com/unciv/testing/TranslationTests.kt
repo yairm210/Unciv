@@ -175,12 +175,11 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslatedNationsFilesAreSerializable() {
-        for (file in Gdx.files.internal("jsons/Nations").list()) {
-            jsonParser.getFromJson(emptyArray<Nation>().javaClass, file.path())
-        }
-        Assert.assertTrue("This test will only pass when there is a translation for all promotions",
-                true)
+    fun nationsFileIsSerializable() {
+        val array = jsonParser.getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations.json")
+
+        Assert.assertTrue("This test will only pass when there Nations.json file is serializable",
+                array.isNotEmpty())
     }
 
     /** For every translatable string find its placeholders and check if all translations have them */
@@ -208,7 +207,7 @@ class TranslationTests {
 
     @Test
     fun allTranslationsEndWithASpace() {
-        val templateLines = Gdx.files.internal(TranslationFileReader().templateFileLocation).reader().readLines()
+        val templateLines = Gdx.files.internal(TranslationFileReader.templateFileLocation).reader().readLines()
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {

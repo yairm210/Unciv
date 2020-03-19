@@ -152,6 +152,8 @@ class BaseUnit : INamed, IConstruction {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return false // couldn't place the unit, so there's actually no unit =(
 
+        if(this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
+
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War")) XP += 15
         unit.promotions.XP = XP

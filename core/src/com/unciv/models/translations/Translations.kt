@@ -32,17 +32,16 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
 
-    fun tryReadTranslationForLanguage(language: String){
+    private fun tryReadTranslationForLanguage(language: String){
         val translationStart = System.currentTimeMillis()
 
-        val translationFileName = "jsons/translationsByLanguage/$language.properties"
+        val translationFileName = "jsons/translations/$language.properties"
         if (!Gdx.files.internal(translationFileName).exists()) return
 
         val languageTranslations:HashMap<String,String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
-             languageTranslations = TranslationFileReader()
-                    .read(translationFileName)
+             languageTranslations = TranslationFileReader.read(translationFileName)
         }catch (ex:Exception){
             return
         }
@@ -65,13 +64,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
-    fun getLanguagesWithTranslationFile(): List<String> {
+    private fun getLanguagesWithTranslationFile(): List<String> {
 
         val languages = ArrayList<String>()
         // So apparently the Locales don't work for everyone, which is horrendous
         // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
         try{
-            for(file in Gdx.files.internal("jsons/translationsByLanguage").list())
+            for(file in Gdx.files.internal("jsons/translations").list())
                 languages.add(file.nameWithoutExtension())
         }
         catch (ex:Exception){} // Iterating on internal files will not work when running from a .jar
@@ -90,7 +89,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         return languages.distinct()
                 .filter { it!="Thai" &&
-                        Gdx.files.internal("jsons/translationsByLanguage/$it.properties").exists() }
+                        Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
     fun readAllLanguagesTranslation() {
@@ -111,7 +110,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     fun loadPercentageCompleteOfLanguages(){
         val startTime = System.currentTimeMillis()
 
-        percentCompleteOfLanguages = TranslationFileReader().readLanguagePercentages()
+        percentCompleteOfLanguages = TranslationFileReader.readLanguagePercentages()
 
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
@@ -121,68 +120,25 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val percentComplete = HashMap<String,Int>()
         val translationStart = System.currentTimeMillis()
 
-        var allTranslations = 0
-        Gdx.files.internal("jsons/translationsByLanguage/template.properties")
+        var allTranslations = TranslationFileReader.generateNationsStrings().size
+        allTranslations += TranslationFileReader.generateTutorialsStrings().size
+        Gdx.files.internal(TranslationFileReader.templateFileLocation)
                 .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
 
-        val notTranslatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass,
-                "jsons/Nations/Nations.json")
-
         for(language in getLanguagesWithTranslationFile()){
-            val translationFileName = "jsons/translationsByLanguage/$language.properties"
+            val translationFileName = "jsons/translations/$language.properties"
             var translationsOfThisLanguage=0
             Gdx.files.internal(translationFileName).reader()
                     .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
                         translationsOfThisLanguage+=1 }
 
-            val translatedAndTotal = calculatePercentageForNationsFile(language, notTranslatedNations)
-            translationsOfThisLanguage += translatedAndTotal.first
-
-            percentComplete[language] = translationsOfThisLanguage*100/(allTranslations+translatedAndTotal.second)
+            percentComplete[language] = translationsOfThisLanguage*100/allTranslations
         }
 
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Calculating percentage complete of languages - "+translationFilesTime+"ms")
         return percentComplete
-    }
-
-    private fun calculatePercentageForNationsFile(language: String, originalNations: Array<Nation>): Pair<Int, Int> {
-
-        val translationFileName = "jsons/Nations/Nations_$language.json"
-        val translationFile = Gdx.files.internal(translationFileName)
-        if (!translationFile.exists()) {
-            // calculate how many fields are missing
-            val allTranslatables = Nation::class.java.declaredFields.count {
-                it.type == String::class.java || it.type == ArrayList::class.java}
-            return Pair(0, allTranslatables*originalNations.size)
-        }
-
-        var translationsOfThisLanguage = 0
-        var allTranslations = 0
-
-        val translatedNations = JsonParser().getFromJson(emptyArray<Nation>().javaClass, translationFileName)
-
-        for (nation in originalNations)
-        {
-            val translatedNation = translatedNations.find { it.name == nation.name }
-
-            for (field in nation.javaClass.declaredFields.
-                    filter { it.type == String::class.java || it.type == ArrayList::class.java}) {
-                field.isAccessible = true
-                val originalValue = field.get(nation)
-                if (translatedNation != null && // we could exit *before* this loop, however, we need it here to count not translated fields
-                        (field.name in setOf("name", "startBias") || // skip fields which must not be translated
-                        originalValue == null || originalValue == "" ||
-                        ((originalValue is ArrayList<*>) && originalValue.isEmpty()) ||
-                        originalValue != field.get(translatedNation)))
-                    translationsOfThisLanguage++
-
-                allTranslations++
-            }
-        }
-
-        return Pair(translationsOfThisLanguage, allTranslations)
     }
 
     companion object {
@@ -248,7 +204,6 @@ fun String.tr(): String {
         return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
 
-    val translation = UncivGame.Current.translations
-            .get(this, UncivGame.Current.settings.language) // single word
-    return translation
+    return UncivGame.Current.translations
+            .get(this, UncivGame.Current.settings.language)
 }

@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import kotlin.math.floor
+import kotlin.math.abs
 
 // version 1.1.3
 // From https://rosettacode.org/wiki/Perlin_noise#Kotlin
@@ -47,6 +48,29 @@ object Perlin {
         var total = 0.0
         for (i in 0 until nOctaves) {
             total += amp * noise(x * freq / scale, y * freq / scale, z * freq / scale)
+            max += amp
+            freq *= lacunarity
+            amp *= persistence
+        }
+        return total/max
+    }
+
+    fun ridgedNoise3d(x: Double, y: Double, z: Double,
+                      nOctaves: Int = 3,
+                      persistence: Double = 0.5,
+                      lacunarity: Double = 2.0,
+                      scale: Double = 10.0): Double {
+        var freq = 1.0
+        var amp = 1.0
+        var max = 0.0
+        var total = 0.0
+        for (i in 0 until nOctaves) {
+            var value = noise(
+                    x * freq / scale,
+                    y * freq / scale,
+                    z * freq / scale)
+            value = abs(value)
+            total += amp * value
             max += amp
             freq *= lacunarity
             amp *= persistence

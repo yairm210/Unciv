@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
+import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -49,7 +50,7 @@ class NewGameScreen: PickerScreen(){
             if (newGameParameters.isOnlineMultiplayer) {
                 for (player in newGameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
-                        UUID.fromString(player.playerId)
+                        UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
                     } catch (ex: Exception) {
                         val invalidPlayerIdPopup = Popup(this)
                         invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
