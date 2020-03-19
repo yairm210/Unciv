@@ -143,7 +143,9 @@ class PolicyManager {
         val candidateCities = civInfo.cities
                 .sortedBy { it.turnAcquired }
                 .subList(0, min(4, civInfo.cities.size))
-                .filter { it.id !in legalismState
+                .filter {
+                        !it.isInResistance()
+                        && it.id !in legalismState
                         && it.cityConstructions.hasBuildableCultureBuilding() }
         for (city in candidateCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
