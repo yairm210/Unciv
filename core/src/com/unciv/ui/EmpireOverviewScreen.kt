@@ -544,8 +544,12 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
         resourcesTable.add("Total".toLabel())
         for(resource in resources){
-            val sum = resourceDrilldown.filter { it.resource==resource && it.amount > 0 }.sumBy { it.amount }       // negatives used for untapped tiles
-            resourcesTable.add(sum.toString().toLabel())
+            val resourceOrigins = resourceDrilldown.filter { it.resource==resource }
+            if (resourceOrigins.any { it.origin!="Untapped" }) {
+                val sum = resourceOrigins.filter { it.origin != "Untapped" }.sumBy { it.amount }
+                resourcesTable.add(sum.toString().toLabel())
+            } else
+                resourcesTable.add()
         }
 
         return resourcesTable
