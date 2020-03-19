@@ -70,6 +70,8 @@ class MapUnit {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
         private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
         private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
+        const val BONUS_WHEN_INTERCEPTING = "Bonus when intercepting"
+        const val CHANCE_TO_INTERCEPT_AIR_ATTACKS = " chance to intercept air attacks"
     }
 
     //region pure functions
@@ -631,7 +633,7 @@ class MapUnit {
 
     fun interceptChance():Int{
         val interceptUnique = getUniques()
-                .firstOrNull { it.endsWith(" chance to intercept air attacks") }
+                .firstOrNull { it.endsWith(CHANCE_TO_INTERCEPT_AIR_ATTACKS) }
         if(interceptUnique==null) return 0
         val percent = Regex("\\d+").find(interceptUnique)!!.value.toInt()
         return percent
@@ -658,7 +660,7 @@ class MapUnit {
 
     fun interceptDamagePercentBonus():Int{
         var sum=0
-        for(unique in getUniques().filter { it.startsWith("Bonus when intercepting") }){
+        for(unique in getUniques().filter { it.startsWith(BONUS_WHEN_INTERCEPTING) }){
             val percent = Regex("\\d+").find(unique)!!.value.toInt()
             sum += percent
         }

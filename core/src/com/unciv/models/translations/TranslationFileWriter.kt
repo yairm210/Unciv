@@ -3,6 +3,8 @@
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
+import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
@@ -10,7 +12,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
-import com.unciv.models.stats.NamedStats
+import com.unciv.ui.worldscreen.unit.UnitActions
 import java.lang.reflect.Field
 
 object TranslationFileWriter {
@@ -120,6 +122,29 @@ object TranslationFileWriter {
             generatedStrings[filename] = mutableSetOf()
             val resultStrings = generatedStrings[filename]
 
+            fun submitString(item: Any) {
+                val string = item.toString()
+                // substitute the regex for "Bonus/Penalty vs ..."
+                val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
+                when {
+                    match != null ->
+                        resultStrings!!.add("${match.groupValues[1]} vs [unitType] = ")
+
+                    // substitute the regex for the bonuses, etc.
+                    string.startsWith(MapUnit.BONUS_WHEN_INTERCEPTING)
+                            || string.startsWith(UnitActions.CAN_UNDERTAKE)
+                            || string.endsWith(MapUnit.CHANCE_TO_INTERCEPT_AIR_ATTACKS)
+                            || Regex(BattleDamage.BONUS_AS_ATTACKER).matchEntire(string) != null
+                            || Regex(BattleDamage.HEAL_WHEN_KILL).matchEntire(string) != null ->
+                    {
+                        val updatedString = string.replace("\\[\\d+(?=])]".toRegex(),"[amount]")
+                        resultStrings!!.add("$updatedString = ")
+                    }
+                    else ->
+                        resultStrings!!.add("$string = ")
+                }
+            }
+
             fun serializeElement(element: Any) {
                 val allFields = (element.javaClass.declaredFields + element.javaClass.fields).
                                     filter { it.type == String::class.java ||
@@ -132,9 +157,9 @@ object TranslationFileWriter {
                         // this field can contain sub-objects, let's serialize them as well
                         if (fieldValue is java.util.AbstractCollection<*>) {
                             for (item in fieldValue)
-                                if (item is String) resultStrings!!.add("$item = ") else serializeElement(item!!)
+                                if (item is String) submitString(item) else serializeElement(item!!)
                         } else
-                            resultStrings!!.add("$fieldValue = ")
+                            submitString(fieldValue)
                     }
                 }
             }
