@@ -140,9 +140,10 @@ class PolicyManager {
     }
 
     fun tryAddLegalismBuildings() {
-        val candidateCities = civInfo.cities
+        val foundedCities = civInfo.cities.filter { it.civInfo.civName == it.foundingCiv }
+        val candidateCities = foundedCities
                 .sortedBy { it.turnAcquired }
-                .subList(0, min(4, civInfo.cities.size))
+                .subList(0, min(4, foundedCities.size))
                 .filter {
                         !it.isInResistance()
                         && it.id !in legalismState
