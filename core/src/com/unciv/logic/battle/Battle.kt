@@ -462,6 +462,7 @@ object Battle {
         reduceAttackerMovementPointsAndAttacks(attacker,defender)
         val notificationString = "[" + defendBaseUnit.name + "] withdrew from a [" + attackBaseUnit.name + "]"
         defender.getCivInfo().addNotification(notificationString, toTile.position, Color.GREEN)
+        attacker.getCivInfo().addNotification(notificationString, toTile.position, Color.RED)
         return true
     }
 
