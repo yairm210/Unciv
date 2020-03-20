@@ -149,6 +149,7 @@ object RulesetCache :HashMap<String,Ruleset>(){
         this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
 
         for(modFolder in Gdx.files.local("mods").list()){
+            if (modFolder.name().startsWith('.')) continue
             try{
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"))
