@@ -534,13 +534,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         }
         resourcesTable.addSeparator()
 
-        var showUntappedHelp = false
         val origins = resourceDrilldown.map { it.origin }.distinct()
         for(origin in origins){
             val rowLabel = origin.toLabel()
             if (origin == "Untapped") {
                 rowLabel.onClick { untappedOnClick(null) }
-                showUntappedHelp = true
             }
             resourcesTable.add(rowLabel)
             for(resource in resources){
@@ -570,17 +568,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 resourcesTable.add()
         }
 
-        if (showUntappedHelp && !game.settings.tutorialTasksCompleted.contains("Untapped-Help-Done")) {
-            resourcesTable.row()
-            resourcesTable.add("untapped~click~help".toLabel(Color.RED)).colspan(resources.count() + 1)
-        }
         return resourcesTable
     }
 
     private fun untappedOnClick(selectResource: TileResource?) {
         var newPosition: Vector2? = null
-        // ... maybe not.  viewingPlayer.notifications.removeIf { it.color == Color.BLUE }
-        game.settings.addCompletedTutorialTask("Untapped-Help-Done")
         for (city in viewingPlayer.cities) {
             val pos = city.showCityUntappedResources(selectResource)
             if (newPosition == null && pos != null) newPosition = pos
