@@ -17,7 +17,9 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.collections.HashMap
@@ -180,9 +182,26 @@ class CityInfo {
             if (resource.resourceType==ResourceType.Bonus) continue
             if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (getTileResourceAmount(tileInfo)==0)
-                cityResources.add(resource, -1, "Untapped")
+                cityResources.add(resource, 1, "Untapped")
         }
         return cityResources
+    }
+    fun showCityUntappedResources(selectResource: TileResource?): Vector2? {
+        var firstPos: Vector2? = null
+        for (tileInfo in getTiles().filter { it.resource != null }) {
+            val resource = tileInfo.getTileResource()
+            if (selectResource != null) {   // show specific resource: no need to check type or tech
+                if (selectResource.name != tileInfo.resource) continue
+            } else {        // wildcard for all discovered but untapped resources: need tests
+                if (resource.resourceType == ResourceType.Bonus) continue
+                if (resource.revealedBy != null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
+            }
+            if (getTileResourceAmount(tileInfo)==0) {
+                if (firstPos == null) firstPos = tileInfo.position
+                civInfo.addNotification("[${resource}] revealed near [${name}]", tileInfo.position, Color.BLUE )
+            }
+        }
+        return firstPos
     }
 
     fun getTileResourceAmount(tileInfo: TileInfo): Int {

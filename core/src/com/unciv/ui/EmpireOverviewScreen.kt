@@ -1,6 +1,7 @@
 ﻿package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -15,6 +16,7 @@ import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
@@ -24,6 +26,7 @@ import kotlin.math.*
 class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply {  defaults().pad(20f) }
+    private val resourceDrilldown: ResourceSupplyList
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
@@ -85,6 +88,9 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         }
         topTable.add(setDiplomacyButton)
 
+        resourceDrilldown = ResourceSupplyList()
+        resourceDrilldown.add(viewingPlayer.detailedCivResources)
+        for (city in viewingPlayer.cities) resourceDrilldown.add(city.getCityUntappedResources())
         val setResourcesButton = TextButton("Resources".tr(), skin)
         setResourcesButton.onClick {
             centerTable.clear()
@@ -92,7 +98,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             centerTable.pack()
         }
         topTable.add(setResourcesButton)
-        if (viewingPlayer.detailedCivResources.isEmpty())
+        if (resourceDrilldown.isEmpty())
             setResourcesButton.disable()
 
         topTable.pack()
@@ -487,9 +493,6 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
     private fun getResourcesTable(): Table {
         val resourcesTable=Table().apply { defaults().pad(10f) }
-        val resourceDrilldown = ResourceSupplyList()
-        resourceDrilldown.add(viewingPlayer.detailedCivResources)
-        for (city in viewingPlayer.cities) resourceDrilldown.add(city.getCityUntappedResources())
 
         // First row of table has all the icons
         resourcesTable.add()
@@ -531,13 +534,28 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         }
         resourcesTable.addSeparator()
 
+        var showUntappedHelp = false
         val origins = resourceDrilldown.map { it.origin }.distinct()
         for(origin in origins){
-            resourcesTable.add(origin.toLabel())
+            val rowLabel = origin.toLabel()
+            if (origin == "Untapped") {
+                rowLabel.onClick { untappedOnClick(null) }
+                showUntappedHelp = true
+            }
+            resourcesTable.add(rowLabel)
             for(resource in resources){
                 val resourceSupply = resourceDrilldown.firstOrNull { it.resource==resource && it.origin==origin }
-                if(resourceSupply==null) resourcesTable.add()
-                else resourcesTable.add(resourceSupply.amount.toString().toLabel())
+                when {
+                    resourceSupply==null -> resourcesTable.add()
+                    origin != "Untapped" -> resourcesTable.add( resourceSupply.amount.toString().toLabel() )
+                    else -> {
+                        val resourceLabel = ("(" + resourceSupply.amount.toString() + ")").toLabel(Color.LIGHT_GRAY)
+                        resourceLabel.onClick {
+                            untappedOnClick(resource)
+                        }
+                        resourcesTable.add(resourceLabel)
+                    }
+                }
             }
             resourcesTable.row()
         }
@@ -552,7 +570,25 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 resourcesTable.add()
         }
 
+        if (showUntappedHelp && !game.settings.tutorialTasksCompleted.contains("Untapped-Help-Done")) {
+            resourcesTable.row()
+            resourcesTable.add("untapped~click~help".toLabel(Color.RED)).colspan(resources.count() + 1)
+        }
         return resourcesTable
+    }
+
+    private fun untappedOnClick(selectResource: TileResource?) {
+        var newPosition: Vector2? = null
+        // ... maybe not.  viewingPlayer.notifications.removeIf { it.color == Color.BLUE }
+        game.settings.addCompletedTutorialTask("Untapped-Help-Done")
+        for (city in viewingPlayer.cities) {
+            val pos = city.showCityUntappedResources(selectResource)
+            if (newPosition == null && pos != null) newPosition = pos
+        }
+        if (newPosition!= null) {
+            UncivGame.Current.setWorldScreen()
+            UncivGame.Current.worldScreen.mapHolder.setCenterPosition(newPosition)
+        }
     }
 
     companion object {
