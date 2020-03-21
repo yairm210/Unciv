@@ -347,7 +347,7 @@ object UnitActions {
                         unit.getTile().improvementInProgress = null
                         unit.getTile().turnsToImprovement = 0
                         unit.destroy()
-                    }.takeIf { unit.currentMovement > 0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().unbuildable })
+                    }.takeIf { unit.currentMovement > 0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().impassable })
         }
         return null
     }
