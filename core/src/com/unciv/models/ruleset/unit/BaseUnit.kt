@@ -71,8 +71,11 @@ class BaseUnit : INamed, IConstruction {
         for(unique in uniques)
             sb.appendln(Translations.translateBonusOrPenalty(unique))
 
-        for(promotion in promotions)
-            sb.appendln(promotion.tr())
+        if (promotions.isNotEmpty()) {
+            sb.append((if (promotions.size==1) "Free promotion:" else "Free promotions:").tr())
+            for (promotion in promotions)
+                sb.appendln(" " + promotion.tr())
+        }
 
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
