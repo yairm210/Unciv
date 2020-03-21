@@ -44,6 +44,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             return
         }
 
+        // try to load the translations from the mods
+        for(modFolder in Gdx.files.local("mods").list()) {
+            val modTranslationFile = modFolder.child(translationFileName)
+            if (modTranslationFile.exists())
+                languageTranslations.putAll(TranslationFileReader.read(modTranslationFile.path()))
+        }
+
         for (translation in languageTranslations) {
             if (!containsKey(translation.key))
                 this[translation.key] = TranslationEntry(translation.key)
