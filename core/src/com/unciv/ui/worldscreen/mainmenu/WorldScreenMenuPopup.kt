@@ -174,6 +174,11 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
             close()
         }
 
+        addButton("Reddit"){
+            Gdx.net.openURI("https://www.reddit.com/r/Unciv/")
+            close()
+        }
+
         addCloseButton()
     }
 }

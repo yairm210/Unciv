@@ -14,7 +14,7 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileReader
+import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.*
@@ -81,7 +81,7 @@ class UncivGame(
 
             if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
                 translations.readAllLanguagesTranslation()
-                TranslationFileReader.writeNewTranslationFiles(translations)
+                TranslationFileWriter.writeNewTranslationFiles(translations)
             } else {
                 translations.tryReadTranslationForCurrentLanguage()
             }
