@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.VictoryType
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -34,7 +35,7 @@ class PolicyManager {
     }
 
     fun startTurn() {
-        if (isAdopted("Legalism") && legalismState.size < 4)
+        if (isAdopted("Legalism"))
             tryAddLegalismBuildings()
     }
 
@@ -140,15 +141,19 @@ class PolicyManager {
     }
 
     fun tryAddLegalismBuildings() {
-        val foundedCities = civInfo.cities.filter { it.civInfo.civName == it.foundingCiv }
-        val candidateCities = foundedCities
+        val maxBuildings = 4        // single place should we wish to make rule details part of the loadable ruleset
+        if (legalismState.size >= maxBuildings) return
+        // Two filters: Cities failing the tests in the first allow a later city to be considered instead
+        // Failure of the test(s) in the second cause the city to 'reserve' a slot but delay the benefit until those conditions are met.
+        val candidateCities = civInfo.cities
+                .filter { it.id !in legalismState
+                            && !it.isPuppet
+                            && !it.isInResistance() }
+        val benefitCities = candidateCities
                 .sortedBy { it.turnAcquired }
-                .subList(0, min(4, foundedCities.size))
-                .filter {
-                        !it.isInResistance()
-                        && it.id !in legalismState
-                        && it.cityConstructions.hasBuildableCultureBuilding() }
-        for (city in candidateCities) {
+                .subList(0, min(maxBuildings - legalismState.size, candidateCities.size))
+                .filter { it.cityConstructions.hasBuildableCultureBuilding() }
+        for (city in benefitCities) {
             val builtBuilding = city.cityConstructions.addCultureBuilding()
             legalismState[city.id] = builtBuilding!!
         }

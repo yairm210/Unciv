@@ -362,6 +362,8 @@ class CityInfo {
     fun annexCity() {
         isPuppet = false
         cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
+        if (civInfo.policies.isAdopted("Legalism"))
+            civInfo.policies.tryAddLegalismBuildings()
         cityStats.update()
         UncivGame.Current.worldScreen.shouldUpdate = true
     }
