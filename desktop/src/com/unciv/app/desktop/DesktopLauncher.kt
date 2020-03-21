@@ -61,7 +61,7 @@ internal object DesktopLauncher {
         val modDirectory = File("mods")
         if(modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!){
-                if (File(mod.path + "/Images").exists())
+                if (!mod.isHidden && File(mod.path + "/Images").exists())
                     TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
             }
         }
