@@ -92,7 +92,7 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction // See below
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot != "") {
-            val construction = SpecialConstruction.specialConstructionsMap[currentConstructionSnapshot]
+            val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
             if (construction == null) {
                 val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
                 result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
@@ -110,7 +110,7 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
-                && !SpecialConstruction.specialConstructionsMap.containsKey(currentConstructionSnapshot)) {
+                && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
             result += ConstructionInfoTable.turnOrTurns(turnsLeft)
         }
@@ -152,7 +152,7 @@ class CityConstructions {
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
             constructionName=="" -> return getConstruction("Nothing")
             else -> {
-                val special = SpecialConstruction.specialConstructionsMap[constructionName]
+                val special = PerpetualConstruction.perpetualConstructionsMap[constructionName]
                 if(special!=null) return special
             }
         }
@@ -174,7 +174,7 @@ class CityConstructions {
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
         val constr = getConstruction(constructionName)
         return when {
-            constr is SpecialConstruction -> 0
+            constr is PerpetualConstruction -> 0
             useStoredProduction -> constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
             else -> constr.getProductionCost(cityInfo.civInfo)
         }
@@ -222,7 +222,7 @@ class CityConstructions {
         stopUnbuildableConstruction()
 
         val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        if(construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstruction)
@@ -237,7 +237,7 @@ class CityConstructions {
         stopUnbuildableConstruction()
         validateConstructionQueue()
 
-        if(getConstruction(currentConstruction) !is SpecialConstruction)
+        if(getConstruction(currentConstruction) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
     }
 
