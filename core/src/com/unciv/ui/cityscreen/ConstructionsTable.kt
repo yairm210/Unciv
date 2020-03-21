@@ -306,7 +306,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (construction == null || !construction.canBePurchased()
                 || !construction.isBuildable(cityConstructions)
                 || !UncivGame.Current.worldScreen.isPlayersTurn
-                || city.isPuppet || city.isInResistance()) {
+                || city.isPuppet || city.isInResistance()
+                || !city.canPurchase(construction)
+        ) {
             button.setText("Buy".tr())
             button.disable()
         } else {

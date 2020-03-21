@@ -80,7 +80,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getTechIconGroup(it.name,50f)) }
         categoryToEntries["Promotions"] = ruleset.unitPromotions.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.unitPromotions.values, true),
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset.unitPromotions.values, true, ruleset),
                         Table().apply { add(ImageGetter.getPromotionIcon(it.name)) }) }
 
         categoryToEntries["Tutorials"] = tutorialController.getCivilopediaTutorials()

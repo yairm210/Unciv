@@ -253,7 +253,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val isAirUnit = unit.type.isAirUnit()
         val tilesInMoveRange =
                 if (isAirUnit)
-                    unit.getTile().getTilesInDistance(unit.getRange())
+                    unit.getTile().getTilesInDistance(unit.getRange()*2)
                 else
                     unit.movement.getDistanceToTiles().keys.asSequence()
 
