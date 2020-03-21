@@ -51,6 +51,8 @@ class Nation : INamed {
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false
+    // Same for Inca unique
+    @Transient var greatAndeanRoad = false
 
     fun setTransients(){
         outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
@@ -60,6 +62,8 @@ class Nation : INamed {
 
         if(unique == UniqueAbility.GREAT_WARPATH)
             forestsAndJunglesAreRoads = true
+        if(unique == UniqueAbility.GREAT_ANDEAN_ROAD)
+            greatAndeanRoad = true
     }
 
     lateinit var cities: ArrayList<String>

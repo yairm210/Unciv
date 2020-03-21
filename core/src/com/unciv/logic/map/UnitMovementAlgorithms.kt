@@ -30,6 +30,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (unit.doubleMovementInForestAndJungle && (to.baseTerrain == Constants.forest || to.baseTerrain == Constants.jungle))
             return 1f + extraCost
+        if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
+            return 1f + extraCost
 
         if (unit.roughTerrainPenalty
                 && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
