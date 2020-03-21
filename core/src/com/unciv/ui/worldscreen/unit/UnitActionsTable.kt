@@ -62,7 +62,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         if (unit == null) return
         if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
         for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
-            add(button).colspan(2).padBottom(2f).row()
+            add(button).left().padBottom(2f).row()
         pack()
     }
 
