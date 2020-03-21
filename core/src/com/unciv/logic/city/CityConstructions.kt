@@ -312,7 +312,7 @@ class CityConstructions {
     }
 
     fun purchaseConstruction(constructionName: String): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this))
+        if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)

@@ -151,7 +151,7 @@ class BaseUnit : INamed, IConstruction {
         return getRejectionReason(construction) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return false // couldn't place the unit, so there's actually no unit =(
 
@@ -164,6 +164,10 @@ class BaseUnit : INamed, IConstruction {
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
+
+        //movement penalty
+        if(!unit.hasUnique("Can move directly once bought") && wasBought)
+            unit.currentMovement = 0f
 
         return true
     }

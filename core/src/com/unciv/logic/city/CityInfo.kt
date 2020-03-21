@@ -17,6 +17,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -581,6 +582,19 @@ class CityInfo {
                 .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for(otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
+    }
+
+    fun canPurchase(construction : IConstruction) : Boolean {
+        if (construction is BaseUnit)
+        {
+            val tile = getCenterTile()
+            if (construction.unitType.isCivilian())
+                return tile.civilianUnit == null
+            if (construction.unitType.isAirUnit())
+                return tile.airUnits.filter { !it.isTransported }.size < 6
+            else return tile.militaryUnit == null
+        }
+        return true
     }
     //endregion
 }
