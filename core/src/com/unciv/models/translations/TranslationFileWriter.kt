@@ -17,6 +17,7 @@ import java.lang.reflect.Field
 
 object TranslationFileWriter {
 
+    private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
     private val generatedStrings = mutableMapOf<String,MutableSet<String>>()
 
@@ -34,8 +35,12 @@ object TranslationFileWriter {
 
         val stringBuilder = StringBuilder()
         for(line in linesFromTemplates){
-            if(!line.contains(" = ")){ // copy as-is
-                stringBuilder.appendln(line)
+            if(!line.contains(" = ")){
+                // small hack to insert empty lines
+                if (line.startsWith(specialNewLineCode))
+                    stringBuilder.appendln()
+                else // copy as-is
+                    stringBuilder.appendln(line)
                 continue
             }
             val translationKey = line.split(" = ")[0].replace("\\n","\n")
@@ -83,9 +88,12 @@ object TranslationFileWriter {
         val tutorialsStrings = generatedStrings["Tutorials"]
         val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
+        var uniqueIndexOfNewLine = 0
         for (tutorial in tutorials) {
             for (str in tutorial.value)
                 if (str != "") tutorialsStrings!!.add("$str = ")
+            // This is a small hack to insert multiple /n into the set, which can't contain identical lines
+            tutorialsStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
         }
         return tutorialsStrings!!
     }
@@ -93,7 +101,8 @@ object TranslationFileWriter {
     fun getGeneratedStringsSize(): Int {
         if (generatedStrings.isEmpty())
             generateStringsFromJSONs()
-        return generatedStrings.values.sumBy { it.size }
+        return generatedStrings.values.sumBy { // exclude empty lines
+            it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
     }
 
     private fun generateStringsFromJSONs() {
@@ -101,6 +110,7 @@ object TranslationFileWriter {
         if (generatedStrings.isNotEmpty())
             return // do not regenerate if the strings are ready
 
+        var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
         val folderHandler = Gdx.files.internal("jsons")
         val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
@@ -165,8 +175,11 @@ object TranslationFileWriter {
             }
 
             if (array is kotlin.Array<*>)
-                for (element in array)
+                for (element in array) {
                     serializeElement(element!!) // let's serialize the strings recursively
+                    // This is a small hack to insert multiple /n into the set, which can't contain identical lines
+                    resultStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                }
         }
     }
 
