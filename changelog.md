@@ -10,6 +10,8 @@ By rh-github-2015:
 
 Unit purchasing limits - by EdinCitaku
 
+Unit Action buttons stick to the left
+
 Translation updates
 
 ## 3.6.9
