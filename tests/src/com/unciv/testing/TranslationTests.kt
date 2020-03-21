@@ -2,9 +2,7 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
-import com.unciv.JsonParser
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
@@ -19,7 +17,6 @@ import java.util.*
 class TranslationTests {
     private var translations = Translations()
     private var ruleset = Ruleset()
-    private val jsonParser = JsonParser()
 
     @Before
     fun loadTranslations() {
@@ -174,11 +171,12 @@ class TranslationTests {
     }
 
     @Test
-    fun nationsFileIsSerializable() {
-        val array = jsonParser.getFromJson(emptyArray<Nation>().javaClass, "jsons/Nations.json")
+    fun translationsFromJSONsCanBeGenerated() {
+        // it triggers generation of the translation's strings
+        val stringsSize = TranslationFileWriter.getGeneratedStringsSize()
 
-        Assert.assertTrue("This test will only pass when there Nations.json file is serializable",
-                array.isNotEmpty())
+        Assert.assertTrue("This test will only pass when all .json files are serializable",
+                stringsSize > 0)
     }
 
     /** For every translatable string find its placeholders and check if all translations have them */
