@@ -138,7 +138,7 @@ object Battle {
         if (defender.isDefeated()
                 && defender is MapUnitCombatant
                 && attacker is MapUnitCombatant) {
-            val regex = Regex("""Heals \[(\d*)\] damage if it kills a unit""")
+            val regex = Regex(BattleDamage.HEAL_WHEN_KILL)
             for (unique in attacker.unit.getUniques()) {
                 val match = regex.matchEntire(unique)
                 if (match == null) continue

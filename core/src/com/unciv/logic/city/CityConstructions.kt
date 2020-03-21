@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable
@@ -262,6 +263,23 @@ class CityConstructions {
             if (getConstruction(construction).isBuildable(this))
                 constructionQueue.add(construction)
         }
+        // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
+        // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
+        val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstruction }
+        for (constructionName in inProgressSnapshot) {
+            val rejectionReason:String =
+                    when (val construction = getConstruction(constructionName)) {
+                        is Building -> construction.getRejectionReason(this)
+                        is BaseUnit -> construction.getRejectionReason(this)
+                        else -> ""
+                    }
+            if (!(  rejectionReason.endsWith("lready built")
+                            || rejectionReason.startsWith("Cannot be built with")
+                            || rejectionReason.startsWith("Don't need to build any more")
+                            || rejectionReason.startsWith("Obsolete")
+                            )) continue
+            inProgressConstructions.remove(constructionName)
+        }
     }
 
     private fun constructionComplete(construction: IConstruction) {
@@ -294,7 +312,7 @@ class CityConstructions {
     }
 
     fun purchaseConstruction(constructionName: String): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this))
+        if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)

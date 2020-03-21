@@ -338,7 +338,7 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {

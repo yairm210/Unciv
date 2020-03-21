@@ -20,6 +20,8 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 object UnitActions {
 
+    const val CAN_UNDERTAKE = "Can undertake"
+
     fun getUnitActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
         val unitTable = worldScreen.bottomUnitTable
@@ -176,6 +178,7 @@ object UnitActions {
                         tile.turnsToImprovement = 2
                     }
                     tile.improvement = null
+                    if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
                     if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
                     unit.healBy(25)
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
@@ -320,7 +323,7 @@ object UnitActions {
                         if (unit.civInfo.policies.isAdopted("Commerce Complete"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
-                        val relevantUnique = unit.getUniques().first { it.startsWith("Can undertake") }
+                        val relevantUnique = unit.getUniques().first { it.startsWith(CAN_UNDERTAKE) }
                         val influenceEarned = Regex("\\d+").find(relevantUnique)!!.value.toInt()
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned.toInt()}] gold and [$influenceEarned] influence!", null, Color.GOLD)

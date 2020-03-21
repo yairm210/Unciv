@@ -1,3 +1,14 @@
+## 3.6.9
+
+By rh-github-2015:
+- Trade offers better sorting with user choice 
+- Resources always stay up-to-date
+- Promotion and health columns in units overview
+
+Preparation for recognizing ID types - by tobo
+
+Translation updates
+
 ## 3.6.8
 
 Loads of stuff by Jack Rainy!
