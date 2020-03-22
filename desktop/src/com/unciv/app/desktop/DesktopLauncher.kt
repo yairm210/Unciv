@@ -61,7 +61,8 @@ internal object DesktopLauncher {
         val modDirectory = File("mods")
         if(modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!){
-                TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
+                if (!mod.isHidden && File(mod.path + "/Images").exists())
+                    TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
             }
         }
 
@@ -97,6 +98,6 @@ internal object DesktopLauncher {
         presence.details=currentPlayerCiv.nation.getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
         presence.largeImageText ="Turn".tr()+" " + currentPlayerCiv.gameInfo.turns
-        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
+        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }
