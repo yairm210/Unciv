@@ -139,7 +139,7 @@ class BaseUnit : INamed, IConstruction {
                 && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
         if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""

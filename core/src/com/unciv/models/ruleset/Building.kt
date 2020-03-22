@@ -81,7 +81,7 @@ class Building : NamedStats(), IConstruction{
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         if(requiredResource!=null)
-            stringBuilder.appendln("Requires [$requiredResource]".tr())
+            stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
@@ -309,7 +309,7 @@ class Building : NamedStats(), IConstruction{
             return "Cannot be built with $cannotBeBuiltWith"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return "Requires [$requiredResource]"
+            return "Consumes 1 [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
