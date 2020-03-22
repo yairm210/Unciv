@@ -233,7 +233,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
             ImageGetter.setTextureRegionDrawables()
         }
 
-        add("{Mods}:".tr()).colspan(2).row()
+        add("{Mods}:".tr().toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
         val modCheckboxTable = Table().apply { defaults().pad(5f) }
         for(mod in modRulesets){
             val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
