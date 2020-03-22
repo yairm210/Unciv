@@ -3,6 +3,7 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -93,7 +94,7 @@ class Ruleset() {
             for (building in buildings.values) {
                 if (building.cost == 0) {
                     val column = technologies[building.requiredTech]?.column
-                            ?: throw Exception("Building (${building.name}) must either have an explicit cost or a required tech in the same mod")
+                            ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or a required tech in the same mod")
                     building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
                 }
             }
