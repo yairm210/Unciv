@@ -22,6 +22,7 @@ class TileResource : NamedStats() {
 
     fun getDescription(): String {
         val stringBuilder = StringBuilder()
+        stringBuilder.appendln(resourceType.name.tr())
         stringBuilder.appendln(this.clone().toString())
         val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
         terrainsCanBeBuiltOnString.addAll(terrainsCanBeFoundOn.map { it.tr() })

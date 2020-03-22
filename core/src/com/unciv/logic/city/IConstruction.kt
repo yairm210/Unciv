@@ -10,13 +10,13 @@ interface IConstruction : INamed {
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(construction: CityConstructions): Boolean
     fun shouldBeDisplayed(construction: CityConstructions): Boolean
-    fun postBuildEvent(construction: CityConstructions): Boolean  // Yes I'm hilarious.
+    fun postBuildEvent(construction: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun canBePurchased(): Boolean
 }
 
 
 
-open class SpecialConstruction(override var name: String, val description: String) : IConstruction{
+open class PerpetualConstruction(override var name: String, val description: String) : IConstruction{
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         return isBuildable(construction)
     }
@@ -25,23 +25,23 @@ open class SpecialConstruction(override var name: String, val description: Strin
 
     companion object {
         const val CONVERSION_RATE: Int = 4
-        val science = object : SpecialConstruction("Science", "Convert production to science at a rate of $CONVERSION_RATE to 1") {
+        val science = object : PerpetualConstruction("Science", "Convert production to science at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(construction: CityConstructions): Boolean {
                 return construction.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to science")
             }
         }
-        val gold = object : SpecialConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
+        val gold = object : PerpetualConstruction("Gold", "Convert production to gold at a rate of $CONVERSION_RATE to 1") {
             override fun isBuildable(construction: CityConstructions): Boolean {
                 return construction.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to gold")
             }
         }
-        val idle = object : SpecialConstruction("Nothing", "The city will not produce anything.") {
+        val idle = object : PerpetualConstruction("Nothing", "The city will not produce anything.") {
             override fun isBuildable(construction: CityConstructions): Boolean = true
 
             override fun getProductionTooltip(cityInfo: CityInfo): String = ""
         }
 
-        val specialConstructionsMap: Map<String, SpecialConstruction>
+        val perpetualConstructionsMap: Map<String, PerpetualConstruction>
                 = mapOf(science.name to science, gold.name to gold, idle.name to idle)
     }
 
@@ -61,7 +61,7 @@ open class SpecialConstruction(override var name: String, val description: Strin
         throw Exception("Impossible!")
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         throw Exception("Impossible!")
     }
 

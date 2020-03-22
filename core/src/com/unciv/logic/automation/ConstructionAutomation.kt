@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.SpecialConstruction
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Building
@@ -50,7 +50,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         if (!UncivGame.Current.settings.autoAssignCityProduction
                 && civInfo.playerType== PlayerType.Human && !cityInfo.isPuppet)
             return
-        if (cityConstructions.getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
+        if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
         addFoodBuildingChoice()
         addProductionBuildingChoice()
@@ -75,9 +75,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val theChosenOne: String
         if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
             // add science!
-            if (SpecialConstruction.science.isBuildable(cityConstructions))
+            if (PerpetualConstruction.science.isBuildable(cityConstructions))
                 theChosenOne = "Science"
-            else if (SpecialConstruction.gold.isBuildable(cityConstructions))
+            else if (PerpetualConstruction.gold.isBuildable(cityConstructions))
                 theChosenOne = "Gold"
             else theChosenOne = "Nothing"
         } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {

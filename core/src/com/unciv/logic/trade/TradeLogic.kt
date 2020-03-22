@@ -17,7 +17,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
         val offers = TradeOffersList()
         if (civInfo.isCityState() && otherCivilization.isCityState()) return offers
-        if(civInfo.isAtWarWith(otherCivilization))
+        if (civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty))
 
         if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
@@ -65,7 +65,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             val civsWeBothKnow = otherCivsWeKnow
                     .filter { otherCivilization.diplomacy.containsKey(it.civName) }
             val civsWeArentAtWarWith = civsWeBothKnow
-                    .filter { civInfo.getDiplomacyManager(it).diplomaticStatus == DiplomaticStatus.Peace }
+                    .filter { civInfo.getDiplomacyManager(it).canDeclareWar() }
             for (thirdCiv in civsWeArentAtWarWith) {
                 offers.add(TradeOffer(thirdCiv.civName, TradeType.WarDeclaration))
             }
