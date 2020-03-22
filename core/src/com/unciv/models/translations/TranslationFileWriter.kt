@@ -20,8 +20,9 @@ object TranslationFileWriter {
     private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
     private val generatedStrings = mutableMapOf<String,MutableSet<String>>()
+    private lateinit var translations: Translations
 
-    private fun writeByTemplate(language:String, translations: HashMap<String, String>){
+    private fun writeByTemplate() {
 
         val templateFile = Gdx.files.internal(templateFileLocation)
         val linesFromTemplates = mutableListOf<String>()
@@ -33,44 +34,43 @@ object TranslationFileWriter {
             linesFromTemplates.addAll(generatedStrings.getValue(key))
         }
 
-        val stringBuilder = StringBuilder()
-        for(line in linesFromTemplates){
-            if(!line.contains(" = ")){
-                // small hack to insert empty lines
-                if (line.startsWith(specialNewLineCode))
-                    stringBuilder.appendln()
-                else // copy as-is
-                    stringBuilder.appendln(line)
-                continue
-            }
-            val translationKey = line.split(" = ")[0].replace("\\n","\n")
-            var translationValue = ""
-            if(translations.containsKey(translationKey)) translationValue = translations[translationKey]!!
-            else stringBuilder.appendln(" # Requires translation!")
-            val lineToWrite = translationKey.replace("\n","\\n") +
-                    " = "+ translationValue.replace("\n","\\n")
-            stringBuilder.appendln(lineToWrite)
-        }
-        Gdx.files.local("jsons/translations/$language.properties")
-                .writeString(stringBuilder.toString(),false, TranslationFileReader.charset)
-    }
-
-
-    fun writeNewTranslationFiles(translations: Translations) {
-
         for (language in translations.getLanguages()) {
-            val languageHashmap = HashMap<String, String>()
+            val stringBuilder = StringBuilder()
 
-            for (translation in translations.values) {
-                if (translation.containsKey(language))
-                    languageHashmap[translation.entry] = translation[language]!!
+            for (line in linesFromTemplates) {
+                if (!line.contains(" = ")) {
+                    // small hack to insert empty lines
+                    if (line.startsWith(specialNewLineCode))
+                        stringBuilder.appendln()
+                    else // copy as-is
+                        stringBuilder.appendln(line)
+                    continue
+                }
+                val translationKey = line.split(" = ")[0].replace("\\n", "\n")
+                var translationValue = ""
+
+                val translationEntry = translations[translationKey]
+                if (translationEntry != null && translationEntry.containsKey(language)) translationValue = translationEntry[language]!!
+                else stringBuilder.appendln(" # Requires translation!")
+
+                val lineToWrite = translationKey.replace("\n", "\\n") +
+                        " = " + translationValue.replace("\n", "\\n")
+                stringBuilder.appendln(lineToWrite)
             }
-            writeByTemplate(language, languageHashmap)
+
+            Gdx.files.local("jsons/translations/$language.properties")
+                    .writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
         }
-        writeLanguagePercentages(translations)
     }
 
-    private fun writeLanguagePercentages(translations: Translations){
+
+    fun writeNewTranslationFiles(allTranslations: Translations) {
+        translations = allTranslations
+        writeByTemplate()
+        writeLanguagePercentages()
+    }
+
+    private fun writeLanguagePercentages(){
         val percentages = translations.calculatePercentageCompleteOfLanguages()
         val stringBuilder = StringBuilder()
         for(entry in percentages){
