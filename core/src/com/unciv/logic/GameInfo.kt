@@ -14,8 +14,11 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import java.lang.NullPointerException
 import java.util.*
 import kotlin.collections.ArrayList
+
+class UncivShowableException(missingMods: String) : Exception(missingMods) {}
 
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
@@ -219,6 +222,15 @@ class GameInfo {
     fun setTransients() {
         tileMap.gameInfo = this
         ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
+        // any mod the saved game lists that is currently not installed causes null pointer
+        // exceptions in this routine unless it contained no new objects or was very simple.
+        // Player's fault, so better complain early:
+        val missingMods = gameParameters.mods
+                .filterNot { it in ruleSet.mods }
+                .joinToString(limit = 120) { it }
+        if (missingMods.isNotEmpty()) {
+            throw UncivShowableException("Missing mods: [$missingMods]")
+        }
 
         // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
         // Needs to be BEFORE tileMap.setTransients, because the units' setTransients is called from there
@@ -370,3 +382,4 @@ class GameInfo {
     }
 
 }
+

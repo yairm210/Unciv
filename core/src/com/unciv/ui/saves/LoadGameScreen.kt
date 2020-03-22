@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
@@ -44,11 +45,17 @@ class LoadGameScreen : PickerScreen() {
             catch (ex:Exception){
                 val cantLoadGamePopup = Popup(this)
                 cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
-                cantLoadGamePopup.open()
-                ex.printStackTrace()
+                if (ex is UncivShowableException && ex.localizedMessage != null) {
+                    // thrown exceptions are our own tests and can be shown to the user
+                    cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
+                    cantLoadGamePopup.open()
+                } else {
+                    cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                    cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                    cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+                    cantLoadGamePopup.open()
+                    ex.printStackTrace()
+                }
             }
         }
 

@@ -3,6 +3,7 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
+import com.unciv.UncivGame
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -11,6 +12,8 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.Popup
 import kotlin.collections.set
 
 class Ruleset() {
@@ -91,10 +94,11 @@ class Ruleset() {
         if(buildingsFile.exists()) {
             buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
             for (building in buildings.values) {
-                if (building.requiredTech == null) continue
-                val column = technologies[building.requiredTech!!]!!.column
-                if (building.cost == 0)
-                    building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
+                if (building.cost == 0) {
+                    val column = technologies[building.requiredTech]?.column
+                            ?: throw Exception("Building (${building.name}) must either have an explicit cost or a required tech in the same mod")
+                    building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
+                }
             }
         }
 
@@ -155,9 +159,12 @@ object RulesetCache :HashMap<String,Ruleset>(){
                 modRuleset.load(modFolder.child("jsons"))
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
+                println ("Mod loaded successfully: " + modRuleset.name)
             }
             catch (ex:Exception){
-                println( "Exception loading " + modFolder.name() + ": " + ex.message )
+                println ("Exception loading mod '${modFolder.name()}':")
+                println ("  ${ex.localizedMessage}")
+                println ("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
             }
         }
     }
