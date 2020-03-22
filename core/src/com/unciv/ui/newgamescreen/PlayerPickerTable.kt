@@ -28,12 +28,20 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         update()
     }
 
-    fun update() {
+    fun update(desiredCiv: String = "") {
         playerListTable.clear()
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
+        var desiredCivPresent = false
+        var anyRandomPlayer: Player? = null
         for (player in newGameParameters.players) {
             if(!newGameScreen.ruleset.nations.containsKey(player.chosenCiv)) // this was in a mod we disabled
                 player.chosenCiv="Random"
+            if (player.chosenCiv==desiredCiv) desiredCivPresent = true
+            if (player.chosenCiv=="Random" && anyRandomPlayer==null && player.playerType==PlayerType.Human) anyRandomPlayer = player
+        }
+        if (desiredCiv.isNotEmpty() && !desiredCivPresent && anyRandomPlayer!=null)
+            anyRandomPlayer.chosenCiv = desiredCiv
+        for (player in newGameParameters.players) {
             playerListTable.add(getPlayerTable(player, gameBasics)).pad(10f).row()
         }
         if(newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
