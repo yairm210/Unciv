@@ -1,6 +1,7 @@
 ﻿package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.logic.battle.BattleDamage
@@ -22,19 +23,33 @@ object TranslationFileWriter {
     private const val languageFileLocation = "jsons/translations/%s.properties"
 
     fun writeNewTranslationFiles(translations: Translations) {
+
+        val percentages = generateTranslationFiles(translations)
+        writeLanguagePercentages(percentages)
+
+        // try to do the same for the mods
+        for(modFolder in Gdx.files.local("mods").list())
+            generateTranslationFiles(translations, modFolder)
+            // write percentages is not needed: for an individual mod it makes no sense
+
+    }
+
+    private fun generateTranslationFiles(translations: Translations, modFolder: FileHandle? = null): HashMap<String, Int> {
         // read the template
-        val templateFile = Gdx.files.internal(templateFileLocation)
+        val templateFile = if (modFolder != null) modFolder.child(templateFileLocation)
+                            else Gdx.files.internal(templateFileLocation)
         val linesFromTemplates = mutableListOf<String>()
-        linesFromTemplates.addAll(templateFile.reader().readLines())
+        if (templateFile.exists())
+            linesFromTemplates.addAll(templateFile.reader().readLines())
         // read the JSON files
-        val generatedStrings = generateStringsFromJSONs()
+        val generatedStrings = generateStringsFromJSONs(modFolder)
         for (key in generatedStrings.keys) {
             linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
             linesFromTemplates.addAll(generatedStrings.getValue(key))
         }
 
         var countOfTranslatableLines = 0
-        val countOfTranslatedLines = HashMap<String,Int>()
+        val countOfTranslatedLines = HashMap<String, Int>()
         // iterate through all available languages
         for (language in translations.getLanguages()) {
             var translationsOfThisLanguage = 0
@@ -58,8 +73,7 @@ object TranslationFileWriter {
                 if (translationEntry != null && translationEntry.containsKey(language)) {
                     translationValue = translationEntry[language]!!
                     translationsOfThisLanguage++
-                }
-                else stringBuilder.appendln(" # Requires translation!")
+                } else stringBuilder.appendln(" # Requires translation!")
 
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
@@ -68,8 +82,9 @@ object TranslationFileWriter {
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
-            Gdx.files.local(languageFileLocation.format(language))
-                    .writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
+            val fileWriter = if (modFolder != null) modFolder.child(languageFileLocation.format(language))
+                                else Gdx.files.local(languageFileLocation.format(language))
+            fileWriter.writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
         }
 
         // Calculate the percentages of translations
@@ -77,7 +92,7 @@ object TranslationFileWriter {
         for (key in countOfTranslatedLines.keys)
             countOfTranslatedLines[key] = countOfTranslatedLines.getValue(key)*100/countOfTranslatableLines
 
-        writeLanguagePercentages(countOfTranslatedLines)
+        return countOfTranslatedLines
     }
 
     private fun writeLanguagePercentages(percentages: HashMap<String,Int>){
@@ -111,14 +126,15 @@ object TranslationFileWriter {
             it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
     }
 
-    private fun generateStringsFromJSONs(): Map<String, MutableSet<String>> {
+    private fun generateStringsFromJSONs(modFolder: FileHandle? = null): Map<String, MutableSet<String>> {
 
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
         val generatedStrings = LinkedHashMap<String, MutableSet<String>>()
 
         var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
-        val folderHandler = Gdx.files.internal("jsons")
+        val folderHandler = if (modFolder != null) modFolder.child("jsons")
+                             else Gdx.files.internal("jsons")
         val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
         for (jsonFile in listOfJSONFiles)
         {
