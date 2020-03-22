@@ -20,7 +20,6 @@ object TranslationFileWriter {
     private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
     private const val languageFileLocation = "jsons/translations/%s.properties"
-    private val generatedStrings = mutableMapOf<String,MutableSet<String>>()
 
     fun writeNewTranslationFiles(translations: Translations) {
         // read the template
@@ -28,7 +27,7 @@ object TranslationFileWriter {
         val linesFromTemplates = mutableListOf<String>()
         linesFromTemplates.addAll(templateFile.reader().readLines())
         // read the JSON files
-        generateStringsFromJSONs()
+        val generatedStrings = generateStringsFromJSONs()
         for (key in generatedStrings.keys) {
             linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
             linesFromTemplates.addAll(generatedStrings.getValue(key))
@@ -91,37 +90,31 @@ object TranslationFileWriter {
 
 
 
-    private fun generateTutorialsStrings(): Collection<String> {
+    private fun generateTutorialsStrings(): MutableSet<String> {
 
-        if (generatedStrings.containsKey("Tutorials"))
-            return generatedStrings.getValue("Tutorials")
-
-        generatedStrings["Tutorials"] = mutableSetOf()
-        val tutorialsStrings = generatedStrings["Tutorials"]
+        val tutorialsStrings = mutableSetOf<String>()
         val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
         var uniqueIndexOfNewLine = 0
         for (tutorial in tutorials) {
             for (str in tutorial.value)
-                if (str != "") tutorialsStrings!!.add("$str = ")
+                if (str != "") tutorialsStrings.add("$str = ")
             // This is a small hack to insert multiple /n into the set, which can't contain identical lines
-            tutorialsStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+            tutorialsStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
         }
-        return tutorialsStrings!!
+        return tutorialsStrings
     }
 
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
-        if (generatedStrings.isEmpty())
-            generateStringsFromJSONs()
-        return generatedStrings.values.sumBy { // exclude empty lines
+        return generateStringsFromJSONs().values.sumBy { // exclude empty lines
             it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
     }
 
-    private fun generateStringsFromJSONs() {
+    private fun generateStringsFromJSONs(): Map<String, MutableSet<String>> {
 
-        if (generatedStrings.isNotEmpty())
-            return // do not regenerate if the strings are ready
+        // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
+        val generatedStrings = LinkedHashMap<String, MutableSet<String>>()
 
         var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
@@ -132,7 +125,7 @@ object TranslationFileWriter {
             val filename = jsonFile.nameWithoutExtension()
             // Tutorials are a bit special
             if (filename == "Tutorials") {
-                generateTutorialsStrings()
+                generatedStrings[filename] = generateTutorialsStrings()
                 continue
             }
 
@@ -194,6 +187,7 @@ object TranslationFileWriter {
                     resultStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
                 }
         }
+        return generatedStrings
     }
 
     private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
