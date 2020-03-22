@@ -3,7 +3,6 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
-import com.unciv.UncivGame
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -12,8 +11,6 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.Popup
 import kotlin.collections.set
 
 class Ruleset() {
