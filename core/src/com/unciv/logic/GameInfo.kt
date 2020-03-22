@@ -17,7 +17,7 @@ import com.unciv.models.ruleset.RulesetCache
 import java.util.*
 import kotlin.collections.ArrayList
 
-class UncivShowableException(missingMods: String) : Exception(missingMods) {}
+class UncivShowableException(missingMods: String) : Exception(missingMods)
 
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
