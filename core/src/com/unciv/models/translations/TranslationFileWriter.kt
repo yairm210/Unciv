@@ -19,22 +19,26 @@ object TranslationFileWriter {
 
     private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
+    private const val languageFileLocation = "jsons/translations/%s.properties"
     private val generatedStrings = mutableMapOf<String,MutableSet<String>>()
-    private lateinit var translations: Translations
 
-    private fun writeByTemplate() {
-
+    fun writeNewTranslationFiles(translations: Translations) {
+        // read the template
         val templateFile = Gdx.files.internal(templateFileLocation)
         val linesFromTemplates = mutableListOf<String>()
         linesFromTemplates.addAll(templateFile.reader().readLines())
-
+        // read the JSON files
         generateStringsFromJSONs()
         for (key in generatedStrings.keys) {
             linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
             linesFromTemplates.addAll(generatedStrings.getValue(key))
         }
 
+        var countOfTranslatableLines = 0
+        val countOfTranslatedLines = HashMap<String,Int>()
+        // iterate through all available languages
         for (language in translations.getLanguages()) {
+            var translationsOfThisLanguage = 0
             val stringBuilder = StringBuilder()
 
             for (line in linesFromTemplates) {
@@ -45,12 +49,17 @@ object TranslationFileWriter {
                     else // copy as-is
                         stringBuilder.appendln(line)
                     continue
-                }
+                } else // count translatable lines only once (e.g. for English)
+                    if (language == "English") countOfTranslatableLines++
+
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
                 var translationValue = ""
 
                 val translationEntry = translations[translationKey]
-                if (translationEntry != null && translationEntry.containsKey(language)) translationValue = translationEntry[language]!!
+                if (translationEntry != null && translationEntry.containsKey(language)) {
+                    translationValue = translationEntry[language]!!
+                    translationsOfThisLanguage++
+                }
                 else stringBuilder.appendln(" # Requires translation!")
 
                 val lineToWrite = translationKey.replace("\n", "\\n") +
@@ -58,26 +67,29 @@ object TranslationFileWriter {
                 stringBuilder.appendln(lineToWrite)
             }
 
-            Gdx.files.local("jsons/translations/$language.properties")
+            countOfTranslatedLines[language] = translationsOfThisLanguage
+
+            Gdx.files.local(languageFileLocation.format(language))
                     .writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
         }
+
+        // Calculate the percentages of translations
+        // It should be done after the loop of languages, since the countOfTranslatableLines is not known in the 1st iteration
+        for (key in countOfTranslatedLines.keys)
+            countOfTranslatedLines[key] = countOfTranslatedLines.getValue(key)*100/countOfTranslatableLines
+
+        writeLanguagePercentages(countOfTranslatedLines)
     }
 
-
-    fun writeNewTranslationFiles(allTranslations: Translations) {
-        translations = allTranslations
-        writeByTemplate()
-        writeLanguagePercentages()
-    }
-
-    private fun writeLanguagePercentages(){
-        val percentages = translations.calculatePercentageCompleteOfLanguages()
+    private fun writeLanguagePercentages(percentages: HashMap<String,Int>){
         val stringBuilder = StringBuilder()
         for(entry in percentages){
             stringBuilder.appendln(entry.key+" = "+entry.value)
         }
         Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(),false)
     }
+
+
 
     private fun generateTutorialsStrings(): Collection<String> {
 
@@ -98,6 +110,7 @@ object TranslationFileWriter {
         return tutorialsStrings!!
     }
 
+    // used for unit test only
     fun getGeneratedStringsSize(): Int {
         if (generatedStrings.isEmpty())
             generateStringsFromJSONs()

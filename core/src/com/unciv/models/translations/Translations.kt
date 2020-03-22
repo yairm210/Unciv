@@ -69,6 +69,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
+    // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
     private fun getLanguagesWithTranslationFile(): List<String> {
 
         val languages = ArrayList<String>()
@@ -119,30 +120,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
-    }
-
-    fun calculatePercentageCompleteOfLanguages():HashMap<String,Int> {
-        val percentComplete = HashMap<String,Int>()
-        val translationStart = System.currentTimeMillis()
-
-        var allTranslations = TranslationFileWriter.getGeneratedStringsSize()
-        Gdx.files.internal(TranslationFileWriter.templateFileLocation)
-                .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
-
-        for(language in getLanguagesWithTranslationFile()){
-            val translationFileName = "jsons/translations/$language.properties"
-            var translationsOfThisLanguage=0
-            Gdx.files.internal(translationFileName).reader()
-                    .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
-                        translationsOfThisLanguage+=1 }
-
-            percentComplete[language] = translationsOfThisLanguage*100/allTranslations
-        }
-
-
-        val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Calculating percentage complete of languages - "+translationFilesTime+"ms")
-        return percentComplete
     }
 
     companion object {
