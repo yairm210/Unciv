@@ -237,6 +237,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         val modCheckboxTable = Table().apply { defaults().pad(5f) }
         for(mod in modRulesets){
             val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
+            if (mod.name in newGameParameters.mods) checkBox.isChecked = true
             checkBox.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     if(checkBox.isChecked) newGameParameters.mods.add(mod.name)
