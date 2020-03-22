@@ -155,7 +155,9 @@ object RulesetCache :HashMap<String,Ruleset>(){
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
             }
-            catch (ex:Exception){}
+            catch (ex:Exception){
+                println( "Exception loading " + modFolder.name() + ": " + ex.message )
+            }
         }
     }
 

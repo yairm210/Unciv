@@ -70,6 +70,8 @@ class MapUnit {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
         private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
         private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
+        const val BONUS_WHEN_INTERCEPTING = "Bonus when intercepting"
+        const val CHANCE_TO_INTERCEPT_AIR_ATTACKS = " chance to intercept air attacks"
     }
 
     //region pure functions
@@ -371,6 +373,7 @@ class MapUnit {
                         && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
                     tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                    if (tile.resource!=null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
                 if(tile.improvementInProgress=="Remove Road" || tile.improvementInProgress=="Remove Railroad")
                     tile.roadStatus = RoadStatus.None
@@ -378,7 +381,10 @@ class MapUnit {
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
-            else -> tile.improvement = tile.improvementInProgress
+            else -> {
+                tile.improvement = tile.improvementInProgress
+                if (tile.resource!=null) civInfo.updateDetailedCivResources()
+            }
         }
         tile.improvementInProgress = null
     }
@@ -532,7 +538,7 @@ class MapUnit {
                 if (unit.currentMovement < 0.1)
                     unit.disband()
                 // let's find closest city or another carrier where it can be evacuated
-                val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange()).
+                val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange()*2).
                         filterNot { it == currentTile }.firstOrNull{unit.movement.canMoveTo(it)}
 
                 if (tileCanMoveTo!=null)
@@ -545,13 +551,6 @@ class MapUnit {
         if (currentTile.getOwner() == civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
         if (civInfo.isDefeated()) civInfo.destroy()
-        for (unit in currentTile.getUnits().filter { it.type.isAirUnit() && it.isTransported }) {
-            if (unit.movement.canMoveTo(currentTile)) continue // we disbanded a carrier in a city, it can still stay in the city
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange())
-                    .firstOrNull { unit.movement.canMoveTo(it) }
-            if (tileCanMoveTo != null) unit.movement.moveToTile(tileCanMoveTo)
-            else unit.disband()
-        }
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
@@ -627,7 +626,7 @@ class MapUnit {
 
     fun interceptChance():Int{
         val interceptUnique = getUniques()
-                .firstOrNull { it.endsWith(" chance to intercept air attacks") }
+                .firstOrNull { it.endsWith(CHANCE_TO_INTERCEPT_AIR_ATTACKS) }
         if(interceptUnique==null) return 0
         val percent = Regex("\\d+").find(interceptUnique)!!.value.toInt()
         return percent
@@ -654,7 +653,7 @@ class MapUnit {
 
     fun interceptDamagePercentBonus():Int{
         var sum=0
-        for(unique in getUniques().filter { it.startsWith("Bonus when intercepting") }){
+        for(unique in getUniques().filter { it.startsWith(BONUS_WHEN_INTERCEPTING) }){
             val percent = Regex("\\d+").find(unique)!!.value.toInt()
             sum += percent
         }

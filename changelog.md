@@ -1,3 +1,30 @@
+## 3.6.10
+
+By Jack Rainy:
+- Double range of rebase for air units
+- Translation files now take values directly from data files - no more value mismatches!
+
+By rh-github-2015:
+- Clearer free promotions
+- UI cleanup
+
+Unit purchasing limits - by EdinCitaku
+
+Unit Action buttons stick to the left
+
+Translation updates
+
+## 3.6.9
+
+By rh-github-2015:
+- Trade offers better sorting with user choice 
+- Resources always stay up-to-date
+- Promotion and health columns in units overview
+
+Preparation for recognizing ID types - by tobo
+
+Translation updates
+
 ## 3.6.8
 
 Loads of stuff by Jack Rainy!

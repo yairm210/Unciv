@@ -71,8 +71,11 @@ class BaseUnit : INamed, IConstruction {
         for(unique in uniques)
             sb.appendln(Translations.translateBonusOrPenalty(unique))
 
-        for(promotion in promotions)
-            sb.appendln(promotion.tr())
+        if (promotions.isNotEmpty()) {
+            sb.append((if (promotions.size==1) "Free promotion:" else "Free promotions:").tr())
+            for (promotion in promotions)
+                sb.appendln(" " + promotion.tr())
+        }
 
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
@@ -148,9 +151,11 @@ class BaseUnit : INamed, IConstruction {
         return getRejectionReason(construction) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return false // couldn't place the unit, so there's actually no unit =(
+
+        if(this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War")) XP += 15
@@ -159,6 +164,10 @@ class BaseUnit : INamed, IConstruction {
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
+
+        //movement penalty
+        if(!unit.hasUnique("Can move directly once bought") && wasBought)
+            unit.currentMovement = 0f
 
         return true
     }
