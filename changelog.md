@@ -1,3 +1,21 @@
+## 3.6.11
+
+By rh-github-2015:
+ - More civilopedia info for nations and improvements - 
+ - Better error handling for Mods
+
+Fixed "other civ doesn't get duration on timed trades" bug
+
+Removed "Declare war" trade option when there's a peace treaty
+
+Resolved #2175 - Can no longer queue multiple perpetual builds
+
+Resolved #2150 - Added resource type to civilopedia description
+
+Resolved #2224 - can no longer enter promotions screen from overview screen if no valid promotions
+
+LOADS of Translation updates
+
 ## 3.6.10
 
 By Jack Rainy:
