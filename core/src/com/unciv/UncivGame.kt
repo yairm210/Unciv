@@ -48,7 +48,7 @@ class UncivGame(
      */
     val simulateUntilTurnForDebug: Int = 0
 
-    var rewriteTranslationFiles = true
+    var rewriteTranslationFiles = false
 
     lateinit var worldScreen: WorldScreen
 
