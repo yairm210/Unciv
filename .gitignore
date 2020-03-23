@@ -135,7 +135,4 @@ android/release/
 
 android/assets/mods/
 android/assets/SaveFiles/
-android/assets/game.atlas
-android/assets/game.png
-android/assets/game2.png
 android/assets/GameSettingsOld.json

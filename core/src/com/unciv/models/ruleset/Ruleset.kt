@@ -165,12 +165,12 @@ object RulesetCache :HashMap<String,Ruleset>(){
 
     fun getComplexRuleset(mods:Collection<String>): Ruleset {
         val newRuleset = Ruleset()
-        newRuleset.add(getBaseRuleset())
         for(mod in mods)
             if(containsKey(mod)) {
                 newRuleset.add(this[mod]!!)
                 newRuleset.mods+=mod
             }
+        newRuleset.add(getBaseRuleset())
         return newRuleset
     }
 }
