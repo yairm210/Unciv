@@ -32,7 +32,13 @@ class TileImprovement : NamedStats() {
 
     fun getDescription(ruleset: Ruleset): String {
         val stringBuilder = StringBuilder()
-        if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
+        val statsDesc = this.clone().toString()
+        if (statsDesc.isNotEmpty()) stringBuilder.appendln(statsDesc)
+        if (improvingTech != null && improvingTechStats != null) {
+            val improveStatsDesc = improvingTechStats.toString()
+            if (improveStatsDesc.isNotEmpty()) stringBuilder.appendln("$improveStatsDesc ${"with".tr()} ${improvingTech!!.tr()}")
+        }
+
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeBuiltOn) {
