@@ -30,6 +30,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.ignoresTerrainCost) return 1f + extraCost
         if (unit.doubleMovementInForestAndJungle && (to.baseTerrain == Constants.forest || to.baseTerrain == Constants.jungle))
             return 1f + extraCost
+        if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
+            return 1f + extraCost
 
         if (unit.roughTerrainPenalty
                 && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
@@ -184,7 +186,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
         return getShortestPath(destination).any()
     }
 
@@ -316,6 +318,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && unit.type.isWaterUnit()
                 // Check that the tile is not a coastal city's center
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
+            return false
+
+        if (tile.terrainFeature == Constants.ice
+                && !unit.baseUnit.uniques.contains("Can enter ice tiles"))
             return false
 
         if (tile.isWater && unit.type.isLandUnit()) {

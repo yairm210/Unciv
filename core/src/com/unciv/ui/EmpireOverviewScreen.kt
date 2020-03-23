@@ -16,6 +16,7 @@ import com.unciv.logic.trade.TradeOffersList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import kotlin.math.*
@@ -70,7 +71,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         val setUnitsButton = TextButton("Units".tr(), skin)
         setUnitsButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getUnitTable())).height(stage.height * 0.8f)
+            centerTable.add(ScrollPane(getUnitTable()).apply { setOverscroll(false,false) }).height(stage.height * 0.8f)
             centerTable.pack()
         }
         topTable.add(setUnitsButton)
@@ -339,10 +340,12 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         table.add("Ranged strength".tr())
         table.add("Movement".tr())
         table.add("Closest city".tr())
+        table.add("Promotions".tr())
+        table.add("Health".tr())
         table.row()
         table.addSeparator()
 
-        for(unit in viewingPlayer.getCivUnits().sortedBy { it.name }){
+        for(unit in viewingPlayer.getCivUnits().sortedWith(compareBy({it.name},{!it.due},{it.currentMovement<0.1f},{abs(it.currentTile.position.x)+abs(it.currentTile.position.y)}))) {
             val baseUnit = unit.baseUnit()
             val button = TextButton(unit.name.tr(), skin)
             button.onClick {
@@ -357,6 +360,19 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
             if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
+            val promotionsTable = Table()
+            val promotionsForUnit = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter { unit.promotions.promotions.contains(it.name) }     // force same sorting as on picker (.sorted() would be simpler code, but...)
+            for(promotion in promotionsForUnit)
+                promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
+            if (unit.promotions.canBePromoted()) promotionsTable.add(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLDENROD }).size(24f).padLeft(8f)
+            if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(baseUnit.upgradesTo!!, Color.GREEN)).size(28f).padLeft(8f)
+            promotionsTable.onClick {
+                if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
+                    UncivGame.Current.setScreen(PromotionPickerScreen(unit))
+                }
+            }
+            table.add(promotionsTable)
+            if (unit.health < 100) table.add(unit.health.toString()) else table.add()
             table.row()
         }
         table.pack()

@@ -432,6 +432,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Water](https://thenounproject.com/term/water/1762848/) By Kozan for Marsh
 * [Harvest](https://thenounproject.com/term/harvest/1022373/) By Made for Flood plains
 * [Puddle](https://thenounproject.com/search/?q=puddle&i=1138155) By Bakunetsu Kaito for Lakes
+* [Island](https://thenounproject.com/search/?q=island&i=1546376) By Chanut is Industries for Atoll
+* [Iceberg](https://thenounproject.com/search/?q=iceberg&i=44820) By Jaime Carrion for Ice
 
 ## Nations
 

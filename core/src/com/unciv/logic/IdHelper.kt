@@ -1,0 +1,117 @@
+package com.unciv.logic
+
+import java.util.*
+
+/**
+ * This class checks whether a Game- or Player-ID matches the old or new format.
+ * If old format is used, checks are skipped and input is returned.
+ * If new format is detected, prefix and checkDigit are checked and UUID returned.
+ *
+ * All input is returned trimmed.
+ *
+ * New format:
+ * G-UUID-CheckDigit for Game IDs
+ * P-UUID-CheckDigit for Player IDs
+ *
+ * Example:
+ * 2ddb3a34-0699-4126-b7a5-38603e665928
+ * Same ID in proposed new Player-ID format:
+ * P-2ddb3a34-0699-4126-b7a5-38603e665928-5
+ * Same ID in proposed new Game-ID format:
+ * G-2ddb3a34-0699-4126-b7a5-38603e665928-5
+ */
+class IdChecker {
+    companion object {
+        fun checkAndReturnPlayerUuid(playerId: String): String {
+            return checkAndReturnUuiId(playerId, "P")
+        }
+
+        fun checkAndReturnGameUuid(gameId: String): String {
+            return checkAndReturnUuiId(gameId, "G")
+        }
+
+        fun checkAndReturnUuiId(id: String, prefix: String): String {
+            val trimmedPlayerId = id.trim()
+            if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
+                if (!trimmedPlayerId.startsWith(prefix, true)) {
+                    throw IllegalArgumentException("Not a valid ID. Does not start with prefix " + prefix)
+                }
+                val checkDigit = trimmedPlayerId.substring(trimmedPlayerId.lastIndex, trimmedPlayerId.lastIndex +1)
+                // remember, the format is: P-9e37e983-a676-4ecc-800e-ef8ec721a9b9-5
+                val shortenedPlayerId = trimmedPlayerId.substring(2, 38)
+                val calculatedCheckDigit = getCheckDigit(shortenedPlayerId).toString()
+                if (!calculatedCheckDigit.equals(checkDigit)) {
+                    throw IllegalArgumentException("Not a valid ID. Checkdigit invalid.")
+                }
+                return shortenedPlayerId
+            } else if (trimmedPlayerId.length == 36) {
+                return trimmedPlayerId
+            }
+            throw IllegalArgumentException("Not a valid ID. Wrong length.")
+        }
+
+
+        /**
+         * Adapted from https://wiki.openmrs.org/display/docs/Check+Digit+Algorithm
+         */
+        fun getCheckDigit(uuid: String): Int {
+            // allowable characters within identifier
+            val validChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVYWXZ-"
+            var idWithoutCheckdigit = uuid
+            // remove leading or trailing whitespace, convert to uppercase
+            idWithoutCheckdigit = idWithoutCheckdigit.trim().toUpperCase(Locale.ENGLISH)
+
+            // this will be a running total
+            var sum = 0
+
+            // loop through digits from right to left
+            for (i in idWithoutCheckdigit.indices) {
+
+                //set ch to "current" character to be processed
+                val ch = idWithoutCheckdigit.get(idWithoutCheckdigit.length - i - 1)
+
+                // throw exception for invalid characters
+                if (validChars.indexOf(ch) == -1)
+                    throw IllegalArgumentException(
+                            ch + " is an invalid character")
+
+                // our "digit" is calculated using ASCII value - 48
+                val digit = ch.toInt() - 48
+
+                // weight will be the current digit's contribution to
+                // the running total
+                var weight: Int
+                if (i % 2 == 0) {
+
+                    // for alternating digits starting with the rightmost, we
+                    // use our formula this is the same as multiplying x 2 and
+                    // adding digits together for values 0 to 9.  Using the
+                    // following formula allows us to gracefully calculate a
+                    // weight for non-numeric "digits" as well (from their
+                    // ASCII value - 48).
+                    weight = (2 * digit) - (digit / 5) * 9
+
+                } else {
+
+                    // even-positioned digits just contribute their ascii
+                    // value minus 48
+                    weight = digit
+
+                }
+                // keep a running total of weights
+                sum += weight
+
+            }
+            // avoid sum less than 10 (if characters below "0" allowed,
+            // this could happen)
+            sum = Math.abs(sum) + 10
+
+            // check digit is amount needed to reach next number
+            // divisible by ten
+            val returnValue= (10 - (sum % 10)) % 10
+            return returnValue
+        }
+    }
+}
+
+

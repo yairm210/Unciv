@@ -3,9 +3,9 @@ package com.unciv.ui.worldscreen.mainmenu
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.unciv.UncivGame
+import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.LoadMapScreen
 import com.unciv.ui.mapeditor.NewMapScreen
@@ -13,6 +13,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
@@ -105,7 +106,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         multiplayerPopup.addButton("Join Game") {
             val gameId = Gdx.app.clipboard.contents
             try {
-                UUID.fromString(gameId.trim())
+                UUID.fromString(IdChecker.checkAndReturnGameUuid(gameId))
             } catch (ex: Exception) {
                 badGameIdLabel.setText("Invalid game ID!")
                 badGameIdLabel.isVisible = true
@@ -170,6 +171,11 @@ class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScree
 
         addButton("Github"){
             Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            close()
+        }
+
+        addButton("Reddit"){
+            Gdx.net.openURI("https://www.reddit.com/r/Unciv/")
             close()
         }
 

@@ -4,11 +4,10 @@ import com.badlogic.gdx.Gdx
 import java.nio.charset.Charset
 import kotlin.collections.set
 
-class TranslationFileReader{
+object TranslationFileReader {
 
-    private val percentagesFileLocation = "jsons/translationsByLanguage/completionPercentages.properties"
-    val templateFileLocation = "jsons/translationsByLanguage/template.properties"
-    private val charset = Charset.forName("UTF-8").name()
+    const val percentagesFileLocation = "jsons/translations/completionPercentages.properties"
+    val charset: String = Charset.forName("UTF-8").name()
 
     fun read(translationFile: String): LinkedHashMap<String, String> {
         val translations = LinkedHashMap<String, String>()
@@ -23,49 +22,6 @@ class TranslationFileReader{
             }
         }
         return translations
-    }
-
-    private fun writeByTemplate(language:String, translations: HashMap<String, String>){
-        val templateFile = Gdx.files.internal(templateFileLocation)
-        val stringBuilder = StringBuilder()
-        for(line in templateFile.reader().readLines()){
-            if(!line.contains(" = ")){ // copy as-is
-                stringBuilder.appendln(line)
-                continue
-            }
-            val translationKey = line.split(" = ")[0].replace("\\n","\n")
-            var translationValue = ""
-            if(translations.containsKey(translationKey)) translationValue = translations[translationKey]!!
-            else stringBuilder.appendln(" # Requires translation!")
-            val lineToWrite = translationKey.replace("\n","\\n") +
-                    " = "+ translationValue.replace("\n","\\n")
-            stringBuilder.appendln(lineToWrite)
-        }
-        Gdx.files.local("jsons/translationsByLanguage/$language.properties")
-                .writeString(stringBuilder.toString(),false,charset)
-    }
-
-
-    fun writeNewTranslationFiles(translations: Translations) {
-        for (language in translations.getLanguages()) {
-            val languageHashmap = HashMap<String, String>()
-
-            for (translation in translations.values) {
-                if (translation.containsKey(language))
-                    languageHashmap[translation.entry] = translation[language]!!
-            }
-            writeByTemplate(language, languageHashmap)
-        }
-        writeLanguagePercentages(translations)
-    }
-
-    private fun writeLanguagePercentages(translations: Translations){
-        val percentages = translations.calculatePercentageCompleteOfLanguages()
-        val stringBuilder = StringBuilder()
-        for(entry in percentages){
-            stringBuilder.appendln(entry.key+" = "+entry.value)
-        }
-        Gdx.files.local(percentagesFileLocation).writeString(stringBuilder.toString(),false)
     }
 
     fun readLanguagePercentages():HashMap<String,Int>{

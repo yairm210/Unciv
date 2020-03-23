@@ -2,13 +2,10 @@
 package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.Array
-import com.unciv.JsonParser
 import com.unciv.models.UnitActionType
-import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileReader
+import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import org.junit.Assert
 import org.junit.Before
@@ -20,7 +17,6 @@ import java.util.*
 class TranslationTests {
     private var translations = Translations()
     private var ruleset = Ruleset()
-    private val jsonParser = JsonParser()
 
     @Before
     fun loadTranslations() {
@@ -175,12 +171,12 @@ class TranslationTests {
     }
 
     @Test
-    fun allTranslatedNationsFilesAreSerializable() {
-        for (file in Gdx.files.internal("jsons/Nations").list()) {
-            jsonParser.getFromJson(emptyArray<Nation>().javaClass, file.path())
-        }
-        Assert.assertTrue("This test will only pass when there is a translation for all promotions",
-                true)
+    fun translationsFromJSONsCanBeGenerated() {
+        // it triggers generation of the translation's strings
+        val stringsSize = TranslationFileWriter.getGeneratedStringsSize()
+
+        Assert.assertTrue("This test will only pass when all .json files are serializable",
+                stringsSize > 0)
     }
 
     /** For every translatable string find its placeholders and check if all translations have them */
@@ -208,7 +204,7 @@ class TranslationTests {
 
     @Test
     fun allTranslationsEndWithASpace() {
-        val templateLines = Gdx.files.internal(TranslationFileReader().templateFileLocation).reader().readLines()
+        val templateLines = Gdx.files.internal(TranslationFileWriter.templateFileLocation).reader().readLines()
         var failed = false
         for (line in templateLines) {
             if (line.endsWith(" =")) {

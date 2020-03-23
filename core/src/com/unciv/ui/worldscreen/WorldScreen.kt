@@ -38,25 +38,25 @@ import kotlin.concurrent.thread
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
-    var waitingForAutosave = false
+    private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
-    val minimapWrapper = MinimapHolder(mapHolder)
+    private val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
     val bottomUnitTable = UnitTable(this)
-    val bottomTileInfoTable = TileInfoTable(viewingCiv)
-    val battleTable = BattleTable(this)
-    val unitActionsTable = UnitActionsTable(this)
+    private val bottomTileInfoTable = TileInfoTable(viewingCiv)
+    private val battleTable = BattleTable(this)
+    private val unitActionsTable = UnitActionsTable(this)
 
     private val techPolicyAndVictoryHolder = Table()
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
-    private val tutorialTaskTable=Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
+    private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
-    var shouldUpdate=false
+    var shouldUpdate = false
 
     private var backButtonListener : InputListener
 
@@ -517,7 +517,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // remove current listener for the "BACK" button to avoid showing the dialog twice
         stage.removeListener( backButtonListener )
 
-        var promptWindow = Popup(this)
+        val promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
         promptWindow.addButton("Yes"){game.exitEvent?.invoke()}

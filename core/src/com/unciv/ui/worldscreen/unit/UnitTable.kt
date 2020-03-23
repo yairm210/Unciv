@@ -167,7 +167,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
             unitIconHolder.add(UnitGroup(selectedUnit!!,30f)).pad(5f)
-            for(promotion in selectedUnit!!.promotions.promotions)
+            for(promotion in selectedUnit!!.promotions.promotions.sorted())
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
 
             // Since Clear also clears the listeners, we need to re-add it every time

@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
-import com.unciv.logic.city.SpecialConstruction
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -48,7 +48,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
 
 
         var buildingText = construction.name.tr()
-        val specialConstruction = SpecialConstruction.specialConstructionsMap[construction.name]
+        val specialConstruction = PerpetualConstruction.perpetualConstructionsMap[construction.name]
         if (specialConstruction == null) {
             val turnsToComplete = cityConstructions.turnsToConstruction(construction.name)
             buildingText += ("\r\n" + "Cost".tr() + " " + construction.getProductionCost(city.civInfo).toString()).tr()
@@ -65,7 +65,7 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
             description = construction.getDescription(true)
         else if (construction is Building)
             description = construction.getDescription(true, city.civInfo, city.civInfo.gameInfo.ruleSet)
-        else if(construction is SpecialConstruction)
+        else if(construction is PerpetualConstruction)
             description = construction.description.tr()
         else description="" // Should never happen
 

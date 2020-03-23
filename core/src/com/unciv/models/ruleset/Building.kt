@@ -81,7 +81,7 @@ class Building : NamedStats(), IConstruction{
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         if(requiredResource!=null)
-            stringBuilder.appendln("Requires [$requiredResource]".tr())
+            stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
@@ -153,15 +153,16 @@ class Building : NamedStats(), IConstruction{
             if (adoptedPolicies.contains("Constitution") && isWonder)
                 stats.culture += 2f
 
-            if (adoptedPolicies.contains("Autocracy Complete") && cityStrength > 0)
-                stats.happiness += 1
-
             if (baseBuildingName == "Castle"
                     && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
                 stats.gold+=3
             }
+
+            if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
+                stats.happiness += 3
+
         }
         return stats
     }
@@ -192,19 +193,23 @@ class Building : NamedStats(), IConstruction{
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
+
         if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
             productionCost *= 0.85f
+
+        if (name == "Courthouse" && civInfo.policies.isAdopted("Police State"))
+            productionCost *= 0.5f
+
         if (civInfo.isPlayerCivilization()) {
-            if(!isWonder) {
+            if (!isWonder)
                 productionCost *= civInfo.getDifficulty().buildingCostModifier
-            }
         } else {
-            if(isWonder) {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiWonderCostModifier
-            } else {
-                productionCost *= civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
-            }
+            productionCost *= if(isWonder)
+                civInfo.gameInfo.getDifficulty().aiWonderCostModifier
+            else
+                civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
         }
+
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         return productionCost.toInt()
     }
@@ -304,7 +309,7 @@ class Building : NamedStats(), IConstruction{
             return "Cannot be built with $cannotBeBuiltWith"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return "Requires [$requiredResource]"
+            return "Consumes 1 [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
@@ -333,7 +338,7 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
@@ -354,6 +359,10 @@ class Building : NamedStats(), IConstruction{
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
         if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        if ("2 free Great Artists appear" in uniques) {
+            civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+            civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        }
         if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
         if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
         if ("2 free great scientists appear" in uniques) {

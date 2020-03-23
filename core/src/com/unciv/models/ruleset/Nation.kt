@@ -17,17 +17,12 @@ enum class VictoryType{
 
 class Nation : INamed {
     override lateinit var name: String
-    var translatedName=""
-    fun getNameTranslation(): String {
-        if(translatedName!="") return translatedName
-        else return name
-    }
 
     var leaderName=""
-    fun getLeaderDisplayName() = if(isCityState()) getNameTranslation()
-        else "[$leaderName] of [${getNameTranslation()}]"
+    fun getLeaderDisplayName() = if(isCityState()) name
+        else "[$leaderName] of [$name]"
 
-    var cityStateType: CityStateType?=null
+    var cityStateType: CityStateType? = null
     var preferredVictoryType:VictoryType = VictoryType.Neutral
     var declaringWar=""
     var attacked=""
@@ -38,19 +33,9 @@ class Nation : INamed {
     var neutralHello=""
     var hateHello=""
 
-    var neutralLetsHearIt = ArrayList<String>()
-    var neutralYes = ArrayList<String>()
-    var neutralNo = ArrayList<String>()
-
-    var hateLetsHearIt = ArrayList<String>()
-    var hateYes = ArrayList<String>()
-    var hateNo = ArrayList<String>()
-
-    var afterPeace=""
-
     lateinit var outerColor: List<Int>
-    var unique:UniqueAbility?=null
-    var innerColor: List<Int>?=null
+    var unique: UniqueAbility? = null
+    var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 
     @Transient private lateinit var outerColorObject:Color
@@ -66,6 +51,8 @@ class Nation : INamed {
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false
+    // Same for Inca unique
+    @Transient var greatAndeanRoad = false
 
     fun setTransients(){
         outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
@@ -75,21 +62,32 @@ class Nation : INamed {
 
         if(unique == UniqueAbility.GREAT_WARPATH)
             forestsAndJunglesAreRoads = true
+        if(unique == UniqueAbility.GREAT_ANDEAN_ROAD)
+            greatAndeanRoad = true
     }
 
-    lateinit var cities: List<String>
+    lateinit var cities: ArrayList<String>
 
 
 
 
-    fun getUniqueString(ruleset: Ruleset): String {
+    fun getUniqueString(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val textList = ArrayList<String>()
 
-        if (unique != null) {
-            textList += unique!!.description.tr()
+        if (leaderName.isNotEmpty() && !forPickerScreen){
+            textList += getLeaderDisplayName().tr()
             textList += ""
         }
+        if (unique != null) {
+            textList += unique!!.displayName.tr() + ":"
+            textList += "  " + unique!!.description.tr()
 
+            textList += ""
+        }
+        if (startBias.isNotEmpty()) {
+            textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
+            textList += ""
+        }
         addUniqueBuildingsText(textList,ruleset)
         addUniqueUnitsText(textList,ruleset)
         addUniqueImprovementsText(textList,ruleset)

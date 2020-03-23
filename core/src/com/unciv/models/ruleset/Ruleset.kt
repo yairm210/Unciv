@@ -3,6 +3,7 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -91,10 +92,11 @@ class Ruleset() {
         if(buildingsFile.exists()) {
             buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
             for (building in buildings.values) {
-                if (building.requiredTech == null) continue
-                val column = technologies[building.requiredTech!!]!!.column
-                if (building.cost == 0)
-                    building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
+                if (building.cost == 0) {
+                    val column = technologies[building.requiredTech]?.column
+                            ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or a required tech in the same mod")
+                    building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
+                }
             }
         }
 
@@ -127,7 +129,7 @@ class Ruleset() {
             }
         }
 
-        val nationsFile = folderHandle.child("Nations/Nations.json")
+        val nationsFile = folderHandle.child("Nations.json")
         if(nationsFile.exists()) {
             nations += createHashmap(jsonParser.getFromJson(Array<Nation>::class.java, nationsFile))
             for (nation in nations.values) nation.setTransients()
@@ -149,13 +151,19 @@ object RulesetCache :HashMap<String,Ruleset>(){
         this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
 
         for(modFolder in Gdx.files.local("mods").list()){
+            if (modFolder.name().startsWith('.')) continue
             try{
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"))
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
+                println ("Mod loaded successfully: " + modRuleset.name)
             }
-            catch (ex:Exception){}
+            catch (ex:Exception){
+                println ("Exception loading mod '${modFolder.name()}':")
+                println ("  ${ex.localizedMessage}")
+                println ("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
+            }
         }
     }
 

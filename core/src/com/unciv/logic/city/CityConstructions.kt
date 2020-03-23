@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable
@@ -91,7 +92,7 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction // See below
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot != "") {
-            val construction = SpecialConstruction.specialConstructionsMap[currentConstructionSnapshot]
+            val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
             if (construction == null) {
                 val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
                 result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
@@ -109,7 +110,7 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
-                && !SpecialConstruction.specialConstructionsMap.containsKey(currentConstructionSnapshot)) {
+                && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
             result += ConstructionInfoTable.turnOrTurns(turnsLeft)
         }
@@ -151,7 +152,7 @@ class CityConstructions {
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
             constructionName=="" -> return getConstruction("Nothing")
             else -> {
-                val special = SpecialConstruction.specialConstructionsMap[constructionName]
+                val special = PerpetualConstruction.perpetualConstructionsMap[constructionName]
                 if(special!=null) return special
             }
         }
@@ -173,7 +174,7 @@ class CityConstructions {
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
         val constr = getConstruction(constructionName)
         return when {
-            constr is SpecialConstruction -> 0
+            constr is PerpetualConstruction -> 0
             useStoredProduction -> constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
             else -> constr.getProductionCost(cityInfo.civInfo)
         }
@@ -221,7 +222,7 @@ class CityConstructions {
         stopUnbuildableConstruction()
 
         val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        if(construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstruction)
@@ -236,7 +237,7 @@ class CityConstructions {
         stopUnbuildableConstruction()
         validateConstructionQueue()
 
-        if(getConstruction(currentConstruction) !is SpecialConstruction)
+        if(getConstruction(currentConstruction) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
     }
 
@@ -261,6 +262,23 @@ class CityConstructions {
         for (construction in queueSnapshot) {
             if (getConstruction(construction).isBuildable(this))
                 constructionQueue.add(construction)
+        }
+        // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
+        // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
+        val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstruction }
+        for (constructionName in inProgressSnapshot) {
+            val rejectionReason:String =
+                    when (val construction = getConstruction(constructionName)) {
+                        is Building -> construction.getRejectionReason(this)
+                        is BaseUnit -> construction.getRejectionReason(this)
+                        else -> ""
+                    }
+            if (!(  rejectionReason.endsWith("lready built")
+                            || rejectionReason.startsWith("Cannot be built with")
+                            || rejectionReason.startsWith("Don't need to build any more")
+                            || rejectionReason.startsWith("Obsolete")
+                            )) continue
+            inProgressConstructions.remove(constructionName)
         }
     }
 
@@ -294,7 +312,7 @@ class CityConstructions {
     }
 
     fun purchaseConstruction(constructionName: String): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this))
+        if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)

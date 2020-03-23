@@ -16,7 +16,8 @@ object Sounds {
     }
 
     fun play(sound: UncivSound) {
-        if (sound == UncivSound.Silent) return
-        get(sound).play(UncivGame.Current.settings.soundEffectsVolume)
+        val volume = UncivGame.Current.settings.soundEffectsVolume
+        if (sound == UncivSound.Silent || volume < 0.01) return
+        get(sound).play(volume)
     }
 }

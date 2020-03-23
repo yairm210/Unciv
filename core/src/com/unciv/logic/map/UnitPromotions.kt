@@ -15,7 +15,9 @@ class UnitPromotions{
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
     fun canBePromoted(): Boolean {
         if(unit.type==UnitType.Missile) return false
-        return XP >= xpForNextPromotion()
+        if(XP < xpForNextPromotion()) return false
+        if(getAvailablePromotions().isEmpty()) return false
+        return true
     }
 
     fun addPromotion(promotionName: String, isFree: Boolean = false){

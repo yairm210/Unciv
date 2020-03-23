@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
@@ -19,7 +20,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
 
 
-    val expanderTabs = HashMap<TradeType, ExpanderTab>()
+    private val expanderTabs = HashMap<TradeType, ExpanderTab>()
 
     fun update(offersToDisplay:TradeOffersList) {
         table.clear()
@@ -41,12 +42,13 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
         }
 
-        for (offertype in values()) {
-            val offersOfType = offersToDisplay.filter { it.type == offertype }
+        for (offerType in values()) {
+            val offersOfType = offersToDisplay.filter { it.type == offerType }
+                    .sortedWith(compareBy({if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0},{if (it.type==City) it.getOfferText() else it.name.tr()}))
 
-            if (expanderTabs.containsKey(offertype)) {
-                expanderTabs[offertype]!!.innerTable.clear()
-                table.add(expanderTabs[offertype]!!).row()
+            if (expanderTabs.containsKey(offerType)) {
+                expanderTabs[offerType]!!.innerTable.clear()
+                table.add(expanderTabs[offerType]!!).row()
             }
 
             for (offer in offersOfType) {
@@ -62,12 +64,12 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
                 else tradeButton.disable()  // for instance we have negative gold
 
 
-                if (expanderTabs.containsKey(offertype))
-                    expanderTabs[offertype]!!.innerTable.add(tradeButton).row()
+                if (expanderTabs.containsKey(offerType))
+                    expanderTabs[offerType]!!.innerTable.add(tradeButton).row()
                 else table.add(tradeButton).row()
             }
         }
-        widget = table
+        actor = table
     }
 
 }
