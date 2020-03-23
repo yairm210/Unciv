@@ -123,7 +123,7 @@
 		"hurryCostModifier": 20,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Machinery",
-		"uniques": ["May withdraw before melee"],
+		"uniques": ["May withdraw before melee"],	// should be inheritable (promotion)
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 		//Incan unique unit
