@@ -314,7 +314,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             cityList = cityList.reversed()
 
         for (city in cityList) {
-            val button = Button(Label(city.name, skin), skin)
+            val button = Button(city.name.toLabel(), skin)
             button.onClick {
                 UncivGame.Current.setScreen(CityScreen(city))
             }
