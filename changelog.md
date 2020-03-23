@@ -35,7 +35,7 @@ Loads of stuff by Jack Rainy!
 - Sort overview resources by name and amount
 - Turn number of trades changes with game speed
 - Filter for the custom maps
-- Ice is impassible for all except submarines
+- Ice is Impassable for all except submarines
 
 Translation updates
 
