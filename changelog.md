@@ -1,3 +1,19 @@
+## 3.6.10
+
+By Jack Rainy:
+- Double range of rebase for air units
+- Translation files now take values directly from data files - no more value mismatches!
+
+By rh-github-2015:
+- Clearer free promotions
+- UI cleanup
+
+Unit purchasing limits - by EdinCitaku
+
+Unit Action buttons stick to the left
+
+Translation updates
+
 ## 3.6.9
 
 By rh-github-2015:
@@ -19,7 +35,7 @@ Loads of stuff by Jack Rainy!
 - Sort overview resources by name and amount
 - Turn number of trades changes with game speed
 - Filter for the custom maps
-- Ice is impassible for all except submarines
+- Ice is Impassable for all except submarines
 
 Translation updates
 

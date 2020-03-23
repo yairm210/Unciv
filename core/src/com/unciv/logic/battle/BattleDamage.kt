@@ -18,11 +18,17 @@ class BattleDamageModifier(val vs:String,val modificationAmount:Float){
 
 class BattleDamage{
 
+    companion object {
+        const val BONUS_VS_UNIT_TYPE = """(Bonus|Penalty) vs (.*) (\d*)%"""
+        const val BONUS_AS_ATTACKER = """Bonus as Attacker \[(\d*)]%"""
+        const val HEAL_WHEN_KILL = """Heals \[(\d*)] damage if it kills a unit"""
+    }
+
     private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
         val modifiers = mutableListOf<BattleDamageModifier>()
         for (ability in unit.getUniques()) {
             // This beut allows us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
-            val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(ability)
+            val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability)
             if (regexResult == null) continue
             val vs = regexResult.groups[2]!!.value
             val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
@@ -113,7 +119,7 @@ class BattleDamage{
             modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
-                val regexResult = Regex("""Bonus as Attacker [(\d*)]%""").matchEntire(ability) //to do: extend to defender, and penalyy
+                val regexResult = Regex(BONUS_AS_ATTACKER).matchEntire(ability) //to do: extend to defender, and penalyy
                 if (regexResult == null) continue
                 val bonus = regexResult.groups[1]!!.value.toFloat() / 100
                 if (modifiers.containsKey("Attacker Bonus"))

@@ -332,7 +332,7 @@ open class TileInfo {
             if(!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
             lineList += "[$defencePercentString] to unit defence".tr()
         }
-        if(getBaseTerrain().impassable) lineList += "Impassible".tr()
+        if(getBaseTerrain().impassable) lineList += "Impassable".tr()
 
         return lineList.joinToString("\n")
     }

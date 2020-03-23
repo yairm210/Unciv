@@ -81,7 +81,7 @@ class Building : NamedStats(), IConstruction{
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         if(requiredResource!=null)
-            stringBuilder.appendln("Requires [$requiredResource]".tr())
+            stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
@@ -309,7 +309,7 @@ class Building : NamedStats(), IConstruction{
             return "Cannot be built with $cannotBeBuiltWith"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return "Requires [$requiredResource]"
+            return "Consumes 1 [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
@@ -338,7 +338,7 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
@@ -359,6 +359,10 @@ class Building : NamedStats(), IConstruction{
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
         if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        if ("2 free Great Artists appear" in uniques) {
+            civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+            civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        }
         if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
         if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
         if ("2 free great scientists appear" in uniques) {

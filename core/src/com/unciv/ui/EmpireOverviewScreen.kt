@@ -372,7 +372,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 }
             }
             table.add(promotionsTable)
-            if (unit.health in 1..99) table.add(unit.health.toString()) else table.add()
+            if (unit.health < 100) table.add(unit.health.toString()) else table.add()
             table.row()
         }
         table.pack()
