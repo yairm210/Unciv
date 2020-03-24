@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
@@ -18,8 +19,10 @@ class PlayerReadyScreen(currentPlayerCiv: CivilizationInfo) : CameraStageBaseScr
         table.add("[$currentPlayerCiv] ready?".toLabel(currentPlayerCiv.nation.getInnerColor(),24))
 
         table.onClick {
-            UncivGame.Current.worldScreen = WorldScreen(currentPlayerCiv)
-            UncivGame.Current.setWorldScreen()
+            Gdx.app.postRunnable { // To avoid ANRs on Android when the creation of the worldscreen takes more than 500ms
+                UncivGame.Current.worldScreen = WorldScreen(currentPlayerCiv)
+                UncivGame.Current.setWorldScreen()
+            }
         }
         table.setFillParent(true)
         stage.addActor(table)
