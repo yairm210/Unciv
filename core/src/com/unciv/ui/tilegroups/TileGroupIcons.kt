@@ -65,8 +65,7 @@ class TileGroupIcons(val tileGroup: TileGroup){
             newImage.y += yFromCenter
 
             // Display number of carried air units
-            if ((unit.type.isAircraftCarrierUnit() || unit.type.isMissileCarrierUnit())
-                    && !unit.getTile().airUnits.isEmpty() && !unit.getTile().isCityCenter()) {
+            if (unit.getTile().airUnits.any { unit.canTransport(it) } && !unit.getTile().isCityCenter()) {
                 val holder = Table()
                 val secondarycolor = unit.civInfo.nation.getInnerColor()
                 val airUnitTable = Table().apply { defaults().pad(5f) }

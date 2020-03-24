@@ -15,7 +15,6 @@ enum class UnitType{
     WaterRanged,
     WaterSubmarine,
     WaterAircraftCarrier,
-    WaterMissileCarrier,
 
     Fighter,
     Bomber,
@@ -55,16 +54,9 @@ enum class UnitType{
                 || this == WaterMelee
                 || this == WaterCivilian
                 || this == WaterAircraftCarrier
-                || this == WaterMissileCarrier
 
     fun isAirUnit() =
                 this == Bomber
                 || this == Fighter
                 || this == Missile
-
-    fun isMissile() = this == Missile
-
-    fun isAircraftCarrierUnit() = this == WaterAircraftCarrier
-
-    fun isMissileCarrierUnit() = this == WaterMissileCarrier
 }

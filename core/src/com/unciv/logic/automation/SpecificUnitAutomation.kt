@@ -255,8 +255,7 @@ class SpecificUnitAutomation {
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
 
         val immediatelyReachableCities = tilesInRange
-                .filter { unit.movement.canMoveTo(it) && ((it.isCityCenter() && it.getOwner() == unit.civInfo) ||
-                        (it.getUnits().any { mapUnit -> mapUnit.type.isMissileCarrierUnit() && mapUnit.civInfo == unit.civInfo }))}
+                .filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
@@ -272,9 +271,8 @@ class SpecificUnitAutomation {
     }
 
     private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
-        val immediatelyReachableCitiesAndCarriers = unit.currentTile.getTilesInDistance(unit.getRange()*2)
-                .filter {  unit.movement.canMoveTo(it) && ((it.isCityCenter() && it.getOwner() == unit.civInfo) ||
-                        (it.getUnits().any { mapUnit -> mapUnit.type.isAircraftCarrierUnit() && mapUnit.civInfo == unit.civInfo })) }
+        val immediatelyReachableCitiesAndCarriers = unit.currentTile
+                .getTilesInDistance(unit.getRange()*2).filter {  unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
