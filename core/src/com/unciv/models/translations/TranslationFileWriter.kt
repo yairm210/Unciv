@@ -34,10 +34,13 @@ object TranslationFileWriter {
 
     }
 
+    private fun getFileHandle(modFolder: FileHandle?, fileLocation: String) =
+            if (modFolder != null) modFolder.child(fileLocation)
+            else Gdx.files.internal(fileLocation)
+
     private fun generateTranslationFiles(translations: Translations, modFolder: FileHandle? = null): HashMap<String, Int> {
         // read the template
-        val templateFile = if (modFolder != null) modFolder.child(templateFileLocation)
-                            else Gdx.files.internal(templateFileLocation)
+        val templateFile = getFileHandle(modFolder, templateFileLocation)
         val linesFromTemplates = mutableListOf<String>()
         if (templateFile.exists())
             linesFromTemplates.addAll(templateFile.reader().readLines())
@@ -56,15 +59,17 @@ object TranslationFileWriter {
             val stringBuilder = StringBuilder()
 
             for (line in linesFromTemplates) {
-                if (!line.contains(" = ")) {
+                if (line.contains(" = ")) {
+                    // count translatable lines only once (e.g. for English)
+                    if (language == "English") countOfTranslatableLines++
+                } else {
                     // small hack to insert empty lines
                     if (line.startsWith(specialNewLineCode))
                         stringBuilder.appendln()
                     else // copy as-is
                         stringBuilder.appendln(line)
                     continue
-                } else // count translatable lines only once (e.g. for English)
-                    if (language == "English") countOfTranslatableLines++
+                }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
                 var translationValue = ""
@@ -82,8 +87,7 @@ object TranslationFileWriter {
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
-            val fileWriter = if (modFolder != null) modFolder.child(languageFileLocation.format(language))
-                                else Gdx.files.local(languageFileLocation.format(language))
+            val fileWriter = getFileHandle(modFolder,languageFileLocation.format(language))
             fileWriter.writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
         }
 
@@ -133,8 +137,7 @@ object TranslationFileWriter {
 
         var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
-        val folderHandler = if (modFolder != null) modFolder.child("jsons")
-                             else Gdx.files.internal("jsons")
+        val folderHandler = getFileHandle(modFolder,"jsons")
         val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
         for (jsonFile in listOfJSONFiles)
         {
