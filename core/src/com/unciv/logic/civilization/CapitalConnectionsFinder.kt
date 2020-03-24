@@ -48,7 +48,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private fun checkRoad(cityToConnectFrom: CityInfo) {
         check(
-                cityToConnectFrom = cityToConnectFrom,
+                cityToConnectFrom,
                 transportType = road,
                 overridingTransportType = railroad,
                 tileFilter = { tile -> tile.hasRoad(civInfo) || tile.hasRailroad() || tile.isCityCenter() }
@@ -57,7 +57,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private fun checkRailroad(cityToConnectFrom: CityInfo) {
         check(
-                cityToConnectFrom = cityToConnectFrom,
+                cityToConnectFrom,
                 transportType = railroad,
                 tileFilter = { tile -> tile.hasRailroad() || tile.isCityCenter() }
         )
@@ -65,7 +65,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private fun checkHarbor(cityToConnectFrom: CityInfo) {
         check(
-                cityToConnectFrom = cityToConnectFrom,
+                cityToConnectFrom,
                 transportType = harbor,
                 tileFilter = { tile -> tile.isWater || tile.isCityCenter() },
                 cityFilter = { city -> city.containsHarbor() }
@@ -80,6 +80,11 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                       overridingTransportType: String? = null,
                       tileFilter: (TileInfo) -> Boolean,
                       cityFilter: (CityInfo) -> Boolean = { true }) {
+        // This is the time-saving mechanism we discussed earlier - If I arrived at this city via a certain BFS,
+        // then obviously I already have all the cities that can be reached via that BFS so I don't need to run it again.
+        if(cityToConnectFrom.wasPreviouslyReached(transportType,overridingTransportType))
+            return
+
         val bfs = BFS(cityToConnectFrom.getCenterTile(), tileFilter)
         bfs.stepToEnd()
         val reachedCities = allCivCities.filter {
@@ -88,7 +93,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         for (reachedCity in reachedCities) {
             addCityIfFirstEncountered(reachedCity)
             if (reachedCity == cityToConnectFrom) continue
-            if (reachedCity.wasNotPreviouslyReached(transportType, overridingTransportType))
+            if (!reachedCity.wasPreviouslyReached(transportType, overridingTransportType))
                 reachedCity.addMedium(transportType)
         }
     }
@@ -100,9 +105,9 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         }
     }
 
-    private fun CityInfo.wasNotPreviouslyReached(transportType: String, overridingTransportType: String?): Boolean {
+    private fun CityInfo.wasPreviouslyReached(transportType: String, overridingTransportType: String?): Boolean {
         val mediums = citiesReachedToMediums[this]!!
-        return !mediums.contains(transportType) && !mediums.contains(overridingTransportType)
+        return mediums.contains(transportType) || mediums.contains(overridingTransportType)
     }
 
     private fun CityInfo.addMedium(transportType: String) {
