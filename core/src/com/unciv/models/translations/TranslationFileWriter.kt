@@ -36,7 +36,7 @@ object TranslationFileWriter {
 
     private fun getFileHandle(modFolder: FileHandle?, fileLocation: String) =
             if (modFolder != null) modFolder.child(fileLocation)
-            else Gdx.files.internal(fileLocation)
+            else Gdx.files.local(fileLocation)
 
     private fun generateTranslationFiles(translations: Translations, modFolder: FileHandle? = null): HashMap<String, Int> {
         // read the template
