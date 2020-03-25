@@ -31,16 +31,10 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
-        var desiredCivPresent = false
-        var anyRandomPlayer: Player? = null
-        for (player in newGameParameters.players) {
-            if(!newGameScreen.ruleset.nations.containsKey(player.chosenCiv)) // this was in a mod we disabled
-                player.chosenCiv="Random"
-            if (player.chosenCiv==desiredCiv) desiredCivPresent = true
-            if (player.chosenCiv=="Random" && anyRandomPlayer==null && player.playerType==PlayerType.Human) anyRandomPlayer = player
-        }
-        if (desiredCiv.isNotEmpty() && !desiredCivPresent && anyRandomPlayer!=null)
-            anyRandomPlayer.chosenCiv = desiredCiv
+
+        reassignRemovedModReferences()
+        if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
+
         for (player in newGameParameters.players) {
             playerListTable.add(getPlayerTable(player, gameBasics)).pad(10f).row()
         }
@@ -49,6 +43,20 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
         }
         newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size>1)
+    }
+
+    private fun reassignRemovedModReferences() {
+        for (player in newGameParameters.players) {
+            if (!newGameScreen.ruleset.nations.containsKey(player.chosenCiv))
+                player.chosenCiv = "Random"
+        }
+    }
+
+    private fun assignDesiredCiv(desiredCiv: String) {
+        // No auto-select if desiredCiv already used
+        if (newGameParameters.players.any {it.chosenCiv == desiredCiv}) return
+        // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
+        newGameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType==PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
