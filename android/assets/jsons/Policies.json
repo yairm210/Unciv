@@ -61,7 +61,7 @@
 			},
 			{
 				"name": "Republic",
-				"description": "+1 construction in every city, +5% construction when constructing buildings",
+				"description": "+1 production in every city, +5% production when constructing buildings",
 				"requires": ["Collective Rule"],
 				"row": 2,
 				"column": 1
