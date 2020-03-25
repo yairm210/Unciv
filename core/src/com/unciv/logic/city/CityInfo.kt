@@ -148,7 +148,6 @@ class CityInfo {
             if (amount > 0) {
                 cityResources.add(resource, amount, "Tiles")
             }
-
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
@@ -215,8 +214,9 @@ class CityInfo {
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {
         if (isGrowing()) {
-            var turnsToGrowth = ceil((population.getFoodToNextPopulation() - population.foodStored)
-                    / cityStats.currentCityStats.food).toInt()
+            val roundedFoodPerTurn = cityStats.currentCityStats.food.roundToInt().toFloat()
+            val remainingFood = population.getFoodToNextPopulation() - population.foodStored
+            var turnsToGrowth = ceil( remainingFood / roundedFoodPerTurn).toInt()
             if (turnsToGrowth < 1) turnsToGrowth = 1
             return turnsToGrowth
         }
@@ -227,7 +227,7 @@ class CityInfo {
     /** Take null to mean infinity. */
     fun getNumTurnsToStarvation(): Int? {
         if (isStarving()) {
-            return floor(population.foodStored / -cityStats.currentCityStats.food).toInt() + 1
+            return population.foodStored / -cityStats.currentCityStats.food.roundToInt() + 1
         }
 
         return null

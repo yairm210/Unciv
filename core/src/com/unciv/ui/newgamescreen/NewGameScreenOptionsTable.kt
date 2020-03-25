@@ -18,7 +18,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:()->Unit)
+class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.newGameParameters
     val mapParameters = newGameScreen.mapParameters
@@ -134,7 +134,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         isOnlineMultiplayerCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.isOnlineMultiplayer = isOnlineMultiplayerCheckbox.isChecked
-                updatePlayerPickerTable()
+                updatePlayerPickerTable("")
             }
         })
         add(isOnlineMultiplayerCheckbox).colspan(2).row()
@@ -233,16 +233,24 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
             ImageGetter.setTextureRegionDrawables()
         }
 
-        add("{Mods}:".tr()).colspan(2).row()
+        add("{Mods}:".tr().toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
         val modCheckboxTable = Table().apply { defaults().pad(5f) }
         for(mod in modRulesets){
             val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
+            if (mod.name in newGameParameters.mods) checkBox.isChecked = true
             checkBox.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     if(checkBox.isChecked) newGameParameters.mods.add(mod.name)
                     else newGameParameters.mods.remove(mod.name)
                     reloadMods()
-                    updatePlayerPickerTable()
+                    var desiredCiv = ""
+                    if (checkBox.isChecked){
+                        val modNations = RulesetCache[mod.name]?.nations
+                        if (modNations != null && modNations.size > 0) {
+                            desiredCiv = modNations.keys.first()
+                        }
+                    }
+                    updatePlayerPickerTable(desiredCiv)
                 }
             })
             modCheckboxTable.add(checkBox).row()

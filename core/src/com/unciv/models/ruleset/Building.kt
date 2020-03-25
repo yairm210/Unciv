@@ -277,14 +277,14 @@ class Building : NamedStats(), IConstruction{
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         // Regular wonders
-        if (isWonder){
-            if(civInfo.gameInfo.getCities().any {it.cityConstructions.isBuilt(name)})
+        if (isWonder) {
+            if (civInfo.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
 
-            if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any { it != construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 return "Wonder is being built elsewhere"
 
-            if(civInfo.isCityState())
+            if (civInfo.isCityState())
                 return "No world wonders for city-states"
         }
 
@@ -297,7 +297,7 @@ class Building : NamedStats(), IConstruction{
                     && civInfo.cities.any { !it.isPuppet && !it.cityConstructions
                             .containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
-            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 return "National Wonder is being built elsewhere"
             if(civInfo.isCityState())
                 return "No national wonders for city-states"

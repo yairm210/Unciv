@@ -250,7 +250,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         image.centerY(group)
         image.x = group.width-image.width
 
-        // center the circle on thee production image
+        // center the circle on the production image
         circle.x = image.x + (image.width-circle.width)/2
         circle.y = image.y + (image.height-circle.height)/2
 

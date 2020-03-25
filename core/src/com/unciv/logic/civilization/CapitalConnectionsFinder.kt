@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import kotlin.collections.set
 
@@ -15,8 +17,8 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
     private val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
     private val railroadIsResearched = civInfo.tech.isResearched("Railroad")
 
-    private val road = "Road"
-    private val railroad = "Railroad"
+    private val road = RoadStatus.Road.name
+    private val railroad = RoadStatus.Railroad.name
     private val harbor = "Harbor"
 
     init {

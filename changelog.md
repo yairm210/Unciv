@@ -1,3 +1,23 @@
+## 3.6.12
+
+City names now translated in overview and tile info
+
+Resolved some ANRs in Multiplayer
+
+Performance improvements in finding cities connected to capital
+
+Mod translation generation - by Jack Rainy
+
+When moving between units to units in cities, tiles they can move to are now shown
+
+Adding mods auto-adds relevant civs - by rh-github-2015
+
+Added progress bars for constructions in city screen
+
+Nicer, more consistent specialist allocation tables
+
+Translation updates
+
 ## 3.6.11
 
 By rh-github-2015:

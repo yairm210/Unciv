@@ -18,35 +18,32 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
             if (statToMaximumSpecialist.value == 0f) continue
 
             val stat = statToMaximumSpecialist.key
-            add(getAllocationTable(stat)).pad(10f)
-            addSeparatorVertical().pad(5f)
+
+            val assignedSpecialists = cityInfo.population.specialists.get(stat).toInt()
+            val maxSpecialists = cityInfo.population.getMaxSpecialists().get(stat).toInt()
+
+            add(getUnassignButton(assignedSpecialists,stat))
+            add(getAllocationTable(assignedSpecialists, maxSpecialists, stat)).pad(10f)
+            add(getAssignButton(assignedSpecialists,maxSpecialists,stat))
+            addSeparatorVertical().pad(10f)
             add(getSpecialistStatsTable(stat)).row()
         }
         pack()
     }
 
 
-    fun getAllocationTable(stat: Stat):Table{
-        val specialistPickerTable = Table()
-
-        val assignedSpecialists = cityInfo.population.specialists.get(stat).toInt()
-        val maxSpecialists = cityInfo.population.getMaxSpecialists().get(stat).toInt()
-
-        specialistPickerTable.add(getUnassignButton(assignedSpecialists, stat))
+    fun getAllocationTable(assignedSpecialists: Int, maxSpecialists: Int, stat: Stat):Table{
 
         val specialistIconTable = Table()
         for (i in 1..maxSpecialists) {
             val icon = ImageGetter.getSpecialistIcon(stat, i <= assignedSpecialists)
             specialistIconTable.add(icon).size(30f)
         }
-        specialistPickerTable.add(specialistIconTable)
-
-        specialistPickerTable.add(getAssignButton(assignedSpecialists, maxSpecialists, stat))
-
-        return specialistPickerTable
+        return specialistIconTable
     }
 
     private fun getAssignButton(assignedSpecialists: Int, maxSpecialists: Int, stat: Stat):Actor {
+
         if (assignedSpecialists >= maxSpecialists || cityInfo.isPuppet) return Table()
         val assignButton = "+".toLabel(Color.BLACK,24)
                 .apply { this.setAlignment(Align.center) }
@@ -62,8 +59,6 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
     }
 
     private fun getUnassignButton(assignedSpecialists: Int, stat: Stat):Actor {
-        if (assignedSpecialists <= 0 || cityInfo.isPuppet) return Table()
-
         val unassignButton = "-".toLabel(Color.BLACK,24)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(30f).apply { circle.color= Color.RED.cpy().lerp(Color.BLACK,0.1f) }
@@ -72,6 +67,8 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
             cityInfo.cityStats.update()
             cityScreen.update()
         }
+
+        if (assignedSpecialists <= 0 || cityInfo.isPuppet) unassignButton.isVisible=false
         if (!UncivGame.Current.worldScreen.isPlayersTurn) unassignButton.clear()
         return unassignButton
     }

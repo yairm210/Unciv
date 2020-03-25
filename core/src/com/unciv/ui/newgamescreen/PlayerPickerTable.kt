@@ -28,12 +28,14 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         update()
     }
 
-    fun update() {
+    fun update(desiredCiv: String = "") {
         playerListTable.clear()
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
+
+        reassignRemovedModReferences()
+        if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
+
         for (player in newGameParameters.players) {
-            if(!newGameScreen.ruleset.nations.containsKey(player.chosenCiv)) // this was in a mod we disabled
-                player.chosenCiv="Random"
             playerListTable.add(getPlayerTable(player, gameBasics)).pad(10f).row()
         }
         if(newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
@@ -41,6 +43,20 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
         }
         newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size>1)
+    }
+
+    private fun reassignRemovedModReferences() {
+        for (player in newGameParameters.players) {
+            if (!newGameScreen.ruleset.nations.containsKey(player.chosenCiv))
+                player.chosenCiv = "Random"
+        }
+    }
+
+    private fun assignDesiredCiv(desiredCiv: String) {
+        // No auto-select if desiredCiv already used
+        if (newGameParameters.players.any {it.chosenCiv == desiredCiv}) return
+        // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
+        newGameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType==PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
