@@ -24,8 +24,7 @@ class GameSettings {
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
-    var showPixelResources: Boolean = true
-    var nuclearWeaponEnabled = false
+    var nuclearWeaponEnabled = true
     var continuousRendering = false
     var userId = ""
     var multiplayerTurnCheckerEnabled = true

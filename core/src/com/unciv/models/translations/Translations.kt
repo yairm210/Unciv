@@ -39,9 +39,16 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val languageTranslations:HashMap<String,String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
-             languageTranslations = TranslationFileReader.read(translationFileName)
+             languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
         }catch (ex:Exception){
             return
+        }
+
+        // try to load the translations from the mods
+        for(modFolder in Gdx.files.local("mods").list()) {
+            val modTranslationFile = modFolder.child(translationFileName)
+            if (modTranslationFile.exists())
+                languageTranslations.putAll(TranslationFileReader.read(modTranslationFile))
         }
 
         for (translation in languageTranslations) {
@@ -62,6 +69,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         tryReadTranslationForLanguage(UncivGame.Current.settings.language)
     }
 
+    // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
     private fun getLanguagesWithTranslationFile(): List<String> {
 
         val languages = ArrayList<String>()
@@ -112,30 +120,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
         val translationFilesTime = System.currentTimeMillis() - startTime
         println("Loading percent complete of languages - "+translationFilesTime+"ms")
-    }
-
-    fun calculatePercentageCompleteOfLanguages():HashMap<String,Int> {
-        val percentComplete = HashMap<String,Int>()
-        val translationStart = System.currentTimeMillis()
-
-        var allTranslations = TranslationFileWriter.getGeneratedStringsSize()
-        Gdx.files.internal(TranslationFileWriter.templateFileLocation)
-                .reader().forEachLine { if(it.contains(" = ")) allTranslations+=1 }
-
-        for(language in getLanguagesWithTranslationFile()){
-            val translationFileName = "jsons/translations/$language.properties"
-            var translationsOfThisLanguage=0
-            Gdx.files.internal(translationFileName).reader()
-                    .forEachLine { if(it.contains(" = ") && !it.endsWith(" = "))
-                        translationsOfThisLanguage+=1 }
-
-            percentComplete[language] = translationsOfThisLanguage*100/allTranslations
-        }
-
-
-        val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Calculating percentage complete of languages - "+translationFilesTime+"ms")
-        return percentComplete
     }
 
     companion object {
