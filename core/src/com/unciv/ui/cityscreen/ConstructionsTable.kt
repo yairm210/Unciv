@@ -180,6 +180,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val text = name.tr() + turnOrTurns(turnsToComplete)
 
         table.defaults().pad(2f).minWidth(40f)
+        if(isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)
+        else table.add().minWidth(5f)
         table.add(ImageGetter.getConstructionImage(name).surroundWithCircle(40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
@@ -198,6 +200,18 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return table
     }
 
+    fun getProgressBar(constructionName:String): Table {
+        val cityConstructions = cityScreen.city.cityConstructions
+        val construction = cityConstructions.getConstruction(constructionName)
+        if (construction is PerpetualConstruction) return Table()
+        if (cityConstructions.getWorkDone(constructionName) == 0) return Table()
+
+        val constructionPercentage = cityConstructions.getWorkDone(constructionName) /
+                construction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+        return ImageGetter.getProgressBarVertical(2f, 30f, constructionPercentage,
+                Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
+    }
+
     private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String = ""): Table {
         val pickProductionButton = Table()
 
@@ -209,6 +223,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             pickProductionButton.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
         }
 
+        pickProductionButton.add(getProgressBar(construction)).padRight(5f)
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
         pickProductionButton.add(buttonText.toLabel()).expandX().fillX().left()
 
