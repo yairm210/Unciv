@@ -305,7 +305,7 @@ open class TileInfo {
 
         if (isCityCenter()) {
             val city = getCity()!!
-            var cityString = city.name
+            var cityString = city.name.tr()
             if(isViewableToPlayer) cityString += " ("+city.health+")"
             lineList += cityString
             if(UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
