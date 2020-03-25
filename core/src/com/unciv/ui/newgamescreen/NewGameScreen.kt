@@ -30,7 +30,7 @@ class NewGameScreen: PickerScreen(){
         scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
+        val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
         topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
         topTable.add(playerPickerTable).height(topTable.parent.height)
         topTable.pack()
