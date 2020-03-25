@@ -1,6 +1,7 @@
 ﻿package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.logic.battle.BattleDamage
@@ -17,56 +18,88 @@ import java.lang.reflect.Field
 
 object TranslationFileWriter {
 
+    private const val specialNewLineCode = "# This is an empty line "
     const val templateFileLocation = "jsons/translations/template.properties"
-    private val generatedStrings = mutableMapOf<String,MutableSet<String>>()
+    private const val languageFileLocation = "jsons/translations/%s.properties"
 
-    private fun writeByTemplate(language:String, translations: HashMap<String, String>){
+    fun writeNewTranslationFiles(translations: Translations) {
 
-        val templateFile = Gdx.files.internal(templateFileLocation)
+        val percentages = generateTranslationFiles(translations)
+        writeLanguagePercentages(percentages)
+
+        // try to do the same for the mods
+        for(modFolder in Gdx.files.local("mods").list())
+            generateTranslationFiles(translations, modFolder)
+            // write percentages is not needed: for an individual mod it makes no sense
+
+    }
+
+    private fun getFileHandle(modFolder: FileHandle?, fileLocation: String) =
+            if (modFolder != null) modFolder.child(fileLocation)
+            else Gdx.files.local(fileLocation)
+
+    private fun generateTranslationFiles(translations: Translations, modFolder: FileHandle? = null): HashMap<String, Int> {
+        // read the template
+        val templateFile = getFileHandle(modFolder, templateFileLocation)
         val linesFromTemplates = mutableListOf<String>()
-        linesFromTemplates.addAll(templateFile.reader().readLines())
-
-        generateStringsFromJSONs()
+        if (templateFile.exists())
+            linesFromTemplates.addAll(templateFile.reader().readLines())
+        // read the JSON files
+        val generatedStrings = generateStringsFromJSONs(modFolder)
         for (key in generatedStrings.keys) {
             linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
             linesFromTemplates.addAll(generatedStrings.getValue(key))
         }
 
-        val stringBuilder = StringBuilder()
-        for(line in linesFromTemplates){
-            if(!line.contains(" = ")){ // copy as-is
-                stringBuilder.appendln(line)
-                continue
-            }
-            val translationKey = line.split(" = ")[0].replace("\\n","\n")
-            var translationValue = ""
-            if(translations.containsKey(translationKey)) translationValue = translations[translationKey]!!
-            else stringBuilder.appendln(" # Requires translation!")
-            val lineToWrite = translationKey.replace("\n","\\n") +
-                    " = "+ translationValue.replace("\n","\\n")
-            stringBuilder.appendln(lineToWrite)
-        }
-        Gdx.files.local("jsons/translations/$language.properties")
-                .writeString(stringBuilder.toString(),false, TranslationFileReader.charset)
-    }
-
-
-    fun writeNewTranslationFiles(translations: Translations) {
-
+        var countOfTranslatableLines = 0
+        val countOfTranslatedLines = HashMap<String, Int>()
+        // iterate through all available languages
         for (language in translations.getLanguages()) {
-            val languageHashmap = HashMap<String, String>()
+            var translationsOfThisLanguage = 0
+            val stringBuilder = StringBuilder()
 
-            for (translation in translations.values) {
-                if (translation.containsKey(language))
-                    languageHashmap[translation.entry] = translation[language]!!
+            for (line in linesFromTemplates) {
+                if (line.contains(" = ")) {
+                    // count translatable lines only once (e.g. for English)
+                    if (language == "English") countOfTranslatableLines++
+                } else {
+                    // small hack to insert empty lines
+                    if (line.startsWith(specialNewLineCode))
+                        stringBuilder.appendln()
+                    else // copy as-is
+                        stringBuilder.appendln(line)
+                    continue
+                }
+
+                val translationKey = line.split(" = ")[0].replace("\\n", "\n")
+                var translationValue = ""
+
+                val translationEntry = translations[translationKey]
+                if (translationEntry != null && translationEntry.containsKey(language)) {
+                    translationValue = translationEntry[language]!!
+                    translationsOfThisLanguage++
+                } else stringBuilder.appendln(" # Requires translation!")
+
+                val lineToWrite = translationKey.replace("\n", "\\n") +
+                        " = " + translationValue.replace("\n", "\\n")
+                stringBuilder.appendln(lineToWrite)
             }
-            writeByTemplate(language, languageHashmap)
+
+            countOfTranslatedLines[language] = translationsOfThisLanguage
+
+            val fileWriter = getFileHandle(modFolder,languageFileLocation.format(language))
+            fileWriter.writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
         }
-        writeLanguagePercentages(translations)
+
+        // Calculate the percentages of translations
+        // It should be done after the loop of languages, since the countOfTranslatableLines is not known in the 1st iteration
+        for (key in countOfTranslatedLines.keys)
+            countOfTranslatedLines[key] = countOfTranslatedLines.getValue(key)*100/countOfTranslatableLines
+
+        return countOfTranslatedLines
     }
 
-    private fun writeLanguagePercentages(translations: Translations){
-        val percentages = translations.calculatePercentageCompleteOfLanguages()
+    private fun writeLanguagePercentages(percentages: HashMap<String,Int>){
         val stringBuilder = StringBuilder()
         for(entry in percentages){
             stringBuilder.appendln(entry.key+" = "+entry.value)
@@ -74,42 +107,44 @@ object TranslationFileWriter {
         Gdx.files.local(TranslationFileReader.percentagesFileLocation).writeString(stringBuilder.toString(),false)
     }
 
-    private fun generateTutorialsStrings(): Collection<String> {
 
-        if (generatedStrings.containsKey("Tutorials"))
-            return generatedStrings.getValue("Tutorials")
 
-        generatedStrings["Tutorials"] = mutableSetOf()
-        val tutorialsStrings = generatedStrings["Tutorials"]
+    private fun generateTutorialsStrings(): MutableSet<String> {
+
+        val tutorialsStrings = mutableSetOf<String>()
         val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
+        var uniqueIndexOfNewLine = 0
         for (tutorial in tutorials) {
             for (str in tutorial.value)
-                if (str != "") tutorialsStrings!!.add("$str = ")
+                if (str != "") tutorialsStrings.add("$str = ")
+            // This is a small hack to insert multiple /n into the set, which can't contain identical lines
+            tutorialsStrings.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
         }
-        return tutorialsStrings!!
+        return tutorialsStrings
     }
 
+    // used for unit test only
     fun getGeneratedStringsSize(): Int {
-        if (generatedStrings.isEmpty())
-            generateStringsFromJSONs()
-        return generatedStrings.values.sumBy { it.size }
+        return generateStringsFromJSONs().values.sumBy { // exclude empty lines
+            it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
     }
 
-    private fun generateStringsFromJSONs() {
+    private fun generateStringsFromJSONs(modFolder: FileHandle? = null): Map<String, MutableSet<String>> {
 
-        if (generatedStrings.isNotEmpty())
-            return // do not regenerate if the strings are ready
+        // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
+        val generatedStrings = LinkedHashMap<String, MutableSet<String>>()
 
+        var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
-        val folderHandler = Gdx.files.internal("jsons")
+        val folderHandler = getFileHandle(modFolder,"jsons")
         val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
         for (jsonFile in listOfJSONFiles)
         {
             val filename = jsonFile.nameWithoutExtension()
             // Tutorials are a bit special
             if (filename == "Tutorials") {
-                generateTutorialsStrings()
+                generatedStrings[filename] = generateTutorialsStrings()
                 continue
             }
 
@@ -165,9 +200,13 @@ object TranslationFileWriter {
             }
 
             if (array is kotlin.Array<*>)
-                for (element in array)
+                for (element in array) {
                     serializeElement(element!!) // let's serialize the strings recursively
+                    // This is a small hack to insert multiple /n into the set, which can't contain identical lines
+                    resultStrings!!.add("$specialNewLineCode ${uniqueIndexOfNewLine++}")
+                }
         }
+        return generatedStrings
     }
 
     private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
