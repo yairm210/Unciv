@@ -145,7 +145,7 @@
 		"strength": 10,
 		"cost": 45,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles"],
+		"uniques": ["Cannot enter ocean tiles",],
 		"upgradesTo": "Caravel",
 		"obsoleteTech": "Astronomy",
 		"hurryCostModifier": 20,
@@ -661,7 +661,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range"],
+		"uniques": ["+1 Visibility Range","May withdraw before melee"],
 		"hurryCostModifier": 20
 	},
 	{
@@ -1074,7 +1074,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines","[40]% chance to intercept air attacks"], // todo: add bonus vs submarines
+		"uniques": ["Can attack submarines","[40]% chance to intercept air attacks","May withdraw before melee"], // todo: add bonus vs submarines
 		"hurryCostModifier": 20
 	},
 	{
