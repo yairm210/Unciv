@@ -39,7 +39,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val languageTranslations:HashMap<String,String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
-             languageTranslations = TranslationFileReader.read(translationFileName)
+             languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
         }catch (ex:Exception){
             return
         }
@@ -48,7 +48,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         for(modFolder in Gdx.files.local("mods").list()) {
             val modTranslationFile = modFolder.child(translationFileName)
             if (modTranslationFile.exists())
-                languageTranslations.putAll(TranslationFileReader.read(modTranslationFile.path()))
+                languageTranslations.putAll(TranslationFileReader.read(modTranslationFile))
         }
 
         for (translation in languageTranslations) {
