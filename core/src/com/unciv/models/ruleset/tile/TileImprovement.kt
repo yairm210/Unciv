@@ -36,7 +36,7 @@ class TileImprovement : NamedStats() {
         if (statsDesc.isNotEmpty()) stringBuilder.appendln(statsDesc)
         if (improvingTech != null && improvingTechStats != null) {
             val improveStatsDesc = improvingTechStats.toString()
-            if (improveStatsDesc.isNotEmpty()) stringBuilder.appendln("[$improveStatsDesc] with [${improvingTech!!}]")
+            if (improveStatsDesc.isNotEmpty()) stringBuilder.appendln("[$improveStatsDesc] with [${improvingTech!!}]".tr())
         }
         if (uniqueTo!=null && !forPickerScreen) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
