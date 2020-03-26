@@ -32,6 +32,7 @@ enum class UnitType{
                 || this == Siege
                 || this == WaterRanged
                 || this == WaterSubmarine
+                || this == WaterAircraftCarrier
                 || this == City
                 || this.isAirUnit()
 
