@@ -3,12 +3,14 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -332,11 +334,19 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun createNextTurnButton(): TextButton {
+        class NextTurnLongPressListener: ActorGestureListener() {
+            override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
+                nextTurn()
+                return true
+            }
+        }
+
 
         val nextTurnButton = TextButton("", skin) // text is set in update()
         nextTurnButton.label.setFontSize(30)
         nextTurnButton.labelCell.pad(10f)
 
+        nextTurnButton.addListener(NextTurnLongPressListener())
         nextTurnButton.onClick {
             // cycle through units not yet done
             if (viewingCiv.shouldGoToDueUnit()) {
