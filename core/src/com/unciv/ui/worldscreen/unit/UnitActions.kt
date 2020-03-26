@@ -344,10 +344,16 @@ object UnitActions {
                     title = "Create [$improvementName]",
                     uncivSound = UncivSound.Chimes,
                     action = {
-                        unit.getTile().terrainFeature = null // remove forest/jungle/marsh
-                        unit.getTile().improvement = improvementName
-                        unit.getTile().improvementInProgress = null
-                        unit.getTile().turnsToImprovement = 0
+                        val unitTile = unit.getTile()
+                        unitTile.terrainFeature = null // remove forest/jungle/marsh
+                        unitTile.improvement = improvementName
+                        unitTile.improvementInProgress = null
+                        unitTile.turnsToImprovement = 0
+                        val city = unitTile.getCity()
+                        if (city != null) {
+                            city.cityStats.update()
+                            city.civInfo.updateDetailedCivResources()
+                        }
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().impassable })
         }
