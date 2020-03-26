@@ -219,44 +219,8 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         add(victoryConditionsTable).colspan(2).row()
     }
 
-
-    fun addModCheckboxes() {
-        val modRulesets = RulesetCache.filter { it.key!="" }.values
-        if(modRulesets.isEmpty()) return
-
-        fun reloadMods(){
-            ruleset.clear()
-            ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
-            ruleset.mods+=newGameParameters.mods
-
-            ImageGetter.ruleset=ruleset
-            ImageGetter.setTextureRegionDrawables()
-        }
-
-        add("{Mods}:".tr().toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
-        val modCheckboxTable = Table().apply { defaults().pad(5f) }
-        for(mod in modRulesets){
-            val checkBox = CheckBox(mod.name,CameraStageBaseScreen.skin)
-            if (mod.name in newGameParameters.mods) checkBox.isChecked = true
-            checkBox.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    if(checkBox.isChecked) newGameParameters.mods.add(mod.name)
-                    else newGameParameters.mods.remove(mod.name)
-                    reloadMods()
-                    var desiredCiv = ""
-                    if (checkBox.isChecked){
-                        val modNations = RulesetCache[mod.name]?.nations
-                        if (modNations != null && modNations.size > 0) {
-                            desiredCiv = modNations.keys.first()
-                        }
-                    }
-                    updatePlayerPickerTable(desiredCiv)
-                }
-            })
-            modCheckboxTable.add(checkBox).row()
-        }
-
-        add(modCheckboxTable).colspan(2).row()
+    private fun addModCheckboxes() {
+        val modPickerTable = ModPickerTable(newGameScreen, updatePlayerPickerTable)
+        add(modPickerTable).colspan(2).row()
     }
-
 }

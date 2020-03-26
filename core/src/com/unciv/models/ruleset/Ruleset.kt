@@ -141,6 +141,10 @@ class Ruleset() {
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         println("Loading game basics - " + gameBasicsLoadTime + "ms")
     }
+
+    fun containsMapEditorObjects(): Boolean {
+        return terrains.isNotEmpty() || tileResources.isNotEmpty() || tileImprovements.isNotEmpty()
+    }
 }
 
 /** Loading mods is expensive, so let's only do it once and
