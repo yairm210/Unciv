@@ -110,12 +110,11 @@
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
-	/*
 	{
 		"name": "Slinger",
 		"unitType": "Ranged",
-		"replaces": "Archer",
 		"uniqueTo": "Inca",
+		"replaces": "Archer",
 		"movement": 2,
 		"strength": 4,
 		"rangedStrength": 7,
@@ -123,12 +122,10 @@
 		"hurryCostModifier": 20,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Machinery",
-		"uniques": ["May withdraw before melee"],	// should be inheritable (promotion)
 		"upgradesTo": "Crossbowman",
+		"promotions": ["Slinger Withdraw"],
 		"attackSound": "arrow"
-		//Incan unique unit
 	},
-	*/
 	{
 		"name": "Work Boats",
 		"unitType": "WaterCivilian",
