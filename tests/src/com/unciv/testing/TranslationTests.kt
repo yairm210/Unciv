@@ -38,17 +38,6 @@ class TranslationTests {
                 allUnitsHaveTranslation)
     }
 
-    @Test
-    fun allUnitUniquesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (unit in ruleset.units.values) for (unique in unit.uniques) if (!unique.startsWith("Bonus")
-                                                                            && !unique.startsWith("Penalty")
-                                                                            && !unique.contains("[")) // templates
-            strings.add(unique)
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all units uniques",
-                allStringsHaveTranslation)
-    }
 
     @Test
     fun allUnitActionsHaveTranslation() {

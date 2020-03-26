@@ -145,9 +145,7 @@ class CityInfo {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
             val amount = getTileResourceAmount(tileInfo)
-            if (amount > 0) {
-                cityResources.add(resource, amount, "Tiles")
-            }
+            if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
