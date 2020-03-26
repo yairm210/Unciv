@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
@@ -140,6 +141,14 @@ fun Actor.onClick(sound: UncivSound = UncivSound.Click, function: () -> Unit) {
 fun Actor.onClick(function: () -> Unit): Actor {
     onClick(UncivSound.Click, function)
     return this
+}
+
+fun Actor.onChange(function: () -> Unit){
+    this.addListener(object : ChangeListener() {
+        override fun changed(event: ChangeEvent?, actor: Actor?) {
+            function()
+        }
+    })
 }
 
 fun Actor.surroundWithCircle(size:Float,resizeActor:Boolean=true): IconCircleGroup {

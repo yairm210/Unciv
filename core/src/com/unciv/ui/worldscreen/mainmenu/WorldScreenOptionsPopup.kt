@@ -186,13 +186,11 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
         soundEffectsVolumeSlider.value = UncivGame.Current.settings.soundEffectsVolume
-        soundEffectsVolumeSlider.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        soundEffectsVolumeSlider.onChange {
                 UncivGame.Current.settings.soundEffectsVolume = soundEffectsVolumeSlider.value
                 UncivGame.Current.settings.save()
                 Sounds.play(UncivSound.Click)
             }
-        })
         innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
     }
 
@@ -203,18 +201,16 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
             val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
             musicVolumeSlider.value = UncivGame.Current.settings.musicVolume
-            musicVolumeSlider.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
-                    UncivGame.Current.settings.save()
+            musicVolumeSlider.onChange {
+                UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
+                UncivGame.Current.settings.save()
 
-                    val music = UncivGame.Current.music
-                    if (music == null) // restart music, if it was off at the app start
-                        thread(name="Music") { UncivGame.Current.startMusic() }
+                val music = UncivGame.Current.music
+                if (music == null) // restart music, if it was off at the app start
+                    thread(name = "Music") { UncivGame.Current.startMusic() }
 
-                    music?.volume = 0.4f * musicVolumeSlider.value
-                }
-            })
+                music?.volume = 0.4f * musicVolumeSlider.value
+            }
             innerTable.add(musicVolumeSlider).pad(10f).row()
         }
         else{
@@ -253,15 +249,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         resolutionSelectBox.selected = UncivGame.Current.settings.resolution
         innerTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
 
-        resolutionSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UncivGame.Current.settings.resolution = resolutionSelectBox.selected
-                UncivGame.Current.settings.save()
-                UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-                UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
-            }
-        })
+        resolutionSelectBox.onChange {
+            UncivGame.Current.settings.resolution = resolutionSelectBox.selected
+            UncivGame.Current.settings.save()
+            UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
+            UncivGame.Current.setWorldScreen()
+            WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        }
     }
 
     private fun addTileSetSelectBox(innerTable: Table) {

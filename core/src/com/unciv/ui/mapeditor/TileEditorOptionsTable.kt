@@ -66,12 +66,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val slider = Slider(1f,5f,1f, false, skin)
         val sliderLabel = "{Brush Size} $brushSize".toLabel()
 
-        slider.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                brushSize = slider.getValue().toInt()
-                sliderLabel.setText("{Brush Size} $brushSize".tr())
-            }
-        })
+        slider.onChange {
+            brushSize = slider.getValue().toInt()
+            sliderLabel.setText("{Brush Size} $brushSize".tr())
+        }
 
         sliderTab.defaults().pad(5f)
         sliderTab.add(sliderLabel)
