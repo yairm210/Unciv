@@ -143,12 +143,13 @@ fun Actor.onClick(function: () -> Unit): Actor {
     return this
 }
 
-fun Actor.onChange(function: () -> Unit){
+fun Actor.onChange(function: () -> Unit): Actor {
     this.addListener(object : ChangeListener() {
         override fun changed(event: ChangeEvent?, actor: Actor?) {
             function()
         }
     })
+    return this
 }
 
 fun Actor.surroundWithCircle(size:Float,resizeActor:Boolean=true): IconCircleGroup {
