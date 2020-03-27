@@ -372,16 +372,23 @@ class MapGenerator(val ruleset: Ruleset) {
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
     private fun spreadStrategicResources(tileMap: TileMap, distance: Int) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
-        val totalNumberOfResources = tileMap.values.count { it.isLand && !it.getBaseTerrain().impassable } *
-                tileMap.mapParameters.resourceRichness
+        // passable land tiles (no mountains, no wonders) without resources yet
+        val candidateTiles = tileMap.values.filter { it.resource == null && it.isLand && !it.getLastTerrain().impassable }
+        val totalNumberOfResources = candidateTiles.size * tileMap.mapParameters.resourceRichness
         val resourcesPerType = (totalNumberOfResources/strategicResources.size).toInt()
         for (resource in strategicResources) {
-            val suitableTiles = tileMap.values
-                    .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+            // remove the tiles where previous resources have been placed
+            val suitableTiles = candidateTiles
+                    .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getBaseTerrain().name)}
 
             val locations = chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
 
-            for (location in locations) location.resource = resource.name
+            for (location in locations) {
+                // clean features to be able to place the resource
+                if (!resource.terrainsCanBeFoundOn.contains(location.getLastTerrain().name))
+                    location.terrainFeature = null
+                location.resource = resource.name
+            }
         }
     }
 
