@@ -16,7 +16,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
 
     fun selectUnit(unit: MapUnit) {
         if(unit.type.isAirUnit()) return // doesn't appear on map so nothing to select
-        val unitImage = if (unit.type.isCivilian()) icons.civilianUnitIcon
+        val unitImage = if (unit.type.isCivilian() || (tileInfo.isWater && unit.type.isLandUnit())) icons.civilianUnitIcon
         else icons.militaryUnitIcon
         unitImage?.selectUnit()
     }

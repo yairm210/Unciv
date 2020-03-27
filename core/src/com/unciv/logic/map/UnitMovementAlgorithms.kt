@@ -289,9 +289,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!canPassThrough(tile))
             return false
 
-        if (unit.type.isCivilian())
-            return tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
-        else return tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
+        return when {
+            unit.type.isCivilian() || (tile.isWater && unit.type.isLandUnit()) -> tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
+            else -> tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
+        }
     }
 
     private fun canAirUnitMoveTo(tile: TileInfo, unit: MapUnit): Boolean {

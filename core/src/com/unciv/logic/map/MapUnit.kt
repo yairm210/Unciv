@@ -224,7 +224,7 @@ class MapUnit {
         return false
     }
 
-    fun getEmbarkedMovement(): Int {
+    private fun getEmbarkedMovement(): Int {
         var movement=2
         movement += civInfo.tech.getTechUniques().count { it == "Increases embarked movement +1" }
         return movement
@@ -478,8 +478,8 @@ class MapUnit {
     fun removeFromTile(){
         when {
             type.isAirUnit() -> currentTile.airUnits.remove(this)
-            type.isCivilian() -> getTile().civilianUnit=null
-            else -> getTile().militaryUnit=null
+            this == getTile().civilianUnit -> getTile().civilianUnit = null // civilian or embarked military unit
+            else -> getTile().militaryUnit = null
         }
     }
 
@@ -506,8 +506,8 @@ class MapUnit {
         when {
             !movement.canMoveTo(tile) -> throw Exception("I can't go there!")
             type.isAirUnit() -> tile.airUnits.add(this)
-            type.isCivilian() -> tile.civilianUnit=this
-            else -> tile.militaryUnit=this
+            type.isCivilian() || (tile.isWater && type.isLandUnit()) -> tile.civilianUnit = this
+            else -> tile.militaryUnit = this
         }
         // this check is here in order to not load the fresh built unit into carrier right after the build
         isTransported = !tile.isCityCenter() &&
