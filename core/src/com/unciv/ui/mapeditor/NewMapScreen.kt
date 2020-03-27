@@ -10,6 +10,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.MapParametersTable
+import com.unciv.ui.newgamescreen.ModPickerTable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
@@ -19,6 +20,7 @@ class NewMapScreen : PickerScreen() {
 
     private val mapParameters = MapParameters()
     private var generatedMap: TileMap? = null
+    val mods = HashSet<String>()
 
     init {
         setDefaultCloseAction()
@@ -27,6 +29,7 @@ class NewMapScreen : PickerScreen() {
             pad(10f)
             add("Map options".toLabel(fontSize = 24)).row()
             add(MapParametersTable(mapParameters, isEmptyMapAllowed = true)).row()
+            add(ModPickerTable(mods, null, true)).row()
             pack()
         }
 
@@ -45,7 +48,7 @@ class NewMapScreen : PickerScreen() {
             thread(name = "MapGenerator") {
                 try {
                     // Map generation can take a while and we don't want ANRs
-                    val ruleset = RulesetCache.getBaseRuleset()
+                    val ruleset = RulesetCache.getComplexRuleset(mods)
                     generatedMap = MapGenerator(ruleset).generateMap(mapParameters)
 
                     Gdx.app.postRunnable {

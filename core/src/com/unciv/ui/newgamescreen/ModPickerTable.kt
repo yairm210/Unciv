@@ -23,25 +23,24 @@ import com.unciv.ui.utils.toLabel
  *
  *  @param isForMapEditor whether mods with empty terrain and resources tables should be shown
  * */
-class ModPickerTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:((desiredCiv:String)->Unit)?, val isForMapEditor: Boolean = false):
+class ModPickerTable(var modList: HashSet<String>, val updatePlayerPickerTable:((desiredCiv:String)->Unit)?, val isForMapEditor: Boolean = false):
     Table(CameraStageBaseScreen.skin) {
 
-    val newGameParameters = newGameScreen.newGameParameters
-    val ruleset = newGameScreen.ruleset
+    val ruleset = RulesetCache.getComplexRuleset(modList)
 
     init {
 
         fun reloadMods(){
             ruleset.clear()
-            ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
-            ruleset.mods+=newGameParameters.mods
+            ruleset.add(RulesetCache.getComplexRuleset(modList))
+            ruleset.mods += modList
 
             ImageGetter.ruleset=ruleset
             ImageGetter.setTextureRegionDrawables()
         }
 
         val modRulesets = RulesetCache.filter {
-                it.key!="" && (isForMapEditor || it.value.containsMapEditorObjects())
+                it.key!="" && (!isForMapEditor || it.value.containsMapEditorObjects())
             }.values
 
         if (modRulesets.isNotEmpty()) {
@@ -50,11 +49,11 @@ class ModPickerTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTab
             val modCheckboxTable = Table().apply { defaults().pad(5f) }
             for (mod in modRulesets) {
                 val checkBox = CheckBox(mod.name, CameraStageBaseScreen.skin)
-                if (mod.name in newGameParameters.mods) checkBox.isChecked = true
+                if (mod.name in modList) checkBox.isChecked = true
                 checkBox.addListener(object : ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
-                        if (checkBox.isChecked) newGameParameters.mods.add(mod.name)
-                        else newGameParameters.mods.remove(mod.name)
+                        if (checkBox.isChecked) modList.add(mod.name)
+                        else modList.remove(mod.name)
                         reloadMods()
                         var desiredCiv = ""
                         if (checkBox.isChecked) {

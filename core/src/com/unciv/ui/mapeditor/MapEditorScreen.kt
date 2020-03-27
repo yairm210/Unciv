@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -17,13 +18,13 @@ import com.unciv.ui.utils.popups
 import com.unciv.ui.utils.setFontSize
 
 class MapEditorScreen(): CameraStageBaseScreen() {
-    val ruleset = RulesetCache.getBaseRuleset()
+    lateinit var ruleset: Ruleset
     var mapName = "My first map"
 
     var tileMap = TileMap()
     lateinit var mapHolder: EditorMapHolder
 
-    val tileEditorOptions = TileEditorOptionsTable(this)
+    lateinit var tileEditorOptions: TileEditorOptionsTable
 
     private val showHideEditorOptionsButton = TextButton(">", skin)
 
@@ -50,12 +51,14 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     }
 
     fun initialize() {
+        ruleset = RulesetCache.getComplexRuleset(tileMap.requiredMods)
         tileMap.setTransients(ruleset)
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()
         stage.addActor(mapHolder)
 
+        tileEditorOptions = TileEditorOptionsTable(this)
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
 

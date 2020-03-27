@@ -28,6 +28,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
         map.mapParameters = mapParameters
         map.mapParameters.seed = seed
+        map.createdWithMods = ruleset.mods
 
         if (mapType == MapType.empty)
             return map
@@ -43,6 +44,8 @@ class MapGenerator(val ruleset: Ruleset) {
         spreadResources(map)
         spreadAncientRuins(map)
         spawnNaturalWonders(map)
+
+        map.evalRequiredMods()
         return map
     }
 
@@ -731,4 +734,5 @@ class MapGenerator(val ruleset: Ruleset) {
 
         // endregion
     }
+
 }

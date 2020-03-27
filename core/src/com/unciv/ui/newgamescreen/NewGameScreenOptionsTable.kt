@@ -220,7 +220,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     }
 
     private fun addModCheckboxes() {
-        val modPickerTable = ModPickerTable(newGameScreen, updatePlayerPickerTable)
+        val modPickerTable = ModPickerTable(newGameParameters.mods, updatePlayerPickerTable)
         add(modPickerTable).colspan(2).row()
     }
 }

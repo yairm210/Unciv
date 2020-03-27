@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import kotlin.math.abs
 
 class TileMap {
@@ -18,6 +19,8 @@ class TileMap {
     @delegate:Transient val maxLongitude: Float by lazy { if (values.isEmpty()) 0f else values.map { abs(it.longitude) }.max()!! }
 
     var mapParameters = MapParameters()
+    var createdWithMods = HashSet<String>()
+    var requiredMods = HashSet<String>()
 
     @Deprecated("as of 2.7.10")
     private var tiles = HashMap<String, TileInfo>()
@@ -243,6 +246,28 @@ class TileMap {
             tileInfo.ruleset = ruleset
             tileInfo.setTransients()
         }
+    }
+
+    fun evalRequiredMods() {
+        // Narrow down those mods from ruleset which contain a feature the generated map actually uses
+        if (createdWithMods.isEmpty()) return
+        val allModRulesets = createdWithMods.map { RulesetCache[it]!! }
+        val modTerrains = HashMap<String,String>()
+        allModRulesets.forEach{ ruleset -> ruleset.terrains.values.forEach { modTerrains[it.name] = ruleset.name }}
+        val modResources = HashMap<String,String>()
+        allModRulesets.forEach{ ruleset -> ruleset.tileResources.values.forEach { modResources[it.name] = ruleset.name }}
+        val modImprovements = HashMap<String,String>()
+        allModRulesets.forEach{ ruleset -> ruleset.tileImprovements.values.forEach { modImprovements[it.name] = ruleset.name }}
+        requiredMods = HashSet<String>()
+
+        tileMatrix.forEach { outer -> outer.forEach {
+            if (it!=null) {
+                var mod= modTerrains[it.baseTerrain]; if (mod!=null) requiredMods.add(mod)
+                if (it.terrainFeature!=null) { mod = modTerrains[it.terrainFeature!!]; if (mod!=null) requiredMods.add(mod) }
+                if (it.resource!=null) { mod = modResources[it.resource!!]; if (mod!=null) requiredMods.add(mod) }
+                if (it.improvement!=null) { mod = modResources[it.improvement!!]; if (mod!=null) requiredMods.add(mod) }
+            }
+        } }
     }
 }
 
