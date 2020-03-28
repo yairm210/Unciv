@@ -455,6 +455,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Two [Sword](https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) Scimitars by Those Icons for Persia
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
+* [Sun](https://thenounproject.com/search/?q=inca&i=910770) by Made x Made for Inca
 
 
 ## Promotions

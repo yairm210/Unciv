@@ -599,8 +599,8 @@
 		"afterPeace": "Viracocha has frowned upon our war, and has agreed to our peace agreements.",
 		"tradeRequest": "The Incan people offer this fair trade.",
 				
-		"outerColor": [255,255,51],
-		"innerColor": [0,204,102],
+		"outerColor": [255,162,22],
+		"innerColor": [4,163,125],
 		"unique": "GREAT_ANDEAN_ROAD",
 		"cities": ["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Rumicucho","Vilcabamba","Vitcos",
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
