@@ -1,3 +1,22 @@
+## 3.6.13
+
+By rh-github-2015:
+- New Nation added - Inca!
+- Show improvement bonus for improving tech in Civilopedia
+- Add unit ability 'withdraw before melee' to Caravel and Destroyer
+
+By Jack Rainy:
+- Carrier is ranged
+- Mod's name is translatable
+
+City stats and resources update after creating great improvement
+
+Resolved #2214 - Civilopedia entries are now left-aligned
+
+Fixed very rare crashing bugs
+
+Translation updates
+
 ## 3.6.12
 
 City names now translated in overview and tile info
