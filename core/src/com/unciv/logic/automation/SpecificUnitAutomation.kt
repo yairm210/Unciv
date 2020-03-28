@@ -27,7 +27,7 @@ class SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         when (closestReachableResource) {
-            null -> UnitAutomation.tryExplore(unit, unit.movement.getDistanceToTiles())
+            null -> UnitAutomation.tryExplore(unit)
             else -> {
                 unit.movement.headTowards(closestReachableResource)
 
@@ -134,7 +134,7 @@ class SpecificUnitAutomation {
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
             val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-            if (UnitAutomation.tryExplore(unit, unitDistanceToTiles)) return // try to find new areas
+            if (UnitAutomation.tryExplore(unit)) return // try to find new areas
             UnitAutomation.wander(unit) // go around aimlessly
             return
         }
