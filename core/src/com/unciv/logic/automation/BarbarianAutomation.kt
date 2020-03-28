@@ -83,7 +83,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
 
         // 6 - wander
-        UnitAutomation.wander(unit, unitDistanceToTiles)
+        UnitAutomation.wander(unit)
     }
 
     private fun automateScout(unit: MapUnit) {
@@ -111,7 +111,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
 
         // 5 - wander
-        UnitAutomation.wander(unit, unitDistanceToTiles)
+        UnitAutomation.wander(unit)
     }
 
     private fun findFurthestTileCanMoveTo(

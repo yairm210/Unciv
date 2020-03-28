@@ -111,7 +111,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
         if (nextLevelString != "") {
-            diplomacyTable.add(nextLevelString.tr().toLabel()).row()
+            diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
         val friendBonusText = when (otherCiv.getCityStateType()) {

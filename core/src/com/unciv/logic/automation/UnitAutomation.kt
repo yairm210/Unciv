@@ -44,11 +44,13 @@ class UnitAutomation {
         }
 
         @JvmStatic
-        fun wander(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn) {
+        fun wander(unit: MapUnit) {
+            val unitDistanceToTiles = unit.movement.getDistanceToTiles()
             val reachableTiles = unitDistanceToTiles
                     .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
 
-            val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value.totalDistance == unit.currentMovement }
+            val reachableTilesMaxWalkingDistance = reachableTiles
+                    .filter { it.value.totalDistance == unit.currentMovement }
             if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
             else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
         }
@@ -171,7 +173,7 @@ class UnitAutomation {
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
             if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
-            else wander(unit, unitDistanceToTiles)
+            else wander(unit)
             return true
         }
 
