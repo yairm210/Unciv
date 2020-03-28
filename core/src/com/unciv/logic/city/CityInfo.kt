@@ -202,17 +202,17 @@ class CityInfo {
     }
 
     fun isGrowing(): Boolean {
-        return cityStats.currentCityStats.food > 0 && cityConstructions.currentConstruction != Constants.settler
+        return foodForNextTurn() > 0 && cityConstructions.currentConstruction != Constants.settler
     }
 
-    fun isStarving(): Boolean {
-        return cityStats.currentCityStats.food < 0
-    }
+    fun isStarving(): Boolean = foodForNextTurn() < 0
+
+    private fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {
         if (isGrowing()) {
-            val roundedFoodPerTurn = cityStats.currentCityStats.food.roundToInt().toFloat()
+            val roundedFoodPerTurn = foodForNextTurn().toFloat()
             val remainingFood = population.getFoodToNextPopulation() - population.foodStored
             var turnsToGrowth = ceil( remainingFood / roundedFoodPerTurn).toInt()
             if (turnsToGrowth < 1) turnsToGrowth = 1
@@ -225,7 +225,7 @@ class CityInfo {
     /** Take null to mean infinity. */
     fun getNumTurnsToStarvation(): Int? {
         if (isStarving()) {
-            return population.foodStored / -cityStats.currentCityStats.food.roundToInt() + 1
+            return population.foodStored / -foodForNextTurn() + 1
         }
 
         return null
@@ -310,7 +310,7 @@ class CityInfo {
                 population.autoAssignPopulation(foodWeight)
             cityStats.update()
 
-            foodPerTurn = cityStats.currentCityStats.food
+            foodPerTurn = foodForNextTurn().toFloat()
             foodWeight += 0.5f
         }
     }
@@ -330,7 +330,7 @@ class CityInfo {
                     population.foodStored = population.getFoodToNextPopulation() - 1//...reduce below the new growth treshold
                 }
             }
-        } else population.nextTurn(stats.food)
+        } else population.nextTurn(foodForNextTurn())
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
