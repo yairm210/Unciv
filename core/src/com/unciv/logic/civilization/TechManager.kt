@@ -234,8 +234,9 @@ class TechManager {
                     )
                 }
             }
-            getRuleset().policyBranches.values.filter { it.era == currentEra }
-                    .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE) }
+            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
+                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE)
+            }
         }
 
         for(revealedResource in getRuleset().tileResources.values.filter{ techName == it.revealedBy }){
