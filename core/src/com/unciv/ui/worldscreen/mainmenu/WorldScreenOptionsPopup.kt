@@ -21,7 +21,7 @@ class Language(val language:String, val percentComplete:Int){
     }
 }
 
-class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
+class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) {
     var selectedLanguage: String = "English"
 
     init {
@@ -41,7 +41,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         innerTable.add("Show worked tiles".toLabel())
         addButton(innerTable, if (settings.showWorkedTiles) "Yes" else "No") {
-            settings.showWorkedTiles= !settings.showWorkedTiles
+            settings.showWorkedTiles = !settings.showWorkedTiles
             update()
         }
 
@@ -186,46 +186,41 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
         soundEffectsVolumeSlider.value = UncivGame.Current.settings.soundEffectsVolume
-        soundEffectsVolumeSlider.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UncivGame.Current.settings.soundEffectsVolume = soundEffectsVolumeSlider.value
-                UncivGame.Current.settings.save()
-                Sounds.play(UncivSound.Click)
-            }
-        })
+        soundEffectsVolumeSlider.onChange {
+            UncivGame.Current.settings.soundEffectsVolume = soundEffectsVolumeSlider.value
+            UncivGame.Current.settings.save()
+            Sounds.play(UncivSound.Click)
+        }
         innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
     }
 
     private fun addMusicVolumeSlider(innerTable: Table) {
-        val musicLocation =Gdx.files.local(UncivGame.Current.musicLocation)
-        if(musicLocation.exists()) {
+        val musicLocation = Gdx.files.local(UncivGame.Current.musicLocation)
+        if (musicLocation.exists()) {
             innerTable.add("Music volume".tr())
 
             val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
             musicVolumeSlider.value = UncivGame.Current.settings.musicVolume
-            musicVolumeSlider.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
-                    UncivGame.Current.settings.save()
+            musicVolumeSlider.onChange {
+                UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
+                UncivGame.Current.settings.save()
 
-                    val music = UncivGame.Current.music
-                    if (music == null) // restart music, if it was off at the app start
-                        thread(name="Music") { UncivGame.Current.startMusic() }
+                val music = UncivGame.Current.music
+                if (music == null) // restart music, if it was off at the app start
+                    thread(name = "Music") { UncivGame.Current.startMusic() }
 
-                    music?.volume = 0.4f * musicVolumeSlider.value
-                }
-            })
+                music?.volume = 0.4f * musicVolumeSlider.value
+            }
             innerTable.add(musicVolumeSlider).pad(10f).row()
-        }
-        else{
-            val downloadMusicButton = TextButton("Download music".tr(),CameraStageBaseScreen.skin)
+        } else {
+            val downloadMusicButton = TextButton("Download music".tr(), CameraStageBaseScreen.skin)
             innerTable.add(downloadMusicButton).colspan(2).row()
             val errorTable = Table()
             innerTable.add(errorTable).colspan(2).row()
 
             downloadMusicButton.onClick {
                 // So the whole game doesn't get stuck while downloading the file
-                thread(name="Music") {
+                thread(name = "Music") {
                     try {
                         downloadMusicButton.disable()
                         errorTable.clear()
@@ -248,20 +243,18 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         val resolutionSelectBox = SelectBox<String>(skin)
         val resolutionArray = Array<String>()
-        resolutionArray.addAll("750x500","900x600", "1050x700", "1200x800", "1500x1000")
+        resolutionArray.addAll("750x500", "900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UncivGame.Current.settings.resolution
         innerTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
 
-        resolutionSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UncivGame.Current.settings.resolution = resolutionSelectBox.selected
-                UncivGame.Current.settings.save()
-                UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-                UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
-            }
-        })
+        resolutionSelectBox.onChange {
+            UncivGame.Current.settings.resolution = resolutionSelectBox.selected
+            UncivGame.Current.settings.save()
+            UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
+            UncivGame.Current.setWorldScreen()
+            WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        }
     }
 
     private fun addTileSetSelectBox(innerTable: Table) {
@@ -271,20 +264,18 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         val tileSetArray = Array<String>()
         val tileSets = ImageGetter.atlas.regions.filter { it.name.startsWith("TileSets") }
                 .map { it.name.split("/")[1] }.distinct()
-        for(tileset in tileSets) tileSetArray.add(tileset)
+        for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
         tileSetSelectBox.selected = UncivGame.Current.settings.tileSet
         innerTable.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
 
-        tileSetSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UncivGame.Current.settings.tileSet = tileSetSelectBox.selected
-                UncivGame.Current.settings.save()
-                UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-                UncivGame.Current.setWorldScreen()
-                WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
-            }
-        })
+        tileSetSelectBox.onChange {
+            UncivGame.Current.settings.tileSet = tileSetSelectBox.selected
+            UncivGame.Current.settings.save()
+            UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
+            UncivGame.Current.setWorldScreen()
+            WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        }
     }
 
     private fun addAutosaveTurnsSelectBox(innerTable: Table) {
@@ -292,19 +283,17 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
-        autosaveTurnsArray.addAll(1,2,5,10)
+        autosaveTurnsArray.addAll(1, 2, 5, 10)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = UncivGame.Current.settings.turnsBetweenAutosaves
 
         innerTable.add(autosaveTurnsSelectBox).pad(10f).row()
 
-        autosaveTurnsSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UncivGame.Current.settings.turnsBetweenAutosaves= autosaveTurnsSelectBox.selected
-                UncivGame.Current.settings.save()
-                update()
-            }
-        })
+        autosaveTurnsSelectBox.onChange {
+            UncivGame.Current.settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
+            UncivGame.Current.settings.save()
+            update()
+        }
     }
 
     private fun addMultiplayerTurnCheckerDelayBox(innerTable: Table) {
@@ -318,42 +307,38 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
 
         innerTable.add(checkDelaySelectBox).pad(10f).row()
 
-        checkDelaySelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
-                UncivGame.Current.settings.save()
-                update()
-            }
-        })
+        checkDelaySelectBox.onChange {
+            UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
+            UncivGame.Current.settings.save()
+            update()
+        }
     }
 
     private fun addLanguageSelectBox(innerTable: Table) {
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         UncivGame.Current.translations.percentCompleteOfLanguages
-                .map { Language(it.key, if(it.key=="English") 100 else it.value) }
+                .map { Language(it.key, if (it.key == "English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
-        if(languageArray.size==0) return
+        if (languageArray.size == 0) return
+
         innerTable.add("Language".toLabel())
         languageSelectBox.items = languageArray
         val matchingLanguage = languageArray.firstOrNull { it.language == UncivGame.Current.settings.language }
         languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
         innerTable.add(languageSelectBox).minWidth(240f).pad(10f).row()
 
-        languageSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                // Sometimes the "changed" is triggered even when we didn't choose something that isn't the
-                selectedLanguage = languageSelectBox.selected.language
+        languageSelectBox.onChange {
+            // Sometimes the "changed" is triggered even when we didn't choose something that isn't the
+            selectedLanguage = languageSelectBox.selected.language
 
-                if(selectedLanguage!=UncivGame.Current.settings.language )
-                    selectLanguage()
-            }
-        })
-
+            if (selectedLanguage != UncivGame.Current.settings.language)
+                selectLanguage()
+        }
     }
 
-    fun selectLanguage(){
+    fun selectLanguage() {
         UncivGame.Current.settings.language = selectedLanguage
         UncivGame.Current.settings.save()
 

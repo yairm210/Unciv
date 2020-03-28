@@ -448,6 +448,9 @@
 	{
 		"name": "Rejuvenation", // only for Units that have been close to Natural Wonder Fountain of Youth
 		"effect": "All healing effects doubled"
+	},
+	{
+		"name": "Slinger Withdraw", // only for Slinger and subsequent upgrades
+		"effect": "May withdraw before melee (133%)"
 	}
-
 ]

@@ -28,7 +28,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             entryButton.onClick {
                 description.setText(entry.description)
             }
-            entrySelectTable.add(entryButton).row()
+            entrySelectTable.add(entryButton).left().row()
         }
     }
 

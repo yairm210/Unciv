@@ -32,14 +32,6 @@ class TranslationTests {
     }
 
     @Test
-    fun allUnitsHaveTranslation() {
-        val allUnitsHaveTranslation = allStringAreTranslated(ruleset.units.keys)
-        Assert.assertTrue("This test will only pass when there is a translation for all units",
-                allUnitsHaveTranslation)
-    }
-
-
-    @Test
     fun allUnitActionsHaveTranslation() {
         val actions: MutableSet<String> = HashSet()
         for (action in UnitActionType.values()) {
@@ -140,13 +132,6 @@ class TranslationTests {
                 allStringsHaveTranslation)
     }
 
-    @Test
-    fun allPromotionsHaveTranslation() {
-        val strings: Set<String> = ruleset.unitPromotions.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all promotions",
-                allStringsHaveTranslation)
-    }
 
     private fun allStringAreTranslated(strings: Set<String>): Boolean {
         var allStringsHaveTranslation = true

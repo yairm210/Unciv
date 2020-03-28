@@ -46,9 +46,9 @@ class PopulationManager {
 
     //endregion
 
-    fun nextTurn(food: Float) {
-        foodStored += food.roundToInt()
-        if(food.roundToInt() < 0)
+    fun nextTurn(food: Int) {
+        foodStored += food
+        if(food < 0)
             cityInfo.civInfo.addNotification("["+cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
