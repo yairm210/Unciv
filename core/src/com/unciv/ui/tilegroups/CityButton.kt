@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -17,13 +18,16 @@ import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 
-class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
-    init{
+class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
+
+    init {
         isTransform = true // If this is not set then the city button won't scale!
-        touchable= Touchable.disabled
+        touchable = Touchable.disabled
     }
 
-    var isButtonMoved=false
+    private val listOfHiddenUnitMarkers: MutableList<Actor> = mutableListOf()
+    private lateinit var iconTable: Table
+    private var isButtonMoved = false
 
     fun update(isCityViewable:Boolean) {
         clear()
@@ -37,12 +41,73 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             add(healthBar).row()
         }
 
-        val iconTable = getIconTable()
-
+        iconTable = getIconTable()
         add(iconTable).row()
+
         pack()
         setOrigin(Align.center)
         centerX(tileGroup)
+
+        updateHiddenUnitMarkers()
+    }
+
+    private enum class HiddenUnitMarkerPosition {Left, Center, Right}
+
+    private fun updateHiddenUnitMarkers() {
+        // remove obsolete markers
+        for (marker in listOfHiddenUnitMarkers)
+            iconTable.removeActor(marker)
+        listOfHiddenUnitMarkers.clear()
+        // detect civilian in the city center
+        if (!isButtonMoved && (tileGroup.tileInfo.civilianUnit != null))
+            insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
+
+        val tilesAroundCity = tileGroup.tileInfo.neighbors
+        for (tile in tilesAroundCity)
+        {
+            val direction = tileGroup.tileInfo.position.cpy().sub(tile.position)
+
+            if (isButtonMoved) {
+                when {
+                    // detect civilian left-below the city
+                    (tile.civilianUnit != null) && direction.epsilonEquals(0f, 1f) ->
+                        insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
+                    // detect military under the city
+                    (tile.militaryUnit != null) && direction.epsilonEquals(1f, 1f) ->
+                        insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
+                    // detect civilian right-below the city
+                    (tile.civilianUnit != null) && direction.epsilonEquals(1f, 0f) ->
+                        insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
+                }
+            } else if (tile.militaryUnit != null) {
+                when {
+                    // detect military left from the city
+                    direction.epsilonEquals(0f, 1f) ->
+                        insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
+                    // detect military right from the city
+                    direction.epsilonEquals(1f, 0f) ->
+                        insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
+                }
+            }
+        }
+    }
+
+    private fun insertHiddenUnitMarker(pos: HiddenUnitMarkerPosition) {
+        // center of the city button +/- size of the 1.5 tiles
+        val positionX = iconTable.width / 2 + (pos.ordinal-1)*60f
+
+        val indicator = ImageGetter.getTriangle().apply {
+            color = city.civInfo.nation.getInnerColor()
+            setSize(12f, 8f)
+            setOrigin(Align.center)
+            if (!isButtonMoved) {
+                rotation = 180f
+                setPosition(positionX - width/2, 0f)
+            } else
+                setPosition(positionX - width/2, -height/4) // height compensation because of asymmetrical icon
+        }
+        iconTable.addActor(indicator)
+        listOfHiddenUnitMarkers.add(indicator)
     }
 
     private fun addAirUnitTable() {
@@ -155,7 +220,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     private fun moveButtonDown() {
         val moveButtonAction = Actions.sequence(
                 Actions.moveTo(tileGroup.x, tileGroup.y-height, 0.4f, Interpolation.swingOut),
-                Actions.run { isButtonMoved=true }
+                Actions.run {
+                    isButtonMoved = true
+                    updateHiddenUnitMarkers()
+                }
         )
         parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the citybutton remains clickable
     }
@@ -163,7 +231,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     private fun moveButtonUp() {
         val floatAction = Actions.sequence(
                 Actions.moveTo(tileGroup.x, tileGroup.y, 0.4f, Interpolation.sine),
-                Actions.run {isButtonMoved=false}
+                Actions.run {
+                    isButtonMoved = false
+                    updateHiddenUnitMarkers()
+                }
         )
         parent.addAction(floatAction)
     }
