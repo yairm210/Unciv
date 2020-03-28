@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -149,7 +148,7 @@ class CivilizationInfo {
     }
 
     fun stats() = CivInfoStats(this)
-    private fun transients() = CivInfoTransientUpdater(this)
+    fun transients() = CivInfoTransientUpdater(this)
 
     fun updateStatsForNextTurn(){
         statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
@@ -380,8 +379,8 @@ class CivilizationInfo {
         updateDetailedCivResources()
     }
 
-    // implementation in a seperate class, to not clog up CivInfo
-    fun initialSetCitiesConnectedToCapitalTransients() = transients().setCitiesConnectedToCapitalTransients(true)
+    // implementation in a separate class, to not clog up CivInfo
+    fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
@@ -398,7 +397,7 @@ class CivilizationInfo {
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        transients().setCitiesConnectedToCapitalTransients()
+        transients().updateCitiesConnectedToCapital()
         for (city in cities) city.startTurn()
 
         for (unit in getCivUnits()) unit.startTurn()

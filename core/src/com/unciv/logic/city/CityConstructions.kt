@@ -319,8 +319,6 @@ class CityConstructions {
         if (currentConstruction == constructionName)
             cancelCurrentConstruction()
 
-        cityInfo.cityStats.update()
-        cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
         return true
     }
 
