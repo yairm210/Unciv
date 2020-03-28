@@ -39,7 +39,6 @@ class BasicTests {
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
-                        && !game.rewriteTranslationFiles
                         && game.simulateUntilTurnForDebug <= 0)
     }
 
