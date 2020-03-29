@@ -210,14 +210,21 @@ class DiplomacyManager() {
 
     fun resourcesFromTrade(): ResourceSupplyList {
         val counter = ResourceSupplyList()
+        val resourcesMap = civInfo.gameInfo.ruleSet.tileResources
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.ruleSet.tileResources[offer.name]!!,-offer.amount,"Trade")
+                    counter.add(resourcesMap[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(civInfo.gameInfo.ruleSet.tileResources[offer.name]!!,offer.amount,"Trade")
+                    counter.add(resourcesMap[offer.name]!!,offer.amount,"Trade")
         }
+
+        for(trade in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
+            for(offer in trade.trade.theirOffers)
+                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade request")
+        }
+
         return counter
     }
 
@@ -325,18 +332,18 @@ class DiplomacyManager() {
         for (trade in trades.toList()) {
             for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration > 0 }) {
                 offer.duration--
-                if (offer.duration == 0) {
-                    if(offer in trade.theirOffers)
-                        civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", null, Color.GOLD)
-                    else civInfo.addNotification("[" + offer.name + "] to [$otherCivName] has ended", null, Color.GOLD)
-
-                    civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
-                    civInfo.updateDetailedCivResources() // if they were giving us resources
-                }
             }
 
             if (trade.ourOffers.all { it.duration <= 0 } && trade.theirOffers.all { it.duration <= 0 }) {
                 trades.remove(trade)
+                for (offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration == 0 }) { // this was a timed trade
+                    if (offer in trade.theirOffers)
+                        civInfo.addNotification("[${offer.name}] from [$otherCivName] has ended", null, Color.GOLD)
+                    else civInfo.addNotification("[${offer.name}] to [$otherCivName] has ended", null, Color.GOLD)
+
+                    civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
+                    civInfo.updateDetailedCivResources() // if they were giving us resources
+                }
             }
         }
     }

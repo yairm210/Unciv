@@ -12,7 +12,7 @@ import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 
-class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeComplete: () -> Unit): Table(CameraStageBaseScreen.skin){
+class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage): Table(CameraStageBaseScreen.skin){
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
@@ -23,6 +23,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
 
     fun retractOffer(){
         otherCivilization.tradeRequests.removeAll { it.requestingCiv==currentPlayerCiv.civName }
+        currentPlayerCiv.updateDetailedCivResources()
         offerButton.setText("Offer trade".tr())
     }
 
@@ -48,6 +49,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
             }
 
             otherCivilization.tradeRequests.add(TradeRequest(currentPlayerCiv.civName,tradeLogic.currentTrade.reverse()))
+            currentPlayerCiv.updateDetailedCivResources()
             offerButton.setText("Retract offer".tr())
         }
 
