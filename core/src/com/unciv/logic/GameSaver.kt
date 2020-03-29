@@ -60,10 +60,7 @@ class GameSaver {
         // but some people were getting null settings, even though the file existed??? Very odd.
         if(settings==null) settings = GameSettings()
 
-        val currentTileSets = ImageGetter.atlas.regions.asSequence()
-                .filter { it.name.startsWith("TileSets") }
-                .map { it.name.split("/")[1] }.distinct()
-        if(settings.tileSet !in currentTileSets) settings.tileSet = "Default"
+        if(settings.tileSet !in ImageGetter.currentTileSets) settings.tileSet = "Default"
         return settings
     }
 

@@ -16,6 +16,8 @@ import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stat
+import java.util.*
+import kotlin.collections.HashMap
 
 object ImageGetter {
     private const val whiteDotLocation = "OtherIcons/whiteDot"
@@ -25,8 +27,9 @@ object ImageGetter {
     // always have to switch between like 170 different textures.
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
-    var atlas = TextureAtlas("game.atlas")
+    private var atlas = TextureAtlas("game.atlas")
     var ruleset = Ruleset()
+    lateinit var currentTileSets: SortedSet<String>
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
@@ -34,11 +37,20 @@ object ImageGetter {
 
     init{
         setTextureRegionDrawables()
+        currentTileSets = atlas.regions.asSequence()
+                .filter { it.name.startsWith("TileSets") }
+                .map { it.name.split("/")[1] }
+                .distinct().toSortedSet()
     }
-
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
+        // When we used to load images directly from different files, without using a texture atlas,
+        // The draw() phase of the main screen would take a really long time because the BatchRenderer would
+        // always have to switch between like 170 different textures.
+        // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
+        // and the atlas is what tells us what was packed where.
+
         // These are the drawables from the base game
         for(region in atlas.regions){
             val drawable =TextureRegionDrawable(region)
@@ -54,13 +66,15 @@ object ImageGetter {
                     val drawable = TextureRegionDrawable(region)
                     textureRegionDrawables[region.name] = drawable
                 }
+                modAtlas.dispose() // To avoid OutOfMemory exceptions
             }
         }
     }
 
     fun refreshAtlas() {
-        atlas.dispose() // To avoid OutOfMemory exceptions
-        atlas = TextureAtlas("game.atlas")
+        // experimental - why should game.atlas ever change while the game is running?
+        //atlas.dispose() // To avoid OutOfMemory exceptions
+        //atlas = TextureAtlas("game.atlas")
         setTextureRegionDrawables()
     }
 
