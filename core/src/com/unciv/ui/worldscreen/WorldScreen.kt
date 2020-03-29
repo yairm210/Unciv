@@ -1,11 +1,14 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -130,9 +133,60 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         backButtonListener = onBackButtonClicked { exitGamePrompt() }
 
+        addKeyboardListener() // for map panning by W,S,A,D
+
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
+    }
+
+    private fun addKeyboardListener() {
+        stage.addListener(
+            object : InputListener() {
+                private val pressedKeys = mutableSetOf<Int>()
+                private var infiniteAction : RepeatAction? = null
+                private val amountToMove = 30 / mapHolder.scaleX
+                private val ALLOWED_KEYS = setOf(Input.Keys.W,Input.Keys.S,Input.Keys.A,Input.Keys.D)
+
+                override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
+                    if (keycode !in ALLOWED_KEYS) return false
+
+                    pressedKeys.add(keycode)
+                    if (infiniteAction == null) {
+                        // create a copy of the action, because removeAction() will destroy this instance
+                        infiniteAction = Actions.forever(Actions.delay(0.05f, Actions.run { whileKeyPressedLoop() }))
+                        mapHolder.addAction(infiniteAction)
+                    }
+                    return true
+                }
+
+                fun whileKeyPressedLoop() {
+                    for (keycode in pressedKeys) {
+                        when (keycode) {
+                            Input.Keys.W -> mapHolder.scrollY -= amountToMove
+                            Input.Keys.S -> mapHolder.scrollY += amountToMove
+                            Input.Keys.A -> mapHolder.scrollX -= amountToMove
+                            Input.Keys.D -> mapHolder.scrollX += amountToMove
+                        }
+                    }
+                    mapHolder.updateVisualScroll()
+                }
+
+                override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
+                    if (keycode !in ALLOWED_KEYS) return false
+
+                    pressedKeys.remove(keycode)
+                    if (infiniteAction != null && pressedKeys.isEmpty()) {
+                        // stop the loop otherwise it keeps going even after removal
+                        infiniteAction?.finish()
+                        // remove and nil the action
+                        mapHolder.removeAction(infiniteAction)
+                        infiniteAction = null
+                    }
+                    return true
+                }
+            }
+        )
     }
 
     private fun loadLatestMultiplayerState(){
