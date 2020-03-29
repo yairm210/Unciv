@@ -249,15 +249,19 @@ class TileMap {
     }
 
     fun evalRequiredMods() {
-        // Narrow down those mods from ruleset which contain a feature the generated map actually uses
+        // Narrow down those mods from ruleset which contain a feature the generated/edited map actually uses
+        // if we get this wrong then ImageGetter will later crash when it decides on a circle colour for an improvement as its rulest will not have that improvement
         if (createdWithMods.isEmpty()) return
         val allModRulesets = createdWithMods.map { RulesetCache[it]!! }
         val modTerrains = HashMap<String,String>()
-        allModRulesets.forEach{ ruleset -> ruleset.terrains.values.forEach { modTerrains[it.name] = ruleset.name }}
+        allModRulesets.forEach { ruleset -> ruleset.terrains.values.forEach { modTerrains[it.name] = ruleset.name }}
         val modResources = HashMap<String,String>()
-        allModRulesets.forEach{ ruleset -> ruleset.tileResources.values.forEach { modResources[it.name] = ruleset.name }}
+        allModRulesets.forEach { ruleset -> ruleset.tileResources.values.forEach { modResources[it.name] = ruleset.name }}
         val modImprovements = HashMap<String,String>()
-        allModRulesets.forEach{ ruleset -> ruleset.tileImprovements.values.forEach { modImprovements[it.name] = ruleset.name }}
+        allModRulesets.forEach { ruleset -> run {
+                ruleset.tileImprovements.values.forEach { modImprovements[it.name] = ruleset.name }
+                ruleset.nations.values.forEach { modImprovements["StartingLocation "+it.name] = ruleset.name }
+        } }
         requiredMods = HashSet<String>()
 
         tileMatrix.forEach { outer -> outer.forEach {
@@ -265,9 +269,11 @@ class TileMap {
                 var mod= modTerrains[it.baseTerrain]; if (mod!=null) requiredMods.add(mod)
                 if (it.terrainFeature!=null) { mod = modTerrains[it.terrainFeature!!]; if (mod!=null) requiredMods.add(mod) }
                 if (it.resource!=null) { mod = modResources[it.resource!!]; if (mod!=null) requiredMods.add(mod) }
-                if (it.improvement!=null) { mod = modResources[it.improvement!!]; if (mod!=null) requiredMods.add(mod) }
+                if (it.improvement!=null) { mod = modImprovements[it.improvement!!]; if (mod!=null) requiredMods.add(mod) }
             }
         } }
+        if (createdWithMods.size > requiredMods.size)
+            println("Map ${if (mapParameters.name.isEmpty()) "(new)" else mapParameters.name} was created with $createdWithMods but requires only $requiredMods")
     }
 }
 

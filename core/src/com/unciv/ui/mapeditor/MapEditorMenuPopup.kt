@@ -51,6 +51,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         saveMapButton.onClick {
             mapEditorScreen.tileMap.mapParameters.name=mapEditorScreen.mapName
             mapEditorScreen.tileMap.mapParameters.type=MapType.custom
+            mapEditorScreen.tileMap.evalRequiredMods()
             MapSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
             UncivGame.Current.setWorldScreen()
         }

@@ -17,18 +17,23 @@ class GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
-        val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+        var ruleset: Ruleset
 
-        if(mapParameters.name != "")
+        if(mapParameters.name != "") {
             gameInfo.tileMap = MapSaver().loadMap(mapParameters.name)
-        else gameInfo.tileMap = MapGenerator(ruleset).generateMap(mapParameters)
-        gameInfo.tileMap.mapParameters = mapParameters
+            if (!newGameParameters.mods.containsAll(gameInfo.tileMap.requiredMods)) {
+                newGameParameters.mods.plusAssign(gameInfo.tileMap.requiredMods)
+            }
+            ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+        } else {
+            ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+            gameInfo.tileMap = MapGenerator(ruleset).generateMap(mapParameters)
+        }
 
         gameInfo.tileMap.setTransients(ruleset)
 
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         gameInfo.difficulty = newGameParameters.difficulty
-
 
         addCivilizations(newGameParameters, gameInfo, ruleset) // this is before the setTransients so gameInfo doesn't yet have the gameBasics
 

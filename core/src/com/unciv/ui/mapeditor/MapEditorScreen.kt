@@ -12,10 +12,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.popups
-import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     lateinit var ruleset: Ruleset
@@ -51,8 +48,10 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     }
 
     fun initialize() {
-        ruleset = RulesetCache.getComplexRuleset(tileMap.requiredMods)
+        ruleset = RulesetCache.getComplexRuleset(tileMap.createdWithMods)
         tileMap.setTransients(ruleset)
+        ImageGetter.ruleset = ruleset
+        //ImageGetter.refreshAtlas()        -- doesn't -seem- to make a difference
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()
