@@ -45,11 +45,6 @@ object ImageGetter {
 
     fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
-        // When we used to load images directly from different files, without using a texture atlas,
-        // The draw() phase of the main screen would take a really long time because the BatchRenderer would
-        // always have to switch between like 170 different textures.
-        // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
-        // and the atlas is what tells us what was packed where.
 
         // These are the drawables from the base game
         for(region in atlas.regions){
@@ -66,7 +61,6 @@ object ImageGetter {
                     val drawable = TextureRegionDrawable(region)
                     textureRegionDrawables[region.name] = drawable
                 }
-                modAtlas.dispose() // To avoid OutOfMemory exceptions
             }
         }
     }
