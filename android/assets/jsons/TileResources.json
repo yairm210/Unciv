@@ -90,7 +90,7 @@
 		"name": "Iron",
 		"resourceType": "Strategic",
 		"revealedBy": "Iron Working",
-		"terrainsCanBeFoundOn": ["Grassland","Plains","Desert","Tundra","Snow","Hill"],
+		"terrainsCanBeFoundOn": ["Grassland","Plains","Desert","Tundra","Snow","Hill","Forest"],
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 1},
@@ -118,7 +118,7 @@
 		"name": "Aluminum",
 		"resourceType": "Strategic",
 		"revealedBy": "Electricity",
-		"terrainsCanBeFoundOn": ["Plains","Desert","Tundra","Hill"],
+		"terrainsCanBeFoundOn": ["Plains","Desert","Tundra","Hill","Forest"],
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 2}
@@ -161,7 +161,7 @@
 	{
 		"name": "Gems",
 		"resourceType": "Luxury",
-		"terrainsCanBeFoundOn": ["Jungle","Grassland","Plains","Desert","Tundra","Hill"],
+		"terrainsCanBeFoundOn": ["Jungle","Grassland","Plains","Desert","Tundra","Hill","Forest"],
 		"gold": 3,
 		"improvement": "Mine",
 		"improvementStats": {"gold": 1}
@@ -169,7 +169,7 @@
 	{
 		"name": "Gold",
 		"resourceType": "Luxury",
-		"terrainsCanBeFoundOn": ["Grassland","Plains","Desert","Hill"],
+		"terrainsCanBeFoundOn": ["Grassland","Plains","Desert","Hill","Forest"],
 		"gold": 2,
 		"improvement": "Mine",
 		"improvementStats": {"gold": 1},
@@ -178,7 +178,7 @@
 	{
 		"name": "Silver",
 		"resourceType": "Luxury",
-		"terrainsCanBeFoundOn": ["Desert","Tundra","Hill"],
+		"terrainsCanBeFoundOn": ["Desert","Tundra","Hill","Forest"],
 		"gold": 2,
 		"improvement": "Mine",
 		"improvementStats": {"gold": 1},
