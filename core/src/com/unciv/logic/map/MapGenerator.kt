@@ -383,12 +383,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
             val locations = chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
 
-            for (location in locations) {
-                // clean features to be able to place the resource
-                if (!resource.terrainsCanBeFoundOn.contains(location.getLastTerrain().name))
-                    location.terrainFeature = null
-                location.resource = resource.name
-            }
+            for (location in locations) location.resource = resource.name
         }
     }
 
