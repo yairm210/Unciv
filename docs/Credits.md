@@ -34,6 +34,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
+* [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
 
 ### Classical Era
 
@@ -184,6 +185,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck for Mint
 * [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
 * [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
+* [Rice Field](https://thenounproject.com/term/rice-field/2511648/) by Graphic Engineer for Terrace farm
  
 ### Medieval Era
 
