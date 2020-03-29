@@ -27,6 +27,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private var mapTypeSpecificTable = Table()
     private val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
+    private lateinit var modPickerTable: ModPickerTable
 
     init {
         pad(10f)
@@ -81,6 +82,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 updateOnMapTypeChange()
+                updateModsDependentOnMap()
             }
         })
 
@@ -99,6 +101,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         mapFileSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 mapParameters.name = mapFileSelectBox.selected!!
+                updateModsDependentOnMap()
             }
         })
         return mapFileSelectBox
@@ -230,7 +233,20 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
             updatePlayerPickerTable(desiredCiv)
         }
 
-        val modPickerTable = ModPickerTable(newGameParameters.mods) { modList, desiredCiv -> notifyChangedMods(modList,desiredCiv) }
+        modPickerTable = ModPickerTable(newGameParameters.mods) { modList, desiredCiv -> notifyChangedMods(modList,desiredCiv) }
         add(modPickerTable).colspan(2).row()
     }
+
+    private fun updateModsDependentOnMap() {
+        // Clarify for the user that mods required by the selected map are now mandatory
+        var lockMods = HashSet<String>()
+        if (mapParameters.type == MapType.custom) {
+            try {
+                val mapInfo = MapSaver().loadMapInfo(mapParameters.name)
+                lockMods = mapInfo.requiredMods
+            } catch (ex: Exception) {}
+        }
+        modPickerTable.updateLockedMods (lockMods)
+    }
+
 }

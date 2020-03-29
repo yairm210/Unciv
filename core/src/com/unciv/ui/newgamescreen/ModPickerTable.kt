@@ -53,13 +53,29 @@ class ModPickerTable(var modList: HashSet<String>, val notifyChangedMods:((modLi
                                     desiredCiv = modNations.keys.first()
                                 }
                             }
-                            (notifyChangedMods!!)(modList,desiredCiv)
+                            (notifyChangedMods)(modList,desiredCiv)
                         }
                     }
                 })
                 modCheckboxTable.add(checkBox).row()
             }
             add(modCheckboxTable).colspan(2).row()
+        }
+    }
+
+    fun updateLockedMods(lockMods: HashSet<String>) {
+        this.children.filter { it is Table }.forEach {
+            (it as Table).cells.forEach {
+                val actor = it.actor as? CheckBox
+                if (actor!=null && actor.toString().startsWith("CheckBox: ")) {
+                    if (lockMods.contains(actor.toString().drop(10))) {
+                        actor.isChecked = true
+                        actor.isDisabled = true
+                    } else {
+                        actor.isDisabled = false
+                    }
+                }
+            }
         }
     }
 }

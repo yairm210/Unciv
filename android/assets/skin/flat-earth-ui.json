@@ -266,12 +266,14 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		fontColor: color
 		downFontColor: pressed
 		overFontColor: highlight
+		disabledFontColor: gray
 	}
 	radio: {
 		checkboxOn: radio-pressed-c
 		checkboxOff: checkbox-c
 		font: button
 		fontColor: color
+		disabledFontColor: gray
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle: {
