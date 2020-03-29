@@ -118,7 +118,9 @@ class BaseUnit : INamed, IConstruction {
 
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         val rejectionReason = getRejectionReason(construction)
-        return rejectionReason=="" || rejectionReason.startsWith("Requires")
+        return rejectionReason==""
+                || rejectionReason.startsWith("Requires")
+                || rejectionReason.startsWith("Consumes")
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
