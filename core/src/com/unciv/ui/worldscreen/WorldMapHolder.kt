@@ -62,17 +62,6 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
 
-        // Apparently this lakes loads of CPU so restrict it as much as possible
-        if(Gdx.app.type==Application.ApplicationType.Desktop) {
-            addAction(Actions.forever(Actions.delay(0.05f, Actions.run {
-                val amountToMove = 30 / scaleX
-                if (Gdx.input.isKeyPressed(Input.Keys.W)) scrollY -= amountToMove
-                if (Gdx.input.isKeyPressed(Input.Keys.S)) scrollY += amountToMove
-                if (Gdx.input.isKeyPressed(Input.Keys.A)) scrollX -= amountToMove
-                if (Gdx.input.isKeyPressed(Input.Keys.D)) scrollX += amountToMove
-                updateVisualScroll()
-            })))
-        }
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
