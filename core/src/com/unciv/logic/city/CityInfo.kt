@@ -46,8 +46,12 @@ class CityInfo {
     var expansion = CityExpansionManager()
     var cityStats = CityStats()
 
+    /** All tiles that this city controls */
     var tiles = HashSet<Vector2>()
+    /** Tiles that have population assigned to them */
     var workedTiles = HashSet<Vector2>()
+    /** Tiles that the population in them won't be reassigned */
+    var lockedTiles = HashSet<Vector2>()
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
@@ -114,6 +118,7 @@ class CityInfo {
         toReturn.expansion = expansion.clone()
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
+        toReturn.lockedTiles = lockedTiles
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter

@@ -140,6 +140,11 @@ open class TileInfo {
         return city!=null && city.workedTiles.contains(position)
     }
 
+    fun isLocked(): Boolean{
+        val city = getCity()
+        return city!=null && city.lockedTiles.contains(position)
+    }
+
     fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {

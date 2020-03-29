@@ -32,10 +32,11 @@ class TileGroupIcons(val tileGroup: TileGroup){
                 tileIsViewable && showMilitaryUnit, 20f, viewingCiv)
     }
 
-    fun addPopulationIcon() {
-        populationIcon = ImageGetter.getStatIcon("Population")
+    fun addPopulationIcon(icon: Image = ImageGetter.getStatIcon("Population")
+            .apply { color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f) }) {
+        populationIcon?.remove()
+        populationIcon = icon
         populationIcon!!.run {
-            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
             setSize(20f, 20f)
             center(tileGroup)
             x += 20 // right

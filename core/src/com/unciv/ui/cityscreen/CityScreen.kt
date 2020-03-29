@@ -39,7 +39,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     private var cityStatsTable = CityStatsTable(this)
 
     /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */
-    private var tileTable = CityScreenTileTable(city)
+    private var tileTable = CityScreenTileTable(this)
 
     /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
     private var selectedConstructionTable = ConstructionInfoTable(this.city)
@@ -164,7 +164,8 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
                         game.settings.addCompletedTutorialTask("Reassign worked tiles")
-                    } else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                    } else if (tileInfo.isWorked() && !tileInfo.isLocked())
+                        city.workedTiles.remove(tileInfo.position)
                     city.cityStats.update()
                 }
                 update()

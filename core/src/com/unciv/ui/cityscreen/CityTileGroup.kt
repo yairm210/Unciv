@@ -19,8 +19,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         isTransform=false // performance helper - nothing here is rotated or scaled
         addActor(yieldGroup)
         if (city.location == tileInfo.position) {
-            icons.populationIcon = ImageGetter.getImage("StatIcons/City_Center_(Civ6)")
-            addActor(icons.populationIcon)
+            icons.addPopulationIcon(ImageGetter.getImage("StatIcons/City_Center_(Civ6)"))
         }
 
     }
@@ -34,7 +33,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
                 baseLayerGroup.color.a = 0.3f
                 yieldGroup.isVisible = false
                 if (city.canAcquireTile(tileInfo))
-                    addAcquirableIcon()
+                    icons.addPopulationIcon(ImageGetter.getStatIcon("Acquire"))
             }
 
             tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
@@ -42,7 +41,11 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
                 baseLayerGroup.color.a = 0.5f
             }
 
-            !tileInfo.isCityCenter() && icons.populationIcon==null -> { // workable
+            tileInfo.isLocked() -> {
+                icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Lock"))
+            }
+
+            !tileInfo.isCityCenter() -> { // workable
                 icons.addPopulationIcon()
                 isWorkable = true
             }
@@ -90,18 +93,6 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
 
             populationIcon.toFront()
         }
-    }
-
-
-    private fun addAcquirableIcon() {
-        icons.populationIcon = ImageGetter.getStatIcon("Acquire")
-        icons.populationIcon!!.run {
-            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
-            setSize(20f, 20f)
-            center(this@CityTileGroup)
-            x += 20 // right
-        }
-        miscLayerGroup.addActor(icons.populationIcon)
     }
 
 }
