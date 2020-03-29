@@ -9,7 +9,7 @@ interface IConstruction : INamed {
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(construction: CityConstructions): Boolean
-    fun shouldBeDisplayed(construction: CityConstructions): Boolean
+    fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     fun postBuildEvent(construction: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun getResource(): String?
     fun canBePurchased(): Boolean
@@ -18,8 +18,8 @@ interface IConstruction : INamed {
 
 
 open class PerpetualConstruction(override var name: String, val description: String) : IConstruction{
-    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
-        return isBuildable(construction)
+    override fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean {
+        return isBuildable(cityConstructions)
     }
     open fun getProductionTooltip(cityInfo: CityInfo) : String
             = "\r\n${(cityInfo.cityStats.currentCityStats.production / CONVERSION_RATE).roundToInt()}/${"{turn}".tr()}"
