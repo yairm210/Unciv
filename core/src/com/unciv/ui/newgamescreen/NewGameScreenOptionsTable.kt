@@ -225,8 +225,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
             ruleset.add(RulesetCache.getComplexRuleset(modList))
             ruleset.mods += modList
 
-            ImageGetter.ruleset=ruleset
-            ImageGetter.setTextureRegionDrawables()
+            ImageGetter.updateRuleset(ruleset)
 
             updatePlayerPickerTable(desiredCiv)
         }

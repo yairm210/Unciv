@@ -16,7 +16,7 @@ import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     lateinit var ruleset: Ruleset
-    var mapName = "My first map"
+    var mapName = ""
 
     var tileMap = TileMap()
     lateinit var mapHolder: EditorMapHolder
@@ -43,6 +43,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     }
 
     constructor(map: TileMap): this() {
+        mapName = "My first map".tr()
         tileMap = map
         initialize()
     }
@@ -50,8 +51,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     fun initialize() {
         ruleset = RulesetCache.getComplexRuleset(tileMap.createdWithMods)
         tileMap.setTransients(ruleset)
-        ImageGetter.ruleset = ruleset
-        ImageGetter.setTextureRegionDrawables()
+        ImageGetter.updateRuleset(ruleset)
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()

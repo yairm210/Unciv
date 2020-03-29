@@ -26,6 +26,8 @@ class NewGameScreen: PickerScreen(){
     val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
+        ImageGetter.updateRuleset(ruleset)
+
         setDefaultCloseAction()
         scrollPane.setScrollingDisabled(true,true)
 

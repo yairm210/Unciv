@@ -132,8 +132,7 @@ class UncivGame(
 
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
-        ImageGetter.ruleset = gameInfo.ruleSet
-        ImageGetter.setTextureRegionDrawables()
+        ImageGetter.updateRuleset(gameInfo.ruleSet)
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }
@@ -148,7 +147,10 @@ class UncivGame(
     }
 
     fun setWorldScreen() {
-        if (screen != null && screen != worldScreen) screen.dispose()
+        if (screen != null && screen != worldScreen) {
+            screen.dispose()
+            ImageGetter.checkRuleset(gameInfo.ruleSet)
+        }
         setScreen(worldScreen)
         worldScreen.shouldUpdate = true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
         Gdx.graphics.requestRendering()
@@ -158,7 +160,7 @@ class UncivGame(
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        ImageGetter.setTextureRegionDrawables()
+        ImageGetter.updateRuleset(gameInfo.ruleSet)
 
         // This is to solve a rare problem -
         // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.

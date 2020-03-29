@@ -29,7 +29,7 @@ object ImageGetter {
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
     private var atlas = TextureAtlas("game.atlas")
-    var ruleset = Ruleset()
+    private var ruleset = Ruleset()
     var currentTileSets: SortedSet<String>
     private var keepModAtlas = HashMap<String,TextureAtlas>()
 
@@ -52,7 +52,17 @@ object ImageGetter {
         setTextureRegionDrawables()
     }
 
-    fun setTextureRegionDrawables(){
+    fun updateRuleset(newRuleset: Ruleset) {
+        ruleset = newRuleset
+        setTextureRegionDrawables()
+    }
+    fun checkRuleset(newRuleset: Ruleset) {
+        // adopt given ruleset and pull corresponding drawables only if mods differ
+        // mods are kotlin sets and thus support structural equality (=== false but == true if they contain same elements)
+        if (ruleset===newRuleset || ruleset.mods==newRuleset.mods) return
+        updateRuleset(newRuleset)
+    }
+    private fun setTextureRegionDrawables(){
         textureRegionDrawables.clear()
 
         // These are the drawables from the base game
