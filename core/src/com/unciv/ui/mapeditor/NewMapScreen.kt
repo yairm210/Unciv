@@ -29,7 +29,7 @@ class NewMapScreen : PickerScreen() {
             pad(10f)
             add("Map options".toLabel(fontSize = 24)).row()
             add(MapParametersTable(mapParameters, isEmptyMapAllowed = true)).row()
-            add(ModPickerTable(mods, null, true)).row()
+            add(ModPickerTable(mods, null)).row()
             pack()
         }
 

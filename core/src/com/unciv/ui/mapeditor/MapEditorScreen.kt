@@ -51,7 +51,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         ruleset = RulesetCache.getComplexRuleset(tileMap.createdWithMods)
         tileMap.setTransients(ruleset)
         ImageGetter.ruleset = ruleset
-        //ImageGetter.refreshAtlas()        -- doesn't -seem- to make a difference
+        ImageGetter.setTextureRegionDrawables()
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()

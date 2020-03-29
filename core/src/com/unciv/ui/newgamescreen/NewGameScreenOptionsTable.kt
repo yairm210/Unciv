@@ -220,7 +220,18 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     }
 
     private fun addModCheckboxes() {
-        val modPickerTable = ModPickerTable(newGameParameters.mods, updatePlayerPickerTable)
+        fun notifyChangedMods(modList: HashSet<String>, desiredCiv: String) {
+            ruleset.clear()
+            ruleset.add(RulesetCache.getComplexRuleset(modList))
+            ruleset.mods += modList
+
+            ImageGetter.ruleset=ruleset
+            ImageGetter.setTextureRegionDrawables()
+
+            updatePlayerPickerTable(desiredCiv)
+        }
+
+        val modPickerTable = ModPickerTable(newGameParameters.mods) { modList, desiredCiv -> notifyChangedMods(modList,desiredCiv) }
         add(modPickerTable).colspan(2).row()
     }
 }

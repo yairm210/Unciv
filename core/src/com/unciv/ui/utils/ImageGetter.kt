@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
+import com.badlogic.gdx.utils.Array
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -29,18 +30,26 @@ object ImageGetter {
     // and the atlas is what tells us what was packed where.
     private var atlas = TextureAtlas("game.atlas")
     var ruleset = Ruleset()
-    lateinit var currentTileSets: SortedSet<String>
+    var currentTileSets: SortedSet<String>
+    private var keepModAtlas = HashMap<String,TextureAtlas>()
 
     // We then shove all the drawables into a hashmap, because the atlas specifically tells us
     //   that the search on it is inefficient
     val textureRegionDrawables = HashMap<String,TextureRegionDrawable>()
 
     init{
-        setTextureRegionDrawables()
         currentTileSets = atlas.regions.asSequence()
                 .filter { it.name.startsWith("TileSets") }
                 .map { it.name.split("/")[1] }
                 .distinct().toSortedSet()
+        for (modDir in Gdx.files.local("mods").list()) {
+            val modAtlasFile = Gdx.files.local(modDir.path() + "/game.atlas")
+            if (modAtlasFile.exists() && !modAtlasFile.isDirectory) {
+                val modAtlas = TextureAtlas(modAtlasFile)
+                keepModAtlas[modDir.name()] = modAtlas
+            }
+        }
+        setTextureRegionDrawables()
     }
 
     fun setTextureRegionDrawables(){
@@ -54,23 +63,20 @@ object ImageGetter {
 
         // These are from the mods
         for(mod in ruleset.mods){
-            val modAtlasFile = Gdx.files.local("mods/$mod/game.atlas")
-            if (modAtlasFile.exists()) {
-                val modAtlas = TextureAtlas(modAtlasFile)
-                for (region in modAtlas.regions) {
-                    val drawable = TextureRegionDrawable(region)
-                    textureRegionDrawables[region.name] = drawable
-                }
+            val modAtlas = keepModAtlas[mod]!!
+            for (region in modAtlas.regions) {
+                val drawable = TextureRegionDrawable(region)
+                textureRegionDrawables[region.name] = drawable
             }
         }
     }
 
-    fun refreshAtlas() {
-        // experimental - why should game.atlas ever change while the game is running?
-        //atlas.dispose() // To avoid OutOfMemory exceptions
-        //atlas = TextureAtlas("game.atlas")
-        setTextureRegionDrawables()
-    }
+//    fun refreshAtlas() {
+//        // experimental - why should game.atlas ever change while the game is running?
+//        //atlas.dispose() // To avoid OutOfMemory exceptions
+//        //atlas = TextureAtlas("game.atlas")
+//        setTextureRegionDrawables()
+//    }
 
     fun getWhiteDot() =  getImage(whiteDotLocation)
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}

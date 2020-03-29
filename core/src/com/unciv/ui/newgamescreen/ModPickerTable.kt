@@ -23,24 +23,15 @@ import com.unciv.ui.utils.toLabel
  *
  *  @param isForMapEditor whether mods with empty terrain and resources tables should be shown
  * */
-class ModPickerTable(var modList: HashSet<String>, val updatePlayerPickerTable:((desiredCiv:String)->Unit)?, val isForMapEditor: Boolean = false):
+class ModPickerTable(var modList: HashSet<String>, val notifyChangedMods:((modList: HashSet<String>, desiredCiv:String)->Unit)?):
     Table(CameraStageBaseScreen.skin) {
 
     val ruleset = RulesetCache.getComplexRuleset(modList)
 
     init {
 
-        fun reloadMods(){
-            ruleset.clear()
-            ruleset.add(RulesetCache.getComplexRuleset(modList))
-            ruleset.mods += modList
-
-            ImageGetter.ruleset=ruleset
-            ImageGetter.setTextureRegionDrawables()
-        }
-
         val modRulesets = RulesetCache.filter {
-                it.key!="" && (!isForMapEditor || it.value.containsMapEditorObjects())
+                it.key!="" && (notifyChangedMods!=null || it.value.containsMapEditorObjects())
             }.values
 
         if (modRulesets.isNotEmpty()) {
@@ -54,15 +45,16 @@ class ModPickerTable(var modList: HashSet<String>, val updatePlayerPickerTable:(
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
                         if (checkBox.isChecked) modList.add(mod.name)
                         else modList.remove(mod.name)
-                        reloadMods()
-                        var desiredCiv = ""
-                        if (checkBox.isChecked) {
-                            val modNations = RulesetCache[mod.name]?.nations
-                            if (modNations != null && modNations.size > 0) {
-                                desiredCiv = modNations.keys.first()
+                        if (notifyChangedMods!=null) {
+                            var desiredCiv = ""
+                            if (checkBox.isChecked) {
+                                val modNations = RulesetCache[mod.name]?.nations
+                                if (modNations != null && modNations.size > 0) {
+                                    desiredCiv = modNations.keys.first()
+                                }
                             }
+                            (notifyChangedMods!!)(modList,desiredCiv)
                         }
-                        if (desiredCiv.isNotEmpty()) updatePlayerPickerTable?.invoke(desiredCiv)
                     }
                 })
                 modCheckboxTable.add(checkBox).row()
