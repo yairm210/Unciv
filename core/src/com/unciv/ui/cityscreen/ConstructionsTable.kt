@@ -11,6 +11,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.UncivSound
+import com.unciv.models.ruleset.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
@@ -133,16 +134,23 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         for (unit in city.getRuleset().units.values.filter { it.shouldBeDisplayed(cityConstructions) }) {
             val useStoredProduction = !cityConstructions.isBeingConstructedOrEnqueued(unit.name)
             val turnsToUnit = cityConstructions.turnsToConstruction(unit.name, useStoredProduction)
-            val productionButton = getProductionButton(unit.name,
-                    unit.name.tr() + turnOrTurns(turnsToUnit),
+            var buttonText = unit.name.tr() + turnOrTurns(turnsToUnit)
+            if(unit.requiredResource != null)
+                buttonText += "\n"+"Consumes 1 [${unit.requiredResource}]".tr()
+
+            val productionButton = getProductionButton(unit,
+                    buttonText,
                     unit.getRejectionReason(cityConstructions))
             units.add(productionButton)
         }
 
         for (building in city.getRuleset().buildings.values.filter { it.shouldBeDisplayed(cityConstructions)}) {
             val turnsToBuilding = cityConstructions.turnsToConstruction(building.name)
-            val productionTextButton = getProductionButton(building.name,
-                    building.name.tr() + turnOrTurns(turnsToBuilding),
+            var buttonText = building.name.tr() + turnOrTurns(turnsToBuilding)
+            if(building.requiredResource != null)
+                buttonText += "\n"+"Consumes 1 [${building.requiredResource}]".tr()
+            val productionTextButton = getProductionButton(building,
+                    buttonText,
                     building.getRejectionReason(cityConstructions)
             )
             if (building.isWonder) buildableWonders += productionTextButton
@@ -152,7 +160,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         for (specialConstruction in PerpetualConstruction.perpetualConstructionsMap.values
                 .filter { it.shouldBeDisplayed(cityConstructions) }) {
-            specialConstructions += getProductionButton(specialConstruction.name,
+            specialConstructions += getProductionButton(specialConstruction,
                     "Produce [${specialConstruction.name}]".tr()
                             + specialConstruction.getProductionTooltip(city))
         }
@@ -177,7 +185,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
         val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
-        val text = name.tr() + turnOrTurns(turnsToComplete)
+        var text = name.tr() + turnOrTurns(turnsToComplete)
+
+        val constructionResource = cityConstructions.getConstruction(name).getResource()
+
+        if(constructionResource != null)
+            text += "\n"+"Consumes 1 [$constructionResource]".tr()
 
         table.defaults().pad(2f).minWidth(40f)
         if(isFirstConstructionOfItsKind) table.add(getProgressBar(name)).minWidth(5f)
@@ -212,30 +225,29 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.WHITE)
     }
 
-    private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String = ""): Table {
+    private fun getProductionButton(construction: IConstruction, buttonText: String, rejectionReason: String = ""): Table {
         val pickProductionButton = Table()
 
         pickProductionButton.align(Align.left).pad(5f)
         pickProductionButton.background = ImageGetter.getBackground(Color.BLACK)
         pickProductionButton.touchable = Touchable.enabled
 
-        if (!isSelectedQueueEntry() && cityScreen.selectedConstruction != null && cityScreen.selectedConstruction!!.name == construction) {
+        if (!isSelectedQueueEntry() && cityScreen.selectedConstruction != null && cityScreen.selectedConstruction == construction) {
             pickProductionButton.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
         }
 
-        pickProductionButton.add(getProgressBar(construction)).padRight(5f)
-        pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
-        pickProductionButton.add(buttonText.toLabel()).expandX().fillX().left()
+        pickProductionButton.add(getProgressBar(construction.name)).padRight(5f)
+        pickProductionButton.add(ImageGetter.getConstructionImage(construction.name).surroundWithCircle(40f)).padRight(10f)
+        pickProductionButton.add(buttonText.toLabel()).expandX().fillX().left().row()
 
         // no rejection reason means we can build it!
         if(rejectionReason != "") {
             pickProductionButton.color = Color.GRAY
-            pickProductionButton.row()
             pickProductionButton.add(rejectionReason.toLabel(Color.RED).apply{ setWrap(true)} )
                     .colspan(pickProductionButton.columns).fillX().left().padTop(2f)
         }
         pickProductionButton.onClick {
-            cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(construction)
+            cityScreen.selectedConstruction = construction
             cityScreen.selectedTile = null
             selectedQueueEntry = -2
             cityScreen.update()
@@ -243,6 +255,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         return pickProductionButton
     }
+
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry > -2
     private fun isSelectedCurrentConstruction(): Boolean = selectedQueueEntry == -1
 

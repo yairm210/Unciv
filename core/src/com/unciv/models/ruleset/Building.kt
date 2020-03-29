@@ -397,6 +397,8 @@ class Building : NamedStats(), IConstruction{
         return true
     }
 
+    override fun getResource(): String? = requiredResource
+
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat)>0) return true

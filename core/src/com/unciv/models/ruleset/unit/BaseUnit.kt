@@ -172,6 +172,8 @@ class BaseUnit : INamed, IConstruction {
         return true
     }
 
+    override fun getResource(): String? = requiredResource
+
     fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
         return civInfo.getEquivalentUnit(upgradesTo!!)
     }

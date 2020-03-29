@@ -11,6 +11,7 @@ interface IConstruction : INamed {
     fun isBuildable(construction: CityConstructions): Boolean
     fun shouldBeDisplayed(construction: CityConstructions): Boolean
     fun postBuildEvent(construction: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
+    fun getResource(): String?
     fun canBePurchased(): Boolean
 }
 
@@ -64,5 +65,7 @@ open class PerpetualConstruction(override var name: String, val description: Str
     override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         throw Exception("Impossible!")
     }
+
+    override fun getResource(): String? =null
 
 }
