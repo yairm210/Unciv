@@ -1,12 +1,12 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -59,6 +59,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         center(worldScreen.stage)
 
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
+
+        addAction(Actions.forever(Actions.delay(0.05f, Actions.run {
+            val amountToMove = 30/scaleX
+            if(Gdx.input.isKeyPressed(Input.Keys.W)) scrollY -= amountToMove
+            if(Gdx.input.isKeyPressed(Input.Keys.S)) scrollY += amountToMove
+            if(Gdx.input.isKeyPressed(Input.Keys.A)) scrollX -= amountToMove
+            if(Gdx.input.isKeyPressed(Input.Keys.D)) scrollX += amountToMove
+            updateVisualScroll()
+        })))
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
