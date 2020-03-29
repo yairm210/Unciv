@@ -62,7 +62,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name)) }
         categoryToEntries["Resources"] = ruleset.tileResources.values
-                .map { CivilopediaEntry(it.name,it.getDescription(),
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getResourceImage(it.name,50f)) }
         categoryToEntries["Terrains"] = ruleset.terrains.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset)) }
