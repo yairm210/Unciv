@@ -164,6 +164,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 val translations = Translations()
                 translations.readAllLanguagesTranslation()
                 TranslationFileWriter.writeNewTranslationFiles(translations)
+                // notify about completion
+                generateTranslationsButton.setText("Translation files are generated successfully.".tr())
+                generateTranslationsButton.disable()
             }
             innerTable.add(generateTranslationsButton).colspan(2).row()
         }
