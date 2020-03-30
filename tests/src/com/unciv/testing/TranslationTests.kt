@@ -162,7 +162,7 @@ class TranslationTests {
         for (key in translations.keys) {
             val placeholders = placeholderPattern.findAll(key).map { it.value }.toList()
             for (language in languages) {
-                placeholders.forEach { placeholder ->
+                for (placeholder in placeholders) {
                     if (!translations.get(key, language).contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
                         println("Placeholder `$placeholder` not found in `$language` for key `$key`")

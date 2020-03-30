@@ -1,3 +1,22 @@
+## 3.6.14
+
+Harbors immediately connect cities
+
+Revealed resources near cities generate notifications
+
+Cities in unit overview are translated
+
+Resolved #1885 - Both sides of per-turn trades end at the same time, resources offered in trade requests are not considered 
+yours for that turn
+
+Resoved #1869 - added WASD support for map panning
+
+Resolved #1779 - Can lock worked tiles to prevent them from being unassigned
+
+Resources in Civilopedia state consuming units and buildings - #1964
+
+Translation updates
+
 ## 3.6.13
 
 By rh-github-2015:
