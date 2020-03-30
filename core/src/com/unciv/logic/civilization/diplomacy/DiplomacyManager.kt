@@ -222,7 +222,8 @@ class DiplomacyManager() {
 
         for(trade in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
             for(offer in trade.trade.theirOffers)
-                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade request")
+                if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
+                    counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade request")
         }
 
         return counter
