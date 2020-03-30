@@ -28,15 +28,16 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
     private val listOfHiddenUnitMarkers: MutableList<Actor> = mutableListOf()
     private lateinit var iconTable: Table
     private var isButtonMoved = false
+    private var showAdditionalInfoTags = false
 
     fun update(isCityViewable:Boolean) {
+        showAdditionalInfoTags = isCityViewable
+
         clear()
-
         setButtonActions()
-
         addAirUnitTable()
 
-        if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
+        if (showAdditionalInfoTags && city.health < city.getMaxHealth().toFloat()) {
             val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
             add(healthBar).row()
         }
@@ -58,6 +59,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
         for (marker in listOfHiddenUnitMarkers)
             iconTable.removeActor(marker)
         listOfHiddenUnitMarkers.clear()
+
+        if (!showAdditionalInfoTags) return
+
         // detect civilian in the city center
         if (!isButtonMoved && (tileGroup.tileInfo.civilianUnit != null))
             insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
@@ -111,7 +115,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
     }
 
     private fun addAirUnitTable() {
-        if (tileGroup.tileInfo.airUnits.isEmpty()) return
+        if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
         airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor())
