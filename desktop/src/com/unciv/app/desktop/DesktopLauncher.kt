@@ -26,6 +26,8 @@ internal object DesktopLauncher {
         config.addIcon("ExtraImages/Icon.png", Files.FileType.Internal)
         config.title = "Unciv"
         config.useHDPI = true
+        config.width = 960
+        config.height = 540
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion
 

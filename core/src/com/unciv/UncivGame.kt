@@ -98,6 +98,12 @@ class UncivGame(
                 autoLoadGame()
                 thread(name="Music") { startMusic() }
                 isInitialized = true
+                if (Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
+                    if (settings.windowState.fullscreen)
+                        Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+                    else
+                        Gdx.graphics.setWindowedMode(settings.windowState.width,settings.windowState.height)
+                }
             }
         }
         crashController = CrashController.Impl(crashReportSender)
@@ -176,8 +182,10 @@ class UncivGame(
     }
 
     override fun dispose() {
-        if (::gameInfo.isInitialized)
+        if (::gameInfo.isInitialized) {
             GameSaver().autoSave(gameInfo)
+            settings.save()
+        }
     }
 
     companion object {
