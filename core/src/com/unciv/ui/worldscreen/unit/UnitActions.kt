@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -277,6 +278,7 @@ object UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         unit.civInfo.tech.hurryResearch()
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { unit.civInfo.tech.currentTechnologyName() != null && unit.currentMovement > 0 })
         }
@@ -287,6 +289,7 @@ object UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         unit.civInfo.goldenAges.enterGoldenAge()
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0 })
         }
@@ -306,6 +309,7 @@ object UnitActions {
                             addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                             constructIfEnough()
                         }
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { canHurryWonder })
         }
@@ -327,6 +331,7 @@ object UnitActions {
                         val influenceEarned = Regex("\\d+").find(relevantUnique)!!.value.toInt()
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned.toInt()}] gold and [$influenceEarned] influence!", null, Color.GOLD)
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { canConductTradeMission })
         }
@@ -354,10 +359,22 @@ object UnitActions {
                             city.cityStats.update()
                             city.civInfo.updateDetailedCivResources()
                         }
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().impassable })
         }
         return null
+    }
+
+    private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {
+        val uniqueText = "Provides a sum of gold each time you spend a Great Person"
+        val cityWithMausoleum = civInfo.cities.firstOrNull { it.containsBuildingUnique(uniqueText) }
+                ?: return
+        val goldEarned = (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        civInfo.gold += goldEarned
+
+        val mausoleum = cityWithMausoleum.cityConstructions.getBuiltBuildings().first { it.uniques.contains(uniqueText) }
+        civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, Color.GOLD)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {

@@ -169,6 +169,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Paper](https://thenounproject.com/term/paper/1443472/) By anam
 * [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
 * [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
+* [Ho Chi Minh mausoleum](https://thenounproject.com/thanhloc1009/collection/asia-landmark/?i=2412921) By Phạm Thanh Lộc for Mausoleum of Halicarnassus
 
 ### Classical Era
 
