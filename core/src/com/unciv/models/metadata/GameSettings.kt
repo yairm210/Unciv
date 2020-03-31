@@ -46,7 +46,19 @@ class GameSettings {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val gm = Gdx.graphics.displayMode
             val gr = Gdx.graphics
-            windowState = WindowState((gm.width-gr.width)/2, (gm.height-gr.height)/2, gr.width, gr.height, gr.isFullscreen)
+            // A maximized window is *not* fullscreen, and the taskbar often stays visible.
+            // Taskbar height samples: 79px (w10 @ fhd), 67px (mint 19.3 cinnamon @ 2.5k)
+            windowState = when {
+                gr.isFullscreen ->
+                    // actual fullscreen should preserve the old geometry
+                    WindowState(windowState.x, windowState.y, windowState.width, windowState.height, true)
+                gm.width == gr.width && gr.height >= gm.height-90 && gr.height <= gm.height-32 ->
+                    // Don't center when it looks suspiciously like maximized
+                    WindowState(0, 0, gr.width, gr.height, false)
+                else ->
+                    // center assuming a conservative 32px taskbar height
+                    WindowState((gm.width - gr.width) / 2, (gm.height - 32 - gr.height) / 2, gr.width, gr.height, false)
+            }
         }
         GameSaver().setGeneralSettings(this)
     }

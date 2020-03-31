@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
 import com.unciv.models.UncivSound
+import com.unciv.models.metadata.WindowState
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -51,7 +52,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
             update()
         }
 
-
         innerTable.add("Show tutorials".toLabel())
         addButton(innerTable, if (settings.showTutorials) "Yes" else "No") {
             settings.showTutorials = !settings.showTutorials
@@ -85,6 +85,17 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen){
         addLanguageSelectBox(innerTable)
 
         addResolutionSelectBox(innerTable)
+
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            innerTable.add("Fullscreen mode".toLabel())
+            addButton(innerTable, if (settings.windowState.fullscreen) "Yes" else "No") {
+                val ows = settings.windowState
+                settings.windowState = WindowState(ows.x, ows.y, ows.width, ows.height, !ows.fullscreen)
+                if (ows.fullscreen) Gdx.graphics.setWindowedMode(ows.width,ows.height)
+                else Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
+                update()
+            }
+        }
 
         addTileSetSelectBox(innerTable)
 
