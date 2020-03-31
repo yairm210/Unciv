@@ -56,13 +56,11 @@ class CivilizationInfo {
     var playerType = PlayerType.AI
     /** Used in online multiplayer for human players */ var playerId = ""
     var gold = 0
-    @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
-    @Deprecated("As of 2.11.3") var scienceVictory = ScienceVictoryManager()
     var victoryManager=VictoryManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
@@ -361,11 +359,6 @@ class CivilizationInfo {
         }
 
         victoryManager.civInfo=this
-
-        // As of 2.11.3 scienceVictory is deprecated
-        if(victoryManager.currentsSpaceshipParts.values.sum() == 0
-                && scienceVictory.currentParts.values.sum()>0)
-            victoryManager.currentsSpaceshipParts = scienceVictory.currentParts
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo

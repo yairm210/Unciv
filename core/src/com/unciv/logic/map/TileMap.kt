@@ -19,9 +19,6 @@ class TileMap {
 
     var mapParameters = MapParameters()
 
-    @Deprecated("as of 2.7.10")
-    private var tiles = HashMap<String, TileInfo>()
-
     private var tileList = ArrayList<TileInfo>()
 
     val values: Collection<TileInfo>
@@ -223,9 +220,6 @@ class TileMap {
     }
 
     fun setTransients(ruleset: Ruleset) {
-        if(tiles.any())
-            tileList.addAll(tiles.values)
-
         val topY= tileList.asSequence().map { it.position.y.toInt() }.max()!!
         bottomY= tileList.asSequence().map { it.position.y.toInt() }.min()!!
         val rightX= tileList.asSequence().map { it.position.x.toInt() }.max()!!
