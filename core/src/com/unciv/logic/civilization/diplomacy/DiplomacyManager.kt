@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import kotlin.math.ceil
@@ -211,17 +212,16 @@ class DiplomacyManager() {
     fun resourcesFromTrade(): ResourceSupplyList {
         val counter = ResourceSupplyList()
         val resourcesMap = civInfo.gameInfo.ruleSet.tileResources
-        for(trade in trades){
-            for(offer in trade.ourOffers)
-                if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(resourcesMap[offer.name]!!,-offer.amount,"Trade")
-            for(offer in trade.theirOffers)
-                if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(resourcesMap[offer.name]!!,offer.amount,"Trade")
+        val isResourceFilter: (TradeOffer) -> Boolean = { it.type == TradeType.Strategic_Resource || it.type == TradeType.Luxury_Resource }
+        for (trade in trades) {
+            for (offer in trade.ourOffers.filter(isResourceFilter))
+                counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade")
+            for (offer in trade.theirOffers.filter(isResourceFilter))
+                counter.add(resourcesMap[offer.name]!!, offer.amount, "Trade")
         }
 
-        for(trade in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
-            for(offer in trade.trade.theirOffers)
+        for (trade in otherCiv().tradeRequests.filter { it.requestingCiv == civInfo.civName }) {
+            for (offer in trade.trade.theirOffers.filter(isResourceFilter))
                 counter.add(resourcesMap[offer.name]!!, -offer.amount, "Trade request")
         }
 
