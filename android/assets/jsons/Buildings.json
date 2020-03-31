@@ -144,15 +144,14 @@
 		"uniques": ["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
 		"requiredTech": "Bronze Working"
 	},
-	/*
 	{
 		"name": "Statue of Zeus",
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["+15% Combat Strenght when attacking Cities."],
+		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
 		"requiredTech": "Bronze Working"
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
-	}, */
+	},
 	{
 		"name": "Mausoleum of Halicarnassus",
 		"culture": 1,

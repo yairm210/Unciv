@@ -170,6 +170,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
 * [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
 * [Ho Chi Minh mausoleum](https://thenounproject.com/thanhloc1009/collection/asia-landmark/?i=2412921) By Phạm Thanh Lộc for Mausoleum of Halicarnassus
+* Icon for Statue of Zeus made by [JackRainy](https://github.com/JackRainy), based on [King](https://thenounproject.com/eucalyp/collection/game-elements-glyph1/?i=3155251) By Eucalyp
 
 ### Classical Era
 
