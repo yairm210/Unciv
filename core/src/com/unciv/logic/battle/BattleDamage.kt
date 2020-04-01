@@ -142,6 +142,10 @@ class BattleDamage{
 
             if (policies.isAdopted("Autocracy Complete") && (policies.autocracyCompletedTurns > 0))
                 modifiers["Autocracy Complete"] = 0.2f
+
+            if (defender is CityCombatant &&
+                    attacker.getCivInfo().containsBuildingUnique("+15% Combat Strength for all units when attacking Cities"))
+                modifiers["Statue of Zeus"] = 0.15f
         }
 
         else if (attacker is CityCombatant) {
