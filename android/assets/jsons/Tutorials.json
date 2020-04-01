@@ -164,7 +164,7 @@
 	"Units can only gain up to 30 XP from Barbarian units - meaning up to 2 promotions. After that, Barbarian units will provide no experience."
   ]
   Combat: [
-	"Unit and cities are worn down by combat, which is affected by a number of different values.\nEach unit has a certain 'base' combar value, which can be improved by certain conditions, promotions and locations.",
+	"Unit and cities are worn down by combat, which is affected by a number of different values.\nEach unit has a certain 'base' combat value, which can be improved by certain conditions, promotions and locations.",
 	"Units use the 'Strength' value as the base combat value when melee attacking and when defending.\nWhen using a ranged attack, they will the use the 'Ranged Strength' value instead.",
 	"Ranged attacks can be done from a distance, dependant on the 'Range' value of the unit.\nWhile melee attacks allow the defender to damage the attacker in retaliation, ranged attacks do not."
   ]
