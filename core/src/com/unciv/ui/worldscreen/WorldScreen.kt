@@ -385,6 +385,38 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
     }
 
+    private fun nextTurnButtonClicked() {
+        // cycle through units not yet done
+        if (viewingCiv.shouldGoToDueUnit()) {
+            val nextDueUnit = viewingCiv.getNextDueUnit()
+            if(nextDueUnit!=null) {
+                mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                bottomUnitTable.selectedCity = null
+                bottomUnitTable.selectedUnit = nextDueUnit
+                shouldUpdate=true
+            }
+            return
+        }
+
+        val cityWithNoProductionSet = viewingCiv.cities
+                .firstOrNull{it.cityConstructions.currentConstruction==""}
+        if(cityWithNoProductionSet!=null){
+            game.setScreen(CityScreen(cityWithNoProductionSet))
+            return
+        }
+
+        if (viewingCiv.shouldOpenTechPicker()) {
+            game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
+            return
+        } else if (viewingCiv.policies.shouldOpenPolicyPicker) {
+            game.setScreen(PolicyPickerScreen(this))
+            viewingCiv.policies.shouldOpenPolicyPicker = false
+            return
+        }
+
+        game.settings.addCompletedTutorialTask("Pass a turn")
+        nextTurn() // If none of the above
+    }
     private fun createNextTurnButton(): TextButton {
 
         val nextTurnButton = TextButton("", skin) // text is set in update()
@@ -392,38 +424,18 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.labelCell.pad(10f)
 
         nextTurnButton.onClick {
-            // cycle through units not yet done
-            if (viewingCiv.shouldGoToDueUnit()) {
-                val nextDueUnit = viewingCiv.getNextDueUnit()
-                if(nextDueUnit!=null) {
-                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                    bottomUnitTable.selectedCity = null
-                    bottomUnitTable.selectedUnit = nextDueUnit
-                    shouldUpdate=true
-                }
-                return@onClick
-            }
-
-            val cityWithNoProductionSet = viewingCiv.cities
-                    .firstOrNull{it.cityConstructions.currentConstruction==""}
-            if(cityWithNoProductionSet!=null){
-                game.setScreen(CityScreen(cityWithNoProductionSet))
-                return@onClick
-            }
-
-            if (viewingCiv.shouldOpenTechPicker()) {
-                game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
-                return@onClick
-            } else if (viewingCiv.policies.shouldOpenPolicyPicker) {
-                game.setScreen(PolicyPickerScreen(this))
-                viewingCiv.policies.shouldOpenPolicyPicker = false
-                return@onClick
-            }
-
-            game.settings.addCompletedTutorialTask("Pass a turn")
-            nextTurn() // If none of the above
+            nextTurnButtonClicked()
         }
-
+        nextTurnButton.addListener (object: InputListener() {
+            override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                if (character==' '||character=='N'||character=='n') {
+                    nextTurnButtonClicked()
+                    return true
+                }
+                return super.keyTyped(event, character)
+            }
+        })
+        stage.setKeyboardFocus(nextTurnButton)
         return nextTurnButton
     }
 
