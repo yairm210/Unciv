@@ -28,7 +28,7 @@ object TranslationFileWriter {
         writeLanguagePercentages(percentages)
 
         // try to do the same for the mods
-        for(modFolder in Gdx.files.local("mods").list())
+        for(modFolder in Gdx.files.local("mods").list().filter { it.isDirectory })
             generateTranslationFiles(translations, modFolder)
             // write percentages is not needed: for an individual mod it makes no sense
 
