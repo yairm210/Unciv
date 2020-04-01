@@ -12,7 +12,9 @@ Mods are located in a `/mods` directory, on Desktop that should be next to your 
 
 In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
 
-Each folder in the /mods directory is a different mod.
+When loading a mod, they can be in 1 of 2 formats:
+- A folder in `/mods` - this is how you will work when you're editing your mod
+- A zip file in `/mods` - this is an easier way of handling prebuilt mods
 
 Mods have 2 subfolders:
 - jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons)
