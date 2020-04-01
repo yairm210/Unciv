@@ -101,8 +101,18 @@ class UncivGame(
                 if (Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
                     if (settings.windowState.fullscreen)
                         Gdx.graphics.setFullscreenMode(Gdx.graphics.displayMode)
-                    else
-                        Gdx.graphics.setWindowedMode(settings.windowState.width,settings.windowState.height)
+                    else {
+                        Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
+                        val grWindowField = Gdx.graphics.javaClass.getDeclaredField("window")
+                        grWindowField.isAccessible = true
+                        val grWindow = grWindowField.get(Gdx.graphics)
+                        val grSetPosMethod = (grWindowField.genericType as Class<*>).getDeclaredMethod("setPosition", Int::class.java, Int::class.java )
+                        grSetPosMethod.invoke(grWindow,settings.windowState.x,settings.windowState.y)
+                        if (settings.windowState.maximized) {
+                            val grMaximizeMethod = (grWindowField.genericType as Class<*>).getDeclaredMethod("maximizeWindow")
+                            grMaximizeMethod.invoke(grWindow)
+                        }
+                    }
                 }
             }
         }
@@ -186,6 +196,12 @@ class UncivGame(
             GameSaver().autoSave(gameInfo)
             settings.save()
         }
+        // Kludge code to find out and fix in a generic way what's blocking proper shutdown
+        // Helps, but fixing DesktopLauncher.tryActivateDiscord would be better
+        val numThreads = Thread.activeCount()
+        val threadList = Array<Thread>(numThreads) { _ -> Thread() }
+        Thread.enumerate(threadList)
+        threadList.filter { it !== Thread.currentThread() }.forEach { it.stop() }
     }
 
     companion object {

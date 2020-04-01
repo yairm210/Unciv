@@ -4,7 +4,7 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
 
-data class WindowState (val x:Int=0, val y:Int=0, val width:Int=0, val height:Int=0, val fullscreen:Boolean=true)
+data class WindowState (val x:Int=0, val y:Int=0, val width:Int=0, val height:Int=0, val maximized:Boolean=false, val fullscreen:Boolean=true)
 
 class GameSettings {
     var showWorkedTiles: Boolean = false
@@ -44,20 +44,20 @@ class GameSettings {
 
     fun save(){
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
-            val gm = Gdx.graphics.displayMode
             val gr = Gdx.graphics
-            // A maximized window is *not* fullscreen, and the taskbar often stays visible.
-            // Taskbar height samples: 79px (w10 @ fhd), 67px (mint 19.3 cinnamon @ 2.5k)
-            windowState = when {
-                gr.isFullscreen ->
-                    // actual fullscreen should preserve the old geometry
-                    WindowState(windowState.x, windowState.y, windowState.width, windowState.height, true)
-                gm.width == gr.width && gr.height >= gm.height-90 && gr.height <= gm.height-32 ->
-                    // Don't center when it looks suspiciously like maximized
-                    WindowState(0, 0, gr.width, gr.height, false)
-                else ->
-                    // center assuming a conservative 32px taskbar height
-                    WindowState((gm.width - gr.width) / 2, (gm.height - 32 - gr.height) / 2, gr.width, gr.height, false)
+            if (gr.isFullscreen) {
+                // actual fullscreen should preserve the old geometry
+                windowState = WindowState(windowState.x, windowState.y, windowState.width, windowState.height, windowState.maximized, true)
+            } else {
+                val grWindowField = gr.javaClass.getDeclaredField("window")
+                grWindowField.isAccessible = true
+                val grWindow = grWindowField.get(gr)
+                val grGetXMethod = (grWindowField.genericType as Class<*>).getDeclaredMethod("getPositionX")
+                val windowX = grGetXMethod.invoke(grWindow) as Int
+                val grGetYMethod = (grWindowField.genericType as Class<*>).getDeclaredMethod("getPositionY")
+                val windowY = grGetYMethod.invoke(grWindow) as Int
+                val isMaximized = false     // Lwjgl3 allows detecting "iconified" but not maximized. In case they learn...
+                windowState = WindowState(windowX, windowY, gr.width, gr.height, isMaximized, false)
             }
         }
         GameSaver().setGeneralSettings(this)
