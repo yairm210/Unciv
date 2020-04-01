@@ -122,13 +122,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             update()
         }
 
-
-        innerTable.add("Enable nuclear weapons".toLabel())
-        addButton(innerTable, if (settings.nuclearWeaponEnabled) "Yes" else "No") {
-            settings.nuclearWeaponEnabled = !settings.nuclearWeaponEnabled
-            update()
-        }
-
         addAutosaveTurnsSelectBox(innerTable)
 
         // at the moment the notification service only exists on Android

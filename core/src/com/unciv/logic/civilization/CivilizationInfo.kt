@@ -166,7 +166,7 @@ class CivilizationInfo {
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      */
-    fun getCivResourcesByName():HashMap<String,Int>{
+    fun getCivResourcesByName():HashMap<String,Int> {
         val hashMap = HashMap<String,Int>()
         for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
@@ -353,9 +353,9 @@ class CivilizationInfo {
         tech.civInfo = this
         tech.setTransients()
 
-        diplomacy.values.forEach {
-            it.civInfo=this
-            it.updateHasOpenBorders()
+        for (diplomacyManager in diplomacy.values) {
+            diplomacyManager.civInfo=this
+            diplomacyManager.updateHasOpenBorders()
         }
 
         victoryManager.civInfo=this

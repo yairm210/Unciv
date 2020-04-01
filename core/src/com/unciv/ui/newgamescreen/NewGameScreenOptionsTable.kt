@@ -41,6 +41,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
         addOneCityChallengeCheckbox()
+        addNuclearWeaponsCheckbox()
         addIsOnlineMultiplayerCheckbox()
         addModCheckboxes()
 
@@ -101,15 +102,18 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         add(checkbox).colspan(2).row()
     }
 
-    private fun addBarbariansCheckbox() {
+    private fun addBarbariansCheckbox()  =
         addCheckbox("No barbarians", newGameParameters.noBarbarians)
             { newGameParameters.noBarbarians = it }
-    }
 
-    private fun addOneCityChallengeCheckbox() {
+    private fun addOneCityChallengeCheckbox() =
         addCheckbox("One City Challenge", newGameParameters.oneCityChallenge)
             { newGameParameters.oneCityChallenge = it }
-    }
+
+    private fun addNuclearWeaponsCheckbox() =
+        addCheckbox("Enable nuclear weapons", newGameParameters.nuclearWeaponsEnabled)
+            { newGameParameters.nuclearWeaponsEnabled = it }
+
 
     private fun addIsOnlineMultiplayerCheckbox() {
 
