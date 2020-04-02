@@ -610,8 +610,8 @@
 	/*
 	{
 		//NEEDS SNOW AND ICE
-		"name": "Denmark",
-		"leaderName": "Harald Bluetooth",
+		"name": "DICk",
+		"leaderName": "Oh",
 		"adjective": ["Danish"],
 		"startBias": ["Coast"],
 		"preferredVictoryType": "Domination",
@@ -622,13 +622,13 @@
 		"attacked": "Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!",
 		"defeated": "Loki must have stood by you, for a common man alone could not have defeated me... Oh well! I will join the einherjar in Valhalla and feast, while you toil away here.",
 		"introduction": "Harad Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?",
-		"neutralHello": "Hail to you.",
-		"hateHello": "Oh, it's you.",
-		"tradeRequest": "This is a fine deal! Even a drunk beggar would agree!",
+		"neutralHello": "Hi.",
+		"hateHello": "FUCK YOU.",
+		"tradeRequest": "ACCEPT IT! YOU FU*CKING ******",
 		"outerColor": [51,25,0],
 		"innerColor": [255,255,102],
 		"unique": "VIKING_FURY",
-		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
+		"cities": ["CONSTANTINOPLE","NEW AMSTERDAM","NEW NEW YORK","NEGNTODe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
 			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
@@ -666,9 +666,9 @@
 	{
 		"name": "Milan",
 		"adjective": ["Milanese"],
-		"cityStateType": "Cultured",
+		"cityStateType": "Gold",
 		
-		"declaringWar": "You leave us no choice. War it must be.",
+		"declaringWar": ".FUCK YOU",
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "You fiend! History shall remember this!",
 		"outerColor": [0, 0, 0],
