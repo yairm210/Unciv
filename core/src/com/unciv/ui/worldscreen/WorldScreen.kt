@@ -63,6 +63,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private var backButtonListener : InputListener
 
+    // An initialized val always turned out to illegally be null...
+    lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
+
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
@@ -108,7 +111,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         stage.addActor(unitActionsTable)
 
-        createNextTurnButton() // needs civ table to be positioned
+        //createNextTurnButton() // needs civ table to be positioned // Why twice in primary and secondary constructor?
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -150,7 +153,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
                     if (keycode !in ALLOWED_KEYS) return false
-
                     pressedKeys.add(keycode)
                     if (infiniteAction == null) {
                         // create a copy of the action, because removeAction() will destroy this instance
@@ -184,6 +186,18 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         infiniteAction = null
                     }
                     return true
+                }
+
+                override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                    if (character in keyPressDispatcher) {
+                        println("keyTyped: '$character'")
+                        //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                        try {
+                            keyPressDispatcher[character]?.invoke()
+                        } catch (ex: Exception) {}
+                        return true
+                    }
+                    return super.keyTyped(event, character)
                 }
             }
         )
@@ -423,19 +437,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.label.setFontSize(30)
         nextTurnButton.labelCell.pad(10f)
 
-        nextTurnButton.onClick {
-            nextTurnButtonClicked()
-        }
-        nextTurnButton.addListener (object: InputListener() {
-            override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-                if (character==' '||character=='N'||character=='n') {
-                    nextTurnButtonClicked()
-                    return true
-                }
-                return super.keyTyped(event, character)
-            }
-        })
-        stage.setKeyboardFocus(nextTurnButton)
+        val actionLambda = { nextTurnButtonClicked() }
+        nextTurnButton.onClick (actionLambda)
+        if (!::keyPressDispatcher.isInitialized) keyPressDispatcher = hashMapOf()
+        keyPressDispatcher[' '] = actionLambda
+        keyPressDispatcher['n'] = actionLambda
+
         return nextTurnButton
     }
 

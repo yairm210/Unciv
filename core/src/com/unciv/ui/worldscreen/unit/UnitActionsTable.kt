@@ -12,47 +12,49 @@ import com.unciv.models.UnitAction
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
+private data class UnitIconAndKey (val Icon: Actor, val key: Char = 0.toChar())
+
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     init {
         touchable = Touchable.enabled
     }
     
-    private fun getIconForUnitAction(unitAction:String): Actor {
+    private fun getIconAnKeyForUnitAction(unitAction:String): UnitIconAndKey {
         when {
             unitAction.startsWith("Upgrade to") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
                 // What you find between the first [ and the first ] that comes after it, will be group no. 1
                 val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
-                return ImageGetter.getUnitIcon(unitToUpgradeTo)
+                return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo))
             }
-            unitAction.startsWith("Sleep") -> return ImageGetter.getImage("OtherIcons/Sleep")
-            unitAction.startsWith("Fortify") -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
+            unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"),'f')
+            unitAction.startsWith("Fortify") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK },'f')
             else -> when(unitAction){
-                "Move unit" -> return ImageGetter.getStatIcon("Movement")
-                "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
-                "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
-                "Construct improvement" -> return ImageGetter.getUnitIcon(Constants.worker)
-                "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
-                "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
-                "Found city" -> return ImageGetter.getUnitIcon(Constants.settler)
-                "Hurry Research" -> return ImageGetter.getUnitIcon("Great Scientist")
-                "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
-                "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
-                "Construct Landmark" -> return ImageGetter.getImprovementIcon("Landmark")
-                "Hurry Wonder" -> return ImageGetter.getUnitIcon("Great Engineer")
-                "Construct Manufactory" -> return ImageGetter.getImprovementIcon("Manufactory")
-                "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")
-                "Construct Customs House" -> return ImageGetter.getImprovementIcon("Customs house")
-                "Set up" -> return ImageGetter.getUnitIcon("Catapult")
-                "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit")
-                "Explore" -> return ImageGetter.getUnitIcon("Scout")
-                "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop")
-                "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
-                "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
-                "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
-                "Construct road" -> return ImageGetter.getImprovementIcon("Road")
-                else -> return ImageGetter.getImage("OtherIcons/Star")
+                "Move unit" -> return UnitIconAndKey(ImageGetter.getStatIcon("Movement"))
+                "Stop movement"-> return UnitIconAndKey(ImageGetter.getStatIcon("Movement").apply { color= Color.RED }, '.')
+                "Promote" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }, 'p')
+                "Construct improvement" -> return UnitIconAndKey(ImageGetter.getUnitIcon(Constants.worker),'i')
+                "Automate" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Engineer"), 'm')
+                "Stop automation" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'm')
+                "Found city" -> return UnitIconAndKey(ImageGetter.getUnitIcon(Constants.settler),'f')
+                "Hurry Research" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Scientist"), 'g')
+                "Construct Academy" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Academy"), 'i')
+                "Start Golden Age" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Artist"), 'g')
+                "Construct Landmark" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Landmark"), 'i')
+                "Hurry Wonder" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Engineer"), 'g')
+                "Construct Manufactory" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Manufactory"), 'i')
+                "Conduct Trade Mission" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Merchant"), 'g')
+                "Construct Customs House" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Customs house"), 'i')
+                "Set up" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Catapult"), 'u')
+                "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
+                "Explore" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Scout"), 'x')
+                "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')
+                "Create Fishing Boats" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Fishing Boats"),'i')
+                "Create Oil well" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Oil well"),'i')
+                "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"),'p')
+                "Construct road" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Road"),'r')
+                else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
             }
         }
     }
@@ -68,16 +70,21 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
 
     private fun getUnitActionButton(unitAction: UnitAction): Button {
+        val iconAndKey = getIconAnKeyForUnitAction(unitAction.title)
         val actionButton = Button(CameraStageBaseScreen.skin)
-        actionButton.add(getIconForUnitAction(unitAction.title)).size(20f).pad(5f)
+        actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         actionButton.pack()
-        actionButton.onClick(unitAction.uncivSound) {
+        val actionLambda = {
             unitAction.action?.invoke()
             UncivGame.Current.worldScreen.shouldUpdate=true
         }
+        actionButton.onClick(unitAction.uncivSound,actionLambda)
         if (unitAction.action == null) actionButton.disable()
+        else if (iconAndKey.key != 0.toChar()) {
+            worldScreen.keyPressDispatcher[iconAndKey.key] = actionLambda
+        }
         return actionButton
     }
 }
