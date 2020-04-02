@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
@@ -20,6 +19,8 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
@@ -115,6 +116,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 selectedImprovement=TileImprovement().apply { name="StartingLocation "+nation.name }
                 val nationIcon = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
                 setCurrentHex(nationIcon, "[${nation.name}] starting location")
+                UncivGame.Current.music.chooseTrack(nation.name,"Theme", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.PlaySingle))
             }
             nationsTable.add(nationImage).row()
         }

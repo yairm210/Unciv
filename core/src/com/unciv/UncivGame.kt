@@ -4,13 +4,13 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.audio.Music
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapParameters
+import com.unciv.ui.utils.MusicController
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
@@ -33,6 +33,8 @@ class UncivGame(
     fun isGameInfoInitialized() = this::gameInfo.isInitialized
     lateinit var settings: GameSettings
     lateinit var crashController: CrashController
+    lateinit var music: MusicController
+
     /**
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
@@ -49,8 +51,6 @@ class UncivGame(
 
     lateinit var worldScreen: WorldScreen
 
-    var music: Music? = null
-    val musicLocation = "music/thatched-villagers.mp3"
     var isInitialized = false
 
 
@@ -69,6 +69,7 @@ class UncivGame(
         // So it's basically a long set of deferred actions.
         settings = GameSaver().getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
+        music = MusicController(settings.musicVolume)
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
@@ -86,7 +87,7 @@ class UncivGame(
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
                 autoLoadGame()
-                thread(name="Music") { startMusic() }
+                music.chooseTrack()
                 isInitialized = true
             }
         }
@@ -103,18 +104,6 @@ class UncivGame(
         }
     }
 
-    fun startMusic() {
-        if (settings.musicVolume < 0.01) return
-
-        val musicFile = Gdx.files.local(musicLocation)
-        if (musicFile.exists()) {
-            music = Gdx.audio.newMusic(musicFile)
-            music!!.isLooping = true
-            music!!.volume = 0.4f * settings.musicVolume
-            music!!.play()
-        }
-    }
-
     fun setScreen(screen: CameraStageBaseScreen) {
         Gdx.input.inputProcessor = screen.stage
         super.setScreen(screen)
@@ -124,6 +113,7 @@ class UncivGame(
         this.gameInfo = gameInfo
         ImageGetter.ruleset = gameInfo.ruleSet
         ImageGetter.refreshAtlas()
+        music.setModList(gameInfo.ruleSet.mods)
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }
@@ -168,6 +158,8 @@ class UncivGame(
     override fun dispose() {
         if (::gameInfo.isInitialized)
             GameSaver().autoSave(gameInfo)
+        if (::music.isInitialized)
+            music.shutdown()
     }
 
     companion object {

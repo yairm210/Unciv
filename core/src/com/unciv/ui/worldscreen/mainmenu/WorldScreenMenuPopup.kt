@@ -23,6 +23,9 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init {
         val width = 200f
         val height = 30f
+
+        UncivGame.Current.music.pause()
+
         addSquareButton("Map editor".tr()){
             openMapEditorPopup()
             close()
@@ -77,6 +80,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         addSquareButton("Close"){
+            UncivGame.Current.music.resume()
             close()
         }.size(width,height)
     }

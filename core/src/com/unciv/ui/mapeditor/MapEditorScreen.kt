@@ -51,6 +51,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
     fun initialize() {
         tileMap.setTransients(ruleset)
+        //UncivGame.Current.music.setModList(tileMap.createdWithMods)   // When map editor can deal with mods...
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()

@@ -12,6 +12,7 @@ import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import java.util.*
 import kotlin.concurrent.thread
 
 class Language(val language:String, val percentComplete:Int){
@@ -202,21 +203,17 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     }
 
     private fun addMusicVolumeSlider(innerTable: Table) {
-        val musicLocation = Gdx.files.local(UncivGame.Current.musicLocation)
-        if (musicLocation.exists()) {
+        if(UncivGame.Current.music.isMusicAvailable()) {
             innerTable.add("Music volume".tr())
 
-            val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
+            val musicVolumeSlider = Slider(0f, 1.0f, 0.05f, false, skin)
             musicVolumeSlider.value = UncivGame.Current.settings.musicVolume
             musicVolumeSlider.onChange {
                 UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
                 UncivGame.Current.settings.save()
 
-                val music = UncivGame.Current.music
-                if (music == null) // restart music, if it was off at the app start
-                    thread(name = "Music") { UncivGame.Current.startMusic() }
-
-                music?.volume = 0.4f * musicVolumeSlider.value
+                    UncivGame.Current.music.setVolume(musicVolumeSlider.value)
+                    UncivGame.Current.music.chooseTrack (flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile,MusicTrackChooserFlags.PlaySingle))
             }
             innerTable.add(musicVolumeSlider).pad(10f).row()
         } else {
@@ -227,15 +224,14 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
             downloadMusicButton.onClick {
                 // So the whole game doesn't get stuck while downloading the file
-                thread(name = "Music") {
+                thread(name = "DownloadMusic") {
                     try {
                         downloadMusicButton.disable()
                         errorTable.clear()
                         errorTable.add("Downloading...".toLabel())
-                        val file = DropBox().downloadFile("/Music/thatched-villagers.mp3")
-                        musicLocation.write(file, false)
+                        UncivGame.Current.music.downloadDefaultFile()
                         update()
-                        UncivGame.Current.startMusic()
+                        UncivGame.Current.music.chooseTrack(flags = EnumSet.of(MusicTrackChooserFlags.PlayDefaultFile,MusicTrackChooserFlags.PlaySingle))
                     } catch (ex: Exception) {
                         errorTable.clear()
                         errorTable.add("Could not download music!".toLabel(Color.RED))

@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameSpeed
@@ -11,10 +12,8 @@ import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
+import java.util.*
 
 class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
@@ -202,6 +201,8 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
 
             ImageGetter.ruleset=ruleset
             ImageGetter.setTextureRegionDrawables()
+
+            UncivGame.Current.music.setModList(ruleset.mods)
         }
 
         add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
@@ -215,6 +216,8 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
                 reloadMods()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {
+                    if (!UncivGame.Current.music.chooseTrack(mod.name,"Theme", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.PlaySingle)) && desiredCiv.isNotEmpty())
+                        UncivGame.Current.music.chooseTrack(desiredCiv,"Theme", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.PlaySingle))
                     val modNations = RulesetCache[mod.name]?.nations
                     if (modNations != null && modNations.size > 0) {
                         desiredCiv = modNations.keys.first()

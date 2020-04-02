@@ -152,13 +152,13 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         }
         nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
-
         for (nation in newGameScreen.ruleset.nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth,newGameScreen.ruleset).onClick {
+            nationListTable.add(NationTable(nation, nationsPopupWidth, newGameScreen.ruleset).onClick {
                 player.chosenCiv = nation.name
+                UncivGame.Current.music.chooseTrack(nation.name,"Theme", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.PlaySingle))
                 nationsPopup.close()
                 update()
             }).pad(10f).width(nationsPopupWidth).row()

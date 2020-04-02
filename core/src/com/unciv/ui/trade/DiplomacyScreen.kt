@@ -20,6 +20,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import java.util.*
 import kotlin.math.roundToInt
 
 class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
@@ -67,6 +68,9 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
             leftSideTable.add(civIndicator).row()
 
             civIndicator.onClick {
+                UncivGame.Current.music.chooseTrack(civ.civName,
+                        if(civ.isAtWarWith(viewingCiv)) "War" else "Peace",
+                        flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.PlaySingle))
                 updateRightSide(civ)
             }
         }

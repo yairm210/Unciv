@@ -14,6 +14,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.utils.MusicTrackChooserFlags
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -101,7 +102,11 @@ class GameInfo {
 
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
-
+        if (turns % 5==0)
+            UncivGame.Current.music.chooseTrack(currentPlayerCiv.civName,
+                    if (currentPlayerCiv.isAtWar()) "War" else "Peace",
+                    flags = EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch, MusicTrackChooserFlags.SlowFade)
+                )
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(thisPlayer)
     }

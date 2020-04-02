@@ -2,11 +2,13 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
+import java.util.*
 
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen){
     fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
@@ -30,6 +32,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         when(popupAlert.type){
             AlertType.WarDeclaration -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                UncivGame.Current.music.chooseTrack(civInfo.civName,"War", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.SuffixMustMatch))
                 addLeaderName(civInfo)
                 addGoodSizedLabel(civInfo.nation.declaringWar).row()
                 val responseTable = Table()
@@ -39,6 +42,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.Defeated -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                UncivGame.Current.music.chooseTrack(civInfo.civName,"Defeat", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.SuffixMustMatch))
                 addLeaderName(civInfo)
                 addGoodSizedLabel(civInfo.nation.defeated).row()
                 add(getCloseButton("Farewell."))
@@ -46,6 +50,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.FirstContact -> {
                 val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val nation = civInfo.nation
+                UncivGame.Current.music.chooseTrack(nation.name,"Peace", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.SuffixMustMatch))
                 if (civInfo.isCityState()) {
                     addLeaderName(civInfo)
                     addGoodSizedLabel("We have encountered the City-State of [${nation.name}]!").row()
@@ -149,6 +154,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.WonderBuilt -> {
                 val wonder = worldScreen.gameInfo.ruleSet.buildings[popupAlert.value]!!
+                UncivGame.Current.music.chooseTrack(wonder.name,"Built", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.SuffixMustMatch))
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 val centerTable = Table()
@@ -162,6 +168,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
                 val tech = gameBasics.technologies[popupAlert.value]!!
+                UncivGame.Current.music.chooseTrack(tech.name,"Researched", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.SuffixMustMatch))
                 addGoodSizedLabel(tech.name)
                 addSeparator()
                 val centerTable = Table()
@@ -172,6 +179,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Close"))
             }
             AlertType.GoldenAge -> {
+                UncivGame.Current.music.chooseTrack(worldScreen.gameInfo.currentPlayerCiv.civName,"Golden", EnumSet.of(MusicTrackChooserFlags.PrefixMustMatch,MusicTrackChooserFlags.SuffixMustMatch))
                 addGoodSizedLabel("GOLDEN AGE")
                 addSeparator()
                 addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
