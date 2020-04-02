@@ -1,0 +1,137 @@
+{ "groups": [
+		{
+			"title": "Default track",
+			"description": "This is the default track Unciv adopted long ago.",
+			"credits": "The tracks in this group are by Kevin MacLeod (https://incompetech.com)",
+			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"files": [
+					{
+						"title": "Thatched Villagers",
+						"localFileName": "Ambient_Thatched-Villagers.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Thatched%20Villagers.mp3"
+					}
+				]
+		}
+		{
+			"title": "Geoff Knorr's Civ5 tracks",
+			"description": "Geoff Knorr is an award-winning composer of music for media and the concert hall. He has worked as a composer, orchestrator, sound designer, and mixing engineer on many video game titles, including Civilization V.\n\nSome of these tracks are available on http://www.geoffknorr.com/sid-meiers-civilization-v.",
+			"credits": "The tracks in this group are by Geoff Knorr (http://www.geoffknorr.com)",
+			"license": "unknown",
+			"files": [
+					{
+						"title": "Alexander Peace - Greece - \"Epitaph of Seikilos\"",
+						"localFileName": "Greece_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41ade4b0def98027ba71/1408123309706/Alexander_Peace.mp3"
+					},
+					{
+						"title": "Alexander War - Greece - \"Epitaph of Seikilos\"",
+						"localFileName": "Greece_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41a6e4b027cf34f15a64/1408123302366/Alexander_War.mp3"
+					},
+
+					{
+						"title": "Elizabeth Peace - England - \"I Vow to Thee, My Country\"",
+						"localFileName": "England_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4144e4b0def98027b9e0/1408123204348/Elizabeth_Peace.mp3"
+					},
+					{
+						"title": "Elizabeth War - England - \"I Vow to Thee, My Country\"",
+						"localFileName": "England_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee414de4b0def98027b9ee/1408123213143/Elizabeth_War.mp3"
+					},
+
+					{
+						"title": "Harun al-Rashid Peace - Arabia - \"Thikriati; Hijaz Maqam\"",
+						"localFileName": "Arabia_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee417ae4b0def98027ba24/1408123258542/Harun_al_Rashid_Peace.mp3"
+					},
+					{
+						"title": "Harun al-Rashid War - Arabia - \"Thikriati; Hijaz Maqam\"",
+						"localFileName": "Arabia_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4218e4b0def98027bb1a/1408123416016/Harun_al_Rashid_War.mp3"
+					},
+
+					{
+						"title": "Darius I Peace - Persia - \"Morghe Sahar\"",
+						"localFileName": "Persia_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41c0e4b027cf34f15a83/1408123328810/Darius_Peace.mp3"
+					},
+					{
+						"title": "Darius I War - Persia - \"Morghe Sahar\"",
+						"localFileName": "Persia_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41cbe4b0def98027baa5/1408123339330/Darius_War.mp3"
+					},
+
+					{
+						"title": "Kamehameha Peace - Polynesia - \"Hole Waimea\"",
+						"localFileName": "Polynesia_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc84137c5812b977e58c1/1478281296714/Kamehameha_Peace.mp3"
+					},
+					{
+						"title": "Kamehameha War - Polynesia - \"Hole Waimea\"",
+						"localFileName": "Polynesia_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc85037c5812b977e5986/1478281311969/Kamehameha_War.mp3"
+					},
+					{
+						"title": "Paradise Found - Polynesian Scenario",
+						"localFileName": "Polynesia_Theme.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc84159cc6833a5e315f6/1478281298322/Kamehameha_Scenario.mp3"
+					},
+
+					{
+						"title": "Genghis Khan Peace - Mongolia - \"Traditional Mongolian Long Song\"",
+						"localFileName": "Mongolia_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc886e58c62471485cd8a/1478281370588/Genghis_Khan_Peace.mp3"
+					},
+					{
+						"title": "Genghis Khan War - Mongolia - \"Traditional Mongolian Long Song\"",
+						"localFileName": "Mongolia_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc886e4fcb5a68ecdb31e/1478281370855/Genghis_Khan_War.mp3"
+					},
+
+					{
+						"title": "Isabella Peace - Spain - \"Viva La Quince Brigada\"",
+						"localFileName": "Spain_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc89ae58c62471485ceaa/1478281391156/Isabella_Peace.mp3"
+					},
+					{
+						"title": "Isabella War - Spain - \"Viva La Quince Brigada\"",
+						"localFileName": "Spain_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc89ae4fcb5a68ecdb3f9/1478281397217/Isabella_War.mp3"
+					},
+
+					{
+						"title": "Pachacuti Peace - Inca - \"Incan Melody Fragments\"",
+						"localFileName": "Inca_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc8afe58c62471485cfba/1478281411031/Pachacuti_Peace.mp3"
+					},
+					{
+						"title": "Pachacuti War - Inca - \"Incan Melody Fragments\"",
+						"localFileName": "Inca_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc8b5e4fcb5a68ecdb4ee/1478281419517/Pachacuti_War.mp3"
+					},
+
+					{
+						"title": "Oda Nobunaga Peace - Japan - \"Rokudan no Shirabe\"",
+						"localFileName": "Japan_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4229e4b077338ecfc82c/1408123433287/Oda_Nobunaga_Peace.mp3"
+					},
+					{
+						"title": "Oda Nobunaga War - Japan - \"Rokudan no Shirabe\"",
+						"localFileName": "Japan_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee425be4b077338ecfc868/1408123483170/Oda_Nobunaga_War.mp3"
+					},
+
+					{
+						"title": "Suleiman Peace - Ottoman Empire - \"Ceddin Deden\"",
+						"localFileName": "The Ottomans_Peace.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4307e4b032360e1f3dee/1408123655767/Suleiman_Peace.mp3"
+					},
+					{
+						"title": "Suleiman War - Ottoman Empire - \"Ceddin Deden\"",
+						"localFileName": "The Ottomans_War.mp3",
+						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4308e4b08be4e39a5b85/1408123656896/Suleiman_War.mp3"
+					}
+				]
+		}
+] }
