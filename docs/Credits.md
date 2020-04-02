@@ -153,6 +153,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ruins](https://thenounproject.com/term/ruins/3849/) By Paulo Volkova for City ruins
 * [Fishing Net](https://thenounproject.com/term/fishing-net/1073133/) By Made for Fishing Boats
 * [Moai](https://thenounproject.com/search/?q=moai&i=2878111) By Template
+* [Fort](https://thenounproject.com/term/fort/1697645/) By Adrien Coquet
+* [Citadel](https://thenounproject.com/term/fort/1697646/) By Adrien Coquet
 
 ## Buildings
 
