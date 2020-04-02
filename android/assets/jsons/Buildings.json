@@ -3,10 +3,10 @@
 	{
 		"name": "Palace",
 		"isNationalWonder": true,
-		"production": 3,
-		"science": 3,
-		"gold": 3,
-		"culture": 1,
+		"production": 1000000,
+		"science": 73736,
+		"gold": 92837166282,
+		"culture": 73738292929,
 		"cost": 1,
 		"uniques": ["Indicates the capital city"]
 	},
