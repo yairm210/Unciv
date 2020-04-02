@@ -1,3 +1,41 @@
+## 3.6.14
+
+Harbors immediately connect cities
+
+Revealed resources near cities generate notifications
+
+Cities in unit overview are translated
+
+Resolved #1885 - Both sides of per-turn trades end at the same time, resources offered in trade requests are not considered 
+yours for that turn
+
+Resoved #1869 - added WASD support for map panning
+
+Resolved #1779 - Can lock worked tiles to prevent them from being unassigned
+
+Resources in Civilopedia state consuming units and buildings - #1964
+
+Translation updates
+
+## 3.6.13
+
+By rh-github-2015:
+- New Nation added - Inca!
+- Show improvement bonus for improving tech in Civilopedia
+- Add unit ability 'withdraw before melee' to Caravel and Destroyer
+
+By Jack Rainy:
+- Carrier is ranged
+- Mod's name is translatable
+
+City stats and resources update after creating great improvement
+
+Resolved #2214 - Civilopedia entries are now left-aligned
+
+Fixed very rare crashing bugs
+
+Translation updates
+
 ## 3.6.12
 
 City names now translated in overview and tile info

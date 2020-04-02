@@ -12,7 +12,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, tileSetStrings: TileSetStrings)
     : TileGroup(tileInfo,tileSetStrings) {
 
-    var cityButton: CityButton? = null
+    private var cityButton: CityButton? = null
 
     fun selectUnit(unit: MapUnit) {
         if(unit.type.isAirUnit()) return // doesn't appear on map so nothing to select

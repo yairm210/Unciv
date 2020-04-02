@@ -73,17 +73,17 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
         // 3 - trying to attack enemy
         // if a embarked melee unit can land and attack next turn, do not attack from water.
-        if (battleHelper.tryDisembarkUnitToAttackPosition(unit, unitDistanceToTiles)) return
+        if (battleHelper.tryDisembarkUnitToAttackPosition(unit)) return
         if (battleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route
-        if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
+        if (UnitAutomation().tryPillageImprovement(unit)) return
 
         // 5 - heal the unit if needed
-        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
+        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit)) return
 
         // 6 - wander
-        UnitAutomation.wander(unit, unitDistanceToTiles)
+        UnitAutomation.wander(unit)
     }
 
     private fun automateScout(unit: MapUnit) {
@@ -105,13 +105,13 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // TODO
 
         // 3 - trying to pillage tile or trade route
-        if (UnitAutomation().tryPillageImprovement(unit, unitDistanceToTiles)) return
+        if (UnitAutomation().tryPillageImprovement(unit)) return
 
         // 4 - heal the unit if needed
-        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit, unitDistanceToTiles)) return
+        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit)) return
 
         // 5 - wander
-        UnitAutomation.wander(unit, unitDistanceToTiles)
+        UnitAutomation.wander(unit)
     }
 
     private fun findFurthestTileCanMoveTo(

@@ -18,7 +18,6 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
@@ -81,7 +80,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     fun setTrade(civ: CivilizationInfo): TradeTable {
         rightSideTable.clear()
-        val tradeTable =TradeTable(civ, stage) { updateLeftSideTable() }
+        val tradeTable =TradeTable(civ, stage)
         rightSideTable.add(tradeTable)
         return tradeTable
     }
@@ -111,7 +110,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
         if (nextLevelString != "") {
-            diplomacyTable.add(nextLevelString.tr().toLabel()).row()
+            diplomacyTable.add(nextLevelString.toLabel()).row()
         }
 
         val friendBonusText = when (otherCiv.getCityStateType()) {

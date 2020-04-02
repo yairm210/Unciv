@@ -46,9 +46,9 @@ class PopulationManager {
 
     //endregion
 
-    fun nextTurn(food: Float) {
-        foodStored += food.roundToInt()
-        if(food.roundToInt() < 0)
+    fun nextTurn(food: Int) {
+        foodStored += food
+        if(food < 0)
             cityInfo.civInfo.addNotification("["+cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
@@ -112,7 +112,7 @@ class PopulationManager {
         for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] }) {
             if (tile.getCity() != cityInfo)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
-            if(tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3) // AutoAssignPopulation used to assign pop outside of allowed range, fixed as of 2.10.4
+            if(tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
         }
 
@@ -122,7 +122,8 @@ class PopulationManager {
                     else {
                 cityInfo.workedTiles.asSequence()
                         .map { cityInfo.tileMap[it] }
-                        .minBy { Automation().rankTileForCityWork(it, cityInfo) }!!
+                        .minBy { Automation().rankTileForCityWork(it, cityInfo)
+                            + (if(it.isLocked()) 10 else 0) }!!
             }
             val valueWorstTile = if(worstWorkedTile==null) 0f
             else Automation().rankTileForCityWork(worstWorkedTile, cityInfo)

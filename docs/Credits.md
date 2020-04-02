@@ -34,6 +34,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
+* [Slingshot](https://thenounproject.com/term/slingshot/9106/) by James Keuning for Slinger
 
 ### Classical Era
 
@@ -168,6 +169,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Paper](https://thenounproject.com/term/paper/1443472/) By anam
 * [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
 * [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
+* [Ho Chi Minh mausoleum](https://thenounproject.com/thanhloc1009/collection/asia-landmark/?i=2412921) By Phạm Thanh Lộc for Mausoleum of Halicarnassus
+* Icon for Statue of Zeus made by [JackRainy](https://github.com/JackRainy), based on [King](https://thenounproject.com/eucalyp/collection/game-elements-glyph1/?i=3155251) By Eucalyp
 
 ### Classical Era
 
@@ -184,6 +187,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck for Mint
 * [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
 * [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
+* [Rice Field](https://thenounproject.com/term/rice-field/2511648/) by Graphic Engineer for Terrace farm
  
 ### Medieval Era
 
@@ -455,6 +459,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Two [Sword](https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) Scimitars by Those Icons for Persia
 * [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057) by bc21 for Polynesia
 * [Dharmachakra](https://thenounproject.com/search/?q=dharmachakra&i=740796) by Parkjisun for Siam
+* [Sun](https://thenounproject.com/search/?q=inca&i=910770) by Made x Made for Inca
 
 
 ## Promotions
@@ -508,6 +513,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
 * [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
+* [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 
 # Sound credits
 

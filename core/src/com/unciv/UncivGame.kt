@@ -14,7 +14,6 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.*
@@ -48,8 +47,6 @@ class UncivGame(
      */
     val simulateUntilTurnForDebug: Int = 0
 
-    var rewriteTranslationFiles = false
-
     lateinit var worldScreen: WorldScreen
 
     var music: Music? = null
@@ -63,7 +60,6 @@ class UncivGame(
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
-            rewriteTranslationFiles = false
         }
         Current = this
 
@@ -78,13 +74,7 @@ class UncivGame(
 
         thread(name = "LoadJSON") {
             RulesetCache.loadRulesets()
-
-            if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
-                translations.readAllLanguagesTranslation()
-                TranslationFileWriter.writeNewTranslationFiles(translations)
-            } else {
-                translations.tryReadTranslationForCurrentLanguage()
-            }
+            translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
 
             if (settings.userId == "") { // assign permanent user id

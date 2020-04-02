@@ -133,7 +133,7 @@ class Nation : INamed {
             if (unit.rangedStrength != originalUnit.rangedStrength)
                 textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
             if (unit.range != originalUnit.range)
-                textList += "  {Range} " + unit.range + "[${unit.range}] vs [${originalUnit.range}]".tr()
+                textList += "  {Range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
             if (unit.movement != originalUnit.movement)
                 textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
             if (originalUnit.requiredResource != null && unit.requiredResource == null)

@@ -10,6 +10,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import kotlin.concurrent.thread
@@ -44,11 +45,9 @@ class SaveGameScreen : PickerScreen() {
 
         val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
         showAutosavesCheckbox.isChecked = false
-        showAutosavesCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        showAutosavesCheckbox.onChange {
                 updateShownSaves(showAutosavesCheckbox.isChecked)
             }
-        })
         newSave.add(showAutosavesCheckbox).row()
 
         topTable.add(newSave)

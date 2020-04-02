@@ -69,7 +69,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
-            if(trade.ourOffers.any { it.type==TradeType.Agreement && it.name==Constants.researchAgreement })
+            if(trade.ourOffers.any { it.name==Constants.researchAgreement })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20) // offer again in 20 turns
 
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name== Constants.peaceTreaty })

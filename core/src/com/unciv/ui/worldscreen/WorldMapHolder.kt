@@ -1,12 +1,13 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -25,6 +26,7 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
+import sun.awt.ExtendedKeyCodes
 import kotlin.concurrent.thread
 
 
@@ -59,6 +61,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         center(worldScreen.stage)
 
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
+
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {

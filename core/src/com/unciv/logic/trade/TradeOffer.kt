@@ -5,12 +5,12 @@ import com.unciv.UncivGame
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.translations.tr
 
-data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, var duration:Int=0) {
+data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, var duration:Int=-1) {
 
     init {
         // Duration needs to be part of the variables defined at the top, so that it will be copied over with copy()
         duration = when(type){
-            TradeType.Gold, TradeType.Technology, TradeType.Introduction, TradeType.WarDeclaration, TradeType.City -> 0 /** 0 for offers that are immediate (e.g. gold transfer) */
+            TradeType.Gold, TradeType.Technology, TradeType.Introduction, TradeType.WarDeclaration, TradeType.City -> -1 /** -1 for offers that are immediate (e.g. gold transfer) */
             else -> when(UncivGame.Current.gameInfo.gameParameters.gameSpeed){
                 GameSpeed.Quick -> if (name==Constants.peaceTreaty) 10 else 25
                 else -> ((if (name==Constants.peaceTreaty) 10 else 30) * UncivGame.Current.gameInfo.gameParameters.gameSpeed.modifier).toInt()

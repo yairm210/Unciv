@@ -338,40 +338,40 @@ class Building : NamedStats(), IConstruction{
         return getRejectionReason(construction)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val civInfo = construction.cityInfo.civInfo
+    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+        val civInfo = cityConstructions.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
-        construction.addBuilding(name)
+        cityConstructions.addBuilding(name)
 
-        if (providesFreeBuilding != null && !construction.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
+        if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
             for(building in civInfo.gameInfo.ruleSet.buildings.values)
                 if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
                     buildingToAdd = building.name
 
-            construction.addBuilding(buildingToAdd)
+            cityConstructions.addBuilding(buildingToAdd)
         }
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
-        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
         if ("2 free Great Artists appear" in uniques) {
-            civInfo.addGreatPerson("Great Artist", construction.cityInfo)
-            civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
         }
         if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
-        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
         if ("2 free great scientists appear" in uniques) {
-            civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
-            civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
+            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
         }
         if ("Provides 2 free workers" in uniques) {
-            civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
-            civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
+            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
+            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
         }
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
@@ -389,8 +389,15 @@ class Building : NamedStats(), IConstruction{
 
         if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
 
+
+        cityConstructions.cityInfo.cityStats.update() // new building new stats
+        civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
+        civInfo.transients().updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+
         return true
     }
+
+    override fun getResource(): String? = requiredResource
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true

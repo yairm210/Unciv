@@ -251,11 +251,6 @@ class GameInfo {
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
         for (civInfo in civilizations) civInfo.gameInfo = this
 
-        // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
-        if(civilizations.all { it.playerType==PlayerType.AI })
-            getCurrentPlayerCivilization().playerType=PlayerType.Human
-        if(getCurrentPlayerCivilization().difficulty!="Chieftain")
-            difficulty= getCurrentPlayerCivilization().difficulty
         difficultyObject = ruleSet.difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
@@ -267,23 +262,6 @@ class GameInfo {
             if(civInfo.policies.adoptedPolicies.contains("Facism")){
                 civInfo.policies.adoptedPolicies.remove("Facism")
                 civInfo.policies.adoptedPolicies.add("Fascism")
-            }
-
-            for (cityInfo in civInfo.cities) {
-                val cityConstructions = cityInfo.cityConstructions
-
-                // As of 2.9.6, removed hydro plant, since it requires rivers, which we do not yet have
-                if ("Hydro Plant" in cityConstructions.builtBuildings)
-                    cityConstructions.builtBuildings.remove("Hydro Plant")
-                if (cityConstructions.currentConstruction == "Hydro Plant") {
-                    cityConstructions.currentConstruction = ""
-                    cityConstructions.chooseNextConstruction()
-                }
-
-                // As of 2.14.1, changed Machu Pichu to Machu Picchu
-                changeBuildingName(cityConstructions, "Machu Pichu", "Machu Picchu")
-                // As of 2.16.1, changed Colloseum to Colosseum
-                changeBuildingName(cityConstructions, "Colloseum", "Colosseum")
             }
 
             // This doesn't HAVE to go here, but why not.

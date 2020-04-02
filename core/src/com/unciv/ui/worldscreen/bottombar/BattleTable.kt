@@ -326,11 +326,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth-currentHealth)
 
-        val damagedHealth = ImageGetter.getDot(Color.RED)
-        damagedHealth.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.sequence(
-                Actions.color(Color.BLACK,0.7f),
-                Actions.color(Color.RED,0.7f)
-        )))
+        val damagedHealth = ImageGetter.getDot(Color.FIREBRICK)
+        if (UncivGame.Current.settings.continuousRendering) {
+            damagedHealth.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.sequence(
+                    Actions.color(Color.BLACK,0.7f),
+                    Actions.color(Color.FIREBRICK,0.7f)
+            ))) }
         addHealthToBar(damagedHealth,expectedDamage)
 
         val remainingHealth = currentHealth-expectedDamage

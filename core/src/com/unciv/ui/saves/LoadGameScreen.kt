@@ -13,11 +13,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.Popup
+import com.unciv.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -96,11 +92,9 @@ class LoadGameScreen : PickerScreen() {
         rightSideTable.add(copySavedGameToClipboardButton).row()
 
         showAutosavesCheckbox.isChecked = false
-        showAutosavesCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        showAutosavesCheckbox.onChange {
                 updateLoadableGames(showAutosavesCheckbox.isChecked)
             }
-        })
         rightSideTable.add(showAutosavesCheckbox).row()
         return rightSideTable
     }

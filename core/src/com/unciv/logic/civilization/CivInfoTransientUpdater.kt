@@ -113,7 +113,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     }
 
 
-    fun setCitiesConnectedToCapitalTransients(initialSetup: Boolean = false) {
+    fun updateCitiesConnectedToCapital(initialSetup: Boolean = false) {
         if (civInfo.cities.isEmpty()) return // eg barbarians
 
         val citiesReachedToMediums = CapitalConnectionsFinder(civInfo).find()

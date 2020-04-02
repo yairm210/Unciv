@@ -140,6 +140,11 @@ open class TileInfo {
         return city!=null && city.workedTiles.contains(position)
     }
 
+    fun isLocked(): Boolean{
+        val city = getCity()
+        return city!=null && city.lockedTiles.contains(position)
+    }
+
     fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
@@ -184,18 +189,23 @@ open class TileInfo {
                 val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]!!
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
-            if(resource.resourceType==ResourceType.Strategic
+            if (resource.resourceType==ResourceType.Strategic
                     && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
-                stats.production+=1
-            if(resource.name=="Oil" && city!=null
-                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
-                stats.gold += 2
-            if(city!=null && isWater){
-                if(city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
-                    stats.production+=1
-                if(city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")){
-                    stats.production+=1
-                    stats.gold+=1
+                stats.production += 1
+            if (city != null) {
+                if (resource.name == "Oil"
+                        && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
+                    stats.gold += 2
+                if ((resource.name == "Marble" || resource.name == "Stone")
+                        && city.containsBuildingUnique("+2 Gold for each source of Marble and Stone"))
+                    stats.gold += 2
+                if (isWater) {
+                    if(city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
+                        stats.production += 1
+                    if(city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")){
+                        stats.production += 1
+                        stats.gold += 1
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.tile
 
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
@@ -20,7 +21,7 @@ class TileResource : NamedStats() {
     var unique: String? = null
 
 
-    fun getDescription(): String {
+    fun getDescription(ruleset: Ruleset): String {
         val stringBuilder = StringBuilder()
         stringBuilder.appendln(resourceType.name.tr())
         stringBuilder.appendln(this.clone().toString())
@@ -30,6 +31,17 @@ class TileResource : NamedStats() {
         stringBuilder.appendln()
         stringBuilder.appendln("Improved by [$improvement]".tr())
         stringBuilder.appendln("Bonus stats for improvement: ".tr() + "$improvementStats".tr())
+
+        val buildingsThatConsumeThis = ruleset.buildings.values.filter { it.requiredResource==name }
+        if(buildingsThatConsumeThis.isNotEmpty())
+            stringBuilder.appendln("Buildings that consume this resource: ".tr()
+                    + buildingsThatConsumeThis.joinToString { it.name.tr() })
+
+        val unitsThatConsumeThis = ruleset.units.values.filter { it.requiredResource==name }
+        if(unitsThatConsumeThis.isNotEmpty())
+            stringBuilder.appendln("Units that consume this resource: ".tr()
+                    + unitsThatConsumeThis.joinToString { it.name.tr() })
+
         if(unique!=null) stringBuilder.appendln(unique!!.tr())
         return stringBuilder.toString()
     }

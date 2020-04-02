@@ -15,6 +15,7 @@ class GameParameters { // Default values are the default new game
 
     var noBarbarians = false
     var oneCityChallenge = false
+    var nuclearWeaponsEnabled = true
 
     var victoryTypes: ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
     var startingEra = TechEra.Ancient

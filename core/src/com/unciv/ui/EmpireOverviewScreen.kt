@@ -345,7 +345,8 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         table.row()
         table.addSeparator()
 
-        for(unit in viewingPlayer.getCivUnits().sortedWith(compareBy({it.name},{!it.due},{it.currentMovement<0.1f},{abs(it.currentTile.position.x)+abs(it.currentTile.position.y)}))) {
+        for(unit in viewingPlayer.getCivUnits().sortedWith(compareBy({it.name},{!it.due},
+                {it.currentMovement<0.1f},{abs(it.currentTile.position.x)+abs(it.currentTile.position.y)}))) {
             val baseUnit = unit.baseUnit()
             val button = TextButton(unit.name.tr(), skin)
             button.onClick {
@@ -359,7 +360,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
-            if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
+            if (closestCity!=null) table.add(closestCity.getCity()!!.name.tr()) else table.add()
             val promotionsTable = Table()
             val promotionsForUnit = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter { unit.promotions.promotions.contains(it.name) }     // force same sorting as on picker (.sorted() would be simpler code, but...)
             for(promotion in promotionsForUnit)

@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -57,13 +56,11 @@ class CivilizationInfo {
     var playerType = PlayerType.AI
     /** Used in online multiplayer for human players */ var playerId = ""
     var gold = 0
-    @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
-    @Deprecated("As of 2.11.3") var scienceVictory = ScienceVictoryManager()
     var victoryManager=VictoryManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
@@ -149,7 +146,7 @@ class CivilizationInfo {
     }
 
     fun stats() = CivInfoStats(this)
-    private fun transients() = CivInfoTransientUpdater(this)
+    fun transients() = CivInfoTransientUpdater(this)
 
     fun updateStatsForNextTurn(){
         statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
@@ -169,7 +166,7 @@ class CivilizationInfo {
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      */
-    fun getCivResourcesByName():HashMap<String,Int>{
+    fun getCivResourcesByName():HashMap<String,Int> {
         val hashMap = HashMap<String,Int>()
         for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
@@ -356,17 +353,12 @@ class CivilizationInfo {
         tech.civInfo = this
         tech.setTransients()
 
-        diplomacy.values.forEach {
-            it.civInfo=this
-            it.updateHasOpenBorders()
+        for (diplomacyManager in diplomacy.values) {
+            diplomacyManager.civInfo=this
+            diplomacyManager.updateHasOpenBorders()
         }
 
         victoryManager.civInfo=this
-
-        // As of 2.11.3 scienceVictory is deprecated
-        if(victoryManager.currentsSpaceshipParts.values.sum() == 0
-                && scienceVictory.currentParts.values.sum()>0)
-            victoryManager.currentsSpaceshipParts = scienceVictory.currentParts
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
@@ -380,8 +372,8 @@ class CivilizationInfo {
         updateDetailedCivResources()
     }
 
-    // implementation in a seperate class, to not clog up CivInfo
-    fun initialSetCitiesConnectedToCapitalTransients() = transients().setCitiesConnectedToCapitalTransients(true)
+    // implementation in a separate class, to not clog up CivInfo
+    fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
@@ -398,7 +390,7 @@ class CivilizationInfo {
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        transients().setCitiesConnectedToCapitalTransients()
+        transients().updateCitiesConnectedToCapital()
         for (city in cities) city.startTurn()
 
         for (unit in getCivUnits()) unit.startTurn()

@@ -33,6 +33,7 @@ class TileInfoTests {
             val terrain = improvement.terrainsCanBeBuiltOn.firstOrNull() ?: continue
             tile.baseTerrain = terrain
             tile.setTransients()
+            if(improvement.uniqueTo!=null) civInfo.civName = improvement.uniqueTo!!
             val canBeBuilt = tile.canBuildImprovement(improvement, civInfo)
             Assert.assertTrue( improvement.name, canBeBuilt)
         }

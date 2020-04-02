@@ -144,12 +144,11 @@
 		"uniques": ["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
 		"requiredTech": "Bronze Working"
 	},
-	/*
 	{
 		"name": "Statue of Zeus",
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["+15% Combat Strenght when attacking Cities."],
+		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
 		"requiredTech": "Bronze Working"
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
 	},
@@ -158,11 +157,10 @@
 		"culture": 1,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Gain 100 Gold when you use a Great Person.","+2 Gold from every source of Marble and Stone"],
+		"uniques": ["Provides a sum of gold each time you spend a Great Person", "+2 Gold for each source of Marble and Stone"],
 		"requiredTech": "Masonry"
 		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
 	},
-	*/
 	
 	// Classical Era
 	
