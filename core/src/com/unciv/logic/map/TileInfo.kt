@@ -348,8 +348,17 @@ open class TileInfo {
             milUnitString += " - "+militaryUnit!!.civInfo.civName.tr()
             lineList += milUnitString
         }
-        if(getDefensiveBonus()!=0f){
-            var defencePercentString = (getDefensiveBonus()*100).toInt().toString()+"%"
+        var defenceBonus = getDefensiveBonus()
+        val tileImprovement = getTileImprovement()
+        if (tileImprovement != null) {
+            defenceBonus += when {
+                tileImprovement.hasUnique("Gives a defensive bonus of 50%") -> 0.5f
+                tileImprovement.hasUnique("Gives a defensive bonus of 100%") -> 1.0f
+                else -> 0.0f
+            }
+        }
+        if(defenceBonus != 0.0f){
+            var defencePercentString = (defenceBonus*100).toInt().toString()+"%"
             if(!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
             lineList += "[$defencePercentString] to unit defence".tr()
         }
