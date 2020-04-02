@@ -439,7 +439,7 @@ class MapUnit {
 
     fun endTurn() {
         doPostTurnAction()
-        if(currentMovement== getMaxMovement().toFloat() // didn't move this turn
+        if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
                 || getUniques().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
@@ -447,6 +447,8 @@ class MapUnit {
             if (action!!.endsWith(" until healed")) {
                 action = null // wake up when healed
             }
+
+        getCitadelDamage()
     }
 
     fun startTurn() {
@@ -660,6 +662,22 @@ class MapUnit {
             sum += percent
         }
         return sum
+    }
+
+    private fun getCitadelDamage() {
+        // Check for Citadel damage
+        val applyCitadelDamage = currentTile.neighbors
+                .filter{ it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) }
+                .map{ it.getTileImprovement() }
+                .filter{ it != null && it.hasUnique("Deal 3 damage to adjacent enemy units") }
+                .any()
+
+        if (applyCitadelDamage) {
+            health -= 3
+
+            if (health <= 0)
+                destroy()
+        }
     }
 
     //endregion

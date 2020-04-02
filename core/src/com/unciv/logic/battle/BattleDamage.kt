@@ -160,6 +160,7 @@ class BattleDamage{
 
     fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
+        val tile = defender.getTile()
 
         if (defender.unit.isEmbarked()) {
             // embarked units get no defensive modifiers apart from this unique
@@ -172,11 +173,18 @@ class BattleDamage{
 
         modifiers.putAll(getGeneralModifiers(defender, attacker))
 
-        modifiers.putAll(getTileSpecificModifiers(defender, defender.getTile()))
+        modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
         if (!defender.unit.hasUnique("No defensive terrain bonus")) {
-            val tileDefenceBonus = defender.getTile().getDefensiveBonus()
-            if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
+            val tileDefenceBonus = tile.getDefensiveBonus()
+            if (tileDefenceBonus > 0)
+                modifiers["Terrain"] = tileDefenceBonus
+
+            val isFriendlyTerritory = tile.getOwner() != null && !defender.getCivInfo().isAtWarWith(tile.getOwner()!!)
+            val improvement = tile.getTileImprovement()
+            if (isFriendlyTerritory && improvement != null)
+                if (improvement.hasUnique("Gives a defensive bonus of 50%")) modifiers["Fort"] = 0.50f
+                else if (improvement.hasUnique("Gives a defensive bonus of 100%")) modifiers["Citadel"] = 1.0f
         }
 
         if(attacker.isRanged()) {
