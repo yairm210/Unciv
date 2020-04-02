@@ -76,25 +76,26 @@ class GameSaver {
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
         val gameInfoClone = gameInfo.clone()
-        thread(name="Autosave") {
-            saveGame(gameInfoClone, "Autosave")
-
-            // keep auto-saves for the last 10 turns for debugging purposes
-            val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfoClone.turns}"
-            getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
-
-            fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
-            while(getAutosaves().size>10){
-                val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
-                deleteSave(saveToDelete)
-            }
-
+        thread(name = "Autosave") {
+            autoSaveSingleThreaded(gameInfoClone)
             // do this on main thread
             Gdx.app.postRunnable {
                 postRunnable()
             }
         }
+    }
+    fun autoSaveSingleThreaded (gameInfo: GameInfo) {
+        saveGame(gameInfo, "Autosave")
 
+        // keep auto-saves for the last 10 turns for debugging purposes
+        val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
+        getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
+
+        fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
+        while(getAutosaves().size>10){
+            val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
+            deleteSave(saveToDelete)
+        }
     }
 
     /**

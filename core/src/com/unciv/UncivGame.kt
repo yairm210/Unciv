@@ -24,7 +24,8 @@ import kotlin.concurrent.thread
 class UncivGame(
         val version: String,
         private val crashReportSender: CrashReportSender? = null,
-        val exitEvent: (()->Unit)? = null
+        val exitEvent: (()->Unit)? = null,
+        val cancelDiscordEvent: (()->Unit)? = null
 ) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(version, null)
@@ -166,8 +167,17 @@ class UncivGame(
     }
 
     override fun dispose() {
+        cancelDiscordEvent?.invoke()
         if (::gameInfo.isInitialized)
-            GameSaver().autoSave(gameInfo)
+            GameSaver().autoSaveSingleThreaded(gameInfo)      // NO new thread
+
+        // Log still running threads (should be only this one and "DestroyJavaVM")
+        val numThreads = Thread.activeCount()
+        val threadList = Array<Thread>(numThreads) { _ -> Thread() }
+        Thread.enumerate(threadList)
+        threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
+            println ("    Thread ${it.name} still running in UncivGame.dispose().")
+        }
     }
 
     companion object {
