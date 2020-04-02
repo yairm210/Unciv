@@ -26,14 +26,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
                 // What you find between the first [ and the first ] that comes after it, will be group no. 1
                 val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
-                return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo))
+                return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo), 'u')
             }
             unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"),'f')
             unitAction.startsWith("Fortify") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK },'f')
             else -> when(unitAction){
                 "Move unit" -> return UnitIconAndKey(ImageGetter.getStatIcon("Movement"))
                 "Stop movement"-> return UnitIconAndKey(ImageGetter.getStatIcon("Movement").apply { color= Color.RED }, '.')
-                "Promote" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }, 'p')
+                "Promote" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }, 'o')
                 "Construct improvement" -> return UnitIconAndKey(ImageGetter.getUnitIcon(Constants.worker),'i')
                 "Automate" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Engineer"), 'm')
                 "Stop automation" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'm')
@@ -46,7 +46,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
                 "Construct Manufactory" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Manufactory"), 'i')
                 "Conduct Trade Mission" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Merchant"), 'g')
                 "Construct Customs House" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Customs house"), 'i')
-                "Set up" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Catapult"), 'u')
+                "Set up" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Catapult"), 't')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
                 "Explore" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Scout"), 'x')
                 "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')

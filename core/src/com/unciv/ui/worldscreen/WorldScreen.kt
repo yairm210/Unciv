@@ -189,11 +189,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
                 override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-                    if (character in keyPressDispatcher) {
-                        println("keyTyped: '$character'")
+                    if (character.toLowerCase() in keyPressDispatcher) {
                         //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                         try {
-                            keyPressDispatcher[character]?.invoke()
+                            keyPressDispatcher[character.toLowerCase()]?.invoke()
                         } catch (ex: Exception) {}
                         return true
                     }
