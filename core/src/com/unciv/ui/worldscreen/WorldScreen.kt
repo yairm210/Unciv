@@ -143,6 +143,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         shouldUpdate = true
     }
 
+    private fun cleanupKeyDispatcher() {
+        val delKeys = keyPressDispatcher.keys.filter { it!=' ' && it!='n' }
+        delKeys.forEach { keyPressDispatcher.remove(it) }
+    }
+
     private fun addKeyboardListener() {
         stage.addListener(
             object : InputListener() {
@@ -255,6 +260,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 
         minimapWrapper.update(viewingCiv)
+        cleanupKeyDispatcher()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 
