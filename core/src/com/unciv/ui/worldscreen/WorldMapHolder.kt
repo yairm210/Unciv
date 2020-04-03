@@ -1,13 +1,10 @@
 package com.unciv.ui.worldscreen
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -26,7 +23,6 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
-import sun.awt.ExtendedKeyCodes
 import kotlin.concurrent.thread
 
 
@@ -128,7 +124,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if(moveHereDto!=null)
             table.add(getMoveHereButton(moveHereDto))
 
-        var unitList = ArrayList<MapUnit>()
+        val unitList = ArrayList<MapUnit>()
         if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
             unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
         } else if (tileInfo.airUnits.isNotEmpty() && tileInfo.airUnits.first().civInfo==worldScreen.viewingCiv) {
@@ -270,7 +266,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
         else {
-            val tiles = BattleHelper().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
+            val tiles = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
             tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         }
 
@@ -294,7 +290,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
         if (city.attackedThisTurn) return
 
-        val attackableTiles = UnitAutomation().getBombardTargets(city)
+        val attackableTiles = UnitAutomation.getBombardTargets(city)
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))

@@ -51,8 +51,8 @@ object Battle {
             }
         }
 
-        var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
-        var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
+        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,defender)
+        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker,defender)
 
         if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
@@ -383,7 +383,7 @@ object Battle {
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
 
-            var damage = BattleDamage().calculateDamageToDefender(MapUnitCombatant(interceptor), attacker)
+            var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), attacker)
             damage += damage * interceptor.interceptDamagePercentBonus() / 100
             if (attacker.unit.hasUnique("Reduces damage taken from interception by 50%")) damage /= 2
 

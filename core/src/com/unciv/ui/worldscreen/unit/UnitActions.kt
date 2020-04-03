@@ -191,7 +191,7 @@ object UnitActions {
             actionList += UnitAction(
                     type = UnitActionType.Explore,
                     action = {
-                        UnitAutomation().automatedExplore(unit)
+                        UnitAutomation.automatedExplore(unit)
                         unit.action = Constants.unitActionExplore
                     })
         } else {
