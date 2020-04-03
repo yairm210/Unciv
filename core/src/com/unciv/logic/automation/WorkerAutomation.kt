@@ -3,9 +3,7 @@ package com.unciv.logic.automation
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -233,7 +231,7 @@ class WorkerAutomation(val unit: MapUnit) {
 
         val isHills = tile.getBaseTerrain().name == Constants.hill
         // if this place is not perfect, let's see if there is a better one
-        val nearestTiles = tile.getTilesInDistance(2).toList()
+        val nearestTiles = tile.getTilesInDistance(2).filter{it.owningCity?.civInfo == civInfo}.toList()
         for (closeTile in nearestTiles) {
             // don't build forts too close to the cities
             if (closeTile.isCityCenter()) return false
