@@ -64,5 +64,7 @@ class TileImprovement : NamedStats() {
 
         return stringBuilder.toString()
     }
+
+    fun hasUnique(unique: String) = uniques.contains(unique)
 }
 

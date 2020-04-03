@@ -212,7 +212,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
             // If this city is the closest city to another civ, that makes it a likely candidate for attack
             if (civInfo.getKnownCivs().filter { it.cities.isNotEmpty() }
-                            .any { NextTurnAutomation().getClosestCities(civInfo, it).city1 == cityInfo })
+                            .any { NextTurnAutomation.getClosestCities(civInfo, it).city1 == cityInfo })
                 modifier *= 1.5f
 
             addChoice(relativeCostEffectiveness, defensiveBuilding.name, modifier)

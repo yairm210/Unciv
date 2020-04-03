@@ -44,7 +44,7 @@ object Constants {
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val random = "Random"
-    val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house")
+    val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house", "Citadel")
 
     val unitActionSetUp = "Set Up"
     val unitActionSleep = "Sleep"

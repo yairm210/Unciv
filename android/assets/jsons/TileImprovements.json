@@ -79,7 +79,16 @@
 		"improvingTech": "Compass",
 		"improvingTechStats": {"gold": 1}
 	},
-	
+
+	// Military improvement
+	{
+		name: "Fort",
+		terrainsCanBeBuiltOn: ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
+		turnsToBuild: 6,
+		techRequired: "Engineering",
+		uniques: ["Gives a defensive bonus of 50%"]
+	},
+
 	// Transportation
 	{
 		"name": "Road",
@@ -151,7 +160,12 @@
 		"improvingTech": "Economics",
 		"improvingTechStats": {"gold": 1}
 	},
-	
+	{
+		name: "Citadel",
+		uniques: ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
+		// TODO (G&K): adds every tile around it to your territory
+	},
+
 	//Civilization unique improvements
 	{
 		"name": "Moai",
