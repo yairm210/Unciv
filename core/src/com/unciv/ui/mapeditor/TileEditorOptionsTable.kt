@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
@@ -183,7 +182,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
                     tileInfo.baseTerrain =
-                            if (terrainObject.occursOn == null) terrainObject.occursOn!!.first()
+                            if (terrainObject.occursOn != null) terrainObject.occursOn.first()
                             else "Grassland"
                     tileInfo.terrainFeature = terrain
                 } else tileInfo.baseTerrain = terrain
