@@ -2,7 +2,6 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
@@ -10,7 +9,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
-import com.unciv.ui.MusicDownloadScreen
+import com.unciv.ui.musicmanager.MusicDownloadScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread

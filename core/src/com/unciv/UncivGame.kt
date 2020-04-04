@@ -16,6 +16,7 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.musicmanager.MusicDownloadScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -94,6 +95,8 @@ class UncivGame(
     }
 
     fun autoLoadGame() {
+        return setScreen(MusicDownloadScreen())
+
         if (!GameSaver().getSave("Autosave").exists())
             return setScreen(LanguagePickerScreen())
         try {
