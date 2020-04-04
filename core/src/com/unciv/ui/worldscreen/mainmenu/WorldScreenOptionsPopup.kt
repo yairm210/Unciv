@@ -10,6 +10,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
+import com.unciv.ui.MusicDownloadScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
@@ -219,6 +220,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 music?.volume = 0.4f * musicVolumeSlider.value
             }
             innerTable.add(musicVolumeSlider).pad(10f).row()
+/*
         } else {
             val downloadMusicButton = TextButton("Download music".tr(), CameraStageBaseScreen.skin)
             innerTable.add(downloadMusicButton).colspan(2).row()
@@ -242,7 +244,15 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                     }
                 }
             }
+*/
         }
+        val downloadMusicButton = TextButton("Download music".tr(), CameraStageBaseScreen.skin)
+        innerTable.add(downloadMusicButton).colspan(2).padBottom(10f).row()
+        downloadMusicButton.onClick {
+            UncivGame.Current.setScreen(MusicDownloadScreen())
+            close()
+        }
+
     }
 
     private fun addResolutionSelectBox(innerTable: Table) {

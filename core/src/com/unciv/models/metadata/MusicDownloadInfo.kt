@@ -4,20 +4,51 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.badlogic.gdx.utils.JsonWriter
+import java.io.File
 
 data class MusicDownloadFile ( var title: String, var localFileName: String, var url: String ) {
-    constructor() : this("","","")
+    constructor() : this("","","")          // for the json parser
+
+    fun isPresent(path: String): Boolean {
+        val pathFile = Gdx.files.local(path)
+        val nameNoExt = pathFile.child(localFileName).nameWithoutExtension()
+        if (listOf("mp3","ogg","m4a").any { pathFile.child("$nameNoExt.$it").takeIf { it.exists() && !it.isDirectory } != null })
+            return true
+        else
+            return false
+    }
 }
 
-data class MusicDownloadGroup ( var title: String, var description: String, var credits: String, var license: String, var files: List<MusicDownloadFile> ) {
-    constructor() : this ( "", "", "", "", emptyList<MusicDownloadFile>() )
+data class MusicDownloadGroup (var title: String, var description: String, var credits: String, var attribution: String, var files: List<MusicDownloadFile> ) {
+    constructor() : this ( "", "", "", "", emptyList<MusicDownloadFile>() )     // for the json parser
+
+    @Transient var selected = false
+    @Transient internal var path = ""
+
+    fun isPresent(): Boolean {
+        return files.all { it.isPresent(path) }
+    }
 }
 
-data class MusicDownloadInfo ( var groups: List<MusicDownloadGroup> ) {
-    constructor() : this(emptyList<MusicDownloadGroup>())
+data class MusicDownloadInfo ( var groups: ArrayList<MusicDownloadGroup> ) {
+    constructor() : this(ArrayList<MusicDownloadGroup>())                   // for the json parser
 
-    fun save(fileName: String = "MusicDownloadInfo.json", pretty: Boolean = false) {
-        var file = Gdx.files.local("jsons").child(fileName)
+    private fun setPath (path: String) {
+        groups.forEach { it.path = path }
+    }
+
+    val size: Int
+        get() = this.groups.size
+
+    operator fun plusAssign (other: MusicDownloadInfo) {
+        groups.addAll (other.groups)
+    }
+    override fun toString(): String {
+        return super.toString() + groups.joinToString(prefix = " (", postfix = ")") { it.title }
+    }
+
+    fun save(fileName: String = defaultFileName, pretty: Boolean = false) {
+        var file = Gdx.files.local(jsonsFolder).child(fileName)
         var jsonStr = json().toJson(this)
         if (pretty) {
             val settings = JsonValue.PrettyPrintSettings()
@@ -30,28 +61,38 @@ data class MusicDownloadInfo ( var groups: List<MusicDownloadGroup> ) {
     }
 
     companion object {
+        private val defaultFileName = "MusicDownloadInfo.json"
+        private val jsonsFolder = "jsons"
+        private val musicFolder = "music"
+        private val modsFolder = "mods"
+
         fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true }
 
-        fun load(fileName: String = "MusicDownloadInfo.json"): MusicDownloadInfo {
-            var file = Gdx.files.local("jsons").child(fileName)
+        fun load(path: String = jsonsFolder, fileName: String = defaultFileName): MusicDownloadInfo {
+            var file = Gdx.files.local(path).child(fileName)
             if (!file.exists()) return MusicDownloadInfo()
-            return json().fromJson(MusicDownloadInfo::class.java, file)
+            val info = json().fromJson(MusicDownloadInfo::class.java, file)
+            val musicPath = file.parent().parent().child(musicFolder).path()
+            info.setPath (musicPath)
+            return info
+        }
+        fun load(paths: List<String>, fileName: String = defaultFileName): MusicDownloadInfo {
+            var result = MusicDownloadInfo()
+            paths.forEach {
+                result += load (it, fileName)
+            }
+            return result
+        }
+        fun load(allMods: Boolean): MusicDownloadInfo {
+            val paths = mutableListOf(jsonsFolder)
+            if (allMods) {
+                paths += Gdx.files.local(modsFolder)
+                        .list { name: File? -> name?.isDirectory ?: false }
+                        .map { it.child(jsonsFolder) }
+                        .filter { it.exists() }
+                        .map { it.path() }
+            }
+            return load(paths)
         }
     }
 }
-
-/*    fun generateSample(): MusicDownloadInfo {
-        var new = MusicDownloadInfo()
-        var group = MusicDownloadGroup()
-        group.title = "Default track"
-        group.description = "This is the default track Unciv adopted long ago."
-        group.credits = "The tracks in this group are by Kevin MacLeod (https://incompetech.com)"
-        group.license = """Licensed under Creative Commons: By Attribution 4.0 License
-http://creativecommons.org/licenses/by/4.0/"""
-        group.files = listOf(
-                MusicDownloadFile("Thatched Villagers", "Ambient_Thatched-Villagers.mp3", "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Thatched%20Villagers.mp3")
-        )
-        new.groups = listOf(group)
-        return new
-    }*/
-

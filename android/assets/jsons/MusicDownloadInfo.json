@@ -1,9 +1,9 @@
 { "groups": [
 		{
 			"title": "Default track",
-			"description": "This is the default track Unciv adopted long ago.",
-			"credits": "The tracks in this group are by Kevin MacLeod (https://incompetech.com)",
-			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"description": "This is the default track Unciv adopted long ago.\nSolid in pace, The Thatched Roof Villagers moves with percussion and a number of flutes and pipes struggling for dominance. The real joy of the piece is halfway through when the tinny dulcimer plays the melody and is then joined by the flutes in melody and harmony. The music is jovial and inviting.",
+			"credits": "This track is by Kevin MacLeod (https://incompetech.com)",
+			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
 			"files": [
 					{
 						"title": "Thatched Villagers",
@@ -11,12 +11,12 @@
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Thatched%20Villagers.mp3"
 					}
 				]
-		}
+		},
 		{
 			"title": "Geoff Knorr's Civ5 tracks",
 			"description": "Geoff Knorr is an award-winning composer of music for media and the concert hall. He has worked as a composer, orchestrator, sound designer, and mixing engineer on many video game titles, including Civilization V.\n\nSome of these tracks are available on http://www.geoffknorr.com/sid-meiers-civilization-v.",
 			"credits": "The tracks in this group are by Geoff Knorr (http://www.geoffknorr.com)",
-			"license": "unknown",
+			"attribution": "",
 			"files": [
 					{
 						"title": "Alexander Peace - Greece - \"Epitaph of Seikilos\"",
@@ -133,5 +133,179 @@
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4308e4b08be4e39a5b85/1408123656896/Suleiman_War.mp3"
 					}
 				]
+		},
+		{
+			"title": "Kevin Macleod selection",
+			"description": "Kevin Macleod",
+			"credits": "The tracks in this group are by Kevin Macleod (https://incompetech.filmmusic.io/)",
+			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"files": [
+					{
+						"title": "Black Vortex",
+						"localFileName": "Ambient - Black Vortex.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Black%20Vortex.mp3"
+					},
+					{
+						"title": "Carefree",
+						"localFileName": "Ambient - Carefree.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3"
+					},
+					{
+						"title": "Cold Funk",
+						"localFileName": "Ambient - Cold Funk.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cold%20Funk.mp3"
+					},
+					{
+						"title": "Cold Sober",
+						"localFileName": "Ambient - Cold Sober.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cold%20Sober.mp3"
+					},
+					{
+						"title": "Curse of the Scarab",
+						"localFileName": "Ambient - Curse of the Scarab.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Curse%20of%20the%20Scarab.mp3"
+					},
+					{
+						"title": "Ghost Dance",
+						"localFileName": "Ambient - Ghost Dance.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghost%20Dance.mp3"
+					},
+					{
+						"title": "Day of Chaos",
+						"localFileName": "Ambient - Day of Chaos.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Day%20of%20Chaos.mp3"
+					},
+					{
+						"title": "Evening of Chaos",
+						"localFileName": "Ambient - Evening of Chaos.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Evening%20of%20Chaos.mp3"
+					},
+					{
+						"title": "Night of Chaos",
+						"localFileName": "Ambient - Night of Chaos.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Night%20of%20Chaos.mp3"
+					},
+					{
+						"title": "Rynos Theme",
+						"localFileName": "Ambient - Rynos Theme.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Rynos%20Theme.mp3"
+					},
+					{
+						"title": "Inner Light",
+						"localFileName": "Ambient - Inner Light.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Inner%20Light.mp3"
+					},
+					{
+						"title": "Undaunted",
+						"localFileName": "Ambient - Undaunted.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Undaunted.mp3"
+					}
+				]
+		},
+		{
+			"title": "Kevin Macleod: Tenebrous Brothers Carnival",
+			"description": "Kevin Macleod",
+			"credits": "The tracks in this group are by Kevin Macleod (https://incompetech.filmmusic.io/)",
+			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"files": [
+					{
+						"title": "Tenebrous Brothers Carnival - Prelude",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Prelude.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Prelude.mp3"
+					},
+					{
+						"title": "Tenebrous Brothers Carnival - Intermission",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Intermission.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Intermission.mp3"
+					},
+					{
+						"title": "Tenebrous Brothers Carnival - Act One",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Act One.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Act%20One.mp3"
+					},
+					{
+						"title": "Tenebrous Brothers Carnival - Act Two",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Act Two.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Act%20Two.mp3"
+					},
+					{
+						"title": "Tenebrous Brothers Carnival - Act Three",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Act Three.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Act%20Three.mp3"
+					},
+					{
+						"title": "Tenebrous Brothers Carnival - Mermaid",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Mermaid.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Mermaid.mp3"
+					},
+					{
+						"title": "Tenebrous Brothers Carnival - Snake Lady",
+						"localFileName": "Ambient - Tenebrous Brothers Carnival - Snake Lady.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Snake%20Lady.mp3"
+					}
+			]
+		},
+		{
+			"title": "Kevin Macleod: Ghostpocalypse",
+			"description": "Kevin Macleod: Ghostpocalypse",
+			"credits": "The tracks in this group are by Kevin Macleod (https://incompetech.filmmusic.io/)",
+			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"files": [
+					{
+						"title": "Ghostpocalypse - 1 Departure",
+						"localFileName": "Ambient - Ghostpocalypse - 1 Departure.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%201%20Departure.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 2 The Call",
+						"localFileName": "Ambient - Ghostpocalypse - 2 The Call.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%202%20The%20Call.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 3 Road of Trials",
+						"localFileName": "Ambient - Ghostpocalypse - 3 Road of Trials.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%203%20Road%20of%20Trials.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 4 Temptress",
+						"localFileName": "Ambient - Ghostpocalypse - 4 Temptress.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%204%20Temptress.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 5 Apotheosis",
+						"localFileName": "Ambient - Ghostpocalypse - 5 Apotheosis.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%205%20Apotheosis.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 6 Crossing the Threshold",
+						"localFileName": "Ambient - Ghostpocalypse - 6 Crossing the Threshold.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%206%20Crossing%20the%20Threshold.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 7 Master",
+						"localFileName": "Ambient - Ghostpocalypse - 7 Master.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%207%20Master.mp3"
+					},
+					{
+						"title": "Ghostpocalypse - 8 Epilog",
+						"localFileName": "Ambient - Ghostpocalypse - 8 Epilog.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%208%20Epilog.mp3"
+					},
+				]
 		}
+/*
+		{
+			"title": "Kevin Macleod: Elf Meditation",
+			"description": "Kevin Macleod: Elf Meditation\n\"What is meditation for one may be cause for concern in another. - Some Elf\"",
+			"credits": "This track is by Kevin Macleod (https://incompetech.filmmusic.io/)",
+			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"files": [
+					{
+						"title": "Elf Meditation",
+						"localFileName": "Ambient - Elf Meditation.mp3",
+						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Elf%20Meditation.mp3"
+					}
+			]
+		}
+*/
 ] }
