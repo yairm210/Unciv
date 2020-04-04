@@ -3,6 +3,8 @@
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) 
  and licensed by Creative Commons 3.0
 
+New Unciv logo made by u-ndefined on Discord
+
 Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by me 
 
 Trees for the jungle tiles in the "Fantasy Hex" are extracted from [Desert Strike for the Amiga](http://eab.abime.net/showthread.php?t=67078&styleid=4)
