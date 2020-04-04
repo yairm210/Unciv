@@ -6,10 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.disable
 
-class MusicMgrBottomPane(enable: Boolean, pickButton: MusicMgrSelectButton, skin: Skin): Table(skin) {
+class MusicMgrBottomPane(enable: Boolean, skin: Skin): Table(skin) {
     val closeButton = TextButton("Close".tr(), skin)
     val previousButton = PreviousNextButton(true, enable)
+    val pickButton = MusicMgrSelectButton(MusicMgrSelectButtonState.Disabled, skin)
     val nextButton = PreviousNextButton(false, enable)
     val okButton = Button(skin)
 
@@ -25,12 +27,12 @@ class MusicMgrBottomPane(enable: Boolean, pickButton: MusicMgrSelectButton, skin
         val okImage = ImageGetter.getImage("OtherIcons/Music Download")
         okButton.add(okImage).size(28f).pad(2f,12f,2f,12f)
         add (okButton).right()
+        okButton.disable()
     }
 
     fun layout (width: Float, height: Float) {
         this.width = width
         this.height = height
-        //this.setFillParent(true)
         this.layout()
     }
 }

@@ -72,11 +72,9 @@ class MusicMgrGroupPane(skin: Skin): Table(skin) {
         if (musicGroup.shouldDownloadCover()) {
             coverHolder.clear()
             musicGroup.downloadCover {
-                ID, status, message ->
+                ID, status, _ ->
                 if (status in 200..299)
                     Gdx.app.postRunnable { setCover(ID) }
-                else
-                    println("Cover download failed: $message")
             }
         } else {
             setCover ()

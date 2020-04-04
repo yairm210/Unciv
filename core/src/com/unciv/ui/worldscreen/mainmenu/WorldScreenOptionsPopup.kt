@@ -9,7 +9,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
-import com.unciv.ui.musicmanager.MusicDownloadScreen
+import com.unciv.ui.musicmanager.MusicManagerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
@@ -248,7 +248,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         val downloadMusicButton = TextButton("Download music".tr(), CameraStageBaseScreen.skin)
         innerTable.add(downloadMusicButton).colspan(2).padBottom(10f).row()
         downloadMusicButton.onClick {
-            UncivGame.Current.setScreen(MusicDownloadScreen())
+            UncivGame.Current.setScreen(MusicManagerScreen())
             close()
         }
 

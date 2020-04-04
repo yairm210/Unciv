@@ -8,6 +8,7 @@ import com.badlogic.gdx.net.HttpRequestBuilder
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.badlogic.gdx.utils.JsonWriter
+import com.unciv.ui.musicmanager.MusicMgrDownloader
 import java.io.File
 
 data class MusicDownloadTrack (
@@ -81,32 +82,12 @@ data class MusicDownloadGroup (
         // may already have modified the context so the finished download might no longer be relevant.
         // It is the responsibility of the client to check this, and for this purpose it gets the ID back.
         if (!hasCover()) return
-        val requestBuilder = HttpRequestBuilder()
-        val request = requestBuilder.newRequest().method("GET").url(cover).build()
-        Gdx.net.sendHttpRequest (request, object : Net.HttpResponseListener {
-            override fun handleHttpResponse (httpResponse: Net.HttpResponse?) {
-                if (httpResponse==null) return
-                println ("Downloader received a response, status ${httpResponse.status.statusCode}, headers: ${httpResponse.headers}")
-                val contentType = httpResponse.headers["Content-Type"]?.first() ?: ""
-                if (contentType.startsWith("image/") || contentType.isEmpty()) {
-                    getCachedCoverFile()?.writeBytes (httpResponse.result, false)
-                    println ("Cover downloaded: $coverLocal")
-                    completionEvent?.invoke (coverLocal, httpResponse.status.statusCode, "OK")
-                } else {
-                    coverDownloadHasFailed = true
-                    println ("Cover download failed - wrong Content-Type: $contentType")
-                    completionEvent?.invoke (coverLocal, -1, "Wrong content type: $contentType")
-                }
-            }
-            override fun cancelled() {
-                completionEvent?.invoke (coverLocal, 0, "Cancelled")
-            }
-            override fun failed(t: Throwable?) {
+        MusicMgrDownloader.downloadFile(cover,getCachedCoverFile()!!,coverLocal,"image/") { ID, status, message ->
+            run {
                 coverDownloadHasFailed = true
-                println ("Cover download failed: ${t.toString()}")
-                completionEvent?.invoke (coverLocal, -1, t?.toString() ?: "Failed")
+                completionEvent?.invoke(ID, status, message)
             }
-        })
+        }
     }
 
     companion object {
