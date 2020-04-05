@@ -1,3 +1,17 @@
+## 3.7.0
+
+By Jack Rainy:
+- Forts and citadels (with AI)
+- Crash fixed in specific circumstances of Map Editor
+
+"Free policy" freezes fixed
+
+Desktop window size restore - By rh-github-2015
+
+Not being able to read the settings file shouldn't make you crash
+
+Translation updates
+
 ## 3.6.15
 
 By Jack Rainy:
