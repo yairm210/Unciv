@@ -3,6 +3,7 @@ package com.unciv.ui.musicmanager
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.unciv.UncivGame
+import com.unciv.models.metadata.MusicDownloadGroup
 import com.unciv.models.metadata.MusicDownloadInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
@@ -17,6 +18,8 @@ class MusicManagerScreen : CameraStageBaseScreen() {
     private val bottomPane = MusicMgrBottomPane(music.size > 1, skin)
     var currentPage = 0
 
+    private val downloader = MusicMgrDownloader()
+
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
@@ -29,7 +32,11 @@ class MusicManagerScreen : CameraStageBaseScreen() {
         bottomPane.nextButton.onClick { changePage(1) }
         bottomPane.okButton.onClick {
             bottomPane.okButton.disable()
-
+            downloader.queueDownloads(music)
+            downloader.startDownload() {
+                currentPage = -1
+                changePage(0)
+            }
         }
 
         val splitPane = SplitPane(scrollInfoPane, bottomPane, true, skin)
@@ -50,14 +57,23 @@ class MusicManagerScreen : CameraStageBaseScreen() {
 
     private fun changePage(delta: Int = 0) {
         if (music.size==0) return
-        currentPage = (currentPage + delta + music.size) % music.size
-        val musicGroup = music.groups[currentPage]
-        bottomPane.pickButton.state = when {
-            musicGroup.isPresent() -> MusicMgrSelectButtonState.Present
-            musicGroup.selected -> MusicMgrSelectButtonState.Selected
-            else -> MusicMgrSelectButtonState.Select
+        if (currentPage == -1 && delta == 0) {
+            val musicGroup = MusicDownloadGroup()
+            musicGroup.title = "Download result"
+            val messages = downloader.messages
+            musicGroup.description = if (messages.size==0) "Success."
+                else messages.joinToString { "\n" }
+            infoPane.show (musicGroup)
+        } else {
+            currentPage = (currentPage + delta + music.size) % music.size
+            val musicGroup = music.groups[currentPage]
+            bottomPane.pickButton.state = when {
+                musicGroup.isPresent() -> MusicMgrSelectButtonState.Present
+                musicGroup.selected -> MusicMgrSelectButtonState.Selected
+                else -> MusicMgrSelectButtonState.Select
+            }
+            infoPane.show (musicGroup)
         }
-        infoPane.show (musicGroup)
         infoPane.layout (stage.width, stage.height * screenSplit)
         bottomPane.layout(stage.width, stage.height * (1 - screenSplit))
     }

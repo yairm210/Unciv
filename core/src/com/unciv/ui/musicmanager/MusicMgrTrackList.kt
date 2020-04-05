@@ -63,7 +63,7 @@ class MusicMgrTrackList(skin: Skin): Table(skin) {
 }
 
 private class TrackListRow(musicTrack: MusicDownloadTrack, isPresent: Boolean, clickEvent: (TrackListRow, MusicDownloadTrack)->Unit, skin: Skin): Table(skin) {
-    private val iconSize = 32f
+    private val iconSize = 30f
     val playButton = TrackPlayButton(enable = isPresent)
 
     init {

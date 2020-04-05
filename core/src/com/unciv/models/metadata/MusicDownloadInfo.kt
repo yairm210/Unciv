@@ -20,6 +20,8 @@ data class MusicDownloadTrack (
     constructor() : this("","","", "")          // for the json parser
 
     @Transient internal var path = ""
+    val ID
+        get() = path + File.separator + localFileName
 
     fun isPresent (): Boolean {
         return file() != null
@@ -30,6 +32,12 @@ data class MusicDownloadTrack (
         return allowedExtensions
                 .map { pathFile.child("$nameNoExt.$it") }
                 .firstOrNull { it.exists() && !it.isDirectory }
+    }
+    fun downloadTrack(completionEvent: ((ID: String, status: Int, message: String) -> Unit)?) {
+        MusicMgrDownloader.downloadFile(url,file()!!,ID,"audio/") { ID, status, message -> completionEvent?.invoke(ID, status, message) }
+    }
+    override fun toString(): String {
+        return super.toString() + " ($ID)"
     }
     companion object {
         val allowedExtensions = listOf("mp3","ogg","m4a")
@@ -58,6 +66,10 @@ data class MusicDownloadGroup (
 
     fun isPresent(): Boolean {
         return tracks.all { it.isPresent() }
+    }
+
+    override fun toString(): String {
+        return super.toString() + " ($title: ${tracks.size} tracks)"
     }
 
     private fun getCachedCoverFile(): FileHandle? {
