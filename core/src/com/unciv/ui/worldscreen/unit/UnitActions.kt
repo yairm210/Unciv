@@ -17,6 +17,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
+import com.unciv.ui.utils.hasOpenPopups
 import com.unciv.ui.worldscreen.WorldScreen
 
 object UnitActions {
@@ -73,10 +74,12 @@ object UnitActions {
         actionList += UnitAction(
                 type = UnitActionType.DisbandUnit,
                 action = {
-                    val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
-                        "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
-                    else "Do you really want to disband this unit?".tr()
-                    YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+                    if (!worldScreen.hasOpenPopups()) {
+                        val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
+                            "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
+                        else "Do you really want to disband this unit?".tr()
+                        YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+                    }
                 }.takeIf {unit.currentMovement > 0} )
     }
 
