@@ -56,6 +56,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
+    private var nextTurnAction:()->Unit= {}
     private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
@@ -261,7 +262,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             when {
                 !gameInfo.oneMoreTurnMode && viewingCiv.isDefeated() -> game.setScreen(VictoryScreen())
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
-                viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy() -> game.setScreen(PolicyPickerScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
@@ -390,39 +390,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val nextTurnButton = TextButton("", skin) // text is set in update()
         nextTurnButton.label.setFontSize(30)
         nextTurnButton.labelCell.pad(10f)
-
-        nextTurnButton.onClick {
-            // cycle through units not yet done
-            if (viewingCiv.shouldGoToDueUnit()) {
-                val nextDueUnit = viewingCiv.getNextDueUnit()
-                if(nextDueUnit!=null) {
-                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                    bottomUnitTable.selectedCity = null
-                    bottomUnitTable.selectedUnit = nextDueUnit
-                    shouldUpdate=true
-                }
-                return@onClick
-            }
-
-            val cityWithNoProductionSet = viewingCiv.cities
-                    .firstOrNull{it.cityConstructions.currentConstruction==""}
-            if(cityWithNoProductionSet!=null){
-                game.setScreen(CityScreen(cityWithNoProductionSet))
-                return@onClick
-            }
-
-            if (viewingCiv.shouldOpenTechPicker()) {
-                game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
-                return@onClick
-            } else if (viewingCiv.policies.shouldOpenPolicyPicker) {
-                game.setScreen(PolicyPickerScreen(this))
-                viewingCiv.policies.shouldOpenPolicyPicker = false
-                return@onClick
-            }
-
-            game.settings.addCompletedTutorialTask("Pass a turn")
-            nextTurn() // If none of the above
-        }
+        nextTurnButton.onClick { nextTurnAction() }
 
         return nextTurnButton
     }
@@ -496,21 +464,56 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
+    class NextTurnAction(val text:String,val action:()->Unit)
+
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
-        val text = when {
-            !isPlayersTurn -> "Waiting for other players..."
-            viewingCiv.shouldGoToDueUnit() -> "Next unit"
-            viewingCiv.cities.any { it.cityConstructions.currentConstruction == "" } -> "Pick construction"
-            viewingCiv.shouldOpenTechPicker() -> "Pick a tech"
-            viewingCiv.policies.shouldOpenPolicyPicker -> "Pick a policy"
-            else -> "Next turn"
-        }
-        nextTurnButton.setText(text.tr())
-        nextTurnButton.color = if (text == "Next turn") Color.WHITE else Color.GRAY
+        val action:NextTurnAction = getNextTurnAction()
+        nextTurnAction = action.action
+
+        nextTurnButton.setText(action.text.tr())
+        nextTurnButton.color = if (action.text == "Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
         if (isSomethingOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
         else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
+    }
+
+    private fun getNextTurnAction(): NextTurnAction {
+        return when {
+            !isPlayersTurn -> NextTurnAction("Waiting for other players...") {}
+
+            viewingCiv.shouldGoToDueUnit() -> NextTurnAction("Next unit") {
+                val nextDueUnit = viewingCiv.getNextDueUnit()
+                if (nextDueUnit != null) {
+                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                    bottomUnitTable.selectedCity = null
+                    bottomUnitTable.selectedUnit = nextDueUnit
+                    shouldUpdate = true
+                }
+            }
+
+            viewingCiv.cities.any { it.cityConstructions.currentConstruction == "" } ->
+                NextTurnAction("Pick construction") {
+                    val cityWithNoProductionSet = viewingCiv.cities
+                            .firstOrNull { it.cityConstructions.currentConstruction == "" }
+                    if (cityWithNoProductionSet != null) game.setScreen(CityScreen(cityWithNoProductionSet))
+                }
+
+            viewingCiv.shouldOpenTechPicker() -> NextTurnAction("Pick a tech") {
+                game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
+            }
+
+            viewingCiv.policies.shouldOpenPolicyPicker || viewingCiv.policies.freePolicies > 0 ->
+                NextTurnAction("Pick a policy") {
+                    game.setScreen(PolicyPickerScreen(this))
+                    viewingCiv.policies.shouldOpenPolicyPicker = false
+                }
+
+            else -> NextTurnAction("Next turn") {
+                game.settings.addCompletedTutorialTask("Pass a turn")
+                nextTurn()
+            }
+        }
     }
 
     override fun resize(width: Int, height: Int) {

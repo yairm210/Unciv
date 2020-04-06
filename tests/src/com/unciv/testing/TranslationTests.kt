@@ -45,64 +45,6 @@ class TranslationTests {
                 allUnitActionsHaveTranslation)
     }
 
-    @Test
-    fun allTerrainsHaveTranslation() {
-        val strings: Set<String> = ruleset.terrains.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all buildings",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTerrainUniquesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (terrain in ruleset.terrains.values) {
-            strings.addAll(terrain.uniques)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all terrain uniques",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allImprovementsHaveTranslation() {
-        val strings: Set<String> = ruleset.tileImprovements.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all improvements",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allImprovementUniquesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (improvement in ruleset.tileImprovements.values) {
-            strings.addAll(improvement.uniques)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all improvements uniques",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTechnologiesHaveTranslation() {
-        val strings: Set<String> = ruleset.technologies.keys
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all technologies",
-                allStringsHaveTranslation)
-    }
-
-    @Test
-    fun allTechnologiesQuotesHaveTranslation() {
-        val strings: MutableSet<String> = HashSet()
-        for (tech in ruleset.technologies.values) {
-            strings.add(tech.quote)
-        }
-        val allStringsHaveTranslation = allStringAreTranslated(strings)
-        Assert.assertTrue("This test will only pass when there is a translation for all technologies quotes",
-                allStringsHaveTranslation)
-    }
-
-
     private fun allStringAreTranslated(strings: Set<String>): Boolean {
         var allStringsHaveTranslation = true
         for (key in strings) {

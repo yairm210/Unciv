@@ -61,16 +61,27 @@ class SpecificUnitAutomation {
             return
         }
 
-        //if no unit to follow, take refuge in city.
+        // try to build a citadel
+        if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo))
+            UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
+
+        //if no unit to follow, take refuge in city or build citadel there.
+        val reachableTest : (TileInfo) -> Boolean = {it.civilianUnit == null &&
+                unit.movement.canMoveTo(it)
+                && unit.movement.canReach(it)}
         val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull {
-                    it.civilianUnit == null && unit.movement.canMoveTo(it)
-                            && unit.movement.canReach(it)
-                }
+                .firstOrNull { reachableTest(it) }
 
         if (cityToGarrison != null) {
-            unit.movement.headTowards(cityToGarrison)
+            // try to find a good place for citadel nearby
+            val potentialTilesNearCity = cityToGarrison.getTilesInDistanceRange(3..4)
+            val tileForCitadel = potentialTilesNearCity.firstOrNull { reachableTest(it) &&
+                    WorkerAutomation(unit).evaluateFortPlacement(it, unit.civInfo) }
+            if (tileForCitadel != null)
+                unit.movement.headTowards(tileForCitadel)
+            else
+                unit.movement.headTowards(cityToGarrison)
             return
         }
     }

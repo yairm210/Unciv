@@ -40,6 +40,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
                 "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
                 "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
                 "Construct Landmark" -> return ImageGetter.getImprovementIcon("Landmark")
+                "Construct Citadel" -> return ImageGetter.getImprovementIcon("Citadel")
                 "Hurry Wonder" -> return ImageGetter.getUnitIcon("Great Engineer")
                 "Construct Manufactory" -> return ImageGetter.getImprovementIcon("Manufactory")
                 "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")

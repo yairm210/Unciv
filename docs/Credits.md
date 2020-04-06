@@ -3,6 +3,8 @@
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) 
  and licensed by Creative Commons 3.0
 
+New Unciv logo made by u-ndefined on Discord
+
 Base tile icons for the "Fantasy Hex" tileset belong to CuddlyClover @ https://cuddlyclover.itch.io/fantasy-hex-tiles with a few additions by me 
 
 Trees for the jungle tiles in the "Fantasy Hex" are extracted from [Desert Strike for the Amiga](http://eab.abime.net/showthread.php?t=67078&styleid=4)
@@ -153,6 +155,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ruins](https://thenounproject.com/term/ruins/3849/) By Paulo Volkova for City ruins
 * [Fishing Net](https://thenounproject.com/term/fishing-net/1073133/) By Made for Fishing Boats
 * [Moai](https://thenounproject.com/search/?q=moai&i=2878111) By Template
+* [Fort](https://thenounproject.com/term/fort/1697645/) By Adrien Coquet
+* [Citadel](https://thenounproject.com/term/fort/1697646/) By Adrien Coquet
 
 ## Buildings
 

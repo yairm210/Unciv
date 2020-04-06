@@ -1,3 +1,33 @@
+## 3.7.0
+
+By Jack Rainy:
+- Forts and citadels (with AI)
+- Crash fixed in specific circumstances of Map Editor
+
+"Free policy" freezes fixed
+
+Desktop window size restore - By rh-github-2015
+
+Not being able to read the settings file shouldn't make you crash
+
+Translation updates
+
+## 3.6.15
+
+By Jack Rainy:
+- New wonders: Mausoleum of Halicarnassus, Statue of Zeus
+- UI bugfixes: city info and aircraft
+- Display the hidden units indicators under city buttons
+- Map generation places resources 'under' terrain features
+
+Resolved #2135 - added tutorials for Research Agreements, Combat and Experience
+
+Nuclear weapons setting moved to a per-game parameter
+
+Railroad is now just a black line - much clearer than the old, "nicer" image
+
+Translation updates
+
 ## 3.6.14
 
 Harbors immediately connect cities

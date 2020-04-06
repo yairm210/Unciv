@@ -55,7 +55,11 @@ class GameSaver {
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
         if(!settingsFile.exists()) return GameSettings()
-        var settings = json().fromJson(GameSettings::class.java, settingsFile)
+        var settings: GameSettings?=null
+        try {
+            settings = json().fromJson(GameSettings::class.java, settingsFile)
+        }
+        catch (ex:Exception){}
         // I'm not sure of the circumstances,
         // but some people were getting null settings, even though the file existed??? Very odd.
         if(settings==null) settings = GameSettings()

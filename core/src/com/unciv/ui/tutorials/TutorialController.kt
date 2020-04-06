@@ -48,7 +48,6 @@ class TutorialController(screen: CameraStageBaseScreen) {
     }
 
     private fun getTutorial(tutorial: Tutorial): Array<String> {
-
         return tutorials[tutorial.value] ?: Array()
     }
 }

@@ -52,6 +52,7 @@ class UncivGame(
 
     var music: Music? = null
     val musicLocation = "music/thatched-villagers.mp3"
+    private var isSizeRestored = false
     var isInitialized = false
 
 
@@ -94,9 +95,18 @@ class UncivGame(
         crashController = CrashController.Impl(crashReportSender)
     }
 
+    private fun restoreSize() {
+        if (!isSizeRestored && Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
+            isSizeRestored = true
+            Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
+        }
+    }
+
     fun autoLoadGame() {
-        if (!GameSaver().getSave("Autosave").exists())
+        if (!GameSaver().getSave("Autosave").exists()) {
+            restoreSize()
             return setScreen(LanguagePickerScreen())
+        }
         try {
             loadGame("Autosave")
         } catch (ex: Exception) { // silent fail if we can't read the autosave
@@ -125,6 +135,7 @@ class UncivGame(
         this.gameInfo = gameInfo
         ImageGetter.ruleset = gameInfo.ruleSet
         ImageGetter.refreshAtlas()
+        restoreSize()
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }
@@ -168,8 +179,10 @@ class UncivGame(
 
     override fun dispose() {
         cancelDiscordEvent?.invoke()
-        if (::gameInfo.isInitialized)
+        if (::gameInfo.isInitialized){
             GameSaver().autoSaveSingleThreaded(gameInfo)      // NO new thread
+            settings.save()
+        }
 
         // Log still running threads (should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()
