@@ -45,7 +45,7 @@ class GameSettings {
         if (Gdx.app.type == Application.ApplicationType.Desktop) {
             windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
         }
-        GameSaver().setGeneralSettings(this)
+        GameSaver.setGeneralSettings(this)
     }
 
     fun addCompletedTutorialTask(tutorialTask:String){

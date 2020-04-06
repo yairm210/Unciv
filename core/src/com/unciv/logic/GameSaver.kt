@@ -9,9 +9,9 @@ import com.unciv.ui.utils.ImageGetter
 import java.io.File
 import kotlin.concurrent.thread
 
-class GameSaver {
-    private val saveFilesFolder = "SaveFiles"
-    private val multiplayerFilesFolder = "MultiplayerGames"
+object GameSaver {
+    private const val saveFilesFolder = "SaveFiles"
+    private const val multiplayerFilesFolder = "MultiplayerGames"
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 

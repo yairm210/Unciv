@@ -68,7 +68,7 @@ class UncivGame(
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
-        settings = GameSaver().getGeneralSettings() // needed for the screen
+        settings = GameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
@@ -102,7 +102,7 @@ class UncivGame(
     }
 
     fun autoLoadGame() {
-        if (!GameSaver().getSave("Autosave").exists()) {
+        if (!GameSaver.getSave("Autosave").exists()) {
             restoreSize()
             return setScreen(LanguagePickerScreen())
         }
@@ -140,11 +140,11 @@ class UncivGame(
     }
 
     fun loadGame(gameName: String) {
-        loadGame(GameSaver().loadGameByName(gameName))
+        loadGame(GameSaver.loadGameByName(gameName))
     }
 
     fun startNewGame() {
-        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
+        val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
         loadGame(newGame)
     }
 
@@ -178,7 +178,7 @@ class UncivGame(
 
     override fun dispose() {
         if (::gameInfo.isInitialized) {
-            GameSaver().autoSave(gameInfo)
+            GameSaver.autoSave(gameInfo)
             settings.save()
         }
     }
