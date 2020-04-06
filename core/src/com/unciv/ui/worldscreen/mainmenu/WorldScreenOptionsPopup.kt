@@ -124,7 +124,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addAutosaveTurnsSelectBox(innerTable)
 
-        if (true || Gdx.app.type != Application.ApplicationType.Desktop) {
+        if (Gdx.app.type != Application.ApplicationType.Desktop) {
             val importExportButton = TextButton("Import / Export".tr(), CameraStageBaseScreen.skin)
             importExportButton.onClick {
                 importExportButton.disable()            // inoculate against button spammers??
