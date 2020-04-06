@@ -11,11 +11,14 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import java.io.File
-import kotlin.concurrent.thread
+import java.util.*
+import kotlin.concurrent.timer
 import kotlin.system.exitProcess
 
 
 internal object DesktopLauncher {
+    private var discordTimer: Timer? = null
+
     @JvmStatic
     fun main(arg: Array<String>) {
 
@@ -27,9 +30,9 @@ internal object DesktopLauncher {
         config.title = "Unciv"
         config.useHDPI = true
 
-        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion
+        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        val game = UncivGame(if (versionFromJar != null) versionFromJar else "Desktop", null){exitProcess(0)}
+        val game = UncivGame ( versionFromJar, null, { exitProcess(0) }, { discordTimer?.cancel() } )
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
@@ -71,27 +74,23 @@ internal object DesktopLauncher {
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
-
         try {
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 
             Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
 
-            thread {
-                while (true) {
-                    try {
-                        updateRpc(game)
-                    }catch (ex:Exception){}
-                    Thread.sleep(1000)
-                }
+            discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
+                try {
+                    updateRpc(game)
+                } catch (ex:Exception){}
             }
         } catch (ex: Exception) {
-            print("Could not initialize Discord")
+            println("Could not initialize Discord")
         }
     }
 
-    fun updateRpc(game: UncivGame) {
+    private fun updateRpc(game: UncivGame) {
         if(!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
