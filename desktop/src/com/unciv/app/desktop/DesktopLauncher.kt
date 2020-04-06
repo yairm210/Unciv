@@ -19,7 +19,7 @@ internal object DesktopLauncher {
     @JvmStatic
     fun main(arg: Array<String>) {
 
-        packImages()
+        //packImages()
 
         val config = LwjglApplicationConfiguration()
         // Don't activate GL 3.0 because it causes problems for MacOS computers

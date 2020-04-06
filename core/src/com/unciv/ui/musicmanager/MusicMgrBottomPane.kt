@@ -7,33 +7,53 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.toLabel
 
 class MusicMgrBottomPane(enable: Boolean, skin: Skin): Table(skin) {
     val closeButton = TextButton("Close".tr(), skin)
     val previousButton = PreviousNextButton(true, enable)
     val pickButton = MusicMgrSelectButton(MusicMgrSelectButtonState.Disabled, skin)
     val nextButton = PreviousNextButton(false, enable)
-    val okButton = Button(skin)
+    val downloadButton = DownloadButton(DownloadButtonState.Disabled, skin)
+    val leftLabel = LockableLabel(skin)
+    val rightLabel = LockableLabel(skin)
 
     init {
         defaults().pad(10f)
         add (closeButton).left()
+        leftLabel.setAlignment(Align.left)
+        add(leftLabel).growX()
         val centerPanel = HorizontalGroup()
         centerPanel.addActor(previousButton)
         centerPanel.addActor(pickButton)
         centerPanel.addActor(nextButton)
-        centerPanel.pack()
         add(centerPanel).center()
-        val okImage = ImageGetter.getImage("OtherIcons/Music Download")
-        okButton.add(okImage).size(28f).pad(2f,12f,2f,12f)
-        add (okButton).right()
-        okButton.disable()
+        rightLabel.setAlignment(Align.right)
+        add(rightLabel).growX()
+        add (downloadButton).right()
     }
 
     fun layout (width: Float, height: Float) {
         this.width = width
         this.height = height
         this.layout()
+    }
+}
+
+class LockableLabel(skin: Skin): Label("", skin) {
+    // Subclassed Label solely to stop them from pushing the center cell out of center when their text changes
+    private var lockWidth = 0f
+    init {
+        var labelStyle = skin.get(Label.LabelStyle::class.java)
+        labelStyle = Label.LabelStyle(labelStyle) // clone this to another
+        labelStyle.fontColor = Color.SLATE
+        this.style = labelStyle
+    }
+    override fun getPrefWidth(): Float {
+        if (lockWidth>0f) return lockWidth
+        if (width>0f) lockWidth = width
+        return super.getPrefWidth()
     }
 }
 
@@ -60,19 +80,23 @@ class PreviousNextButton(val previous: Boolean, val enabled: Boolean): Table() {
     }
 }
 
-enum class MusicMgrSelectButtonState { Disabled, Present, Select, Selected }
+enum class MusicMgrSelectButtonState { Disabled, Present, Select, Queued }
 
 class MusicMgrSelectButton(initialState: MusicMgrSelectButtonState, skin: Skin): TextButton("", skin) {
     private val presentText = "Available".tr()
     private val selectText = "Select".tr()
     private val selectedText = "Queued".tr()
 
+    override fun getPrefWidth(): Float {
+        return 132f
+    }
+
     var state: MusicMgrSelectButtonState = initialState
         set(value) {
             field = value
             when (value) {
                 MusicMgrSelectButtonState.Disabled -> {
-                    setText("---")
+                    setText("")
                     color = Color.GRAY
                     isDisabled = true
                 }
@@ -86,7 +110,7 @@ class MusicMgrSelectButton(initialState: MusicMgrSelectButtonState, skin: Skin):
                     color = Color.WHITE
                     isDisabled = false
                 }
-                MusicMgrSelectButtonState.Selected -> {
+                MusicMgrSelectButtonState.Queued -> {
                     setText(selectedText)
                     color = Color.GOLDENROD
                     isDisabled = false
@@ -94,4 +118,47 @@ class MusicMgrSelectButton(initialState: MusicMgrSelectButtonState, skin: Skin):
             }
             touchable = if (isDisabled) Touchable.disabled else Touchable.enabled
         }
+}
+
+enum class DownloadButtonState (val image: String, val enabled: Boolean) {
+    Uninitialized ("", false),
+    Disabled ("OtherIcons/Music Download", false),
+    Stopped ("OtherIcons/Music Download", true),
+    Stopping ("OtherIcons/Music Stop DL", false),
+    Running ("OtherIcons/Music Stop DL", true)
+}
+
+class DownloadButton(initialState: DownloadButtonState, skin: Skin): Button(skin) {
+    var state = initialState
+        set (value) {
+            lastState = field
+            field = value
+            setImage()
+        }
+    private var lastState: DownloadButtonState = DownloadButtonState.Uninitialized
+
+    private val images = hashMapOf<DownloadButtonState, Image>()
+
+    init {
+        DownloadButtonState.values().filter { it.image.isNotEmpty() }.forEach {
+            images[it] = ImageGetter.getImage(it.image)
+        }
+        setImage()
+    }
+
+    private fun setImage() {
+        if (lastState!=state) {
+            clearChildren()
+            add(images[state]).size(30f).pad(2f,12f,2f,12f)
+        }
+        if (state.enabled) enable() else disable()
+    }
+
+//    fun toggleDL(): Boolean {
+//        return when (state) {
+//            DownloadButtonState.Stopped -> { state = DownloadButtonState.Running; true }
+//            DownloadButtonState.Running -> { state = DownloadButtonState.Stopped; false }
+//            else -> false
+//        }
+//    }
 }

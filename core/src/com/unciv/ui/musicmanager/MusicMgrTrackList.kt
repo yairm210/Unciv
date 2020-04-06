@@ -63,8 +63,8 @@ class MusicMgrTrackList(skin: Skin): Table(skin) {
 }
 
 private class TrackListRow(musicTrack: MusicDownloadTrack, isPresent: Boolean, clickEvent: (TrackListRow, MusicDownloadTrack)->Unit, skin: Skin): Table(skin) {
-    private val iconSize = 30f
-    val playButton = TrackPlayButton(enable = isPresent)
+    private val iconSize = 26f
+    val playButton = TrackPlayButton(if(isPresent) TrackPlayButtonState.Stopped else TrackPlayButtonState.Disabled)
 
     init {
         val noteImage = ImageGetter.getImage("OtherIcons/Music Note").surroundWithCircle(iconSize)
@@ -87,39 +87,44 @@ private class TrackListRow(musicTrack: MusicDownloadTrack, isPresent: Boolean, c
 
 }
 
-private enum class TrackPlayButtonState (val image: String) {
-    Disabled ("OtherIcons/Music Disabled"),
-    Stopped ("OtherIcons/Music Play"),
-    Playing ("OtherIcons/Music Stop")
+private enum class TrackPlayButtonState (val image: String, val touchable: Touchable) {
+    Uninitialized ("", Touchable.disabled),
+    Disabled ("OtherIcons/Music Disabled", Touchable.disabled),
+    Stopped ("OtherIcons/Music Play", Touchable.enabled),
+    Playing ("OtherIcons/Music Stop", Touchable.enabled)
 }
 
-private class TrackPlayButton(enable: Boolean): Table() {
-    var state = if (enable) TrackPlayButtonState.Stopped else TrackPlayButtonState.Disabled
+private class TrackPlayButton(initialState: TrackPlayButtonState): Table() {
+    var state = initialState
         set (value) {
+            lastState = field
             field = value
             setImage()
         }
+    private var lastState: TrackPlayButtonState = TrackPlayButtonState.Uninitialized
 
     private val images = hashMapOf<TrackPlayButtonState, Image>()
 
     init {
-        TrackPlayButtonState.values().forEach {
+        TrackPlayButtonState.values().filter { it.image.isNotEmpty() }.forEach {
             images[it] = ImageGetter.getImage(it.image)
         }
         setImage()
     }
 
     private fun setImage() {
-        clear()
-        add (images[state]).size(32f)
-        touchable = if (state== TrackPlayButtonState.Disabled) Touchable.disabled else Touchable.enabled
+        if (lastState!=state) {
+            clearChildren()                 // Do not clear(): Removes listeners
+            add(images[state]).size(26f)
+        }
+        touchable = state.touchable
     }
 
     fun toggle(): Boolean {
         return when (state) {
-            TrackPlayButtonState.Disabled -> false
             TrackPlayButtonState.Stopped -> { state = TrackPlayButtonState.Playing; true }
             TrackPlayButtonState.Playing -> { state = TrackPlayButtonState.Stopped; false }
+            else -> false
         }
     }
 }

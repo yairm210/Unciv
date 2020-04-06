@@ -1,10 +1,8 @@
 package com.unciv.models.metadata
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Net
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.net.HttpRequestBuilder
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.JsonValue
 import com.badlogic.gdx.utils.JsonWriter
@@ -14,43 +12,53 @@ import java.io.File
 data class MusicDownloadTrack (
         var title: String,              // track name as chosen by the author
         var info: String,               // optional info (like track length in brackets)
-        var localFileName: String,      // relative filename (no path, include extension)
+        var localFile: String,          // relative filename (no path, include extension)
         var url: String                 // url to download from
 ) {
     constructor() : this("","","", "")          // for the json parser
 
     @Transient internal var path = ""
     val ID
-        get() = path + File.separator + localFileName
+        get() = path + File.separator + localFile
 
+    fun getDuration(): Int {
+        if (info.isEmpty()) return 0
+        val match = Regex("""\b(\d+):(\d+)\b""").find(info) ?: return 0
+        return 60 * (match.groups[1]?.value?.toIntOrNull() ?: 0) + (match.groups[2]?.value?.toIntOrNull() ?: 0)
+    }
+    fun getEstimatedSize(): Long = getDuration() * 150_000_000L / 3600L      // Assume worst case 320kbps which is roughly 150MB/hour
+    fun getEstimatedDLDuration(): Long = getEstimatedSize() * 1000L / 500_000L  // ms at 500kB/s
     fun isPresent (): Boolean {
         return file() != null
     }
-    fun file(): FileHandle? {
+    fun file(search: Boolean = true): FileHandle? {
         val pathFile = Gdx.files.local(path)
-        val nameNoExt = pathFile.child(localFileName).nameWithoutExtension()
-        return allowedExtensions
+        val nameNoExt = pathFile.child(localFile).nameWithoutExtension()
+        return if(search) allowedExtensions
                 .map { pathFile.child("$nameNoExt.$it") }
                 .firstOrNull { it.exists() && !it.isDirectory }
+            else pathFile.child(localFile)
     }
     fun downloadTrack(completionEvent: ((ID: String, status: Int, message: String) -> Unit)?) {
-        MusicMgrDownloader.downloadFile(url,file()!!,ID,"audio/") { ID, status, message -> completionEvent?.invoke(ID, status, message) }
+        val saveFile = file(false)!!        // To make failure recognizable in a stack trace
+        MusicMgrDownloader.downloadFile(url,saveFile,ID, contentTypeRegex) { ID, status, message -> completionEvent?.invoke(ID, status, message) }
     }
     override fun toString(): String {
         return super.toString() + " ($ID)"
     }
     companion object {
         val allowedExtensions = listOf("mp3","ogg","m4a")
+        val contentTypeRegex = "^audio/|^application/octet-stream"
     }
 }
 
 data class MusicDownloadGroup (
         var title: String,              // Playlist caption
-        var cover: String,              // url to download cover image from
+        var coverUrl: String,           // url to download cover image from
         var coverLocal: String,         // local filename (no path), also serves as unique key
         var description: String,        // lengthy blurb about this collection
         var credits: String,            // author (one link recognized, makes widget touchable)
-        var attribution: String,        // license (one link recognized, makes widget touchable)
+        var license: String,            // license (one link recognized, makes widget touchable)
         var tracks: List<MusicDownloadTrack>
 ) {
     constructor() : this ( "", "", "", "", "", "", emptyList<MusicDownloadTrack>() )     // for the json parser
@@ -78,7 +86,7 @@ data class MusicDownloadGroup (
         if (!cacheDir.exists()) cacheDir.mkdirs()
         return cacheDir.child(coverLocal)
     }
-    fun hasCover(): Boolean = !(cover.isEmpty() || coverLocal.isEmpty())
+    fun hasCover(): Boolean = !(coverUrl.isEmpty() || coverLocal.isEmpty())
     fun isCoverCached(): Boolean = getCachedCoverFile()?.exists() ?: false
     fun shouldDownloadCover(): Boolean = hasCover() && !coverDownloadHasFailed && !isCoverCached()
     fun getCachedCover(): Texture? {
@@ -94,7 +102,7 @@ data class MusicDownloadGroup (
         // may already have modified the context so the finished download might no longer be relevant.
         // It is the responsibility of the client to check this, and for this purpose it gets the ID back.
         if (!hasCover()) return
-        MusicMgrDownloader.downloadFile(cover,getCachedCoverFile()!!,coverLocal,"image/") { ID, status, message ->
+        MusicMgrDownloader.downloadFile(coverUrl,getCachedCoverFile()!!,coverLocal,"^image/") { ID, status, message ->
             run {
                 coverDownloadHasFailed = true
                 completionEvent?.invoke(ID, status, message)
@@ -116,6 +124,9 @@ data class MusicDownloadInfo ( var groups: ArrayList<MusicDownloadGroup> ) {
 
     fun anySelected(): Boolean {
         return groups.any { it.selected }
+    }
+    fun setSelected(value: Boolean) {
+        groups.forEach { it.selected = value }
     }
 
     val size: Int

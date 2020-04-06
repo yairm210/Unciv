@@ -1,341 +1,384 @@
 { "groups": [
 		{
 			"title": "Default track",
-			"cover": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/KevinMacleod.jpg/492px-KevinMacleod.jpg",
+			"coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/KevinMacleod.jpg/492px-KevinMacleod.jpg",
 			"coverLocal": "wikimedia.org.kevinmacleod.jpg",
 			"description": "This is the default track Unciv adopted long ago.\nSolid in pace, The Thatched Roof Villagers moves with percussion and a number of flutes and pipes struggling for dominance. The real joy of the piece is halfway through when the tinny dulcimer plays the melody and is then joined by the flutes in melody and harmony. The music is jovial and inviting.",
 			"credits": "This track is by Kevin MacLeod (https://incompetech.com)",
-			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
 			"tracks": [
 					{
 						"title": "Thatched Villagers",
-						"localFileName": "Ambient_Thatched-Villagers.mp3",
+						"info": "(4:05)",
+						"localFile": "Ambient_Thatched-Villagers.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Thatched%20Villagers.mp3"
 					}
 				]
 		},
 		{
 			"title": "Geoff Knorr's Civ5 tracks",
-			"cover": "https://images.squarespace-cdn.com/content/v1/53de75dee4b03184671b802f/1478718251638-A9D72L23ZLYWOG2X5KPR/ke17ZwdGBToddI8pDm48kPJXHKy2-mnvrsdpGQjlhod7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z5QHyNOqBUUEtDDsRWrJLTmihaE5rlzFBImxTetd_yW5btdZx37rH5fuWDtePBPDaHF5LxdCVHkNEqSYPsUQCdT/CivV_AlbumCover.jpg",
+			"coverUrl": "https://images.squarespace-cdn.com/content/v1/53de75dee4b03184671b802f/1478718251638-A9D72L23ZLYWOG2X5KPR/ke17ZwdGBToddI8pDm48kPJXHKy2-mnvrsdpGQjlhod7gQa3H78H3Y0txjaiv_0fDoOvxcdMmMKkDsyUqMSsMWxHk725yiiHCCLfrh8O1z5QHyNOqBUUEtDDsRWrJLTmihaE5rlzFBImxTetd_yW5btdZx37rH5fuWDtePBPDaHF5LxdCVHkNEqSYPsUQCdT/CivV_AlbumCover.jpg?format=750w",
 			"coverLocal": "geoffknorr.com.CivV_AlbumCover.jpg",
 			"description": "Geoff Knorr is an award-winning composer of music for media and the concert hall. He has worked as a composer, orchestrator, sound designer, and mixing engineer on many video game titles, including Civilization V.\n\nSome of these tracks are available on http://www.geoffknorr.com/sid-meiers-civilization-v.",
 			"credits": "The tracks in this group are by Geoff Knorr (http://www.geoffknorr.com)",
-			"attribution": "",
+			"license": "",
 			"tracks": [
 					{
-						"title": "Alexander Peace - Greece - \\\"Epitaph of Seikilos\\\"",
+						"title": "Alexander Peace - Greece - \"Epitaph of Seikilos\"",
 						"info": "(6:44)",
-						"localFileName": "Greece_Peace.mp3",
+						"localFile": "Greece_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41ade4b0def98027ba71/1408123309706/Alexander_Peace.mp3"
 					},
 					{
 						"title": "Alexander War - Greece - \"Epitaph of Seikilos\"",
 						"info": "(5:06)",
-						"localFileName": "Greece_War.mp3",
+						"localFile": "Greece_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41a6e4b027cf34f15a64/1408123302366/Alexander_War.mp3"
 					},
 					{
 						"title": "Elizabeth Peace - England - \"I Vow to Thee, My Country\"",
 						"info": "(5:23)",
-						"localFileName": "England_Peace.mp3",
+						"localFile": "England_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4144e4b0def98027b9e0/1408123204348/Elizabeth_Peace.mp3"
 					},
 					{
 						"title": "Elizabeth War - England - \"I Vow to Thee, My Country\"",
 						"info": "(5:05)",
-						"localFileName": "England_War.mp3",
+						"localFile": "England_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee414de4b0def98027b9ee/1408123213143/Elizabeth_War.mp3"
 					},
 
 					{
 						"title": "Harun al-Rashid Peace - Arabia - \"Thikriati; Hijaz Maqam\"",
 						"info": "(6:27)",
-						"localFileName": "Arabia_Peace.mp3",
+						"localFile": "Arabia_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee417ae4b0def98027ba24/1408123258542/Harun_al_Rashid_Peace.mp3"
 					},
 					{
 						"title": "Harun al-Rashid War - Arabia - \"Thikriati; Hijaz Maqam\"",
 						"info": "(4:47)",
-						"localFileName": "Arabia_War.mp3",
+						"localFile": "Arabia_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4218e4b0def98027bb1a/1408123416016/Harun_al_Rashid_War.mp3"
 					},
 
 					{
 						"title": "Darius I Peace - Persia - \"Morghe Sahar\"",
 						"info": "(5:16)",
-						"localFileName": "Persia_Peace.mp3",
+						"localFile": "Persia_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41c0e4b027cf34f15a83/1408123328810/Darius_Peace.mp3"
 					},
 					{
 						"title": "Darius I War - Persia - \"Morghe Sahar\"",
 						"info": "(5:49)",
-						"localFileName": "Persia_War.mp3",
+						"localFile": "Persia_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee41cbe4b0def98027baa5/1408123339330/Darius_War.mp3"
 					},
 					{
 						"title": "Kamehameha Peace - Polynesia - \"Hole Waimea\"",
 						"info": "(3:30)",
-						"localFileName": "Polynesia_Peace.mp3",
+						"localFile": "Polynesia_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc84137c5812b977e58c1/1478281296714/Kamehameha_Peace.mp3"
 					},
 					{
 						"title": "Kamehameha War - Polynesia - \"Hole Waimea\"",
 						"info": "(3:25)",
-						"localFileName": "Polynesia_War.mp3",
+						"localFile": "Polynesia_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc85037c5812b977e5986/1478281311969/Kamehameha_War.mp3"
 					},
 					{
 						"title": "Paradise Found - Polynesian Scenario",
 						"info": "(3:54)",
-						"localFileName": "Polynesia_Theme.mp3",
+						"localFile": "Polynesia_Theme.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc84159cc6833a5e315f6/1478281298322/Kamehameha_Scenario.mp3"
 					},
 
 					{
 						"title": "Genghis Khan Peace - Mongolia - \"Traditional Mongolian Long Song\"",
 						"info": "(5:15)",
-						"localFileName": "Mongolia_Peace.mp3",
+						"localFile": "Mongolia_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc886e58c62471485cd8a/1478281370588/Genghis_Khan_Peace.mp3"
 					},
 					{
 						"title": "Genghis Khan War - Mongolia - \"Traditional Mongolian Long Song\"",
 						"info": "(5:19)",
-						"localFileName": "Mongolia_War.mp3",
+						"localFile": "Mongolia_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc886e4fcb5a68ecdb31e/1478281370855/Genghis_Khan_War.mp3"
 					},
 
 					{
 						"title": "Isabella Peace - Spain - \"Viva La Quince Brigada\"",
 						"info": "(5:35)",
-						"localFileName": "Spain_Peace.mp3",
+						"localFile": "Spain_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc89ae58c62471485ceaa/1478281391156/Isabella_Peace.mp3"
 					},
 					{
 						"title": "Isabella War - Spain - \"Viva La Quince Brigada\"",
 						"info": "(5:32)",
-						"localFileName": "Spain_War.mp3",
+						"localFile": "Spain_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc89ae4fcb5a68ecdb3f9/1478281397217/Isabella_War.mp3"
 					},
 
 					{
 						"title": "Pachacuti Peace - Inca - \"Incan Melody Fragments\"",
 						"info": "(5:11)",
-						"localFileName": "Inca_Peace.mp3",
+						"localFile": "Inca_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc8afe58c62471485cfba/1478281411031/Pachacuti_Peace.mp3"
 					},
 					{
 						"title": "Pachacuti War - Inca - \"Incan Melody Fragments\"",
 						"info": "(5:40)",
-						"localFileName": "Inca_War.mp3",
+						"localFile": "Inca_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/581cc8b5e4fcb5a68ecdb4ee/1478281419517/Pachacuti_War.mp3"
 					},
 
 					{
 						"title": "Oda Nobunaga Peace - Japan - \"Rokudan no Shirabe\"",
 						"info": "(5:44)",
-						"localFileName": "Japan_Peace.mp3",
+						"localFile": "Japan_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4229e4b077338ecfc82c/1408123433287/Oda_Nobunaga_Peace.mp3"
 					},
 					{
 						"title": "Oda Nobunaga War - Japan - \"Rokudan no Shirabe\"",
 						"info": "(5:56)",
-						"localFileName": "Japan_War.mp3",
+						"localFile": "Japan_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee425be4b077338ecfc868/1408123483170/Oda_Nobunaga_War.mp3"
 					},
 
 					{
 						"title": "Suleiman Peace - Ottoman Empire - \"Ceddin Deden\"",
 						"info": "(5:05)",
-						"localFileName": "The Ottomans_Peace.mp3",
+						"localFile": "The Ottomans_Peace.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4307e4b032360e1f3dee/1408123655767/Suleiman_Peace.mp3"
 					},
 					{
 						"title": "Suleiman War - Ottoman Empire - \"Ceddin Deden\"",
 						"info": "(5:08)",
-						"localFileName": "The Ottomans_War.mp3",
+						"localFile": "The Ottomans_War.mp3",
 						"url": "https://static1.squarespace.com/static/53de75dee4b03184671b802f/53ee401ee4b0c741572e3615/53ee4308e4b08be4e39a5b85/1408123656896/Suleiman_War.mp3"
 					}
 				]
 		},
 		{
 			"title": "Kevin Macleod selection",
-			"cover": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/KevinMacleod.jpg/492px-KevinMacleod.jpg",
+			"coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/KevinMacleod.jpg/492px-KevinMacleod.jpg",
 			"coverLocal": "wikimedia.org.kevinmacleod.jpg",
 			"description": "An arbitrary collection of some of Kevin Macleod's excellent pieces.",
 			"credits": "The tracks in this group are by Kevin Macleod (https://incompetech.filmmusic.io/)",
-			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
 			"tracks": [
 					{
 						"title": "Black Vortex",
-						"localFileName": "Ambient - Black Vortex.mp3",
+						"info": "(2:49)",
+						"localFile": "Ambient - Black Vortex.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Black%20Vortex.mp3"
 					},
 					{
 						"title": "Carefree",
-						"localFileName": "Ambient - Carefree.mp3",
+						"info": "(3:25)",
+						"localFile": "Ambient - Carefree.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3"
 					},
 					{
 						"title": "Cold Funk",
-						"localFileName": "Ambient - Cold Funk.mp3",
+						"info": "(4:48)",
+						"localFile": "Ambient - Cold Funk.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cold%20Funk.mp3"
 					},
 					{
 						"title": "Cold Sober",
-						"localFileName": "Ambient - Cold Sober.mp3",
+						"info": "(3:21)",
+						"localFile": "Ambient - Cold Sober.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cold%20Sober.mp3"
 					},
 					{
 						"title": "Curse of the Scarab",
-						"localFileName": "Ambient - Curse of the Scarab.mp3",
+						"info": "(5:27)",
+						"localFile": "Ambient - Curse of the Scarab.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Curse%20of%20the%20Scarab.mp3"
 					},
 					{
 						"title": "Ghost Dance",
-						"localFileName": "Ambient - Ghost Dance.mp3",
+						"info": "(1:13)",
+						"localFile": "Ambient - Ghost Dance.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghost%20Dance.mp3"
 					},
 					{
 						"title": "Day of Chaos",
-						"localFileName": "Ambient - Day of Chaos.mp3",
+						"info": "(4:09)",
+						"localFile": "Ambient - Day of Chaos.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Day%20of%20Chaos.mp3"
 					},
 					{
 						"title": "Evening of Chaos",
-						"localFileName": "Ambient - Evening of Chaos.mp3",
+						"info": "(4:42)",
+						"localFile": "Ambient - Evening of Chaos.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Evening%20of%20Chaos.mp3"
 					},
 					{
 						"title": "Night of Chaos",
-						"localFileName": "Ambient - Night of Chaos.mp3",
+						"info": "(3:30)",
+						"localFile": "Ambient - Night of Chaos.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Night%20of%20Chaos.mp3"
 					},
 					{
 						"title": "Rynos Theme",
-						"localFileName": "Ambient - Rynos Theme.mp3",
+						"info": "(3:05)",
+						"localFile": "Ambient - Rynos Theme.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Rynos%20Theme.mp3"
 					},
 					{
 						"title": "Inner Light",
-						"localFileName": "Ambient - Inner Light.mp3",
+						"info": "(9:36)",
+						"localFile": "Ambient - Inner Light.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Inner%20Light.mp3"
 					},
 					{
 						"title": "Undaunted",
-						"localFileName": "Ambient - Undaunted.mp3",
+						"info": "(3:32)",
+						"localFile": "Ambient - Undaunted.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Undaunted.mp3"
 					}
 				]
 		},
 		{
 			"title": "Kevin Macleod: Tenebrous Brothers Carnival",
-			"cover": "https://is2-ssl.mzstatic.com/image/thumb/Music3/v4/5f/c5/da/5fc5dac6-e410-726c-4319-7b6a62132c33/5054316131663_cover.jpg/626x0w.jpg",
+			"coverUrl": "https://is2-ssl.mzstatic.com/image/thumb/Music3/v4/5f/c5/da/5fc5dac6-e410-726c-4319-7b6a62132c33/5054316131663_cover.jpg/626x0w.jpg",
 			"coverLocal": "mzstatic.com.5054316131663_cover.jpg",
 			"description": "Kevin Macleod",
 			"credits": "The tracks in this group are by Kevin Macleod (https://incompetech.filmmusic.io/)",
-			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
 			"tracks": [
 					{
 						"title": "Tenebrous Brothers Carnival - Prelude",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Prelude.mp3",
+						"info": "(7:14)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Prelude.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Prelude.mp3"
 					},
 					{
 						"title": "Tenebrous Brothers Carnival - Intermission",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Intermission.mp3",
+						"info": "(2:55)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Intermission.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Intermission.mp3"
 					},
 					{
 						"title": "Tenebrous Brothers Carnival - Act One",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Act One.mp3",
+						"info": "(3:57)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Act One.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Act%20One.mp3"
 					},
 					{
 						"title": "Tenebrous Brothers Carnival - Act Two",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Act Two.mp3",
+						"info": "(1:09)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Act Two.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Act%20Two.mp3"
 					},
 					{
 						"title": "Tenebrous Brothers Carnival - Act Three",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Act Three.mp3",
+						"info": "(2:02)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Act Three.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Act%20Three.mp3"
 					},
 					{
 						"title": "Tenebrous Brothers Carnival - Mermaid",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Mermaid.mp3",
+						"info": "(4:27)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Mermaid.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Mermaid.mp3"
 					},
 					{
 						"title": "Tenebrous Brothers Carnival - Snake Lady",
-						"localFileName": "Ambient - Tenebrous Brothers Carnival - Snake Lady.mp3",
+						"info": "(3:21)",
+
+						"localFile": "Ambient - Tenebrous Brothers Carnival - Snake Lady.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Tenebrous%20Brothers%20Carnival%20-%20Snake%20Lady.mp3"
 					}
 			]
 		},
 		{
 			"title": "Kevin Macleod: Ghostpocalypse",
-			"cover": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/KevinMacleod.jpg/492px-KevinMacleod.jpg",
+			"coverUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/KevinMacleod.jpg/492px-KevinMacleod.jpg",
 			"coverLocal": "wikimedia.org.kevinmacleod.jpg",
 			"description": "Kevin Macleod: Ghostpocalypse",
 			"credits": "The tracks in this group are by Kevin Macleod (https://incompetech.filmmusic.io/)",
-			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
 			"tracks": [
 					{
 						"title": "Ghostpocalypse - 1 Departure",
-						"localFileName": "Ambient - Ghostpocalypse - 1 Departure.mp3",
+						"info": "(1:17)",
+
+						"localFile": "Ambient - Ghostpocalypse - 1 Departure.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%201%20Departure.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 2 The Call",
-						"localFileName": "Ambient - Ghostpocalypse - 2 The Call.mp3",
+						"info": "(2:48)",
+
+						"localFile": "Ambient - Ghostpocalypse - 2 The Call.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%202%20The%20Call.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 3 Road of Trials",
-						"localFileName": "Ambient - Ghostpocalypse - 3 Road of Trials.mp3",
+						"info": "(2:30)",
+
+						"localFile": "Ambient - Ghostpocalypse - 3 Road of Trials.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%203%20Road%20of%20Trials.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 4 Temptress",
-						"localFileName": "Ambient - Ghostpocalypse - 4 Temptress.mp3",
+						"info": "(1:54)",
+
+						"localFile": "Ambient - Ghostpocalypse - 4 Temptress.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%204%20Temptress.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 5 Apotheosis",
-						"localFileName": "Ambient - Ghostpocalypse - 5 Apotheosis.mp3",
+						"info": "(1:48)",
+
+						"localFile": "Ambient - Ghostpocalypse - 5 Apotheosis.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%205%20Apotheosis.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 6 Crossing the Threshold",
-						"localFileName": "Ambient - Ghostpocalypse - 6 Crossing the Threshold.mp3",
+						"info": "(1:48)",
+
+						"localFile": "Ambient - Ghostpocalypse - 6 Crossing the Threshold.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%206%20Crossing%20the%20Threshold.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 7 Master",
-						"localFileName": "Ambient - Ghostpocalypse - 7 Master.mp3",
+						"info": "(1:59)",
+
+						"localFile": "Ambient - Ghostpocalypse - 7 Master.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%207%20Master.mp3"
 					},
 					{
 						"title": "Ghostpocalypse - 8 Epilog",
-						"localFileName": "Ambient - Ghostpocalypse - 8 Epilog.mp3",
+						"info": "(1:42)",
+
+						"localFile": "Ambient - Ghostpocalypse - 8 Epilog.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Ghostpocalypse%20-%208%20Epilog.mp3"
 					},
 				]
-		}
-/*
+		},
 		{
 			"title": "Kevin Macleod: Elf Meditation",
-			"cover": "https://static.filmmusic.io/fileadmin/_processed_/9/1/csm_5728_1577913698_0953d6d1c9.jpg",
+			"coverUrl": "https://static.filmmusic.io/fileadmin/_processed_/9/1/csm_5728_1577913698_0953d6d1c9.jpg",
+			"coverLocal": "filmmusic.io.elf_meditation.jpg",
 			"description": "Kevin Macleod: Elf Meditation\n\"What is meditation for one may be cause for concern in another. - Some Elf\"",
 			"credits": "This track is by Kevin Macleod (https://incompetech.filmmusic.io/)",
-			"attribution": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
+			"license": "Licensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/",
 			"tracks": [
 					{
 						"title": "Elf Meditation",
-						"localFileName": "Ambient - Elf Meditation.mp3",
+						"info": "(58:54)"
+						"localFile": "Ambient - Elf Meditation.mp3",
 						"url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Elf%20Meditation.mp3"
 					}
 			]
 		}
-*/
 ] }

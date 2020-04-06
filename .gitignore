@@ -136,3 +136,5 @@ android/release/
 android/assets/mods/
 android/assets/SaveFiles/
 android/assets/GameSettingsOld.json
+/android/assets/music/
+/android/assets/cover-cache/

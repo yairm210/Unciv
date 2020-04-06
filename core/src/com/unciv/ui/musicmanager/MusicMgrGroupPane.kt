@@ -66,7 +66,7 @@ class MusicMgrGroupPane(skin: Skin): Table(skin) {
         description = musicGroup.description
         credits = musicGroup.credits
         linkToWeb(creditsLabel,extractLink(credits))
-        attribution = musicGroup.attribution
+        attribution = musicGroup.license
         linkToWeb(attributionBox,extractLink(attribution))
 
         if (musicGroup.shouldDownloadCover()) {
