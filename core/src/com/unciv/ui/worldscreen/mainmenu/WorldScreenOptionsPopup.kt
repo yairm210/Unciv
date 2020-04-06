@@ -124,6 +124,16 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addAutosaveTurnsSelectBox(innerTable)
 
+        if (true || Gdx.app.type != Application.ApplicationType.Desktop) {
+            val importExportButton = TextButton("Import / Export".tr(), CameraStageBaseScreen.skin)
+            importExportButton.onClick {
+                importExportButton.disable()            // inoculate against button spammers??
+                ImportExportPopup(worldScreen).open()
+                close()
+            }
+            innerTable.add(importExportButton).colspan(2).pad(5f).row()
+        }
+
         // at the moment the notification service only exists on Android
         if (Gdx.app.type == Application.ApplicationType.Android) {
             innerTable.add("Multiplayer options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()

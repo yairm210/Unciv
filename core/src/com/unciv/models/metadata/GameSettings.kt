@@ -33,6 +33,7 @@ class GameSettings {
     var multiplayerTurnCheckerDelayInMinutes = 5
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
+    var importExportFolder = "Unciv-Backups"
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
