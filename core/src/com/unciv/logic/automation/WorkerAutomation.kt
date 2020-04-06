@@ -191,6 +191,8 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.containsGreatImprovement() -> null
             tile.containsUnfinishedGreatImprovement() -> null
 
+            // Defence is more important that civilian improvements
+            evaluateFortPlacement(tile,civInfo) -> "Fort"
             // I think we can assume that the unique improvement is better
             uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
             
@@ -206,6 +208,75 @@ class WorkerAutomation(val unit: MapUnit) {
         }
         if (improvementString == null) return null
         return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
+    }
+
+    private fun isAcceptableTileForFort(tile: TileInfo, civInfo: CivilizationInfo): Boolean
+    {
+        // don't build fort in the city
+        if (tile.isCityCenter()) return false
+        // don't build fort if it is already here
+        if (tile.improvement == "Fort") return false
+        // don't build on resource tiles
+        if (tile.hasViewableResource(civInfo)) return false
+        // don't build on great improvements
+        if (tile.containsGreatImprovement() || tile.containsUnfinishedGreatImprovement()) return false
+
+        return true
+    }
+
+    fun evaluateFortPlacement(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+        // build on our land only
+        if ((tile.owningCity?.civInfo != civInfo) ||
+                !isAcceptableTileForFort(tile, civInfo)) return false
+
+        val isHills = tile.getBaseTerrain().name == Constants.hill
+        // if this place is not perfect, let's see if there is a better one
+        val nearestTiles = tile.getTilesInDistance(2).filter{it.owningCity?.civInfo == civInfo}.toList()
+        for (closeTile in nearestTiles) {
+            // don't build forts too close to the cities
+            if (closeTile.isCityCenter()) return false
+            // don't build forts too close to other forts
+            if (closeTile.improvement == "Fort" || closeTile.improvement == "Citadel"
+                    || closeTile.improvementInProgress == "Fort") return false
+            // there is another better tile for the fort
+            if (!isHills && tile.getBaseTerrain().name == Constants.hill &&
+                    isAcceptableTileForFort(closeTile, civInfo)) return false
+        }
+
+        val enemyCivs = civInfo.getKnownCivs()
+                .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canAttack() }
+        // no potential enemies
+        if (enemyCivs.isEmpty()) return false
+
+        val threatMapping : (CivilizationInfo) -> Int = {
+            // the war is already a good nudge to build forts
+            (if (civInfo.isAtWarWith(it)) 20 else 0) +
+            // let's check also the force of the enemy
+                    when (Automation().threatAssessment(civInfo, it)) {
+            ThreatLevel.VeryLow -> 1 // do not build forts
+            ThreatLevel.Low -> 6 // too close, let's build until it is late
+            ThreatLevel.Medium -> 10
+            ThreatLevel.High -> 15 // they are strong, let's built until they reach us
+            ThreatLevel.VeryHigh -> 20
+        } }
+        val enemyCivsIsCloseEnough = enemyCivs.filter { NextTurnAutomation.getMinDistanceBetweenCities(civInfo, it) <= threatMapping(it) }
+        // no threat, let's not build fort
+        if (enemyCivsIsCloseEnough.isEmpty()) return false
+
+        // make list of enemy cities as sources of threat
+        val enemyCities = mutableListOf<TileInfo>()
+        enemyCivsIsCloseEnough.forEach { enemyCities.addAll(it.cities.map { city -> city.getCenterTile() } ) }
+
+        // find closest enemy city
+        val closestEnemyCity = enemyCities.minBy { it.aerialDistanceTo(tile) }!!
+        val distanceToEnemy = tile.aerialDistanceTo(closestEnemyCity)
+
+        // find closest our city to defend from this enemy city
+        val closestOurCity = tile.owningCity!!.getCenterTile()
+        val distanceBetweenCities = closestEnemyCity.aerialDistanceTo(closestOurCity)
+
+        // let's build fort on the front line, not behind the city
+        return distanceBetweenCities > distanceToEnemy
     }
 
 }

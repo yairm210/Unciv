@@ -160,6 +160,7 @@ class BattleDamage{
 
     fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
+        val tile = defender.getTile()
 
         if (defender.unit.isEmbarked()) {
             // embarked units get no defensive modifiers apart from this unique
@@ -172,11 +173,17 @@ class BattleDamage{
 
         modifiers.putAll(getGeneralModifiers(defender, attacker))
 
-        modifiers.putAll(getTileSpecificModifiers(defender, defender.getTile()))
+        modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
         if (!defender.unit.hasUnique("No defensive terrain bonus")) {
-            val tileDefenceBonus = defender.getTile().getDefensiveBonus()
-            if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
+            val tileDefenceBonus = tile.getDefensiveBonus()
+            if (tileDefenceBonus > 0)
+                modifiers["Terrain"] = tileDefenceBonus
+
+            val improvement = tile.getTileImprovement()
+            if (improvement != null && tile.isFriendlyTerritory(defender.getCivInfo()))
+                if (improvement.hasUnique("Gives a defensive bonus of 50%")) modifiers[improvement.name] = 0.50f
+                else if (improvement.hasUnique("Gives a defensive bonus of 100%")) modifiers[improvement.name] = 1.0f
         }
 
         if(attacker.isRanged()) {
@@ -196,10 +203,9 @@ class BattleDamage{
 
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
-        val isFriendlyTerritory = tile.getOwner()!=null && !unit.getCivInfo().isAtWarWith(tile.getOwner()!!)
-        if(isFriendlyTerritory && unit.getCivInfo().containsBuildingUnique("+15% combat strength for units fighting in friendly territory"))
+        if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().containsBuildingUnique("+15% combat strength for units fighting in friendly territory"))
             modifiers["Himeji Castle"] = 0.15f
-        if(!isFriendlyTerritory && unit.unit.hasUnique("+20% bonus outside friendly territory"))
+        if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
 
 
