@@ -105,6 +105,7 @@ class MusicMgrDownloader {
         private const val maxConcurrent = 3
         private const val httpMethod = "GET"
         private const val mimeHeaderName = "Content-Type"
+        private const val lengthHeaderName = "Content-Length"
         private const val followRedirects = true
         private const val requestTimeout = 3000                  // passed to request: Time from request sent to response starts arriving IMHO
         private const val watchdogTimeout = 20000L        // default for our own watchdog: Time without callback. Must include response finishes arriving and file saving
@@ -132,34 +133,43 @@ class MusicMgrDownloader {
                     .followRedirects(followRedirects)
                     .timeout(requestTimeout)
                     .build()
-            if (debugMessages) println("Sending download request: $ID")
+            if (debugMessages) println("Sending download request: $ID at ${Date()}")
             Gdx.net.sendHttpRequest (request, object : Net.HttpResponseListener {
                 override fun handleHttpResponse (httpResponse: Net.HttpResponse?) {
                     if (httpResponse==null) return
-                    //if (debugMessages) println ("Downloader received a response, status ${httpResponse.status.statusCode}, headers: ${httpResponse.headers}")
                     val contentType = httpResponse.headers[mimeHeaderName]?.first() ?: ""
-                    if (checkType.isEmpty() || contentType.isEmpty() || Regex(checkType).containsMatchIn(contentType)) {
-                        var status = httpResponse.status.statusCode
-                        if (status in 200..299) {
-                            var message = "OK"
+                    val contentLength = httpResponse.headers[lengthHeaderName]?.first()?.toIntOrNull() ?: -1
+                    var status = -1
+                    var message = ""
+                    // must store, just checking result.size directly would clear the result !!!
+                    // (com.badlogic.gdx.net.NetJavaImpl.HttpClientResponse.getResult() has side effects:
+                    //  it builds the bytes from the stream, calling it a second time the stream is gone.
+                    //  In fact, this step takes most of the time - right here only the response header is complete)
+                    // This is not a bytewise copy, just the reference: No additional overhead
+                    val resultClone = httpResponse.result
+                    when {
+                        httpResponse.status.statusCode !in 200..299 -> {
+                            message = "File download $ID failed - wrong status: $httpResponse.status.statusCode"
+                        }
+                        checkType.isNotEmpty() && contentType.isNotEmpty() && !Regex(checkType).containsMatchIn(contentType) -> {
+                            message = "File download $ID failed - wrong type: $contentType"
+                        }
+                        contentLength <= 0 || contentLength != resultClone.size -> {
+                            message = "File download $ID failed - wrong size: ${resultClone.size} (expected $contentLength)"
+                        }
+                        else -> {
                             try {
                                 file.writeBytes(httpResponse.result, false)
-                                if (debugMessages) println("File downloaded: $ID")
+                                if (debugMessages) println(" request: $ID result fetched (size=${resultClone.size} at ${Date()}")
+                                status = httpResponse.status.statusCode
+                                message = "File downloaded: $ID"
                             } catch (ex: Exception) {
-                                if (debugMessages) println("Saving download failed: $ID")
-                                status = -1
-                                message = ex.toString()
-                                if (file.exists()) file.delete()
+                                message = "Saving downloaded $ID failed: ${ex.toString()}"
                             }
-                            completionEvent?.invoke(ID, status, message)
-                        } else {
-                            if (debugMessages) println ("File download $ID failed - wrong status: $status")
-                            completionEvent?.invoke (ID, -1, "Wrong status: $status")
                         }
-                    } else {
-                        if (debugMessages) println ("File download $ID failed - wrong Content-Type: $contentType")
-                        completionEvent?.invoke (ID, -1, "Wrong content type: $contentType")
                     }
+                    if (debugMessages) println(message)
+                    completionEvent?.invoke(ID, status, message)
                 }
                 override fun cancelled() {
                     completionEvent?.invoke (ID, 0, "Cancelled")

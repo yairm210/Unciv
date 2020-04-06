@@ -37,7 +37,7 @@ Note: a track is accepted as present and not re-downloaded by the manager if a l
 * ~~Current download code crashes instantiating a callback delegate~~
 * ~~Watchdog timeout should be dynamic (Platform independent knowledge about uplink bandwidth? Need to add filesize to track data?)~~
 * Translation support
-* Connection loss can create 0 byte files
+* ~~Connection loss can create 0 byte files~~
 * Integrate Dropbox code, allow this source for the thatched villagers
 * On mobile: is the info whether the device is on a metered network (or any at all) easily accessible? If so, block access / setting for metered?  
 * ~~Play/stop buttons are single-use: Why is the onClick handler only functional once?~~

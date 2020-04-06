@@ -543,3 +543,10 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 The following music is from https://filmmusic.io
 "Thatched Villagers" by Kevin MacLeod (https://incompetech.com)
 License: CC BY (http://creativecommons.org/licenses/by/4.0/)
+
+* [Music Note](https://thenounproject.com/term/music-note/38619/) by Dan Stack as 'Music Note'
+* [music download](https://thenounproject.com/term/music-download/2283777/) by achmad mulyana as 'Music Download'
+* [Stop](https://thenounproject.com/term/stop/1008916/) by Ersin as 'Music Stop'
+* [Play](https://thenounproject.com/term/play/1008911/) by Ersin as 'Music Play'
+* Grey circle by Unciv contributor as 'Music Disabled'
+* [stop hand](https://thenounproject.com/term/stop-hand/3071152) by Sasha Sash as 'Music Stop DL'
