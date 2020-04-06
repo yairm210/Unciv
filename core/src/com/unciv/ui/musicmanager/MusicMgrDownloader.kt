@@ -149,6 +149,7 @@ class MusicMgrDownloader {
                                 if (debugMessages) println("Saving download failed: $ID")
                                 status = -1
                                 message = ex.toString()
+                                if (file.exists()) file.delete()
                             }
                             completionEvent?.invoke(ID, status, message)
                         } else {

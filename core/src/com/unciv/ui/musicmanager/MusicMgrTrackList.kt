@@ -9,9 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.models.UncivSound
 import com.unciv.models.metadata.MusicDownloadGroup
 import com.unciv.models.metadata.MusicDownloadTrack
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.Sounds
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 
@@ -35,9 +37,13 @@ class MusicMgrTrackList(skin: Skin): Table(skin) {
                     actor.playButton.toggle()
             }
         }
-        if (row.playButton.toggle())
+        if (row.playButton.toggle()) {
             play(track.file())
-        else
+            if (music == null) {
+                Sounds.play(UncivSound.Fortify)
+                row.playButton.toggle()
+            }
+        } else
             stop()
     }
 
@@ -48,12 +54,18 @@ class MusicMgrTrackList(skin: Skin): Table(skin) {
         fun play(track: FileHandle?) {
             stop()
             if (track==null) return
-            music = Gdx.audio.newMusic(track)
-            music!!.volume = 0.6f
-            music!!.play()
+            try {
+                music = Gdx.audio.newMusic(track)
+                music!!.volume = 0.6f
+                music!!.play()
+            } catch (ex: Exception) {
+                music?.dispose()
+                music = null
+                println("Exception playing ${track.name()}: ${ex.localizedMessage}")
+            }
         }
         fun stop() {
-            if (music !=null) {
+            if (music != null) {
                 music!!.stop()
                 music!!.dispose()
                 music = null

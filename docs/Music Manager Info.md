@@ -52,6 +52,6 @@ Note: a track is accepted as present and not re-downloaded by the manager if a l
 * ~~How to keep user informed about download progress?~~
 * Allow file deletion from manager?
 * Allow sequentially playing a whole group?
-* Allow select all groups?
+* ~~Allow select all groups?~~
 * ~~Stop downloads button~~
 * ~~Update track availability while DL is running~~
