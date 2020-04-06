@@ -66,7 +66,7 @@ class LoadGameScreen : PickerScreen() {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedGame = GameSaver().gameInfoFromString(decoded)
+                val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 errorLabel.setText("Could not load game from clipboard!".tr())
@@ -77,7 +77,7 @@ class LoadGameScreen : PickerScreen() {
         rightSideTable.add(errorLabel).row()
 
         deleteSaveButton.onClick {
-            GameSaver().deleteSave(selectedSave)
+            GameSaver.deleteSave(selectedSave)
             resetWindowState()
         }
         deleteSaveButton.disable()
@@ -85,7 +85,7 @@ class LoadGameScreen : PickerScreen() {
 
         copySavedGameToClipboardButton.disable()
         copySavedGameToClipboardButton.onClick {
-            val gameText = GameSaver().getSave(selectedSave).readString()
+            val gameText = GameSaver.getSave(selectedSave).readString()
             val gzippedGameText = Gzip.zip(gameText)
             Gdx.app.clipboard.contents = gzippedGameText
         }
@@ -110,7 +110,7 @@ class LoadGameScreen : PickerScreen() {
 
     private fun updateLoadableGames(showAutosaves:Boolean) {
         saveTable.clear()
-        for (save in GameSaver().getSaves().sortedByDescending { GameSaver().getSave(it).lastModified() }) {
+        for (save in GameSaver.getSaves().sortedByDescending { GameSaver.getSave(it).lastModified() }) {
             if(save.startsWith("Autosave") && !showAutosaves) continue
             val textButton = TextButton(save, skin)
             textButton.onClick {
@@ -118,10 +118,10 @@ class LoadGameScreen : PickerScreen() {
                 copySavedGameToClipboardButton.enable()
                 var textToSet = save
 
-                val savedAt = Date(GameSaver().getSave(save).lastModified())
+                val savedAt = Date(GameSaver.getSave(save).lastModified())
                 textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
                 try {
-                    val game = GameSaver().loadGameByName(save)
+                    val game = GameSaver.loadGameByName(save)
                     val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                     textToSet += "\n" + playerCivNames +
                             ", " + game.difficulty.tr() + ", {Turn} ".tr() + game.turns

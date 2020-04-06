@@ -1,19 +1,16 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.unciv.UncivGame
 import core.java.nativefont.NativeFont
 import core.java.nativefont.NativeFontPaint
 
-class Fonts {
+object Fonts {
     // caches for memory and time saving
-    companion object {
-        val characterSetCache = HashMap<String, String>()
-        val fontCache = HashMap<String, BitmapFont>()
-    }
+    private val characterSetCache = HashMap<String, String>()
+    private val fontCache = HashMap<String, BitmapFont>()
 
-    fun getCharactersForFont(language:String=""): String {
+    private fun getCharactersForFont(language:String=""): String {
         if (characterSetCache.containsKey(language)) return characterSetCache[language]!!
 
         val startTime = System.currentTimeMillis()

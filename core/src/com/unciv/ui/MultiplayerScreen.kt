@@ -139,9 +139,9 @@ class MultiplayerScreen() : PickerScreen() {
                 // we need to run it in a different thread.
                 val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
                 if (gameName == "")
-                    GameSaver().saveGame(game, game.gameId, true)
+                    GameSaver.saveGame(game, game.gameId, true)
                 else
-                    GameSaver().saveGame(game, gameName, true)
+                    GameSaver.saveGame(game, gameName, true)
 
                 reloadGameListUI()
             } catch (ex: Exception) {
@@ -177,7 +177,7 @@ class MultiplayerScreen() : PickerScreen() {
     //reloads all gameFiles to refresh UI
     fun reloadGameListUI(){
         val leftSubTable = Table()
-        val gameSaver = GameSaver()
+        val gameSaver = GameSaver
         var savedGames : List<String>?
 
         try {
@@ -246,7 +246,7 @@ class MultiplayerScreen() : PickerScreen() {
             for (gameId in multiplayerGameList.keys) {
                 try {
                     val game = OnlineMultiplayer().tryDownloadGame(gameId)
-                    GameSaver().saveGame(game, multiplayerGameList.getValue(gameId), true)
+                    GameSaver.saveGame(game, multiplayerGameList.getValue(gameId), true)
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
@@ -275,7 +275,7 @@ class MultiplayerScreen() : PickerScreen() {
             if (gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
                 return@onClick
             try {
-                GameSaver().saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
+                GameSaver.saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
                 reloadGameListUI()
             } catch (ex: Exception) {
                 val errorPopup = Popup(this)
@@ -326,7 +326,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
             askPopup.addGoodSizedLabel("Are you sure you want to delete this map?".tr()).row()
             askPopup.addButton("Yes"){
                 try {
-                    GameSaver().deleteSave(gameName, true)
+                    GameSaver.deleteSave(gameName, true)
                     UncivGame.Current.setScreen(backScreen)
                     backScreen.reloadGameListUI()
                 }catch (ex: Exception) {
@@ -357,7 +357,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 backScreen.removeFromList(game.gameId)
                 //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
                 backScreen.addMultiplayerGame(game.gameId, textField.text)
-                GameSaver().deleteSave(gameName, true)
+                GameSaver.deleteSave(gameName, true)
                 UncivGame.Current.setScreen(backScreen)
                 backScreen.reloadGameListUI()
             }catch (ex: Exception) {

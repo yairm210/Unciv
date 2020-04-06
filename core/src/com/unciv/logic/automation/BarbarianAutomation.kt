@@ -1,7 +1,6 @@
 package com.unciv.logic.automation
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
@@ -10,15 +9,9 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
-import com.unciv.models.UnitAction
-import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.ui.worldscreen.unit.UnitActions
 
 class BarbarianAutomation(val civInfo: CivilizationInfo) {
-
-    private val battleHelper = BattleHelper()
-    private val battleDamage = BattleDamage()
 
     fun automate() {
         // ranged go first, after melee and then everyone else
@@ -40,7 +33,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         if (UnitAutomation.tryUpgradeUnit(unit)) return
 
         // 2 - trying to attack somebody
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 3 - at least fortifying
         unit.fortifyIfCan()
@@ -48,13 +41,13 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
     private fun automateCombatUnit(unit: MapUnit) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val nearEnemyTiles = battleHelper.getAttackableEnemies(unit, unitDistanceToTiles)
+        val nearEnemyTiles = BattleHelper.getAttackableEnemies(unit, unitDistanceToTiles)
 
         // 1 - heal or fortifying if death is near
         if (unit.health < 50) {
             val possibleDamage = nearEnemyTiles
                     .map {
-                        battleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                        BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
                                 Battle.getMapCombatantOfTile(it.tileToAttack)!!)
                     }
                     .sum()
@@ -73,14 +66,14 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
         // 3 - trying to attack enemy
         // if a embarked melee unit can land and attack next turn, do not attack from water.
-        if (battleHelper.tryDisembarkUnitToAttackPosition(unit)) return
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         // 4 - trying to pillage tile or route
-        if (UnitAutomation().tryPillageImprovement(unit)) return
+        if (UnitAutomation.tryPillageImprovement(unit)) return
 
         // 5 - heal the unit if needed
-        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit)) return
+        if (unit.health < 100 && UnitAutomation.tryHealUnit(unit)) return
 
         // 6 - wander
         UnitAutomation.wander(unit)
@@ -88,7 +81,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
     private fun automateScout(unit: MapUnit) {
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val nearEnemyTiles = battleHelper.getAttackableEnemies(unit, unitDistanceToTiles)
+        val nearEnemyTiles = BattleHelper.getAttackableEnemies(unit, unitDistanceToTiles)
 
         // 1 - heal or run if death is near
         if (unit.health < 50) {
@@ -105,10 +98,10 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
         // TODO
 
         // 3 - trying to pillage tile or trade route
-        if (UnitAutomation().tryPillageImprovement(unit)) return
+        if (UnitAutomation.tryPillageImprovement(unit)) return
 
         // 4 - heal the unit if needed
-        if (unit.health < 100 && UnitAutomation().tryHealUnit(unit)) return
+        if (unit.health < 100 && UnitAutomation.tryHealUnit(unit)) return
 
         // 5 - wander
         UnitAutomation.wander(unit)

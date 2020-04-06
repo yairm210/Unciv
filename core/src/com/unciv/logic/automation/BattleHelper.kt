@@ -10,13 +10,13 @@ import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 
-class BattleHelper {
+object BattleHelper {
 
     fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
         val attackableEnemies = getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {
-                    BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
                             Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
 
@@ -111,7 +111,7 @@ class BattleHelper {
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
-                    BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                    BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
                             Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
                 .filter { it.tileToAttackFrom.isLand }

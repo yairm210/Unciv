@@ -57,7 +57,7 @@ class SaveGameScreen : PickerScreen() {
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             thread(name="SaveGame"){
-                GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
+                GameSaver.saveGame(UncivGame.Current.gameInfo, textField.text)
                 UncivGame.Current.setWorldScreen()
             }
         }
@@ -66,8 +66,8 @@ class SaveGameScreen : PickerScreen() {
 
     fun updateShownSaves(showAutosaves:Boolean){
         currentSaves.clear()
-        val saves = GameSaver().getSaves()
-                .sortedByDescending { GameSaver().getSave(it).lastModified() }
+        val saves = GameSaver.getSaves()
+                .sortedByDescending { GameSaver.getSave(it).lastModified() }
         for (saveGameName in saves) {
             if(saveGameName.startsWith("Autosave") && !showAutosaves) continue
             val textButton = TextButton(saveGameName, skin)

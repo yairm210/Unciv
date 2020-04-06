@@ -68,15 +68,15 @@ open class CameraStageBaseScreen : Screen {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
 
         fun resetFonts(){
-            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(45).apply { data.setScale(20/45f) }
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.getFont(45).apply { data.setScale(20/45f) }
+            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts.getFont(45).apply { data.setScale(20/45f) }
             skin.get(Label.LabelStyle::class.java).apply {
-                font = Fonts().getFont(45).apply { data.setScale(18/45f) }
+                font = Fonts.getFont(45).apply { data.setScale(18/45f) }
                 fontColor= Color.WHITE
             }
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(18/45f) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(45).apply { data.setScale(20/45f) }
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.getFont(45).apply { data.setScale(18/45f) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.getFont(45).apply { data.setScale(20/45f) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.getFont(45).apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
         internal var batch: Batch = SpriteBatch()
@@ -228,7 +228,7 @@ fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
     if(fontColor!= Color.WHITE || fontSize!=18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
-        if (fontSize != 18) labelStyle.font = Fonts().getFont(45)
+        if (fontSize != 18) labelStyle.font = Fonts.getFont(45)
     }
     return Label(this.tr(),labelStyle).apply { setFontScale(fontSize/45f) }
 }
@@ -238,7 +238,7 @@ fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply 
 
 fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
-    style.font = Fonts().getFont(45)
+    style.font = Fonts.getFont(45)
     style = style // because we need it to call the SetStyle function. Yuk, I know.
     return this.apply { setFontScale(size/45f) } // for chaining
 }

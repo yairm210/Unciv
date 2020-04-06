@@ -11,9 +11,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 
-class SpecificUnitAutomation {
-
-    private val battleHelper = BattleHelper()
+object SpecificUnitAutomation {
 
     private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean =
             tileInfo.isWater && tileInfo.improvement == null && tileInfo.hasViewableResource(civInfo)
@@ -144,7 +142,6 @@ class SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
-            val unitDistanceToTiles = unit.movement.getDistanceToTiles()
             if (UnitAutomation.tryExplore(unit)) return // try to find new areas
             UnitAutomation.wander(unit) // go around aimlessly
             return
@@ -203,7 +200,7 @@ class SpecificUnitAutomation {
                 .flatMap { it.airUnits.asSequence() }.filter { it.civInfo.isAtWarWith(unit.civInfo) }
 
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
@@ -234,7 +231,7 @@ class SpecificUnitAutomation {
     }
 
     fun automateBomber(unit: MapUnit) {
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
@@ -248,7 +245,7 @@ class SpecificUnitAutomation {
                 .filter {
                     it != airUnit.currentTile
                             && it.getTilesInDistance(airUnit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
                 }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -261,7 +258,7 @@ class SpecificUnitAutomation {
 
     // This really needs to be changed, to have better targetting for missiles
     fun automateMissile(unit: MapUnit) {
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
 
@@ -270,7 +267,7 @@ class SpecificUnitAutomation {
 
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
                 unit.movement.moveToTile(city)
                 return
             }
@@ -287,7 +284,7 @@ class SpecificUnitAutomation {
 
         for (city in immediatelyReachableCitiesAndCarriers) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
                 unit.movement.moveToTile(city)
                 return true
             }

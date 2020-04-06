@@ -89,7 +89,7 @@ class GameInfo {
                 || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
-                NextTurnAutomation().automateCivMoves(thisPlayer)
+                NextTurnAutomation.automateCivMoves(thisPlayer)
 
                 // Placing barbarians after their turn
                 if (thisPlayer.isBarbarian()

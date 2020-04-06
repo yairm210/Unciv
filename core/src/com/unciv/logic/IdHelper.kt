@@ -20,8 +20,8 @@ import java.util.*
  * Same ID in proposed new Game-ID format:
  * G-2ddb3a34-0699-4126-b7a5-38603e665928-5
  */
-class IdChecker {
-    companion object {
+object IdChecker {
+
         fun checkAndReturnPlayerUuid(playerId: String): String {
             return checkAndReturnUuiId(playerId, "P")
         }
@@ -30,7 +30,7 @@ class IdChecker {
             return checkAndReturnUuiId(gameId, "G")
         }
 
-        fun checkAndReturnUuiId(id: String, prefix: String): String {
+        private fun checkAndReturnUuiId(id: String, prefix: String): String {
             val trimmedPlayerId = id.trim()
             if (trimmedPlayerId.length == 40) { // length of a UUID (36) with pre- and postfix
                 if (!trimmedPlayerId.startsWith(prefix, true)) {
@@ -108,10 +108,8 @@ class IdChecker {
 
             // check digit is amount needed to reach next number
             // divisible by ten
-            val returnValue= (10 - (sum % 10)) % 10
-            return returnValue
+            return (10 - (sum % 10)) % 10
         }
-    }
 }
 
 
