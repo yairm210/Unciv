@@ -1,5 +1,5 @@
 {
-  // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
+  // Each entry is a tutorial, but the tutorial may be spread over separate paragraphs.
   // Entries starting with a _ will NOT be shown in Civilopedia.
   // 
 
@@ -176,5 +176,8 @@
 	"Not all nations are contending with you for victory.\nCity-states are nations that can't win, don't conquer other cities and can't be traded with.",
 	"Instead, diplomatic relations with city-states are determined by Influence - a meter of 'how much the City-state likes you'.\nInfluence can be increased by attacking their enemies, liberating their city, and giving them sums of gold.",
 	"Certain bonuses are given when you are at above 30 influence.\nWhen you have above 60 Influence, and you have the highest influence with them of all civilizations, you are considered their 'Ally', and gain further bonuses and access to the Luxury and Strategic resources in their lands."
+  ],
+  Long-pressing_Buttons: [
+	"Long-pressing a button will sometimes perform a variant of the displayed action.\n(On the desktop version, this is not translated into a right-click, you still need to long-click.)\nCurrently, the following are implemented:\n\nLong-pressing the next turn button will skip all due units.\nOften this will end a turn right away, but selecting constructions, policies or research still has priority."
   ]
 }

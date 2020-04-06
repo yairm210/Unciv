@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
@@ -391,6 +393,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.label.setFontSize(30)
         nextTurnButton.labelCell.pad(10f)
         nextTurnButton.onClick { nextTurnAction() }
+        nextTurnButton.addListener( object : ActorGestureListener() {
+            override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
+                tryNextTurnSkippingUnits()
+                return true
+            }
+        } )
 
         return nextTurnButton
     }
@@ -478,11 +486,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
-    private fun getNextTurnAction(): NextTurnAction {
+    private fun getNextTurnAction(ignoreUnits: Boolean = false): NextTurnAction {
         return when {
             !isPlayersTurn -> NextTurnAction("Waiting for other players...") {}
 
-            viewingCiv.shouldGoToDueUnit() -> NextTurnAction("Next unit") {
+            !ignoreUnits && viewingCiv.shouldGoToDueUnit() -> NextTurnAction("Next unit") {
                 val nextDueUnit = viewingCiv.getNextDueUnit()
                 if (nextDueUnit != null) {
                     mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
@@ -514,6 +522,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 nextTurn()
             }
         }
+    }
+
+    private fun tryNextTurnSkippingUnits() {
+        // updateNextTurnButton setting disabled should suffice that these checks are unnecesarry, but better safe
+        if (hasOpenPopups() || waitingForAutosave) return      // isPlayersTurn checked by getNextTurnAction
+        val action = getNextTurnAction(true)
+        //game.settings.addCompletedTutorialTask(Tutorial.LongPressNext.value)
+        action.action.invoke()
     }
 
     override fun resize(width: Int, height: Int) {
