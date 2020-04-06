@@ -31,14 +31,14 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     constructor(mapNameToLoad: String?): this() {
         var mapToLoad = mapNameToLoad
         if (mapToLoad == null) {
-            val existingSaves = MapSaver().getMaps()
+            val existingSaves = MapSaver.getMaps()
             if(existingSaves.isNotEmpty())
                 mapToLoad = existingSaves.first()
         }
 
         if(mapToLoad != null){
             mapName = mapToLoad
-            tileMap = MapSaver().loadMap(mapName)
+            tileMap = MapSaver.loadMap(mapName)
         }
 
         initialize()

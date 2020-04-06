@@ -16,7 +16,7 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
 import kotlin.math.min
 
-class NextTurnAutomation{
+object NextTurnAutomation{
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
@@ -70,7 +70,7 @@ class NextTurnAutomation{
             if(popupAlert.type==AlertType.DemandToStopSettlingCitiesNear){  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)
-                if(Automation().threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
+                if(Automation.threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
                     diploManager.agreeNotToSettleNear()
                 else diploManager.refuseDemandNotToSettleNear()
             }
@@ -231,7 +231,7 @@ class NextTurnAutomation{
         }
     }
 
-    fun potentialLuxuryTrades(civInfo:CivilizationInfo, otherCivInfo:CivilizationInfo): ArrayList<Trade> {
+    private fun potentialLuxuryTrades(civInfo:CivilizationInfo, otherCivInfo:CivilizationInfo): ArrayList<Trade> {
         val tradeLogic = TradeLogic(civInfo, otherCivInfo)
         val ourTradableLuxuryResources = tradeLogic.ourAvailableOffers
                 .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
@@ -322,14 +322,14 @@ class NextTurnAutomation{
     private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
         if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-        val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
+        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo)
         val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
                 .map { it.value.otherCiv() }
                 .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
 
         for (enemy in enemiesCiv) {
-            val enemiesStrength = Automation().evaluteCombatStrength(enemy)
+            val enemiesStrength = Automation.evaluteCombatStrength(enemy)
             if (civInfo.victoryType() != VictoryType.Cultural
                     && enemiesStrength < ourCombatStrength * 2) {
                 continue //We're losing, but can still fight. Refuse peace.
@@ -394,9 +394,9 @@ class NextTurnAutomation{
             isFightingFarAway = true
         }
 
-        val weakestCloseCiv = enemyCivsToEvaluate.minBy { Automation().evaluteCombatStrength(it) }!!
-        val weakestCloseCivCombatStrength = Automation().evaluteCombatStrength(weakestCloseCiv)
-        val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
+        val weakestCloseCiv = enemyCivsToEvaluate.minBy { Automation.evaluteCombatStrength(it) }!!
+        val weakestCloseCivCombatStrength = Automation.evaluteCombatStrength(weakestCloseCiv)
+        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo)
 
         val amountWeNeedToBeStronger =
                 if (civInfo.victoryType() == VictoryType.Domination && !isFightingFarAway) 1.5f else 2f
@@ -427,14 +427,14 @@ class NextTurnAutomation{
             }
         }
 
-        for (unit in civilianUnits) UnitAutomation().automateUnitMoves(unit) // They move first so that combat units can accompany a settler
-        for (unit in rangedUnits) UnitAutomation().automateUnitMoves(unit)
-        for (unit in meleeUnits) UnitAutomation().automateUnitMoves(unit)
-        for (unit in generals) UnitAutomation().automateUnitMoves(unit)
+        for (unit in civilianUnits) UnitAutomation.automateUnitMoves(unit) // They move first so that combat units can accompany a settler
+        for (unit in rangedUnits) UnitAutomation.automateUnitMoves(unit)
+        for (unit in meleeUnits) UnitAutomation.automateUnitMoves(unit)
+        for (unit in generals) UnitAutomation.automateUnitMoves(unit)
     }
 
     private fun automateCityBombardment(civInfo: CivilizationInfo) {
-        for (city in civInfo.cities) UnitAutomation().tryBombardEnemy(city)
+        for (city in civInfo.cities) UnitAutomation.tryBombardEnemy(city)
     }
 
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
@@ -448,7 +448,7 @@ class NextTurnAutomation{
 
             city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())
-                Automation().trainMilitaryUnit(city) // override previous decision if city is under attack
+                Automation.trainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
 
@@ -476,7 +476,7 @@ class NextTurnAutomation{
         }
     }
 
-    fun onCitySettledNearBorders(civInfo: CivilizationInfo, otherCiv:CivilizationInfo){
+    private fun onCitySettledNearBorders(civInfo: CivilizationInfo, otherCiv:CivilizationInfo){
         val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
         when {
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {}
@@ -486,7 +486,7 @@ class NextTurnAutomation{
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,-20f)
             }
             else -> {
-                val threatLevel = Automation().threatAssessment(civInfo,otherCiv)
+                val threatLevel = Automation.threatAssessment(civInfo,otherCiv)
                 if(threatLevel<ThreatLevel.High) // don't piss them off for no reason please.
                     otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
             }
@@ -494,22 +494,19 @@ class NextTurnAutomation{
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
     }
 
-    companion object
-    {
-        fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-            return getClosestCities(civ1,civ2).aerialDistance
-        }
+    fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
+        return getClosestCities(civ1,civ2).aerialDistance
+    }
 
-        data class CityDistance(val city1:CityInfo, val city2:CityInfo, val aerialDistance: Int)
+    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val aerialDistance: Int)
 
-        fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
-            val cityDistances = arrayListOf<CityDistance>()
-            for (civ1city in civ1.cities)
-                for (civ2city in civ2.cities)
-                    cityDistances.add(CityDistance(civ1city, civ2city,
-                            civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
+    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
+        val cityDistances = arrayListOf<CityDistance>()
+        for (civ1city in civ1.cities)
+            for (civ2city in civ2.cities)
+                cityDistances.add(CityDistance(civ1city, civ2city,
+                        civ1city.getCenterTile().aerialDistanceTo(civ2city.getCenterTile())))
 
-            return cityDistances.minBy { it.aerialDistance }!!
-        }
+        return cityDistances.minBy { it.aerialDistance }!!
     }
 }

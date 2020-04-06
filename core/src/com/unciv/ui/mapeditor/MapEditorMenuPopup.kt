@@ -51,7 +51,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         saveMapButton.onClick {
             mapEditorScreen.tileMap.mapParameters.name=mapEditorScreen.mapName
             mapEditorScreen.tileMap.mapParameters.type=MapType.custom
-            MapSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
+            MapSaver.saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
             UncivGame.Current.setWorldScreen()
         }
         add(saveMapButton).row()
@@ -75,7 +75,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             thread(name="MapUpload") {
                 try {
                     val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
-                    DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
+                    DropBox.uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
 
                     remove()
                     val uploadedSuccessfully = Popup(screen)
