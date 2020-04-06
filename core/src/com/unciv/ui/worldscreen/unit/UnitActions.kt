@@ -397,7 +397,7 @@ object UnitActions {
                     action = {
                         unit.fortifyUntilHealed()
                         unitTable.selectedUnit = null
-                    })
+                    }.takeIf { unit.currentMovement > 0 })
             actionList += actionForWounded
         }
 
