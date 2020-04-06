@@ -30,6 +30,7 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     Experience("Experience"),
     Combat("Combat"),
     ResearchAgreements("Research_Agreements"),
+    CityStates("City-States"),
     ;
 
     companion object {
