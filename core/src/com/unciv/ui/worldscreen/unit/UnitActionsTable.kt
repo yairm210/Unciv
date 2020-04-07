@@ -2,9 +2,12 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
@@ -13,6 +16,18 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 private data class UnitIconAndKey (val Icon: Actor, val key: Char = 0.toChar())
+class UnitActionButtonOnHoverListener(private val item: Actor, private val keyLabel: Label) : ClickListener() {
+
+    override fun enter(event: InputEvent, x: Float, y: Float, pointer: Int, fromActor: Actor) {
+        super.enter(event, x, y, pointer, fromActor)
+        keyLabel.isVisible = true
+    }
+
+    override fun exit(event: InputEvent, x: Float, y: Float, pointer: Int, toActor: Actor) {
+        super.exit(event, x, y, pointer, toActor)
+        keyLabel.isVisible = false
+    }
+}
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
@@ -25,7 +40,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             unitAction.startsWith("Upgrade to") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
                 // What you find between the first [ and the first ] that comes after it, will be group no. 1
-                val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
+                val unitToUpgradeTo = Regex("""Upgrade to \[([^]]*)]""").find(unitAction)!!.groups[1]!!.value
                 return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo), 'u')
             }
             unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"),'f')
@@ -75,6 +90,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
+        if (iconAndKey.key != 0.toChar()) {
+            val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.LIGHT_GRAY).apply { isVisible = false }
+            actionButton.add(keyLabel)
+            actionButton.addListener(UnitActionButtonOnHoverListener(actionButton, keyLabel))
+        }
         actionButton.pack()
         val actionLambda = {
             unitAction.action?.invoke()
@@ -85,6 +105,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         else if (iconAndKey.key != 0.toChar()) {
             worldScreen.keyPressDispatcher[iconAndKey.key] = actionLambda
         }
+
         return actionButton
     }
 }
