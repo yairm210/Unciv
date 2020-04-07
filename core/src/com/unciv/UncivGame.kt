@@ -81,7 +81,9 @@ class UncivGame(
 
             if (settings.userId == "") { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
-                settings.save()
+                // Save but without clearing isFreshlyCreated and
+                // without writing the splash screen size to windowState
+                GameSaver.setGeneralSettings(settings, settings.isFreshlyCreated)
             }
 
             // This stuff needs to run on the main thread because it needs the GL context
@@ -103,8 +105,9 @@ class UncivGame(
     }
 
     fun autoLoadGame() {
-        if (!GameSaver.getSave("Autosave").exists()) {
-            restoreSize()
+        // IMHO better test for fresh installs than Autosave.exists()
+        // e.g. should someone delete the settings file only or kill the language picker screen
+        if (settings.isFreshlyCreated) {
             return setScreen(LanguagePickerScreen())
         }
         try {

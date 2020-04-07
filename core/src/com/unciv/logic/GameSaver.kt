@@ -12,6 +12,7 @@ import kotlin.concurrent.thread
 object GameSaver {
     private const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
+    private const val settingsFileName = "GameSettings.json"
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
@@ -49,20 +50,24 @@ object GameSaver {
     }
 
     fun getGeneralSettingsFile(): FileHandle {
-        return Gdx.files.local("GameSettings.json")
+        return Gdx.files.local(settingsFileName)
     }
 
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
-        if(!settingsFile.exists()) return GameSettings()
-        var settings: GameSettings?=null
-        try {
-            settings = json().fromJson(GameSettings::class.java, settingsFile)
-        }
-        catch (ex:Exception){}
-        // I'm not sure of the circumstances,
-        // but some people were getting null settings, even though the file existed??? Very odd.
-        if(settings==null) settings = GameSettings()
+        val settings: GameSettings =
+            if(!settingsFile.exists())
+                GameSettings().apply { isFreshlyCreated = true }
+            else try {
+                json().fromJson(GameSettings::class.java, settingsFile)
+            } catch (ex:Exception){
+                // I'm not sure of the circumstances,
+                // but some people were getting null settings, even though the file existed??? Very odd.
+                // ...Json broken or otherwise unreadable is the only possible reason.
+                println("Error reading settings file: ${ex.localizedMessage}")
+                println("  cause: ${ex.cause}")
+                GameSettings().apply { isFreshlyCreated = true }
+            }
 
         val currentTileSets = ImageGetter.atlas.regions.asSequence()
                 .filter { it.name.startsWith("TileSets") }
@@ -71,7 +76,8 @@ object GameSaver {
         return settings
     }
 
-    fun setGeneralSettings(gameSettings: GameSettings){
+    fun setGeneralSettings(gameSettings: GameSettings, isFreshlyCreated: Boolean = false){
+        gameSettings.isFreshlyCreated = isFreshlyCreated
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
     }
 

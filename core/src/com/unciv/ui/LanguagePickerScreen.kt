@@ -46,11 +46,13 @@ class LanguagePickerScreen: PickerScreen(){
 
     init {
         closeButton.isVisible = false
-        val translationDisclaimer = "Please note that translations are a " +
-                "community-based work in progress and are INCOMPLETE! \n" +
-                "The percentage shown is how much of the language is translated in-game.\n" +
-                "If you want to help translating the game into your language, \n"+
-                "  instructions are in the Github readme! (Menu > Community > Github)"
+        /// trimMargin is overhead, but easier to maintain and see when it might get trimmed without wrap:
+        val translationDisclaimer = """
+            |Please note that translations are a community-based work in progress and are INCOMPLETE!
+            |The percentage shown is how much of the language is translated in-game.
+            |If you want to help translating the game into your language,
+            |  instructions are in the Github readme! (Menu > Community > Github)
+            """.trimMargin()
         topTable.add(translationDisclaimer.toLabel()).pad(10f).row()
 
         val languageCompletionPercentage = UncivGame.Current.translations
@@ -69,11 +71,11 @@ class LanguagePickerScreen: PickerScreen(){
         }
 
         rightSideButton.setText("Pick language".tr())
-
-
         rightSideButton.onClick {
             pickLanguage()
         }
+
+        stage.scrollFocus = scrollPane      // so mousewheel works right away
     }
 
     fun pickLanguage(){
