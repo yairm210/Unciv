@@ -132,7 +132,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             shouldUpdate = true
         }
 
-        backButtonListener = onBackButtonClicked { exitGamePrompt() }
+        backButtonListener = onBackButtonClicked { backButtonAndESCHandler() }
 
         addKeyboardListener() // for map panning by W,S,A,D
 
@@ -565,11 +565,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             displayTutorial(Tutorial.Embarking)
     }
 
-    private fun exitGamePrompt() {
-
-        // don't show a dialog, if it can't exit the game
-        if (game.exitEvent == null)
-            return
+    private fun backButtonAndESCHandler() {
 
         // remove current listener for the "BACK" button to avoid showing the dialog twice
         stage.removeListener (backButtonListener)
@@ -580,6 +576,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // After removeListener just in case this is slow (enumerating all stage actors)
         if (hasOpenPopups()) {
             closeAllPopups()
+            stage.addListener (backButtonListener)
+            return
+        }
+
+        // don't show a dialog, if it can't exit the game
+        if (game.exitEvent == null) {
             stage.addListener (backButtonListener)
             return
         }
