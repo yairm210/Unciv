@@ -13,9 +13,7 @@ import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
@@ -271,8 +269,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         }
 
         for (attackableTile in attackableTiles) {
+
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-            tileGroups[attackableTile]!!.showCrosshair()
+
+            val distance = unit.currentTile.aerialDistanceTo(attackableTile)
+            if (distance > unit.getRange())
+                tileGroups[attackableTile]!!.showCrosshair(colorFromRGB(255, 75, 0))
+            else
+                tileGroups[attackableTile]!!.showCrosshair(Color.RED)
+
         }
 
         // Fade out less relevant images if a military unit is selected
@@ -294,7 +299,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-            tileGroups[attackableTile]!!.showCrosshair()
+            tileGroups[attackableTile]!!.showCrosshair(Color.RED)
         }
     }
 
