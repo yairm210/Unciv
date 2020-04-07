@@ -572,19 +572,29 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return
 
         // remove current listener for the "BACK" button to avoid showing the dialog twice
-        stage.removeListener( backButtonListener )
+        stage.removeListener (backButtonListener)
+
+        // Since Popups including the Main Menu and the Options screen have no own back button
+        // listener and no trivial way to set one, back/esc with one of them open ends up here.
+        // Also, the reaction of other popups like 'disband this unit' to back/esc feels nicer this way.
+        // After removeListener just in case this is slow (enumerating all stage actors)
+        if (hasOpenPopups()) {
+            closeAllPopups()
+            stage.addListener (backButtonListener)
+            return
+        }
 
         val promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
-        promptWindow.addButton("Yes"){game.exitEvent?.invoke()}
+        promptWindow.addButton("Yes") { game.exitEvent?.invoke() }
         promptWindow.addButton("No") {
             // restore the listener back
-            stage.addListener(backButtonListener)
+            stage.addListener (backButtonListener)
             promptWindow.close()
         }
         // show the dialog
-        promptWindow.open()
+        promptWindow.open (true)     // true = always on top
     }
 }
 
