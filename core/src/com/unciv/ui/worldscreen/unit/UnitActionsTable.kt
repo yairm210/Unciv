@@ -91,7 +91,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         if (iconAndKey.key != 0.toChar()) {
-            val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.LIGHT_GRAY).apply { isVisible = false }
+            val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.WHITE).apply { isVisible = false }
             actionButton.add(keyLabel)
             actionButton.addListener(UnitActionButtonOnHoverListener(actionButton, keyLabel))
         }
