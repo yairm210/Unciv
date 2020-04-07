@@ -178,6 +178,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         pack() // Needed to show the background.
         center(UncivGame.Current.worldScreen.stage)
+        screen.stage.scrollFocus = scrollPane
         UncivGame.Current.worldScreen.shouldUpdate = true
     }
 

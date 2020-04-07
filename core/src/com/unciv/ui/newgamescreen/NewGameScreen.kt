@@ -31,10 +31,13 @@ class NewGameScreen: PickerScreen(){
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
         val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-        topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
+        val newGameScreenOptionsScroll = ScrollPane(newGameScreenOptionsTable)
+        newGameScreenOptionsScroll.setOverscroll (false, false)
+        topTable.add(newGameScreenOptionsScroll).height(topTable.parent.height)
         topTable.add(playerPickerTable).height(topTable.parent.height)
         topTable.pack()
         topTable.setFillParent(true)
+        stage.scrollFocus = newGameScreenOptionsScroll
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())

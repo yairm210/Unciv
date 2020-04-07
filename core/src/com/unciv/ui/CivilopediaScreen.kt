@@ -15,6 +15,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     private val categoryToButtons = LinkedHashMap<String, Button>()
 
     private val entrySelectTable = Table().apply { defaults().pad(5f) }
+    private val entryScrollPane = ScrollPane(entrySelectTable)
     val description = "".toLabel()
 
     fun select(category: String) {
@@ -30,6 +31,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             }
             entrySelectTable.add(entryButton).left().row()
         }
+        stage.scrollFocus = entryScrollPane
     }
 
     init {
@@ -94,9 +96,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             buttonTable.add(button)
         }
         select("Tutorials")
-        val sp = ScrollPane(entrySelectTable)
-        sp.setupOverscroll(5f, 1f, 200f)
-        entryTable.add(sp).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
+        entryScrollPane.setupOverscroll(5f, 1f, 200f)
+        entryTable.add(entryScrollPane).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))
         entryTable.add(ScrollPane(description)).colspan(4)
                 .width(Value.percentWidth(0.65f, entryTable))

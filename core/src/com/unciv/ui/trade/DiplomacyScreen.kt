@@ -31,14 +31,15 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
+        val leftSideScroll = ScrollPane(leftSideTable)
+        val splitPane = SplitPane(leftSideScroll, rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
         updateLeftSideTable()
 
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
-
+        stage.scrollFocus = leftSideScroll
 
         val closeButton = TextButton("Close".tr(), skin)
         closeButton.onClick { UncivGame.Current.setWorldScreen() }

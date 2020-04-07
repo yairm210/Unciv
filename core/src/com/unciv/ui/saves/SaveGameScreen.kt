@@ -19,13 +19,15 @@ import kotlin.concurrent.thread
 class SaveGameScreen : PickerScreen() {
     val textField = TextField("", skin)
     val currentSaves = Table()
+    private val saveScroll = ScrollPane(currentSaves)
 
     init {
         setDefaultCloseAction()
 
         currentSaves.add("Current saves".toLabel()).row()
         updateShownSaves(false)
-        topTable.add(ScrollPane(currentSaves)).height(stage.height*2/3)
+        topTable.add(saveScroll).height(stage.height*2/3)
+        stage.scrollFocus = saveScroll
 
         val newSave = Table()
         val defaultSaveName = game.gameInfo.currentPlayer+" -  "+game.gameInfo.turns+" turns"

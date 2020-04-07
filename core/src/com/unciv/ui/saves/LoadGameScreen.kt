@@ -21,6 +21,7 @@ class LoadGameScreen : PickerScreen() {
     lateinit var selectedSave:String
     private val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard".tr(),skin)
     private val saveTable = Table()
+    private val saveScroll = ScrollPane(saveTable)
     private val deleteSaveButton = TextButton("Delete save".tr(), skin)
     private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
 
@@ -28,7 +29,8 @@ class LoadGameScreen : PickerScreen() {
         setDefaultCloseAction()
 
         resetWindowState()
-        topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
+        topTable.add(saveScroll).height(stage.height*2/3)
+        stage.scrollFocus = saveScroll
 
         val rightSideTable = getRightSideTable()
 

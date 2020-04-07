@@ -163,7 +163,9 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
                 update()
             }).pad(10f).width(nationsPopupWidth).row()
         }
-        nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
+        val nationScroll = ScrollPane(nationListTable)
+        nationsPopup.add(nationScroll).height(newGameScreen.stage.height * 0.8f)
+        newGameScreen.stage.scrollFocus = nationScroll
         nationsPopup.open()
         update()
     }

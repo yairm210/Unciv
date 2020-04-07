@@ -19,7 +19,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private val pad = 10f
 
     private val showConstructionsTableButton = TextButton("Show construction queue".tr(), skin)
-    private val scrollPane: ScrollPane
+    val scrollPane: ScrollPane
     private val innerTable = Table(skin)
 
     init {

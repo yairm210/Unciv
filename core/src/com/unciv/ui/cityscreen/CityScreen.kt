@@ -70,9 +70,11 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         if (showConstructionsTable) {
             constructionsTable.isVisible = true
             cityInfoTable.isVisible = false
+            stage.scrollFocus = constructionsTable.availableConstructionsScrollPane
         } else {
             constructionsTable.isVisible = false
             cityInfoTable.isVisible = true
+            stage.scrollFocus = cityInfoTable.scrollPane
         }
 
         city.cityStats.update()

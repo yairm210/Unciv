@@ -23,7 +23,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private val showCityInfoTableButton: TextButton
     private val constructionsQueueScrollPane: ScrollPane
-    private val availableConstructionsScrollPane: ScrollPane
+    val availableConstructionsScrollPane: ScrollPane
 
     private val constructionsQueueTable = Table()
     private val availableConstructionsTable = Table()

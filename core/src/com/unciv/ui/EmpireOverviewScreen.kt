@@ -19,11 +19,13 @@ import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
+import kotlin.coroutines.suspendCoroutine
 import kotlin.math.*
 
 class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply {  defaults().pad(20f) }
+    private var cityInfoScrollPane: ScrollPane? = null
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
@@ -38,6 +40,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             centerTable.clear()
             centerTable.add(getCityInfoTable())
             centerTable.pack()
+            if (cityInfoScrollPane != null) stage.scrollFocus = cityInfoScrollPane
         }
         setCities()
         setCityInfoButton.onClick(setCities)
@@ -61,8 +64,10 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         val setCurrentTradesButton = TextButton("Trades".tr(), skin)
         setCurrentTradesButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getTradesTable())).height(stage.height * 0.8f) // so it doesn't cover the navigation buttons
+            val scrollPane = ScrollPane(getTradesTable())
+            centerTable.add(scrollPane).height(stage.height * 0.8f) // so it doesn't cover the navigation buttons
             centerTable.pack()
+            stage.scrollFocus = scrollPane
         }
         topTable.add(setCurrentTradesButton)
         if (viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
@@ -71,8 +76,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         val setUnitsButton = TextButton("Units".tr(), skin)
         setUnitsButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getUnitTable()).apply { setOverscroll(false,false) }).height(stage.height * 0.8f)
+            val scrollPane = ScrollPane(getUnitTable())
+            scrollPane.setOverscroll (false, false)
+            centerTable.add(scrollPane).height(stage.height * 0.8f)
             centerTable.pack()
+            stage.scrollFocus = scrollPane
         }
         topTable.add(setUnitsButton)
 
@@ -260,9 +268,9 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
         fillCitiesTable(cityInfoTableDetails, "City", false)
 
-        val cityInfoScrollPane = ScrollPane(cityInfoTableDetails)
-        cityInfoScrollPane.pack()
-        cityInfoScrollPane.setOverscroll(false, false)//I think it feels better with no overscroll
+        cityInfoScrollPane = ScrollPane(cityInfoTableDetails)
+        cityInfoScrollPane!!.pack()
+        cityInfoScrollPane!!.setOverscroll(false, false)//I think it feels better with no overscroll
 
         val cityInfoTableTotal = Table(skin)
         cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
@@ -288,7 +296,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         citySortIcon.width = max(iconSize, cityInfoTableDetails.width - (iconSize+padding) * 8)
 
         table.add(cityInfoTableIcons).row()
-        table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).row()
+        table.add(cityInfoScrollPane!!).width(cityInfoTableDetails.width).row()
         table.add(cityInfoTableTotal)
         table.pack()
 
