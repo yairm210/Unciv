@@ -69,7 +69,8 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                     .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
-        else rightSide.add(techEnabledIcons).width(
-                kotlin.math.max(150f, techEnabledIcons.children.size * (techIconSize+6f)))
+        else rightSide.add(techEnabledIcons)
+                .width(techEnabledIcons.children.size * (techIconSize+6f))
+                .minWidth(150f)
     }
 }
