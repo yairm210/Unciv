@@ -1,5 +1,6 @@
 package com.unciv.ui.pickerscreens
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
