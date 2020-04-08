@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
@@ -123,7 +124,7 @@ object ImageGetter {
     val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
     val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
-        if(improvementName.startsWith("Remove") || improvementName.startsWith("Cancel"))
+        if(improvementName.startsWith("Remove") || improvementName == Constants.cancelImprovementOrder)
             return getImage("OtherIcons/Stop")
         if(improvementName.startsWith("StartingLocation ")){
             val nationName = improvementName.removePrefix("StartingLocation ")

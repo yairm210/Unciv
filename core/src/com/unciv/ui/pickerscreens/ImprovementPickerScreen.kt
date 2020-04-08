@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -23,7 +24,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
         fun accept(improvement: TileImprovement?) {
             if (improvement != null) {
-                if (improvement.name == "Cancel improvement order") {
+                if (improvement.name == Constants.cancelImprovementOrder ) {
                     tileInfo.stopWorkingOnImprovement()
                     // no onAccept() - Worker can stay selected
                 } else {
