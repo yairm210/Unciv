@@ -64,6 +64,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private var backButtonListener : InputListener
 
+    // An initialized val always turned out to illegally be null...
+    lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
+
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
@@ -110,7 +113,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         stage.addActor(unitActionsTable)
 
-        createNextTurnButton() // needs civ table to be positioned
+        // still a zombie: createNextTurnButton() // needs civ table to be positioned
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -140,6 +143,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
+    }
+
+    private fun cleanupKeyDispatcher() {
+        val delKeys = keyPressDispatcher.keys.filter { it!=' ' && it!='n' }
+        delKeys.forEach { keyPressDispatcher.remove(it) }
     }
 
     private fun addKeyboardListener() {
@@ -186,6 +194,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         infiniteAction = null
                     }
                     return true
+                }
+
+                override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                    if (character.toLowerCase() in keyPressDispatcher && !hasOpenPopups()) {
+                        //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                        try {
+                            keyPressDispatcher[character.toLowerCase()]?.invoke()
+                        } catch (ex: Exception) {}
+                        return true
+                    }
+                    return super.keyTyped(event, character)
                 }
             }
         )
@@ -244,6 +263,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 
         minimapWrapper.update(viewingCiv)
+        cleanupKeyDispatcher()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 
@@ -391,7 +411,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val nextTurnButton = TextButton("", skin) // text is set in update()
         nextTurnButton.label.setFontSize(30)
         nextTurnButton.labelCell.pad(10f)
-        nextTurnButton.onClick { nextTurnAction() }
+        val nextTurnActionWrapped = { nextTurnAction() }
+        nextTurnButton.onClick (nextTurnActionWrapped)
+        if (!::keyPressDispatcher.isInitialized) keyPressDispatcher = hashMapOf()
+        keyPressDispatcher[' '] = nextTurnActionWrapped
+        keyPressDispatcher['n'] = nextTurnActionWrapped
 
         return nextTurnButton
     }
