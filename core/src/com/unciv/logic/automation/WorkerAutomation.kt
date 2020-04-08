@@ -252,7 +252,7 @@ class WorkerAutomation(val unit: MapUnit) {
             // the war is already a good nudge to build forts
             (if (civInfo.isAtWarWith(it)) 20 else 0) +
             // let's check also the force of the enemy
-                    when (Automation().threatAssessment(civInfo, it)) {
+                    when (Automation.threatAssessment(civInfo, it)) {
             ThreatLevel.VeryLow -> 1 // do not build forts
             ThreatLevel.Low -> 6 // too close, let's build until it is late
             ThreatLevel.Medium -> 10

@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
 
-class GameStarter {
+object GameStarter {
 
     fun startNewGame(newGameParameters: GameParameters, mapParameters: MapParameters): GameInfo {
         val gameInfo = GameInfo()
@@ -20,7 +20,7 @@ class GameStarter {
         val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
         if(mapParameters.name != "")
-            gameInfo.tileMap = MapSaver().loadMap(mapParameters.name)
+            gameInfo.tileMap = MapSaver.loadMap(mapParameters.name)
         else gameInfo.tileMap = MapGenerator(ruleset).generateMap(mapParameters)
         gameInfo.tileMap.mapParameters = mapParameters
 

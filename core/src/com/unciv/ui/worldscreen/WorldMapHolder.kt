@@ -1,13 +1,10 @@
 package com.unciv.ui.worldscreen
 
-import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -16,9 +13,7 @@ import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
@@ -26,7 +21,6 @@ import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
-import sun.awt.ExtendedKeyCodes
 import kotlin.concurrent.thread
 
 
@@ -128,7 +122,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if(moveHereDto!=null)
             table.add(getMoveHereButton(moveHereDto))
 
-        var unitList = ArrayList<MapUnit>()
+        val unitList = ArrayList<MapUnit>()
         if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
             unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
         } else if (tileInfo.airUnits.isNotEmpty() && tileInfo.airUnits.first().civInfo==worldScreen.viewingCiv) {
@@ -270,13 +264,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
         else {
-            val tiles = BattleHelper().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
+            val tiles = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
             tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         }
 
         for (attackableTile in attackableTiles) {
+
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-            tileGroups[attackableTile]!!.showCrosshair()
+
+            val distance = unit.currentTile.aerialDistanceTo(attackableTile)
+            if (distance > unit.getRange())
+                tileGroups[attackableTile]!!.showCrosshair(colorFromRGB(255, 75, 0))
+            else
+                tileGroups[attackableTile]!!.showCrosshair(Color.RED)
+
         }
 
         // Fade out less relevant images if a military unit is selected
@@ -294,11 +295,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
         if (city.attackedThisTurn) return
 
-        val attackableTiles = UnitAutomation().getBombardTargets(city)
+        val attackableTiles = UnitAutomation.getBombardTargets(city)
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-            tileGroups[attackableTile]!!.showCrosshair()
+            tileGroups[attackableTile]!!.showCrosshair(Color.RED)
         }
     }
 

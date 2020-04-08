@@ -123,12 +123,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         crosshairImage.height = 70f
         crosshairImage.center(this)
         crosshairImage.isVisible = false
-        crosshairImage.color = Color.WHITE.cpy().apply { a = 0.5f }
         circleCrosshairFogLayerGroup.addActor(crosshairImage)
     }
     //endregion
 
-    fun showCrosshair() {
+    fun showCrosshair(color: Color) {
+        crosshairImage.color = color.cpy().apply { a = 0.5f }
         crosshairImage.isVisible = true
     }
 

@@ -51,7 +51,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private fun addMapTypeSelection() {
         add("{Map type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
-        if (MapSaver().getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
+        if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
         val mapFileSelectBox = getMapFileSelectBox()
@@ -87,7 +87,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private fun getMapFileSelectBox(): SelectBox<String> {
         val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
         val mapNames = Array<String>()
-        for (mapName in MapSaver().getMaps()) mapNames.add(mapName)
+        for (mapName in MapSaver.getMaps()) mapNames.add(mapName)
         mapFileSelectBox.items = mapNames
         if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
 

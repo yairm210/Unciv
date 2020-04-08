@@ -343,7 +343,7 @@ class MapUnit {
 
         if (action == Constants.unitActionAutomation) WorkerAutomation(this).automateWorkerAction()
 
-        if(action == Constants.unitActionExplore) UnitAutomation().automatedExplore(this)
+        if(action == Constants.unitActionExplore) UnitAutomation.automatedExplore(this)
     }
 
     private fun doPostTurnAction() {

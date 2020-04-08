@@ -333,11 +333,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val button = TextButton("", CameraStageBaseScreen.skin)
 
         if (construction == null || !construction.canBePurchased()
-                || !construction.isBuildable(cityConstructions)
-                || !UncivGame.Current.worldScreen.isPlayersTurn
-                || city.isPuppet || city.isInResistance()
-                || !city.canPurchase(construction)
         ) {
+            // fully disable a "buy" button only for "priceless" buildings such as wonders
+            // for all other cases, the price should be displayed
             button.setText("Buy".tr())
             button.disable()
         } else {
@@ -354,7 +352,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 YesNoPopup(purchasePrompt, { purchaseConstruction(construction) }, cityScreen, { cityScreen.update() }).open()
             }
 
-            if (constructionGoldCost > city.civInfo.gold)
+            if ( !construction.isBuildable(cityConstructions)
+                    || !UncivGame.Current.worldScreen.isPlayersTurn
+                    || city.isPuppet || city.isInResistance()
+                    || !city.canPurchase(construction)
+                    || constructionGoldCost > city.civInfo.gold )
                 button.disable()
         }
 

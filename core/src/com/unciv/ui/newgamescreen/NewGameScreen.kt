@@ -68,15 +68,15 @@ class NewGameScreen: PickerScreen(){
             thread(name="NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 try {
-                    newGame = GameStarter().startNewGame(newGameParameters,mapParameters)
+                    newGame = GameStarter.startNewGame(newGameParameters,mapParameters)
                     if (newGameParameters.isOnlineMultiplayer) {
                         newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                         try {
                             OnlineMultiplayer().tryUploadGame(newGame!!)
-                            GameSaver().autoSave(newGame!!){}
+                            GameSaver.autoSave(newGame!!){}
 
                             //Saved as Multiplayer game to show up in the session browser
-                            GameSaver().saveGame(newGame!!, newGame!!.gameId,true)
+                            GameSaver.saveGame(newGame!!, newGame!!.gameId,true)
                             //Save gameId to clipboard because you have to do it anyway.
                             Gdx.app.clipboard.contents = newGame!!.gameId
                             //Popup to notify the User that the gameID got copied to the clipboard

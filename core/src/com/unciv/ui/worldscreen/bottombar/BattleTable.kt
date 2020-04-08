@@ -12,7 +12,6 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.*
-import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.translations.tr
@@ -23,8 +22,6 @@ import com.unciv.ui.utils.Popup
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
-
-    private val battleHelper = BattleHelper()
 
     init {
         isVisible = false
@@ -125,14 +122,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
         val attackerModifiers =
-                BattleDamage().getAttackModifiers(attacker,defender).map {
+                BattleDamage.getAttackModifiers(attacker,defender).map {
                     val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                     val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
                     "$description: $percentage"
                 }
         val defenderModifiers =
                 if (defender is MapUnitCombatant)
-                    BattleDamage().getDefenceModifiers(attacker, defender).map {
+                    BattleDamage.getDefenceModifiers(attacker, defender).map {
                         val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                         val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
                         "$description: $percentage"
@@ -145,8 +142,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row().pad(2f)
         }
 
-        var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
-        var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
+        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,defender)
+        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker,defender)
 
 
         if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers
@@ -191,13 +188,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
-                attackableTile = battleHelper
+                attackableTile = BattleHelper
                         .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             }
             else if (attacker is CityCombatant)
             {
-                val canBombard = UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
+                val canBombard = UnitAutomation.getBombardTargets(attacker.city).contains(defender.getTile())
                 if (canBombard) {
                     attackableTile = AttackableTile(attacker.getTile(), defender.getTile())
                 }

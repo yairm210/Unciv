@@ -194,7 +194,7 @@ object UnitActions {
             actionList += UnitAction(
                     type = UnitActionType.Explore,
                     action = {
-                        UnitAutomation().automatedExplore(unit)
+                        UnitAutomation.automatedExplore(unit)
                         unit.action = Constants.unitActionExplore
                     })
         } else {
@@ -397,7 +397,7 @@ object UnitActions {
                     action = {
                         unit.fortifyUntilHealed()
                         unitTable.selectedUnit = null
-                    })
+                    }.takeIf { unit.currentMovement > 0 })
             actionList += actionForWounded
         }
 
