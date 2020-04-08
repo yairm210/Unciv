@@ -822,7 +822,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "How could we fall to the likes of you?!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [102,0,51],
+		"innerColor": [152,0,241],
 		"cities": ["Almaty"]
 	},
 	{
@@ -894,7 +894,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "We... defeated? No... we had so much work to do!",
 		"outerColor": [0, 0, 0],
-		"innerColor": [51,25,0],
+		"innerColor": [151,125,0],
 		"cities": ["Kathmandu"]
 	},
 	{
