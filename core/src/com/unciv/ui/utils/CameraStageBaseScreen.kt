@@ -86,7 +86,7 @@ open class CameraStageBaseScreen : Screen {
     fun onBackButtonClicked(action:()->Unit): InputListener {
         val listener = object : InputListener(){
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if(keycode == Input.Keys.BACK){
+                if(keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE){
                     action()
                     return true
                 }

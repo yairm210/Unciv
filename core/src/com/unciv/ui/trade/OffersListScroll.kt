@@ -1,6 +1,6 @@
 package com.unciv.ui.trade
 
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
