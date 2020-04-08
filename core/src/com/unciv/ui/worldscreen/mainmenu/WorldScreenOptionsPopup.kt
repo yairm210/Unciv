@@ -122,7 +122,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addAutosaveTurnsSelectBox()
 
         // at the moment the notification service only exists on Android
-        if (true || Gdx.app.type == Application.ApplicationType.Android) {
+        if (Gdx.app.type == Application.ApplicationType.Android) {
             addHeader("Multiplayer options")
 
             addYesNoRow ("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
