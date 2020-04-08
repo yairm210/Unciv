@@ -23,63 +23,71 @@ class Language(val language:String, val percentComplete:Int){
 
 class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) {
     var selectedLanguage: String = "English"
+    private val settings = UncivGame.Current.settings
+    private val innerTable = Table(CameraStageBaseScreen.skin)
 
     init {
-        UncivGame.Current.settings.addCompletedTutorialTask("Open the options table")
-        update()
+        settings.addCompletedTutorialTask("Open the options table")
+
+        rebuildInnerTable()
+
+        val scrollPane = ScrollPane(innerTable, skin)
+        scrollPane.setOverscroll(false, false)
+        scrollPane.fadeScrollBars = false
+        scrollPane.setScrollingDisabled(true, false)
+        add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
+
+        addCloseButton()
+
+        pack() // Needed to show the background.
+        center(UncivGame.Current.worldScreen.stage)
     }
 
+    private fun addHeader (text: String) {
+        innerTable.add(text.toLabel(fontSize = 24)).colspan(2).padTop(if (innerTable.cells.isEmpty) 0f else 20f).row()
+    }
 
-    fun update() {
-        val settings = UncivGame.Current.settings
+    private fun addYesNoRow (text: String, initialValue: Boolean, updateWorld: Boolean = false, action: ((Boolean) -> Unit)) {
+        innerTable.add(text.toLabel())
+        val button = YesNoButton(initialValue, skin) {
+            action(it)
+            settings.save()
+            if (updateWorld)
+                UncivGame.Current.worldScreen.shouldUpdate = true
+        }
+        innerTable.add(button).row()
+    }
+
+    private fun reloadWorldAndOptions() {
         settings.save()
-        clear()
+        UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
+        UncivGame.Current.setWorldScreen()
+        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+    }
 
-        val innerTable = Table(CameraStageBaseScreen.skin)
+    private fun rebuildInnerTable() {
+        settings.save()
+        innerTable.clear()
 
-        innerTable.add("Display options".toLabel(fontSize = 24)).colspan(2).row()
+        addHeader("Display options")
 
-        innerTable.add("Show worked tiles".toLabel())
-        addButton(innerTable, if (settings.showWorkedTiles) "Yes" else "No") {
-            settings.showWorkedTiles = !settings.showWorkedTiles
-            update()
+        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) {
+            settings.showWorkedTiles = it
         }
-
-        innerTable.add("Show resources and improvements".toLabel())
-        addButton(innerTable, if (settings.showResourcesAndImprovements) "Yes" else "No") {
-            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
-            update()
+        addYesNoRow ("Show resources and improvements", settings.showResourcesAndImprovements, true) {
+            settings.showResourcesAndImprovements = it
         }
-
-
-        innerTable.add("Show tutorials".toLabel())
-        addButton(innerTable, if (settings.showTutorials) "Yes" else "No") {
-            settings.showTutorials = !settings.showTutorials
-            update()
+        addYesNoRow ("Show tutorials", settings.showTutorials, true) {
+            settings.showTutorials = it
         }
-
-        innerTable.add("Show minimap".toLabel())
-        addButton(innerTable, if (settings.showMinimap) "Yes" else "No") {
-            settings.showMinimap = !settings.showMinimap
-            update()
+        addYesNoRow ("Show minimap", settings.showMinimap, true) {
+            settings.showMinimap = it
         }
-
-        innerTable.add("Show pixel units".toLabel())
-        addButton(innerTable, if (settings.showPixelUnits) "Yes" else "No") {
-            settings.showPixelUnits = !settings.showPixelUnits
-            update()
+        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) {
+            settings.showPixelUnits = it
         }
-
-        innerTable.add("Show pixel improvements".toLabel())
-        addButton(innerTable, if (settings.showPixelImprovements) "Yes" else "No") {
-            settings.showPixelImprovements = !settings.showPixelImprovements
-            update()
-        }
-
-        innerTable.add("Order trade offers by amount".toLabel())
-        addButton(innerTable, if (settings.orderTradeOffersByAmount) "Yes" else "No") {
-            settings.orderTradeOffersByAmount = !settings.orderTradeOffersByAmount
-            update()
+        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) {
+            settings.showPixelImprovements = it
         }
 
         addLanguageSelectBox(innerTable)
@@ -88,68 +96,52 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addTileSetSelectBox(innerTable)
 
-        innerTable.add("Continuous rendering".toLabel())
-        addButton(innerTable, if (settings.continuousRendering) "Yes" else "No") {
-            settings.continuousRendering = !settings.continuousRendering
-            Gdx.graphics.isContinuousRendering = settings.continuousRendering
-            update()
+        addYesNoRow ("Continuous rendering", settings.continuousRendering) {
+            settings.continuousRendering = it
+            Gdx.graphics.isContinuousRendering = it
         }
 
-        innerTable.add("Gameplay options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
+        addHeader("Gameplay options")
 
-
-        innerTable.add("Check for idle units".toLabel())
-        addButton(innerTable, if (settings.checkForDueUnits) "Yes" else "No") {
-            settings.checkForDueUnits = !settings.checkForDueUnits
-            update()
+        addYesNoRow ("Check for idle units", settings.checkForDueUnits) {
+            settings.checkForDueUnits = it
         }
-
-        innerTable.add("Move units with a single tap".toLabel())
-        addButton(innerTable, if (settings.singleTapMove) "Yes" else "No") {
-            settings.singleTapMove = !settings.singleTapMove
-            update()
+        addYesNoRow ("Move units with a single tap", settings.singleTapMove) {
+            settings.singleTapMove = it
         }
-
-        innerTable.add("Auto-assign city production".toLabel())
-        addButton(innerTable, if (settings.autoAssignCityProduction) "Yes" else "No") {
-            settings.autoAssignCityProduction = !settings.autoAssignCityProduction
-            update()
+        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction) {
+            settings.autoAssignCityProduction = it
         }
-
-        innerTable.add("Auto-build roads".toLabel())
-        addButton(innerTable, if (settings.autoBuildingRoads) "Yes" else "No") {
-            settings.autoBuildingRoads = !settings.autoBuildingRoads
-            update()
+        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) {
+            settings.autoBuildingRoads = it
+        }
+        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) {
+            settings.orderTradeOffersByAmount = it
         }
 
         addAutosaveTurnsSelectBox(innerTable)
 
         // at the moment the notification service only exists on Android
-        if (Gdx.app.type == Application.ApplicationType.Android) {
-            innerTable.add("Multiplayer options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
+        if (true || Gdx.app.type == Application.ApplicationType.Android) {
+            addHeader("Multiplayer options")
 
-            innerTable.add("Enable out-of-game turn notifications".toLabel())
-            addButton(innerTable, if (settings.multiplayerTurnCheckerEnabled) "Yes" else "No") {
-                settings.multiplayerTurnCheckerEnabled = !settings.multiplayerTurnCheckerEnabled
-                update()
+            addYesNoRow ("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
+                settings.multiplayerTurnCheckerEnabled = it
             }
+
             if (settings.multiplayerTurnCheckerEnabled) {
                 addMultiplayerTurnCheckerDelayBox(innerTable)
 
-                innerTable.add("Show persistent notification for turn notifier service".toLabel())
-                addButton(innerTable, if (settings.multiplayerTurnCheckerPersistentNotificationEnabled) "Yes" else "No") {
-                    settings.multiplayerTurnCheckerPersistentNotificationEnabled = !settings.multiplayerTurnCheckerPersistentNotificationEnabled
-                    update()
+                addYesNoRow ("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled) {
+                    settings.multiplayerTurnCheckerPersistentNotificationEnabled = it
                 }
             }
         }
 
-        innerTable.add("Other options".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
-
+        addHeader("Other options")
 
         addSoundEffectsVolumeSlider(innerTable)
         addMusicVolumeSlider(innerTable)
-
 
         if(Gdx.app.type==Application.ApplicationType.Desktop) {
             val generateTranslationsButton = TextButton("Generate translation files".tr(), CameraStageBaseScreen.skin)
@@ -166,36 +158,16 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         innerTable.add("Version".toLabel()).pad(10f)
         innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
-
-
-        val scrollPane = ScrollPane(innerTable, skin)
-        scrollPane.setOverscroll(false, false)
-        scrollPane.fadeScrollBars = false
-        scrollPane.setScrollingDisabled(true, false)
-        add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
-
-        addCloseButton()
-
-        pack() // Needed to show the background.
-        center(UncivGame.Current.worldScreen.stage)
-        UncivGame.Current.worldScreen.shouldUpdate = true
     }
-
-    private fun addButton(table: Table, text: String, action: () -> Unit): Cell<TextButton> {
-        val button = TextButton(text.tr(), skin).apply { color = ImageGetter.getBlue() }
-        button.onClick(action)
-        return table.add(button).apply { row() }
-    }
-
 
     private fun addSoundEffectsVolumeSlider(innerTable: Table) {
         innerTable.add("Sound effects volume".tr())
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
-        soundEffectsVolumeSlider.value = UncivGame.Current.settings.soundEffectsVolume
+        soundEffectsVolumeSlider.value = settings.soundEffectsVolume
         soundEffectsVolumeSlider.onChange {
-            UncivGame.Current.settings.soundEffectsVolume = soundEffectsVolumeSlider.value
-            UncivGame.Current.settings.save()
+            settings.soundEffectsVolume = soundEffectsVolumeSlider.value
+            settings.save()
             Sounds.play(UncivSound.Click)
         }
         innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
@@ -207,10 +179,10 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             innerTable.add("Music volume".tr())
 
             val musicVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
-            musicVolumeSlider.value = UncivGame.Current.settings.musicVolume
+            musicVolumeSlider.value = settings.musicVolume
             musicVolumeSlider.onChange {
-                UncivGame.Current.settings.musicVolume = musicVolumeSlider.value
-                UncivGame.Current.settings.save()
+                settings.musicVolume = musicVolumeSlider.value
+                settings.save()
 
                 val music = UncivGame.Current.music
                 if (music == null) // restart music, if it was off at the app start
@@ -234,7 +206,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                         errorTable.add("Downloading...".toLabel())
                         val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
                         musicLocation.write(file, false)
-                        update()
+                        rebuildInnerTable()
                         UncivGame.Current.startMusic()
                     } catch (ex: Exception) {
                         errorTable.clear()
@@ -252,15 +224,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         val resolutionArray = Array<String>()
         resolutionArray.addAll("750x500", "900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
-        resolutionSelectBox.selected = UncivGame.Current.settings.resolution
+        resolutionSelectBox.selected = settings.resolution
         innerTable.add(resolutionSelectBox).minWidth(240f).pad(10f).row()
 
         resolutionSelectBox.onChange {
-            UncivGame.Current.settings.resolution = resolutionSelectBox.selected
-            UncivGame.Current.settings.save()
-            UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-            UncivGame.Current.setWorldScreen()
-            WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+            settings.resolution = resolutionSelectBox.selected
+            reloadWorldAndOptions()
         }
     }
 
@@ -273,15 +242,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 .map { it.name.split("/")[1] }.distinct()
         for (tileset in tileSets) tileSetArray.add(tileset)
         tileSetSelectBox.items = tileSetArray
-        tileSetSelectBox.selected = UncivGame.Current.settings.tileSet
+        tileSetSelectBox.selected = settings.tileSet
         innerTable.add(tileSetSelectBox).minWidth(240f).pad(10f).row()
 
         tileSetSelectBox.onChange {
-            UncivGame.Current.settings.tileSet = tileSetSelectBox.selected
-            UncivGame.Current.settings.save()
-            UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-            UncivGame.Current.setWorldScreen()
-            WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+            settings.tileSet = tileSetSelectBox.selected
+            reloadWorldAndOptions()
         }
     }
 
@@ -292,14 +258,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         val autosaveTurnsArray = Array<Int>()
         autosaveTurnsArray.addAll(1, 2, 5, 10)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
-        autosaveTurnsSelectBox.selected = UncivGame.Current.settings.turnsBetweenAutosaves
+        autosaveTurnsSelectBox.selected = settings.turnsBetweenAutosaves
 
         innerTable.add(autosaveTurnsSelectBox).pad(10f).row()
 
         autosaveTurnsSelectBox.onChange {
-            UncivGame.Current.settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
-            UncivGame.Current.settings.save()
-            update()
+            settings.turnsBetweenAutosaves = autosaveTurnsSelectBox.selected
+            settings.save()
         }
     }
 
@@ -310,14 +275,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         val possibleDelaysArray = Array<Int>()
         possibleDelaysArray.addAll(1, 2, 5, 15)
         checkDelaySelectBox.items = possibleDelaysArray
-        checkDelaySelectBox.selected = UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes
+        checkDelaySelectBox.selected = settings.multiplayerTurnCheckerDelayInMinutes
 
         innerTable.add(checkDelaySelectBox).pad(10f).row()
 
         checkDelaySelectBox.onChange {
-            UncivGame.Current.settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
-            UncivGame.Current.settings.save()
-            update()
+            settings.multiplayerTurnCheckerDelayInMinutes = checkDelaySelectBox.selected
+            settings.save()
         }
     }
 
@@ -332,27 +296,49 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         innerTable.add("Language".toLabel())
         languageSelectBox.items = languageArray
-        val matchingLanguage = languageArray.firstOrNull { it.language == UncivGame.Current.settings.language }
+        val matchingLanguage = languageArray.firstOrNull { it.language == settings.language }
         languageSelectBox.selected = if (matchingLanguage != null) matchingLanguage else languageArray.first()
         innerTable.add(languageSelectBox).minWidth(240f).pad(10f).row()
 
         languageSelectBox.onChange {
-            // Sometimes the "changed" is triggered even when we didn't choose something that isn't the
+            // Sometimes the "changed" is triggered even when we didn't choose something
             selectedLanguage = languageSelectBox.selected.language
 
-            if (selectedLanguage != UncivGame.Current.settings.language)
+            if (selectedLanguage != settings.language)
                 selectLanguage()
         }
     }
 
-    fun selectLanguage() {
-        UncivGame.Current.settings.language = selectedLanguage
-        UncivGame.Current.settings.save()
-
+    private fun selectLanguage() {
+        settings.language = selectedLanguage
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
-        UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-        UncivGame.Current.setWorldScreen()
-        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        reloadWorldAndOptions()
+    }
+
+}
+
+/*
+        This TextButton subclass helps to keep looks and behaviour of our Yes/No
+        in one place, but it also helps keeping context for those action lambdas.
+
+        Usage: YesNoButton(someSetting: Boolean, skin) { someSetting = it; sideEffects() }
+ */
+private fun Boolean.toYesNo(): String = (if (this) "Yes" else "No").tr()
+private class YesNoButton(initialValue: Boolean, skin: Skin, action: (Boolean) -> Unit)
+        : TextButton (initialValue.toYesNo(), skin ) {
+
+    var value = initialValue
+        private set(value) {
+            field = value
+            setText(value.toYesNo())
+        }
+
+    init {
+        color = ImageGetter.getBlue()
+        onClick {
+            value = !value
+            action.invoke(value)
+        }
     }
 }
