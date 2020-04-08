@@ -227,6 +227,7 @@ class MapUnit {
     fun getEmbarkedMovement(): Int {
         var movement=2
         movement += civInfo.tech.getTechUniques().count { it == "Increases embarked movement +1" }
+        if (civInfo.nation.unique == UniqueAbility.VIKING_FURY) movement +=1
         return movement
     }
 
