@@ -38,6 +38,7 @@ class MapUnit {
     @Transient var roughTerrainPenalty = false
     @Transient var doubleMovementInCoast = false
     @Transient var doubleMovementInForestAndJungle = false
+    @Transient var doubleMovementInSnowTundraAndHills = false
 
     lateinit var owner: String
     lateinit var name: String
@@ -133,10 +134,11 @@ class MapUnit {
         uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.unitPromotions[it]!!.effect })
         tempUniques = uniques
 
-        if("Ignores terrain cost" in uniques) ignoresTerrainCost=true
-        if("Rough terrain penalty" in uniques) roughTerrainPenalty=true
-        if("Double movement in coast" in uniques) doubleMovementInCoast=true
-        if("Double movement rate through Forest and Jungle" in uniques) doubleMovementInForestAndJungle=true
+        if("Ignores terrain cost" in uniques) ignoresTerrainCost = true
+        if("Rough terrain penalty" in uniques) roughTerrainPenalty = true
+        if("Double movement in coast" in uniques) doubleMovementInCoast = true
+        if("Double movement rate through Forest and Jungle" in uniques) doubleMovementInForestAndJungle = true
+        if("Double movement in Snow, Tundra and Hills" in uniques) doubleMovementInSnowTundraAndHills = true
     }
 
     fun hasUnique(unique:String): Boolean {

@@ -41,6 +41,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
             return 1 / 2f + extraCost
 
+        if (unit.doubleMovementInSnowTundraAndHills && to.baseTerrain == Constants.hill)
+            return 1f + extraCost // usually hills take 2
+        if (unit.doubleMovementInSnowTundraAndHills && (to.baseTerrain == Constants.snow || to.baseTerrain == Constants.tundra))
+            return 1 / 2f + extraCost
+
         return to.getLastTerrain().movementCost.toFloat() + extraCost // no road
     }
 
