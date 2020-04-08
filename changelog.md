@@ -1,3 +1,23 @@
+## 3.7.1
+
+Hopefully resolved #2361 - should work on 32-bit linux
+
+By Jack Rainy:
+- Better colors for Katmandu and Almaty
+- Autosize of the tech buttons
+- Display the crosshair in alternate color for distant targets
+- Display price for unavailable purchases 
+
+By rh-github-2015:
+- Fortify until healed disabled if no more movement
+- Better thread handling
+
+Resolved #2340 - cannot open multiple 'disband' popups for cash hack
+
+Resolved #2305 - Added city-states and influence tutorial
+
+Translation updates
+
 ## 3.7.0
 
 By Jack Rainy:
