@@ -15,7 +15,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.Tutorial
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Nation
@@ -259,7 +258,6 @@ class CivilizationInfo {
     fun discoverNaturalWonder(naturalWonderName: String)
     {
         naturalWonders.add(naturalWonderName)
-        UncivGame.Current.worldScreen.displayTutorial(Tutorial.NaturalWonders)
     }
 
     override fun toString(): String {return civName} // for debug

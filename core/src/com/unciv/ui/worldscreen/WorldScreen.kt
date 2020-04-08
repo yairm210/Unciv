@@ -564,6 +564,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             displayTutorial(Tutorial.SiegeUnits)
         if(viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units"))
             displayTutorial(Tutorial.Embarking)
+        if(viewingCiv.naturalWonders.size > 0)
+            displayTutorial(Tutorial.NaturalWonders)
     }
 
     private fun backButtonAndESCHandler() {
