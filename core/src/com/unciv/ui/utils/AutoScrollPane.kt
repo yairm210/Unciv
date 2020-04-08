@@ -40,10 +40,14 @@ open class AutoScrollPane(widget: Actor?, style: ScrollPaneStyle = ScrollPaneSty
     init {
         this.addListener (object : ClickListener() {
             override fun enter(event: InputEvent?, x: Float, y: Float, pointer: Int, fromActor: Actor?) {
+                if (stage == null)
+                    return
                 if (savedFocus == null) savedFocus = stage.scrollFocus
                 stage.scrollFocus = this@AutoScrollPane
             }
             override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+                if (stage == null)
+                    return
                 if (stage.scrollFocus == this@AutoScrollPane) stage.scrollFocus = savedFocus
                 savedFocus = null
             }
