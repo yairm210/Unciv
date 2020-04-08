@@ -540,6 +540,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
+        if (!UncivGame.Current.settings.showTutorials) return
         val shownTutorials = UncivGame.Current.settings.tutorialsShown
         displayTutorial(Tutorial.SlowStart)
         if("_BarbarianEncountered" !in shownTutorials
