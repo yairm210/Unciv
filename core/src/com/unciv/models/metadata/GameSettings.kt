@@ -43,7 +43,7 @@ class GameSettings {
     }
 
     fun save(){
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+        if (!isFreshlyCreated && Gdx.app.type == Application.ApplicationType.Desktop) {
             windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
         }
         GameSaver.setGeneralSettings(this)

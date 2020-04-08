@@ -79,11 +79,9 @@ class UncivGame(
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
 
-            if (settings.userId == "") { // assign permanent user id
+            if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
-                // Save but without clearing isFreshlyCreated and
-                // without writing the splash screen size to windowState
-                GameSaver.setGeneralSettings(settings, settings.isFreshlyCreated)
+                settings.save()
             }
 
             // This stuff needs to run on the main thread because it needs the GL context

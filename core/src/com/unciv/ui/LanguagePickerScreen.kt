@@ -74,12 +74,11 @@ class LanguagePickerScreen: PickerScreen(){
         rightSideButton.onClick {
             pickLanguage()
         }
-
-        stage.scrollFocus = scrollPane      // so mousewheel works right away
     }
 
     fun pickLanguage(){
         UncivGame.Current.settings.language = chosenLanguage
+        UncivGame.Current.settings.isFreshlyCreated = false     // mark so the picker isn't called next launch
         UncivGame.Current.settings.save()
 
         UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()

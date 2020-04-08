@@ -76,8 +76,7 @@ object GameSaver {
         return settings
     }
 
-    fun setGeneralSettings(gameSettings: GameSettings, isFreshlyCreated: Boolean = false){
-        gameSettings.isFreshlyCreated = isFreshlyCreated
+    fun setGeneralSettings(gameSettings: GameSettings){
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
     }
 
