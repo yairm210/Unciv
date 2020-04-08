@@ -280,6 +280,7 @@ open class TileInfo {
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
+            improvement.name == "Cancel improvement order" && this.improvementInProgress != null -> true
             topTerrain.unbuildable && !(topTerrain.name == Constants.forest && improvement.name == "Camp") -> false
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
@@ -386,6 +387,10 @@ open class TileInfo {
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
         improvementInProgress = improvement.name
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
+    }
+    fun stopWorkingOnImprovement() {
+        improvementInProgress = null
+        turnsToImprovement = 0
     }
 
     fun hasEnemySubmarine(viewingCiv:CivilizationInfo): Boolean {

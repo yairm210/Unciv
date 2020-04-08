@@ -23,9 +23,14 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
         fun accept(improvement: TileImprovement?) {
             if (improvement != null) {
-                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
-                if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
-                onAccept()
+                if (improvement.name == "Cancel improvement order") {
+                    tileInfo.stopWorkingOnImprovement()
+                    // no onAccept() - Worker can stay selected
+                } else {
+                    tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
+                    if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
+                    onAccept()
+                }
                 game.setWorldScreen()
                 dispose()
             }
@@ -50,11 +55,12 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
             group.add(image).size(30f).pad(10f)
 
-            var labelText = improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}"
+            var labelText = improvement.name.tr()
+            improvement.getTurnsToBuild(currentPlayerCiv).let { if (it > 0) labelText += " - $it {turns}" }
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name
             if (provideResource) labelText += "\n"+"Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.name!=RoadStatus.Road.name
-                    && improvement.name!=RoadStatus.Railroad.name && !improvement.name.startsWith("Remove"))
+                    && improvement.name!=RoadStatus.Railroad.name && !improvement.name.startsWith("Remove") && !improvement.name.startsWith("Cancel"))
             if (tileInfo.improvement!=null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
             group.add(labelText.toLabel()).pad(10f)
@@ -124,6 +130,30 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             regularImprovements.add(pickNow).padLeft(10f)
             regularImprovements.row()
         }
+
+//        if (tileInfo.hasImprovementInProgress()) {
+//            dummyImprovement.name = "Cancel improvement order"
+//            val group = Table()
+//            val image = ImageGetter.getImage("OtherIcons/Stop")
+//            group.add(image).size(30f).pad(10f)
+//            group.add(dummyImprovement.name.toLabel()).pad(10f)
+//            group.touchable = Touchable.enabled
+//            group.onClick {
+//                selectedImprovement = dummyImprovement
+//                pick(dummyImprovement.name.tr())
+//                descriptionLabel.setText("Clears any pending improvement orders vor the selected tile.")
+//            }
+//            val pickNow = "Pick now!".toLabel()
+//            pickNow.onClick {
+//                accept(dummyImprovement)
+//            }
+//            val cancelButton = Button(skin)
+//            cancelButton.add(group)
+//            regularImprovements.add(cancelButton)
+//            regularImprovements.add(pickNow).padLeft(10f)
+//            regularImprovements.row()
+//        }
+
         topTable.add(regularImprovements)
     }
 }
