@@ -90,11 +90,11 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             settings.showPixelImprovements = it
         }
 
-        addLanguageSelectBox(innerTable)
+        addLanguageSelectBox()
 
-        addResolutionSelectBox(innerTable)
+        addResolutionSelectBox()
 
-        addTileSetSelectBox(innerTable)
+        addTileSetSelectBox()
 
         addYesNoRow ("Continuous rendering", settings.continuousRendering) {
             settings.continuousRendering = it
@@ -119,7 +119,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             settings.orderTradeOffersByAmount = it
         }
 
-        addAutosaveTurnsSelectBox(innerTable)
+        addAutosaveTurnsSelectBox()
 
         // at the moment the notification service only exists on Android
         if (true || Gdx.app.type == Application.ApplicationType.Android) {
@@ -130,7 +130,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             }
 
             if (settings.multiplayerTurnCheckerEnabled) {
-                addMultiplayerTurnCheckerDelayBox(innerTable)
+                addMultiplayerTurnCheckerDelayBox()
 
                 addYesNoRow ("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled) {
                     settings.multiplayerTurnCheckerPersistentNotificationEnabled = it
@@ -140,8 +140,8 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addHeader("Other options")
 
-        addSoundEffectsVolumeSlider(innerTable)
-        addMusicVolumeSlider(innerTable)
+        addSoundEffectsVolumeSlider()
+        addMusicVolumeSlider()
 
         if(Gdx.app.type==Application.ApplicationType.Desktop) {
             val generateTranslationsButton = TextButton("Generate translation files".tr(), CameraStageBaseScreen.skin)
@@ -160,7 +160,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
     }
 
-    private fun addSoundEffectsVolumeSlider(innerTable: Table) {
+    private fun addSoundEffectsVolumeSlider() {
         innerTable.add("Sound effects volume".tr())
 
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
@@ -173,7 +173,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         innerTable.add(soundEffectsVolumeSlider).pad(10f).row()
     }
 
-    private fun addMusicVolumeSlider(innerTable: Table) {
+    private fun addMusicVolumeSlider() {
         val musicLocation = Gdx.files.local(UncivGame.Current.musicLocation)
         if (musicLocation.exists()) {
             innerTable.add("Music volume".tr())
@@ -217,7 +217,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         }
     }
 
-    private fun addResolutionSelectBox(innerTable: Table) {
+    private fun addResolutionSelectBox() {
         innerTable.add("Resolution".toLabel())
 
         val resolutionSelectBox = SelectBox<String>(skin)
@@ -233,7 +233,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         }
     }
 
-    private fun addTileSetSelectBox(innerTable: Table) {
+    private fun addTileSetSelectBox() {
         innerTable.add("Tileset".toLabel())
 
         val tileSetSelectBox = SelectBox<String>(skin)
@@ -251,7 +251,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         }
     }
 
-    private fun addAutosaveTurnsSelectBox(innerTable: Table) {
+    private fun addAutosaveTurnsSelectBox() {
         innerTable.add("Turns between autosaves".toLabel())
 
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
@@ -268,7 +268,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         }
     }
 
-    private fun addMultiplayerTurnCheckerDelayBox(innerTable: Table) {
+    private fun addMultiplayerTurnCheckerDelayBox() {
         innerTable.add("Time between turn checks out-of-game (in minutes)".toLabel())
 
         val checkDelaySelectBox = SelectBox<Int>(skin)
@@ -285,7 +285,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         }
     }
 
-    private fun addLanguageSelectBox(innerTable: Table) {
+    private fun addLanguageSelectBox() {
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         UncivGame.Current.translations.percentCompleteOfLanguages
