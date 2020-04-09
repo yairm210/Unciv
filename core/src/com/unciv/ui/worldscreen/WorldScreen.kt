@@ -323,6 +323,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun displayTutorialsOnUpdate() {
         UncivGame.Current.crashController.showDialogIfNeeded()
 
+        val startTime = System.nanoTime()
+
         displayTutorial(Tutorial.Introduction)
         if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
             for (enemyCity in viewingCiv.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
@@ -340,6 +342,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker })
             displayTutorial(Tutorial.Workers)
+
+        println("displayTutorialsOnUpdate: ${System.nanoTime() - startTime}ns")
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -540,6 +544,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
+        val startTime = System.nanoTime()
+
         val shownTutorials = UncivGame.Current.settings.tutorialsShown
         displayTutorial(Tutorial.SlowStart)
         if("_BarbarianEncountered" !in shownTutorials
@@ -564,6 +570,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             displayTutorial(Tutorial.SiegeUnits)
         if(viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units"))
             displayTutorial(Tutorial.Embarking)
+
+        println("showTutorialsOnNextTurn: ${System.nanoTime() - startTime}ns")
     }
 
     private fun backButtonAndESCHandler() {
