@@ -573,7 +573,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // Also, the reaction of other popups like 'disband this unit' to back/esc feels nicer this way.
         // After removeListener just in case this is slow (enumerating all stage actors)
         if (hasOpenPopups()) {
-            closeAllPopups()
+            closeOneVisiblePopup()
             return
         }
 
