@@ -167,7 +167,7 @@ class CivilizationInfo {
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      */
     fun getCivResourcesByName():HashMap<String,Int> {
-        val hashMap = HashMap<String,Int>()
+        val hashMap = HashMap<String,Int>(gameInfo.ruleSet.tileResources.size)
         for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount

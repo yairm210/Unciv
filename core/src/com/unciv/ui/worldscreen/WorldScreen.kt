@@ -326,22 +326,29 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val startTime = System.nanoTime()
 
         displayTutorial(Tutorial.Introduction)
-        if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
-            for (enemyCity in viewingCiv.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() }.flatMap { it.cities }) {
-                if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
-                                .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv} })
-                    displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit)
-            }
+
+        displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
+            // diplomacy is a HashMap, cities a List - so sequences should help
+            // .flatMap { it.getUnits().asSequence() }  is not a good idea because getUnits constructs an ArrayList dynamically
+            viewingCiv.diplomacy.values.asSequence()
+                    .filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .map { it.otherCiv() }
+                    // we're now lazily enumerating over CivilizationInfo's we're at war with
+                    .flatMap { it.cities.asSequence() }
+                    // ... all *their* cities
+                    .filter { it.health == 1 }
+                    // ... those ripe for conquering
+                    .flatMap { it.getCenterTile().getTilesInDistance(2).asSequence() }
+                    // ... all tiles around those in range of an average melee unit
+                    // -> and now we look for a unit that could do the conquering because it's ours
+                    //    no matter whether civilian, air or ranged, tell user he needs melee
+                    .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv} }
         }
-        if(viewingCiv.cities.any { it.hasJustBeenConquered })
-            displayTutorial(Tutorial.AfterConquering)
+        displayTutorial(Tutorial.AfterConquering) { viewingCiv.cities.any{it.hasJustBeenConquered} }
 
-        if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 })
-            displayTutorial(Tutorial.InjuredUnits)
+        displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker })
-            displayTutorial(Tutorial.Workers)
+        displayTutorial(Tutorial.Workers) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker } }
 
         println("displayTutorialsOnUpdate: ${System.nanoTime() - startTime}ns")
     }
@@ -546,30 +553,25 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun showTutorialsOnNextTurn(){
         val startTime = System.nanoTime()
 
-        val shownTutorials = UncivGame.Current.settings.tutorialsShown
         displayTutorial(Tutorial.SlowStart)
-        if("_BarbarianEncountered" !in shownTutorials
-                && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } })
-            displayTutorial(Tutorial.BarbarianEncountered)
-        if(viewingCiv.cities.size > 2) displayTutorial(Tutorial.RoadsAndRailroads)
-        if(viewingCiv.getHappiness() < 5) displayTutorial(Tutorial.Happiness)
-        if(viewingCiv.getHappiness() < 0) displayTutorial(Tutorial.Unhappiness)
-        if(viewingCiv.goldenAges.isGoldenAge()) displayTutorial(Tutorial.GoldenAge)
-        if(gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits) displayTutorial(Tutorial.IdleUnits)
-        if(gameInfo.turns >= 100) displayTutorial(Tutorial.ContactMe)
-        val resources = viewingCiv.getCivResources()
-        if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorial(Tutorial.LuxuryResource)
-        if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorial(Tutorial.StrategicResource)
-        if("Enemy_City" !in shownTutorials
-                && viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
-                        .flatMap { it.cities }.any { viewingCiv.exploredTiles.contains(it.location) })
-            displayTutorial(Tutorial.EnemyCity)
-        if(viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts"))
-            displayTutorial(Tutorial.ApolloProgram)
-        if(viewingCiv.getCivUnits().any { it.type == UnitType.Siege })
-            displayTutorial(Tutorial.SiegeUnits)
-        if(viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units"))
-            displayTutorial(Tutorial.Embarking)
+        displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
+        displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
+        displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }
+        displayTutorial(Tutorial.Unhappiness) { viewingCiv.getHappiness() < 0 }
+        displayTutorial(Tutorial.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
+        displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits }
+        displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
+        val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
+        val test = viewingCiv.getCivResources()
+        displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType==ResourceType.Luxury } }
+        displayTutorial(Tutorial.StrategicResource) { resources.any { it.resource.resourceType==ResourceType.Strategic} }
+        displayTutorial(Tutorial.EnemyCity) {
+            viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
+                .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
+        }
+        displayTutorial(Tutorial.ApolloProgram) { viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts") }
+        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
+        displayTutorial(Tutorial.Embarking) { viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units") }
 
         println("showTutorialsOnNextTurn: ${System.nanoTime() - startTime}ns")
     }
