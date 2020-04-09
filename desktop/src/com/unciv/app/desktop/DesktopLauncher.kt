@@ -80,8 +80,8 @@ internal object DesktopLauncher {
                 else -> sequenceOf()
             }
 
-        val atlasFile = File(output + File.separator + packFileName + ".atlas")
-        if (atlasFile.exists()) {
+        val atlasFile = File("$output${File.separator}$packFileName.atlas")
+        if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
             val atlasModTime = atlasFile.lastModified()
             if (!File(input).listTree().any { it.extension in listOf("png","jpg","jpeg") && it.lastModified() > atlasModTime }) return
         }
