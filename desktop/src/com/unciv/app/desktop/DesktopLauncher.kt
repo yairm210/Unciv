@@ -58,19 +58,34 @@ internal object DesktopLauncher {
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
 
         if (File("../Images").exists()) // So we don't run this from within a fat JAR
-            TexturePacker.process(settings, "../Images", ".", "game")
+            packImagesIfOutdated(settings, "../Images", ".", "game")
 
         // pack for mods as well
         val modDirectory = File("mods")
         if(modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!){
                 if (!mod.isHidden && File(mod.path + "/Images").exists())
-                    TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
+                    packImagesIfOutdated(settings, mod.path + "/Images", mod.path, "game")
             }
         }
 
         val texturePackingTime = System.currentTimeMillis() - startTime
         println("Packing textures - "+texturePackingTime+"ms")
+    }
+
+    private fun packImagesIfOutdated (settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
+        fun File.listTree(): Sequence<File> = when {
+                this.isFile -> sequenceOf(this)
+                this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
+                else -> sequenceOf()
+            }
+
+        val atlasFile = File(output + File.separator + packFileName + ".atlas")
+        if (atlasFile.exists()) {
+            val atlasModTime = atlasFile.lastModified()
+            if (!File(input).listTree().any { it.extension in listOf("png","jpg","jpeg") && it.lastModified() > atlasModTime }) return
+        }
+        TexturePacker.process(settings, input, output, packFileName )
     }
 
     private fun tryActivateDiscord(game: UncivGame) {
