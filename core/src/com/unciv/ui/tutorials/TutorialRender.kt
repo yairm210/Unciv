@@ -3,6 +3,7 @@ package com.unciv.ui.tutorials
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -24,6 +25,7 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
             closeAction()
         } else {
             val tutorialPopup = Popup(screen)
+            tutorialPopup.name = Constants.tutorialPopupNamePrefix + tutorialName
 
             if (Gdx.files.internal("ExtraImages/$tutorialName").exists()) {
                 tutorialPopup.add(ImageGetter.getExternalImage(tutorialName)).row()

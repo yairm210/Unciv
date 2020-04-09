@@ -22,7 +22,23 @@ class TutorialController(screen: CameraStageBaseScreen) {
         showTutorialIfNeeded()
     }
 
+    fun removeTutorial(tutorialName: String) {
+        Tutorial.valueOf(tutorialName)?.let { removeTutorial(it) }
+    }
+    fun removeTutorial(tutorial: Tutorial) {
+        isTutorialShowing = false
+        tutorialQueue.remove(tutorial)
+        with(UncivGame.Current.settings) {
+            if (!tutorialsShown.contains(tutorial.name)) {
+                tutorialsShown.add(tutorial.name)
+                save()
+            }
+        }
+        showTutorialIfNeeded()
+    }
+
     private fun showTutorialIfNeeded() {
+        if (!UncivGame.Current.settings.showTutorials) return
         val tutorial = tutorialQueue.firstOrNull()
         if (tutorial == null) {
             allTutorialsShowedCallback?.invoke()
@@ -30,15 +46,7 @@ class TutorialController(screen: CameraStageBaseScreen) {
             isTutorialShowing = true
             val texts = getTutorial(tutorial)
             tutorialRender.showTutorial(TutorialForRender(tutorial, texts)) {
-                tutorialQueue.remove(tutorial)
-                isTutorialShowing = false
-                with(UncivGame.Current.settings) {
-                    if (!tutorialsShown.contains(tutorial.name)) {
-                        tutorialsShown.add(tutorial.name)
-                        save()
-                    }
-                }
-                showTutorialIfNeeded()
+                removeTutorial(tutorial)
             }
         }
     }

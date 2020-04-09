@@ -52,4 +52,6 @@ object Constants {
     val unitActionAutomation = "Automate"
     val unitActionExplore = "Explore"
     val futureTech = "Future Tech"
+
+    const val tutorialPopupNamePrefix = "Tutorial: "
 }
