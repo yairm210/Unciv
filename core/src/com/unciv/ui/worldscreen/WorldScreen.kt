@@ -323,8 +323,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun displayTutorialsOnUpdate() {
         UncivGame.Current.crashController.showDialogIfNeeded()
 
-        val startTime = System.nanoTime()
-
         displayTutorial(Tutorial.Introduction)
 
         displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
@@ -349,8 +347,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
         displayTutorial(Tutorial.Workers) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker } }
-
-        println("displayTutorialsOnUpdate: ${System.nanoTime() - startTime}ns")
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -551,8 +547,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
-        val startTime = System.nanoTime()
-
         displayTutorial(Tutorial.SlowStart)
         displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
         displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
@@ -572,8 +566,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.ApolloProgram) { viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts") }
         displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units") }
-
-        println("showTutorialsOnNextTurn: ${System.nanoTime() - startTime}ns")
     }
 
     private fun backButtonAndESCHandler() {
