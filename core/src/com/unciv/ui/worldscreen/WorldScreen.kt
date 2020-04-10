@@ -576,7 +576,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if (hasOpenPopups()) {
             val closedName = closeOneVisiblePopup() ?: return
             if (closedName.startsWith(Constants.tutorialPopupNamePrefix)) {
-                tutorialController.removeTutorial(closedName.substring(Constants.tutorialPopupNamePrefix.length))
+                closedName.removePrefix(Constants.tutorialPopupNamePrefix)
+                tutorialController.removeTutorial(closedName)
             }
             return
         }
