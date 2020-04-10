@@ -450,8 +450,9 @@ class MapUnit {
         attacksThisTurn = 0
         due = true
 
-        // Wake sleeping units if there's an enemy nearby
-        if (isSleeping() && currentTile.getTilesInDistance(2).any {
+        // Wake sleeping units if there's an enemy nearby and civilian is not protected
+        if (isSleeping() && (!type.isCivilian() || currentTile.militaryUnit == null) &&
+                currentTile.getTilesInDistance(2).any {
                     it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(civInfo)
                 })
             action = null
