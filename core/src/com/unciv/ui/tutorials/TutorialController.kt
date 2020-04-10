@@ -15,9 +15,6 @@ class TutorialController(screen: CameraStageBaseScreen) {
     private val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
 
     fun showTutorial(tutorial: Tutorial) {
-        if (!UncivGame.Current.settings.showTutorials) return
-        if (UncivGame.Current.settings.tutorialsShown.contains(tutorial.name)) return
-
         tutorialQueue.add(tutorial)
         showTutorialIfNeeded()
     }
