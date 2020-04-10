@@ -581,7 +581,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits }
         displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
         val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
-        val test = viewingCiv.getCivResources()
         displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType==ResourceType.Luxury } }
         displayTutorial(Tutorial.StrategicResource) { resources.any { it.resource.resourceType==ResourceType.Strategic} }
         displayTutorial(Tutorial.EnemyCity) {
