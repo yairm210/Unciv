@@ -492,7 +492,7 @@
 		"movement": 3,
 		"strength": 21,
 		"cost": 120,
-		"requiredTech": "Metal casting",
+		"requiredTech": "Metal Casting",
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Metallurgy",
 		"requiredResource": "Iron",
