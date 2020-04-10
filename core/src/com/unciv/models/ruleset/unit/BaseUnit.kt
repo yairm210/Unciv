@@ -1,12 +1,12 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.IHasReplaces
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
@@ -15,7 +15,7 @@ import com.unciv.models.stats.INamed
 
 /** This is the basic info of the units, as specified in Units.json,
  in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
-class BaseUnit : INamed, IConstruction {
+class BaseUnit : INamed, IHasReplaces, IConstruction {
 
     override lateinit var name: String
     var cost: Int = 0
@@ -33,7 +33,7 @@ class BaseUnit : INamed, IConstruction {
     var promotions =HashSet<String>()
     var obsoleteTech:String?=null
     var upgradesTo:String? = null
-    var replaces:String?=null
+    override var replaces:String?=null
     var uniqueTo:String?=null
     var attackSound:String?=null
 

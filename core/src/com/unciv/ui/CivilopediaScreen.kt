@@ -10,7 +10,7 @@ import com.unciv.ui.utils.*
 import java.util.*
 
 class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
-    class CivilopediaEntry(var name: String, var description: String, var image: Actor? = null)
+    class CivilopediaEntry(var name: String, var description: String, var image: Actor? = null, var sortHint: Int = 0)
 
     private val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
     private val categoryToButtons = LinkedHashMap<String, Button>()
@@ -21,7 +21,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     fun select(category: String) {
         entrySelectTable.clear()
         for (entry in categoryToEntries[category]!!
-                .sortedBy { it.name.tr() }){  // Alphabetical order of localized names
+                .sortedWith(compareBy({ it.sortHint },{ it.name.tr() }))  // Alphabetical order of localized names
+        ) {
             val entryButton = Button(skin)
             if(entry.image!=null)
                 entryButton.add(entry.image).size(50f).padRight(10f)
@@ -31,6 +32,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             }
             entrySelectTable.add(entryButton).left().row()
         }
+        description.setText("")
     }
 
     init {
@@ -69,7 +71,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset)) }
         categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset,false),
-                        ImageGetter.getImprovementIcon(it.name,50f)) }
+                        ImageGetter.getImprovementIcon(it.name,50f),
+                        it.sortHint ) }
         categoryToEntries["Units"] = ruleset.units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
                         ImageGetter.getConstructionImage(it.name)) }

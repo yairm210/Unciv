@@ -10,7 +10,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import kotlin.math.pow
 
-class Building : NamedStats(), IConstruction{
+class Building : NamedStats(), IConstruction, IHasReplaces {
 
     var requiredTech: String? = null
 
@@ -33,7 +33,7 @@ class Building : NamedStats(), IConstruction{
     var cityStrength=0
     var cityHealth=0
     var xpForNewUnits=0
-    var replaces:String?=null
+    override var replaces:String?=null
     var uniqueTo:String?=null
     var quote:String=""
     private var providesFreeBuilding: String? = null

@@ -12,6 +12,10 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.collections.LinkedHashMap
 import kotlin.collections.set
 
 class Ruleset() {
@@ -44,18 +48,79 @@ class Ruleset() {
         return hashMap
     }
 
+    private fun <T : INamed, C: Collection<T>> createHashmap(items: C): LinkedHashMap<String, T> {
+        val hashMap = LinkedHashMap<String, T>()
+        for (item in items)
+            hashMap[item.name] = item
+        return hashMap
+    }
+
+    private fun <T> mergeByReplaces (base: LinkedHashMap<String, T>, new: LinkedHashMap<String, T>)
+                where T: IHasReplaces, T: INamed {
+        // Special ordering: Uniques directly after their normal counterpart, otherwise by load order
+        if (base.isEmpty()) {
+            base.putAll(new)
+            return
+        }
+        val newArray = ArrayList<T>(base.size + new.size)
+        newArray.addAll(base.values)
+        new.values.forEach { item ->
+            var index = newArray.size
+            if (item.replaces != null) {
+                index = 1 + newArray.indexOfFirst { it.name == item.replaces }
+                if (index == 0 ) index = newArray.size
+            }
+            newArray.add(index, item)
+        }
+        base.clear()
+        base.putAll(createHashmap(newArray))
+    }
+
+    private fun <T> mergeBySortHint (base: LinkedHashMap<String, T>, new: LinkedHashMap<String, T>)
+                where T: IHasSortHint, T: INamed {
+        // Special ordering: sortHint then load order - so Mods can insert in a controlled manner
+        if (base.isEmpty()) {
+            base.putAll(new)
+            return
+        }
+        val list = listOf(base, new)
+                .flatMap { it.values }
+                .sortedBy { it.sortHint }
+        base.clear()
+        base.putAll(createHashmap(list))
+    }
+
+    private fun <T: INamed> mergeNewToTop (base: LinkedHashMap<String, T>, new: LinkedHashMap<String, T>) {
+        // Special ordering: mods-added first
+        if (base.isEmpty()) {
+            base.putAll(new)
+            return
+        }
+        val baseClone = LinkedHashMap<String, T>()
+        baseClone.putAll(base)
+        base.clear()
+        base.putAll(new.filter { it.key !in baseClone.keys })
+        base.putAll(baseClone)
+        base.putAll(new.filter { it.key in baseClone.keys })
+    }
+
     fun add(ruleset: Ruleset) {
-        buildings.putAll(ruleset.buildings)
-        difficulties.putAll(ruleset.difficulties)
-        nations.putAll(ruleset.nations)
-        policyBranches.putAll(ruleset.policyBranches)
-        technologies.putAll(ruleset.technologies)
-        buildings.putAll(ruleset.buildings)
-        terrains.putAll(ruleset.terrains)
-        tileImprovements.putAll(ruleset.tileImprovements)
-        tileResources.putAll(ruleset.tileResources)
-        unitPromotions.putAll(ruleset.unitPromotions)
-        units.putAll(ruleset.units)
+        // The ruleset member collections maintain inherent load order. Some are displayed without sorting.
+        // The effect may not be desirable for mods - their items would come last.
+        // Especially in the case of Improvements - they'd get listed after e.g. Removals.
+        // Thus the merge functions - they try to preserve load order while still placing items
+        // defined by mods in a place not too surprising to the player, and preserving the
+        // ability of mods to overwrite an existing definition.
+        mergeByReplaces (buildings, ruleset.buildings)
+        mergeBySortHint (difficulties, ruleset.difficulties)
+        mergeNewToTop (nations, ruleset.nations)
+        policyBranches.putAll(ruleset.policyBranches)   // special display
+        technologies.putAll(ruleset.technologies)       // special display
+        terrains.putAll(ruleset.terrains)               // mod-terrain goes to the end
+        mergeBySortHint (tileImprovements, ruleset.tileImprovements)
+        tileResources.putAll(ruleset.tileResources)     // mod-resources go to the end
+        unitPromotions.putAll(ruleset.unitPromotions)   // mod-promotions to the end
+        mergeByReplaces(units, ruleset.units)
     }
 
     fun clear() {
@@ -64,7 +129,6 @@ class Ruleset() {
         nations.clear()
         policyBranches.clear()
         technologies.clear()
-        buildings.clear()
         terrains.clear()
         tileImprovements.clear()
         tileResources.clear()
@@ -171,12 +235,14 @@ object RulesetCache :HashMap<String,Ruleset>(){
 
     fun getComplexRuleset(mods:Collection<String>): Ruleset {
         val newRuleset = Ruleset()
+        // Include base ruleset first so mods can overwrite existing items
+        // A nice display order must be handled separately
+        newRuleset.add(getBaseRuleset())
         for(mod in mods)
             if(containsKey(mod)) {
                 newRuleset.add(this[mod]!!)
-                newRuleset.mods+=mod
+                newRuleset.mods += mod
             }
-        newRuleset.add(getBaseRuleset())
         return newRuleset
     }
 }

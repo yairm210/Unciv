@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.ruleset.IHasSortHint
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.NamedStats
@@ -8,7 +9,7 @@ import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.math.roundToInt
 
-class TileImprovement : NamedStats() {
+class TileImprovement : NamedStats(), IHasSortHint {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
     var techRequired: String? = null
@@ -17,6 +18,7 @@ class TileImprovement : NamedStats() {
     var improvingTechStats: Stats? = null
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()
+    override var sortHint = 10
 
     private val turnsToBuild: Int = 0 // This is the base cost.
 

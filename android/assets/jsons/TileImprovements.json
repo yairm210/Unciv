@@ -82,23 +82,25 @@
 
 	// Military improvement
 	{
-		name: "Fort",
-		terrainsCanBeBuiltOn: ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
-		turnsToBuild: 6,
-		techRequired: "Engineering",
-		uniques: ["Gives a defensive bonus of 50%"]
+		"name": "Fort",
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
+		"turnsToBuild": 6,
+		"techRequired": "Engineering",
+		"uniques": ["Gives a defensive bonus of 50%"]
 	},
 
 	// Transportation
 	{
 		"name": "Road",
 		"turnsToBuild": 4,
-		"techRequired": "The Wheel"
+		"techRequired": "The Wheel",
+		"sortHint": 20
 	},
 	{
 		"name": "Railroad",
 		"turnsToBuild": 4,
-		"techRequired": "Railroad"
+		"techRequired": "Railroad",
+		"sortHint": 20
 	},
 	
 	// Removals
@@ -106,35 +108,41 @@
 		"name": "Remove Forest",
 		"turnsToBuild": 4,
 		"terrainsCanBeBuiltOn": ["Forest"],
-		"techRequired": "Mining"
+		"techRequired": "Mining",
+		"sortHint": 30
 	},
 	{
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
 		"terrainsCanBeBuiltOn": ["Jungle"],
-		"techRequired": "Bronze Working"
+		"techRequired": "Bronze Working",
+		"sortHint": 30
 	},
 	{
 		"name": "Remove Fallout",
 		"turnsToBuild": 8,
 		"terrainsCanBeBuiltOn": ["Fallout"],
-		"techRequired": "Agriculture"
+		"techRequired": "Agriculture",
+		"sortHint": 30
 	},
 	{
 		"name": "Remove Marsh",
 		"turnsToBuild": 6,
 		"terrainsCanBeBuiltOn": ["Marsh"],
-		"techRequired": "Bronze Working"
+		"techRequired": "Bronze Working",
+		"sortHint": 30
 	},
 
 	// These are unique and have unique in-game checks related to them
 	{
 		"name": "Remove Road",
-		"turnsToBuild": 2
+		"turnsToBuild": 2,
+		"sortHint": 40
 	},
 	{
 		"name": "Remove Railroad",
-		"turnsToBuild": 2
+		"turnsToBuild": 2,
+		"sortHint": 40
 	},
 	
 	// Great Person improvements
@@ -142,28 +150,33 @@
 		"name": "Academy",
 		"science": 8,
 		"improvingTech": "Scientific Theory",
-		"improvingTechStats": {"science": 2}
+		"improvingTechStats": {"science": 2},
+		"sortHint": 15
 	},
 	{
 		"name": "Landmark",
-		"culture": 6
+		"culture": 6,
+		"sortHint": 15
 	},
 	{
 		"name": "Manufactory",
 		"production": 4,
 		"improvingTech": "Chemistry",
-		"improvingTechStats": {"production": 1}
+		"improvingTechStats": {"production": 1},
+		"sortHint": 15
 	},
 	{
 		"name": "Customs house",
 		"gold": 4,
 		"improvingTech": "Economics",
-		"improvingTechStats": {"gold": 1}
+		"improvingTechStats": {"gold": 1},
+		"sortHint": 15
 	},
 	{
-		name: "Citadel",
-		uniques: ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
+		"name": "Citadel",
+		"uniques": ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"],
 		// TODO (G&K): adds every tile around it to your territory
+		"sortHint": 15
 	},
 
 	//Civilization unique improvements
@@ -190,7 +203,7 @@
 		//It can be colored in lemon
 	},
 	
-	{ "name": "Ancient ruins" },
-	{ "name": "City ruins" },
-	{ "name": "Barbarian encampment" }
+	{ "name": "Ancient ruins", "sortHint": 99 },
+	{ "name": "City ruins", "sortHint": 99 },
+	{ "name": "Barbarian encampment", "sortHint": 99 }
 ]

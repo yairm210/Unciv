@@ -3,7 +3,7 @@ package com.unciv.models.ruleset
 import com.unciv.models.stats.INamed
 import java.util.*
 
-class Difficulty: INamed {
+class Difficulty: INamed, IHasSortHint {
     override lateinit var name: String
     var baseHappiness: Int = 0
     var extraHappinessPerLuxury: Float = 0f
@@ -25,4 +25,5 @@ class Difficulty: INamed {
     var aisExchangeTechs = false
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
+    override var sortHint = 100
 }
