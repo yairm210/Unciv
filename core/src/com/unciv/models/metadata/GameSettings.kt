@@ -33,6 +33,7 @@ class GameSettings {
     var multiplayerTurnCheckerDelayInMinutes = 5
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
+    var isFreshlyCreated = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -42,7 +43,7 @@ class GameSettings {
     }
 
     fun save(){
-        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+        if (!isFreshlyCreated && Gdx.app.type == Application.ApplicationType.Desktop) {
             windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
         }
         GameSaver.setGeneralSettings(this)
