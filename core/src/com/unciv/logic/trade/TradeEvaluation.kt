@@ -25,7 +25,7 @@ class TradeEvaluation{
 
         fun hasResource(tradeOffer: TradeOffer): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
-            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= tradeOffer.amount
+            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= 0
         }
 
         when(tradeOffer.type){
