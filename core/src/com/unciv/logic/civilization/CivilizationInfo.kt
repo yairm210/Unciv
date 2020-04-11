@@ -403,6 +403,7 @@ class CivilizationInfo {
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", Color.GOLD)
             }
         }
+        updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
     }
 
     fun endTurn() {
