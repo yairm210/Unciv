@@ -10,7 +10,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
 
-        if ((from.isLand != to.isLand) && unit.type.isLandUnit())
+        if ((from.isLand != to.isLand) && unit.type.isLandUnit() &&
+                (unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
         var extraCost = 0f
@@ -37,6 +38,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return 4f + extraCost
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
+            return 1 / 2f + extraCost
+
+        if (unit.doubleMovementInSnowTundraAndHills && to.baseTerrain == Constants.hill)
+            return 1f + extraCost // usually hills take 2
+        if (unit.doubleMovementInSnowTundraAndHills && (to.baseTerrain == Constants.snow || to.baseTerrain == Constants.tundra))
             return 1 / 2f + extraCost
 
         return to.getLastTerrain().movementCost.toFloat() + extraCost // no road

@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
@@ -183,8 +184,13 @@ object UnitActions {
                     }
                     tile.improvement = null
                     if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
-                    if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+
+                    if (!unit.hasUnique("No movement cost to pillage") &&
+                            (!unit.type.isMelee() || unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
+                                    unit.useMovementPoints(1f)
+
                     unit.healBy(25)
+
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
     }
 

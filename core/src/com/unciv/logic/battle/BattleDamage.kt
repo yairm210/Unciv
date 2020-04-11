@@ -125,7 +125,7 @@ object BattleDamage {
                 else modifiers["Attacker Bonus"] = bonus
             }
 
-            if(attacker.unit.isEmbarked())
+            if(attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
                 modifiers["Landing"] = -0.5f
 
             if (attacker.isMelee()) {
@@ -206,6 +206,14 @@ object BattleDamage {
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
 
+        if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
+                (tile.baseTerrain == Constants.snow
+                        || tile.baseTerrain == Constants.tundra
+                        || tile.baseTerrain == Constants.hill) &&
+                // except when there is a vegetation
+                (tile.terrainFeature != Constants.forest
+                        || tile.terrainFeature != Constants.jungle))
+            modifiers[tile.baseTerrain] = 0.25f
 
         if(unit.getCivInfo().nation.unique == UniqueAbility.WAYFINDING && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
             modifiers["Moai"] = 0.1f
