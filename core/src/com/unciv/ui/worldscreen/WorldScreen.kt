@@ -30,6 +30,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
+import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
@@ -599,7 +600,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // Also, the reaction of other popups like 'disband this unit' to back/esc feels nicer this way.
         // After removeListener just in case this is slow (enumerating all stage actors)
         if (hasOpenPopups()) {
-            closeAllPopups()
+            val closedName = closeOneVisiblePopup() ?: return
+            if (closedName.startsWith(Constants.tutorialPopupNamePrefix)) {
+                closedName.removePrefix(Constants.tutorialPopupNamePrefix)
+                tutorialController.removeTutorial(closedName)
+            }
             return
         }
 

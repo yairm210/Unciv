@@ -67,7 +67,8 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
 }
 
 fun CameraStageBaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
-fun CameraStageBaseScreen.closeAllPopups() { for (popup in popups) popup.close() }
+fun CameraStageBaseScreen.closeAllPopups() = popups.forEach { it.close() }
+fun CameraStageBaseScreen.closeOneVisiblePopup() = popups.lastOrNull { it.isVisible }?.apply { close() }?.name
 
 val CameraStageBaseScreen.popups: List<Popup>
     get() = stage.actors.filterIsInstance<Popup>()
