@@ -136,6 +136,9 @@
 		"name": "Remove Railroad",
 		"turnsToBuild": 2
 	},
+	{
+		"name": "Cancel improvement order",
+	},
 	
 	// Great Person improvements
 	{
