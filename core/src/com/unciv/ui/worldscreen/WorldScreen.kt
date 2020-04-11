@@ -572,6 +572,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
+        if (!UncivGame.Current.settings.showTutorials) return
         displayTutorial(Tutorial.SlowStart)
         displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
         displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
@@ -581,7 +582,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits }
         displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
         val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
-        val test = viewingCiv.getCivResources()
         displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType==ResourceType.Luxury } }
         displayTutorial(Tutorial.StrategicResource) { resources.any { it.resource.resourceType==ResourceType.Strategic} }
         displayTutorial(Tutorial.EnemyCity) {
@@ -591,6 +591,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.ApolloProgram) { viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts") }
         displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units") }
+        displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
     }
 
     private fun backButtonAndESCHandler() {
