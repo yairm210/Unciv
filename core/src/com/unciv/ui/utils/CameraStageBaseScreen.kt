@@ -62,7 +62,12 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun displayTutorial(tutorial: Tutorial) = tutorialController.showTutorial(tutorial)
+    fun displayTutorial( tutorial: Tutorial, test: (()->Boolean)? = null ) {
+        if (!game.settings.showTutorials) return
+        if (game.settings.tutorialsShown.contains(tutorial.name)) return
+        if (test != null && !test()) return
+        tutorialController.showTutorial(tutorial)
+    }
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
@@ -86,7 +91,7 @@ open class CameraStageBaseScreen : Screen {
     fun onBackButtonClicked(action:()->Unit): InputListener {
         val listener = object : InputListener(){
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if(keycode == Input.Keys.BACK){
+                if(keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE){
                     action()
                     return true
                 }

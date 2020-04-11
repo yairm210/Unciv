@@ -19,22 +19,21 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (toOwner != null && to.isLand && toOwner.hasActiveGreatWall && civInfo.isAtWarWith(toOwner))
             extraCost += 1
 
-        if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
+        if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return 1 / 10f + extraCost
 
         if (from.hasConnection(civInfo) && to.hasConnection(civInfo))
         {
-            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
-            else return 1 / 2f + extraCost
+            return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
+            else 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
-        if (unit.doubleMovementInForestAndJungle && (to.baseTerrain == Constants.forest || to.baseTerrain == Constants.jungle))
-            return 1f + extraCost
+        if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
+            return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
         if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
-            return 1f + extraCost
+            return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
-        if (unit.roughTerrainPenalty
-                && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
+        if (unit.roughTerrainPenalty && to.isRoughTerrain())
             return 4f + extraCost
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)

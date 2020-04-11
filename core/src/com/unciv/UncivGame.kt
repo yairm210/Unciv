@@ -79,7 +79,7 @@ class UncivGame(
             translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
 
-            if (settings.userId == "") { // assign permanent user id
+            if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
                 settings.save()
             }
@@ -103,8 +103,9 @@ class UncivGame(
     }
 
     fun autoLoadGame() {
-        if (!GameSaver.getSave("Autosave").exists()) {
-            restoreSize()
+        // IMHO better test for fresh installs than Autosave.exists()
+        // e.g. should someone delete the settings file only or kill the language picker screen
+        if (settings.isFreshlyCreated) {
             return setScreen(LanguagePickerScreen())
         }
         try {

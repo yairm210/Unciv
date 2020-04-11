@@ -55,6 +55,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()
         stage.addActor(mapHolder)
+        stage.scrollFocus = mapHolder
 
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)

@@ -1,11 +1,11 @@
 package com.unciv.ui.worldscreen
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
@@ -13,7 +13,6 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max

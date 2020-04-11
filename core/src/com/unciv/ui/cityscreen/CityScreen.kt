@@ -1,7 +1,7 @@
 package com.unciv.ui.cityscreen
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -98,8 +98,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         updateAnnexAndRazeCityButton()
         updateTileGroups()
 
-        if (city.getCenterTile().getTilesAtDistance(4).any())
-            displayTutorial(Tutorial.CityRange)
+        displayTutorial(Tutorial.CityRange) { city.getCenterTile().getTilesAtDistance(4).any() }
     }
 
     private fun updateTileGroups() {

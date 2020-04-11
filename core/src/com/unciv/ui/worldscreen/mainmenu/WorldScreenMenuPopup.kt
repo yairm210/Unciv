@@ -65,13 +65,13 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         addSquareButton("Options".tr()){
-            WorldScreenOptionsPopup(worldScreen).open()
+            WorldScreenOptionsPopup(worldScreen).open(force = true)
             close()
         }.size(width,height)
         addSeparator()
 
         addSquareButton("Community"){
-            WorldScreenCommunityPopup(worldScreen).open()
+            WorldScreenCommunityPopup(worldScreen).open(force = true)
             close()
         }.size(width,height)
         addSeparator()
@@ -108,7 +108,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }
 
         mapEditorPopup.addCloseButton()
-        mapEditorPopup.open()
+        mapEditorPopup.open(force = true)
     }
 
 }

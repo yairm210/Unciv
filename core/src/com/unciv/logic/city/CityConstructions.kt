@@ -370,13 +370,12 @@ class CityConstructions {
     }
 
     fun addToQueue(constructionName: String) {
-        if (!isQueueFull()) {
-            if (isQueueEmpty() && currentConstruction == "" || currentConstruction == "Nothing") {
-                currentConstruction = constructionName
-                currentConstructionIsUserSet = true
-            } else
-                constructionQueue.add(constructionName)
-        }
+        if (isQueueFull()) return
+        if (isQueueEmpty() && currentConstruction == "" || currentConstruction == "Nothing") {
+            currentConstruction = constructionName
+            currentConstructionIsUserSet = true
+        } else
+            constructionQueue.add(constructionName)
     }
 
     fun removeFromQueue(constructionName: String) {
