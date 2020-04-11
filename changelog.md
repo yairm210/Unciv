@@ -1,3 +1,24 @@
+## 3.7.2
+
+By rh-github-2015:
+- Keyboard support for unit actions!
+- Can cancel improvments!
+- Better tracking of language picking
+- Conditionally pack images
+- Scroll panes autofocus
+- Code optimization
+
+By Jack Rainy:
+- Improved great improvement build rules
+- Fixed Woodsman promotion
+- Civilian units don't wake up from enemies if they're protected
+
+"Natural Wonders" tutorial - by Smashfanful & Jack Rainy
+
+Resources immediately come back after declined trades
+
+Translation updates
+
 ## 3.7.1
 
 Hopefully resolved #2361 - should work on 32-bit linux
