@@ -484,7 +484,6 @@
 		"attackSound": "metalhit"
 		//Aside from the Great Generals II promotion, Samurai should also create Fishing Boats (not now, surely)
 	},
-	/*
 	{
 		"name": "Berserker",
 		"replaces": "Longswordsman",
@@ -493,7 +492,7 @@
 		"movement": 3,
 		"strength": 21,
 		"cost": 120,
-		"requiredTech": "Steel",
+		"requiredTech": "Metal Casting",
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Metallurgy",
 		"requiredResource": "Iron",
@@ -503,7 +502,6 @@
 		"attackSound": "metalhit"
 		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
 	},
-	*/
 	{
 		"name": "Pikeman",
 		"unitType": "Melee",
@@ -894,10 +892,8 @@
 		"hurryCostModifier": 20,
 		"attackSound": "shot"
 	},
-	
-	/*
 	{
-		"name": "Norvegian Ski Infantry",
+		"name": "Norwegian Ski Infantry",
 		"unitType": "Melee",
 		"replaces": "Rifleman",
 		"uniqueTo": "Denmark",
@@ -907,11 +903,10 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["Bonus in Snow, Tundra and Hills"],
+		"uniques": ["+25% bonus in Snow, Tundra and Hills", "Double movement in Snow, Tundra and Hills"],
 		"hurryCostModifier": 20,
 		"attackSound": "shot"
 	},
-	*/
 	{
 		"name": "Cavalry",
 		"unitType": "Mounted",
