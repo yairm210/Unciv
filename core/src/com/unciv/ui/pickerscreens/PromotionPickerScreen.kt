@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.Tutorial
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.translations.tr
@@ -84,5 +85,7 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
 
         }
         topTable.add(availablePromotionsGroup)
+
+        displayTutorial(Tutorial.Experience)
     }
 }
