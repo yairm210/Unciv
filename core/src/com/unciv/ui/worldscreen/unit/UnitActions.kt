@@ -364,7 +364,9 @@ object UnitActions {
                         }
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { unit.currentMovement > 0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().impassable })
+                    }.takeIf { unit.currentMovement > 0f && !tile.isWater &&
+                            !tile.isCityCenter() && !tile.getLastTerrain().impassable &&
+                            tile.improvement != improvementName })
         }
         return null
     }
