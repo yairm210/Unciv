@@ -55,4 +55,7 @@ object Constants {
 
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
+
+    const val asciiEscape = '\u001B'        // Character Escape (not to be confused with Input.Keys.ESCAPE, a virtual key code)
+    const val asciiDelete = '\u007F'        // Character Delete
 }
