@@ -70,12 +70,14 @@ open class PickerScreen : CameraStageBaseScreen() {
 
         keyListener = getKeyboardListener()
         keyPressDispatcher = hashMapOf()
+        UncivGame.Current.worldScreen.pauseWASDListener = true
         stage.addListener(keyListener)
     }
 
     override fun dispose() {
         @Suppress ("UNNECESSARY_SAFE_CALL")
             stage?.removeListener(keyListener)    // Compiler says cannot ever be null but ?. is still necessary
+        UncivGame.Current.worldScreen.pauseWASDListener = false
         super.dispose()
     }
 

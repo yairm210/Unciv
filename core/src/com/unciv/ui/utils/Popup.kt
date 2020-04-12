@@ -50,11 +50,13 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         screen.stage.addActor(this)
         pack()
         center(screen.stage)
+        (screen as? WorldScreen)?.pauseWASDListener = true
         stage.addListener(keyListener)
     }
 
     open fun close() {
         stage?.removeListener(keyListener)
+        (screen as? WorldScreen)?.pauseWASDListener = false
         remove()
         if (screen.popups.isNotEmpty()) screen.popups[0].isVisible = true
     }

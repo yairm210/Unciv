@@ -64,6 +64,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     var shouldUpdate = false
 
     private var backButtonListener : InputListener
+    var pauseWASDListener = false
 
     // An initialized val always turned out to illegally be null...
     lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
@@ -160,7 +161,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 private val ALLOWED_KEYS = setOf(Input.Keys.W,Input.Keys.S,Input.Keys.A,Input.Keys.D)
 
                 override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                    if (keycode !in ALLOWED_KEYS) return false
+                    if (keycode !in ALLOWED_KEYS || pauseWASDListener) return false
 
                     pressedKeys.add(keycode)
                     if (infiniteAction == null) {
@@ -172,6 +173,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
                 fun whileKeyPressedLoop() {
+                    if (pauseWASDListener || pressedKeys.isEmpty()) {
+                        pressedKeys.clear()
+                        if (infiniteAction != null) {
+                            // stop the loop otherwise it keeps going even after removal
+                            infiniteAction?.finish()
+                            // remove and nil the action
+                            mapHolder.removeAction(infiniteAction)
+                            infiniteAction = null
+                        }
+                        return
+                    }
                     for (keycode in pressedKeys) {
                         when (keycode) {
                             Input.Keys.W -> mapHolder.scrollY -= amountToMove
@@ -185,15 +197,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
                     if (keycode !in ALLOWED_KEYS) return false
-
                     pressedKeys.remove(keycode)
-                    if (infiniteAction != null && pressedKeys.isEmpty()) {
-                        // stop the loop otherwise it keeps going even after removal
-                        infiniteAction?.finish()
-                        // remove and nil the action
-                        mapHolder.removeAction(infiniteAction)
-                        infiniteAction = null
-                    }
                     return true
                 }
 
