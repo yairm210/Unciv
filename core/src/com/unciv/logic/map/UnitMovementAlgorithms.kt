@@ -350,12 +350,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // AIs won't enter city-state's border.
         }
 
-        val unitsInTile = tile.getUnits()
-        if (unitsInTile.isNotEmpty()) {
-            val firstUnit = unitsInTile.first()
-            if (firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
-                return false
-        }
+        val firstUnit = tile.getUnits().firstOrNull()
+        if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+            return false
 
         return true
     }
