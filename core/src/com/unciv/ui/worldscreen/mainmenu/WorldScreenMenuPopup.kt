@@ -100,9 +100,10 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         mapEditorPopup.addButton("Load map") {
             val loadMapScreen = LoadMapScreen(null)
             loadMapScreen.closeButton.isVisible = true
-            loadMapScreen.closeButton.onClick {
+            loadMapScreen.setCloseAction {
                 UncivGame.Current.setWorldScreen()
-                loadMapScreen.dispose() }
+                loadMapScreen.dispose()
+            }
             UncivGame.Current.setScreen(loadMapScreen)
             mapEditorPopup.close()
         }
