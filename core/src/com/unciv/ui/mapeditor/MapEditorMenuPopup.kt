@@ -70,6 +70,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
                 }
             }
         }
+        saveMapButton.isEnabled = mapNameEditor.text.isNotEmpty()
         add(saveMapButton).row()
         mapNameEditor.addListener {
             mapEditorScreen.mapName = mapNameEditor.text
