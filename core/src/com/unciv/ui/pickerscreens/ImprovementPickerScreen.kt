@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.logic.map.RoadStatus
@@ -37,8 +36,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             }
         }
 
-        rightSideButton.setText("Pick improvement".tr())
-        rightSideButton.onClick {
+        setAcceptButtonAction("Pick improvement") {
             accept(selectedImprovement)
         }
 
@@ -68,12 +66,14 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             group.add(labelText.toLabel()).pad(10f)
 
             group.touchable = Touchable.enabled
-            group.onClick {
+            val action = {
                 selectedImprovement = improvement
                 pick(improvement.name.tr())
                 val ruleSet = tileInfo.tileMap.gameInfo.ruleSet
                 descriptionLabel.setText(improvement.getDescription(ruleSet))
             }
+            group.onClick (action)
+            registerKeyHandler (labelText, action)
 
             val pickNow = "Pick now!".toLabel()
             pickNow.onClick {

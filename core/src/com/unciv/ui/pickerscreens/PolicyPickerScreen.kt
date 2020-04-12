@@ -1,9 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.Tutorial
@@ -17,9 +15,15 @@ import com.unciv.ui.worldscreen.WorldScreen
 class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo = worldScreen.viewingCiv)
     : PickerScreen() {
     internal val viewingCiv: CivilizationInfo = civInfo
-    private var pickedPolicy: Policy? = null
+    private data class PickedPolicyAndButton (val policy: Policy, val button: Button)
+    private var pickedPolicy: PickedPolicyAndButton? = null
+    private var highlightedButton: Button? = null
+    private val virtualBranchBoxSizeX = 6
+    private val virtualBranchBoxSizeY = 8
 
     init {
+        arrowKeyStraightLineBias = 2
+
         val policies = viewingCiv.policies
         displayTutorial(Tutorial.CultureAndPolicies)
 
@@ -33,7 +37,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick(UncivSound.Policy) {
-            viewingCiv.policies.adopt(pickedPolicy!!)
+            viewingCiv.policies.adopt(pickedPolicy!!.policy)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if(game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()){
@@ -46,14 +50,19 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             rightSideButton.disable()
         
 
-
         topTable.row().pad(30f)
-
+        var branchRow = 0
+        var branchCol = 0
         for (branch in viewingCiv.gameInfo.ruleSet.policyBranches.values) {
-            if (branch.name == "Commerce") topTable.addSeparator()
+            if (branch.name == "Commerce") {
+                topTable.addSeparator()
+                branchRow = 1
+                branchCol = 0
+            }
             val branchGroup = Table()
             branchGroup.row().pad(20f)
-            branchGroup.add(getPolicyButton(branch, false)).row()
+            branchGroup.add(getPolicyButton(branch, false,
+                    branchCol * virtualBranchBoxSizeX + virtualBranchBoxSizeX/2, branchRow * virtualBranchBoxSizeY)).row()
 
             var currentRow = 1
             var currentColumn = 1
@@ -68,20 +77,24 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
                 if (policy.column > currentColumn) {
                     branchTable.add().colspan(policy.column - currentColumn) // empty space
                 }
-                branchTable.add(getPolicyButton(policy, true)).colspan(2)
+                branchTable.add(getPolicyButton(policy, true,
+                        branchCol * virtualBranchBoxSizeX + policy.column, branchRow * virtualBranchBoxSizeY + policy.row + 1)).colspan(2)
                 currentColumn = policy.column + 2
             }
             branchTable.pack()
             branchGroup.add(branchTable).height(150f).row()
 
-            branchGroup.add(getPolicyButton(branch.policies.last(), false)) // finisher
+            branchGroup.add(getPolicyButton(branch.policies.last(), false,
+                    branchCol * virtualBranchBoxSizeX + virtualBranchBoxSizeX/2, branchRow * virtualBranchBoxSizeY + 6)) // finisher
 
             topTable.add(branchGroup)
+            branchCol += 1
         }
         topTable.pack()
     }
 
-    private fun pickPolicy(policy: Policy) {
+    private fun pickPolicy(policyAndButton: PickedPolicyAndButton) {
+        val policy = policyAndButton.policy
         if (!worldScreen.isPlayersTurn
                 || viewingCiv.isDefeated()
                 || viewingCiv.policies.isAdopted(policy.name)
@@ -92,7 +105,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         } else {
             rightSideButton.enable()
         }
-        pickedPolicy = policy
+        pickedPolicy = policyAndButton
         var policyText = policy.name.tr() + "\r\n" + policy.description.tr() + "\r\n"
         if (!policy.name.endsWith("Complete")){
             if(policy.requires!!.isNotEmpty())
@@ -101,9 +114,10 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
                 policyText += ("{Unlocked at} {"+policy.branch.era.toString()+" era}").tr()
         }
         descriptionLabel.setText(policyText)
+        policyAndButton.button.highlight()
     }
 
-    private fun getPolicyButton(policy: Policy, image: Boolean): Button {
+    private fun getPolicyButton(policy: Policy, image: Boolean, x: Int, y: Int): Button {
         var policyButton = Button(skin)
         if (image) {
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name)
@@ -119,9 +133,22 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         {
             policyButton.color = Color.GRAY
         }
-        policyButton.onClick { pickPolicy(policy) }
+        val action =  { pickPolicy(PickedPolicyAndButton(policy,policyButton)) }
+        policyButton.onClick (action)
+        registerKeyHandler (policy.name.tr(), action, x, y)
         policyButton.pack()
         return policyButton
     }
 
+    private fun Button.highlight (highlight: Boolean = true) {
+        if (highlight) {
+            highlightedButton?.highlight(false)
+            highlightedButton = null
+        }
+        val newColor = if (highlight) Color.GOLDENROD else Color.WHITE
+        (this.children.firstOrNull { it is Image } as Image?)?.color = newColor
+        (this.children.firstOrNull { it is Label } as Label?)?.color = newColor
+        if (highlight)
+            highlightedButton = this
+    }
 }

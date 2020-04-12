@@ -58,4 +58,8 @@ object Constants {
 
     const val asciiEscape = '\u001B'        // Character Escape (not to be confused with Input.Keys.ESCAPE, a virtual key code)
     const val asciiDelete = '\u007F'        // Character Delete
+    const val asciiCtrlC  = '\u0003'        // Control-C: Save game to Clipboard
+    const val asciiCtrlV  = '\u0016'        // Control-V: Load game from Clipboard
+    const val asciiCtrlX  = '\u0018'        // Control-X: ?
+
 }

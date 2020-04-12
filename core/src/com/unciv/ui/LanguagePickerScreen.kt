@@ -2,6 +2,7 @@ package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
@@ -29,19 +30,22 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
         pack()
     }
 
-    fun update(chosenLanguage:String){
+    fun update(chosenLanguage:String, scrollPane: ScrollPane? = null){
         background = ImageGetter.getBackground( if(chosenLanguage==language) blue else darkBlue)
+        if (chosenLanguage==language) {
+            scrollPane?.scrollTo (x, y, width, height)
+        }
     }
 
 }
 
-class LanguagePickerScreen: PickerScreen(){
+class LanguagePickerScreen: PickerScreen() {
     var chosenLanguage = "English"
 
     private val languageTables = ArrayList<LanguageTable>()
 
     fun update(){
-        languageTables.forEach { it.update(chosenLanguage) }
+        languageTables.forEach { it.update(chosenLanguage, scrollPane) }
     }
 
     init {
@@ -62,16 +66,17 @@ class LanguagePickerScreen: PickerScreen(){
                 .sortedByDescending { it.percentComplete} )
 
         languageTables.forEach {
-            it.onClick {
+            val action = {
                 chosenLanguage = it.language
                 rightSideButton.enable()
                 update()
             }
+            it.onClick (action)
+            registerKeyHandler (it.language, action)
             topTable.add(it).pad(10f).row()
         }
 
-        rightSideButton.setText("Pick language".tr())
-        rightSideButton.onClick {
+        setAcceptButtonAction ("Pick language") {
             pickLanguage()
         }
     }

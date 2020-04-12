@@ -3,8 +3,10 @@ package com.unciv.ui.mapeditor
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
@@ -18,22 +20,24 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
     val deleteMapButton = TextButton("Delete map".tr(),skin)
 
     init {
-        rightSideButton.setText("Load map".tr())
-        rightSideButton.onClick {
+        setAcceptButtonAction("Load map") {
             UncivGame.Current.setScreen(MapEditorScreen(chosenMap))
             dispose()
         }
 
         val mapsTable = Table().apply { defaults().pad(10f) }
         for (map in MapSaver.getMaps()) {
-            val loadMapButton = TextButton(map, skin)
-            loadMapButton.onClick {
+            val selectMapButton = TextButton(map, skin)
+            val action = {
                 rightSideButton.enable()
                 chosenMap = map
                 deleteMapButton.enable()
                 deleteMapButton.color = Color.RED
+                descriptionLabel.setText(map)
             }
-            mapsTable.add(loadMapButton).row()
+            selectMapButton.onClick (action)
+            registerKeyHandler (map, action)
+            mapsTable.add(selectMapButton).row()
         }
         topTable.add(ScrollPane(mapsTable)).height(stage.height * 2 / 3)
                 .maxWidth(stage.width/2)
@@ -51,7 +55,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
         val couldNotLoadMapLabel = "Could not load map!".toLabel(Color.RED).apply { isVisible=false }
-        loadFromClipboardButton.onClick {
+        val loadFromClipboardAction = {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
@@ -62,22 +66,27 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
                 couldNotLoadMapLabel.isVisible=true
             }
         }
+        loadFromClipboardButton.onClick (loadFromClipboardAction)
         rightSideTable.add(loadFromClipboardButton).row()
         rightSideTable.add(couldNotLoadMapLabel).row()
+        registerKeyHandler (Constants.asciiCtrlV, loadFromClipboardAction)
 
-        deleteMapButton.onClick {
+        val deleteAction = {
             YesNoPopup("Are you sure you want to delete this map?", {
                 MapSaver.deleteMap(chosenMap)
                 UncivGame.Current.setScreen(LoadMapScreen(previousMap))
             }, this).open()
         }
+        deleteMapButton.onClick (deleteAction)
         deleteMapButton.disable()
         deleteMapButton.color = Color.RED
         rightSideTable.add(deleteMapButton).row()
+        val checkedDelAction = { if (deleteMapButton.touchable == Touchable.enabled) deleteAction() }
+        registerKeyHandler (Constants.asciiDelete, checkedDelAction)
 
         topTable.add(rightSideTable)
         if(previousMap==null) closeButton.isVisible=false
-        else closeButton.onClick { UncivGame.Current.setScreen(MapEditorScreen(previousMap)) }
+        else setCloseAction { UncivGame.Current.setScreen(MapEditorScreen(previousMap)) }
     }
 }
 

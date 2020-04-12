@@ -47,11 +47,25 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         scrollPane.setOverscroll(false,false)
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
-        createTechTable()
+        // per default show current/recent technology,
+        // and possibly select it to show description,
+        // which is very helpful when just discovered and clicking the notification
+        var centerAndSelect = false
+        var techToCenter = centerOnTech ?: civInfo.tech.currentTechnology()
+        if (techToCenter != null) {
+            // select only if there it doesn't mess up tempTechsToResearch
+            centerAndSelect = (civInfo.tech.isResearched(techToCenter.name) || civInfo.tech.techsToResearch.size <= 1)
+        } else {
+            // center on any possible technology which is ready for the research right now
+            val firstAvailable = researchableTechs.firstOrNull()
+            techToCenter = civInfo.gameInfo.ruleSet.technologies[firstAvailable]
+        }
+
+        createTechTable (techToCenter)
 
         setButtonsInfo()
-        rightSideButton.setText("Pick a tech".tr())
-        rightSideButton.onClick(UncivSound.Paper) {
+
+        setAcceptButtonAction ("Pick a tech", UncivSound.Paper) {
             game.settings.addCompletedTutorialTask("Pick technology")
             if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
             else civTech.techsToResearch = tempTechsToResearch
@@ -61,27 +75,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             dispose()
         }
 
-
-        // per default show current/recent technology,
-        // and possibly select it to show description,
-        // which is very helpful when just discovered and clicking the notification
-        val tech = centerOnTech ?: civInfo.tech.currentTechnology()
-        if (tech != null) {
-            // select only if there it doesn't mess up tempTechsToResearch
-            if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
-                selectTechnology(tech, true)
-            else centerOnTechnology(tech)
-        } else {
-            // center on any possible technology which is ready for the research right now
-            val firstAvailable = researchableTechs.firstOrNull()
-            val firstAvailableTech = civInfo.gameInfo.ruleSet.technologies[firstAvailable]
-            if (firstAvailableTech != null)
-                centerOnTechnology(firstAvailableTech)
+        if (techToCenter != null) {
+            if (centerAndSelect)
+                selectTechnology(techToCenter, true)
+            else centerOnTechnology(techToCenter)
         }
 
     }
 
-    private fun createTechTable() {
+    private fun createTechTable(techToCenter: Technology?) {
         val columns = civInfo.gameInfo.ruleSet.technologies.values.map { it.column!!.columnNumber}.max()!! +1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
@@ -108,8 +110,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                     val techButton = TechButton(tech.name, civTech, false)
 
                     techNameToButton[tech.name] = techButton
-                    techButton.onClick { selectTechnology(tech, false) }
+                    val action = { selectTechnology(tech, false) }
+                    techButton.onClick (action)
                     topTable.add(techButton)
+                    registerKeyHandler(tech.name,  {action(); centerOnTechnology(tech)}, j, i, tech == techToCenter)
                 }
             }
         }

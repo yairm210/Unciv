@@ -3,8 +3,8 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
@@ -15,35 +15,37 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
-    private var selectedPromotion: Promotion? = null
+    private data class PickedPromotionAndButton (val promotion: Promotion, val button: Button, val enable: Boolean)
+    private var selectedPromotion: PickedPromotionAndButton? = null
+    private var highlightedButton: Button? = null
+    private val promotionsForUnitType: List<Promotion>
 
-
-    fun acceptPromotion(promotion: Promotion?) {
-        unit.promotions.addPromotion(promotion!!.name)
-        if(unit.promotions.canBePromoted()) game.setScreen(PromotionPickerScreen(unit))
+    private fun acceptPromotion(promotion: Promotion?) {
+        if (promotion == null) return
+        unit.promotions.addPromotion (promotion.name)
+        if (unit.promotions.canBePromoted()) game.setScreen (PromotionPickerScreen(unit))
         else game.setWorldScreen()
         dispose()
-        game.worldScreen.shouldUpdate=true
+        game.worldScreen.shouldUpdate = true
     }
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
         setDefaultCloseAction()
 
-
-        rightSideButton.setText("Pick promotion".tr())
-        rightSideButton.onClick(UncivSound.Promote) {
-          acceptPromotion(selectedPromotion)
+        setAcceptButtonAction ("Pick promotion", UncivSound.Promote) {
+            acceptPromotion (selectedPromotion?.promotion)
         }
+
         val canBePromoted = unit.promotions.canBePromoted()
-        if(!canBePromoted)
+        if (!canBePromoted)
             rightSideButton.disable()
 
         val availablePromotionsGroup = Table()
         availablePromotionsGroup.defaults().pad(5f)
 
         val unitType = unit.type
-        val promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
+        promotionsForUnitType = unit.civInfo.gameInfo.ruleSet.unitPromotions.values.filter {
             it.unitTypes.contains(unitType.toString())
                     || unit.promotions.promotions.contains(it.name) }
         val unitAvailablePromotions = unit.promotions.getAvailablePromotions()
@@ -57,16 +59,11 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             selectPromotionButton.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
             selectPromotionButton.add(promotion.name.toLabel()).pad(10f).padRight(20f)
             selectPromotionButton.touchable = Touchable.enabled
-            selectPromotionButton.onClick {
-                selectedPromotion = promotion
-                rightSideButton.setText(promotion.name.tr())
-                if(canBePromoted && isPromotionAvailable && !unitHasPromotion)
-                    rightSideButton.enable()
-                else rightSideButton.disable()
-
-
-                descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
+            val action = {
+                pickPromotion(PickedPromotionAndButton(promotion, selectPromotionButton, canBePromoted && isPromotionAvailable && !unitHasPromotion))
             }
+            selectPromotionButton.onClick (action)
+            registerKeyHandler (promotion.name.tr(), action)
 
             availablePromotionsGroup.add(selectPromotionButton)
 
@@ -87,5 +84,31 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
         topTable.add(availablePromotionsGroup)
 
         displayTutorial(Tutorial.Experience)
+    }
+
+    private fun pickPromotion (promotionAndButton: PickedPromotionAndButton) {
+        selectedPromotion = promotionAndButton
+        rightSideButton.setText(promotionAndButton.promotion.name.tr())
+        if (promotionAndButton.enable)
+            rightSideButton.enable()
+        else rightSideButton.disable()
+
+        descriptionLabel.setText(promotionAndButton.promotion.getDescription(promotionsForUnitType))
+
+        promotionAndButton.button.highlight()
+    }
+
+    private fun Button.highlight (highlight: Boolean = true) {
+        if (highlight) {
+            highlightedButton?.highlight(false)
+            highlightedButton = null
+        }
+        val newColor = if (highlight) Color.GOLDENROD else Color.WHITE
+        //(this.children.firstOrNull { it is Image } as Image?)?.color = newColor
+        (this.children.firstOrNull { it is Label } as Label?)?.color = newColor
+        if (highlight) {
+            highlightedButton = this
+            scrollPane.scrollTo(x, y, width, height)
+        }
     }
 }

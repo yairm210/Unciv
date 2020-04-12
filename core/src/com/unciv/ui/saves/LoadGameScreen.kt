@@ -3,9 +3,11 @@ package com.unciv.ui.saves
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.UncivShowableException
@@ -32,7 +34,7 @@ class LoadGameScreen : PickerScreen() {
 
         topTable.add(rightSideTable)
 
-        rightSideButton.onClick {
+        setAcceptButtonAction("") {
             try {
                 UncivGame.Current.loadGame(selectedSave)
             }
@@ -62,7 +64,7 @@ class LoadGameScreen : PickerScreen() {
 
         val errorLabel = "".toLabel(Color.RED)
         val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
-        loadFromClipboardButton.onClick {
+        val loadFromClipboardAction = {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
@@ -73,15 +75,22 @@ class LoadGameScreen : PickerScreen() {
                 ex.printStackTrace()
             }
         }
-        rightSideTable.add(loadFromClipboardButton).row()
-        rightSideTable.add(errorLabel).row()
+        loadFromClipboardButton.onClick (loadFromClipboardAction)
+        rightSideTable.add(loadFromClipboardButton).pad(5f).row()
+        rightSideTable.add(errorLabel).pad(5f).row()
+        registerKeyHandler(Constants.asciiCtrlV, loadFromClipboardAction)
 
-        deleteSaveButton.onClick {
-            GameSaver.deleteSave(selectedSave)
-            resetWindowState()
+        val deleteAction =  {
+            YesNoPopup("Are you sure you want to delete this save?", {
+                GameSaver.deleteSave(selectedSave)
+                resetWindowState()
+            }, this).open()
         }
+        deleteSaveButton.onClick (deleteAction)
         deleteSaveButton.disable()
-        rightSideTable.add(deleteSaveButton).row()
+        rightSideTable.add(deleteSaveButton).pad(5f).row()
+        val checkedDelAction = { if (deleteSaveButton.touchable == Touchable.enabled) deleteAction() }
+        registerKeyHandler (Constants.asciiDelete, checkedDelAction)
 
         copySavedGameToClipboardButton.disable()
         copySavedGameToClipboardButton.onClick {
@@ -89,13 +98,13 @@ class LoadGameScreen : PickerScreen() {
             val gzippedGameText = Gzip.zip(gameText)
             Gdx.app.clipboard.contents = gzippedGameText
         }
-        rightSideTable.add(copySavedGameToClipboardButton).row()
+        rightSideTable.add(copySavedGameToClipboardButton).pad(5f).row()
 
         showAutosavesCheckbox.isChecked = false
         showAutosavesCheckbox.onChange {
                 updateLoadableGames(showAutosavesCheckbox.isChecked)
             }
-        rightSideTable.add(showAutosavesCheckbox).row()
+        rightSideTable.add(showAutosavesCheckbox).pad(5f).row()
         return rightSideTable
     }
 
@@ -110,10 +119,11 @@ class LoadGameScreen : PickerScreen() {
 
     private fun updateLoadableGames(showAutosaves:Boolean) {
         saveTable.clear()
+        clearKeyHandlers()
         for (save in GameSaver.getSaves().sortedByDescending { GameSaver.getSave(it).lastModified() }) {
             if(save.startsWith("Autosave") && !showAutosaves) continue
             val textButton = TextButton(save, skin)
-            textButton.onClick {
+            val action = {
                 selectedSave = save
                 copySavedGameToClipboardButton.enable()
                 var textToSet = save
@@ -134,6 +144,8 @@ class LoadGameScreen : PickerScreen() {
                 deleteSaveButton.enable()
                 deleteSaveButton.color = Color.RED
             }
+            textButton.onClick (action)
+            registerKeyHandler (save, action)
             saveTable.add(textButton).pad(5f).row()
         }
     }
