@@ -307,7 +307,8 @@ class MapUnit {
     fun setTransients(ruleset: Ruleset) {
         promotions.unit=this
         mapUnitAction?.unit = this
-        baseUnit=ruleset.units[name]!!
+        baseUnit=ruleset.units[name]
+                ?: throw java.lang.Exception("Unit $name is not found!")
         updateUniques()
     }
 

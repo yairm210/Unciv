@@ -42,11 +42,13 @@ class LoadGameScreen : PickerScreen() {
                 if (ex is UncivShowableException && ex.localizedMessage != null) {
                     // thrown exceptions are our own tests and can be shown to the user
                     cantLoadGamePopup.addGoodSizedLabel(ex.localizedMessage).row()
+                    cantLoadGamePopup.addCloseButton()
                     cantLoadGamePopup.open()
                 } else {
                     cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
                     cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
                     cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+                    cantLoadGamePopup.addCloseButton()
                     cantLoadGamePopup.open()
                     ex.printStackTrace()
                 }

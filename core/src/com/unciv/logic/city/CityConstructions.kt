@@ -210,7 +210,8 @@ class CityConstructions {
 
     //region state changing functions
     fun setTransients(){
-        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]!! })
+        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]
+                    ?: throw java.lang.Exception("Building $it is not found!")})
     }
 
     fun addProductionPoints(productionToAdd: Int) {

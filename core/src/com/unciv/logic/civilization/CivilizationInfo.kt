@@ -338,7 +338,8 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.ruleSet.nations[civName]!!
+        nation = gameInfo.ruleSet.nations[civName]
+                ?: throw java.lang.Exception("Nation $civName is not found!")
     }
 
     fun setTransients() {
