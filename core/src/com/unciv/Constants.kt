@@ -60,6 +60,6 @@ object Constants {
     const val asciiDelete = '\u007F'        // Character Delete
     const val asciiCtrlC  = '\u0003'        // Control-C: Save game to Clipboard
     const val asciiCtrlV  = '\u0016'        // Control-V: Load game from Clipboard
-    const val asciiCtrlX  = '\u0018'        // Control-X: ?
+    const val asciiNull   = '\u0000'        // keyPressed sends this for function keys
 
 }

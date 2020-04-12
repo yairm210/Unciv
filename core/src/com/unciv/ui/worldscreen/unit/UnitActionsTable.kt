@@ -89,7 +89,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
-        if (iconAndKey.key != 0.toChar()) {
+        if (iconAndKey.key != Constants.asciiNull) {
             val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.WHITE).apply { isVisible = false }
             actionButton.add(keyLabel)
             actionButton.addListener(UnitActionButtonOnHoverListener(actionButton, keyLabel))
@@ -102,7 +102,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         if (unitAction.action == null) actionButton.disable()
         else {
             actionButton.onClick(unitAction.uncivSound,action)
-            if (iconAndKey.key != 0.toChar())
+            if (iconAndKey.key != Constants.asciiNull)
                 worldScreen.keyPressDispatcher[iconAndKey.key] = action
         }
 

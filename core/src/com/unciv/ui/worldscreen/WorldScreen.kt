@@ -35,6 +35,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
+import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
 import kotlin.concurrent.thread
@@ -202,6 +203,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
                 override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                    if (character == Constants.asciiNull && event?.keyCode == Input.Keys.F12) {
+                        if (popups.none { it is WorldScreenMenuPopup })
+                            WorldScreenMenuPopup(this@WorldScreen).open(force = true)
+                        return true
+                    }
                     if (character.toLowerCase() in keyPressDispatcher && !hasOpenPopups()) {
                         //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
                         try {

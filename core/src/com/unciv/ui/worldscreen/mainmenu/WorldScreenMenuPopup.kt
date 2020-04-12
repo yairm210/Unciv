@@ -23,60 +23,60 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init {
         val width = 200f
         val height = 30f
-        addSquareButton("Map editor".tr()){
+        addSquareButton("Map editor") {
             openMapEditorPopup()
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Civilopedia".tr()){
+        addSquareButton("Civilopedia") {
             UncivGame.Current.setScreen(CivilopediaScreen(worldScreen.gameInfo.ruleSet))
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Load game".tr()){
+        addSquareButton("Load game") {
             UncivGame.Current.setScreen(LoadGameScreen())
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Save game".tr()){
+        addSquareButton("Save game") {
             UncivGame.Current.setScreen(SaveGameScreen())
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Start new game".tr()){ 
+        addSquareButton("Start new game") {
             UncivGame.Current.setScreen(NewGameScreen()) 
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Multiplayer".tr()){
+        addSquareButton("Multiplayer") {
             UncivGame.Current.setScreen(MultiplayerScreen()) 
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Victory status".tr()){ 
+        addSquareButton("Victory status") {
             UncivGame.Current.setScreen(VictoryScreen())
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Options".tr()){
+        addSquareButton("Options") {
             WorldScreenOptionsPopup(worldScreen).open(force = true)
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Community"){
+        addSquareButton("Community") {
             WorldScreenCommunityPopup(worldScreen).open(force = true)
             close()
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Close"){
+        addSquareButton("Close") {
             close()
         }.size(width,height)
     }
