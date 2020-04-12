@@ -325,8 +325,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
-        if (tile.terrainFeature == Constants.ice
-                && !unit.baseUnit.uniques.contains("Can enter ice tiles"))
+        if (tile.terrainFeature == Constants.ice && !unit.canEnterIceTiles)
             return false
 
         if (tile.isWater && unit.type.isLandUnit()) {
@@ -335,8 +334,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return false
         }
         if (tile.isOcean && unit.civInfo.nation.unique != UniqueAbility.WAYFINDING) {
-            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
-            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+            if (unit.cannotEnterOceanTiles) return false
+            if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))
                 return false
         }

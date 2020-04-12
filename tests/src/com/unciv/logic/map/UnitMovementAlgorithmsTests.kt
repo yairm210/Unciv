@@ -1,4 +1,4 @@
-//  Taken from https://github.com/TomGrill/gdx-testing
+﻿//  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
 import com.unciv.Constants
@@ -103,8 +103,10 @@ class UnitMovementAlgorithmsTests {
         for (type in UnitType.values()) {
             unit.baseUnit = BaseUnit().apply { unitType = type }
 
-            if (type == UnitType.WaterSubmarine)
+            if (type == UnitType.WaterSubmarine) {
                 unit.baseUnit.uniques.add("Can enter ice tiles")
+            }
+            unit.updateUniques()
 
             Assert.assertTrue("$type cannot be in Ice",
                     (type == UnitType.WaterSubmarine) == unit.movement.canPassThrough(tile))
@@ -170,6 +172,8 @@ class UnitMovementAlgorithmsTests {
                 if (type == UnitType.Ranged)
                     uniques.add("Cannot enter ocean tiles until Astronomy")
             }
+            unit.updateUniques()
+
             Assert.assertTrue("$type cannot be in Ocean",
                     (type == UnitType.Melee) != unit.movement.canPassThrough(tile))
 
