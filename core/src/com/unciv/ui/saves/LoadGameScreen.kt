@@ -118,8 +118,9 @@ class LoadGameScreen : PickerScreen() {
                 copySavedGameToClipboardButton.enable()
                 var textToSet = save
 
+                // See also: https://en.wikipedia.org/wiki/Date_format_by_country
                 val savedAt = Date(GameSaver.getSave(save).lastModified())
-                textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
+                textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH.mm".tr()).format(savedAt)
                 try {
                     val game = GameSaver.loadGameByName(save)
                     val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
