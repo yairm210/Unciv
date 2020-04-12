@@ -18,7 +18,7 @@ import com.unciv.ui.utils.setFontSize
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     val ruleset = RulesetCache.getBaseRuleset()
-    var mapName = "My first map"
+    var mapName = "My first map".tr()
 
     var tileMap = TileMap()
     lateinit var mapHolder: EditorMapHolder
