@@ -113,7 +113,10 @@ fun Button.enable() {
     color = Color.WHITE
     touchable = Touchable.enabled
 }
-
+var Button.isEnabled: Boolean
+    //Todo: Use in PromotionPickerScreen, TradeTable, WorldScreen.updateNextTurnButton
+    get() = touchable == Touchable.enabled
+    set(value) = if (value) enable() else disable()
 
 fun colorFromRGB(r: Int, g: Int, b: Int): Color {
     return Color(r/255f, g/255f, b/255f, 1f)
