@@ -3,9 +3,15 @@ package com.unciv.ui
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.tile.Terrain
+import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.translations.tr
+import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import java.util.*
 
@@ -15,8 +21,9 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
     private val categoryToEntries = LinkedHashMap<String, Collection<CivilopediaEntry>>()
     private val categoryToButtons = LinkedHashMap<String, Button>()
 
-    private val entrySelectTable = Table().apply { defaults().pad(5f) }
+    private val entrySelectTable = Table().apply { defaults().pad(6f) }
     val description = "".toLabel()
+
 
     fun select(category: String) {
         entrySelectTable.clear()
@@ -24,7 +31,10 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .sortedBy { it.name.tr() }){  // Alphabetical order of localized names
             val entryButton = Button(skin)
             if(entry.image!=null)
-                entryButton.add(entry.image).size(50f).padRight(10f)
+                if (category=="Terrains")
+                    entryButton.add(entry.image).padRight(24f)
+                else
+                    entryButton.add(entry.image).size(50f).padRight(10f)
             entryButton.add(entry.name.toLabel())
             entryButton.onClick {
                 description.setText(entry.description)
@@ -59,6 +69,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         description.setWrap(true)
 
+        val tileSetStrings = TileSetStrings()
+
         categoryToEntries["Buildings"] = ruleset.buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
                         ImageGetter.getConstructionImage(it.name)) }
@@ -66,7 +78,8 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getResourceImage(it.name,50f)) }
         categoryToEntries["Terrains"] = ruleset.terrains.values
-                .map { CivilopediaEntry(it.name,it.getDescription(ruleset)) }
+                .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
+                        terrainImage(it, ruleset, tileSetStrings) ) }
         categoryToEntries["Tile Improvements"] = ruleset.tileImprovements.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset,false),
                         ImageGetter.getImprovementIcon(it.name,50f)) }
@@ -108,5 +121,32 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         buttonTable.width = stage.width
     }
 
+    private fun terrainImage (terrain: Terrain, ruleset: Ruleset, tileSetStrings: TileSetStrings ): Actor? {
+        val tileInfo = TileInfo()
+        tileInfo.ruleset = ruleset
+        when(terrain.type) {
+            TerrainType.NaturalWonder -> {
+                tileInfo.naturalWonder = terrain.name
+                tileInfo.baseTerrain = terrain.turnsInto ?: Constants.grassland
+            }
+            TerrainType.TerrainFeature -> {
+                tileInfo.terrainFeature = terrain.name
+                tileInfo.baseTerrain = terrain.occursOn?.last() ?: Constants.grassland
+            }
+            else ->
+                tileInfo.baseTerrain = terrain.name
+        }
+        tileInfo.setTransients()
+        val group = TileGroup(tileInfo, TileSetStrings())
+        group.showEntireMap = true
+        group.forMapEditorIcon = true
+        group.update()
+        return group
+//        val wrapper = Table()
+//        wrapper.add(group).pad(24f)
+//        wrapper.pad(2f,24f,2f,24f)
+//        wrapper.debug = true
+//        return wrapper
+    }
 }
 

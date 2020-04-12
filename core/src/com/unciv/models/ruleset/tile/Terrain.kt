@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset.tile
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.translations.tr
@@ -23,7 +24,10 @@ class Terrain : NamedStats() {
         if(uniques.isNotEmpty())
             sb.appendln(uniques.joinToString { it.tr() })
 
-        sb.appendln("{Movement cost}: $movementCost".tr())
+        if (impassable)
+            sb.appendln(Constants.impassable.tr())
+        else
+            sb.appendln("{Movement cost}: $movementCost".tr())
 
         if (defenceBonus != 0f)
             sb.appendln("{Defence bonus}: ".tr() + (defenceBonus * 100).toInt() + "%")
