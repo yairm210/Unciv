@@ -578,7 +578,8 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
-            } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
+            } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug
+                    || currentPlayer.knows(civ) || currentPlayer.isDefeated() || currentPlayer.victoryManager.hasWon()) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
                 backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()
