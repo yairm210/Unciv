@@ -35,29 +35,6 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val buttonTable = Table()
-        buttonTable.pad(15f)
-        buttonTable.defaults().pad(10f)
-        val buttonTableScroll = ScrollPane(buttonTable)
-
-        val goToGameButton = TextButton("Close".tr(), skin)
-        goToGameButton.onClick {
-            game.setWorldScreen()
-            dispose()
-        }
-
-        val topTable = Table()
-        topTable.add(goToGameButton).pad(10f)
-        topTable.add(buttonTableScroll)
-
-        val entryTable = Table()
-        val splitPane = SplitPane(topTable, entryTable, true, skin)
-        splitPane.splitAmount = 0.2f
-        splitPane.setFillParent(true)
-
-        stage.addActor(splitPane)
-
-        description.setWrap(true)
 
         categoryToEntries["Buildings"] = ruleset.buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
@@ -87,6 +64,10 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         categoryToEntries["Tutorials"] = tutorialController.getCivilopediaTutorials()
                 .map { CivilopediaEntry(it.key.replace("_"," "), it.value.joinToString("\n\n") { line -> line.tr() }) }
 
+        val buttonTable = Table()
+        buttonTable.pad(15f)
+        buttonTable.defaults().pad(10f)
+
         for (category in categoryToEntries.keys) {
             val button = TextButton(category.tr(), skin)
             button.style = TextButton.TextButtonStyle(button.style)
@@ -94,18 +75,46 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
             button.onClick { select(category) }
             buttonTable.add(button)
         }
-        select("Tutorials")
-        val sp = ScrollPane(entrySelectTable)
-        sp.setupOverscroll(5f, 1f, 200f)
-        entryTable.add(sp).width(Value.percentWidth(0.25f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
+
+        buttonTable.pack()
+        buttonTable.width = stage.width
+        val buttonTableScroll = ScrollPane(buttonTable)
+
+        val goToGameButton = TextButton("Close".tr(), skin)
+        goToGameButton.onClick {
+            game.setWorldScreen()
+            dispose()
+        }
+
+        val topTable = Table()
+        topTable.add(goToGameButton).pad(10f)
+        topTable.add(buttonTableScroll)
+        topTable.pack()
+        //buttonTable.height = topTable.height
+
+        val entryTable = Table()
+        val splitPane = SplitPane(topTable, entryTable, true, skin)
+        splitPane.splitAmount = topTable.prefHeight / stage.height
+        entryTable.height = stage.height - topTable.prefHeight
+        splitPane.setFillParent(true)
+
+        stage.addActor(splitPane)
+
+        description.setWrap(true)
+
+        val entrySelectScroll = ScrollPane(entrySelectTable)
+        entrySelectScroll.setupOverscroll(5f, 1f, 200f)
+        entryTable.add(entrySelectScroll)
+                .width(Value.percentWidth(0.25f, entryTable))
+                .fillY()
                 .pad(Value.percentWidth(0.02f, entryTable))
         entryTable.add(ScrollPane(description)).colspan(4)
                 .width(Value.percentWidth(0.65f, entryTable))
-                .height(Value.percentHeight(0.7f, entryTable))
+                .fillY()
                 .pad(Value.percentWidth(0.02f, entryTable))
         // Simply changing these to x*width, y*height won't work
 
-        buttonTable.width = stage.width
+        select("Tutorials")
     }
 
 }
