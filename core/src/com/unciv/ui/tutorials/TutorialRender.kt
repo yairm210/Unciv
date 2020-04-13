@@ -33,7 +33,7 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
 
             tutorialPopup.addGoodSizedLabel(texts[0]).row()
 
-            val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+            val button = TextButton(Constants.close.tr(), CameraStageBaseScreen.skin)
             button.onClick {
                 tutorialPopup.remove()
                 texts.removeIndex(0)

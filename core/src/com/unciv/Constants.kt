@@ -56,4 +56,6 @@ object Constants {
 
     const val cancelImprovementOrder = "Cancel improvement order"
     const val tutorialPopupNamePrefix = "Tutorial: "
+
+    const val close = "Close"
 }

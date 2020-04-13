@@ -2,13 +2,14 @@ package com.unciv.ui.pickerscreens
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton = TextButton("Close".tr(), skin)
+    internal var closeButton: TextButton = TextButton(Constants.close.tr(), skin)
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton

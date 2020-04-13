@@ -506,9 +506,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.setText(action.text.tr())
         nextTurnButton.color = if (action.text == "Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
-        if (isSomethingOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
-        else nextTurnButton.enable()
+        nextTurnButton.isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
+    }
+    fun enableNextTurnButtonAfterOptions() {
+        nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
     }
 
     private fun getNextTurnAction(): NextTurnAction {

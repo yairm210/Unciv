@@ -40,7 +40,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         stage.addActor(splitPane)
 
 
-        val closeButton = TextButton("Close".tr(), skin)
+        val closeButton = TextButton(Constants.close.tr(), skin)
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.label.setFontSize(24)
         closeButton.labelCell.pad(10f)
@@ -326,7 +326,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
         demandsTable.add(dontSettleCitiesButton).row()
 
-        demandsTable.add(TextButton("Close".tr(),skin).onClick { updateRightSide(otherCiv) })
+        demandsTable.add(TextButton(Constants.close.tr(),skin).onClick { updateRightSide(otherCiv) })
         return demandsTable
     }
 

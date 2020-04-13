@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
@@ -157,7 +158,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
                         .toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
@@ -169,13 +170,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
                 centerTable.add(tech.getDescription(gameBasics).toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
             AlertType.GoldenAge -> {
                 addGoodSizedLabel("GOLDEN AGE")
                 addSeparator()
                 addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
         }
     }
