@@ -14,7 +14,11 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
-class Ruleset() {
+class ModOptions {
+    var techsToRemove = HashSet<String>()
+}
+
+class Ruleset {
 
     private val jsonParser = JsonParser()
 
@@ -30,6 +34,7 @@ class Ruleset() {
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
     val mods = LinkedHashSet<String>()
+    var modOptions = ModOptions()
 
     fun clone(): Ruleset {
         val newRuleset = Ruleset()
@@ -46,6 +51,7 @@ class Ruleset() {
 
     fun add(ruleset: Ruleset) {
         buildings.putAll(ruleset.buildings)
+        for(techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         difficulties.putAll(ruleset.difficulties)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
@@ -73,8 +79,17 @@ class Ruleset() {
         mods.clear()
     }
 
+
     fun load(folderHandle :FileHandle ) {
         val gameBasicsStartTime = System.currentTimeMillis()
+
+        val modOptionsFile = folderHandle.child("ModOptions.json")
+        if(modOptionsFile.exists()){
+            try {
+                modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+            }
+            catch (ex:Exception){}
+        }
 
         val techFile =folderHandle.child("Techs.json")
         if(techFile.exists()) {
@@ -168,14 +183,14 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
     fun getBaseRuleset() = this[""]!!
 
-    fun getComplexRuleset(mods: Collection<String>): Ruleset {
+    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
+        newRuleset.add(getBaseRuleset())
         for (mod in mods)
             if (containsKey(mod)) {
                 newRuleset.add(this[mod]!!)
                 newRuleset.mods += mod
             }
-        newRuleset.add(getBaseRuleset())
         return newRuleset
     }
 }
