@@ -19,7 +19,7 @@ object GameStarter {
         gameInfo.gameParameters = newGameParameters
         val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
-        if(mapParameters.name != "")
+        if (mapParameters.name != "")
             gameInfo.tileMap = MapSaver.loadMap(mapParameters.name)
         else gameInfo.tileMap = MapGenerator(ruleset).generateMap(mapParameters)
         gameInfo.tileMap.mapParameters = mapParameters
@@ -35,7 +35,7 @@ object GameStarter {
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
         // Add Civ Technologies
-        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarian()}) {
+        for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
 
             if (!civInfo.isPlayerCivilization())
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
@@ -100,9 +100,9 @@ object GameStarter {
                 gameInfo.tileMap)
 
         // remove starting locations one we're done
-        for(tile in gameInfo.tileMap.values){
-            if(tile.improvement!=null && tile.improvement!!.startsWith("StartingLocation "))
-                tile.improvement=null
+        for (tile in gameInfo.tileMap.values) {
+            if (tile.improvement != null && tile.improvement!!.startsWith("StartingLocation "))
+                tile.improvement = null
         }
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
@@ -131,42 +131,42 @@ object GameStarter {
 
     }
 
-    private fun getStartingLocations(civs:List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
+    private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
                 .filter { it.isLand && !it.getBaseTerrain().impassable }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
-        while(landTiles.any()){
-            val bfs = BFS(landTiles.random()){it.isLand && !it.getBaseTerrain().impassable}
+        while (landTiles.any()) {
+            val bfs = BFS(landTiles.random()) { it.isLand && !it.getBaseTerrain().impassable }
             bfs.stepToEnd()
             val tilesInGroup = bfs.tilesReached.keys
             landTiles = landTiles.filter { it !in tilesInGroup }
-            if(tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
+            if (tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
                 landTilesInBigEnoughGroup.addAll(tilesInGroup)
         }
 
         val tilesWithStartingLocations = tileMap.values
-                .filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
+                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
 
-        val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
+        val civsOrderedByAvailableLocations = civs.sortedBy { civ ->
             when {
-                tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
+                tilesWithStartingLocations.any { it.improvement == "StartingLocation " + civ.civName } -> 1 // harshest requirements
                 civ.nation.startBias.isNotEmpty() -> 2 // less harsh
                 else -> 3
             }  // no requirements
         }
 
-        for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/3 downTo 0){
+        for (minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size / 3 downTo 0) {
             val freeTiles = landTilesInBigEnoughGroup
-                    .filter {  vectorIsAtLeastNTilesAwayFromEdge(it.position,minimumDistanceBetweenStartingLocations,tileMap)}
+                    .filter { vectorIsAtLeastNTilesAwayFromEdge(it.position, minimumDistanceBetweenStartingLocations, tileMap) }
                     .toMutableList()
 
-            val startingLocations = HashMap<CivilizationInfo,TileInfo>()
+            val startingLocations = HashMap<CivilizationInfo, TileInfo>()
 
-            for(civ in civsOrderedByAvailableLocations){
-                var startingLocation:TileInfo
-                val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement=="StartingLocation "+civ.civName }
-                if(presetStartingLocation!=null) startingLocation = presetStartingLocation
+            for (civ in civsOrderedByAvailableLocations) {
+                var startingLocation: TileInfo
+                val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement == "StartingLocation " + civ.civName }
+                if (presetStartingLocation != null) startingLocation = presetStartingLocation
                 else {
                     if (freeTiles.isEmpty()) break // we failed to get all the starting tiles with this minimum distance
                     var preferredTiles = freeTiles.toList()
@@ -182,21 +182,21 @@ object GameStarter {
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
                 }
                 startingLocations[civ] = startingLocation
-                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position,minimumDistanceBetweenStartingLocations))
+                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position, minimumDistanceBetweenStartingLocations))
             }
-            if(startingLocations.size < civs.size) continue // let's try again with less minimum distance!
+            if (startingLocations.size < civs.size) continue // let's try again with less minimum distance!
 
             return startingLocations
         }
         throw Exception("Didn't manage to get starting tiles even with distance of 1?")
     }
 
-    private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n:Int, tileMap: TileMap): Boolean {
+    private fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n: Int, tileMap: TileMap): Boolean {
         // Since all maps are HEXAGONAL, the easiest way of checking if a tile is n steps away from the
         // edge is checking the distance to the CENTER POINT
         // Can't believe we used a dumb way of calculating this before!
         val hexagonalRadius = -tileMap.leftX
         val distanceFromCenter = HexMath.getDistance(vector, Vector2.Zero)
-        return hexagonalRadius-distanceFromCenter >= n
+        return hexagonalRadius - distanceFromCenter >= n
     }
 }

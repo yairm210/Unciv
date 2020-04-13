@@ -325,8 +325,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
-        if (tile.terrainFeature == Constants.ice
-                && !unit.baseUnit.uniques.contains("Can enter ice tiles"))
+        if (tile.terrainFeature == Constants.ice && !unit.canEnterIceTiles)
             return false
 
         if (tile.isWater && unit.type.isLandUnit()) {
@@ -335,8 +334,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return false
         }
         if (tile.isOcean && unit.civInfo.nation.unique != UniqueAbility.WAYFINDING) {
-            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
-            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+            if (unit.cannotEnterOceanTiles) return false
+            if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))
                 return false
         }
@@ -350,12 +349,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // AIs won't enter city-state's border.
         }
 
-        val unitsInTile = tile.getUnits()
-        if (unitsInTile.isNotEmpty()) {
-            val firstUnit = unitsInTile.first()
-            if (firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
-                return false
-        }
+        val firstUnit = tile.getUnits().firstOrNull()
+        if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+            return false
 
         return true
     }

@@ -122,6 +122,8 @@ class WorkerAutomation(val unit: MapUnit) {
                 .filter {
                     (it.civilianUnit == null || it == currentTile)
                             && tileCanBeImproved(it, unit.civInfo)
+                            && it.getTilesInDistance(2)
+                                .none { it.isCityCenter() && it.getCity()!!.civInfo.isAtWarWith(unit.civInfo) }
                 }
                 .sortedByDescending { getPriority(it, unit.civInfo) }
 
