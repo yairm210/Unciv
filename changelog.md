@@ -1,3 +1,24 @@
+## 3.7.3
+
+By Jack Rainy:
+- New Civilization: Denmark
+- Performance improvement
+- Better mod exceptions
+
+By SomeTroglodyte:
+- Civilopedia cleanup
+- Better map saving
+
+Resolved #2285 - workers no longer try to work within range of enemy city
+
+Resolved #2221 - buildings in mods can reference techs in original ruleset
+
+Resolved #2381 - can now remove buildings, units and techs in mods
+
+Free policies with no adoptable policies no longer 'stuck' the game
+
+Translation updates
+
 ## 3.7.2
 
 By rh-github-2015:
