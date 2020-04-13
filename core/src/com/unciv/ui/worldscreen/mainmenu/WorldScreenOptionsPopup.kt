@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
@@ -110,8 +111,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addYesNoRow ("Move units with a single tap", settings.singleTapMove) {
             settings.singleTapMove = it
         }
-        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction) {
+        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
+            if (it && UncivGame.Current.gameInfo.currentPlayerCiv.playerType == PlayerType.Human) {
+                UncivGame.Current.gameInfo.currentPlayerCiv.cities.forEach {
+                    city -> city.cityConstructions.chooseNextConstruction()
+                }
+            }
         }
         addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) {
             settings.autoBuildingRoads = it
