@@ -1002,7 +1002,7 @@
 		"attacked": "Very well, this shall not be forgotten.",
 		"defeated": "Congratulations, conquerer. This tribe serves you now.",
 		"outerColor": [0, 0, 0],
-		"innerColor": [153,204,255],
+		"innerColor": [224,224,224],
 		"cities": ["Mogadishu"]
 	},
 	
