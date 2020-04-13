@@ -16,6 +16,8 @@ import kotlin.collections.set
 
 class ModOptions {
     var techsToRemove = HashSet<String>()
+    var buildingsToRemove = HashSet<String>()
+    var unitsToRemove = HashSet<String>()
 }
 
 class Ruleset {
@@ -51,17 +53,18 @@ class Ruleset {
 
     fun add(ruleset: Ruleset) {
         buildings.putAll(ruleset.buildings)
-        for(techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
+        for(buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         technologies.putAll(ruleset.technologies)
-        buildings.putAll(ruleset.buildings)
+        for(techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
+        for(unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
     }
 
     fun clear() {
