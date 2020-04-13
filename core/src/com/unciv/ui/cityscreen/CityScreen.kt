@@ -97,8 +97,6 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         updateAnnexAndRazeCityButton()
         updateTileGroups()
-
-        displayTutorial(Tutorial.CityRange) { city.getCenterTile().getTilesAtDistance(4).any() }
     }
 
     private fun updateTileGroups() {

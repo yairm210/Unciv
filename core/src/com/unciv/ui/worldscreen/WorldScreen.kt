@@ -30,7 +30,6 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
@@ -576,6 +575,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun showTutorialsOnNextTurn(){
         if (!UncivGame.Current.settings.showTutorials) return
         displayTutorial(Tutorial.SlowStart)
+        displayTutorial(Tutorial.CityExpansion){ viewingCiv.cities.any { it.expansion.tilesClaimed()>0 } }
         displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
         displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
         displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }
