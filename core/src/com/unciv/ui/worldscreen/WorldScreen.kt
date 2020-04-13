@@ -497,14 +497,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    class NextTurnAction(val text:String,val action:()->Unit)
+    private class NextTurnAction(val text:String, val color:Color, val action:()->Unit)
 
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
         val action:NextTurnAction = getNextTurnAction()
         nextTurnAction = action.action
 
         nextTurnButton.setText(action.text.tr())
-        nextTurnButton.color = if (action.text == "Next turn") Color.WHITE else Color.GRAY
+        nextTurnButton.label.color = action.color
         nextTurnButton.pack()
         if (isSomethingOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
         else nextTurnButton.enable()
@@ -513,39 +513,42 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun getNextTurnAction(): NextTurnAction {
         return when {
-            !isPlayersTurn -> NextTurnAction("Waiting for other players...") {}
+            !isPlayersTurn -> NextTurnAction("Waiting for other players...", Color.GRAY) {}
 
-            viewingCiv.shouldGoToDueUnit() -> NextTurnAction("Next unit") {
-                val nextDueUnit = viewingCiv.getNextDueUnit()
-                if (nextDueUnit != null) {
-                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                    bottomUnitTable.selectedCity = null
-                    bottomUnitTable.selectedUnit = nextDueUnit
-                    shouldUpdate = true
+            viewingCiv.shouldGoToDueUnit() ->
+                NextTurnAction("Next unit", Color.LIGHT_GRAY) {
+                    val nextDueUnit = viewingCiv.getNextDueUnit()
+                    if (nextDueUnit != null) {
+                        mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                        bottomUnitTable.selectedCity = null
+                        bottomUnitTable.selectedUnit = nextDueUnit
+                        shouldUpdate = true
+                    }
                 }
-            }
 
             viewingCiv.cities.any { it.cityConstructions.currentConstruction == "" } ->
-                NextTurnAction("Pick construction") {
+                NextTurnAction("Pick construction", Color.CORAL) {
                     val cityWithNoProductionSet = viewingCiv.cities
                             .firstOrNull { it.cityConstructions.currentConstruction == "" }
                     if (cityWithNoProductionSet != null) game.setScreen(CityScreen(cityWithNoProductionSet))
                 }
 
-            viewingCiv.shouldOpenTechPicker() -> NextTurnAction("Pick a tech") {
-                game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
-            }
+            viewingCiv.shouldOpenTechPicker() ->
+                NextTurnAction("Pick a tech", Color.SKY) {
+                    game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
+                }
 
             viewingCiv.policies.shouldOpenPolicyPicker || viewingCiv.policies.freePolicies > 0 ->
-                NextTurnAction("Pick a policy") {
+                NextTurnAction("Pick a policy", Color.VIOLET) {
                     game.setScreen(PolicyPickerScreen(this))
                     viewingCiv.policies.shouldOpenPolicyPicker = false
                 }
 
-            else -> NextTurnAction("Next turn") {
-                game.settings.addCompletedTutorialTask("Pass a turn")
-                nextTurn()
-            }
+            else ->
+                NextTurnAction("Next turn", Color.WHITE) {
+                    game.settings.addCompletedTutorialTask("Pass a turn")
+                    nextTurn()
+                }
         }
     }
 
