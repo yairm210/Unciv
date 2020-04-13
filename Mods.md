@@ -23,6 +23,6 @@ In order to remove objects from the game, you'll need to create a ModOptions fil
 
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
-If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Inca mod =)
+If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Aliens mod =)
 
 There is now a [list of mods](https://docs.google.com/spreadsheets/d/1043Ng9ukrL3y8MUXBVl7-C9JsQGnBi5R5mkmS2l7FFg/edit#gid=0)!
