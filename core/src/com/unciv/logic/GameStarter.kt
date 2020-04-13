@@ -118,13 +118,17 @@ object GameStarter {
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
 
-            civ.placeUnitNearTile(startingLocation.position, Constants.settler, removeImprovement = true)
-            civ.placeUnitNearTile(startingLocation.position, getWarriorEquivalent(civ), removeImprovement = true)
+            fun placeNearStartingPosition(unitName:String) {
+                val newUnit = civ.placeUnitNearTile(startingLocation.position, unitName)
+                if (newUnit != null) newUnit.currentTile.improvement = null
+            }
+            placeNearStartingPosition(Constants.settler)
+            placeNearStartingPosition(getWarriorEquivalent(civ))
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {
                     val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
-                    civ.placeUnitNearTile(startingLocation.position, unitToAdd, removeImprovement = true)
+                    placeNearStartingPosition(unitToAdd)
                 }
             }
         }

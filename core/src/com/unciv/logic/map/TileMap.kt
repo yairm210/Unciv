@@ -124,8 +124,7 @@ class TileMap {
     fun placeUnitNearTile(
             position: Vector2,
             unitName: String,
-            civInfo: CivilizationInfo,
-            removeImprovement: Boolean = false
+            civInfo: CivilizationInfo
     ): MapUnit? {
         val unit = gameInfo.ruleSet.units[unitName]!!.getMapUnit(gameInfo.ruleSet)
 
@@ -159,8 +158,6 @@ class TileMap {
             return null // we didn't actually create a unit...
         }
 
-        // Remove the tile improvement, e.g. when placing the starter units (so they don't spawn on ruins/encampments)
-        if (removeImprovement) unitToPlaceTile.improvement = null
         // only once we know the unit can be placed do we add it to the civ's unit list
         unit.putInTile(unitToPlaceTile)
         unit.currentMovement = unit.getMaxMovement().toFloat()
