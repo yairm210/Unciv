@@ -5,6 +5,7 @@ import com.unciv.JsonParser
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.worldscreen.WorldScreen
 
 class TutorialController(screen: CameraStageBaseScreen) {
 
@@ -13,6 +14,16 @@ class TutorialController(screen: CameraStageBaseScreen) {
     var allTutorialsShowedCallback: (() -> Unit)? = null
     private val tutorialRender = TutorialRender(screen)
     private val tutorials = JsonParser().getFromJson(LinkedHashMap<String, Array<String>>().javaClass, "jsons/Tutorials.json")
+
+    init {
+        // Prevent crashes when a json tutorial has no enum entry
+        tutorials.keys.filter { Tutorial.findByName(it) == null }
+                .forEach {
+                    if (screen is WorldScreen)  // Still happening multiple times (reinstantiated on game load)
+                        println("WARNING: Tutorial '$it' is missing its enum entry.")
+                    tutorials.remove(it)
+                }
+    }
 
     fun showTutorial(tutorial: Tutorial) {
         tutorialQueue.add(tutorial)
