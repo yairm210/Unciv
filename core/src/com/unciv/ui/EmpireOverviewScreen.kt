@@ -1,4 +1,4 @@
-﻿package com.unciv.ui
+package com.unciv.ui
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
@@ -19,6 +19,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.Constants
 import java.text.DecimalFormat
 import kotlin.math.*
 
@@ -29,7 +30,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
-        val closeButton = TextButton("Close".tr(), skin)
+        val closeButton = TextButton(Constants.close.tr(), skin)
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)

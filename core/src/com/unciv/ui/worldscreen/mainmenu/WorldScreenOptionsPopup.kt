@@ -38,7 +38,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
-        addCloseButton()
+        addCloseButton() { worldScreen.enableNextTurnButtonAfterOptions() }
 
         pack() // Needed to show the background.
         center(UncivGame.Current.worldScreen.stage)

@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
@@ -76,7 +77,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Close"){
+        addSquareButton(Constants.close){
             close()
         }.size(width,height)
     }
