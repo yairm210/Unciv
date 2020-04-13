@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
@@ -104,7 +105,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addHeader("Gameplay options")
 
-        addYesNoRow ("Check for idle units", settings.checkForDueUnits) {
+        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) {
             settings.checkForDueUnits = it
         }
         addYesNoRow ("Move units with a single tap", settings.singleTapMove) {
