@@ -29,7 +29,7 @@ class Ruleset() {
     val nations = LinkedHashMap<String, Nation>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
-    val mods = HashSet<String>()
+    val mods = LinkedHashSet<String>()
 
     fun clone(): Ruleset {
         val newRuleset = Ruleset()
@@ -146,35 +146,34 @@ class Ruleset() {
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
  *  */
-object RulesetCache :HashMap<String,Ruleset>(){
-    fun loadRulesets(){
+object RulesetCache :HashMap<String,Ruleset>() {
+    fun loadRulesets() {
         this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
 
-        for(modFolder in Gdx.files.local("mods").list()){
+        for (modFolder in Gdx.files.local("mods").list()) {
             if (modFolder.name().startsWith('.')) continue
-            try{
+            try {
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"))
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
-                println ("Mod loaded successfully: " + modRuleset.name)
-            }
-            catch (ex:Exception){
-                println ("Exception loading mod '${modFolder.name()}':")
-                println ("  ${ex.localizedMessage}")
-                println ("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
+                println("Mod loaded successfully: " + modRuleset.name)
+            } catch (ex: Exception) {
+                println("Exception loading mod '${modFolder.name()}':")
+                println("  ${ex.localizedMessage}")
+                println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
             }
         }
     }
 
     fun getBaseRuleset() = this[""]!!
 
-    fun getComplexRuleset(mods:Collection<String>): Ruleset {
+    fun getComplexRuleset(mods: Collection<String>): Ruleset {
         val newRuleset = Ruleset()
-        for(mod in mods)
-            if(containsKey(mod)) {
+        for (mod in mods)
+            if (containsKey(mod)) {
                 newRuleset.add(this[mod]!!)
-                newRuleset.mods+=mod
+                newRuleset.mods += mod
             }
         newRuleset.add(getBaseRuleset())
         return newRuleset
