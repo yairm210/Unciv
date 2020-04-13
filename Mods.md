@@ -21,7 +21,7 @@ These images are built (at runtime) into a single image with an 'altas', so if y
 
 In order to remove objects from the game, you'll need to create a ModOptions file in the `/jsons` subfolder - there's an example [here](https://github.com/yairm210/Unciv-mod-example/blob/master/Removing%20Things/jsons/ModOptions.json)
 
-For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the ExampleIncaMod and put it in a /mods folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Inca as a playable civilization!
+For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
 If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Inca mod =)
 
