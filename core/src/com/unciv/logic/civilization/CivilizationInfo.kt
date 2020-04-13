@@ -280,9 +280,9 @@ class CivilizationInfo {
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
-        if (!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
-            return false
-        return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
+        val diplomacyManager = diplomacy[otherCiv.civName]
+                ?: return false // not encountered yet
+        return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -338,7 +338,8 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.ruleSet.nations[civName]!!
+        nation = gameInfo.ruleSet.nations[civName]
+                ?: throw java.lang.Exception("Nation $civName is not found!")
     }
 
     fun setTransients() {
@@ -451,13 +452,13 @@ class CivilizationInfo {
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
-        if(otherCiv==this) return true
-        if(nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles) return true
-        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
-            return false
-        if(isAtWarWith(otherCiv)) return true
-        if(getDiplomacyManager(otherCiv).hasOpenBorders) return true
-        return false
+        if (otherCiv==this) return true
+        if (otherCiv.isBarbarian()) return true
+        if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
+            return true
+        val diplomacyManager = diplomacy[otherCiv.civName]
+                ?: return false // not encountered yet
+        return (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War)
     }
 
     fun addNotification(text: String, location: Vector2?, color: Color) {

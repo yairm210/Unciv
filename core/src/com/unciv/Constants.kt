@@ -5,6 +5,7 @@ object Constants {
     const val settler = "Settler"
     const val greatGeneral = "Great General"
 
+    const val impassable = "Impassable"
     const val ocean = "Ocean"
     const val coast = "Coast"
     const val mountain = "Mountain"

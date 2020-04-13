@@ -14,6 +14,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
+import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
@@ -261,23 +262,24 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
         }
 
-        val unitType = unit.type
-        val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
+        val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
         else {
-            val tiles = BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
-            tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+            BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                    .filter { (UncivGame.Current.viewEntireMapForDebug ||
+                            playerViewableTilePositions.contains(it.tileToAttack.position)) }
+                    .distinctBy { it.tileToAttack }
         }
 
         for (attackableTile in attackableTiles) {
 
-            tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
+            tileGroups[attackableTile.tileToAttack]!!.showCircle(colorFromRGB(237, 41, 57))
 
-            val distance = unit.currentTile.aerialDistanceTo(attackableTile)
-            if (distance > unit.getRange())
-                tileGroups[attackableTile]!!.showCrosshair(colorFromRGB(255, 75, 0))
-            else
-                tileGroups[attackableTile]!!.showCrosshair(Color.RED)
-
+            tileGroups[attackableTile.tileToAttack]!!.showCrosshair (
+                    // the targets which cannot be attacked without movements shown as orange-ish
+                    if (attackableTile.tileToAttackFrom != unit.currentTile)
+                         colorFromRGB(255, 75, 0)
+                    else Color.RED
+            )
         }
 
         // Fade out less relevant images if a military unit is selected

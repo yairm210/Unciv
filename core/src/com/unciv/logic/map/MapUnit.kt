@@ -39,6 +39,9 @@ class MapUnit {
     @Transient var doubleMovementInCoast = false
     @Transient var doubleMovementInForestAndJungle = false
     @Transient var doubleMovementInSnowTundraAndHills = false
+    @Transient var canEnterIceTiles = false
+    @Transient var cannotEnterOceanTiles = false
+    @Transient var cannotEnterOceanTilesUntilAstronomy = false
 
     lateinit var owner: String
     lateinit var name: String
@@ -134,11 +137,14 @@ class MapUnit {
         uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.unitPromotions[it]!!.effect })
         tempUniques = uniques
 
-        if("Ignores terrain cost" in uniques) ignoresTerrainCost = true
-        if("Rough terrain penalty" in uniques) roughTerrainPenalty = true
-        if("Double movement in coast" in uniques) doubleMovementInCoast = true
-        if("Double movement rate through Forest and Jungle" in uniques) doubleMovementInForestAndJungle = true
-        if("Double movement in Snow, Tundra and Hills" in uniques) doubleMovementInSnowTundraAndHills = true
+        ignoresTerrainCost = ("Ignores terrain cost" in uniques)
+        roughTerrainPenalty = ("Rough terrain penalty" in uniques)
+        doubleMovementInCoast = ("Double movement in coast" in uniques)
+        doubleMovementInForestAndJungle = ("Double movement rate through Forest and Jungle" in uniques)
+        doubleMovementInSnowTundraAndHills = ("Double movement in Snow, Tundra and Hills" in uniques)
+        canEnterIceTiles = ("Can enter ice tiles" in uniques)
+        cannotEnterOceanTiles = ("Cannot enter ocean tiles" in uniques)
+        cannotEnterOceanTilesUntilAstronomy = ("Cannot enter ocean tiles until Astronomy" in uniques)
     }
 
     fun hasUnique(unique:String): Boolean {
@@ -307,7 +313,8 @@ class MapUnit {
     fun setTransients(ruleset: Ruleset) {
         promotions.unit=this
         mapUnitAction?.unit = this
-        baseUnit=ruleset.units[name]!!
+        baseUnit=ruleset.units[name]
+                ?: throw java.lang.Exception("Unit $name is not found!")
         updateUniques()
     }
 
