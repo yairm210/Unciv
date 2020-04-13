@@ -93,7 +93,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         buttonTable.width = stage.width
         val buttonTableScroll = ScrollPane(buttonTable)
 
-        val goToGameButton = TextButton(Constants.close.tr(), skin)
+        val goToGameButton = Constants.close.toTextButton()
         goToGameButton.onClick {
             game.setWorldScreen()
             dispose()

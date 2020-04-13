@@ -116,7 +116,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         razeCityButtonHolder.clear()
 
         if(city.isPuppet) {
-            val annexCityButton = TextButton("Annex city".tr(), skin)
+            val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
                 city.annexCity()
@@ -124,13 +124,13 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             }
             razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
         } else if(!city.isBeingRazed) {
-            val razeCityButton = TextButton("Raze city".tr(), skin)
+            val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
             if(!UncivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
         } else {
-            val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
+            val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
             if(!UncivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()

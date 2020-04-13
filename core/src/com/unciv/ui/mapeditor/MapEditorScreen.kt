@@ -11,10 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.popups
-import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     val ruleset = RulesetCache.getBaseRuleset()
@@ -25,7 +22,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
     val tileEditorOptions = TileEditorOptionsTable(this)
 
-    private val showHideEditorOptionsButton = TextButton(">", skin)
+    private val showHideEditorOptionsButton = ">".toTextButton()
 
 
     constructor(mapNameToLoad: String?): this() {
@@ -76,7 +73,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         stage.addActor(showHideEditorOptionsButton)
 
 
-        val optionsMenuButton = TextButton("Menu".tr(), skin)
+        val optionsMenuButton = "Menu".toTextButton()
         optionsMenuButton.onClick {
             if(popups.any { it is MapEditorMenuPopup })
                 return@onClick // already open

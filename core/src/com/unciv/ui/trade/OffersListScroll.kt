@@ -14,6 +14,7 @@ import com.unciv.ui.cityscreen.ExpanderTab
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toTextButton
 import kotlin.math.min
 
 class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
@@ -52,7 +53,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
 
             for (offer in offersOfType) {
-                val tradeButton = TextButton(offer.getOfferText(), CameraStageBaseScreen.skin)
+                val tradeButton = offer.getOfferText().toTextButton()
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1

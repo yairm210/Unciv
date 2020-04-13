@@ -18,7 +18,7 @@ import java.text.DecimalFormat
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     private val pad = 10f
 
-    private val showConstructionsTableButton = TextButton("Show construction queue".tr(), skin)
+    private val showConstructionsTableButton = "Show construction queue".toTextButton()
     private val scrollPane: ScrollPane
     private val innerTable = Table(skin)
 
@@ -86,7 +86,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                         .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
                 if(!building.isWonder && !building.isNationalWonder) {
                     val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
-                    val sellBuildingButton = TextButton("Sell for [$sellAmount] gold".tr(),skin)
+                    val sellBuildingButton = "Sell for [$sellAmount] gold".toTextButton()
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
 
                     sellBuildingButton.onClick {

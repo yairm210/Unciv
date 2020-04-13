@@ -226,6 +226,8 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
     return newHashSet
 }
 
+fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
+
 /** also translates */
 fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)
 
