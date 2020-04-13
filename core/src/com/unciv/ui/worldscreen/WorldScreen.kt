@@ -536,7 +536,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
             }
 
-            viewingCiv.policies.shouldOpenPolicyPicker || viewingCiv.policies.freePolicies > 0 ->
+            viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy())  ->
                 NextTurnAction("Pick a policy") {
                     game.setScreen(PolicyPickerScreen(this))
                     viewingCiv.policies.shouldOpenPolicyPicker = false
