@@ -107,16 +107,7 @@ class Ruleset {
         }
 
         val buildingsFile = folderHandle.child("Buildings.json")
-        if(buildingsFile.exists()) {
-            buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
-            for (building in buildings.values) {
-                if (building.cost == 0) {
-                    val column = technologies[building.requiredTech]?.column
-                            ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or a required tech in the same mod")
-                    building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
-                }
-            }
-        }
+        if(buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if(terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
@@ -159,6 +150,21 @@ class Ruleset {
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         println("Loading game basics - " + gameBasicsLoadTime + "ms")
     }
+
+    /** Building costs are unique in that they are dependant on info in the technology part.
+     *  This means that if you add a building in a mod, you want it to depend on the original tech values.
+     *  Alternatively, if you edit a tech column's building costs, you want it to affect all buildings in that column.
+     *  This deals with that
+     *  */
+    fun updateBuildingCosts(){
+        for (building in buildings.values) {
+            if (building.cost == 0) {
+                val column = technologies[building.requiredTech]?.column
+                        ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or reference an existing tech")
+                building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
+            }
+        }
+    }
 }
 
 /** Loading mods is expensive, so let's only do it once and
@@ -194,6 +200,8 @@ object RulesetCache :HashMap<String,Ruleset>() {
                 newRuleset.add(this[mod]!!)
                 newRuleset.mods += mod
             }
+        newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
+
         return newRuleset
     }
 }
