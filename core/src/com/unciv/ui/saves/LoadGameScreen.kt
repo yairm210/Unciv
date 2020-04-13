@@ -119,7 +119,7 @@ class LoadGameScreen : PickerScreen() {
                 var textToSet = save
 
                 val savedAt = Date(GameSaver.getSave(save).lastModified())
-                textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
+                textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm").format(savedAt)
                 try {
                     val game = GameSaver.loadGameByName(save)
                     val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
