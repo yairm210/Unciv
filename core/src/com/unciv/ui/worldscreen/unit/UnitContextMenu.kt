@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.action.BuildLongRoadAction
@@ -75,6 +76,7 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     selectedUnit.movement.moveToTile(tileToMoveTo)
+                    if(selectedUnit.action == Constants.unitActionExplore) selectedUnit.action = null // remove explore on manual move
                     Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
@@ -82,7 +84,6 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
                         tileMapHolder.worldScreen.bottomUnitTable.selectedUnit = selectedUnit
                     }
 
-                    // we don't update it directly because we're on a different thread; instead, we tell it to update itself
                     tileMapHolder.worldScreen.shouldUpdate = true
                     tileMapHolder.unitActionOverlay?.remove()
                 } catch (e: Exception) {

@@ -385,5 +385,6 @@ object UnitAutomation {
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
         unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
+        unit.action = null
     }
 }
