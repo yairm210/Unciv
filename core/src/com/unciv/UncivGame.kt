@@ -102,7 +102,12 @@ class UncivGame(
         }
     }
 
+
     fun autoLoadGame() {
+
+        if(true){
+            return setScreen(CityBuildingScreen())
+        }
         // IMHO better test for fresh installs than Autosave.exists()
         // e.g. should someone delete the settings file only or kill the language picker screen
         if (settings.isFreshlyCreated) {
@@ -211,3 +216,5 @@ class LoadingScreen:CameraStageBaseScreen() {
         stage.addActor(happinessImage)
     }
 }
+
+
