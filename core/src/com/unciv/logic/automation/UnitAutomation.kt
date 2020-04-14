@@ -291,7 +291,7 @@ object UnitAutomation {
                     // move into position far away enough that the bombard doesn't hurt
                     if (tileToMoveTo != null)
                         unit.movement.headTowards(tileToMoveTo)
-                } else {
+                } else { // unit range <= 2
                     // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
                     val militaryUnitsAroundEnemyCity =
                             closestReachableEnemyCity.getTilesInDistance(3)
