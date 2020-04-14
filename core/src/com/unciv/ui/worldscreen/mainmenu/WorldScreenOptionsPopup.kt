@@ -103,6 +103,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             Gdx.graphics.isContinuousRendering = it
         }
 
+        val continuousRenderingDescription = "When disabled, saves battery life but certain animations will be suspended"
+        innerTable.add(continuousRenderingDescription.toLabel(fontSize = 14)).colspan(2).padTop(20f).row()
+
         addHeader("Gameplay options")
 
         addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) {
