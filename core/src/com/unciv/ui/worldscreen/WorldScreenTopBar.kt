@@ -31,9 +31,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessImage = Group()
     // These are all to improve performance IE reduce update time (was 150 ms on my phone, which is a lot!)
     private val malcontentColor = Color.valueOf("ef5350")
-    val happinessColor = colorFromRGB(92, 194, 77)
-    val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
-    val happinessGroup = ImageGetter.getStatIcon("Happiness")
+    private val happinessColor = colorFromRGB(92, 194, 77)
+    private val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
+    private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
     init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
@@ -69,28 +69,40 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             resourceTable.add(resourceLabel)
         }
         resourceTable.pack()
+        resourceTable.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+
         return resourceTable
     }
 
     private fun getStatsTable(): Table {
         val statsTable = Table()
         statsTable.defaults().pad(3f)//.align(Align.top)
+
         statsTable.add(goldLabel)
-        statsTable.add(ImageGetter.getStatIcon("Gold")).padRight(20f).size(20f)
+        val goldImage = ImageGetter.getStatIcon("Gold")
+        statsTable.add(goldImage).padRight(20f).size(20f)
+        val invokeStatsPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Stats")) }
+        goldLabel.onClick(invokeStatsPage)
+        goldImage.onClick(invokeStatsPage)
+
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
         statsTable.add(ImageGetter.getStatIcon("Science")).padRight(20f).size(20f)
 
         statsTable.add(happinessImage).size(20f)
         statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
+        val invokeResourcesPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+        happinessImage.onClick(invokeResourcesPage)
+        happinessLabel.onClick(invokeResourcesPage)
 
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
         statsTable.add(ImageGetter.getStatIcon("Culture")).size(20f)
+
         statsTable.pack()
         statsTable.width = worldScreen.stage.width - 20
         return statsTable
     }
 
-    internal fun getMenuButton(): Image {
+    private fun getMenuButton(): Image {
         val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
