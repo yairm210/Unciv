@@ -56,6 +56,10 @@ class CityInfo {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
+    /** The very first found city is the _original_ capital,
+     * while the _current_ capital can be any other city after the original one is captured.
+     * It is important to distinct them since the original cannot be razed and defines the Domination Victory. */
+    var isOriginalCapital = false
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
@@ -76,6 +80,7 @@ class CityInfo {
 
         name = cityNamePrefix + cityName
 
+        isOriginalCapital = civInfo.citiesCreated == 0
         civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
@@ -125,6 +130,7 @@ class CityInfo {
         toReturn.foundingCiv = foundingCiv
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
+        toReturn.isOriginalCapital = isOriginalCapital
         return toReturn
     }
 
@@ -139,7 +145,7 @@ class CityInfo {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
-    fun isInResistance() = resistanceCounter>0
+    fun isInResistance() = resistanceCounter > 0
 
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
