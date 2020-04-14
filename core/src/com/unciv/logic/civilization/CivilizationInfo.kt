@@ -263,10 +263,10 @@ class CivilizationInfo {
     override fun toString(): String {return civName} // for debug
 
     /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
-    fun isDefeated()= cities.isEmpty()
+    fun isDefeated() = cities.isEmpty()  // No cities
             && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
             && !isBarbarian() // Barbarians can be never defeated
-            && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
+            && !getCivUnits().any { it.name == Constants.settler } // No settlers
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
