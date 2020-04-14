@@ -13,6 +13,8 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.EmpireOverviewScreen
+import com.unciv.ui.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
@@ -86,7 +88,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         goldImage.onClick(invokeStatsPage)
 
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
-        statsTable.add(ImageGetter.getStatIcon("Science")).padRight(20f).size(20f)
+        val scienceImage = ImageGetter.getStatIcon("Science")
+        statsTable.add(scienceImage).padRight(20f).size(20f)
+        val invokeTechScreen =  { UncivGame.Current.setScreen(TechPickerScreen(worldScreen.viewingCiv)) }
+        scienceLabel.onClick(invokeTechScreen)
+        scienceImage.onClick(invokeTechScreen)
 
         statsTable.add(happinessImage).size(20f)
         statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
@@ -95,7 +101,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         happinessLabel.onClick(invokeResourcesPage)
 
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
-        statsTable.add(ImageGetter.getStatIcon("Culture")).size(20f)
+        val cultureImage = ImageGetter.getStatIcon("Culture")
+        statsTable.add(cultureImage).size(20f)
+        val invokePoliciesPage = { UncivGame.Current.setScreen(PolicyPickerScreen(worldScreen)) }
+        cultureLabel.onClick(invokePoliciesPage)
+        cultureImage.onClick(invokePoliciesPage)
 
         statsTable.pack()
         statsTable.width = worldScreen.stage.width - 20
