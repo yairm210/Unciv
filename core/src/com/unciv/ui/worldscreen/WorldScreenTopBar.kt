@@ -16,6 +16,7 @@ import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -69,9 +70,11 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             val resourceLabel = "0".toLabel()
             resourceLabels[resource.name] = resourceLabel
             resourceTable.add(resourceLabel)
+            val invokeResourcesPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+            resourceLabel.onClick(invokeResourcesPage)
+            resourceImage.onClick(invokeResourcesPage)
         }
         resourceTable.pack()
-        resourceTable.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
 
         return resourceTable
     }
@@ -152,6 +155,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val yearText = "["+ abs(year)+"] "+ if (year<0) "BC" else "AD"
         turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ yearText.tr())
+        turnsLabel.onClick { UncivGame.Current.setScreen(VictoryScreen()) }
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"
