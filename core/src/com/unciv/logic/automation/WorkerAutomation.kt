@@ -177,10 +177,10 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.terrainFeature == "Fallout" -> "Remove Fallout"
-            tile.terrainFeature == Constants.jungle -> "Remove Jungle"
-            tile.terrainFeature == Constants.forest && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
+            tile.terrainFeature == "Marsh" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
+            tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Fallout"    // for really mad modders
+            tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Jungle"
+            tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Forest"
             else -> tile.getTileResource().improvement
         }
 
@@ -197,7 +197,7 @@ class WorkerAutomation(val unit: MapUnit) {
             evaluateFortPlacement(tile,civInfo) -> "Fort"
             // I think we can assume that the unique improvement is better
             uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
-            
+
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
             tile.terrainFeature == Constants.jungle -> "Trading post"
@@ -210,6 +210,17 @@ class WorkerAutomation(val unit: MapUnit) {
         }
         if (improvementString == null) return null
         return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
+    }
+    private fun isImprovementOnFeatureAllowed(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+        // Old hardcoded logic amounts to:
+        //return tile.terrainFeature == Constants.forest && tile.getTileResource().improvement == "Camp"
+
+        // routine assumes the caller ensured that terrainFeature and resource are both present
+        val resourceImprovementName = tile.getTileResource().improvement
+                ?: return false
+        val resourceImprovement = civInfo.gameInfo.ruleSet.tileImprovements[resourceImprovementName]
+                ?: return false
+        return resourceImprovement.resourceTerrainAllow.contains(tile.terrainFeature!!)
     }
 
     private fun isAcceptableTileForFort(tile: TileInfo, civInfo: CivilizationInfo): Boolean
