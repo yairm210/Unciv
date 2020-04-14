@@ -21,12 +21,12 @@ class CityExpansionManager {
     }
 
     fun tilesClaimed() = cityInfo.tiles.size - 7
+
     // This one has conflicting sources -
     // http://civilization.wikia.com/wiki/Mathematics_of_Civilization_V says it's 20+(10(t-1))^1.1
     // https://www.reddit.com/r/civ/comments/58rxkk/how_in_gods_name_do_borders_expand_in_civ_vi/ has it
     //   (per game XML files) at 6*(t+0.4813)^1.3
     // The second seems to be more based, so I'll go with that
-
     fun getCultureToNextTile(): Int {
         var cultureToNextTile = 6 * (tilesClaimed() + 1.4813).pow(1.3)
         if (cityInfo.civInfo.containsBuildingUnique("Cost of acquiring new tiles reduced by 25%"))
@@ -88,13 +88,14 @@ class CityExpansionManager {
             takeOwnership(tile)
     }
 
-    private fun addNewTileWithCulture() {
-        cultureStored -= getCultureToNextTile()
-
+    private fun addNewTileWithCulture(): Boolean {
         val chosenTile = chooseNewTileToOwn()
-        if(chosenTile!=null){
+        if (chosenTile!=null) {
+            cultureStored -= getCultureToNextTile()
             takeOwnership(chosenTile)
+            return true
         }
+        return false
     }
 
     fun relinquishOwnership(tileInfo: TileInfo){
@@ -128,8 +129,8 @@ class CityExpansionManager {
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
-            addNewTileWithCulture()
-            cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
+            if (addNewTileWithCulture())
+                cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
         }
     }
 
