@@ -113,7 +113,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         }
         addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
-            if (it && UncivGame.Current.gameInfo.currentPlayerCiv.playerType == PlayerType.Human) {
+            if (it && worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human) {
                 UncivGame.Current.gameInfo.currentPlayerCiv.cities.forEach {
                     city -> city.cityConstructions.chooseNextConstruction()
                 }
