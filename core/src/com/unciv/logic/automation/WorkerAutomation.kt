@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
@@ -175,24 +176,46 @@ class WorkerAutomation(val unit: MapUnit) {
     }
 
     private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
-        val improvementStringForResource : String ?= when {
-            tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeature == "Marsh" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
-            tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Fallout"    // for really mad modders
-            tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Jungle"
-            tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Forest"
-            else -> tile.getTileResource().improvement
+        val improvementString = chooseImprovementName(tile, civInfo) ?: return null
+        return civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
+    }
+    private fun chooseImprovementName(tile: TileInfo, civInfo: CivilizationInfo): String? {
+        if (tile.improvementInProgress != null) return tile.improvementInProgress
+        // Great improvements do provide strategic but not luxury resources, so protect them in that case
+        val tileContainsGreatImprovement = tile.containsGreatImprovement()
+        if (tileContainsGreatImprovement && tile.getTileResourceOrNull()?.resourceType == ResourceType.Strategic) return null
+        // tile.containsUnfinishedGreatImprovement() -> null       // cannot trigger: improvementInProgress is null
+
+        // Unlock a resource takes priority over Great Improvements
+        if (tile.resource != null && tile.hasViewableResource(civInfo)) {
+            val resourceImprovementName = tile.getTileResource().improvement
+            if (resourceImprovementName != null ) {
+                var removalImprovementName =
+                        if (tile.terrainFeature == null || !tile.getLastTerrain().unbuildable) ""
+                        else civInfo.gameInfo.ruleSet.tileImprovements["Remove " + tile.terrainFeature]?.name
+                // "" means no removal necessary, "something" means removal necessary and that's the appropriate action
+                // null means bad modding: Resource on unbuildable feature and no removal available
+                if (removalImprovementName != null) {
+                    if (removalImprovementName.isNotEmpty()) {
+                        // Terrain feature present that would need removal...
+                        // But: Special check for resource-unlocking improvements allowed (like Camp)
+                        val resourceImprovement = civInfo.gameInfo.ruleSet.tileImprovements[resourceImprovementName]
+                        if (resourceImprovement?.resourceTerrainAllow?.contains(tile.terrainFeature) == true)
+                            return resourceImprovementName      // Allow improvement on unbuildable feature
+                        return removalImprovementName           // need to remove
+                    }
+                    return resourceImprovementName
+                }
+            }
         }
 
+        // Now protect great improvements
+        if (tileContainsGreatImprovement) return null
+
         val uniqueImprovement = civInfo.gameInfo.ruleSet.tileImprovements.values
-                .firstOrNull { it.uniqueTo==civInfo.civName}
+                .firstOrNull { it.uniqueTo==civInfo.civName }       // what if a mod mods several?
 
-        val improvementString = when {
-            tile.improvementInProgress != null -> tile.improvementInProgress
-            improvementStringForResource != null -> improvementStringForResource
-            tile.containsGreatImprovement() -> null
-            tile.containsUnfinishedGreatImprovement() -> null
-
+        return when {
             // Defence is more important that civilian improvements
             evaluateFortPlacement(tile,civInfo) -> "Fort"
             // I think we can assume that the unique improvement is better
@@ -208,19 +231,6 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.baseTerrain == Constants.tundra -> "Trading post"
             else -> null
         }
-        if (improvementString == null) return null
-        return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
-    }
-    private fun isImprovementOnFeatureAllowed(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        // Old hardcoded logic amounts to:
-        //return tile.terrainFeature == Constants.forest && tile.getTileResource().improvement == "Camp"
-
-        // routine assumes the caller ensured that terrainFeature and resource are both present
-        val resourceImprovementName = tile.getTileResource().improvement
-                ?: return false
-        val resourceImprovement = civInfo.gameInfo.ruleSet.tileImprovements[resourceImprovementName]
-                ?: return false
-        return resourceImprovement.resourceTerrainAllow.contains(tile.terrainFeature!!)
     }
 
     private fun isAcceptableTileForFort(tile: TileInfo, civInfo: CivilizationInfo): Boolean
