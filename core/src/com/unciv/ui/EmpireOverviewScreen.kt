@@ -143,17 +143,20 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
-        happinessTable.add("Happiness".toLabel(fontSize = 24)).colspan(2).row()
+        val happinessHeader = Table(skin)
+        happinessHeader.add(ImageGetter.getStatIcon("Happiness")).pad(5f,0f,5f,12f).size(20f)
+        happinessHeader.add("Happiness".toLabel(fontSize = 24)).padTop(5f)
+        happinessTable.add(happinessHeader).colspan(2).row()
         happinessTable.addSeparator()
 
         val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
 
         for (entry in happinessBreakdown.filterNot { it.value.roundToInt()==0 }) {
             happinessTable.add(entry.key.tr())
-            happinessTable.add(entry.value.roundToInt().toString()).row()
+            happinessTable.add(entry.value.roundToInt().toString()).right().row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString())
+        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString()).right()
         happinessTable.pack()
         return happinessTable
     }
@@ -161,17 +164,20 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getGoldTable(): Table {
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
-        goldTable.add("Gold".toLabel(fontSize = 24)).colspan(2).row()
+        val goldHeader = Table(skin)
+        goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f,0f,5f,12f).size(20f)
+        goldHeader.add("Gold".toLabel(fontSize = 24)).padTop(5f)
+        goldTable.add(goldHeader).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
-            goldTable.add(entry.value.gold.roundToInt().toString()).row()
+            goldTable.add(entry.value.gold.roundToInt().toString()).right().row()
             total += entry.value.gold
         }
         goldTable.add("Total".tr())
-        goldTable.add(total.roundToInt().toString())
+        goldTable.add(total.roundToInt().toString()).right()
         goldTable.pack()
         return goldTable
     }
@@ -180,16 +186,19 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getScienceTable(): Table {
         val scienceTable = Table(skin)
         scienceTable.defaults().pad(5f)
-        scienceTable.add("Science".toLabel(fontSize = 24)).colspan(2).row()
+        val scienceHeader = Table(skin)
+        scienceHeader.add(ImageGetter.getStatIcon("Science")).pad(5f,0f,5f,12f).size(20f)
+        scienceHeader.add("Science".toLabel(fontSize = 24)).padTop(5f)
+        scienceTable.add(scienceHeader).colspan(2).row()
         scienceTable.addSeparator()
         val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
                 .filter { it.value.science!=0f }
         for (entry in scienceStats) {
             scienceTable.add(entry.key.tr())
-            scienceTable.add(entry.value.science.roundToInt().toString()).row()
+            scienceTable.add(entry.value.science.roundToInt().toString()).right().row()
         }
         scienceTable.add("Total".tr())
-        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString())
+        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString()).right()
         scienceTable.pack()
         return scienceTable
     }
@@ -203,7 +212,12 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
-        greatPeopleTable.add("Great person points".toLabel(fontSize = 24)).colspan(3).row()
+        val greatPeopleHeader = Table(skin)
+        val greatPeopleIcon = ImageGetter.getStatIcon("Specialist")
+        greatPeopleIcon.color = Color.ROYAL
+        greatPeopleHeader.add(greatPeopleIcon).padRight(12f).size(30f)
+        greatPeopleHeader.add("Great person points".toLabel(fontSize = 24)).padTop(5f)
+        greatPeopleTable.add(greatPeopleHeader).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
         greatPeopleTable.add("Current points".tr())
