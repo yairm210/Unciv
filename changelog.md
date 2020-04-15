@@ -1,3 +1,29 @@
+## 3.7.4
+
+By Jack Rainy:
+- Use correct icons for great improvements
+- World view stats clickable
+- Fix crash for tiny cities
+
+By SomeTroglodyte:
+- Fix options disabling next turn
+- Next turn button colors
+- Cultural expansion maximum
+- Icons for stats overview
+
+Cannot accept multiple conflicting offers - #2146
+
+Added city expansion tutorial - #2322
+
+Reveal all civs when won/lost - #2407
+
+Carious exploration-related improvements - #2278
+
+Unit placement improvements - #2406
+
+Translation updates
+
+
 ## 3.7.3
 
 By Jack Rainy:
