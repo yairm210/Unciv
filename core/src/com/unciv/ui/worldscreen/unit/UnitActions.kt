@@ -373,7 +373,10 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0f && !tile.isWater &&
                             !tile.isCityCenter() && !tile.getLastTerrain().impassable &&
-                            tile.improvement != improvementName })
+                            tile.improvement != improvementName &&
+                            // citadel can be built only next to or within own borders
+                            (improvementName != Constants.citadel ||
+                                    tile.neighbors.any { it.getOwner() == unit.civInfo })})
         }
         return null
     }
