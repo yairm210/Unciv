@@ -184,7 +184,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
         val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
-        var text = name.tr() + turnOrTurns(turnsToComplete)
+        var text = name.tr() +
+                if (name in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
+                else turnOrTurns(turnsToComplete)
 
         val constructionResource = cityConstructions.getConstruction(name).getResource()
 
@@ -368,13 +370,28 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     // we need to prevent queue reordering to mess that up. Without this guard, validateConstructionQueue
     // would simply remove the offending entries
     private fun isRaisePriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo): Boolean {
+        val construction = city.cityConstructions.getConstruction(name)
+        // Perpetuals please never move up
+        if (construction is PerpetualConstruction) return false
         // valid construction prerequisites from queue left after this were moved one up
         val upperQueue = city.cityConstructions.getCompleteConstructionQueue().take(constructionQueueIndex)
-        val construction = city.cityConstructions.getConstruction(name)
+        // now test if it can still be built with those in-queue prerequisites
         return construction.isBuildableWithQueue(city.cityConstructions, upperQueue)
     }
     private fun isLowerPriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo)
         = isRaisePriorityOK(constructionQueueIndex+1, city.cityConstructions.constructionQueue[constructionQueueIndex+1], city)
+
+    private fun raiseLowerCommmonHandler(constructionQueueIndex: Int, name: String, direction: Int, validationFailure: Boolean) {
+        if (validationFailure) {
+            cityScreen.selectedConstruction = null
+            selectedQueueEntry = -2
+        } else {
+            cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
+            selectedQueueEntry = constructionQueueIndex + direction
+        }
+        cityScreen.selectedTile = null
+        cityScreen.update()
+    }
 
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
@@ -387,11 +404,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.raisePriority(constructionQueueIndex)
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
-                cityScreen.selectedTile = null
-                selectedQueueEntry = constructionQueueIndex - 1
-                cityScreen.update()
+                raiseLowerCommmonHandler(
+                        constructionQueueIndex, name, direction = -1,
+                        validationFailure = city.cityConstructions.raisePriority(constructionQueueIndex)
+                )
             }
         }
         return tab
@@ -408,11 +424,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.lowerPriority(constructionQueueIndex)
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
-                cityScreen.selectedTile = null
-                selectedQueueEntry = constructionQueueIndex + 1
-                cityScreen.update()
+                raiseLowerCommmonHandler(
+                        constructionQueueIndex, name, direction = 1,
+                        validationFailure = city.cityConstructions.lowerPriority(constructionQueueIndex)
+                )
             }
         }
         return tab

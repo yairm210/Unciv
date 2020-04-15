@@ -242,7 +242,7 @@ class CityConstructions {
             addProductionPoints(cityStats.production.roundToInt())
     }
 
-    private fun validateConstructionQueue() {
+    private fun validateConstructionQueue(): Boolean {
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
         val construction = getConstruction(currentConstruction)
 
@@ -280,6 +280,7 @@ class CityConstructions {
         } else {
             currentConstruction = saveCurrentConstruction
         }
+        return anyChange
     }
 
     private fun validateInProgressConstructions() {
@@ -418,7 +419,7 @@ class CityConstructions {
         validateConstructionQueue()
     }
 
-    fun raisePriority(constructionQueueIndex: Int) {
+    fun raisePriority(constructionQueueIndex: Int): Boolean {
         // change current construction
         if(constructionQueueIndex == 0) {
             // Add current construction to queue after the first element
@@ -427,12 +428,12 @@ class CityConstructions {
         }
         else
             constructionQueue.swap(constructionQueueIndex-1, constructionQueueIndex)
-        validateConstructionQueue()
+        return validateConstructionQueue()
     }
 
     // Lowering == Highering next element in queue
-    fun lowerPriority(constructionQueueIndex: Int) {
-        raisePriority(constructionQueueIndex+1)
+    fun lowerPriority(constructionQueueIndex: Int): Boolean {
+        return raisePriority(constructionQueueIndex+1)
     }
 
     fun getCompleteConstructionQueue(): Collection<String> {
