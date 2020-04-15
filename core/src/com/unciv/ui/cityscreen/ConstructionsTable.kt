@@ -139,7 +139,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
             val productionButton = getProductionButton(unit,
                     buttonText,
-                    unit.getRejectionReason(cityConstructions))
+                    unit.getRejectionReason(cityConstructions, cityConstructions.getCompleteConstructionQueue()))
             units.add(productionButton)
         }
 
@@ -150,7 +150,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 buttonText += "\n"+"Consumes 1 [${building.requiredResource}]".tr()
             val productionTextButton = getProductionButton(building,
                     buttonText,
-                    building.getRejectionReason(cityConstructions)
+                    building.getRejectionReason(cityConstructions, cityConstructions.getCompleteConstructionQueue())
             )
             if (building.isWonder) buildableWonders += productionTextButton
             else if (building.isNationalWonder) buildableNationalWonders += productionTextButton
@@ -278,7 +278,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             button = TextButton("Add to queue".tr(), CameraStageBaseScreen.skin)
             if (construction == null
                     || cityConstructions.isQueueFull()
-                    || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
+                    || !cityConstructions.getConstruction(construction.name).isBuildableWithQueue(cityConstructions, cityConstructions.getCompleteConstructionQueue())
                     || !UncivGame.Current.worldScreen.isPlayersTurn
                     || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
                     || city.isPuppet) {
