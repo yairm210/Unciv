@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
@@ -10,7 +11,7 @@ import com.unciv.ui.utils.*
 
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popup(worldScreen){
     fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
-        val button = TextButton(text.tr(), skin)
+        val button = text.toTextButton()
         button.onClick {
             if(action!=null) action()
             worldScreen.shouldUpdate=true
@@ -65,7 +66,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 if (city.foundingCiv != ""
                         && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
                         && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
-                    add(TextButton("Liberate".tr(), skin).onClick {
+                    add("Liberate".toTextButton().onClick {
                         city.liberateCity(conqueringCiv)
                         worldScreen.shouldUpdate=true
                         close()
@@ -76,7 +77,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
                 if (!conqueringCiv.isOneCityChallenger()){
 
-                    add(TextButton("Annex".tr(), skin).onClick {
+                    add("Annex".toTextButton().onClick {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
                         worldScreen.shouldUpdate=true
@@ -86,7 +87,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addGoodSizedLabel("Their citizens generate 2x the unhappiness, unless you build a courthouse.").row()
                     addSeparator()
 
-                    add(TextButton("Puppet".tr(), skin).onClick {
+                    add("Puppet".toTextButton().onClick {
                         city.puppetCity(conqueringCiv)
                         worldScreen.shouldUpdate=true
                         close()
@@ -98,7 +99,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addSeparator()
 
 
-                    add(TextButton("Raze".tr(), skin).onClick {
+                    add("Raze".toTextButton().onClick {
                         city.puppetCity(conqueringCiv)
                         city.annexCity()
                         city.isBeingRazed = true
@@ -109,7 +110,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     addGoodSizedLabel("The population will gradually dwindle until the city is destroyed.").row()
                 } else {
 
-                    add(TextButton("Destroy".tr(), skin).onClick {
+                    add("Destroy".toTextButton().onClick {
                         city.puppetCity(conqueringCiv)
                         city.destroyCity()
                         worldScreen.shouldUpdate=true
@@ -157,7 +158,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 centerTable.add(wonder.getShortDescription(worldScreen.gameInfo.ruleSet)
                         .toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
             AlertType.TechResearched -> {
                 val gameBasics = worldScreen.gameInfo.ruleSet
@@ -169,13 +170,13 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
                 centerTable.add(tech.getDescription(gameBasics).toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
             AlertType.GoldenAge -> {
                 addGoodSizedLabel("GOLDEN AGE")
                 addSeparator()
                 addGoodSizedLabel("Your citizens have been happy with your rule for so long that the empire enters a Golden Age!").row()
-                add(getCloseButton("Close"))
+                add(getCloseButton(Constants.close))
             }
         }
     }

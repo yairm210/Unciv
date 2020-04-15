@@ -23,7 +23,6 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     Workers("Workers"),
     SiegeUnits("Siege_Units"),
     Embarking("Embarking"),
-    CityRange("City_Range"),
     IdleUnits("Idle_Units"),
     ContactMe("Contact_Me"),
     Pillaging("Pillaging"),
@@ -32,6 +31,7 @@ enum class Tutorial(val value: String, val isCivilopedia: Boolean = !value.start
     ResearchAgreements("Research_Agreements"),
     CityStates("City-States"),
     NaturalWonders("Natural_Wonders"),
+    CityExpansion("City_Expansion"),
     ;
 
     companion object {

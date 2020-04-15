@@ -6,6 +6,8 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class CityExpansionManager {
     @Transient
@@ -18,21 +20,22 @@ class CityExpansionManager {
         return toReturn
     }
 
+    fun tilesClaimed() = cityInfo.tiles.size - 7
+    fun isAreaMaxed(): Boolean = (cityInfo.tiles.size >= 90)
+
     // This one has conflicting sources -
     // http://civilization.wikia.com/wiki/Mathematics_of_Civilization_V says it's 20+(10(t-1))^1.1
     // https://www.reddit.com/r/civ/comments/58rxkk/how_in_gods_name_do_borders_expand_in_civ_vi/ has it
     //   (per game XML files) at 6*(t+0.4813)^1.3
     // The second seems to be more based, so I'll go with that
-
     fun getCultureToNextTile(): Int {
-        val numTilesClaimed = cityInfo.tiles.size - 7
-        var cultureToNextTile = 6 * Math.pow(numTilesClaimed + 1.4813, 1.3)
+        var cultureToNextTile = 6 * (kotlin.math.max(0, tilesClaimed()) + 1.4813).pow(1.3)
         if (cityInfo.civInfo.containsBuildingUnique("Cost of acquiring new tiles reduced by 25%"))
             cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if(cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cultureToNextTile *= 0.75 // Specialty of Krepost
         if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
-        return Math.round(cultureToNextTile).toInt()
+        return cultureToNextTile.roundToInt()
     }
 
     fun buyTile(tileInfo: TileInfo){
@@ -45,9 +48,8 @@ class CityExpansionManager {
 
     fun getGoldCostOfTile(tileInfo: TileInfo): Int {
         val baseCost = 50
-        val numTilesClaimed= cityInfo.tiles.size - 7
         val distanceFromCenter = tileInfo.aerialDistanceTo(cityInfo.getCenterTile())
-        var cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5.0
+        var cost = baseCost * (distanceFromCenter-1) + tilesClaimed()*5.0
 
         if (cityInfo.civInfo.containsBuildingUnique("Cost of acquiring new tiles reduced by 25%"))
             cost *= 0.75 //Speciality of Angkor Wat
@@ -87,13 +89,18 @@ class CityExpansionManager {
             takeOwnership(tile)
     }
 
-    private fun addNewTileWithCulture() {
-        cultureStored -= getCultureToNextTile()
-
-        val chosenTile = chooseNewTileToOwn()
-        if(chosenTile!=null){
-            takeOwnership(chosenTile)
+    private fun addNewTileWithCulture(): Boolean {
+        if ( isAreaMaxed() ) {
+            cultureStored = 0
+            return false
         }
+        val chosenTile = chooseNewTileToOwn()
+        if (chosenTile!=null) {
+            cultureStored -= getCultureToNextTile()
+            takeOwnership(chosenTile)
+            return true
+        }
+        return false
     }
 
     fun relinquishOwnership(tileInfo: TileInfo){
@@ -127,8 +134,8 @@ class CityExpansionManager {
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
-            addNewTileWithCulture()
-            cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
+            if (addNewTileWithCulture())
+                cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
         }
     }
 

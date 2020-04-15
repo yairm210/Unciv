@@ -120,7 +120,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         exitMapEditorButton.onClick { UncivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
 
-        val closeOptionsButton = TextButton("Close".tr(), skin)
+        val closeOptionsButton = TextButton(Constants.close.tr(), skin)
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
     }

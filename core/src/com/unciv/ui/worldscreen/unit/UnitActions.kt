@@ -200,8 +200,8 @@ object UnitActions {
             actionList += UnitAction(
                     type = UnitActionType.Explore,
                     action = {
-                        UnitAutomation.automatedExplore(unit)
                         unit.action = Constants.unitActionExplore
+                        if(unit.currentMovement>0) UnitAutomation.automatedExplore(unit)
                     })
         } else {
             actionList += UnitAction(

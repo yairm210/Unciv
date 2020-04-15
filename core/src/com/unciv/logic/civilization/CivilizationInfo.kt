@@ -482,8 +482,8 @@ class CivilizationInfo {
         addNotification("A [$greatPersonName] has been born in [${city.name}]!", city.location, Color.GOLD)
     }
 
-    fun placeUnitNearTile(location: Vector2, unitName: String, removeImprovement: Boolean = false): MapUnit? {
-        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this, removeImprovement = removeImprovement)
+    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
+        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
 
     fun addCity(location: Vector2) {

@@ -1,4 +1,4 @@
-﻿package com.unciv.ui
+package com.unciv.ui
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
@@ -19,33 +19,35 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.Constants
 import java.text.DecimalFormat
 import kotlin.math.*
 
-class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private val defaultPage: String = "Cities") : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply {  defaults().pad(20f) }
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        val clicks = HashMap<String,() -> Unit>()
 
-        val closeButton = TextButton("Close".tr(), skin)
+        val closeButton = Constants.close.toTextButton()
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
-        val setCityInfoButton = TextButton("Cities".tr(), skin)
+        val setCityInfoButton = "Cities".toTextButton()
         val setCities = {
             centerTable.clear()
             centerTable.add(getCityInfoTable())
             centerTable.pack()
         }
-        setCities()
+        clicks["Cities"] = setCities
         setCityInfoButton.onClick(setCities)
         topTable.add(setCityInfoButton)
 
-        val setStatsInfoButton = TextButton("Stats".tr(), skin)
-        setStatsInfoButton.onClick {
+        val setStatsInfoButton = "Stats".toTextButton()
+        val setStats = {
             game.settings.addCompletedTutorialTask("See your stats breakdown")
             centerTable.clear()
             centerTable.add(ScrollPane(Table().apply {
@@ -57,9 +59,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             }))
             centerTable.pack()
         }
+        clicks["Stats"] = setStats
+        setStatsInfoButton.onClick(setStats)
         topTable.add(setStatsInfoButton)
 
-        val setCurrentTradesButton = TextButton("Trades".tr(), skin)
+        val setCurrentTradesButton = "Trades".toTextButton()
         setCurrentTradesButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getTradesTable())).height(stage.height * 0.8f) // so it doesn't cover the navigation buttons
@@ -69,7 +73,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         if (viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
             setCurrentTradesButton.disable()
 
-        val setUnitsButton = TextButton("Units".tr(), skin)
+        val setUnitsButton = "Units".toTextButton()
         setUnitsButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getUnitTable()).apply { setOverscroll(false,false) }).height(stage.height * 0.8f)
@@ -78,7 +82,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         topTable.add(setUnitsButton)
 
 
-        val setDiplomacyButton = TextButton("Diplomacy".tr(), skin)
+        val setDiplomacyButton = "Diplomacy".toTextButton()
         setDiplomacyButton.onClick {
             centerTable.clear()
             centerTable.add(getDiplomacyGroup()).height(stage.height * 0.8f)
@@ -86,17 +90,21 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         }
         topTable.add(setDiplomacyButton)
 
-        val setResourcesButton = TextButton("Resources".tr(), skin)
-        setResourcesButton.onClick {
+        val setResourcesButton = "Resources".toTextButton()
+        val setResources = {
             centerTable.clear()
             centerTable.add(ScrollPane(getResourcesTable())).size(stage.width * 0.8f, stage.height * 0.8f)
             centerTable.pack()
         }
+        clicks["Resources"] = setResources
+        setResourcesButton.onClick(setResources)
         topTable.add(setResourcesButton)
         if (viewingPlayer.detailedCivResources.isEmpty())
             setResourcesButton.disable()
 
         topTable.pack()
+
+        clicks[defaultPage]?.invoke()
 
         val table = Table()
         table.add(topTable).row()
@@ -142,17 +150,20 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
-        happinessTable.add("Happiness".toLabel(fontSize = 24)).colspan(2).row()
+        val happinessHeader = Table(skin)
+        happinessHeader.add(ImageGetter.getStatIcon("Happiness")).pad(5f,0f,5f,12f).size(20f)
+        happinessHeader.add("Happiness".toLabel(fontSize = 24)).padTop(5f)
+        happinessTable.add(happinessHeader).colspan(2).row()
         happinessTable.addSeparator()
 
         val happinessBreakdown = viewingPlayer.stats().getHappinessBreakdown()
 
         for (entry in happinessBreakdown.filterNot { it.value.roundToInt()==0 }) {
             happinessTable.add(entry.key.tr())
-            happinessTable.add(entry.value.roundToInt().toString()).row()
+            happinessTable.add(entry.value.roundToInt().toString()).right().row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString())
+        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString()).right()
         happinessTable.pack()
         return happinessTable
     }
@@ -160,17 +171,20 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getGoldTable(): Table {
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
-        goldTable.add("Gold".toLabel(fontSize = 24)).colspan(2).row()
+        val goldHeader = Table(skin)
+        goldHeader.add(ImageGetter.getStatIcon("Gold")).pad(5f,0f,5f,12f).size(20f)
+        goldHeader.add("Gold".toLabel(fontSize = 24)).padTop(5f)
+        goldTable.add(goldHeader).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
-            goldTable.add(entry.value.gold.roundToInt().toString()).row()
+            goldTable.add(entry.value.gold.roundToInt().toString()).right().row()
             total += entry.value.gold
         }
         goldTable.add("Total".tr())
-        goldTable.add(total.roundToInt().toString())
+        goldTable.add(total.roundToInt().toString()).right()
         goldTable.pack()
         return goldTable
     }
@@ -179,16 +193,19 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
     private fun getScienceTable(): Table {
         val scienceTable = Table(skin)
         scienceTable.defaults().pad(5f)
-        scienceTable.add("Science".toLabel(fontSize = 24)).colspan(2).row()
+        val scienceHeader = Table(skin)
+        scienceHeader.add(ImageGetter.getStatIcon("Science")).pad(5f,0f,5f,12f).size(20f)
+        scienceHeader.add("Science".toLabel(fontSize = 24)).padTop(5f)
+        scienceTable.add(scienceHeader).colspan(2).row()
         scienceTable.addSeparator()
         val scienceStats = viewingPlayer.stats().getStatMapForNextTurn()
                 .filter { it.value.science!=0f }
         for (entry in scienceStats) {
             scienceTable.add(entry.key.tr())
-            scienceTable.add(entry.value.science.roundToInt().toString()).row()
+            scienceTable.add(entry.value.science.roundToInt().toString()).right().row()
         }
         scienceTable.add("Total".tr())
-        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString())
+        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString()).right()
         scienceTable.pack()
         return scienceTable
     }
@@ -202,7 +219,12 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         val pointsToGreatPerson = viewingPlayer.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
-        greatPeopleTable.add("Great person points".toLabel(fontSize = 24)).colspan(3).row()
+        val greatPeopleHeader = Table(skin)
+        val greatPeopleIcon = ImageGetter.getStatIcon("Specialist")
+        greatPeopleIcon.color = Color.ROYAL
+        greatPeopleHeader.add(greatPeopleIcon).padRight(12f).size(30f)
+        greatPeopleHeader.add("Great person points".toLabel(fontSize = 24)).padTop(5f)
+        greatPeopleTable.add(greatPeopleHeader).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
         greatPeopleTable.add("Current points".tr())
@@ -577,7 +599,8 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
-            } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
+            } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug
+                    || currentPlayer.knows(civ) || currentPlayer.isDefeated() || currentPlayer.victoryManager.hasWon()) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
                 backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()

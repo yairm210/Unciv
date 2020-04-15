@@ -30,7 +30,6 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
-import com.unciv.ui.tutorials.TutorialController
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
@@ -506,9 +505,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.setText(action.text.tr())
         nextTurnButton.label.color = action.color
         nextTurnButton.pack()
-        if (isSomethingOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
-        else nextTurnButton.enable()
+        nextTurnButton.isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
+    }
+    fun enableNextTurnButtonAfterOptions() {
+        nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
     }
 
     private fun getNextTurnAction(): NextTurnAction {
@@ -538,7 +539,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
                 }
 
-            viewingCiv.policies.shouldOpenPolicyPicker || viewingCiv.policies.freePolicies > 0 ->
+            viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy())  ->
                 NextTurnAction("Pick a policy", Color.VIOLET) {
                     game.setScreen(PolicyPickerScreen(this))
                     viewingCiv.policies.shouldOpenPolicyPicker = false
@@ -577,6 +578,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun showTutorialsOnNextTurn(){
         if (!UncivGame.Current.settings.showTutorials) return
         displayTutorial(Tutorial.SlowStart)
+        displayTutorial(Tutorial.CityExpansion){ viewingCiv.cities.any { it.expansion.tilesClaimed()>0 } }
         displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
         displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
         displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }

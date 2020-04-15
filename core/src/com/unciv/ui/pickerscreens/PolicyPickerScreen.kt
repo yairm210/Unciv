@@ -109,7 +109,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name)
             policyButton.add(policyImage).size(30f)
         } else {
-            policyButton = TextButton(policy.name.tr(), skin)
+            policyButton = policy.name.toTextButton()
         }
 
         if (viewingCiv.policies.isAdopted(policy.name)) { // existing

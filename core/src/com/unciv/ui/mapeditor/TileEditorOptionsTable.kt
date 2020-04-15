@@ -51,11 +51,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         setTerrainsAndResources()
 
         val tabPickerTable = Table().apply { defaults().pad(10f) }
-        val terrainsAndResourcesTabButton = TextButton("Terrains & Resources".tr(),skin)
+        val terrainsAndResourcesTabButton = "Terrains & Resources".toTextButton()
                 .onClick { setTerrainsAndResources() }
         tabPickerTable.add(terrainsAndResourcesTabButton)
 
-        val civLocationsButton = TextButton("Improvements".tr(), skin)
+        val civLocationsButton = "Improvements".toTextButton()
                 .onClick { setImprovements() }
         tabPickerTable.add(civLocationsButton)
         tabPickerTable.pack()

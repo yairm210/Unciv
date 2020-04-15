@@ -182,7 +182,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             is CityCombatant -> "Bombard"
             else -> "Attack"
         }
-        val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
+        val attackButton = attackText.toTextButton().apply { color= Color.RED }
 
         var attackableTile : AttackableTile? = null
 
@@ -275,7 +275,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         addSeparator().pad(0f)
         row().pad(5f)
 
-        val attackButton = TextButton("NUKE".tr(), skin).apply { color= Color.RED }
+        val attackButton = "NUKE".toTextButton().apply { color= Color.RED }
 
         val canReach = attacker.unit.currentTile.getTilesInDistance(attacker.unit.getRange()).contains(targetTile)
 
