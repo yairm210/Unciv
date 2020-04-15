@@ -153,10 +153,10 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
 
         for (entry in happinessBreakdown.filterNot { it.value.roundToInt()==0 }) {
             happinessTable.add(entry.key.tr())
-            happinessTable.add(entry.value.roundToInt().toString()).row()
+            happinessTable.add(entry.value.roundToInt().toString()).right().row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString())
+        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString()).right()
         happinessTable.pack()
         return happinessTable
     }
@@ -173,11 +173,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         for (entry in viewingPlayer.stats().getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
-            goldTable.add(entry.value.gold.roundToInt().toString()).row()
+            goldTable.add(entry.value.gold.roundToInt().toString()).right().row()
             total += entry.value.gold
         }
         goldTable.add("Total".tr())
-        goldTable.add(total.roundToInt().toString())
+        goldTable.add(total.roundToInt().toString()).right()
         goldTable.pack()
         return goldTable
     }
@@ -195,10 +195,10 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
                 .filter { it.value.science!=0f }
         for (entry in scienceStats) {
             scienceTable.add(entry.key.tr())
-            scienceTable.add(entry.value.science.roundToInt().toString()).row()
+            scienceTable.add(entry.value.science.roundToInt().toString()).right().row()
         }
         scienceTable.add("Total".tr())
-        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString())
+        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString()).right()
         scienceTable.pack()
         return scienceTable
     }
