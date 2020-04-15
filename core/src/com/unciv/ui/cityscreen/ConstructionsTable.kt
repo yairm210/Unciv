@@ -139,7 +139,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
             val productionButton = getProductionButton(unit,
                     buttonText,
-                    unit.getRejectionReason(cityConstructions))
+                    unit.getRejectionReason(cityConstructions, cityConstructions.getCompleteConstructionQueue()))
             units.add(productionButton)
         }
 
@@ -150,7 +150,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 buttonText += "\n"+"Consumes 1 [${building.requiredResource}]".tr()
             val productionTextButton = getProductionButton(building,
                     buttonText,
-                    building.getRejectionReason(cityConstructions)
+                    building.getRejectionReason(cityConstructions, cityConstructions.getCompleteConstructionQueue())
             )
             if (building.isWonder) buildableWonders += productionTextButton
             else if (building.isNationalWonder) buildableNationalWonders += productionTextButton
@@ -184,7 +184,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
         val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
-        var text = name.tr() + turnOrTurns(turnsToComplete)
+        var text = name.tr() +
+                if (name in PerpetualConstruction.perpetualConstructionsMap) "\n8"
+                else turnOrTurns(turnsToComplete)
 
         val constructionResource = cityConstructions.getConstruction(name).getResource()
 
@@ -278,7 +280,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             button = TextButton("Add to queue".tr(), CameraStageBaseScreen.skin)
             if (construction == null
                     || cityConstructions.isQueueFull()
-                    || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
+                    || !cityConstructions.getConstruction(construction.name).isBuildableWithQueue(cityConstructions, cityConstructions.getCompleteConstructionQueue())
                     || !UncivGame.Current.worldScreen.isPlayersTurn
                     || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
                     || city.isPuppet) {
@@ -364,18 +366,48 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return button
     }
 
+    // Now that buildings can be queued if their prerequisites are in the queue (not already built)
+    // we need to prevent queue reordering to mess that up. Without this guard, validateConstructionQueue
+    // would simply remove the offending entries
+    private fun isRaisePriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo): Boolean {
+        val construction = city.cityConstructions.getConstruction(name)
+        // Perpetuals please never move up
+        if (construction is PerpetualConstruction) return false
+        // valid construction prerequisites from queue left after this were moved one up
+        val upperQueue = city.cityConstructions.getCompleteConstructionQueue().take(constructionQueueIndex)
+        // now test if it can still be built with those in-queue prerequisites
+        return construction.isBuildableWithQueue(city.cityConstructions, upperQueue)
+    }
+    private fun isLowerPriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo)
+        = isRaisePriorityOK(constructionQueueIndex+1, city.cityConstructions.constructionQueue[constructionQueueIndex+1], city)
+
+    private fun raiseLowerCommmonHandler(constructionQueueIndex: Int, name: String, direction: Int, validationFailure: Boolean) {
+        if (validationFailure) {
+            cityScreen.selectedConstruction = null
+            selectedQueueEntry = -2
+        } else {
+            cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
+            selectedQueueEntry = constructionQueueIndex + direction
+        }
+        cityScreen.selectedTile = null
+        cityScreen.update()
+    }
+
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        val image = ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f)
+        val enable = UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet
+                && isRaisePriorityOK(constructionQueueIndex, name, city)
+        if (!enable) image.circle.color = Color.DARK_GRAY
+        tab.add(image)
+        if (enable) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.raisePriority(constructionQueueIndex)
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
-                cityScreen.selectedTile = null
-                selectedQueueEntry = constructionQueueIndex - 1
-                cityScreen.update()
+                raiseLowerCommmonHandler(
+                        constructionQueueIndex, name, direction = -1,
+                        validationFailure = city.cityConstructions.raisePriority(constructionQueueIndex)
+                )
             }
         }
         return tab
@@ -383,16 +415,19 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        val image = ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f)
+        val enable = UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet
+                && isLowerPriorityOK(constructionQueueIndex, name, city)
+        if (!enable) image.circle.color = Color.DARK_GRAY
+        tab.add(image)
+        if (enable) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
-                city.cityConstructions.lowerPriority(constructionQueueIndex)
-                cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
-                cityScreen.selectedTile = null
-                selectedQueueEntry = constructionQueueIndex + 1
-                cityScreen.update()
+                raiseLowerCommmonHandler(
+                        constructionQueueIndex, name, direction = 1,
+                        validationFailure = city.cityConstructions.lowerPriority(constructionQueueIndex)
+                )
             }
         }
         return tab
