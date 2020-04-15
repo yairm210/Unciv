@@ -185,7 +185,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
         val turnsToComplete = cityConstructions.turnsToConstruction(name, isFirstConstructionOfItsKind)
         var text = name.tr() +
-                if (name in PerpetualConstruction.perpetualConstructionsMap) "\n8"
+                if (name in PerpetualConstruction.perpetualConstructionsMap) "\n∞"
                 else turnOrTurns(turnsToComplete)
 
         val constructionResource = cityConstructions.getConstruction(name).getResource()
