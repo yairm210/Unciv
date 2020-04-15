@@ -242,7 +242,7 @@ class CityConstructions {
             addProductionPoints(cityStats.production.roundToInt())
     }
 
-    private fun validateConstructionQueue(): Boolean {
+    fun validateConstructionQueue(): Boolean {
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
         val construction = getConstruction(currentConstruction)
 
