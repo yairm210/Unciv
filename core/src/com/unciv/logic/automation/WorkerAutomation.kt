@@ -194,7 +194,8 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.containsUnfinishedGreatImprovement() -> null
 
             // Defence is more important that civilian improvements
-            evaluateFortPlacement(tile,civInfo) -> "Fort"
+            // While AI sucks in strategical placement of forts, allow a human does it manually
+            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,civInfo) -> "Fort"
             // I think we can assume that the unique improvement is better
             uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
 
