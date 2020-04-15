@@ -244,7 +244,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile!!)
+        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
         bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
         bottomTileInfoTable.y = if (UncivGame.Current.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
