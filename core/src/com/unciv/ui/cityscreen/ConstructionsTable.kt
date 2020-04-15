@@ -364,10 +364,26 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return button
     }
 
+    // Now that buildings can be queued if their prerequisites are in the queue (not already built)
+    // we need to prevent queue reordering to mess that up. Without this guard, validateConstructionQueue
+    // would simply remove the offending entries
+    private fun isRaisePriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo): Boolean {
+        // valid construction prerequisites from queue left after this were moved one up
+        val upperQueue = city.cityConstructions.getCompleteConstructionQueue().take(constructionQueueIndex)
+        val construction = city.cityConstructions.getConstruction(name)
+        return construction.isBuildableWithQueue(city.cityConstructions, upperQueue)
+    }
+    private fun isLowerPriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo)
+        = isRaisePriorityOK(constructionQueueIndex+1, city.cityConstructions.constructionQueue[constructionQueueIndex+1], city)
+
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        val image = ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f)
+        val enable = UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet
+                && isRaisePriorityOK(constructionQueueIndex, name, city)
+        if (!enable) image.circle.color = Color.DARK_GRAY
+        tab.add(image)
+        if (enable) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -383,8 +399,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
-        tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        val image = ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f)
+        val enable = UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet
+                && isLowerPriorityOK(constructionQueueIndex, name, city)
+        if (!enable) image.circle.color = Color.DARK_GRAY
+        tab.add(image)
+        if (enable) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled

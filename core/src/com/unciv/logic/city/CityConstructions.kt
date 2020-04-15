@@ -280,22 +280,6 @@ class CityConstructions {
         } else {
             currentConstruction = saveCurrentConstruction
         }
-
-//        if (!construction.isBuildable(this)) {
-//            // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-//            cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
-//            cancelCurrentConstruction()
-//        } else
-//            currentConstruction = saveCurrentConstruction
-//
-//        // Moved from old validateConstructionQueue to fix buildings still in queue after a wonder granted a free one
-//        val queueSnapshot = mutableListOf<String>().apply { addAll(constructionQueue) }
-//        constructionQueue.clear()
-//
-//        for (construction in queueSnapshot) {
-//            if (getConstruction(construction).isBuildable(this))
-//                constructionQueue.add(construction)
-//        }
     }
 
     private fun validateInProgressConstructions() {
