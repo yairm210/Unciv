@@ -23,30 +23,31 @@ import com.unciv.Constants
 import java.text.DecimalFormat
 import kotlin.math.*
 
-class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraStageBaseScreen(){
+class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private val defaultPage: String = "Cities") : CameraStageBaseScreen(){
     private val topTable = Table().apply { defaults().pad(10f) }
     private val centerTable = Table().apply {  defaults().pad(20f) }
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        val clicks = HashMap<String,() -> Unit>()
 
-        val closeButton = TextButton(Constants.close.tr(), skin)
+        val closeButton = Constants.close.toTextButton()
         closeButton.onClick { UncivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
-        val setCityInfoButton = TextButton("Cities".tr(), skin)
+        val setCityInfoButton = "Cities".toTextButton()
         val setCities = {
             centerTable.clear()
             centerTable.add(getCityInfoTable())
             centerTable.pack()
         }
-        setCities()
+        clicks["Cities"] = setCities
         setCityInfoButton.onClick(setCities)
         topTable.add(setCityInfoButton)
 
-        val setStatsInfoButton = TextButton("Stats".tr(), skin)
-        setStatsInfoButton.onClick {
+        val setStatsInfoButton = "Stats".toTextButton()
+        val setStats = {
             game.settings.addCompletedTutorialTask("See your stats breakdown")
             centerTable.clear()
             centerTable.add(ScrollPane(Table().apply {
@@ -58,9 +59,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
             }))
             centerTable.pack()
         }
+        clicks["Stats"] = setStats
+        setStatsInfoButton.onClick(setStats)
         topTable.add(setStatsInfoButton)
 
-        val setCurrentTradesButton = TextButton("Trades".tr(), skin)
+        val setCurrentTradesButton = "Trades".toTextButton()
         setCurrentTradesButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getTradesTable())).height(stage.height * 0.8f) // so it doesn't cover the navigation buttons
@@ -70,7 +73,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         if (viewingPlayer.diplomacy.values.all { it.trades.isEmpty() })
             setCurrentTradesButton.disable()
 
-        val setUnitsButton = TextButton("Units".tr(), skin)
+        val setUnitsButton = "Units".toTextButton()
         setUnitsButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getUnitTable()).apply { setOverscroll(false,false) }).height(stage.height * 0.8f)
@@ -79,7 +82,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         topTable.add(setUnitsButton)
 
 
-        val setDiplomacyButton = TextButton("Diplomacy".tr(), skin)
+        val setDiplomacyButton = "Diplomacy".toTextButton()
         setDiplomacyButton.onClick {
             centerTable.clear()
             centerTable.add(getDiplomacyGroup()).height(stage.height * 0.8f)
@@ -87,17 +90,21 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo) : CameraS
         }
         topTable.add(setDiplomacyButton)
 
-        val setResourcesButton = TextButton("Resources".tr(), skin)
-        setResourcesButton.onClick {
+        val setResourcesButton = "Resources".toTextButton()
+        val setResources = {
             centerTable.clear()
             centerTable.add(ScrollPane(getResourcesTable())).size(stage.width * 0.8f, stage.height * 0.8f)
             centerTable.pack()
         }
+        clicks["Resources"] = setResources
+        setResourcesButton.onClick(setResources)
         topTable.add(setResourcesButton)
         if (viewingPlayer.detailedCivResources.isEmpty())
             setResourcesButton.disable()
 
         topTable.pack()
+
+        clicks[defaultPage]?.invoke()
 
         val table = Table()
         table.add(topTable).row()
