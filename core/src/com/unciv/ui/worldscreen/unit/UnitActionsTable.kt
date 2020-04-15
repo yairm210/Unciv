@@ -41,6 +41,12 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
                 val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
                 return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo), 'u')
             }
+            unitAction.startsWith("Create ") -> {
+                // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
+                // What you find between the first [ and the first ] that comes after it, will be group no. 1
+                val improvementName = Regex("""Create \[([^]]*)]""").find(unitAction)!!.groups[1]!!.value
+                return UnitIconAndKey(ImageGetter.getImprovementIcon(improvementName), 'i')
+            }
             unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"),'f')
             unitAction.startsWith("Fortify") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK },'f')
             else -> when(unitAction){
@@ -52,20 +58,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
                 "Stop automation" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'm')
                 "Found city" -> return UnitIconAndKey(ImageGetter.getUnitIcon(Constants.settler),'f')
                 "Hurry Research" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Scientist"), 'g')
-                "Construct Academy" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Academy"), 'i')
                 "Start Golden Age" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Artist"), 'g')
-                "Construct Landmark" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Landmark"), 'i')
-                "Construct Citadel" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Citadel"), 'i')
                 "Hurry Wonder" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Engineer"), 'g')
-                "Construct Manufactory" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Manufactory"), 'i')
                 "Conduct Trade Mission" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Great Merchant"), 'g')
-                "Construct Customs House" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Customs house"), 'i')
                 "Set up" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Catapult"), 't')
                 "Disband unit" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/DisbandUnit"))
                 "Explore" -> return UnitIconAndKey(ImageGetter.getUnitIcon("Scout"), 'x')
                 "Stop exploration" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Stop"), 'x')
-                "Create Fishing Boats" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Fishing Boats"),'i')
-                "Create Oil well" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Oil well"),'i')
                 "Pillage" -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Pillage"),'p')
                 "Construct road" -> return UnitIconAndKey(ImageGetter.getImprovementIcon("Road"),'r')
                 else -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Star"))
