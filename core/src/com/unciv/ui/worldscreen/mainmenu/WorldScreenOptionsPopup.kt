@@ -114,8 +114,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addYesNoRow ("Move units with a single tap", settings.singleTapMove) {
             settings.singleTapMove = it
         }
-        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction) {
+        addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
+            if (it && worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human) {
+                UncivGame.Current.gameInfo.currentPlayerCiv.cities.forEach {
+                    city -> city.cityConstructions.chooseNextConstruction()
+                }
+            }
         }
         addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) {
             settings.autoBuildingRoads = it
