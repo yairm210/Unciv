@@ -28,7 +28,7 @@ class CityExpansionManager {
     // The second seems to be more based, so I'll go with that
 
     fun getCultureToNextTile(): Int {
-        var cultureToNextTile = 6 * (tilesClaimed() + 1.4813).pow(1.3)
+        var cultureToNextTile = 6 * (kotlin.math.max(0, tilesClaimed()) + 1.4813).pow(1.3)
         if (cityInfo.civInfo.containsBuildingUnique("Cost of acquiring new tiles reduced by 25%"))
             cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if(cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
