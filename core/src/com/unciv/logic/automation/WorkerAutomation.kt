@@ -195,7 +195,7 @@ class WorkerAutomation(val unit: MapUnit) {
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,civInfo) -> "Fort"
+            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,civInfo) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
 
@@ -229,7 +229,7 @@ class WorkerAutomation(val unit: MapUnit) {
         // don't build fort in the city
         if (tile.isCityCenter()) return false
         // don't build fort if it is already here
-        if (tile.improvement == "Fort") return false
+        if (tile.improvement == Constants.fort) return false
         // don't build on resource tiles
         if (tile.hasViewableResource(civInfo)) return false
         // don't build on great improvements
@@ -250,8 +250,8 @@ class WorkerAutomation(val unit: MapUnit) {
             // don't build forts too close to the cities
             if (closeTile.isCityCenter()) return false
             // don't build forts too close to other forts
-            if (closeTile.improvement == "Fort" || closeTile.improvement == "Citadel"
-                    || closeTile.improvementInProgress == "Fort") return false
+            if (closeTile.improvement == Constants.fort || closeTile.improvement == Constants.citadel
+                    || closeTile.improvementInProgress == Constants.fort) return false
             // there is another better tile for the fort
             if (!isHills && tile.getBaseTerrain().name == Constants.hill &&
                     isAcceptableTileForFort(closeTile, civInfo)) return false

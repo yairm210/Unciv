@@ -47,6 +47,9 @@ object Constants {
     const val random = "Random"
     val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house", "Citadel")
 
+    const val fort = "Fort"
+    const val citadel = "Citadel"
+
     const val unitActionSetUp = "Set Up"
     const val unitActionSleep = "Sleep"
     const val unitActionSleepUntilHealed = "Sleep until healed"
