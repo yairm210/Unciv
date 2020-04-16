@@ -307,7 +307,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
 
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {
-        val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
+        val tileGroup = tileGroups.values.firstOrNull { it.tileInfo.position == vector } ?: return
         selectedTile = tileGroup.tileInfo
         if(selectUnit)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!)
