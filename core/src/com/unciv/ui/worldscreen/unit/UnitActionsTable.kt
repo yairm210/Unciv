@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
@@ -78,6 +79,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     fun update(unit: MapUnit?){
         try {
+            // Note: As of Gdx 1.9.10 this is hardcoded true on Desktop, false on IOS (checked 2020-04-16)
             keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
         } catch (ex: Exception) {}
 
@@ -97,9 +99,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
         if (keyboardAvailable && iconAndKey.key != 0.toChar()) {
-            val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.WHITE).apply { isVisible = false }
+            val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.WHITE)
             actionButton.add(keyLabel)
-            actionButton.addListener(UnitActionButtonOnHoverListener(actionButton, keyLabel))
+            // Hovering doesn't seem to work on Gdx/Android
+            if (Gdx.app.type == Application.ApplicationType.Desktop) {
+                keyLabel.isVisible = false
+                actionButton.addListener(UnitActionButtonOnHoverListener(actionButton, keyLabel))
+            }
         }
         actionButton.pack()
         val action = {
