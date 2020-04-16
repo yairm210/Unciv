@@ -93,7 +93,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             rightSideButton.enable()
         }
         pickedPolicy = policy
-        var policyText = policy.name.tr() + "\r\n" + policy.description.tr() + "\r\n"
+        var policyText = policy.name.tr() + "\r\n" + policy.effect.tr() + "\r\n"
         if (!policy.name.endsWith("Complete")){
             if(policy.requires!!.isNotEmpty())
                 policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }

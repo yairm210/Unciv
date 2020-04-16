@@ -347,6 +347,7 @@ class CivilizationInfo {
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
+        policies.setTransients()
 
         if(citiesCreated==0 && cities.any())
             citiesCreated = cities.filter { it.name in nation.cities }.count()

@@ -9,7 +9,7 @@ class Promotion : INamed{
     override lateinit var name: String
     var prerequisites = listOf<String>()
     lateinit var effect:String
-    var unitTypes = listOf<String>() // The json parser woulddn't agree to deserialize this as a list of UnitTypes. =(
+    var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
     fun getDescription(promotionsForUnitType: Collection<Promotion>, forCivilopedia:Boolean=false, ruleSet:Ruleset? = null):String {
         // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city

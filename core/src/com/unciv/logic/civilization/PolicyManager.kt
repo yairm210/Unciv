@@ -11,6 +11,9 @@ import kotlin.math.roundToInt
 class PolicyManager {
 
     @Transient lateinit var civInfo: CivilizationInfo
+    // Needs to be separate from the actual adopted policies, so that
+    //  in different game versions, policies can have different effects
+    @Transient internal val policyEffects = HashSet<String>()
 
     var freePolicies = 0
     var storedCulture = 0
@@ -32,6 +35,15 @@ class PolicyManager {
         toReturn.autocracyCompletedTurns = autocracyCompletedTurns
         return toReturn
     }
+
+    fun setTransients(){
+        val allPolicies = getAllPolicies()
+        val effectsOfCurrentPolicies = adoptedPolicies.map { adoptedPolicy -> allPolicies.first { it.name==adoptedPolicy }.effect }
+        policyEffects.addAll(effectsOfCurrentPolicies)
+    }
+
+    private fun getAllPolicies() = civInfo.gameInfo.ruleSet.policyBranches.values.asSequence()
+            .flatMap { it.policies.asSequence()+sequenceOf(it) }
 
     fun startTurn() {
         if (isAdopted("Legalism") && legalismState.size < 4)
@@ -68,6 +80,8 @@ class PolicyManager {
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
+    fun hasEffect(effectName:String) = policyEffects.contains(effectName)
+
     fun isAdoptable(policy: Policy): Boolean {
         if(isAdopted(policy.name)) return false
         if (policy.name.endsWith("Complete")) return false
@@ -80,8 +94,7 @@ class PolicyManager {
         if (freePolicies == 0 && storedCulture < getCultureNeededForNextPolicy())
             return false
 
-        val hasAdoptablePolicies = civInfo.gameInfo.ruleSet.policyBranches.values
-                .flatMap { it.policies.union(listOf(it)) }
+        val hasAdoptablePolicies = getAllPolicies()
                 .any { civInfo.policies.isAdoptable(it) }
         return hasAdoptablePolicies
     }
@@ -100,6 +113,7 @@ class PolicyManager {
         }
 
         adoptedPolicies.add(policy.name)
+        policyEffects.add(policy.effect)
 
         if (!branchCompletion) {
             val branch = policy.branch

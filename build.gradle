@@ -33,7 +33,7 @@ allprojects {
     version = '1.0.1'
     ext {
         appName = "Unciv"
-        appCodeNumber = 409
+        appCodeNumber = 410
         appVersion = "3.7.4"
 
         gdxVersion = '1.9.10'

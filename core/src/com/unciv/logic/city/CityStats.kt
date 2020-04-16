@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.PolicyManager
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Building
@@ -254,25 +255,25 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromPolicies(adoptedPolicies: HashSet<String>): Stats {
+    private fun getStatsFromPolicies(adoptedPolicies: PolicyManager): Stats {
         val stats = Stats()
-        if (adoptedPolicies.contains("Tradition") && cityInfo.isCapital())
+        if (adoptedPolicies.isAdopted("Tradition") && cityInfo.isCapital())
             stats.culture += 3f
-        if (adoptedPolicies.contains("Landed Elite") && cityInfo.isCapital())
+        if (adoptedPolicies.isAdopted("Landed Elite") && cityInfo.isCapital())
             stats.food += 2f
-        if (adoptedPolicies.contains("Tradition Complete"))
+        if (adoptedPolicies.isAdopted("Tradition Complete"))
             stats.food += 2f
-        if (adoptedPolicies.contains("Monarchy") && cityInfo.isCapital())
+        if (adoptedPolicies.isAdopted("Monarchy") && cityInfo.isCapital())
             stats.gold += (cityInfo.population.population / 2).toFloat()
-        if (adoptedPolicies.contains("Liberty"))
+        if (adoptedPolicies.hasEffect("+1 culture in every city"))
             stats.culture += 1f
-        if (adoptedPolicies.contains("Republic"))
+        if (adoptedPolicies.isAdopted("Republic"))
             stats.production += 1f
-        if (adoptedPolicies.contains("Military Caste") && cityInfo.getCenterTile().militaryUnit != null)
+        if (adoptedPolicies.isAdopted("Military Caste") && cityInfo.getCenterTile().militaryUnit != null)
             stats.culture += 2
-        if (adoptedPolicies.contains("Universal Suffrage"))
+        if (adoptedPolicies.isAdopted("Universal Suffrage"))
             stats.production += (cityInfo.population.population / 5).toFloat()
-        if (adoptedPolicies.contains("Free Speech"))
+        if (adoptedPolicies.isAdopted("Free Speech"))
             stats.culture += (cityInfo.population.population / 2).toFloat()
 
         return stats
@@ -367,7 +368,7 @@ class CityStats {
         newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
-        newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
+        newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
         newBaseStatList["City States"] = getStatsFromCityStates()
 

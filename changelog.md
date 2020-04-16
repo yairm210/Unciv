@@ -17,7 +17,7 @@ Added city expansion tutorial - #2322
 
 Reveal all civs when won/lost - #2407
 
-Carious exploration-related improvements - #2278
+Various exploration-related improvements - #2278
 
 Unit placement improvements - #2406
 
