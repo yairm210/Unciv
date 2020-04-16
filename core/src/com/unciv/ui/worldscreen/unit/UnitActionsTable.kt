@@ -14,6 +14,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import kotlin.concurrent.thread
 
 private data class UnitIconAndKey (val Icon: Actor, val key: Char = 0.toChar())
 
@@ -91,7 +92,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         else {
             actionButton.onClick(unitAction.uncivSound,action)
             if (iconAndKey.key != 0.toChar())
-                worldScreen.keyPressDispatcher[iconAndKey.key] = action
+                worldScreen.keyPressDispatcher[iconAndKey.key] = {
+                    thread(name="Sound") { Sounds.play(unitAction.uncivSound) }
+                    action()
+                }
         }
 
         return actionButton
