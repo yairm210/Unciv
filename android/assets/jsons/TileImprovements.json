@@ -39,6 +39,7 @@
 	// Resource-specific
 	{
 		"name": "Camp",
+		"resourceTerrainAllow": ["Forest"],
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
 		"improvingTech": "Economics",
