@@ -371,11 +371,12 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     // we need to prevent queue reordering to mess that up. Without this guard, validateConstructionQueue
     // would simply remove the offending entries
     private fun isRaisePriorityOK(constructionQueueIndex: Int, name: String, city: CityInfo): Boolean {
+        if (constructionQueueIndex <= 0) return false       // safeguard, should never be called so
         val construction = city.cityConstructions.getConstruction(name)
         // Perpetuals please never move up
         if (construction is PerpetualConstruction) return false
         // Get the part of the queue above this if this were moved one up
-        val upperQueue = city.cityConstructions.constructionQueue.take(constructionQueueIndex)
+        val upperQueue = city.cityConstructions.constructionQueue.take(constructionQueueIndex - 1)
         // now test if it can still be built with those in-queue prerequisites
         return construction.isBuildableWithQueue(city.cityConstructions, upperQueue)
     }

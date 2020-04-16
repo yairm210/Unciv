@@ -389,6 +389,7 @@ class CityConstructions {
             currentConstructionIsUserSet = true
         } else
             constructionQueue.add(constructionName)
+        validateConstructionQueue()
     }
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
@@ -398,8 +399,10 @@ class CityConstructions {
             if(automatic) chooseNextConstruction()
             else constructionQueue.add("Nothing") // To prevent Construction Automation
             currentConstructionIsUserSet = false
+        } else { // we're just continuing the regular queue
+            currentConstructionIsUserSet = true
+            validateConstructionQueue()
         }
-        else currentConstructionIsUserSet = true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int): Boolean {
