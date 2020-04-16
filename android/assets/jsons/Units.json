@@ -324,7 +324,6 @@
 		"cost": 75,
 		"requiredTech": "Iron Working",
 		"upgradesTo": "Longswordsman",
-		"obsoleteTech": "Steel",
 		"requiredResource": "Iron",
 		"uniques": ["Can construct roads"],
 		"hurryCostModifier": 20,
