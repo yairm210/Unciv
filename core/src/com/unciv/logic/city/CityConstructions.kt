@@ -238,6 +238,7 @@ class CityConstructions {
 
     fun endTurn(cityStats: Stats) {
         validateConstructionQueue()
+        validateInProgressConstructions()
 
         if(getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
@@ -252,8 +253,12 @@ class CityConstructions {
             if (getConstruction(construction).isBuildable(this))
                 constructionQueue.add(construction)
         }
+    }
+
+    private fun validateInProgressConstructions() {
         // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
         // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
+        // Needs only be called once in a while - endTurn is enough
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
             val rejectionReason: String =
