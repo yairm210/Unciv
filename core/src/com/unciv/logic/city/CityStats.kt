@@ -64,7 +64,7 @@ class CityStats {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
-                if (cityInfo.civInfo.policies.hasEffect("Production to science conversion in cities increased by 33%")) scienceProduced *= 1.33f
+                if (cityInfo.civInfo.policies.hasEffect(Constants.scienceConversionEffect)) scienceProduced *= 1.33f
                 stats.science += scienceProduced
             }
         }
