@@ -88,7 +88,7 @@ class CityInfo {
 
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")
-            cityConstructions.currentConstruction = Constants.worker // Default for first city only!
+            cityConstructions.currentConstructionFromQueue = Constants.worker // Default for first city only!
         }
 
         if (civInfo.policies.isAdopted("Legalism"))
@@ -213,7 +213,7 @@ class CityInfo {
     }
 
     fun isGrowing(): Boolean {
-        return foodForNextTurn() > 0 && cityConstructions.currentConstruction != Constants.settler
+        return foodForNextTurn() > 0 && cityConstructions.currentConstructionFromQueue != Constants.settler
     }
 
     fun isStarving(): Boolean = foodForNextTurn() < 0

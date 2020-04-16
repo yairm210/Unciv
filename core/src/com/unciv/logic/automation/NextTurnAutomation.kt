@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
@@ -459,11 +458,11 @@ object NextTurnAutomation{
         if (civInfo.cities.any()
                 && civInfo.getHappiness() > civInfo.cities.size + 5
                 && civInfo.getCivUnits().none { it.name == Constants.settler }
-                && civInfo.cities.none { it.cityConstructions.currentConstruction == Constants.settler }) {
+                && civInfo.cities.none { it.cityConstructions.currentConstructionFromQueue == Constants.settler }) {
 
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstruction = Constants.settler
+                bestCity.cityConstructions.currentConstructionFromQueue = Constants.settler
         }
     }
 

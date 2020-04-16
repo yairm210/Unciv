@@ -527,10 +527,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     }
                 }
 
-            viewingCiv.cities.any { it.cityConstructions.currentConstruction == "" } ->
+            viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
                 NextTurnAction("Pick construction", Color.CORAL) {
                     val cityWithNoProductionSet = viewingCiv.cities
-                            .firstOrNull { it.cityConstructions.currentConstruction == "" }
+                            .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
                     if (cityWithNoProductionSet != null) game.setScreen(CityScreen(cityWithNoProductionSet))
                 }
 

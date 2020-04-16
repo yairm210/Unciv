@@ -60,7 +60,7 @@ class CityStats {
     private fun getStatsFromProduction(production: Float): Stats {
         val stats = Stats()
 
-        when (cityInfo.cityConstructions.currentConstruction) {
+        when (cityInfo.cityConstructions.currentConstructionFromQueue) {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
@@ -476,7 +476,7 @@ class CityStats {
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 
 
-        if (cityInfo.cityConstructions.currentConstruction == Constants.settler && totalFood > 0) {
+        if (cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler && totalFood > 0) {
             newFinalStatList["Excess food to production"] =
                     Stats().apply { production=totalFood; food=-totalFood }
         }

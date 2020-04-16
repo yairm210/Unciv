@@ -55,13 +55,13 @@ object Automation {
 
     fun trainMilitaryUnit(city: CityInfo) {
         val name = chooseMilitaryUnit(city)
-        city.cityConstructions.currentConstruction = name
+        city.cityConstructions.currentConstructionFromQueue = name
     }
 
     fun chooseMilitaryUnit(city: CityInfo) : String {
         var militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
-        if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstruction))
-            return city.cityConstructions.currentConstruction
+        if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstructionFromQueue))
+            return city.cityConstructions.currentConstructionFromQueue
 
         val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()){it.isWater || it.isCityCenter()}
         findWaterConnectedCitiesAndEnemies.stepToEnd()

@@ -89,7 +89,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice
 
         civInfo.addNotification("Work has started on [$theChosenOne]", Color.BROWN, CityAction(cityInfo.location))
-        cityConstructions.currentConstruction = theChosenOne
+        cityConstructions.currentConstructionFromQueue = theChosenOne
     }
 
     private fun addMilitaryUnitChoice() {

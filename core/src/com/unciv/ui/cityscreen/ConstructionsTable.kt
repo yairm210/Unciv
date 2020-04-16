@@ -92,7 +92,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private fun updateConstructionQueue() {
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
-        val currentConstruction = cityConstructions.currentConstruction
+        val currentConstruction = cityConstructions.currentConstructionFromQueue
         val queue = cityConstructions.constructionQueue
 
         constructionsQueueTable.defaults().pad(0f)
@@ -100,7 +100,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionsQueueTable.addSeparator()
 
         if (currentConstruction != "")
-            constructionsQueueTable.add(getQueueEntry(-1, currentConstruction, queue.isEmpty(), isSelectedCurrentConstruction()))
+            constructionsQueueTable.add(getQueueEntry(0, currentConstruction))
                     .expandX().fillX().row()
         else
             constructionsQueueTable.add("Pick a construction".toLabel()).pad(2f).row()
@@ -111,7 +111,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         if (queue.isNotEmpty()) {
             queue.forEachIndexed { i, constructionName ->
-                constructionsQueueTable.add(getQueueEntry(i, constructionName, i == queue.size - 1, i == selectedQueueEntry))
+                if (i != 0)  // This is already displayed as "Current construction"
+                    constructionsQueueTable.add(getQueueEntry(i, constructionName))
                         .expandX().fillX().row()
                 if (i != queue.size - 1)
                     constructionsQueueTable.addSeparator()
@@ -171,7 +172,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         availableConstructionsTable.addCategory("Other", specialConstructions)
     }
 
-    private fun getQueueEntry(constructionQueueIndex: Int, name: String, isLast: Boolean, isSelected: Boolean): Table {
+    private fun getQueueEntry(constructionQueueIndex: Int, name: String): Table {
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
@@ -179,7 +180,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         table.align(Align.left).pad(5f)
         table.background = ImageGetter.getBackground(Color.BLACK)
 
-        if (isSelected)
+        if (constructionQueueIndex == selectedQueueEntry)
             table.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK, 0.5f))
 
         val isFirstConstructionOfItsKind = cityConstructions.isFirstConstructionOfItsKind(constructionQueueIndex, name)
@@ -197,14 +198,15 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         table.add(ImageGetter.getConstructionImage(name).surroundWithCircle(40f)).padRight(10f)
         table.add(text.toLabel()).expandX().fillX().left()
 
-        if (constructionQueueIndex >= 0) table.add(getRaisePriorityButton(constructionQueueIndex, name, city)).right()
+        if (constructionQueueIndex > 0) table.add(getRaisePriorityButton(constructionQueueIndex, name, city)).right()
         else table.add().right()
-        if (!isLast) table.add(getLowerPriorityButton(constructionQueueIndex, name, city)).right()
+        if (constructionQueueIndex != cityConstructions.constructionQueue.lastIndex)
+            table.add(getLowerPriorityButton(constructionQueueIndex, name, city)).right()
         else table.add().right()
 
         table.touchable = Touchable.enabled
         table.onClick {
-            cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
+            cityScreen.selectedConstruction = cityConstructions.getConstruction(name)
             cityScreen.selectedTile = null
             selectedQueueEntry = constructionQueueIndex
             cityScreen.update()
@@ -256,7 +258,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry > -2
-    private fun isSelectedCurrentConstruction(): Boolean = selectedQueueEntry == -1
 
     private fun getQueueButton(construction: IConstruction?): TextButton {
         val city = cityScreen.city
@@ -303,7 +304,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val cityConstructions = city.cityConstructions
         // We can't trust the isSelectedQueueEntry because that fails when we have the same unit as both the current construction and in the queue,
         // and then we purchase the unit from the queue - see #2157
-        val constructionIsCurrentConstruction = construction.name==cityConstructions.currentConstruction
+        val constructionIsCurrentConstruction = construction.name==cityConstructions.currentConstructionFromQueue
 
         if (!cityConstructions.purchaseConstruction(construction.name)) {
             Popup(cityScreen).apply {

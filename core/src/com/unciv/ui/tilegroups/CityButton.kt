@@ -320,7 +320,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
 
         val circle = ImageGetter.getCircle()
         circle.setSize(25f,25f)
-        val image = ImageGetter.getConstructionImage(cityConstructions.currentConstruction)
+        val image = ImageGetter.getConstructionImage(cityConstructions.currentConstructionFromQueue)
         image.setSize(18f,18f)
         image.centerY(group)
         image.x = group.width-image.width
