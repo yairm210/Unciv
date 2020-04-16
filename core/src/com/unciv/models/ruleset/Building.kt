@@ -236,7 +236,7 @@ class Building : NamedStats(), IConstruction{
                 || rejectionReason == "Wonder is being built elsewhere"
     }
 
-    fun getRejectionReason(construction: CityConstructions):String{
+    fun getRejectionReason(construction: CityConstructions, queueToConsiderBuilt: Collection<String> = listOf()):String{
         if (construction.isBuilt(name)) return "Already built"
 
         val cityCenter = construction.cityInfo.getCenterTile()
@@ -293,8 +293,13 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "National Wonder is already built"
             if (requiredBuildingInAllCities!=null
-                    && civInfo.cities.any { !it.isPuppet && !it.cityConstructions
-                            .containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
+                    && civInfo.cities.any {
+                        !it.isPuppet &&
+                        ! (
+                            it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!)
+                                || it == construction.cityInfo && queueToConsiderBuilt.contains(requiredBuildingInAllCities!!)
+                        )
+                    })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 return "National Wonder is being built elsewhere"
@@ -302,9 +307,15 @@ class Building : NamedStats(), IConstruction{
                 return "No national wonders for city-states"
         }
 
-        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
+        if (requiredBuilding != null && ! (
+                        construction.containsBuildingOrEquivalent(requiredBuilding!!)
+                            || queueToConsiderBuilt.contains(requiredBuilding!!)
+                    ))
             return "Requires a [$requiredBuilding] in this city"
-        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
+        if (cannotBeBuiltWith != null && (
+                        construction.isBuilt(cannotBeBuiltWith!!)
+                            || queueToConsiderBuilt.contains(cannotBeBuiltWith!!)
+                    ))
             return "Cannot be built with $cannotBeBuiltWith"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
@@ -323,7 +334,9 @@ class Building : NamedStats(), IConstruction{
 
         if ("Spaceship part" in uniques) {
             if (!civInfo.containsBuildingUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
-            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
+            val unconstructedParts = (civInfo.victoryManager.unconstructedSpaceshipParts()[name] ?: 0)
+                    - queueToConsiderBuilt.count { it == name }
+            if (unconstructedParts <= 0) return "Don't need to build any more of these!"
         }
 
         if(!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
@@ -334,7 +347,10 @@ class Building : NamedStats(), IConstruction{
     }
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        return getRejectionReason(cityConstructions)==""
+        return getRejectionReason(cityConstructions).isEmpty()
+    }
+    override fun isBuildableWithQueue(cityConstructions: CityConstructions, queueToConsiderBuilt: Collection<String>): Boolean {
+        return getRejectionReason(cityConstructions, queueToConsiderBuilt).isEmpty()
     }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {

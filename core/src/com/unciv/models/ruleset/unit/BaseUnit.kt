@@ -122,34 +122,39 @@ class BaseUnit : INamed, IConstruction {
                 || rejectionReason.startsWith("Consumes")
     }
 
-    fun getRejectionReason(construction: CityConstructions): String {
-        if(unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
-            return "Can't build water units by the coast"
-        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
-        if(civRejectionReason!="") return civRejectionReason
-        return ""
+    fun getRejectionReason(construction: CityConstructions, queueToConsiderBuilt: Collection<String> = listOf()): String {
+        return if(unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
+            "Can't build water units away from the coast"
+        else getRejectionReason(construction.cityInfo.civInfo, queueToConsiderBuilt)
     }
 
-    fun getRejectionReason(civInfo: CivilizationInfo): String {
-        if (unbuildable) return "Unbuildable"
-        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
-        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
-        if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
-        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
-                && uniques.contains("Requires Manhattan Project")) return "Disabled by setting"
-        if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
-            return "Requires Manhattan Project"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
-        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
-        if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
-        return ""
+    fun getRejectionReason(civInfo: CivilizationInfo, queueToConsiderBuilt: Collection<String> = listOf()): String {
+        return when {
+            unbuildable -> "Unbuildable"
+            requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!) -> "$requiredTech not researched"
+            obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!) -> "Obsolete by $obsoleteTech"
+            uniqueTo!=null && uniqueTo!=civInfo.civName -> "Unique to $uniqueTo"
+            civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name } -> "Our unique unit replaces this"
+            !civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
+                    && uniques.contains("Requires Manhattan Project") -> "Disabled by setting"
+            uniques.contains("Requires Manhattan Project") && ! (
+                    civInfo.containsBuildingUnique("Enables nuclear weapon")
+                        || queueToConsiderBuilt.any { civInfo.gameInfo.ruleSet.buildings[it]?.uniques?.any { it == "Enables nuclear weapon" } ?: false }
+                ) -> "Requires Manhattan Project"
+            requiredResource!=null && !civInfo.hasResource(requiredResource!!) -> "Consumes 1 [$requiredResource]"
+            name == Constants.settler && civInfo.isCityState() -> "No settler for city-states"
+            name == Constants.settler && civInfo.isOneCityChallenger() -> "No settler for players in One City Challenge"
+            else -> ""
+        }
     }
 
     fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
 
     override fun isBuildable(cityConstructions: CityConstructions): Boolean {
-        return getRejectionReason(cityConstructions) == ""
+        return getRejectionReason(cityConstructions).isEmpty()
+    }
+    override fun isBuildableWithQueue(cityConstructions: CityConstructions, queueToConsiderBuilt: Collection<String>): Boolean {
+        return getRejectionReason(cityConstructions, queueToConsiderBuilt).isEmpty()
     }
 
     override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {

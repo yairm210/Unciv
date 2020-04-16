@@ -556,6 +556,7 @@ class CityInfo {
     fun sellBuilding(buildingName:String){
         cityConstructions.builtBuildings.remove(buildingName)
         cityConstructions.removeBuilding(buildingName)
+        cityConstructions.validateConstructionQueue()       // if true queue display needs updating - unnecessary right now
         civInfo.gold += getGoldForSellingBuilding(buildingName)
         hasSoldBuildingThisTurn=true
 

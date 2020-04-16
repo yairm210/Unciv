@@ -9,6 +9,8 @@ interface IConstruction : INamed {
     fun getProductionCost(civInfo: CivilizationInfo): Int
     fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(cityConstructions: CityConstructions): Boolean
+    fun isBuildableWithQueue(cityConstructions: CityConstructions, queueToConsiderBuilt: Collection<String>): Boolean
+        = isBuildable(cityConstructions)
     fun shouldBeDisplayed(cityConstructions: CityConstructions): Boolean
     fun postBuildEvent(construction: CityConstructions, wasBought: Boolean = false): Boolean  // Yes I'm hilarious.
     fun getResource(): String?

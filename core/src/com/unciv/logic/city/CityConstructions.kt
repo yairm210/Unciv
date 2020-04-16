@@ -244,15 +244,41 @@ class CityConstructions {
             addProductionPoints(cityStats.production.roundToInt())
     }
 
-
-    private fun validateConstructionQueue() {
-        val queueSnapshot = constructionQueue.toMutableList()
-        constructionQueue.clear()
-
-        for (construction in queueSnapshot) {
-            if (getConstruction(construction).isBuildable(this))
-                constructionQueue.add(construction)
+    /**
+     * Rebuild the construction queue omitting items that cannot or should not be built
+     *
+     * Units/Buildings that only cannot be built because their prerequisite building is unbuilt
+     *  - but it is farther up in the queue - are now permitted
+     * Perpetual constructions are only allowed at the end of the queue
+     *  - if there are currently several, the *last* one shall win
+     * @return Boolean: true when any change has been applied
+    */
+    fun validateConstructionQueue(): Boolean {
+        val tempQueue = mutableListOf<String>()
+        var anyChange = false
+        val lastConstruction = constructionQueue.last()
+        var droppedPerpetualConstruction: String? = null
+        var isPerpetual = false         // Updated and used in loop, after loop it still says whether last entry is perpetual
+        constructionQueue.asSequence()
+            .map { getConstruction(it) }.forEach {
+                isPerpetual = it is PerpetualConstruction
+                if ( isPerpetual && it.name != lastConstruction) {
+                    droppedPerpetualConstruction = it.name
+                    anyChange = true
+                } else if (it.isBuildableWithQueue(this, tempQueue)) {
+                    tempQueue.add(it.name)
+                } else {
+                    if (tempQueue.isEmpty())
+                        cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [${it.name}]", cityInfo.location, Color.BROWN)
+                    anyChange = true
+                }
+            }
+        if (anyChange) {
+            if (droppedPerpetualConstruction != null && !isPerpetual)
+                tempQueue.add(droppedPerpetualConstruction!!)
+            constructionQueue = tempQueue
         }
+        return anyChange
     }
 
     private fun validateInProgressConstructions() {
@@ -376,13 +402,14 @@ class CityConstructions {
         else currentConstructionIsUserSet = true // we're just continuing the regular queue
     }
 
-    fun raisePriority(constructionQueueIndex: Int) {
+    fun raisePriority(constructionQueueIndex: Int): Boolean {
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
+        return validateConstructionQueue()
     }
 
     // Lowering == Highering next element in queue
-    fun lowerPriority(constructionQueueIndex: Int) {
-        raisePriority(constructionQueueIndex+1)
+    fun lowerPriority(constructionQueueIndex: Int): Boolean {
+        return raisePriority(constructionQueueIndex + 1)
     }
 
     //endregion
