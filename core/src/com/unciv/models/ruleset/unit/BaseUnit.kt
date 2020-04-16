@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -149,8 +148,8 @@ class BaseUnit : INamed, IConstruction {
 
     fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        return getRejectionReason(construction) == ""
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
+        return getRejectionReason(cityConstructions) == ""
     }
 
     override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {

@@ -334,8 +334,8 @@ class Building : NamedStats(), IConstruction{
         return ""
     }
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        return getRejectionReason(construction)==""
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
+        return getRejectionReason(cityConstructions)==""
     }
 
     override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {

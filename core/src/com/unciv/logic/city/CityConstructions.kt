@@ -217,7 +217,8 @@ class CityConstructions {
     }
 
     fun addProductionPoints(productionToAdd: Int) {
-        if (!inProgressConstructions.containsKey(currentConstructionFromQueue)) inProgressConstructions[currentConstructionFromQueue] = 0
+        if (!inProgressConstructions.containsKey(currentConstructionFromQueue))
+            inProgressConstructions[currentConstructionFromQueue] = 0
         inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd
     }
 
@@ -351,11 +352,7 @@ class CityConstructions {
         return cultureBuildingToBuild
     }
 
-    private fun cancelCurrentConstruction() {
-        currentConstructionIsUserSet = false
-        constructionQueue.removeAt(0)
-        chooseNextConstruction()
-    }
+    private fun cancelCurrentConstruction() = removeFromQueue(0,true)
 
     fun chooseNextConstruction() {
         if(currentConstructionIsUserSet) return
@@ -381,17 +378,18 @@ class CityConstructions {
 
     fun removeFromQueue(constructionName: String) {
         if (constructionName in constructionQueue)
-            constructionQueue.remove(constructionName)
+            removeFromQueue(constructionQueue.indexOf(constructionName), true)
     }
 
-    fun removeFromQueue(constructionQueueIndex: Int) {
-        // constructionQueueIndex -1 is the current construction
-        if (constructionQueueIndex < 0) {
-            // To prevent Construction Automation
-            if (constructionQueue.isEmpty()) constructionQueue.add("Nothing")
-            cancelCurrentConstruction()
-        } else
-            constructionQueue.removeAt(constructionQueueIndex)
+    /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
+    fun removeFromQueue(constructionQueueIndex: Int, automatic:Boolean) {
+        constructionQueue.removeAt(constructionQueueIndex)
+        if (constructionQueue.isEmpty()){
+            if(automatic) chooseNextConstruction()
+            else constructionQueue.add("Nothing") // To prevent Construction Automation
+            currentConstructionIsUserSet = false
+        }
+        else currentConstructionIsUserSet = true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int) {

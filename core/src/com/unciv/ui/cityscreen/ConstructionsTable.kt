@@ -269,7 +269,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             if (!UncivGame.Current.worldScreen.isPlayersTurn || city.isPuppet) button.disable()
             else {
                 button.onClick {
-                    cityConstructions.removeFromQueue(selectedQueueEntry)
+                    cityConstructions.removeFromQueue(selectedQueueEntry,false)
                     cityScreen.selectedConstruction = null
                     selectedQueueEntry = -2
                     cityScreen.update()
@@ -318,7 +318,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             // currentConstruction is removed from the queue by purchaseConstruction
             // to avoid conflicts with NextTurnAutomation
             if (!constructionIsCurrentConstruction && cityConstructions.constructionQueue[selectedQueueEntry] == construction.name)
-                cityConstructions.removeFromQueue(selectedQueueEntry)
+                cityConstructions.removeFromQueue(selectedQueueEntry,false)
             selectedQueueEntry = -2
             cityScreen.selectedConstruction = null
         }
