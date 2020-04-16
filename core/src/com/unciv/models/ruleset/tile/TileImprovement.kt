@@ -11,6 +11,11 @@ import kotlin.math.roundToInt
 class TileImprovement : NamedStats() {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
+
+    // Used only for Camp - but avoid hardcoded comparison and *allow modding*
+    // Terrain Features that need not be cleared if the improvement enables a resource
+    var resourceTerrainAllow: Collection<String> = ArrayList()
+
     var techRequired: String? = null
 
     var improvingTech: String? = null
