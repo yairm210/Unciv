@@ -390,7 +390,7 @@ class Building : NamedStats(), IConstruction{
         if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
 
 
-        cityConstructions.cityInfo.cityStats.update() // new building new stats
+        cityConstructions.cityInfo.cityStats.update() // new building, new stats
         civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
         civInfo.transients().updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
 

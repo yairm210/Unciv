@@ -223,7 +223,7 @@ class CityConstructions {
     }
 
     fun constructIfEnough(){
-        stopUnbuildableConstruction()
+        validateConstructionQueue()
 
         val construction = getConstruction(currentConstructionFromQueue)
         if(construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
@@ -232,35 +232,20 @@ class CityConstructions {
             if (inProgressConstructions.containsKey(currentConstructionFromQueue)
                     && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 constructionComplete(construction)
-                cancelCurrentConstruction()
             }
         }
     }
 
     fun endTurn(cityStats: Stats) {
-        stopUnbuildableConstruction()
         validateConstructionQueue()
 
         if(getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
     }
 
-    private fun stopUnbuildableConstruction() {
-        // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
-        val construction = getConstruction(currentConstructionFromQueue)
-
-        val saveCurrentConstruction = currentConstructionFromQueue
-        currentConstructionFromQueue = ""
-        if (!construction.isBuildable(this)) {
-            // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
-            cancelCurrentConstruction()
-        } else
-            currentConstructionFromQueue = saveCurrentConstruction
-    }
 
     private fun validateConstructionQueue() {
-        val queueSnapshot = mutableListOf<String>().apply { addAll(constructionQueue) }
+        val queueSnapshot = constructionQueue.toMutableList()
         constructionQueue.clear()
 
         for (construction in queueSnapshot) {
@@ -271,18 +256,18 @@ class CityConstructions {
         // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
         val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
         for (constructionName in inProgressSnapshot) {
-            val rejectionReason:String =
+            val rejectionReason: String =
                     when (val construction = getConstruction(constructionName)) {
                         is Building -> construction.getRejectionReason(this)
                         is BaseUnit -> construction.getRejectionReason(this)
                         else -> ""
                     }
-            if (!(  rejectionReason.endsWith("lready built")
-                            || rejectionReason.startsWith("Cannot be built with")
-                            || rejectionReason.startsWith("Don't need to build any more")
-                            || rejectionReason.startsWith("Obsolete")
-                            )) continue
-            inProgressConstructions.remove(constructionName)
+
+            if (rejectionReason.endsWith("lready built")
+                    || rejectionReason.startsWith("Cannot be built with")
+                    || rejectionReason.startsWith("Don't need to build any more")
+                    || rejectionReason.startsWith("Obsolete")
+            ) inProgressConstructions.remove(constructionName)
         }
     }
 
@@ -290,6 +275,10 @@ class CityConstructions {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
+        if(construction.name == currentConstructionFromQueue)
+            removeCurrentConstruction()
+
+        validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
 
         if (construction is Building && construction.isWonder) {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
@@ -321,7 +310,8 @@ class CityConstructions {
 
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
         if (currentConstructionFromQueue == constructionName)
-            cancelCurrentConstruction()
+            removeCurrentConstruction()
+        validateConstructionQueue()
 
         return true
     }
@@ -344,23 +334,17 @@ class CityConstructions {
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
         constructionComplete(getConstruction(cultureBuildingToBuild))
 
-        if (isBeingConstructed(cultureBuildingToBuild))
-            cancelCurrentConstruction()
-        else if (isEnqueued(cultureBuildingToBuild))
-            removeFromQueue(cultureBuildingToBuild)
-
         return cultureBuildingToBuild
     }
 
-    private fun cancelCurrentConstruction() = removeFromQueue(0,true)
+    private fun removeCurrentConstruction() = removeFromQueue(0,true)
 
     fun chooseNextConstruction() {
         if(currentConstructionIsUserSet) return
 
+        validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
             currentConstructionIsUserSet = true
-            stopUnbuildableConstruction()
-
             if (currentConstructionFromQueue != "") return
         }
 
@@ -376,11 +360,6 @@ class CityConstructions {
             constructionQueue.add(constructionName)
     }
 
-    fun removeFromQueue(constructionName: String) {
-        if (constructionName in constructionQueue)
-            removeFromQueue(constructionQueue.indexOf(constructionName), true)
-    }
-
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
     fun removeFromQueue(constructionQueueIndex: Int, automatic:Boolean) {
         constructionQueue.removeAt(constructionQueueIndex)
@@ -394,7 +373,6 @@ class CityConstructions {
 
     fun raisePriority(constructionQueueIndex: Int) {
         constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
-
     }
 
     // Lowering == Highering next element in queue
