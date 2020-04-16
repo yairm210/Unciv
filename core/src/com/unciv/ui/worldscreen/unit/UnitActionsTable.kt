@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -28,6 +30,8 @@ class UnitActionButtonOnHoverListener(private val item: Actor, private val keyLa
 }
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
+
+    private var keyboardAvailable = false
 
     init {
         touchable = Touchable.enabled
@@ -73,6 +77,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     }
 
     fun update(unit: MapUnit?){
+        try {
+            keyboardAvailable = Gdx.input.isPeripheralAvailable(Input.Peripheral.HardwareKeyboard)
+        } catch (ex: Exception) {}
+
         clear()
         if (unit == null) return
         if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
@@ -88,7 +96,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if(unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
         actionButton.add(unitAction.title.toLabel(fontColor)).pad(5f)
-        if (iconAndKey.key != 0.toChar()) {
+        if (keyboardAvailable && iconAndKey.key != 0.toChar()) {
             val keyLabel = "(${iconAndKey.key.toUpperCase()})".toLabel(Color.WHITE).apply { isVisible = false }
             actionButton.add(keyLabel)
             actionButton.addListener(UnitActionButtonOnHoverListener(actionButton, keyLabel))
