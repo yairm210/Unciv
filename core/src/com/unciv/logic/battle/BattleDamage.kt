@@ -67,11 +67,12 @@ object BattleDamage {
             if (civHappiness < 0)
                 modifiers["Unhappiness"] = max(0.02f * civHappiness, -0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if (civInfo.policies.isAdopted("Populism") && combatant.getHealth() < 100) {
+            if (civInfo.policies.hasEffect("Wounded military units deal +25% damage") && combatant.getHealth() < 100) {
                 modifiers["Populism"] = 0.25f
             }
 
-            if (civInfo.policies.isAdopted("Discipline") && combatant.isMelee()
+            if (civInfo.policies.hasEffect("+15% combat strength for melee units which have another military unit in an adjacent tile")
+                    && combatant.isMelee()
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
                             .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })
                 modifiers["Discipline"] = 0.15f
@@ -102,7 +103,7 @@ object BattleDamage {
 
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] = civInfo.gameInfo.getDifficulty().barbarianBonus
-            if (civInfo.policies.isAdopted("Honor"))
+            if (civInfo.policies.hasEffect("+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit"))
                 modifiers["vs Barbarians"] = 0.25f
         }
         
@@ -138,7 +139,7 @@ object BattleDamage {
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             }
 
-            if (policies.isAdopted("Autocracy Complete") && (policies.autocracyCompletedTurns > 0))
+            if (policies.autocracyCompletedTurns > 0 && policies.hasEffect("+20% attack bonus to all Military Units for 30 turns"))
                 modifiers["Autocracy Complete"] = 0.2f
 
             if (defender is CityCombatant &&
@@ -147,7 +148,8 @@ object BattleDamage {
         }
 
         else if (attacker is CityCombatant) {
-            if (policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
+            if (policies.hasEffect("Units in cities cost no Maintenance, garrisoned city +50% attacking strength")
+                    && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
         }
 
