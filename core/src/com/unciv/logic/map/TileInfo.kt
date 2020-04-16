@@ -292,7 +292,9 @@ open class TileInfo {
 
     fun hasImprovementInProgress() = improvementInProgress!=null
 
-    fun isCoastalTile() = neighbors.any { it.baseTerrain==Constants.coast }
+    @delegate:Transient
+    private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain==Constants.coast } }
+    fun isCoastalTile() = _isCoastalTile
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
             resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
