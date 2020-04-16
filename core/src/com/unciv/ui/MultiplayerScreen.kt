@@ -387,7 +387,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
         gameIDTable.add(pasteGameIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
 
-        topTable.add(Label("Game Name".tr(), skin)).row()
+        topTable.add(Label("Game name".tr(), skin)).row()
         topTable.add(gameNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         //CloseButton Setup
