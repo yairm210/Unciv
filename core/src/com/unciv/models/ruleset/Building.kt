@@ -194,10 +194,10 @@ class Building : NamedStats(), IConstruction{
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
+        if (!isWonder && culture != 0f && civInfo.policies.hasEffect("Building time of culture buildings reduced by 15%"))
             productionCost *= 0.85f
 
-        if (name == "Courthouse" && civInfo.policies.isAdopted("Police State"))
+        if (name == "Courthouse" && civInfo.policies.hasEffect("+3 Happiness from every Courthouse. Build Courthouses in half the usual time."))
             productionCost *= 0.5f
 
         if (civInfo.isPlayerCivilization()) {
@@ -217,11 +217,10 @@ class Building : NamedStats(), IConstruction{
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
-        if (civInfo.policies.isAdopted("Mercantilism")) cost *= 0.75
+        if (civInfo.policies.hasEffect("-25% to purchasing items in cities")) cost *= 0.75
         if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
-        if (civInfo.policies.isAdopted("Patronage")
-                && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
-                        .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
+        if (civInfo.policies.hasEffect( "Cost of purchasing culture buildings reduced by 50%")
+                && culture !=0f && !isWonder)
             cost *= 0.5
 
         return (cost / 10).toInt() * 10

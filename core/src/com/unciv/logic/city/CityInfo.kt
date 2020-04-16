@@ -91,8 +91,7 @@ class CityInfo {
             cityConstructions.currentConstructionFromQueue = Constants.worker // Default for first city only!
         }
 
-        if (civInfo.policies.isAdopted("Legalism"))
-            civInfo.policies.tryAddLegalismBuildings()
+        civInfo.policies.tryAddLegalismBuildings()
 
         expansion.reset()
 
@@ -195,12 +194,13 @@ class CityInfo {
                 // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
                 || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){
             var amountToAdd = 1
-            if(resource.resourceType == ResourceType.Strategic){
+            if(resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
-                if(civInfo.policies.isAdopted("Fascism")) amountToAdd*=2
-                if(civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses","Iron","Uranium"))
+                if (civInfo.policies.hasEffect("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
-                if(resource.name=="Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
+                if (civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses", "Iron", "Uranium"))
+                    amountToAdd *= 2
+                if (resource.name == "Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
                     amountToAdd *= 2
             }
             if(resource.resourceType == ResourceType.Luxury
@@ -260,12 +260,12 @@ class CityInfo {
         for(entry in stats){
             if(civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
-            if (civInfo.policies.isAdopted("Entrepreneurship"))
+            if (civInfo.policies.hasEffect("Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange."))
                 entry.value.gold *= 1.25f
 
             if (civInfo.containsBuildingUnique("+33% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1.33f)
-            if (civInfo.policies.isAdopted("Freedom"))
+            if (civInfo.policies.hasEffect("+25% great people rate"))
                 stats[entry.key] = stats[entry.key]!!.times(1.25f)
         }
 

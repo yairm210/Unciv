@@ -249,11 +249,14 @@ open class TileInfo {
                 improvement.clone() // basic improvement
 
         if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
+        if (improvement.name == "Trading post" && city != null
+                && city.civInfo.policies.hasEffect("+1 science from every trading post, +17% science from universities"))
             stats.science += 1f
-        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
+        if (improvement.name == "Trading post" && city != null
+                && city.civInfo.policies.hasEffect("+1 gold from every trading post, double gold from Great Merchant trade missions"))
             stats.gold += 1f
-        if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
+        if (containsGreatImprovement()
+                && observingCiv.policies.hasEffect("Tile yield from great improvement +100%, golden ages increase by 50%"))
             stats.add(improvement) // again, for the double effect
         if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science += 2
