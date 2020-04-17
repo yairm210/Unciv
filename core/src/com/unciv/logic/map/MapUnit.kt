@@ -357,8 +357,14 @@ class MapUnit {
     }
 
     private fun doPostTurnAction() {
-        if (name == Constants.worker && getTile().improvementInProgress != null) workOnImprovement()
-        if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
+        if (name == Constants.worker) {
+            if (getTile().improvementInProgress != null && action?.startsWith("moveTo") != true)
+                workOnImprovement()
+        } else if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") {
+            val civilianInSameTile = getTile().civilianUnit
+            if (civilianInSameTile==null || civilianInSameTile?.name != Constants.worker || civilianInSameTile?.action?.startsWith("moveTo") == true )
+                workOnImprovement()
+        }
         if(currentMovement == getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()
