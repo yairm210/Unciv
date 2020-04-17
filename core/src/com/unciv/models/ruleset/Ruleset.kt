@@ -15,6 +15,7 @@ import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
 class ModOptions {
+    var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
@@ -194,12 +195,13 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
     fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
-        newRuleset.add(getBaseRuleset())
-        for (mod in mods)
-            if (containsKey(mod)) {
-                newRuleset.add(this[mod]!!)
-                newRuleset.mods += mod
-            }
+        val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
+        if (loadedMods.none { it.modOptions.isBaseRuleset })
+            newRuleset.add(getBaseRuleset())
+        for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
+            newRuleset.add(mod)
+            newRuleset.mods += mod.name
+        }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
         return newRuleset

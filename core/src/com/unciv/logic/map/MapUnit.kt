@@ -53,11 +53,11 @@ class MapUnit {
     var action: String? // work, automation, fortifying, I dunno what.
         // getter and setter for compatibility: make sure string-based actions still work
         get() {
-            val mapUnitActionVal=mapUnitAction
-            if(mapUnitActionVal is StringAction)
+            val mapUnitActionVal = mapUnitAction
+            if (mapUnitActionVal is StringAction)
                 return mapUnitActionVal.action
             // any other unit action does count as a unit action, thus is not null. The actual logic is not based on an action string, but realized by extending MapUnitAction
-            if(mapUnitActionVal!=null)
+            if (mapUnitActionVal != null)
                 return ""
 
             return null // unit has no action
@@ -81,14 +81,14 @@ class MapUnit {
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
-        toReturn.owner=owner
-        toReturn.name=name
-        toReturn.currentMovement=currentMovement
-        toReturn.health=health
-        toReturn.action=action
-        toReturn.attacksThisTurn=attacksThisTurn
-        toReturn.promotions=promotions.clone()
-        toReturn.isTransported=isTransported
+        toReturn.owner = owner
+        toReturn.name = name
+        toReturn.currentMovement = currentMovement
+        toReturn.health = health
+        toReturn.action = action
+        toReturn.attacksThisTurn = attacksThisTurn
+        toReturn.promotions = promotions.clone()
+        toReturn.isTransported = isTransported
         return toReturn
     }
 
@@ -227,7 +227,7 @@ class MapUnit {
     }
 
     fun isInvisible(): Boolean {
-        if(hasUnique("Invisible to others"))
+        if (hasUnique("Invisible to others"))
             return true
         return false
     }
@@ -304,7 +304,7 @@ class MapUnit {
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
         return healingBonus
     }
-    
+
     fun canGarrison() = type.isMilitary() && type.isLandUnit()
 
     //endregion
@@ -324,15 +324,15 @@ class MapUnit {
     }
 
     fun doPreTurnAction() {
-        if(action==null) return
+        if (action == null) return
         val currentTile = getTile()
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
-                .filter { it.militaryUnit!=null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)}
-        if(enemyUnitsInWalkingDistance.isNotEmpty()) {
-            if (mapUnitAction?.shouldStopOnEnemyInSight()==true)
-                mapUnitAction=null
+                .filter { it.militaryUnit != null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
+        if (enemyUnitsInWalkingDistance.isNotEmpty()) {
+            if (mapUnitAction?.shouldStopOnEnemyInSight() == true)
+                mapUnitAction = null
             return  // Don't you dare move.
         }
 
@@ -342,18 +342,18 @@ class MapUnit {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(Integer.parseInt(destination[0]).toFloat(), Integer.parseInt(destination[1]).toFloat())
             val destinationTile = currentTile.tileMap[destinationVector]
-            if(!movement.canReach(destinationTile)) return // That tile that we were moving towards is now unreachable
+            if (!movement.canReach(destinationTile)) return // That tile that we were moving towards is now unreachable
             val gotTo = movement.headTowards(destinationTile)
-            if(gotTo==currentTile) // We didn't move at all
+            if (gotTo == currentTile) // We didn't move at all
                 return
             if (gotTo.position == destinationVector) action = null
-            if (currentMovement >0) doPreTurnAction()
+            if (currentMovement > 0) doPreTurnAction()
             return
         }
 
         if (action == Constants.unitActionAutomation) WorkerAutomation(this).automateWorkerAction()
 
-        if(action == Constants.unitActionExplore) UnitAutomation.automatedExplore(this)
+        if (action == Constants.unitActionExplore) UnitAutomation.automatedExplore(this)
     }
 
     private fun doPostTurnAction() {
@@ -370,22 +370,22 @@ class MapUnit {
     }
 
     private fun workOnImprovement() {
-        val tile=getTile()
+        val tile = getTile()
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
 
-        if(civInfo.isCurrentPlayer())
+        if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
         when {
             tile.improvementInProgress!!.startsWith("Remove") -> {
                 val tileImprovement = tile.getTileImprovement()
-                if(tileImprovement!=null
+                if (tileImprovement != null
                         && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
                     tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
-                    if (tile.resource!=null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
+                    if (tile.resource != null) civInfo.updateDetailedCivResources()        // unlikely, but maybe a mod makes a resource improvement dependent on a terrain feature
                 }
-                if(tile.improvementInProgress=="Remove Road" || tile.improvementInProgress=="Remove Railroad")
+                if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
                 else tile.terrainFeature = null
             }
@@ -393,7 +393,7 @@ class MapUnit {
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
             else -> {
                 tile.improvement = tile.improvementInProgress
-                if (tile.resource!=null) civInfo.updateDetailedCivResources()
+                if (tile.resource != null) civInfo.updateDetailedCivResources()
             }
         }
         tile.improvementInProgress = null
@@ -431,13 +431,13 @@ class MapUnit {
             isFriendlyTerritory -> 15 // Allied territory
             else -> 5 // Enemy territory
         }
-        
-        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.") 
+
+        if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
             && !isFriendlyTerritory
             // Additional healing from medic is only applied when the unit is able to heal
             && healing > 0)
             healing += 5
-        
+
         return healing
     }
 
@@ -499,9 +499,9 @@ class MapUnit {
         // addPromotion requires currentTile to be valid because it accesses ruleset through it
         currentTile = tile
 
-        if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary())
-        {
-            val gainDoubleHealPromotion = tile.neighbors.any{it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game")}
+        if(!hasUnique("All healing effects doubled") && type.isLandUnit() && type.isMilitary()) {
+            val gainDoubleHealPromotion = tile.neighbors
+                    .any { it.containsUnique("Grants Rejuvenation (all healing effects doubled) to adjacent military land units for the rest of the game") }
             if (gainDoubleHealPromotion)
                 promotions.addPromotion("Rejuvenation", true)
         }
@@ -607,23 +607,24 @@ class MapUnit {
                 .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
                 .map { it.position }
             civInfo.exploredTiles.addAll(tilesToReveal)
+            civInfo.updateViewableTiles()
             civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
         }
 
         (actions.random(tileBasedRandom))()
     }
 
-    fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true){
-        owner=civInfo.civName
-        this.civInfo=civInfo
-        civInfo.addUnit(this,updateCivInfo)
+    fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true) {
+        owner = civInfo.civName
+        this.civInfo = civInfo
+        civInfo.addUnit(this, updateCivInfo)
     }
 
     fun canIntercept(attackedTile: TileInfo): Boolean {
-        if(attacksThisTurn>1) return false
-        if(interceptChance()==0) return false
-        if(attacksThisTurn>0 && !hasUnique("1 extra Interception may be made per turn")) return false
-        if(currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
+        if (attacksThisTurn > 1) return false
+        if (interceptChance() == 0) return false
+        if (attacksThisTurn > 0 && !hasUnique("1 extra Interception may be made per turn")) return false
+        if (currentTile.aerialDistanceTo(attackedTile) > baseUnit.interceptRange) return false
         return true
     }
 
@@ -649,13 +650,13 @@ class MapUnit {
     }
 
     fun canTransport(mapUnit: MapUnit): Boolean {
-        if(!isTransportTypeOf(mapUnit)) return false
-        if(owner!=mapUnit.owner) return false
+        if (!isTransportTypeOf(mapUnit)) return false
+        if (owner != mapUnit.owner) return false
 
         var unitCapacity = 2
         unitCapacity += getUniques().count { it == "Can carry 1 extra air unit" }
 
-        if(currentTile.airUnits.filter { it.isTransported }.size>=unitCapacity) return false
+        if (currentTile.airUnits.filter { it.isTransported }.size >= unitCapacity) return false
 
         return true
     }
