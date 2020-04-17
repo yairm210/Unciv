@@ -524,10 +524,10 @@ class CivilizationInfo {
     fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         val basicGoldCostOfSignResearchAgreement = when(getEra()){
-            "Medieval era", "Renaissance era" -> 250
-            "Industrial era" -> 300
-            "Modern era" -> 350
-            "Information era", Constants.futureEra -> 400
+            Constants.medievalEra, Constants.renaissanceEra -> 250
+            Constants.industrialEra -> 300
+            Constants.modernEra -> 350
+            Constants.informationEra, Constants.futureEra -> 400
             else -> 0
         }
         return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()

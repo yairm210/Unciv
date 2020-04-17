@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
@@ -221,15 +222,16 @@ object ImageGetter {
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
         var techIconColor = Color.WHITE
-        when (ruleset.technologies[techName]!!.era().name) {
-            "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
-            "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
-            "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)
-            "Renaissance" -> techIconColor = colorFromRGB(104, 58, 183)
-            "Industrial" -> techIconColor = colorFromRGB(63, 81, 182)
-            "Modern" -> techIconColor = colorFromRGB(33, 150, 243)
-            "Information" -> techIconColor = colorFromRGB(0, 150, 136)
-            "Future" -> techIconColor = colorFromRGB(76,176,81)
+        when (ruleset.technologies[techName]!!.era()) {
+            Constants.ancientEra -> techIconColor = colorFromRGB(255, 87, 35)
+            Constants.classicalEra -> techIconColor = colorFromRGB(233, 31, 99)
+            Constants.medievalEra -> techIconColor = colorFromRGB(157, 39, 176)
+            Constants.renaissanceEra -> techIconColor = colorFromRGB(104, 58, 183)
+            Constants.industrialEra -> techIconColor = colorFromRGB(63, 81, 182)
+            Constants.modernEra -> techIconColor = colorFromRGB(33, 150, 243)
+            Constants.informationEra -> techIconColor = colorFromRGB(0, 150, 136)
+            Constants.futureEra -> techIconColor = colorFromRGB(76,176,81)
+            else -> Color.WHITE
         }
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK,0.6f) }
                 .surroundWithCircle(circleSize)

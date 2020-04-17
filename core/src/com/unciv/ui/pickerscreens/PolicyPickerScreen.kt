@@ -98,7 +98,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             if(policy.requires!!.isNotEmpty())
                 policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
             else
-                policyText += ("{Unlocked at} {"+policy.branch.era.toString()+" era}").tr()
+                policyText += ("{Unlocked at} {"+ policy.branch.era+"}").tr()
         }
         descriptionLabel.setText(policyText)
     }
