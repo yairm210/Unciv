@@ -42,7 +42,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             for (tech in ruleset.technologies.values
-                    .filter { it.era() < newGameParameters.startingEra })
+                    .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(newGameParameters.startingEra) })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
 
@@ -70,6 +70,8 @@ object GameStarter {
             else availableCivNames.pop()
 
             val playerCiv = CivilizationInfo(nationName)
+            for(tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+                playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
             playerCiv.playerType = player.playerType
             playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
