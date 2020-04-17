@@ -110,16 +110,17 @@ object UnitActions {
     }
 
     private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
+        val improvement = RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet) ?: return
         if (unit.hasUnique("Can construct roads")
                 && tile.roadStatus == RoadStatus.None
                 && tile.improvementInProgress != "Road"
                 && tile.isLand
-                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet)!!.techRequired!!))
+                && (improvement.techRequired==null || unit.civInfo.tech.isResearched(improvement.techRequired!!)))
             actionList += UnitAction(
                     type = UnitActionType.ConstructRoad,
                     action = {
                         tile.improvementInProgress = "Road"
-                        tile.turnsToImprovement = 4
+                        tile.turnsToImprovement = improvement.getTurnsToBuild(unit.civInfo)
                     }.takeIf { unit.currentMovement > 0 })
     }
 
