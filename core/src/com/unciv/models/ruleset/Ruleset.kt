@@ -166,6 +166,12 @@ class Ruleset {
             }
         }
     }
+
+    fun getEras(): List<String> {
+        return technologies.values.map { it.column!!.era }.distinct()
+    }
+
+    fun getEraNumber(era:String) = getEras().indexOf(era)
 }
 
 /** Loading mods is expensive, so let's only do it once and

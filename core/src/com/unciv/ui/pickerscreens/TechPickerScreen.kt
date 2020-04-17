@@ -82,18 +82,19 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     }
 
     private fun createTechTable() {
-        val columns = civInfo.gameInfo.ruleSet.technologies.values.map { it.column!!.columnNumber}.max()!! +1
+        val allTechs = civInfo.gameInfo.ruleSet.technologies.values
+        val columns = allTechs.map { it.column!!.columnNumber}.max()!! +1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
-        for (technology in civInfo.gameInfo.ruleSet.technologies.values) {
+        for (technology in allTechs) {
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
-        val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
-        for (i in 0..7) {
-            val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
-            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.BLUE)).fill().colspan(j)
-            else topTable.add((erasName[i]+" era").toLabel().addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
+        val erasName = allTechs.map { it.era() }.distinct()
+        for ((i,eraName) in erasName.withIndex()) {
+            val columnSpan = if (eraName != Constants.ancientEra && eraName != Constants.futureEra) 2 else 3
+            val color = if (i % 2 == 0) Color.BLUE else Color.FIREBRICK
+            topTable.add(eraName.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
         for (i in 0..9) {

@@ -570,7 +570,7 @@ class MapUnit {
                 .filter {
                     !civInfo.tech.isResearched(it.name)
                             && civInfo.tech.canBeResearched(it.name)
-                            && it.era() == TechEra.Ancient
+                            && it.era() == Constants.ancientEra
                 }
         if(researchableAncientEraTechs.isNotEmpty())
             actions.add {

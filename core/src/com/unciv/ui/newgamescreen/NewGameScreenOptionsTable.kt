@@ -160,8 +160,9 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private fun addEraSelectBox() {
         // The eras enum values are "Medieval" etc. but are shown to the player as "Medieval era".tr()
         // because in other languages "Medieval era" is one word
-        addSelectBox("{Starting Era}:", TechEra.values().map { it.name + " era" }, newGameParameters.startingEra.name + " era")
-            {newGameParameters.startingEra = TechEra.valueOf(it.replace(" era", ""))}
+        val eras = ruleset.technologies.values.map { it.era() }.distinct()
+        addSelectBox("{Starting Era}:", eras, newGameParameters.startingEra)
+            { newGameParameters.startingEra = it }
     }
 
 

@@ -81,7 +81,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
-                var culture = 3f * (civInfo.getEra().ordinal+1)
+                var culture = 3f * (civInfo.getEraNumber()+1)
                 if(civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
                     culture*=1.5f
                 cultureBonus.add(Stat.Culture, culture)

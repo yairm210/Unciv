@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.UncivGame
@@ -268,13 +269,17 @@ class CivilizationInfo {
             && !isBarbarian() // Barbarians can be never defeated
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
-    fun getEra(): TechEra {
+    fun getEra(): String {
         val maxEraOfTech =  tech.researchedTechnologies
                 .asSequence()
-                .map { it.era() }
-                .max()
-        if(maxEraOfTech!=null) return maxEraOfTech
-        else return TechEra.Ancient
+                .map { it.column!! }
+                .maxBy { it.columnNumber }!!
+                .era
+        return maxEraOfTech
+    }
+
+    fun getEraNumber(): Int {
+        return gameInfo.ruleSet.getEraNumber(getEra())
     }
 
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
@@ -518,12 +523,11 @@ class CivilizationInfo {
 
     fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val highestEra = sequenceOf(getEra(),otherCiv.getEra()).maxBy { it.ordinal }!!
-        val basicGoldCostOfSignResearchAgreement = when(highestEra){
-            TechEra.Medieval, TechEra.Renaissance -> 250
-            TechEra.Industrial -> 300
-            TechEra.Modern -> 350
-            TechEra.Information, TechEra.Future -> 400
+        val basicGoldCostOfSignResearchAgreement = when(getEra()){
+            "Medieval era", "Renaissance era" -> 250
+            "Industrial era" -> 300
+            "Modern era" -> 350
+            "Information era", Constants.futureEra -> 400
             else -> 0
         }
         return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()

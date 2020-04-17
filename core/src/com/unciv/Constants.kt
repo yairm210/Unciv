@@ -63,4 +63,7 @@ object Constants {
     const val close = "Close"
 
     const val scienceConversionEffect = "Production to science conversion in cities increased by 33%"
+
+    const val ancientEra="Ancient era"
+    const val futureEra="Future era"
 }

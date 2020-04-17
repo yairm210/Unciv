@@ -223,12 +223,12 @@ class TechManager {
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched,techName))
 
         val currentEra = civInfo.getEra()
-        if (previousEra < currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra era]!", null, Color.GOLD)
+        if (previousEra != currentEra) {
+            civInfo.addNotification("You have entered the [$currentEra]!", null, Color.GOLD)
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
                     knownCiv.addNotification(
-                        "[${civInfo.civName}] has entered the [$currentEra era]!",
+                        "[${civInfo.civName}] has entered the [$currentEra]!",
                         null,
                         Color.BLUE
                     )
