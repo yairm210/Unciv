@@ -317,8 +317,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             return
         }
         if (isSelectedQueueEntry()) {
-            // currentConstruction is removed from the queue by purchaseConstruction
-            // to avoid conflicts with NextTurnAutomation
             selectedQueueEntry = -2
             cityScreen.selectedConstruction = null
         }
