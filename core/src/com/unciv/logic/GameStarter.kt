@@ -70,7 +70,7 @@ object GameStarter {
             else availableCivNames.pop()
 
             val playerCiv = CivilizationInfo(nationName)
-            for(tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+            for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
                 playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
             playerCiv.playerType = player.playerType
             playerCiv.playerId = player.playerId
@@ -92,7 +92,6 @@ object GameStarter {
             val civ = CivilizationInfo(cityStateName)
             gameInfo.civilizations.add(civ)
         }
-
     }
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
@@ -139,7 +138,8 @@ object GameStarter {
 
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
-                .filter { it.isLand && !it.getBaseTerrain().impassable }
+                // Games starting on snow might as well start over...
+                .filter { it.isLand && !it.getBaseTerrain().impassable && it.baseTerrain!=Constants.snow }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
         while (landTiles.any()) {
