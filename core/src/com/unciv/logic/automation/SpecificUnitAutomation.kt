@@ -61,7 +61,7 @@ object SpecificUnitAutomation {
 
         // try to build a citadel
         if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo))
-            UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
+            UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
 
         //if no unit to follow, take refuge in city or build citadel there.
         val reachableTest : (TileInfo) -> Boolean = {it.civilianUnit == null &&
@@ -189,7 +189,7 @@ object SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
+                UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
             return
         }
     }

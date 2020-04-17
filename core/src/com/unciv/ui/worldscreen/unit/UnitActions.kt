@@ -346,11 +346,11 @@ object UnitActions {
                     }.takeIf { canConductTradeMission })
         }
 
-        val buildImprovementAction = getGreatPersonBuildImprovementAction(unit)
+        val buildImprovementAction = getBuildImprovementAction(unit)
         if (buildImprovementAction != null) actionList += buildImprovementAction
     }
 
-    fun getGreatPersonBuildImprovementAction(unit: MapUnit): UnitAction? {
+    fun getBuildImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
         for (unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }) {
             val improvementName = unique.replace("Can build improvement: ", "")

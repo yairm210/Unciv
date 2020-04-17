@@ -153,7 +153,8 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
 
-        for (nation in newGameScreen.ruleset.nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
+        for (nation in newGameScreen.ruleset.nations.values
+                .filter { !it.isCityState() && it.name != "Barbarians" }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
