@@ -61,4 +61,6 @@ object Constants {
     const val tutorialPopupNamePrefix = "Tutorial: "
 
     const val close = "Close"
+
+    const val scienceConversionEffect = "Production to science conversion in cities increased by 33%"
 }
