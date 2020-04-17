@@ -1,7 +1,10 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.Input
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -20,6 +23,7 @@ import java.util.*
 class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     var selectedTile: TileInfo? = null
     var selectedConstruction: IConstruction? = null
+    var keyListener: InputListener? = null
 
     /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
     var showConstructionsTable = true
@@ -64,6 +68,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         stage.addActor(cityPickerTable)
         stage.addActor(cityInfoTable)
         update()
+
+        keyListener = getKeyboardListener()
+        stage.addListener(keyListener)
     }
 
     internal fun update() {
@@ -189,5 +196,30 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         scrollPane.scrollPercentX=0.5f
         scrollPane.scrollPercentY=0.5f
         scrollPane.updateVisualScroll()
+    }
+
+    fun exit() {
+        stage.removeListener(keyListener)
+        game.setWorldScreen()
+        game.worldScreen.mapHolder.setCenterPosition(city.location)
+        game.worldScreen.bottomUnitTable.selectedUnit=null
+    }
+    fun page(delta: Int) {
+        val civInfo = city.civInfo
+        val numCities = civInfo.cities.size
+        if (numCities == 0) return
+        val indexOfCity = civInfo.cities.indexOf(city)
+        val indexOfNextCity = (indexOfCity + delta + numCities) % numCities
+        stage.removeListener(keyListener)
+        game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
+    }
+
+    private fun getKeyboardListener(): InputListener = object : InputListener() {
+        override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+            if (character != 0.toChar() || event == null) return super.keyTyped(event, character)
+            if (event.keyCode == Input.Keys.LEFT) page(-1)
+            if (event.keyCode == Input.Keys.RIGHT) page(1)
+            return true
+        }
     }
 }
