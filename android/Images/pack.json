@@ -1,0 +1,24 @@
+{
+	// Apparently some chipsets, like NVIDIA Tegra 3 graphics chipset (used in Asus TF700T tablet),
+    // don't support non-power-of-two texture sizes - kudos @yuroller!
+    // https://github.com/yairm210/UnCiv/issues/1340
+	"pot": true,					// size: powers of two only
+	"maxWidth": 2048,				// 'older' devices pre-2010 or so might still struggle with this
+	"maxHeight": 2048,
+
+	// This is so they don't look all pixelated
+	"filterMag": "MipMapLinearLinear",
+	"filterMin": "MipMapLinearLinear",
+
+	// We want the least number of tex files possible, but organized by importance in-game.
+	// Thus the idea to proccess L and H subfolders separately, but within these combine
+	"combineSubdirectories": false,	// Needed true, but only one level below
+	"flattenPaths": false,		// keep relative path names
+
+//	"rotation": true,				// incompatible, no benefit for Unciv
+//	"stripWhitespaceX": true,		// incompatible, would pack significantly better
+//	"stripWhitespaceY": true,		// incompatible
+
+	"fast": true,					// quality impact negligible, but 3x processing time
+	"limitMemory": false			// 2-pass or load all into RAM: nowadays no problem
+}
