@@ -20,9 +20,11 @@ class AndroidLauncher : AndroidApplication() {
 		}
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
-        val game = UncivGame(BuildConfig.VERSION_NAME,
-                            CrashReportSenderAndroid(this))
-                            {this.finish()}
+        val game = UncivGame (
+                version = BuildConfig.VERSION_NAME,
+                crashReportSender = CrashReportSenderAndroid(this),
+                exitEvent = this::finish
+            )
         initialize(game, config)
     }
 

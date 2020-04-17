@@ -1,5 +1,6 @@
 package com.unciv.ui.mapeditor
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
@@ -44,7 +45,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
 
     private fun loadContent() {
         try {
-            val folderList = DropBox().getFolderList("/Maps")
+            val folderList = DropBox.getFolderList("/Maps")
             Gdx.app.postRunnable {
                 scrollableMapTable.apply { defaults().pad(10f) }
                 for (downloadableMap in folderList.entries) {
@@ -72,10 +73,10 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
     private fun loadMap(downloadableMap: DropBox.FolderListEntry) {
 
         try {
-            val mapJsonGzipped = DropBox().downloadFileAsString(downloadableMap.path_display)
+            val mapJsonGzipped = DropBox.downloadFileAsString(downloadableMap.path_display)
             val decodedMapJson = Gzip.unzip(mapJsonGzipped)
-            val mapObject = MapSaver().mapFromJson(decodedMapJson)
-            MapSaver().saveMap(downloadableMap.name, mapObject)
+            val mapObject = MapSaver.mapFromJson(decodedMapJson)
+            MapSaver.saveMap(downloadableMap.name, mapObject)
 
             // creating a screen is a GL task
             Gdx.app.postRunnable { UncivGame.Current.setScreen(MapEditorScreen(mapObject)) }

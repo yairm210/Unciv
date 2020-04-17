@@ -51,6 +51,8 @@ class Nation : INamed {
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false
+    // Same for Inca unique
+    @Transient var greatAndeanRoad = false
 
     fun setTransients(){
         outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
@@ -60,6 +62,8 @@ class Nation : INamed {
 
         if(unique == UniqueAbility.GREAT_WARPATH)
             forestsAndJunglesAreRoads = true
+        if(unique == UniqueAbility.GREAT_ANDEAN_ROAD)
+            greatAndeanRoad = true
     }
 
     lateinit var cities: ArrayList<String>
@@ -67,14 +71,23 @@ class Nation : INamed {
 
 
 
-    fun getUniqueString(ruleset: Ruleset): String {
+    fun getUniqueString(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val textList = ArrayList<String>()
 
-        if (unique != null) {
-            textList += unique!!.description.tr()
+        if (leaderName.isNotEmpty() && !forPickerScreen){
+            textList += getLeaderDisplayName().tr()
             textList += ""
         }
+        if (unique != null) {
+            textList += unique!!.displayName.tr() + ":"
+            textList += "  " + unique!!.description.tr()
 
+            textList += ""
+        }
+        if (startBias.isNotEmpty()) {
+            textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
+            textList += ""
+        }
         addUniqueBuildingsText(textList,ruleset)
         addUniqueUnitsText(textList,ruleset)
         addUniqueImprovementsText(textList,ruleset)
@@ -120,7 +133,7 @@ class Nation : INamed {
             if (unit.rangedStrength != originalUnit.rangedStrength)
                 textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
             if (unit.range != originalUnit.range)
-                textList += "  {Range} " + unit.range + "[${unit.range}] vs [${originalUnit.range}]".tr()
+                textList += "  {Range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
             if (unit.movement != originalUnit.movement)
                 textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
             if (originalUnit.requiredResource != null && unit.requiredResource == null)

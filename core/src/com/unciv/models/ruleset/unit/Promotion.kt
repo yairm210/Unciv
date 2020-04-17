@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset.unit
 
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
@@ -8,9 +9,9 @@ class Promotion : INamed{
     override lateinit var name: String
     var prerequisites = listOf<String>()
     lateinit var effect:String
-    var unitTypes = listOf<String>() // The json parser woulddn't agree to deserialize this as a list of UnitTypes. =(
+    var unitTypes = listOf<String>() // The json parser wouldn't agree to deserialize this as a list of UnitTypes. =(
 
-    fun getDescription(promotionsForUnitType: Collection<Promotion>, forCivilopedia:Boolean=false):String {
+    fun getDescription(promotionsForUnitType: Collection<Promotion>, forCivilopedia:Boolean=false, ruleSet:Ruleset? = null):String {
         // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city
         val stringBuilder = StringBuilder()
         stringBuilder.appendln(Translations.translateBonusOrPenalty(effect.tr()))
@@ -23,8 +24,18 @@ class Promotion : INamed{
             stringBuilder.appendln("{Requires}: ".tr()+prerequisitesString.joinToString(" OR ".tr()))
         }
         if(forCivilopedia){
-            val unitTypesString = unitTypes.joinToString(", "){it.tr()}
-            stringBuilder.appendln("Available for [$unitTypesString]".tr())
+            if (unitTypes.isNotEmpty()) {
+                val unitTypesString = unitTypes.joinToString(", ") { it.tr() }
+                stringBuilder.appendln("Available for [$unitTypesString]".tr())
+            }
+
+            if (ruleSet!=null) {
+                val freeforUnits = ruleSet.units.filter { it.value.promotions.contains(name) }
+                if (freeforUnits.isNotEmpty()) {
+                    val freeforString = freeforUnits.map { it.value.name }.joinToString(", ") { it.tr() }
+                    stringBuilder.appendln("Free for [$freeforString]".tr())
+                }
+            }
         }
         return stringBuilder.toString()
     }

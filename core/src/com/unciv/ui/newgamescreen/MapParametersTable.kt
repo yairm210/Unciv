@@ -1,17 +1,16 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
@@ -45,11 +44,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         )
         val mapShapeSelectBox =
                 TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
-        mapShapeSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        mapShapeSelectBox.onChange {
                 mapParameters.shape = mapShapeSelectBox.selected.value
             }
-        })
 
         add ("{Map shape}:".toLabel()).left()
         add(mapShapeSelectBox).fillX().row()
@@ -68,15 +65,13 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
 
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, mapParameters.type, skin)
 
-        mapTypeSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        mapTypeSelectBox.onChange {
                 mapParameters.type = mapTypeSelectBox.selected.value
 
                 // If the map won't be generated, these options are irrelevant and are hidden
                 noRuinsCheckbox.isVisible = mapParameters.type != MapType.empty
                 noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
             }
-        })
 
         add("{Map generation type}:".toLabel()).left()
         add(mapTypeSelectBox).fillX().row()
@@ -90,11 +85,9 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             skin
         )
 
-        worldSizeSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        worldSizeSelectBox.onChange {
                 mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
             }
-        })
 
         add("{World size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
@@ -103,28 +96,23 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     private fun addNoRuinsCheckbox() {
         noRuinsCheckbox = CheckBox("No ancient ruins".tr(), skin)
         noRuinsCheckbox.isChecked = mapParameters.noRuins
-        noRuinsCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.noRuins = noRuinsCheckbox.isChecked
-            }
-        })
+        noRuinsCheckbox.onChange { mapParameters.noRuins = noRuinsCheckbox.isChecked }
         add(noRuinsCheckbox).colspan(2).row()
     }
 
     private fun addNoNaturalWondersCheckbox() {
         noNaturalWondersCheckbox = CheckBox("No Natural Wonders".tr(), skin)
         noNaturalWondersCheckbox.isChecked = mapParameters.noNaturalWonders
-        noNaturalWondersCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
-            }
-        })
+        noNaturalWondersCheckbox.onChange {
+            mapParameters.noNaturalWonders = noNaturalWondersCheckbox.isChecked
+        }
         add(noNaturalWondersCheckbox).colspan(2).row()
     }
 
     private fun addAdvancedSettings() {
         val button = TextButton("Show advanced settings".tr(), skin)
-        val advancedSettingsTable = Table().apply {isVisible = false; defaults().pad(5f)}
+        val advancedSettingsTable = Table()
+                .apply {isVisible = false; defaults().pad(5f)}
 
         add(button).colspan(2).row()
         val advancedSettingsCell = add(Table()).colspan(2)
@@ -142,111 +130,47 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             }
         }
 
+        val sliders = HashMap<Slider, ()->Float>()
 
-        val elevationExponentSlider = Slider(0.5f,1f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.elevationExponent = this@apply.value
-                }
-            })
+        fun addSlider(text:String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): Slider {
+            val slider = Slider(min, max, (max-min)/20,false,skin)
+            slider.value = getValue()
+            slider.onChange { onChange(slider.value) }
+            advancedSettingsTable.add(text.toLabel()).left()
+            advancedSettingsTable.add(slider).fillX().row()
+            sliders.put(slider, getValue)
+            return slider
         }
-        elevationExponentSlider.value = mapParameters.elevationExponent
-        advancedSettingsTable.add("Map Height".toLabel()).left()
-        advancedSettingsTable.add(elevationExponentSlider).fillX().row()
 
+        addSlider("Map Height", {mapParameters.elevationExponent}, 0.5f,1f)
+            {mapParameters.elevationExponent=it}
 
-        val tempExtremeSlider = Slider(0.4f,0.8f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.temperatureExtremeness = this@apply.value
-                }
-            })
-        }
-        tempExtremeSlider.value = mapParameters.temperatureExtremeness
-        advancedSettingsTable.add("Temperature extremeness".toLabel()).left()
-        advancedSettingsTable.add(tempExtremeSlider).fillX().row()
+        addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
+            { mapParameters.temperatureExtremeness = it}
 
+        addSlider("Resource richness", {mapParameters.resourceRichness},0f,0.5f)
+            { mapParameters.resourceRichness=it }
 
-        val resourceRichnessSlider = Slider(0f,0.5f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.resourceRichness = this@apply.value
-                }
-            })
-        }
-        resourceRichnessSlider.value = mapParameters.resourceRichness
-        advancedSettingsTable.add("Resource richness".toLabel()).left()
-        advancedSettingsTable.add(resourceRichnessSlider).fillX().row()
+        addSlider("Vegetation richness", {mapParameters.vegetationRichness}, 0f, 1f)
+            { mapParameters.vegetationRichness=it }
 
-        val vegetationRichnessSlider = Slider(0f,1f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.vegetationRichness = this@apply.value
-                }
-            })
-        }
-        vegetationRichnessSlider.value = mapParameters.vegetationRichness
-        advancedSettingsTable.add("Vegetation richness".toLabel()).left()
-        advancedSettingsTable.add(vegetationRichnessSlider).fillX().row()
+        addSlider("Rare features richness", {mapParameters.rareFeaturesRichness}, 0f, 0.5f)
+            { mapParameters.rareFeaturesRichness = it }
 
-        val rareFeaturesRichnessSlider = Slider(0f,0.5f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.rareFeaturesRichness = this@apply.value
-                }
-            })
-        }
-        rareFeaturesRichnessSlider.value = mapParameters.rareFeaturesRichness
-        advancedSettingsTable.add("Rare features richness".toLabel()).left()
-        advancedSettingsTable.add(rareFeaturesRichnessSlider).fillX().row()
+        addSlider("Max Coast extension", {mapParameters.maxCoastExtension.toFloat()}, 0f, 5f)
+            { mapParameters.maxCoastExtension =it.toInt() }.apply { stepSize=1f }
 
+        addSlider("Biome areas extension", {mapParameters.tilesPerBiomeArea.toFloat()}, 1f, 15f)
+            { mapParameters.tilesPerBiomeArea = it.toInt() }.apply { stepSize=1f }
 
-        val maxCoastExtensionSlider = Slider(0f,5f,1f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.maxCoastExtension = this@apply.value.toInt()
-                }
-            })
-        }
-        maxCoastExtensionSlider.value = mapParameters.maxCoastExtension.toFloat()
-        advancedSettingsTable.add("Max Coast extension".toLabel()).left()
-        advancedSettingsTable.add(maxCoastExtensionSlider).fillX().row()
-
-
-        val tilesPerBiomeAreaSlider = Slider(1f,15f,1f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.tilesPerBiomeArea = this@apply.value.toInt()
-                }
-            })
-        }
-        tilesPerBiomeAreaSlider.value = mapParameters.tilesPerBiomeArea.toFloat()
-        advancedSettingsTable.add("Biome areas extension".toLabel()).left()
-        advancedSettingsTable.add(tilesPerBiomeAreaSlider).fillX().row()
-
-
-        val waterThresholdSlider = Slider(-0.1f,0.1f,0.01f, false, skin).apply {
-            addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    mapParameters.waterThreshold = this@apply.value
-                }
-            })
-        }
-        waterThresholdSlider.value = mapParameters.waterThreshold
-        advancedSettingsTable.add("Water level".toLabel()).left()
-        advancedSettingsTable.add(waterThresholdSlider).fillX().row()
+        addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
+            { mapParameters.waterThreshold = it }
 
         val resetToDefaultButton = TextButton("Reset to default".tr(), skin)
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
-            elevationExponentSlider.value = mapParameters.elevationExponent
-            tempExtremeSlider.value = mapParameters.temperatureExtremeness
-            resourceRichnessSlider.value = mapParameters.resourceRichness
-            vegetationRichnessSlider.value = mapParameters.vegetationRichness
-            rareFeaturesRichnessSlider.value = mapParameters.rareFeaturesRichness
-            maxCoastExtensionSlider.value = mapParameters.maxCoastExtension.toFloat()
-            tilesPerBiomeAreaSlider.value = mapParameters.tilesPerBiomeArea.toFloat()
-            waterThresholdSlider.value = mapParameters.waterThreshold
+            for(entry in sliders)
+                entry.key.value = entry.value()
         }
         advancedSettingsTable.add(resetToDefaultButton).colspan(2).row()
     }

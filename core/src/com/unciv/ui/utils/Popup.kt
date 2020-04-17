@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.models.translations.tr
 
 /**
@@ -63,11 +64,17 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
         return add(button).apply { row() }
     }
 
-    fun addCloseButton() = addButton("Close") { close() }
+    fun addCloseButton(action: (()->Unit)? = null): Cell<TextButton> {
+        return if (action==null)
+            addButton(Constants.close) { close() }
+        else
+            addButton(Constants.close) { close(); action() }
+    }
 }
 
 fun CameraStageBaseScreen.hasOpenPopups(): Boolean = stage.actors.any { it is Popup && it.isVisible }
-fun CameraStageBaseScreen.closeAllPopups() { for (popup in popups) popup.close() }
+fun CameraStageBaseScreen.closeAllPopups() = popups.forEach { it.close() }
+fun CameraStageBaseScreen.closeOneVisiblePopup() = popups.lastOrNull { it.isVisible }?.apply { close() }?.name
 
 val CameraStageBaseScreen.popups: List<Popup>
     get() = stage.actors.filterIsInstance<Popup>()

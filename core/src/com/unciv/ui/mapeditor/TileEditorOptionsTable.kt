@@ -1,13 +1,12 @@
 package com.unciv.ui.mapeditor
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
@@ -52,11 +51,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         setTerrainsAndResources()
 
         val tabPickerTable = Table().apply { defaults().pad(10f) }
-        val terrainsAndResourcesTabButton = TextButton("Terrains & Resources".tr(),skin)
+        val terrainsAndResourcesTabButton = "Terrains & Resources".toTextButton()
                 .onClick { setTerrainsAndResources() }
         tabPickerTable.add(terrainsAndResourcesTabButton)
 
-        val civLocationsButton = TextButton("Improvements".tr(), skin)
+        val civLocationsButton = "Improvements".toTextButton()
                 .onClick { setImprovements() }
         tabPickerTable.add(civLocationsButton)
         tabPickerTable.pack()
@@ -66,12 +65,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val slider = Slider(1f,5f,1f, false, skin)
         val sliderLabel = "{Brush Size} $brushSize".toLabel()
 
-        slider.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                brushSize = slider.getValue().toInt()
-                sliderLabel.setText("{Brush Size} $brushSize".tr())
-            }
-        })
+        slider.onChange {
+            brushSize = slider.getValue().toInt()
+            sliderLabel.setText("{Brush Size} $brushSize".tr())
+        }
 
         sliderTab.defaults().pad(5f)
         sliderTab.add(sliderLabel)
@@ -184,10 +181,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
-                    tileInfo.baseTerrain = when {
-                        terrainObject.occursOn == null -> terrainObject.occursOn!!.first()
-                        else -> "Grassland"
-                    }
+                    tileInfo.baseTerrain =
+                            if (terrainObject.occursOn != null) terrainObject.occursOn.first()
+                            else "Grassland"
                     tileInfo.terrainFeature = terrain
                 } else tileInfo.baseTerrain = terrain
 

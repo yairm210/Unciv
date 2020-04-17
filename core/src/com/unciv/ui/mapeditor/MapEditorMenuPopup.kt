@@ -12,6 +12,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.translations.tr
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.Popup
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.isEnabled
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.mainmenu.DropBox
 import kotlin.concurrent.thread
@@ -19,8 +21,10 @@ import kotlin.concurrent.thread
 class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
     init{
         val mapNameEditor = TextField(mapEditorScreen.mapName, skin)
-        mapNameEditor.addListener{ mapEditorScreen.mapName=mapNameEditor.text; true }
-        add(mapNameEditor).row()
+        add(mapNameEditor).fillX().row()
+        mapNameEditor.selectAll()
+        mapNameEditor.maxLength = 240       // A few under max for most filesystems
+        mapEditorScreen.stage.keyboardFocus = mapNameEditor
 
         val newMapButton = TextButton("New map".tr(),skin)
         newMapButton.onClick {
@@ -51,10 +55,28 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         saveMapButton.onClick {
             mapEditorScreen.tileMap.mapParameters.name=mapEditorScreen.mapName
             mapEditorScreen.tileMap.mapParameters.type=MapType.custom
-            MapSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
-            UncivGame.Current.setWorldScreen()
+            thread ( name = "SaveMap" ) {
+                try {
+                    MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
+                    UncivGame.Current.setWorldScreen()
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    Gdx.app.postRunnable {
+                        val cantLoadGamePopup = Popup(mapEditorScreen)
+                        cantLoadGamePopup.addGoodSizedLabel("It looks like your map can't be saved!").row()
+                        cantLoadGamePopup.addCloseButton()
+                        cantLoadGamePopup.open(force = true)
+                    }
+                }
+            }
         }
+        saveMapButton.isEnabled = mapNameEditor.text.isNotEmpty()
         add(saveMapButton).row()
+        mapNameEditor.addListener {
+            mapEditorScreen.mapName = mapNameEditor.text
+            saveMapButton.isEnabled = mapNameEditor.text.isNotEmpty()
+            true
+        }
 
         val copyMapAsTextButton = TextButton("Copy to clipboard".tr(), skin)
         copyMapAsTextButton.onClick {
@@ -75,7 +97,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             thread(name="MapUpload") {
                 try {
                     val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
-                    DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
+                    DropBox.uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
 
                     remove()
                     val uploadedSuccessfully = Popup(screen)
@@ -98,7 +120,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         exitMapEditorButton.onClick { UncivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
 
-        val closeOptionsButton = TextButton("Close".tr(), skin)
+        val closeOptionsButton = TextButton(Constants.close.tr(), skin)
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
     }

@@ -46,9 +46,9 @@ class PopulationManager {
 
     //endregion
 
-    fun nextTurn(food: Float) {
-        foodStored += food.roundToInt()
-        if(food.roundToInt() < 0)
+    fun nextTurn(food: Int) {
+        foodStored += food
+        if(food < 0)
             cityInfo.civInfo.addNotification("["+cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
@@ -80,9 +80,9 @@ class PopulationManager {
         val bestTile: TileInfo? = cityInfo.getTiles()
                 .filter { it.aerialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
-                .maxBy { Automation().rankTileForCityWork(it,cityInfo, foodWeight) }
+                .maxBy { Automation.rankTileForCityWork(it,cityInfo, foodWeight) }
         val valueBestTile = if(bestTile==null) 0f
-        else Automation().rankTileForCityWork(bestTile, cityInfo, foodWeight)
+        else Automation.rankTileForCityWork(bestTile, cityInfo, foodWeight)
 
         //evaluate specialists
         val maxSpecialistsMap = getMaxSpecialists().toHashMap()
@@ -90,11 +90,11 @@ class PopulationManager {
         val bestJob: Stat? = specialists.toHashMap()
                 .filter {maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!!}
                 .map {it.key}
-                .maxBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo) }
+                .maxBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo) }
         var valueBestSpecialist = 0f
         if (bestJob != null) {
             val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(bestJob, policies)
-            valueBestSpecialist = Automation().rankSpecialist(specialistStats, cityInfo)
+            valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
         }
 
         //assign population
@@ -112,7 +112,7 @@ class PopulationManager {
         for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] }) {
             if (tile.getCity() != cityInfo)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
-            if(tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3) // AutoAssignPopulation used to assign pop outside of allowed range, fixed as of 2.10.4
+            if(tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
         }
 
@@ -122,10 +122,11 @@ class PopulationManager {
                     else {
                 cityInfo.workedTiles.asSequence()
                         .map { cityInfo.tileMap[it] }
-                        .minBy { Automation().rankTileForCityWork(it, cityInfo) }!!
+                        .minBy { Automation.rankTileForCityWork(it, cityInfo)
+                            + (if(it.isLocked()) 10 else 0) }!!
             }
             val valueWorstTile = if(worstWorkedTile==null) 0f
-            else Automation().rankTileForCityWork(worstWorkedTile, cityInfo)
+            else Automation.rankTileForCityWork(worstWorkedTile, cityInfo)
 
 
             //evaluate specialists
@@ -133,10 +134,10 @@ class PopulationManager {
             val worstJob: Stat? = specialists.toHashMap()
                     .filter { it.value > 0 }
                     .map {it.key}
-                    .minBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo) }
+                    .minBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob, policies), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob, policies), cityInfo)
 
             //un-assign population
             if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)

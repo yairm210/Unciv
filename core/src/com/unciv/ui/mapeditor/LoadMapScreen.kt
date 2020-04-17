@@ -1,8 +1,8 @@
 package com.unciv.ui.mapeditor
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
@@ -25,7 +25,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
         }
 
         val mapsTable = Table().apply { defaults().pad(10f) }
-        for (map in MapSaver().getMaps()) {
+        for (map in MapSaver.getMaps()) {
             val loadMapButton = TextButton(map, skin)
             loadMapButton.onClick {
                 rightSideButton.enable()
@@ -55,7 +55,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedMap = MapSaver().mapFromJson(decoded)
+                val loadedMap = MapSaver.mapFromJson(decoded)
                 UncivGame.Current.setScreen(MapEditorScreen(loadedMap))
             }
             catch (ex:Exception){
@@ -67,7 +67,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         deleteMapButton.onClick {
             YesNoPopup("Are you sure you want to delete this map?", {
-                MapSaver().deleteMap(chosenMap)
+                MapSaver.deleteMap(chosenMap)
                 UncivGame.Current.setScreen(LoadMapScreen(previousMap))
             }, this).open()
         }

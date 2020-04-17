@@ -12,7 +12,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 
-class DropBox {
+object DropBox {
 
     fun dropboxApi(url:String, data:String="",contentType:String="",dropboxApiArg:String=""): InputStream? {
 
@@ -48,7 +48,7 @@ class DropBox {
     fun getFolderList(folder:String):FolderList{
         val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
                 "{\"path\":\"$folder\"}","application/json")
-        return GameSaver().json().fromJson(FolderList::class.java,response)
+        return GameSaver.json().fromJson(FolderList::class.java,response)
     }
 
     fun downloadFile(fileName:String): InputStream {
@@ -97,13 +97,13 @@ class OnlineMultiplayer {
     fun getGameLocation(gameId:String) = "/MultiplayerGames/$gameId"
 
     fun tryUploadGame(gameInfo: GameInfo){
-        val zippedGameInfo = Gzip.zip(GameSaver().json().toJson(gameInfo))
-        DropBox().uploadFile(getGameLocation(gameInfo.gameId),zippedGameInfo,true)
+        val zippedGameInfo = Gzip.zip(GameSaver.json().toJson(gameInfo))
+        DropBox.uploadFile(getGameLocation(gameInfo.gameId),zippedGameInfo,true)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
-        return GameSaver().gameInfoFromString(Gzip.unzip(zippedGameInfo))
+        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
+        return GameSaver.gameInfoFromString(Gzip.unzip(zippedGameInfo))
     }
 
     /**
@@ -112,7 +112,7 @@ class OnlineMultiplayer {
      * It is therefore stateless and save to call for Multiplayer Turn Notifier, unlike tryDownloadGame().
      */
     fun tryDownloadCurrentTurnCiv(gameId: String): CivilizationInfo {
-        val zippedGameInfo = DropBox().downloadFileAsString(getGameLocation(gameId))
-        return GameSaver().currentTurnCivFromString(Gzip.unzip(zippedGameInfo))
+        val zippedGameInfo = DropBox.downloadFileAsString(getGameLocation(gameId))
+        return GameSaver.currentTurnCivFromString(Gzip.unzip(zippedGameInfo))
     }
 }

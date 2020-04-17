@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stats
@@ -12,8 +11,9 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 
-class CityScreenTileTable(val city: CityInfo): Table(){
+class CityScreenTileTable(val cityScreen: CityScreen): Table(){
     val innerTable = Table()
+    val city = cityScreen.city
     init{
         innerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         add(innerTable).pad(2f).fill()
@@ -58,7 +58,28 @@ class CityScreenTileTable(val city: CityInfo): Table(){
                 city.expansion.takeOwnership(selectedTile)
                 UncivGame.Current.setScreen(CityScreen(city))
             }
-            innerTable.add(acquireTileButton)
+            innerTable.add(acquireTileButton).row()
+        }
+
+        if(city.workedTiles.contains(selectedTile.position)){
+            if(selectedTile.isLocked()) {
+                val unlockButton = TextButton("Unlock", CameraStageBaseScreen.skin)
+                unlockButton.onClick {
+                    city.lockedTiles.remove(selectedTile.position)
+                    update(selectedTile)
+                    cityScreen.update()
+                }
+                innerTable.add(unlockButton).row()
+            }
+            else {
+                val lockButton = TextButton("Lock", CameraStageBaseScreen.skin)
+                lockButton.onClick {
+                    city.lockedTiles.add(selectedTile.position)
+                    update(selectedTile)
+                    cityScreen.update()
+                }
+                innerTable.add(lockButton).row()
+            }
         }
         innerTable.pack()
         pack()

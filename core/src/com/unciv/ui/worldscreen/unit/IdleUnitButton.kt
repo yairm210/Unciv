@@ -46,6 +46,7 @@ class IdleUnitButton (
 
             unitToSelect.due = false
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
+            unitTable.selectedCity = null // need to deselect city, so that units on cities show their tiles
             unitTable.selectedUnit = unitToSelect
             unitTable.worldScreen.shouldUpdate=true
 

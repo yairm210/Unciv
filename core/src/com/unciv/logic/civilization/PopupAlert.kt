@@ -8,8 +8,6 @@ enum class AlertType{
     FirstContact,
     CityConquered,
     BorderConflict,
-    @Deprecated("As of 2.19.0 - replaced with DemandToStopSettlingCitiesNear")
-    CitiesSettledNearOtherCiv,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
     GoldenAge,

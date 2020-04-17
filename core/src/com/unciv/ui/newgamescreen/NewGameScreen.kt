@@ -1,7 +1,7 @@
 package com.unciv.ui.newgamescreen
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
@@ -9,6 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
+import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -29,7 +30,7 @@ class NewGameScreen: PickerScreen(){
         scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { playerPickerTable.update() }
+        val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
         topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
         topTable.add(playerPickerTable).height(topTable.parent.height)
         topTable.pack()
@@ -49,7 +50,7 @@ class NewGameScreen: PickerScreen(){
             if (newGameParameters.isOnlineMultiplayer) {
                 for (player in newGameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
-                        UUID.fromString(player.playerId)
+                        UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
                     } catch (ex: Exception) {
                         val invalidPlayerIdPopup = Popup(this)
                         invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!".tr()).row()
@@ -67,15 +68,15 @@ class NewGameScreen: PickerScreen(){
             thread(name="NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 try {
-                    newGame = GameStarter().startNewGame(newGameParameters,mapParameters)
+                    newGame = GameStarter.startNewGame(newGameParameters,mapParameters)
                     if (newGameParameters.isOnlineMultiplayer) {
                         newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                         try {
                             OnlineMultiplayer().tryUploadGame(newGame!!)
-                            GameSaver().autoSave(newGame!!){}
+                            GameSaver.autoSave(newGame!!){}
 
                             //Saved as Multiplayer game to show up in the session browser
-                            GameSaver().saveGame(newGame!!, newGame!!.gameId,true)
+                            GameSaver.saveGame(newGame!!, newGame!!.gameId,true)
                             //Save gameId to clipboard because you have to do it anyway.
                             Gdx.app.clipboard.contents = newGame!!.gameId
                             //Popup to notify the User that the gameID got copied to the clipboard

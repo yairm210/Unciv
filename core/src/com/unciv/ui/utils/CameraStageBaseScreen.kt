@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
@@ -61,21 +62,26 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun displayTutorial(tutorial: Tutorial) = tutorialController.showTutorial(tutorial)
+    fun displayTutorial( tutorial: Tutorial, test: (()->Boolean)? = null ) {
+        if (!game.settings.showTutorials) return
+        if (game.settings.tutorialsShown.contains(tutorial.name)) return
+        if (test != null && !test()) return
+        tutorialController.showTutorial(tutorial)
+    }
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
 
         fun resetFonts(){
-            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(45).apply { data.setScale(20/45f) }
+            skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.getFont(45).apply { data.setScale(20/45f) }
+            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts.getFont(45).apply { data.setScale(20/45f) }
             skin.get(Label.LabelStyle::class.java).apply {
-                font = Fonts().getFont(45).apply { data.setScale(18/45f) }
+                font = Fonts.getFont(45).apply { data.setScale(18/45f) }
                 fontColor= Color.WHITE
             }
-            skin.get(TextField.TextFieldStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(18/45f) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(45).apply { data.setScale(20/45f) }
-            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(45).apply { data.setScale(20/45f) }
+            skin.get(TextField.TextFieldStyle::class.java).font = Fonts.getFont(45).apply { data.setScale(18/45f) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.getFont(45).apply { data.setScale(20/45f) }
+            skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.getFont(45).apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
         internal var batch: Batch = SpriteBatch()
@@ -85,7 +91,7 @@ open class CameraStageBaseScreen : Screen {
     fun onBackButtonClicked(action:()->Unit): InputListener {
         val listener = object : InputListener(){
             override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
-                if(keycode == Input.Keys.BACK){
+                if(keycode == Input.Keys.BACK || keycode == Input.Keys.ESCAPE){
                     action()
                     return true
                 }
@@ -107,7 +113,10 @@ fun Button.enable() {
     color = Color.WHITE
     touchable = Touchable.enabled
 }
-
+var Button.isEnabled: Boolean
+    //Todo: Use in PromotionPickerScreen, TradeTable, WorldScreen.updateNextTurnButton
+    get() = touchable == Touchable.enabled
+    set(value) = if (value) enable() else disable()
 
 fun colorFromRGB(r: Int, g: Int, b: Int): Color {
     return Color(r/255f, g/255f, b/255f, 1f)
@@ -139,6 +148,15 @@ fun Actor.onClick(sound: UncivSound = UncivSound.Click, function: () -> Unit) {
 
 fun Actor.onClick(function: () -> Unit): Actor {
     onClick(UncivSound.Click, function)
+    return this
+}
+
+fun Actor.onChange(function: () -> Unit): Actor {
+    this.addListener(object : ChangeListener() {
+        override fun changed(event: ChangeEvent?, actor: Actor?) {
+            function()
+        }
+    })
     return this
 }
 
@@ -208,6 +226,8 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
     return newHashSet
 }
 
+fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
+
 /** also translates */
 fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)
 
@@ -218,7 +238,7 @@ fun String.toLabel(fontColor:Color= Color.WHITE, fontSize:Int=18): Label {
     if(fontColor!= Color.WHITE || fontSize!=18) { // if we want the default we don't need to create another style
         labelStyle = Label.LabelStyle(labelStyle) // clone this to another
         labelStyle.fontColor = fontColor
-        if (fontSize != 18) labelStyle.font = Fonts().getFont(45)
+        if (fontSize != 18) labelStyle.font = Fonts.getFont(45)
     }
     return Label(this.tr(),labelStyle).apply { setFontScale(fontSize/45f) }
 }
@@ -228,7 +248,7 @@ fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply 
 
 fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
-    style.font = Fonts().getFont(45)
+    style.font = Fonts.getFont(45)
     style = style // because we need it to call the SetStyle function. Yuk, I know.
     return this.apply { setFontScale(size/45f) } // for chaining
 }

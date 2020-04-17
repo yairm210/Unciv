@@ -25,7 +25,7 @@ class TradeEvaluation{
 
         fun hasResource(tradeOffer: TradeOffer): Boolean {
             val resourcesByName = offerer.getCivResourcesByName()
-            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= tradeOffer.amount
+            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= 0
         }
 
         when(tradeOffer.type){
@@ -125,7 +125,7 @@ class TradeEvaluation{
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
-                val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
+                val threatToThem = Automation.threatAssessment(civInfo,civToDeclareWarOn)
 
                 if (!civInfo.isAtWarWith(civToDeclareWarOn)) return 0 // why should we pay you to go fight someone...?
                 else when (threatToThem) {
@@ -196,7 +196,7 @@ class TradeEvaluation{
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(offer.name)
-                val threatToUs = Automation().threatAssessment(civInfo, civToDeclareWarOn)
+                val threatToUs = Automation.threatAssessment(civInfo, civToDeclareWarOn)
 
                 return when (threatToUs) {
                     ThreatLevel.VeryLow -> 100
@@ -229,8 +229,8 @@ class TradeEvaluation{
     }
 
     fun evaluatePeaceCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
-        val ourCombatStrength = Automation().evaluteCombatStrength(ourCivilization)
-        val theirCombatStrength = Automation().evaluteCombatStrength(otherCivilization)
+        val ourCombatStrength = Automation.evaluteCombatStrength(ourCivilization)
+        val theirCombatStrength = Automation.evaluteCombatStrength(otherCivilization)
         if(ourCombatStrength==theirCombatStrength) return 0
         if(ourCombatStrength==0) return -1000
         if(theirCombatStrength==0) return 1000 // Chumps got no cities or units

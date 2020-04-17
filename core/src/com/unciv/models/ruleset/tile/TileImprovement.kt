@@ -11,6 +11,11 @@ import kotlin.math.roundToInt
 class TileImprovement : NamedStats() {
 
     var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
+
+    // Used only for Camp - but avoid hardcoded comparison and *allow modding*
+    // Terrain Features that need not be cleared if the improvement enables a resource
+    var resourceTerrainAllow: Collection<String> = ArrayList()
+
     var techRequired: String? = null
 
     var improvingTech: String? = null
@@ -30,9 +35,15 @@ class TileImprovement : NamedStats() {
         return realTurnsToBuild.roundToInt()
     }
 
-    fun getDescription(ruleset: Ruleset): String {
+    fun getDescription(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val stringBuilder = StringBuilder()
-        if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
+        val statsDesc = this.clone().toString()
+        if (statsDesc.isNotEmpty()) stringBuilder.appendln(statsDesc)
+        if (improvingTech != null && improvingTechStats != null) {
+            val improveStatsDesc = improvingTechStats.toString()
+            if (improveStatsDesc.isNotEmpty()) stringBuilder.appendln("[$improveStatsDesc] with [${improvingTech!!}]".tr())
+        }
+        if (uniqueTo!=null && !forPickerScreen) stringBuilder.appendln("Unique to [$uniqueTo]".tr())
         if (!terrainsCanBeBuiltOn.isEmpty()) {
             val terrainsCanBeBuiltOnString: ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeBuiltOn) {
@@ -53,7 +64,12 @@ class TileImprovement : NamedStats() {
 
         if (techRequired != null) stringBuilder.appendln("Required tech: [$techRequired]".tr())
 
+        for(unique in uniques)
+            stringBuilder.appendln (unique.tr())
+
         return stringBuilder.toString()
     }
+
+    fun hasUnique(unique: String) = uniques.contains(unique)
 }
 

@@ -7,22 +7,20 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
-class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeComplete: () -> Unit): Table(CameraStageBaseScreen.skin){
+class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage): Table(CameraStageBaseScreen.skin){
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
     var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
-    val offerButton = TextButton("Offer trade".tr(), CameraStageBaseScreen.skin)
+    val offerButton = "Offer trade".toTextButton()
 
     fun isTradeOffered() = otherCivilization.tradeRequests.any{it.requestingCiv==currentPlayerCiv.civName}
 
     fun retractOffer(){
         otherCivilization.tradeRequests.removeAll { it.requestingCiv==currentPlayerCiv.civName }
+        currentPlayerCiv.updateDetailedCivResources()
         offerButton.setText("Offer trade".tr())
     }
 
@@ -48,6 +46,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
             }
 
             otherCivilization.tradeRequests.add(TradeRequest(currentPlayerCiv.civName,tradeLogic.currentTrade.reverse()))
+            currentPlayerCiv.updateDetailedCivResources()
             offerButton.setText("Retract offer".tr())
         }
 

@@ -4,6 +4,8 @@ import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
 
+data class WindowState (val width:Int=0, val height:Int=0)
+
 class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
@@ -24,13 +26,14 @@ class GameSettings {
     var showMinimap: Boolean = true
     var showPixelUnits: Boolean = false
     var showPixelImprovements: Boolean = true
-    var showPixelResources: Boolean = true
-    var nuclearWeaponEnabled = false
     var continuousRendering = false
     var userId = ""
     var multiplayerTurnCheckerEnabled = true
     var multiplayerTurnCheckerPersistentNotificationEnabled = true
     var multiplayerTurnCheckerDelayInMinutes = 5
+    var orderTradeOffersByAmount = true
+    var windowState = WindowState()
+    var isFreshlyCreated = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
@@ -40,7 +43,10 @@ class GameSettings {
     }
 
     fun save(){
-        GameSaver().setGeneralSettings(this)
+        if (!isFreshlyCreated && Gdx.app.type == Application.ApplicationType.Desktop) {
+            windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
+        }
+        GameSaver.setGeneralSettings(this)
     }
 
     fun addCompletedTutorialTask(tutorialTask:String){

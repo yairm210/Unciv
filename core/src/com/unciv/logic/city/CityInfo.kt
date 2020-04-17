@@ -17,6 +17,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -45,12 +46,20 @@ class CityInfo {
     var expansion = CityExpansionManager()
     var cityStats = CityStats()
 
+    /** All tiles that this city controls */
     var tiles = HashSet<Vector2>()
+    /** Tiles that have population assigned to them */
     var workedTiles = HashSet<Vector2>()
+    /** Tiles that the population in them won't be reassigned */
+    var lockedTiles = HashSet<Vector2>()
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var isPuppet = false
+    /** The very first found city is the _original_ capital,
+     * while the _current_ capital can be any other city after the original one is captured.
+     * It is important to distinct them since the original cannot be razed and defines the Domination Victory. */
+    var isOriginalCapital = false
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
@@ -71,6 +80,7 @@ class CityInfo {
 
         name = cityNamePrefix + cityName
 
+        isOriginalCapital = civInfo.citiesCreated == 0
         civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
@@ -78,11 +88,10 @@ class CityInfo {
 
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")
-            cityConstructions.currentConstruction = Constants.worker // Default for first city only!
+            cityConstructions.currentConstructionFromQueue = Constants.worker // Default for first city only!
         }
 
-        if (civInfo.policies.isAdopted("Legalism"))
-            civInfo.policies.tryAddLegalismBuildings()
+        civInfo.policies.tryAddLegalismBuildings()
 
         expansion.reset()
 
@@ -113,12 +122,14 @@ class CityInfo {
         toReturn.expansion = expansion.clone()
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
+        toReturn.lockedTiles = lockedTiles
         toReturn.isBeingRazed = isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter
         toReturn.foundingCiv = foundingCiv
         toReturn.turnAcquired = turnAcquired
         toReturn.isPuppet = isPuppet
+        toReturn.isOriginalCapital = isOriginalCapital
         return toReturn
     }
 
@@ -133,7 +144,7 @@ class CityInfo {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
     }
-    fun isInResistance() = resistanceCounter>0
+    fun isInResistance() = resistanceCounter > 0
 
 
     fun getRuleset() = civInfo.gameInfo.ruleSet
@@ -144,10 +155,7 @@ class CityInfo {
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
             val amount = getTileResourceAmount(tileInfo)
-            if (amount > 0) {
-                cityResources.add(resource, amount, "Tiles")
-            }
-
+            if (amount > 0) cityResources.add(resource, amount, "Tiles")
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
@@ -186,12 +194,13 @@ class CityInfo {
                 // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
                 || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){
             var amountToAdd = 1
-            if(resource.resourceType == ResourceType.Strategic){
+            if(resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
-                if(civInfo.policies.isAdopted("Fascism")) amountToAdd*=2
-                if(civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses","Iron","Uranium"))
+                if (civInfo.policies.hasEffect("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
-                if(resource.name=="Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
+                if (civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses", "Iron", "Uranium"))
+                    amountToAdd *= 2
+                if (resource.name == "Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
                     amountToAdd *= 2
             }
             if(resource.resourceType == ResourceType.Luxury
@@ -204,18 +213,19 @@ class CityInfo {
     }
 
     fun isGrowing(): Boolean {
-        return cityStats.currentCityStats.food > 0 && cityConstructions.currentConstruction != Constants.settler
+        return foodForNextTurn() > 0 && cityConstructions.currentConstructionFromQueue != Constants.settler
     }
 
-    fun isStarving(): Boolean {
-        return cityStats.currentCityStats.food < 0
-    }
+    fun isStarving(): Boolean = foodForNextTurn() < 0
+
+    private fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {
         if (isGrowing()) {
-            var turnsToGrowth = ceil((population.getFoodToNextPopulation() - population.foodStored)
-                    / cityStats.currentCityStats.food).toInt()
+            val roundedFoodPerTurn = foodForNextTurn().toFloat()
+            val remainingFood = population.getFoodToNextPopulation() - population.foodStored
+            var turnsToGrowth = ceil( remainingFood / roundedFoodPerTurn).toInt()
             if (turnsToGrowth < 1) turnsToGrowth = 1
             return turnsToGrowth
         }
@@ -226,7 +236,7 @@ class CityInfo {
     /** Take null to mean infinity. */
     fun getNumTurnsToStarvation(): Int? {
         if (isStarving()) {
-            return floor(population.foodStored / -cityStats.currentCityStats.food).toInt() + 1
+            return population.foodStored / -foodForNextTurn() + 1
         }
 
         return null
@@ -250,12 +260,12 @@ class CityInfo {
         for(entry in stats){
             if(civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
-            if (civInfo.policies.isAdopted("Entrepreneurship"))
+            if (civInfo.policies.hasEffect("Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange."))
                 entry.value.gold *= 1.25f
 
             if (civInfo.containsBuildingUnique("+33% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1.33f)
-            if (civInfo.policies.isAdopted("Freedom"))
+            if (civInfo.policies.hasEffect("+25% great people rate"))
                 stats[entry.key] = stats[entry.key]!!.times(1.25f)
         }
 
@@ -311,7 +321,7 @@ class CityInfo {
                 population.autoAssignPopulation(foodWeight)
             cityStats.update()
 
-            foodPerTurn = cityStats.currentCityStats.food
+            foodPerTurn = foodForNextTurn().toFloat()
             foodWeight += 0.5f
         }
     }
@@ -331,7 +341,7 @@ class CityInfo {
                     population.foodStored = population.getFoodToNextPopulation() - 1//...reduce below the new growth treshold
                 }
             }
-        } else population.nextTurn(stats.food)
+        } else population.nextTurn(foodForNextTurn())
 
         if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
@@ -581,6 +591,19 @@ class CityInfo {
                 .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for(otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
+    }
+
+    fun canPurchase(construction : IConstruction) : Boolean {
+        if (construction is BaseUnit)
+        {
+            val tile = getCenterTile()
+            if (construction.unitType.isCivilian())
+                return tile.civilianUnit == null
+            if (construction.unitType.isAirUnit())
+                return tile.airUnits.filter { !it.isTransported }.size < 6
+            else return tile.militaryUnit == null
+        }
+        return true
     }
     //endregion
 }

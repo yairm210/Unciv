@@ -1,21 +1,21 @@
 package com.unciv.ui.newgamescreen
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
+import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.utils.Popup
 import java.util.*
 
 class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters: GameParameters): Table() {
@@ -28,12 +28,14 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         update()
     }
 
-    fun update() {
+    fun update(desiredCiv: String = "") {
         playerListTable.clear()
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
+
+        reassignRemovedModReferences()
+        if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
+
         for (player in newGameParameters.players) {
-            if(!newGameScreen.ruleset.nations.containsKey(player.chosenCiv)) // this was in a mod we disabled
-                player.chosenCiv="Random"
             playerListTable.add(getPlayerTable(player, gameBasics)).pad(10f).row()
         }
         if(newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
@@ -41,6 +43,20 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
         }
         newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size>1)
+    }
+
+    private fun reassignRemovedModReferences() {
+        for (player in newGameParameters.players) {
+            if (!newGameScreen.ruleset.nations.containsKey(player.chosenCiv))
+                player.chosenCiv = "Random"
+        }
+    }
+
+    private fun assignDesiredCiv(desiredCiv: String) {
+        // No auto-select if desiredCiv already used
+        if (newGameParameters.players.any {it.chosenCiv == desiredCiv}) return
+        // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
+        newGameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType==PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
@@ -72,8 +88,8 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
             fun onPlayerIdTextUpdated(){
                 try {
-                    val uuid = UUID.fromString(playerIdTextfield.text)
-                    player.playerId = playerIdTextfield.text
+                    UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextfield.text))
+                    player.playerId = playerIdTextfield.text.trim()
                     errorLabel.apply { setText("✔");setFontColor(Color.GREEN) }
                 } catch (ex: Exception) {
                     errorLabel.apply { setText("✘");setFontColor(Color.RED) }

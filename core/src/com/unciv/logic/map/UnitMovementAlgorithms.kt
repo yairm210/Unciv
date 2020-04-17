@@ -10,7 +10,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // This function is called ALL THE TIME and should be as time-optimal as possible!
     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
 
-        if ((from.isLand != to.isLand) && unit.type.isLandUnit())
+        if ((from.isLand != to.isLand) && unit.type.isLandUnit() &&
+                (unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
         var extraCost = 0f
@@ -19,23 +20,29 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (toOwner != null && to.isLand && toOwner.hasActiveGreatWall && civInfo.isAtWarWith(toOwner))
             extraCost += 1
 
-        if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
+        if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return 1 / 10f + extraCost
 
         if (from.hasConnection(civInfo) && to.hasConnection(civInfo))
         {
-            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
-            else return 1 / 2f + extraCost
+            return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
+            else 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
-        if (unit.doubleMovementInForestAndJungle && (to.baseTerrain == Constants.forest || to.baseTerrain == Constants.jungle))
-            return 1f + extraCost
+        if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
+            return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
+        if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
+            return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
-        if (unit.roughTerrainPenalty
-                && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
+        if (unit.roughTerrainPenalty && to.isRoughTerrain())
             return 4f + extraCost
 
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
+            return 1 / 2f + extraCost
+
+        if (unit.doubleMovementInSnowTundraAndHills && to.baseTerrain == Constants.hill)
+            return 1f + extraCost // usually hills take 2
+        if (unit.doubleMovementInSnowTundraAndHills && (to.baseTerrain == Constants.snow || to.baseTerrain == Constants.tundra))
             return 1 / 2f + extraCost
 
         return to.getLastTerrain().movementCost.toFloat() + extraCost // no road
@@ -184,7 +191,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit())
-            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()
+            return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
         return getShortestPath(destination).any()
     }
 
@@ -318,8 +325,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
-        if (tile.terrainFeature == Constants.ice
-                && !unit.baseUnit.uniques.contains("Can enter ice tiles"))
+        if (tile.terrainFeature == Constants.ice && !unit.canEnterIceTiles)
             return false
 
         if (tile.isWater && unit.type.isLandUnit()) {
@@ -328,8 +334,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 return false
         }
         if (tile.isOcean && unit.civInfo.nation.unique != UniqueAbility.WAYFINDING) {
-            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
-            if (unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+            if (unit.cannotEnterOceanTiles) return false
+            if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))
                 return false
         }
@@ -343,12 +349,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             // AIs won't enter city-state's border.
         }
 
-        val unitsInTile = tile.getUnits()
-        if (unitsInTile.isNotEmpty()) {
-            val firstUnit = unitsInTile.first()
-            if (firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
-                return false
-        }
+        val firstUnit = tile.getUnits().firstOrNull()
+        if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+            return false
 
         return true
     }

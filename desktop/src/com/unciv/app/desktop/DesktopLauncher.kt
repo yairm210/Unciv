@@ -11,11 +11,14 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import java.io.File
-import kotlin.concurrent.thread
+import java.util.*
+import kotlin.concurrent.timer
 import kotlin.system.exitProcess
 
 
 internal object DesktopLauncher {
+    private var discordTimer: Timer? = null
+
     @JvmStatic
     fun main(arg: Array<String>) {
 
@@ -27,9 +30,9 @@ internal object DesktopLauncher {
         config.title = "Unciv"
         config.useHDPI = true
 
-        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion
+        val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        val game = UncivGame(if (versionFromJar != null) versionFromJar else "Desktop", null){exitProcess(0)}
+        val game = UncivGame ( versionFromJar, null, { exitProcess(0) }, { discordTimer?.cancel() } )
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
@@ -55,13 +58,14 @@ internal object DesktopLauncher {
         settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
 
         if (File("../Images").exists()) // So we don't run this from within a fat JAR
-            TexturePacker.process(settings, "../Images", ".", "game")
+            packImagesIfOutdated(settings, "../Images", ".", "game")
 
         // pack for mods as well
         val modDirectory = File("mods")
         if(modDirectory.exists()) {
             for (mod in modDirectory.listFiles()!!){
-                TexturePacker.process(settings, mod.path + "/Images", mod.path, "game")
+                if (!mod.isHidden && File(mod.path + "/Images").exists())
+                    packImagesIfOutdated(settings, mod.path + "/Images", mod.path, "game")
             }
         }
 
@@ -69,34 +73,45 @@ internal object DesktopLauncher {
         println("Packing textures - "+texturePackingTime+"ms")
     }
 
-    private fun tryActivateDiscord(game: UncivGame) {
+    private fun packImagesIfOutdated (settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
+        fun File.listTree(): Sequence<File> = when {
+                this.isFile -> sequenceOf(this)
+                this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
+                else -> sequenceOf()
+            }
 
+        val atlasFile = File("$output${File.separator}$packFileName.atlas")
+        if (atlasFile.exists() && File("$output${File.separator}$packFileName.png").exists()) {
+            val atlasModTime = atlasFile.lastModified()
+            if (!File(input).listTree().any { it.extension in listOf("png","jpg","jpeg") && it.lastModified() > atlasModTime }) return
+        }
+        TexturePacker.process(settings, input, output, packFileName )
+    }
+
+    private fun tryActivateDiscord(game: UncivGame) {
         try {
             val handlers = DiscordEventHandlers()
             DiscordRPC.INSTANCE.Discord_Initialize("647066573147996161", handlers, true, null)
 
             Runtime.getRuntime().addShutdownHook(Thread { DiscordRPC.INSTANCE.Discord_Shutdown() })
 
-            thread {
-                while (true) {
-                    try {
-                        updateRpc(game)
-                    }catch (ex:Exception){}
-                    Thread.sleep(1000)
-                }
+            discordTimer = timer(name = "Discord", daemon = true, period = 1000) {
+                try {
+                    updateRpc(game)
+                } catch (ex:Exception){}
             }
         } catch (ex: Exception) {
-            print("Could not initialize Discord")
+            println("Could not initialize Discord")
         }
     }
 
-    fun updateRpc(game: UncivGame) {
+    private fun updateRpc(game: UncivGame) {
         if(!game.isInitialized) return
         val presence = DiscordRichPresence()
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         presence.details=currentPlayerCiv.nation.getLeaderDisplayName().tr()
         presence.largeImageKey = "logo" // The actual image is uploaded to the discord app / applications webpage
         presence.largeImageText ="Turn".tr()+" " + currentPlayerCiv.gameInfo.turns
-        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence);
+        DiscordRPC.INSTANCE.Discord_UpdatePresence(presence)
     }
 }

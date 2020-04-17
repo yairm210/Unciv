@@ -4,9 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
@@ -15,9 +13,8 @@ import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.*
+import com.unciv.models.AttackableTile
 import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.map.TileGroupMap
@@ -59,6 +56,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         center(worldScreen.stage)
 
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
+
     }
 
     private fun onTileClicked(tileInfo: TileInfo) {
@@ -125,12 +123,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         if(moveHereDto!=null)
             table.add(getMoveHereButton(moveHereDto))
 
-        var unitList = ArrayList<MapUnit>()
+        val unitList = ArrayList<MapUnit>()
         if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
             unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
-        } else if (tileInfo.militaryUnit!=null &&
-                (tileInfo.militaryUnit!!.type.isAircraftCarrierUnit() || tileInfo.militaryUnit!!.type.isMissileCarrierUnit()) &&
-                 tileInfo.militaryUnit!!.civInfo==worldScreen.viewingCiv && tileInfo.airUnits.isNotEmpty()) {
+        } else if (tileInfo.airUnits.isNotEmpty() && tileInfo.airUnits.first().civInfo==worldScreen.viewingCiv) {
             unitList.addAll(tileInfo.getUnits())
         }
 
@@ -253,7 +249,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val isAirUnit = unit.type.isAirUnit()
         val tilesInMoveRange =
                 if (isAirUnit)
-                    unit.getTile().getTilesInDistance(unit.getRange())
+                    unit.getTile().getTilesInDistance(unit.getRange()*2)
                 else
                     unit.movement.getDistanceToTiles().keys.asSequence()
 
@@ -266,16 +262,24 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                         if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
         }
 
-        val unitType = unit.type
-        val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
+        val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
         else {
-            val tiles = BattleHelper().getAttackableEnemies(unit, unit.movement.getDistanceToTiles()).map { it.tileToAttack }
-            tiles.filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+            BattleHelper.getAttackableEnemies(unit, unit.movement.getDistanceToTiles())
+                    .filter { (UncivGame.Current.viewEntireMapForDebug ||
+                            playerViewableTilePositions.contains(it.tileToAttack.position)) }
+                    .distinctBy { it.tileToAttack }
         }
 
         for (attackableTile in attackableTiles) {
-            tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-            tileGroups[attackableTile]!!.showCrosshair()
+
+            tileGroups[attackableTile.tileToAttack]!!.showCircle(colorFromRGB(237, 41, 57))
+
+            tileGroups[attackableTile.tileToAttack]!!.showCrosshair (
+                    // the targets which cannot be attacked without movements shown as orange-ish
+                    if (attackableTile.tileToAttackFrom != unit.currentTile)
+                         colorFromRGB(255, 75, 0)
+                    else Color.RED
+            )
         }
 
         // Fade out less relevant images if a military unit is selected
@@ -293,17 +297,17 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
         if (city.attackedThisTurn) return
 
-        val attackableTiles = UnitAutomation().getBombardTargets(city)
+        val attackableTiles = UnitAutomation.getBombardTargets(city)
                 .filter { (UncivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-            tileGroups[attackableTile]!!.showCrosshair()
+            tileGroups[attackableTile]!!.showCrosshair(Color.RED)
         }
     }
 
 
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {
-        val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
+        val tileGroup = tileGroups.values.firstOrNull { it.tileInfo.position == vector } ?: return
         selectedTile = tileGroup.tileInfo
         if(selectUnit)
             worldScreen.bottomUnitTable.tileSelected(selectedTile!!)

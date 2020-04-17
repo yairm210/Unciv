@@ -1,4 +1,4 @@
-package com.unciv.logic.map
+﻿package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -132,12 +132,28 @@ open class TileInfo {
         return containingCity.civInfo
     }
 
+    fun isFriendlyTerritory(civInfo: CivilizationInfo): Boolean {
+        val tileOwner = getOwner()
+        return when {
+            tileOwner == null -> false
+            tileOwner == civInfo -> true
+            !civInfo.knows(tileOwner) -> false
+            else -> tileOwner.getDiplomacyManager(civInfo).isConsideredFriendlyTerritory()
+        }
+    }
+
     fun getTerrainFeature(): Terrain? =
             if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
+
 
     fun isWorked(): Boolean {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
+    }
+
+    fun isLocked(): Boolean{
+        val city = getCity()
+        return city!=null && city.lockedTiles.contains(position)
     }
 
     fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)
@@ -184,18 +200,23 @@ open class TileInfo {
                 val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]!!
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
-            if(resource.resourceType==ResourceType.Strategic
+            if (resource.resourceType==ResourceType.Strategic
                     && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
-                stats.production+=1
-            if(resource.name=="Oil" && city!=null
-                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
-                stats.gold += 2
-            if(city!=null && isWater){
-                if(city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
-                    stats.production+=1
-                if(city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")){
-                    stats.production+=1
-                    stats.gold+=1
+                stats.production += 1
+            if (city != null) {
+                if (resource.name == "Oil"
+                        && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
+                    stats.gold += 2
+                if ((resource.name == "Marble" || resource.name == "Stone")
+                        && city.containsBuildingUnique("+2 Gold for each source of Marble and Stone"))
+                    stats.gold += 2
+                if (isWater) {
+                    if(city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
+                        stats.production += 1
+                    if(city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")){
+                        stats.production += 1
+                        stats.gold += 1
+                    }
                 }
             }
         }
@@ -228,17 +249,22 @@ open class TileInfo {
                 improvement.clone() // basic improvement
 
         if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
+        if (improvement.name == "Trading post" && city != null
+                && city.civInfo.policies.hasEffect("+1 science from every trading post, +17% science from universities"))
             stats.science += 1f
-        if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Commerce Complete"))
+        if (improvement.name == "Trading post" && city != null
+                && city.civInfo.policies.hasEffect("+1 gold from every trading post, double gold from Great Merchant trade missions"))
             stats.gold += 1f
-        if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
+        if (containsGreatImprovement()
+                && observingCiv.policies.hasEffect("Tile yield from great improvement +100%, golden ages increase by 50%"))
             stats.add(improvement) // again, for the double effect
         if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science += 2
 
         if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
             stats.culture += neighbors.count { it.improvement == "Moai" }
+        if (improvement.uniques.contains("+1 food for each adjacent Mountain"))
+            stats.food += neighbors.count { it.baseTerrain == Constants.mountain }
 
         return stats
     }
@@ -251,12 +277,14 @@ open class TileInfo {
             improvement.name == this.improvement -> false
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
+            "Cannot improve a resource" in improvement.uniques && resource != null -> false
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
             improvement.name == "Remove Road" && this.roadStatus == RoadStatus.Road -> true
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
-            topTerrain.unbuildable && !(topTerrain.name == Constants.forest && improvement.name == "Camp") -> false
+            improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
+            topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
         }
@@ -264,7 +292,9 @@ open class TileInfo {
 
     fun hasImprovementInProgress() = improvementInProgress!=null
 
-    fun isCoastalTile() = neighbors.any { it.baseTerrain==Constants.coast }
+    @delegate:Transient
+    private val _isCoastalTile: Boolean by lazy { neighbors.any { it.baseTerrain==Constants.coast } }
+    fun isCoastalTile() = _isCoastalTile
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean =
             resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
@@ -302,7 +332,7 @@ open class TileInfo {
 
         if (isCityCenter()) {
             val city = getCity()!!
-            var cityString = city.name
+            var cityString = city.name.tr()
             if(isViewableToPlayer) cityString += " ("+city.health+")"
             lineList += cityString
             if(UncivGame.Current.viewEntireMapForDebug || city.civInfo == viewingCiv)
@@ -324,12 +354,21 @@ open class TileInfo {
             milUnitString += " - "+militaryUnit!!.civInfo.civName.tr()
             lineList += milUnitString
         }
-        if(getDefensiveBonus()!=0f){
-            var defencePercentString = (getDefensiveBonus()*100).toInt().toString()+"%"
+        var defenceBonus = getDefensiveBonus()
+        val tileImprovement = getTileImprovement()
+        if (tileImprovement != null) {
+            defenceBonus += when {
+                tileImprovement.hasUnique("Gives a defensive bonus of 50%") -> 0.5f
+                tileImprovement.hasUnique("Gives a defensive bonus of 100%") -> 1.0f
+                else -> 0.0f
+            }
+        }
+        if(defenceBonus != 0.0f){
+            var defencePercentString = (defenceBonus*100).toInt().toString()+"%"
             if(!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
             lineList += "[$defencePercentString] to unit defence".tr()
         }
-        if(getBaseTerrain().impassable) lineList += "Impassible".tr()
+        if(getBaseTerrain().impassable) lineList += Constants.impassable.tr()
 
         return lineList.joinToString("\n")
     }
@@ -353,6 +392,10 @@ open class TileInfo {
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
         improvementInProgress = improvement.name
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
+    }
+    fun stopWorkingOnImprovement() {
+        improvementInProgress = null
+        turnsToImprovement = 0
     }
 
     fun hasEnemySubmarine(viewingCiv:CivilizationInfo): Boolean {

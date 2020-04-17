@@ -66,7 +66,7 @@ open class Stats() {
     }
 
     fun toHashMap(): HashMap<Stat, Float> {
-        return hashMapOf(Stat.Production to production,
+        return linkedMapOf(Stat.Production to production,
                 Stat.Culture to culture,
                 Stat.Gold to gold,
                 Stat.Food to food,

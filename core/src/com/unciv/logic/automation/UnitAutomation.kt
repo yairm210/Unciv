@@ -7,108 +7,99 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitActions
 
-class UnitAutomation {
+object UnitAutomation {
 
-    companion object {
-        const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
-        const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
+    const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
+    const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
-        internal fun tryExplore(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
-            if (tryGoToRuin(unit, unitDistanceToTiles) && unit.currentMovement == 0f) return true
+    internal fun tryExplore(unit: MapUnit): Boolean {
+        if (tryGoToRuin(unit) && unit.currentMovement == 0f) return true
 
-            for (tile in unit.currentTile.getTilesInDistance(10))
-                if (unit.movement.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
-                        && unit.movement.canReach(tile)
-                        && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())) {
-                    unit.movement.headTowards(tile)
-                    return true
-                }
-            return false
-        }
-
-        private fun tryGoToRuin(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
-            if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
-            val tileWithRuin = unitDistanceToTiles.keys
-                    .firstOrNull {
-                        it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it)
-                    }
-            if (tileWithRuin == null)
-                return false
-            unit.movement.moveToTile(tileWithRuin)
-            return true
-        }
-
-        @JvmStatic
-        fun wander(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn) {
-            val reachableTiles = unitDistanceToTiles
-                    .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
-
-            val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value.totalDistance == unit.currentMovement }
-            if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
-            else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
-        }
-
-        internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
-            val upgradesTo = unit.baseUnit().upgradesTo
-            if (upgradesTo == null) return false
-
-            val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units.getValue(upgradesTo)
-            if (!upgradedUnit.isBuildable(unit.civInfo)) return false
-
-            val upgradeAction = UnitActions.getUpgradeAction(unit)
-            if (upgradeAction == null) return false
-
-            upgradeAction.action?.invoke()
-            return true
-        }
+        for (tile in unit.currentTile.getTilesInDistance(10))
+            if (unit.movement.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
+                    && unit.movement.canReach(tile)
+                    && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())) {
+                unit.movement.headTowards(tile)
+                return true
+            }
+        return false
     }
 
-    private val battleHelper = BattleHelper()
+    private fun tryGoToRuin(unit: MapUnit): Boolean {
+        if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val tileWithRuin = unitDistanceToTiles.keys
+                .firstOrNull {
+                    it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it)
+                }
+        if (tileWithRuin == null)
+            return false
+        unit.movement.moveToTile(tileWithRuin)
+        return true
+    }
+
+    @JvmStatic
+    fun wander(unit: MapUnit) {
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val reachableTiles = unitDistanceToTiles
+                .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
+
+        val reachableTilesMaxWalkingDistance = reachableTiles
+                .filter { it.value.totalDistance == unit.currentMovement }
+        if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
+        else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.keys.random())
+    }
+
+    internal fun tryUpgradeUnit(unit: MapUnit): Boolean {
+        val upgradesTo = unit.baseUnit().upgradesTo
+        if (upgradesTo == null) return false
+
+        val upgradedUnit = unit.civInfo.gameInfo.ruleSet.units.getValue(upgradesTo)
+        if (!upgradedUnit.isBuildable(unit.civInfo)) return false
+
+        val upgradeAction = UnitActions.getUpgradeAction(unit)
+        if (upgradeAction == null) return false
+
+        upgradeAction.action?.invoke()
+        return true
+    }
 
     fun automateUnitMoves(unit: MapUnit) {
-        if (unit.civInfo.isBarbarian()) {
+        if (unit.civInfo.isBarbarian())
             throw IllegalStateException("Barbarians is not allowed here.")
-        }
 
-        if (unit.name == Constants.settler) {
-            return SpecificUnitAutomation().automateSettlerActions(unit)
-        }
+        if (unit.name == Constants.settler)
+            return SpecificUnitAutomation.automateSettlerActions(unit)
 
-        if (unit.name == Constants.worker) {
+        if (unit.name == Constants.worker)
             return WorkerAutomation(unit).automateWorkerAction()
-        }
 
-        if (unit.name == "Work Boats") {
-            return SpecificUnitAutomation().automateWorkBoats(unit)
-        }
+        if (unit.name == "Work Boats")
+            return SpecificUnitAutomation.automateWorkBoats(unit)
 
         if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
-            return SpecificUnitAutomation().automateGreatGeneral(unit)
+            return SpecificUnitAutomation.automateGreatGeneral(unit)
 
         if (unit.type == UnitType.Fighter)
-            return SpecificUnitAutomation().automateFighter(unit)
+            return SpecificUnitAutomation.automateFighter(unit)
 
         if (unit.type == UnitType.Bomber)
-            return SpecificUnitAutomation().automateBomber(unit)
+            return SpecificUnitAutomation.automateBomber(unit)
 
         if (unit.type == UnitType.Missile)
-            return SpecificUnitAutomation().automateMissile(unit)
+            return SpecificUnitAutomation.automateMissile(unit)
+
 
         if (unit.name.startsWith("Great")
-            && unit.name in GreatPersonManager().statToGreatPersonMapping.values) { // So "Great War Infantry" isn't caught here
-            return SpecificUnitAutomation().automateGreatPerson(unit)
-        }
+            && unit.name in GreatPersonManager().statToGreatPersonMapping.values)// So "Great War Infantry" isn't caught here
+            return SpecificUnitAutomation.automateGreatPerson(unit)
 
-        var unitDistanceToTiles = unit.movement.getDistanceToTiles()
-
-        if (tryGoToRuin(unit, unitDistanceToTiles)) {
+        if (tryGoToRuin(unit)) {
             if (unit.currentMovement == 0f) return
-            unitDistanceToTiles = unit.movement.getDistanceToTiles()
         }
 
         if (tryUpgradeUnit(unit)) return
@@ -116,22 +107,22 @@ class UnitAutomation {
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
-        if (unit.health < 50 && tryHealUnit(unit, unitDistanceToTiles)) return // do nothing but heal
+        if (unit.health < 50 && tryHealUnit(unit)) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
-        if (battleHelper.tryDisembarkUnitToAttackPosition(unit, unitDistanceToTiles)) return
+        if (BattleHelper.tryDisembarkUnitToAttackPosition(unit)) return
 
         // if there is an attackable unit in the vicinity, attack!
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
         if (tryGarrisoningUnit(unit)) return
 
-        if (unit.health < 80 && tryHealUnit(unit, unitDistanceToTiles)) return
+        if (unit.health < 80 && tryHealUnit(unit)) return
 
         // move towards the closest reasonably attackable enemy unit within 3 turns of movement (and 5 tiles range)
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
-        if (unit.health < 100 && tryHealUnit(unit, unitDistanceToTiles)) return
+        if (unit.health < 100 && tryHealUnit(unit)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
@@ -139,7 +130,7 @@ class UnitAutomation {
         if (tryHeadTowardsEncampment(unit)) return
 
         // else, try to go o unreached tiles
-        if (tryExplore(unit, unitDistanceToTiles)) return
+        if (tryExplore(unit)) return
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
@@ -157,12 +148,13 @@ class UnitAutomation {
         return true
     }
 
-    fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
+    fun tryHealUnit(unit: MapUnit): Boolean {
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
         if (unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val currentUnitTile = unit.getTile()
 
-        if (tryPillageImprovement(unit, unitDistanceToTiles)) return true
+        if (tryPillageImprovement(unit)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
 
@@ -171,7 +163,7 @@ class UnitAutomation {
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
             if (reachableCityTile != null) unit.movement.headTowards(reachableCityTile)
-            else wander(unit, unitDistanceToTiles)
+            else wander(unit)
             return true
         }
 
@@ -188,8 +180,9 @@ class UnitAutomation {
         return true
     }
 
-    fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
+    fun tryPillageImprovement(unit: MapUnit): Boolean {
         if (unit.type.isCivilian()) return false
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
         val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
                 .filter { it.value.totalDistance < unit.currentMovement }.keys
                 .filter { unit.movement.canMoveTo(it) && UnitActions.canPillage(unit, it) }
@@ -205,7 +198,7 @@ class UnitAutomation {
 
     fun getBombardTargets(city: CityInfo): Sequence<TileInfo> =
             city.getCenterTile().getTilesInDistance(city.range)
-                    .filter { battleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
+                    .filter { BattleHelper.containsAttackableEnemy(it, CityCombatant(city)) }
 
     /** Move towards the closest attackable enemy of the [unit].
      *
@@ -217,13 +210,13 @@ class UnitAutomation {
                 unit.getTile().position,
                 unit.getMaxMovement() * CLOSE_ENEMY_TURNS_AWAY_LIMIT
         )
-        var closeEnemies = battleHelper.getAttackableEnemies(
+        var closeEnemies = BattleHelper.getAttackableEnemies(
                 unit,
                 unitDistanceToTiles,
                 tilesToCheck = unit.getTile().getTilesInDistance(CLOSE_ENEMY_TILES_AWAY_LIMIT).toList()
         ).filter {
             // Ignore units that would 1-shot you if you attacked
-            BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+            BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
                 Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
         }
 
@@ -298,7 +291,7 @@ class UnitAutomation {
                     // move into position far away enough that the bombard doesn't hurt
                     if (tileToMoveTo != null)
                         unit.movement.headTowards(tileToMoveTo)
-                } else {
+                } else { // unit range <= 2
                     // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
                     val militaryUnitsAroundEnemyCity =
                             closestReachableEnemyCity.getTilesInDistance(3)
@@ -308,7 +301,7 @@ class UnitAutomation {
                     var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
                     val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)
                     for (militaryUnit in militaryUnitsAroundEnemyCity) {
-                        totalAttackOnCityPerTurn += BattleDamage().calculateDamageToDefender(MapUnitCombatant(militaryUnit), enemyCityCombatant)
+                        totalAttackOnCityPerTurn += BattleDamage.calculateDamageToDefender(MapUnitCombatant(militaryUnit), enemyCityCombatant)
                     }
                     if (totalAttackOnCityPerTurn * 3 > closestReachableEnemyCity.getCity()!!.health) // if we can defeat it in 3 turns with the current units,
                         unit.movement.headTowards(closestReachableEnemyCity) // go for it!
@@ -388,10 +381,10 @@ class UnitAutomation {
     /** This is what a unit with the 'explore' action does.
      It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
-        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        if (tryGoToRuin(unit, unitDistanceToTiles) && unit.currentMovement == 0f) return
-        if (unit.health < 80 && tryHealUnit(unit, unitDistanceToTiles)) return
-        if (tryExplore(unit, unit.movement.getDistanceToTiles())) return
+        if (tryGoToRuin(unit) && unit.currentMovement == 0f) return
+        if (unit.health < 80 && tryHealUnit(unit)) return
+        if (tryExplore(unit)) return
         unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
+        unit.action = null
     }
 }

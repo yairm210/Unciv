@@ -14,7 +14,6 @@ import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.TranslationFileReader
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.*
@@ -25,7 +24,8 @@ import kotlin.concurrent.thread
 class UncivGame(
         val version: String,
         private val crashReportSender: CrashReportSender? = null,
-        val exitEvent: (()->Unit)? = null
+        val exitEvent: (()->Unit)? = null,
+        val cancelDiscordEvent: (()->Unit)? = null
 ) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(version, null)
@@ -48,12 +48,11 @@ class UncivGame(
      */
     val simulateUntilTurnForDebug: Int = 0
 
-    var rewriteTranslationFiles = false
-
     lateinit var worldScreen: WorldScreen
 
     var music: Music? = null
     val musicLocation = "music/thatched-villagers.mp3"
+    private var isSizeRestored = false
     var isInitialized = false
 
 
@@ -63,7 +62,6 @@ class UncivGame(
         Gdx.input.setCatchKey(Input.Keys.BACK, true)
         if (Gdx.app.type != Application.ApplicationType.Desktop) {
             viewEntireMapForDebug = false
-            rewriteTranslationFiles = false
         }
         Current = this
 
@@ -71,23 +69,17 @@ class UncivGame(
         // If this takes too long players, especially with older phones, get ANR problems.
         // Whatever needs graphics needs to be done on the main thread,
         // So it's basically a long set of deferred actions.
-        settings = GameSaver().getGeneralSettings() // needed for the screen
+        settings = GameSaver.getGeneralSettings() // needed for the screen
         screen = LoadingScreen()
 
         Gdx.graphics.isContinuousRendering = settings.continuousRendering
 
         thread(name = "LoadJSON") {
             RulesetCache.loadRulesets()
-
-            if (rewriteTranslationFiles) { // Yes, also when running from the Jar. Sue me.
-                translations.readAllLanguagesTranslation()
-                TranslationFileReader.writeNewTranslationFiles(translations)
-            } else {
-                translations.tryReadTranslationForCurrentLanguage()
-            }
+            translations.tryReadTranslationForCurrentLanguage()
             translations.loadPercentageCompleteOfLanguages()
 
-            if (settings.userId == "") { // assign permanent user id
+            if (settings.userId.isEmpty()) { // assign permanent user id
                 settings.userId = UUID.randomUUID().toString()
                 settings.save()
             }
@@ -103,9 +95,19 @@ class UncivGame(
         crashController = CrashController.Impl(crashReportSender)
     }
 
+    private fun restoreSize() {
+        if (!isSizeRestored && Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
+            isSizeRestored = true
+            Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
+        }
+    }
+
     fun autoLoadGame() {
-        if (!GameSaver().getSave("Autosave").exists())
+        // IMHO better test for fresh installs than Autosave.exists()
+        // e.g. should someone delete the settings file only or kill the language picker screen
+        if (settings.isFreshlyCreated) {
             return setScreen(LanguagePickerScreen())
+        }
         try {
             loadGame("Autosave")
         } catch (ex: Exception) { // silent fail if we can't read the autosave
@@ -134,16 +136,17 @@ class UncivGame(
         this.gameInfo = gameInfo
         ImageGetter.ruleset = gameInfo.ruleSet
         ImageGetter.refreshAtlas()
+        restoreSize()
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }
 
     fun loadGame(gameName: String) {
-        loadGame(GameSaver().loadGameByName(gameName))
+        loadGame(GameSaver.loadGameByName(gameName))
     }
 
     fun startNewGame() {
-        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
+        val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
         loadGame(newGame)
     }
 
@@ -176,8 +179,19 @@ class UncivGame(
     }
 
     override fun dispose() {
-        if (::gameInfo.isInitialized)
-            GameSaver().autoSave(gameInfo)
+        cancelDiscordEvent?.invoke()
+        if (::gameInfo.isInitialized){
+            GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+            settings.save()
+        }
+
+        // Log still running threads (should be only this one and "DestroyJavaVM")
+        val numThreads = Thread.activeCount()
+        val threadList = Array<Thread>(numThreads) { _ -> Thread() }
+        Thread.enumerate(threadList)
+        threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
+            println ("    Thread ${it.name} still running in UncivGame.dispose().")
+        }
     }
 
     companion object {

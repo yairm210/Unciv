@@ -11,9 +11,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 
-class SpecificUnitAutomation {
-
-    private val battleHelper = BattleHelper()
+object SpecificUnitAutomation {
 
     private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean =
             tileInfo.isWater && tileInfo.improvement == null && tileInfo.hasViewableResource(civInfo)
@@ -27,7 +25,7 @@ class SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         when (closestReachableResource) {
-            null -> UnitAutomation.tryExplore(unit, unit.movement.getDistanceToTiles())
+            null -> UnitAutomation.tryExplore(unit)
             else -> {
                 unit.movement.headTowards(closestReachableResource)
 
@@ -61,16 +59,27 @@ class SpecificUnitAutomation {
             return
         }
 
-        //if no unit to follow, take refuge in city.
+        // try to build a citadel
+        if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo))
+            UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
+
+        //if no unit to follow, take refuge in city or build citadel there.
+        val reachableTest : (TileInfo) -> Boolean = {it.civilianUnit == null &&
+                unit.movement.canMoveTo(it)
+                && unit.movement.canReach(it)}
         val cityToGarrison = unit.civInfo.cities.asSequence().map { it.getCenterTile() }
                 .sortedBy { it.aerialDistanceTo(unit.currentTile) }
-                .firstOrNull {
-                    it.civilianUnit == null && unit.movement.canMoveTo(it)
-                            && unit.movement.canReach(it)
-                }
+                .firstOrNull { reachableTest(it) }
 
         if (cityToGarrison != null) {
-            unit.movement.headTowards(cityToGarrison)
+            // try to find a good place for citadel nearby
+            val potentialTilesNearCity = cityToGarrison.getTilesInDistanceRange(3..4)
+            val tileForCitadel = potentialTilesNearCity.firstOrNull { reachableTest(it) &&
+                    WorkerAutomation(unit).evaluateFortPlacement(it, unit.civInfo) }
+            if (tileForCitadel != null)
+                unit.movement.headTowards(tileForCitadel)
+            else
+                unit.movement.headTowards(cityToGarrison)
             return
         }
     }
@@ -133,9 +142,8 @@ class SpecificUnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (bestCityLocation == null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
-            val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-            if (UnitAutomation.tryExplore(unit, unitDistanceToTiles)) return // try to find new areas
-            UnitAutomation.wander(unit, unitDistanceToTiles) // go around aimlessly
+            if (UnitAutomation.tryExplore(unit)) return // try to find new areas
+            UnitAutomation.wander(unit) // go around aimlessly
             return
         }
 
@@ -192,27 +200,16 @@ class SpecificUnitAutomation {
                 .flatMap { it.airUnits.asSequence() }.filter { it.civInfo.isAtWarWith(unit.civInfo) }
 
         if (enemyAirUnitsInRange.any()) return // we need to be on standby in case they attack
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
-        // TODO Implement consideration for landing on aircraft carrier
-
-        val immediatelyReachableCities = tilesInRange
-                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
-
-        for (city in immediatelyReachableCities) {
-            if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
-                unit.movement.moveToTile(city)
-                return
-            }
-        }
+        if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
 
         val citiesByNearbyAirUnits = pathsToCities.keys
                 .groupBy { key ->
-                    key.getTilesInDistance(unit.getRange())
+                    key.getTilesInDistance(unit.getRange()*2)
                             .count {
                                 val firstAirUnit = it.airUnits.firstOrNull()
                                 firstAirUnit != null && firstAirUnit.civInfo.isAtWarWith(unit.civInfo)
@@ -234,22 +231,9 @@ class SpecificUnitAutomation {
     }
 
     fun automateBomber(unit: MapUnit) {
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
-
-        // TODO Implement consideration for landing on aircraft carrier
-
-        val immediatelyReachableCities = tilesInRange
-                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
-
-        for (city in immediatelyReachableCities) {
-            if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
-                unit.movement.moveToTile(city)
-                return
-            }
-        }
+        if (tryRelocateToCitiesWithEnemyNearBy(unit)) return
 
         val pathsToCities = unit.movement.getAerialPathsToCities()
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
@@ -261,7 +245,7 @@ class SpecificUnitAutomation {
                 .filter {
                     it != airUnit.currentTile
                             && it.getTilesInDistance(airUnit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
+                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(airUnit)) }
                 }
         if (citiesThatCanAttackFrom.isEmpty()) return
 
@@ -274,16 +258,16 @@ class SpecificUnitAutomation {
 
     // This really needs to be changed, to have better targetting for missiles
     fun automateMissile(unit: MapUnit) {
-        if (battleHelper.tryAttackNearbyEnemy(unit)) return
+        if (BattleHelper.tryAttackNearbyEnemy(unit)) return
 
-        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange()*2)
 
         val immediatelyReachableCities = tilesInRange
-                .filter { it.isCityCenter() && it.getOwner() == unit.civInfo && unit.movement.canMoveTo(it) }
+                .filter { unit.movement.canMoveTo(it) }
 
         for (city in immediatelyReachableCities) {
             if (city.getTilesInDistance(unit.getRange())
-                            .any { battleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
                 unit.movement.moveToTile(city)
                 return
             }
@@ -293,4 +277,19 @@ class SpecificUnitAutomation {
         if (pathsToCities.isEmpty()) return // can't actually move anywhere else
         tryMoveToCitiesToAerialAttackFrom(pathsToCities, unit)
     }
+
+    private fun tryRelocateToCitiesWithEnemyNearBy(unit: MapUnit): Boolean {
+        val immediatelyReachableCitiesAndCarriers = unit.currentTile
+                .getTilesInDistance(unit.getRange()*2).filter {  unit.movement.canMoveTo(it) }
+
+        for (city in immediatelyReachableCitiesAndCarriers) {
+            if (city.getTilesInDistance(unit.getRange())
+                            .any { BattleHelper.containsAttackableEnemy(it, MapUnitCombatant(unit)) }) {
+                unit.movement.moveToTile(city)
+                return true
+            }
+        }
+        return false
+    }
+
 }

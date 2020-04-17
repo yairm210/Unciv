@@ -74,7 +74,7 @@ class Technology {
         val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
         enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
 
-        if (!UncivGame.Current.settings.nuclearWeaponEnabled)
+        if (civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
             enabledBuildings=enabledBuildings.filterNot { it.name=="Manhattan Project" }
 
         return enabledBuildings
@@ -88,9 +88,8 @@ class Technology {
         val replacedUnits = enabledUnits.mapNotNull { it.replaces }
         enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
 
-        if (!UncivGame.Current.settings.nuclearWeaponEnabled)
-            enabledUnits=enabledUnits.filterNot { it.uniques.contains("Requires Manhattan Project") }
-
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
+            enabledUnits = enabledUnits.filterNot { it.uniques.contains("Requires Manhattan Project") }
 
         return enabledUnits
     }

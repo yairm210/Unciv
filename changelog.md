@@ -1,3 +1,224 @@
+## 3.7.4
+
+By Jack Rainy:
+- Use correct icons for great improvements
+- World view stats clickable
+- Fix crash for tiny cities
+
+By SomeTroglodyte:
+- Fix options disabling next turn
+- Next turn button colors
+- Cultural expansion maximum
+- Icons for stats overview
+
+Cannot accept multiple conflicting offers - #2146
+
+Added city expansion tutorial - #2322
+
+Reveal all civs when won/lost - #2407
+
+Various exploration-related improvements - #2278
+
+Unit placement improvements - #2406
+
+Translation updates
+
+
+## 3.7.3
+
+By Jack Rainy:
+- New Civilization: Denmark
+- Performance improvement
+- Better mod exceptions
+
+By SomeTroglodyte:
+- Civilopedia cleanup
+- Better map saving
+
+Resolved #2285 - workers no longer try to work within range of enemy city
+
+Resolved #2221 - buildings in mods can reference techs in original ruleset
+
+Resolved #2381 - can now remove buildings, units and techs in mods
+
+Free policies with no adoptable policies no longer 'stuck' the game
+
+Translation updates
+
+## 3.7.2
+
+By rh-github-2015:
+- Keyboard support for unit actions!
+- Can cancel improvments!
+- Better tracking of language picking
+- Conditionally pack images
+- Scroll panes autofocus
+- Code optimization
+
+By Jack Rainy:
+- Improved great improvement build rules
+- Fixed Woodsman promotion
+- Civilian units don't wake up from enemies if they're protected
+
+"Natural Wonders" tutorial - by Smashfanful & Jack Rainy
+
+Resources immediately come back after declined trades
+
+Translation updates
+
+## 3.7.1
+
+Hopefully resolved #2361 - should work on 32-bit linux
+
+By Jack Rainy:
+- Better colors for Katmandu and Almaty
+- Autosize of the tech buttons
+- Display the crosshair in alternate color for distant targets
+- Display price for unavailable purchases 
+
+By rh-github-2015:
+- Fortify until healed disabled if no more movement
+- Better thread handling
+
+Resolved #2340 - cannot open multiple 'disband' popups for cash hack
+
+Resolved #2305 - Added city-states and influence tutorial
+
+Translation updates
+
+## 3.7.0
+
+By Jack Rainy:
+- Forts and citadels (with AI)
+- Crash fixed in specific circumstances of Map Editor
+
+"Free policy" freezes fixed
+
+Desktop window size restore - By rh-github-2015
+
+Not being able to read the settings file shouldn't make you crash
+
+Translation updates
+
+## 3.6.15
+
+By Jack Rainy:
+- New wonders: Mausoleum of Halicarnassus, Statue of Zeus
+- UI bugfixes: city info and aircraft
+- Display the hidden units indicators under city buttons
+- Map generation places resources 'under' terrain features
+
+Resolved #2135 - added tutorials for Research Agreements, Combat and Experience
+
+Nuclear weapons setting moved to a per-game parameter
+
+Railroad is now just a black line - much clearer than the old, "nicer" image
+
+Translation updates
+
+## 3.6.14
+
+Harbors immediately connect cities
+
+Revealed resources near cities generate notifications
+
+Cities in unit overview are translated
+
+Resolved #1885 - Both sides of per-turn trades end at the same time, resources offered in trade requests are not considered 
+yours for that turn
+
+Resoved #1869 - added WASD support for map panning
+
+Resolved #1779 - Can lock worked tiles to prevent them from being unassigned
+
+Resources in Civilopedia state consuming units and buildings - #1964
+
+Translation updates
+
+## 3.6.13
+
+By rh-github-2015:
+- New Nation added - Inca!
+- Show improvement bonus for improving tech in Civilopedia
+- Add unit ability 'withdraw before melee' to Caravel and Destroyer
+
+By Jack Rainy:
+- Carrier is ranged
+- Mod's name is translatable
+
+City stats and resources update after creating great improvement
+
+Resolved #2214 - Civilopedia entries are now left-aligned
+
+Fixed very rare crashing bugs
+
+Translation updates
+
+## 3.6.12
+
+City names now translated in overview and tile info
+
+Resolved some ANRs in Multiplayer
+
+Performance improvements in finding cities connected to capital
+
+Mod translation generation - by Jack Rainy
+
+When moving between units to units in cities, tiles they can move to are now shown
+
+Adding mods auto-adds relevant civs - by rh-github-2015
+
+Added progress bars for constructions in city screen
+
+Nicer, more consistent specialist allocation tables
+
+Translation updates
+
+## 3.6.11
+
+By rh-github-2015:
+ - More civilopedia info for nations and improvements - 
+ - Better error handling for Mods
+
+Fixed "other civ doesn't get duration on timed trades" bug
+
+Removed "Declare war" trade option when there's a peace treaty
+
+Resolved #2175 - Can no longer queue multiple perpetual builds
+
+Resolved #2150 - Added resource type to civilopedia description
+
+Resolved #2224 - can no longer enter promotions screen from overview screen if no valid promotions
+
+LOADS of Translation updates
+
+## 3.6.10
+
+By Jack Rainy:
+- Double range of rebase for air units
+- Translation files now take values directly from data files - no more value mismatches!
+
+By rh-github-2015:
+- Clearer free promotions
+- UI cleanup
+
+Unit purchasing limits - by EdinCitaku
+
+Unit Action buttons stick to the left
+
+Translation updates
+
+## 3.6.9
+
+By rh-github-2015:
+- Trade offers better sorting with user choice 
+- Resources always stay up-to-date
+- Promotion and health columns in units overview
+
+Preparation for recognizing ID types - by tobo
+
+Translation updates
+
 ## 3.6.8
 
 Loads of stuff by Jack Rainy!
@@ -8,7 +229,7 @@ Loads of stuff by Jack Rainy!
 - Sort overview resources by name and amount
 - Turn number of trades changes with game speed
 - Filter for the custom maps
-- Ice is impassible for all except submarines
+- Ice is Impassable for all except submarines
 
 Translation updates
 

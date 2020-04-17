@@ -39,6 +39,7 @@
 	// Resource-specific
 	{
 		"name": "Camp",
+		"resourceTerrainAllow": ["Forest"],
 		"turnsToBuild": 7,
 		"techRequired": "Trapping",
 		"improvingTech": "Economics",
@@ -79,7 +80,16 @@
 		"improvingTech": "Compass",
 		"improvingTechStats": {"gold": 1}
 	},
-	
+
+	// Military improvement
+	{
+		name: "Fort",
+		terrainsCanBeBuiltOn: ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
+		turnsToBuild: 6,
+		techRequired: "Engineering",
+		uniques: ["Gives a defensive bonus of 50%"]
+	},
+
 	// Transportation
 	{
 		"name": "Road",
@@ -127,6 +137,9 @@
 		"name": "Remove Railroad",
 		"turnsToBuild": 2
 	},
+	{
+		"name": "Cancel improvement order",
+	},
 	
 	// Great Person improvements
 	{
@@ -151,7 +164,12 @@
 		"improvingTech": "Economics",
 		"improvingTechStats": {"gold": 1}
 	},
-	
+	{
+		name: "Citadel",
+		uniques: ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
+		// TODO (G&K): adds every tile around it to your territory
+	},
+
 	//Civilization unique improvements
 	{
 		"name": "Moai",
@@ -163,19 +181,18 @@
 		"improvingTech": "Flight",
 		"improvingTechStats": {"gold": 1}
 	},
-	/*
 	{
-		"name": "Terrace Farm",
+		"name": "Terrace farm",
 		"uniqueTo": "Inca",
 		"food": 1,
-		"turnsToBuild": 4,
-		"improvingTech": "Construction",
-		"uniques": ["+1 Food for each adjacent Mountain","+1 additional Food  with Fertilizer and no fresh water"],
-		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Tundra"],
+		"turnsToBuild": 7,
+		"uniques": ["+1 food for each adjacent Mountain","Cannot improve a resource"],
+		"techRequired": "Construction",
+		"improvingTech": "Fertilizer",
+		"improvingTechStats": {"food":1},
+		"terrainsCanBeBuiltOn": ["Hill"]
 		//It can be colored in lemon
-		//Cannot improve a resource
 	},
-	*/
 	
 	{ "name": "Ancient ruins" },
 	{ "name": "City ruins" },

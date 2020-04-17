@@ -11,34 +11,31 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.popups
-import com.unciv.ui.utils.setFontSize
+import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
     val ruleset = RulesetCache.getBaseRuleset()
-    var mapName = "My first map"
+    var mapName = ""
 
     var tileMap = TileMap()
     lateinit var mapHolder: EditorMapHolder
 
     val tileEditorOptions = TileEditorOptionsTable(this)
 
-    private val showHideEditorOptionsButton = TextButton(">", skin)
+    private val showHideEditorOptionsButton = ">".toTextButton()
 
 
     constructor(mapNameToLoad: String?): this() {
         var mapToLoad = mapNameToLoad
         if (mapToLoad == null) {
-            val existingSaves = MapSaver().getMaps()
+            val existingSaves = MapSaver.getMaps()
             if(existingSaves.isNotEmpty())
                 mapToLoad = existingSaves.first()
         }
 
         if(mapToLoad != null){
             mapName = mapToLoad
-            tileMap = MapSaver().loadMap(mapName)
+            tileMap = MapSaver.loadMap(mapName)
         }
 
         initialize()
@@ -55,6 +52,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles()
         stage.addActor(mapHolder)
+        stage.scrollFocus = mapHolder
 
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
@@ -75,7 +73,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         stage.addActor(showHideEditorOptionsButton)
 
 
-        val optionsMenuButton = TextButton("Menu".tr(), skin)
+        val optionsMenuButton = "Menu".toTextButton()
         optionsMenuButton.onClick {
             if(popups.any { it is MapEditorMenuPopup })
                 return@onClick // already open

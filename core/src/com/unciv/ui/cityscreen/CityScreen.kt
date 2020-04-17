@@ -1,7 +1,7 @@
 package com.unciv.ui.cityscreen
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -39,7 +39,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     private var cityStatsTable = CityStatsTable(this)
 
     /** Displays tile info, alternate with selectedConstructionTable - sits on BOTTOM RIGHT */
-    private var tileTable = CityScreenTileTable(city)
+    private var tileTable = CityScreenTileTable(this)
 
     /** Displays selected construction info, alternate with tileTable - sits on BOTTOM RIGHT */
     private var selectedConstructionTable = ConstructionInfoTable(this.city)
@@ -97,9 +97,6 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
         updateAnnexAndRazeCityButton()
         updateTileGroups()
-
-        if (city.getCenterTile().getTilesAtDistance(4).any())
-            displayTutorial(Tutorial.CityRange)
     }
 
     private fun updateTileGroups() {
@@ -117,7 +114,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         razeCityButtonHolder.clear()
 
         if(city.isPuppet) {
-            val annexCityButton = TextButton("Annex city".tr(), skin)
+            val annexCityButton = "Annex city".toTextButton()
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
                 city.annexCity()
@@ -125,13 +122,15 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             }
             razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
         } else if(!city.isBeingRazed) {
-            val razeCityButton = TextButton("Raze city".tr(), skin)
+            val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
-            if(!UncivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
+            if(!UncivGame.Current.worldScreen.isPlayersTurn || city.isOriginalCapital)
+                razeCityButton.disable()
+
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
         } else {
-            val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
+            val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
             if(!UncivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
@@ -164,7 +163,8 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
                         game.settings.addCompletedTutorialTask("Reassign worked tiles")
-                    } else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                    } else if (tileInfo.isWorked() && !tileInfo.isLocked())
+                        city.workedTiles.remove(tileInfo.position)
                     city.cityStats.update()
                 }
                 update()

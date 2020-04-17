@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.TileImprovement
@@ -23,9 +24,14 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
         fun accept(improvement: TileImprovement?) {
             if (improvement != null) {
-                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
-                if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
-                onAccept()
+                if (improvement.name == Constants.cancelImprovementOrder ) {
+                    tileInfo.stopWorkingOnImprovement()
+                    // no onAccept() - Worker can stay selected
+                } else {
+                    tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
+                    if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
+                    onAccept()
+                }
                 game.setWorldScreen()
                 dispose()
             }
@@ -50,11 +56,13 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
             group.add(image).size(30f).pad(10f)
 
-            var labelText = improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}"
+            var labelText = improvement.name.tr()
+            val turnsToBuild = improvement.getTurnsToBuild(currentPlayerCiv)
+            if (turnsToBuild > 0) labelText += " - $turnsToBuild {turns}"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name
             if (provideResource) labelText += "\n"+"Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.name!=RoadStatus.Road.name
-                    && improvement.name!=RoadStatus.Railroad.name && !improvement.name.startsWith("Remove"))
+                    && improvement.name!=RoadStatus.Railroad.name && !improvement.name.startsWith("Remove") && improvement.name != Constants.cancelImprovementOrder)
             if (tileInfo.improvement!=null && removeImprovement) labelText += "\n" + "Replaces [${tileInfo.improvement}]".tr()
 
             group.add(labelText.toLabel()).pad(10f)
@@ -124,6 +132,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             regularImprovements.add(pickNow).padLeft(10f)
             regularImprovements.row()
         }
+
         topTable.add(regularImprovements)
     }
 }

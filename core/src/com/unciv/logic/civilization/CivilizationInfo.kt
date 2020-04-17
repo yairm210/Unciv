@@ -1,6 +1,5 @@
 package com.unciv.logic.civilization
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
@@ -57,13 +56,11 @@ class CivilizationInfo {
     var playerType = PlayerType.AI
     /** Used in online multiplayer for human players */ var playerId = ""
     var gold = 0
-    @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
-    @Deprecated("As of 2.11.3") var scienceVictory = ScienceVictoryManager()
     var victoryManager=VictoryManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
@@ -149,7 +146,7 @@ class CivilizationInfo {
     }
 
     fun stats() = CivInfoStats(this)
-    private fun transients() = CivInfoTransientUpdater(this)
+    fun transients() = CivInfoTransientUpdater(this)
 
     fun updateStatsForNextTurn(){
         statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
@@ -169,8 +166,8 @@ class CivilizationInfo {
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
      */
-    fun getCivResourcesByName():HashMap<String,Int>{
-        val hashMap = HashMap<String,Int>()
+    fun getCivResourcesByName():HashMap<String,Int> {
+        val hashMap = HashMap<String,Int>(gameInfo.ruleSet.tileResources.size)
         for(resource in gameInfo.ruleSet.tileResources.keys) hashMap[resource]=0
         for(entry in getCivResources())
             hashMap[entry.resource.name] = entry.amount
@@ -265,8 +262,8 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    /** Returns true if the civ was fully initialized and has no cities or settlers remaining */
-    fun isDefeated()= cities.isEmpty()
+    /** Returns true if the civ was fully initialized and has no cities remaining */
+    fun isDefeated()= cities.isEmpty() // No cities
             && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
             && !isBarbarian() // Barbarians can be never defeated
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
@@ -283,9 +280,9 @@ class CivilizationInfo {
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
         if (otherCiv.civName == civName) return false // never at war with itself
         if (otherCiv.isBarbarian() || isBarbarian()) return true
-        if (!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
-            return false
-        return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
+        val diplomacyManager = diplomacy[otherCiv.civName]
+                ?: return false // not encountered yet
+        return diplomacyManager.diplomaticStatus == DiplomaticStatus.War
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -328,7 +325,7 @@ class CivilizationInfo {
             RankingType.Force -> units.sumBy { it.baseUnit.strength }
             RankingType.Happiness -> getHappiness()
             RankingType.Technologies -> tech.researchedTechnologies.size
-            RankingType.Culture -> policies.numberOfAdoptedPolicies
+            RankingType.Culture -> policies.adoptedPolicies.count { !it.endsWith("Complete") }
         }
     }
 
@@ -341,7 +338,8 @@ class CivilizationInfo {
      *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
      *  */
     fun setNationTransient(){
-        nation = gameInfo.ruleSet.nations[civName]!!
+        nation = gameInfo.ruleSet.nations[civName]
+                ?: throw java.lang.Exception("Nation $civName is not found!")
     }
 
     fun setTransients() {
@@ -349,6 +347,7 @@ class CivilizationInfo {
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
+        policies.setTransients()
 
         if(citiesCreated==0 && cities.any())
             citiesCreated = cities.filter { it.name in nation.cities }.count()
@@ -356,17 +355,12 @@ class CivilizationInfo {
         tech.civInfo = this
         tech.setTransients()
 
-        diplomacy.values.forEach {
-            it.civInfo=this
-            it.updateHasOpenBorders()
+        for (diplomacyManager in diplomacy.values) {
+            diplomacyManager.civInfo=this
+            diplomacyManager.updateHasOpenBorders()
         }
 
         victoryManager.civInfo=this
-
-        // As of 2.11.3 scienceVictory is deprecated
-        if(victoryManager.currentsSpaceshipParts.values.sum() == 0
-                && scienceVictory.currentParts.values.sum()>0)
-            victoryManager.currentsSpaceshipParts = scienceVictory.currentParts
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
@@ -380,8 +374,8 @@ class CivilizationInfo {
         updateDetailedCivResources()
     }
 
-    // implementation in a seperate class, to not clog up CivInfo
-    fun initialSetCitiesConnectedToCapitalTransients() = transients().setCitiesConnectedToCapitalTransients(true)
+    // implementation in a separate class, to not clog up CivInfo
+    fun initialSetCitiesConnectedToCapitalTransients() = transients().updateCitiesConnectedToCapital(true)
     fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
     fun updateViewableTiles() = transients().updateViewableTiles()
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
@@ -398,7 +392,7 @@ class CivilizationInfo {
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        transients().setCitiesConnectedToCapitalTransients()
+        transients().updateCitiesConnectedToCapital()
         for (city in cities) city.startTurn()
 
         for (unit in getCivUnits()) unit.startTurn()
@@ -411,6 +405,7 @@ class CivilizationInfo {
                 offeringCiv.addNotification("Our proposed trade is no longer relevant!", Color.GOLD)
             }
         }
+        updateDetailedCivResources() // If you offered a trade last turn, this turn it will have been accepted/declined
     }
 
     fun endTurn() {
@@ -458,13 +453,13 @@ class CivilizationInfo {
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
-        if(otherCiv==this) return true
-        if(nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles) return true
-        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
-            return false
-        if(isAtWarWith(otherCiv)) return true
-        if(getDiplomacyManager(otherCiv).hasOpenBorders) return true
-        return false
+        if (otherCiv==this) return true
+        if (otherCiv.isBarbarian()) return true
+        if (nation.isBarbarian() && gameInfo.turns >= gameInfo.difficultyObject.turnBarbariansCanEnterPlayerTiles)
+            return true
+        val diplomacyManager = diplomacy[otherCiv.civName]
+                ?: return false // not encountered yet
+        return (diplomacyManager.hasOpenBorders || diplomacyManager.diplomaticStatus == DiplomaticStatus.War)
     }
 
     fun addNotification(text: String, location: Vector2?, color: Color) {
@@ -488,8 +483,8 @@ class CivilizationInfo {
         addNotification("A [$greatPersonName] has been born in [${city.name}]!", city.location, Color.GOLD)
     }
 
-    fun placeUnitNearTile(location: Vector2, unitName: String, removeImprovement: Boolean = false): MapUnit? {
-        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this, removeImprovement = removeImprovement)
+    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
+        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
 
     fun addCity(location: Vector2) {
@@ -535,7 +530,7 @@ class CivilizationInfo {
     }
 
     fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
-        val city = NextTurnAutomation().getClosestCities(this, otherCiv).city1
+        val city = NextTurnAutomation.getClosestCities(this, otherCiv).city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }
                 .toList().random()

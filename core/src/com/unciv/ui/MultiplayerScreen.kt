@@ -1,11 +1,13 @@
 package com.unciv.ui
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.logic.GameSaver
-import com.unciv.logic.GameInfo
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
+import com.unciv.logic.IdChecker
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -94,7 +96,7 @@ class MultiplayerScreen() : PickerScreen() {
         rightSideTable.add(editButton).pad(10f).row()
 
         addGameButton.onClick {
-            addMultiplayerGame(Gdx.app.clipboard.contents)
+            UncivGame.Current.setScreen(AddMultiplayerGameScreen(this))
         }
         rightSideTable.add(addGameButton).pad(10f).padBottom(30f).row()
 
@@ -115,7 +117,7 @@ class MultiplayerScreen() : PickerScreen() {
     fun addMultiplayerGame(gameId: String?, gameName: String = ""){
         try {
             //since the gameId is a String it can contain anything and has to be checked
-            UUID.fromString(gameId!!.trim())
+            UUID.fromString(IdChecker.checkAndReturnGameUuid(gameId!!))
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Invalid game ID!".tr())
@@ -124,12 +126,12 @@ class MultiplayerScreen() : PickerScreen() {
             errorPopup.open()
             return
         }
-        
+
         if (gameIsAlreadySavedAsMultiplayer(gameId)) {
             ResponsePopup("Game is already added".tr(), this)
             return
         }
-        
+
         thread(name="MultiplayerDownload") {
             addGameButton.setText("Working...".tr())
             addGameButton.disable()
@@ -138,9 +140,9 @@ class MultiplayerScreen() : PickerScreen() {
                 // we need to run it in a different thread.
                 val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
                 if (gameName == "")
-                    GameSaver().saveGame(game, game.gameId, true)
+                    GameSaver.saveGame(game, game.gameId, true)
                 else
-                    GameSaver().saveGame(game, gameName, true)
+                    GameSaver.saveGame(game, gameName, true)
 
                 reloadGameListUI()
             } catch (ex: Exception) {
@@ -176,7 +178,7 @@ class MultiplayerScreen() : PickerScreen() {
     //reloads all gameFiles to refresh UI
     fun reloadGameListUI(){
         val leftSubTable = Table()
-        val gameSaver = GameSaver()
+        val gameSaver = GameSaver
         var savedGames : List<String>?
 
         try {
@@ -245,7 +247,7 @@ class MultiplayerScreen() : PickerScreen() {
             for (gameId in multiplayerGameList.keys) {
                 try {
                     val game = OnlineMultiplayer().tryDownloadGame(gameId)
-                    GameSaver().saveGame(game, multiplayerGameList.getValue(gameId), true)
+                    GameSaver.saveGame(game, multiplayerGameList.getValue(gameId), true)
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
@@ -274,7 +276,7 @@ class MultiplayerScreen() : PickerScreen() {
             if (gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
                 return@onClick
             try {
-                GameSaver().saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
+                GameSaver.saveGame(currentlyRunningGame, currentlyRunningGame.gameId, true)
                 reloadGameListUI()
             } catch (ex: Exception) {
                 val errorPopup = Popup(this)
@@ -311,10 +313,10 @@ class MultiplayerScreen() : PickerScreen() {
 //backScreen is used for getting back to the MultiplayerScreen so it doesn't have to be created over and over again
 class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen: MultiplayerScreen): PickerScreen(){
     init {
-        var textField = TextField(gameName, skin)
+        val textField = TextField(gameName, skin)
 
         topTable.add(Label("Rename".tr(), skin)).row()
-        topTable.add(textField).pad(10f).padBottom(30f).width(backScreen.stage.width/2).row()
+        topTable.add(textField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         //TODO Change delete to "give up"
             //->turn a player into an AI so everyone can still play without the user
@@ -325,7 +327,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
             askPopup.addGoodSizedLabel("Are you sure you want to delete this map?".tr()).row()
             askPopup.addButton("Yes"){
                 try {
-                    GameSaver().deleteSave(gameName, true)
+                    GameSaver.deleteSave(gameName, true)
                     UncivGame.Current.setScreen(backScreen)
                     backScreen.reloadGameListUI()
                 }catch (ex: Exception) {
@@ -356,7 +358,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 backScreen.removeFromList(game.gameId)
                 //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
                 backScreen.addMultiplayerGame(game.gameId, textField.text)
-                GameSaver().deleteSave(gameName, true)
+                GameSaver.deleteSave(gameName, true)
                 UncivGame.Current.setScreen(backScreen)
                 backScreen.reloadGameListUI()
             }catch (ex: Exception) {
@@ -366,6 +368,47 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 errorPopup.addCloseButton()
                 errorPopup.open()
             }
+        }
+    }
+}
+
+class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
+    init {
+        val gameNameTextField = TextField("", skin)
+        val gameIDTextField = TextField("", skin)
+        val pasteGameIDButton = TextButton("Paste gameID from clipboard", skin)
+        pasteGameIDButton.onClick {
+            gameIDTextField.text = Gdx.app.clipboard.contents
+        }
+
+        topTable.add(Label("GameID".tr(), skin)).row()
+        val gameIDTable = Table()
+        gameIDTable.add(gameIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
+        gameIDTable.add(pasteGameIDButton)
+        topTable.add(gameIDTable).padBottom(30f).row()
+
+        topTable.add(Label("Game name".tr(), skin)).row()
+        topTable.add(gameNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
+
+        //CloseButton Setup
+        closeButton.setText("Back".tr())
+        closeButton.onClick {
+            UncivGame.Current.setScreen(backScreen)
+        }
+
+        //RightSideButton Setup
+        rightSideButton.setText("Save game".tr())
+        rightSideButton.enable()
+        rightSideButton.onClick {
+            try {
+                UUID.fromString(IdChecker.checkAndReturnGameUuid(gameIDTextField.text))
+            }catch (ex: Exception){
+                ResponsePopup("Invalid game ID!".tr(), this)
+                return@onClick
+            }
+
+            backScreen.addMultiplayerGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
+            UncivGame.Current.setScreen(backScreen)
         }
     }
 }

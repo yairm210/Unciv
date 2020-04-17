@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.PolicyManager
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Building
@@ -49,7 +50,7 @@ class CityStats {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if (civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS) goldFromTradeRoute += 1
-            if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2
+            if (civInfo.policies.hasEffect("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes")) goldFromTradeRoute += 2
             if (civInfo.containsBuildingUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }
@@ -59,11 +60,11 @@ class CityStats {
     private fun getStatsFromProduction(production: Float): Stats {
         val stats = Stats()
 
-        when (cityInfo.cityConstructions.currentConstruction) {
+        when (cityInfo.cityConstructions.currentConstructionFromQueue) {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
-                if (cityInfo.civInfo.policies.isAdopted("Rationalism")) scienceProduced *= 1.33f
+                if (cityInfo.civInfo.policies.hasEffect("Production to science conversion in cities increased by 33%")) scienceProduced *= 1.33f
                 stats.science += scienceProduced
             }
         }
@@ -161,9 +162,9 @@ class CityStats {
 
     fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
-        if (cityInfo.civInfo.policies.isAdopted("Landed Elite") && cityInfo.isCapital())
+        if (cityInfo.civInfo.policies.hasEffect("+10% food growth and +2 food in capital") && cityInfo.isCapital())
             bonus += 0.1f
-        if (cityInfo.civInfo.policies.isAdopted("Tradition Complete"))
+        if (cityInfo.civInfo.policies.hasEffect("+15% growth and +2 food in all cities"))
             bonus += 0.15f
         return bonus
     }
@@ -185,7 +186,7 @@ class CityStats {
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-        if (civInfo.policies.isAdopted("Democracy"))
+        if (civInfo.policies.hasEffect("Specialists produce half normal unhappiness"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
 
         if (cityInfo.isPuppet)
@@ -194,7 +195,7 @@ class CityStats {
             unhappinessFromCitizens *= 2f
         if (civInfo.containsBuildingUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
-        if (civInfo.policies.isAdopted("Meritocracy"))
+        if (civInfo.policies.hasEffect("+1 happiness for every city connected to capital, -5% unhappiness from citizens"))
             unhappinessFromCitizens *= 0.95f
         if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
             unhappinessFromCitizens *= 0.5f //halved for the Indian
@@ -202,13 +203,16 @@ class CityStats {
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
-        if (civInfo.policies.isAdopted("Aristocracy"))
+        if (civInfo.policies.hasEffect("+15% production when constructing wonders, +1 happiness for every 10 citizens in a city"))
             happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
-        if (civInfo.policies.isAdopted("Monarchy") && cityInfo.isCapital())
+        if (civInfo.policies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital")
+                && cityInfo.isCapital())
             happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
-        if (civInfo.policies.isAdopted("Meritocracy") && cityInfo.isConnectedToCapital())
+        if (civInfo.policies.hasEffect("+1 happiness for every city connected to capital, -5% unhappiness from citizens")
+                && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
-        if (civInfo.policies.isAdopted("Military Caste") && cityInfo.getCenterTile().militaryUnit != null)
+        if (civInfo.policies.hasEffect("Each city with a garrison increases happiness by 1 and culture by 2"
+                ) && cityInfo.getCenterTile().militaryUnit != null)
             happinessFromPolicies += 1
 
         newHappinessList["Policies"] = happinessFromPolicies
@@ -254,25 +258,25 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromPolicies(adoptedPolicies: HashSet<String>): Stats {
+    private fun getStatsFromPolicies(adoptedPolicies: PolicyManager): Stats {
         val stats = Stats()
-        if (adoptedPolicies.contains("Tradition") && cityInfo.isCapital())
+        if (adoptedPolicies.hasEffect("+3 culture in capital and increased rate of border expansion") && cityInfo.isCapital())
             stats.culture += 3f
-        if (adoptedPolicies.contains("Landed Elite") && cityInfo.isCapital())
+        if (adoptedPolicies.hasEffect("+10% food growth and +2 food in capital") && cityInfo.isCapital())
             stats.food += 2f
-        if (adoptedPolicies.contains("Tradition Complete"))
+        if (adoptedPolicies.hasEffect("+15% growth and +2 food in all cities"))
             stats.food += 2f
-        if (adoptedPolicies.contains("Monarchy") && cityInfo.isCapital())
+        if (adoptedPolicies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital") && cityInfo.isCapital())
             stats.gold += (cityInfo.population.population / 2).toFloat()
-        if (adoptedPolicies.contains("Liberty"))
+        if (adoptedPolicies.hasEffect("+1 culture in every city"))
             stats.culture += 1f
-        if (adoptedPolicies.contains("Republic"))
+        if (adoptedPolicies.hasEffect("+1 production in every city, +5% production when constructing buildings"))
             stats.production += 1f
-        if (adoptedPolicies.contains("Military Caste") && cityInfo.getCenterTile().militaryUnit != null)
+        if (adoptedPolicies.hasEffect("Each city with a garrison increases happiness by 1 and culture by 2") && cityInfo.getCenterTile().militaryUnit != null)
             stats.culture += 2
-        if (adoptedPolicies.contains("Universal Suffrage"))
+        if (adoptedPolicies.hasEffect("+1 production per 5 population"))
             stats.production += (cityInfo.population.population / 5).toFloat()
-        if (adoptedPolicies.contains("Free Speech"))
+        if (adoptedPolicies.hasEffect("+1 culture for every 2 citizens"))
             stats.culture += (cityInfo.population.population / 2).toFloat()
 
         return stats
@@ -367,7 +371,7 @@ class CityStats {
         newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
-        newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
+        newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
         newBaseStatList["City States"] = getStatsFromCityStates()
 
@@ -472,7 +476,7 @@ class CityStats {
         newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 
 
-        if (cityInfo.cityConstructions.currentConstruction == Constants.settler && totalFood > 0) {
+        if (cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler && totalFood > 0) {
             newFinalStatList["Excess food to production"] =
                     Stats().apply { production=totalFood; food=-totalFood }
         }
@@ -487,7 +491,7 @@ class CityStats {
 
     private fun updateFoodEaten() {
         foodEaten = (cityInfo.population.population * 2).toFloat()
-        if (cityInfo.civInfo.policies.isAdopted("Civil Society"))
+        if (cityInfo.civInfo.policies.hasEffect("Specialists produce half normal unhappiness"))
             foodEaten -= cityInfo.population.getNumberOfSpecialists()
     }
 

@@ -1,9 +1,10 @@
 package com.unciv.ui.trade
 
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
+import com.unciv.UncivGame
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
@@ -13,6 +14,7 @@ import com.unciv.ui.cityscreen.ExpanderTab
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toTextButton
 import kotlin.math.min
 
 class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
@@ -42,8 +44,8 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
         }
 
         for (offerType in values()) {
-            val offersOfType = offersToDisplay.filter { it.type == offerType }.
-                                    sortedBy { it.name }.sortedByDescending { it.amount }
+            val offersOfType = offersToDisplay.filter { it.type == offerType }
+                    .sortedWith(compareBy({if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0},{if (it.type==City) it.getOfferText() else it.name.tr()}))
 
             if (expanderTabs.containsKey(offerType)) {
                 expanderTabs[offerType]!!.innerTable.clear()
@@ -51,7 +53,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
 
             for (offer in offersOfType) {
-                val tradeButton = TextButton(offer.getOfferText(), CameraStageBaseScreen.skin)
+                val tradeButton = offer.getOfferText().toTextButton()
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1

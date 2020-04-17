@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable
@@ -18,8 +19,8 @@ import kotlin.math.roundToInt
  * City constructions manager.
  *
  * @property cityInfo the city it refers to
- * @property currentConstruction the name of the construction is currently worked, default = "Monument"
- * @property currentConstructionIsUserSet a flag indicating if the [currentConstruction] has been set by the user or by the AI
+ * @property currentConstructionFromQueue the name of the construction is currently worked, default = "Monument"
+ * @property currentConstructionIsUserSet a flag indicating if the [currentConstructionFromQueue] has been set by the user or by the AI
  * @property constructionQueue a list of constructions names enqueued
  */
 class CityConstructions {
@@ -28,7 +29,13 @@ class CityConstructions {
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
-    var currentConstruction: String = "Monument"
+    @Deprecated("As of 3.7.5, all constructions are in the queue")
+    var currentConstruction=""
+    var currentConstructionFromQueue: String
+        get() {
+            if(constructionQueue.isEmpty()) return "" else return constructionQueue.first()
+        }
+        set(value) { if(constructionQueue.isEmpty()) constructionQueue.add(value) else constructionQueue[0]=value }
     var currentConstructionIsUserSet = false
     var constructionQueue = mutableListOf<String>()
     val queueMaxSize = 10
@@ -38,7 +45,6 @@ class CityConstructions {
         val toReturn = CityConstructions()
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
-        toReturn.currentConstruction=currentConstruction
         toReturn.currentConstructionIsUserSet=currentConstructionIsUserSet
         toReturn.constructionQueue.addAll(constructionQueue)
         return toReturn
@@ -88,13 +94,13 @@ class CityConstructions {
     }
 
     fun getCityProductionTextForCityButton(): String {
-        val currentConstructionSnapshot = currentConstruction // See below
+        val currentConstructionSnapshot = currentConstructionFromQueue // See below
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot != "") {
-            val construction = SpecialConstruction.specialConstructionsMap[currentConstructionSnapshot]
+            val construction = PerpetualConstruction.perpetualConstructionsMap[currentConstructionSnapshot]
             if (construction == null) {
                 val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
+                result += ("\r\n" + "Cost".tr() + " " + getConstruction(currentConstructionFromQueue).getProductionCost(cityInfo.civInfo).toString()).tr()
                 result += ConstructionInfoTable.turnOrTurns(turnsLeft)
             } else {
                 result += construction.getProductionTooltip(cityInfo)
@@ -106,26 +112,24 @@ class CityConstructions {
     fun getProductionForTileInfo(): String {
         /* this is because there were rare errors tht I assume were caused because
            currentContruction changed on another thread */
-        val currentConstructionSnapshot = currentConstruction
+        val currentConstructionSnapshot = currentConstructionFromQueue
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
-                && !SpecialConstruction.specialConstructionsMap.containsKey(currentConstructionSnapshot)) {
+                && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
             result += ConstructionInfoTable.turnOrTurns(turnsLeft)
         }
         return result
     }
 
-    fun getCurrentConstruction(): IConstruction = getConstruction(currentConstruction)
-    fun getIConstructionQueue(): List<IConstruction> = constructionQueue.map{ getConstruction(it) }
+    fun getCurrentConstruction(): IConstruction = getConstruction(currentConstructionFromQueue)
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
-    fun isBeingConstructed(constructionName: String): Boolean = currentConstruction == constructionName
+    fun isBeingConstructed(constructionName: String): Boolean = currentConstructionFromQueue == constructionName
     fun isEnqueued(constructionName: String): Boolean = constructionQueue.contains(constructionName)
     fun isBeingConstructedOrEnqueued(constructionName: String): Boolean = isBeingConstructed(constructionName) || isEnqueued(constructionName)
 
     fun isQueueFull(): Boolean = constructionQueue.size == queueMaxSize
-    fun isQueueEmpty(): Boolean = constructionQueue.isEmpty()
 
     fun isBuildingWonder(): Boolean {
         val currentConstruction = getCurrentConstruction()
@@ -134,13 +138,8 @@ class CityConstructions {
 
     /** If the city is constructing multiple units of the same type, subsequent units will require the full cost  */
     fun isFirstConstructionOfItsKind(constructionQueueIndex: Int, name: String): Boolean {
-        // idx = 1 is the currentConstruction, so it is the first
-        if (constructionQueueIndex == -1)
-            return true
-
         // if the construction name is the same as the current construction, it isn't the first
-        return !isBeingConstructed(name) &&
-                constructionQueueIndex == constructionQueue.indexOfFirst{it == name}
+        return constructionQueueIndex == constructionQueue.indexOfFirst { it == name }
     }
 
 
@@ -149,10 +148,10 @@ class CityConstructions {
         when {
             gameBasics.buildings.containsKey(constructionName) -> return gameBasics.buildings[constructionName]!!
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
-            constructionName=="" -> return getConstruction("Nothing")
+            constructionName == "" -> return getConstruction("Nothing")
             else -> {
-                val special = SpecialConstruction.specialConstructionsMap[constructionName]
-                if(special!=null) return special
+                val special = PerpetualConstruction.perpetualConstructionsMap[constructionName]
+                if (special != null) return special
             }
         }
 
@@ -173,7 +172,7 @@ class CityConstructions {
     fun getRemainingWork(constructionName: String, useStoredProduction: Boolean = true): Int {
         val constr = getConstruction(constructionName)
         return when {
-            constr is SpecialConstruction -> 0
+            constr is PerpetualConstruction -> 0
             useStoredProduction -> constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
             else -> constr.getProductionCost(cityInfo.civInfo)
         }
@@ -184,19 +183,23 @@ class CityConstructions {
         if(workLeft < 0) // we've done more work than actually necessary - possible if circumstances cause buildings to be cheaper later
             return 1 // we'll finish this next turn
 
-        val currConstruction = currentConstruction
-
         val cityStatsForConstruction: Stats
-        if (currentConstruction == constructionName) cityStatsForConstruction = cityInfo.cityStats.currentCityStats
+        if (currentConstructionFromQueue == constructionName) cityStatsForConstruction = cityInfo.cityStats.currentCityStats
         else {
             // The ol' Switcharoo - what would our stats be if that was our current construction?
             // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
             //   and recalculating the entire city stats
-            currentConstruction = constructionName
+            // We don't want to change our current construction queue - what if we have an empty queue, too many changes to check for -
+            //  So we ust clone it and see what would happen f that was our construction
+            val cityConstructionsClone = clone()
+            cityConstructionsClone.currentConstructionFromQueue = constructionName
+            cityConstructionsClone.cityInfo = cityInfo
+            cityConstructionsClone.setTransients()
+            cityInfo.cityConstructions = cityConstructionsClone
             cityInfo.cityStats.update()
             cityStatsForConstruction = cityInfo.cityStats.currentCityStats
             // revert!
-            currentConstruction = currConstruction
+            cityInfo.cityConstructions = this
             cityInfo.cityStats.update()
         }
 
@@ -209,53 +212,41 @@ class CityConstructions {
 
     //region state changing functions
     fun setTransients(){
-        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]!! })
+        builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]
+                    ?: throw java.lang.Exception("Building $it is not found!")})
     }
 
     fun addProductionPoints(productionToAdd: Int) {
-        if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
-        inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + productionToAdd
+        if (!inProgressConstructions.containsKey(currentConstructionFromQueue))
+            inProgressConstructions[currentConstructionFromQueue] = 0
+        inProgressConstructions[currentConstructionFromQueue] = inProgressConstructions[currentConstructionFromQueue]!! + productionToAdd
     }
 
     fun constructIfEnough(){
-        stopUnbuildableConstruction()
+        validateConstructionQueue()
 
-        val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        val construction = getConstruction(currentConstructionFromQueue)
+        if(construction is PerpetualConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
             val productionCost = construction.getProductionCost(cityInfo.civInfo)
-            if (inProgressConstructions.containsKey(currentConstruction)
-                    && inProgressConstructions[currentConstruction]!! >= productionCost) {
+            if (inProgressConstructions.containsKey(currentConstructionFromQueue)
+                    && inProgressConstructions[currentConstructionFromQueue]!! >= productionCost) {
                 constructionComplete(construction)
-                cancelCurrentConstruction()
             }
         }
     }
 
     fun endTurn(cityStats: Stats) {
-        stopUnbuildableConstruction()
         validateConstructionQueue()
+        validateInProgressConstructions()
 
-        if(getConstruction(currentConstruction) !is SpecialConstruction)
+        if(getConstruction(currentConstructionFromQueue) !is PerpetualConstruction)
             addProductionPoints(cityStats.production.roundToInt())
     }
 
-    private fun stopUnbuildableConstruction() {
-        // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
-        val construction = getConstruction(currentConstruction)
-
-        val saveCurrentConstruction = currentConstruction
-        currentConstruction = ""
-        if (!construction.isBuildable(this)) {
-            // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
-            cancelCurrentConstruction()
-        } else
-            currentConstruction = saveCurrentConstruction
-    }
 
     private fun validateConstructionQueue() {
-        val queueSnapshot = mutableListOf<String>().apply { addAll(constructionQueue) }
+        val queueSnapshot = constructionQueue.toMutableList()
         constructionQueue.clear()
 
         for (construction in queueSnapshot) {
@@ -264,10 +255,35 @@ class CityConstructions {
         }
     }
 
+    private fun validateInProgressConstructions() {
+        // remove obsolete stuff from in progress constructions - happens often and leaves clutter in memory and save files
+        // should have NO visible consequences - any accumulated points that may be reused later should stay (nukes when manhattan project city lost, nat wonder when conquered an empty city...)
+        // Needs only be called once in a while - endTurn is enough
+        val inProgressSnapshot = inProgressConstructions.keys.filter { it != currentConstructionFromQueue }
+        for (constructionName in inProgressSnapshot) {
+            val rejectionReason: String =
+                    when (val construction = getConstruction(constructionName)) {
+                        is Building -> construction.getRejectionReason(this)
+                        is BaseUnit -> construction.getRejectionReason(this)
+                        else -> ""
+                    }
+
+            if (rejectionReason.endsWith("lready built")
+                    || rejectionReason.startsWith("Cannot be built with")
+                    || rejectionReason.startsWith("Don't need to build any more")
+                    || rejectionReason.startsWith("Obsolete")
+            ) inProgressConstructions.remove(constructionName)
+        }
+    }
+
     private fun constructionComplete(construction: IConstruction) {
         construction.postBuildEvent(this)
         if (construction.name in inProgressConstructions)
             inProgressConstructions.remove(construction.name)
+        if(construction.name == currentConstructionFromQueue)
+            removeCurrentConstruction()
+
+        validateConstructionQueue() // if we've build e.g. the Great Lighthouse, then Lighthouse is no longer relevant in the queue
 
         if (construction is Building && construction.isWonder) {
             cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
@@ -294,15 +310,14 @@ class CityConstructions {
     }
 
     fun purchaseConstruction(constructionName: String): Boolean {
-        if (!getConstruction(constructionName).postBuildEvent(this))
+        if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
-        if (currentConstruction == constructionName)
-            cancelCurrentConstruction()
+        if (currentConstructionFromQueue == constructionName)
+            removeCurrentConstruction()
+        validateConstructionQueue()
 
-        cityInfo.cityStats.update()
-        cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
         return true
     }
 
@@ -324,69 +339,45 @@ class CityConstructions {
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
         constructionComplete(getConstruction(cultureBuildingToBuild))
 
-        if (isBeingConstructed(cultureBuildingToBuild))
-            cancelCurrentConstruction()
-        else if (isEnqueued(cultureBuildingToBuild))
-            removeFromQueue(cultureBuildingToBuild)
-
         return cultureBuildingToBuild
     }
 
-    private fun cancelCurrentConstruction() {
-        currentConstructionIsUserSet = false
-        currentConstruction = ""
-        chooseNextConstruction()
-    }
+    private fun removeCurrentConstruction() = removeFromQueue(0,true)
 
     fun chooseNextConstruction() {
         if(currentConstructionIsUserSet) return
 
+        validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
-
             currentConstructionIsUserSet = true
-            currentConstruction = constructionQueue.removeAt(0)
-            stopUnbuildableConstruction()
-
-            if (currentConstruction != "") return
+            if (currentConstructionFromQueue != "") return
         }
 
         ConstructionAutomation(this).chooseNextConstruction()
     }
 
     fun addToQueue(constructionName: String) {
-        if (!isQueueFull()) {
-            if (isQueueEmpty() && currentConstruction == "" || currentConstruction == "Nothing") {
-                currentConstruction = constructionName
-                currentConstructionIsUserSet = true
-            } else
-                constructionQueue.add(constructionName)
-        }
-    }
-
-    fun removeFromQueue(constructionName: String) {
-        if (constructionName in constructionQueue)
-            constructionQueue.remove(constructionName)
-    }
-
-    fun removeFromQueue(constructionQueueIndex: Int) {
-        // constructionQueueIndex -1 is the current construction
-        if (constructionQueueIndex < 0) {
-            // To prevent Construction Automation
-            if (constructionQueue.isEmpty()) constructionQueue.add("Nothing")
-            cancelCurrentConstruction()
+        if (isQueueFull()) return
+        if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
+            currentConstructionFromQueue = constructionName
+            currentConstructionIsUserSet = true
         } else
-            constructionQueue.removeAt(constructionQueueIndex)
+            constructionQueue.add(constructionName)
+    }
+
+    /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
+    fun removeFromQueue(constructionQueueIndex: Int, automatic:Boolean) {
+        constructionQueue.removeAt(constructionQueueIndex)
+        if (constructionQueue.isEmpty()){
+            if(automatic) chooseNextConstruction()
+            else constructionQueue.add("Nothing") // To prevent Construction Automation
+            currentConstructionIsUserSet = false
+        }
+        else currentConstructionIsUserSet = true // we're just continuing the regular queue
     }
 
     fun raisePriority(constructionQueueIndex: Int) {
-        // change current construction
-        if(constructionQueueIndex == 0) {
-            // Add current construction to queue after the first element
-            constructionQueue.add(1, currentConstruction)
-            cancelCurrentConstruction()
-        }
-        else
-            constructionQueue.swap(constructionQueueIndex-1, constructionQueueIndex)
+        constructionQueue.swap(constructionQueueIndex - 1, constructionQueueIndex)
     }
 
     // Lowering == Highering next element in queue

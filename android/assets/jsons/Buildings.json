@@ -144,12 +144,11 @@
 		"uniques": ["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
 		"requiredTech": "Bronze Working"
 	},
-	/*
 	{
 		"name": "Statue of Zeus",
 		"culture": 1,
 		"isWonder": true,
-		"uniques": ["+15% Combat Strenght when attacking Cities."],
+		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
 		"requiredTech": "Bronze Working"
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
 	},
@@ -158,11 +157,10 @@
 		"culture": 1,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Gain 100 Gold when you use a Great Person.","+2 Gold from every source of Marble and Stone"],
+		"uniques": ["Provides a sum of gold each time you spend a Great Person", "+2 Gold for each source of Marble and Stone"],
 		"requiredTech": "Masonry"
 		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
 	},
-	*/
 	
 	// Classical Era
 	
@@ -229,6 +227,7 @@
 		"name": "Terracotta Army",
 		"culture": 6,
 		"isWonder": true,
+		"greatPersonPoints": {"culture": 1},
 		"requiredTech": "Construction",
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 	},
@@ -321,7 +320,7 @@
 	},
 	{
 		"name": "Great Wall",
-		"culture": 1,
+		"culture": 3,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
 		"providesFreeBuilding":  "Walls",
@@ -367,6 +366,7 @@
 	{
 		"name": "Chichen Itza",
 		"culture": 1,
+		"happiness": 4,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
 		"uniques": ["Golden Age length increases +50%"],
@@ -503,7 +503,7 @@
 	},
 	{
 		"name": "Notre Dame",
-		"culture": 1,
+		"culture": 3,
 		"happiness": 10,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
@@ -543,6 +543,7 @@
 		"name": "Sistine Chapel",
 		"culture": 1,
 		"isWonder": true,
+		"greatPersonPoints": {"culture": 2},
 		"uniques": ["Culture in all cities increased by 25%"],
 		"requiredTech": "Acoustics",
 		"quote": "'I live and love in God's peculiar light.' - Michelangelo Buonarroti"
@@ -584,6 +585,7 @@
 		"name": "Forbidden Palace",
 		"culture": 1,
 		"isWonder": true,
+		"greatPersonPoints": {"culture": 1},
 		"uniques": ["Unhappiness from population decreased by 10%"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
@@ -600,13 +602,14 @@
 		"name": "Leaning Tower of Pisa",
 		"culture": 1,
 		"isWonder": true,
+		"greatPersonPoints": {"culture": 1},		
 		"uniques": ["Free Great Person"],
 		"requiredTech": "Printing Press",
 		"quote": "'Don't clap too hard - it's a very old building.' - John Osbourne"
 	},
 	{
 		"name": "Himeji Castle",
-		"culture": 1,
+		"culture": 3,
 		"isWonder": true,
 		"greatPersonPoints": {"production": 2},
 		"providesFreeBuilding": "Castle",
@@ -636,7 +639,7 @@
 		"culture": 1,
 		"happiness": 4,
 		"isWonder": true,
-		"uniques": ["Free Great Artist Appears"],
+		"uniques": ["2 free Great Artists appear"],
 		"requiredTech": "Archaeology",
 		"quote": "'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson"
 	},
@@ -653,6 +656,7 @@
 		"name": "Taj Mahal",
 		"culture": 1,
 		"happiness": 4,
+		"greatPersonPoints": {"culture": 2},
 		"isWonder": true,
 		"uniques": ["Empire enters golden age"],
 		"requiredTech": "Architecture",
@@ -711,8 +715,9 @@
 	},
 	{
 		"name": "Brandenburg Gate",
-		"culture": 1,
+		"culture": 3,
 		"xpForNewUnits": 15,
+		"greatPersonPoints": {"science": 2},
 		"isWonder": true,
 		"uniques": ["Free Great General appears near the Capital"],
 		"requiredTech": "Military Science",
@@ -739,6 +744,7 @@
 		"name": "Big Ben",
 		"culture": 1,
 		"gold": 4,
+		"greatPersonPoints": {"gold": 2},
 		"isWonder": true,
 		"uniques": ["-15% to purchasing items in cities"],
 		"requiredTech": "Industrialization",
@@ -759,6 +765,7 @@
 		"name": "Eiffel Tower",
 		"culture": 1,
 		"happiness": 5,
+		"greatPersonPoints": {"gold": 2},
 		"isWonder": true,
 		"uniques": ["Provides 1 happiness per 2 additional social policies adopted"],
 		"requiredTech": "Radio",
@@ -768,6 +775,7 @@
 		"name": "Statue of Liberty",
 		"culture": 1,
 		"isWonder": true,
+		"greatPersonPoints": {"production": 2},
 		"uniques": ["+1 Production from specialists"],
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
@@ -792,6 +800,7 @@
 		"name": "Cristo Redentor",
 		"culture": 5,
 		"isWonder": true,
+		"greatPersonPoints": {"culture": 2},		
 		"uniques": ["Culture cost of adopting new Policies reduced by 10%"],
 		"requiredTech": "Flight",
 		"quote": "'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28"
@@ -799,6 +808,7 @@
 	{
 		"name": "Kremlin",
 		"culture": 3,
+		"cityHealth": 12,
 		"isWonder": true,
 		"uniques": ["Defensive buildings in all cities are 25% more effective"],
 		"requiredTech": "Railroad",
@@ -809,6 +819,7 @@
 		"happiness": 2,
 		"culture": 4,
 		"gold": 6,
+		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"uniques": ["+1 happiness, +2 culture and +3 gold from every Castle",
 			"Must have an owned mountain within 2 tiles"],
@@ -849,6 +860,7 @@
 	{
 		"name": "Sydney Opera House",
 		"isWonder": true,
+		"greatPersonPoints": {"culture": 2},
 		"percentStatBonus": {"culture": 50},
 		"uniques": ["Free Social Policy","Can only be built in coastal cities"],
 		"requiredTech": "Ecology",
@@ -867,7 +879,7 @@
 	{
 		"name": "Pentagon",
 		"isWonder": true,
-		"culture": 1,
+		"culture": 3,
 		"greatPersonPoints": {"production": 2},
 		"uniques": ["Gold cost of upgrading military units reduced by 33%"],
 		"requiredTech": "Combined Arms",
@@ -902,6 +914,7 @@
 		"name": "Hubble Space Telescope",
 		"cost": 1250,
 		"isWonder": true,
+		"greatPersonPoints": {"science": 1},		
 		"providesFreeBuilding":  "Spaceship Factory",
 		"uniques": ["2 free great scientists appear",
 			"Increases production of spaceship parts by 25%"],

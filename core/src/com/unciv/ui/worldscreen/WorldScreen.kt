@@ -1,11 +1,14 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -53,12 +56,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
+    private var nextTurnAction:()->Unit= {}
     private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
     private var backButtonListener : InputListener
+
+    // An initialized val always turned out to illegally be null...
+    lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
 
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
@@ -87,6 +94,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 
         stage.addActor(mapHolder)
+        stage.scrollFocus = mapHolder
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
@@ -105,7 +113,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         stage.addActor(unitActionsTable)
 
-        createNextTurnButton() // needs civ table to be positioned
+        // still a zombie: createNextTurnButton() // needs civ table to be positioned
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -128,11 +136,78 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             shouldUpdate = true
         }
 
-        backButtonListener = onBackButtonClicked { exitGamePrompt() }
+        backButtonListener = onBackButtonClicked { backButtonAndESCHandler() }
+
+        addKeyboardListener() // for map panning by W,S,A,D
 
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
+    }
+
+    private fun cleanupKeyDispatcher() {
+        val delKeys = keyPressDispatcher.keys.filter { it!=' ' && it!='n' }
+        delKeys.forEach { keyPressDispatcher.remove(it) }
+    }
+
+    private fun addKeyboardListener() {
+        stage.addListener(
+            object : InputListener() {
+                private val pressedKeys = mutableSetOf<Int>()
+                private var infiniteAction : RepeatAction? = null
+                private val amountToMove = 30 / mapHolder.scaleX
+                private val ALLOWED_KEYS = setOf(Input.Keys.W,Input.Keys.S,Input.Keys.A,Input.Keys.D)
+
+                override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
+                    if (keycode !in ALLOWED_KEYS) return false
+
+                    pressedKeys.add(keycode)
+                    if (infiniteAction == null) {
+                        // create a copy of the action, because removeAction() will destroy this instance
+                        infiniteAction = Actions.forever(Actions.delay(0.05f, Actions.run { whileKeyPressedLoop() }))
+                        mapHolder.addAction(infiniteAction)
+                    }
+                    return true
+                }
+
+                fun whileKeyPressedLoop() {
+                    for (keycode in pressedKeys) {
+                        when (keycode) {
+                            Input.Keys.W -> mapHolder.scrollY -= amountToMove
+                            Input.Keys.S -> mapHolder.scrollY += amountToMove
+                            Input.Keys.A -> mapHolder.scrollX -= amountToMove
+                            Input.Keys.D -> mapHolder.scrollX += amountToMove
+                        }
+                    }
+                    mapHolder.updateVisualScroll()
+                }
+
+                override fun keyUp(event: InputEvent?, keycode: Int): Boolean {
+                    if (keycode !in ALLOWED_KEYS) return false
+
+                    pressedKeys.remove(keycode)
+                    if (infiniteAction != null && pressedKeys.isEmpty()) {
+                        // stop the loop otherwise it keeps going even after removal
+                        infiniteAction?.finish()
+                        // remove and nil the action
+                        mapHolder.removeAction(infiniteAction)
+                        infiniteAction = null
+                    }
+                    return true
+                }
+
+                override fun keyTyped(event: InputEvent?, character: Char): Boolean {
+                    if (character.toLowerCase() in keyPressDispatcher && !hasOpenPopups()) {
+                        //try-catch mainly for debugging. Breakpoints in the vicinity can make the event fire twice in rapid succession, second time the context can be invalid
+                        try {
+                            keyPressDispatcher[character.toLowerCase()]?.invoke()
+                        } catch (ex: Exception) {}
+                        return true
+                    }
+                    return super.keyTyped(event, character)
+                }
+            }
+        )
     }
 
     private fun loadLatestMultiplayerState(){
@@ -169,7 +244,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorialsOnUpdate()
 
         bottomUnitTable.update()
-        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile!!)
+        bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
         bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
         bottomTileInfoTable.y = if (UncivGame.Current.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
@@ -188,6 +263,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 
         minimapWrapper.update(viewingCiv)
+        cleanupKeyDispatcher()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
 
@@ -207,7 +283,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             when {
                 !gameInfo.oneMoreTurnMode && viewingCiv.isDefeated() -> game.setScreen(VictoryScreen())
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.setScreen(VictoryScreen())
-                viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy() -> game.setScreen(PolicyPickerScreen(this))
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.setScreen(GreatPersonPickerScreen(viewingCiv))
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first()).open()
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this).open()
@@ -269,22 +344,29 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         UncivGame.Current.crashController.showDialogIfNeeded()
 
         displayTutorial(Tutorial.Introduction)
-        if (!UncivGame.Current.settings.tutorialsShown.contains("_EnemyCityNeedsConqueringWithMeleeUnit")) {
-            for (enemyCity in viewingCiv.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() }.flatMap { it.cities }) {
-                if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
-                                .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv} })
-                    displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit)
-            }
+
+        displayTutorial(Tutorial.EnemyCityNeedsConqueringWithMeleeUnit) {
+            // diplomacy is a HashMap, cities a List - so sequences should help
+            // .flatMap { it.getUnits().asSequence() }  is not a good idea because getUnits constructs an ArrayList dynamically
+            viewingCiv.diplomacy.values.asSequence()
+                    .filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .map { it.otherCiv() }
+                    // we're now lazily enumerating over CivilizationInfo's we're at war with
+                    .flatMap { it.cities.asSequence() }
+                    // ... all *their* cities
+                    .filter { it.health == 1 }
+                    // ... those ripe for conquering
+                    .flatMap { it.getCenterTile().getTilesInDistance(2).asSequence() }
+                    // ... all tiles around those in range of an average melee unit
+                    // -> and now we look for a unit that could do the conquering because it's ours
+                    //    no matter whether civilian, air or ranged, tell user he needs melee
+                    .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv} }
         }
-        if(viewingCiv.cities.any { it.hasJustBeenConquered })
-            displayTutorial(Tutorial.AfterConquering)
+        displayTutorial(Tutorial.AfterConquering) { viewingCiv.cities.any{it.hasJustBeenConquered} }
 
-        if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 })
-            displayTutorial(Tutorial.InjuredUnits)
+        displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker })
-            displayTutorial(Tutorial.Workers)
+        displayTutorial(Tutorial.Workers) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker } }
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -336,39 +418,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val nextTurnButton = TextButton("", skin) // text is set in update()
         nextTurnButton.label.setFontSize(30)
         nextTurnButton.labelCell.pad(10f)
-
-        nextTurnButton.onClick {
-            // cycle through units not yet done
-            if (viewingCiv.shouldGoToDueUnit()) {
-                val nextDueUnit = viewingCiv.getNextDueUnit()
-                if(nextDueUnit!=null) {
-                    mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                    bottomUnitTable.selectedCity = null
-                    bottomUnitTable.selectedUnit = nextDueUnit
-                    shouldUpdate=true
-                }
-                return@onClick
-            }
-
-            val cityWithNoProductionSet = viewingCiv.cities
-                    .firstOrNull{it.cityConstructions.currentConstruction==""}
-            if(cityWithNoProductionSet!=null){
-                game.setScreen(CityScreen(cityWithNoProductionSet))
-                return@onClick
-            }
-
-            if (viewingCiv.shouldOpenTechPicker()) {
-                game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
-                return@onClick
-            } else if (viewingCiv.policies.shouldOpenPolicyPicker) {
-                game.setScreen(PolicyPickerScreen(this))
-                viewingCiv.policies.shouldOpenPolicyPicker = false
-                return@onClick
-            }
-
-            game.settings.addCompletedTutorialTask("Pass a turn")
-            nextTurn() // If none of the above
-        }
+        val nextTurnActionWrapped = { nextTurnAction() }
+        nextTurnButton.onClick (nextTurnActionWrapped)
+        if (!::keyPressDispatcher.isInitialized) keyPressDispatcher = hashMapOf()
+        keyPressDispatcher[' '] = nextTurnActionWrapped
+        keyPressDispatcher['n'] = nextTurnActionWrapped
 
         return nextTurnButton
     }
@@ -432,7 +486,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     val newWorldScreen = game.worldScreen
                     newWorldScreen.waitingForAutosave = true
                     newWorldScreen.shouldUpdate = true
-                    GameSaver().autoSave(gameInfoClone) {
+                    GameSaver.autoSave(gameInfoClone) {
                         // only enable the user to next turn once we've saved the current one
                         newWorldScreen.waitingForAutosave = false
                         newWorldScreen.shouldUpdate = true
@@ -442,21 +496,61 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
+    private class NextTurnAction(val text:String, val color:Color, val action:()->Unit)
+
     private fun updateNextTurnButton(isSomethingOpen: Boolean) {
-        val text = when {
-            !isPlayersTurn -> "Waiting for other players..."
-            viewingCiv.shouldGoToDueUnit() -> "Next unit"
-            viewingCiv.cities.any { it.cityConstructions.currentConstruction == "" } -> "Pick construction"
-            viewingCiv.shouldOpenTechPicker() -> "Pick a tech"
-            viewingCiv.policies.shouldOpenPolicyPicker -> "Pick a policy"
-            else -> "Next turn"
-        }
-        nextTurnButton.setText(text.tr())
-        nextTurnButton.color = if (text == "Next turn") Color.WHITE else Color.GRAY
+        val action:NextTurnAction = getNextTurnAction()
+        nextTurnAction = action.action
+
+        nextTurnButton.setText(action.text.tr())
+        nextTurnButton.label.color = action.color
         nextTurnButton.pack()
-        if (isSomethingOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
-        else nextTurnButton.enable()
+        nextTurnButton.isEnabled = !isSomethingOpen && isPlayersTurn && !waitingForAutosave
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
+    }
+    fun enableNextTurnButtonAfterOptions() {
+        nextTurnButton.isEnabled = isPlayersTurn && !waitingForAutosave
+    }
+
+    private fun getNextTurnAction(): NextTurnAction {
+        return when {
+            !isPlayersTurn -> NextTurnAction("Waiting for other players...", Color.GRAY) {}
+
+            viewingCiv.shouldGoToDueUnit() ->
+                NextTurnAction("Next unit", Color.LIGHT_GRAY) {
+                    val nextDueUnit = viewingCiv.getNextDueUnit()
+                    if (nextDueUnit != null) {
+                        mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                        bottomUnitTable.selectedCity = null
+                        bottomUnitTable.selectedUnit = nextDueUnit
+                        shouldUpdate = true
+                    }
+                }
+
+            viewingCiv.cities.any { it.cityConstructions.currentConstructionFromQueue == "" } ->
+                NextTurnAction("Pick construction", Color.CORAL) {
+                    val cityWithNoProductionSet = viewingCiv.cities
+                            .firstOrNull { it.cityConstructions.currentConstructionFromQueue == "" }
+                    if (cityWithNoProductionSet != null) game.setScreen(CityScreen(cityWithNoProductionSet))
+                }
+
+            viewingCiv.shouldOpenTechPicker() ->
+                NextTurnAction("Pick a tech", Color.SKY) {
+                    game.setScreen(TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv))
+                }
+
+            viewingCiv.policies.shouldOpenPolicyPicker || (viewingCiv.policies.freePolicies > 0 && viewingCiv.policies.canAdoptPolicy())  ->
+                NextTurnAction("Pick a policy", Color.VIOLET) {
+                    game.setScreen(PolicyPickerScreen(this))
+                    viewingCiv.policies.shouldOpenPolicyPicker = false
+                }
+
+            else ->
+                NextTurnAction("Next turn", Color.WHITE) {
+                    game.settings.addCompletedTutorialTask("Pass a turn")
+                    nextTurn()
+                }
+        }
     }
 
     override fun resize(width: Int, height: Int) {
@@ -482,52 +576,58 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
-        val shownTutorials = UncivGame.Current.settings.tutorialsShown
+        if (!UncivGame.Current.settings.showTutorials) return
         displayTutorial(Tutorial.SlowStart)
-        if("_BarbarianEncountered" !in shownTutorials
-                && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } })
-            displayTutorial(Tutorial.BarbarianEncountered)
-        if(viewingCiv.cities.size > 2) displayTutorial(Tutorial.RoadsAndRailroads)
-        if(viewingCiv.getHappiness() < 5) displayTutorial(Tutorial.Happiness)
-        if(viewingCiv.getHappiness() < 0) displayTutorial(Tutorial.Unhappiness)
-        if(viewingCiv.goldenAges.isGoldenAge()) displayTutorial(Tutorial.GoldenAge)
-        if(gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits) displayTutorial(Tutorial.IdleUnits)
-        if(gameInfo.turns >= 100) displayTutorial(Tutorial.ContactMe)
-        val resources = viewingCiv.getCivResources()
-        if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorial(Tutorial.LuxuryResource)
-        if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorial(Tutorial.StrategicResource)
-        if("Enemy_City" !in shownTutorials
-                && viewingCiv.getKnownCivs().filter { viewingCiv.isAtWarWith(it) }
-                        .flatMap { it.cities }.any { viewingCiv.exploredTiles.contains(it.location) })
-            displayTutorial(Tutorial.EnemyCity)
-        if(viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts"))
-            displayTutorial(Tutorial.ApolloProgram)
-        if(viewingCiv.getCivUnits().any { it.type == UnitType.Siege })
-            displayTutorial(Tutorial.SiegeUnits)
-        if(viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units"))
-            displayTutorial(Tutorial.Embarking)
+        displayTutorial(Tutorial.CityExpansion){ viewingCiv.cities.any { it.expansion.tilesClaimed()>0 } }
+        displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
+        displayTutorial(Tutorial.RoadsAndRailroads) { viewingCiv.cities.size > 2 }
+        displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }
+        displayTutorial(Tutorial.Unhappiness) { viewingCiv.getHappiness() < 0 }
+        displayTutorial(Tutorial.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
+        displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits }
+        displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
+        val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
+        displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType==ResourceType.Luxury } }
+        displayTutorial(Tutorial.StrategicResource) { resources.any { it.resource.resourceType==ResourceType.Strategic} }
+        displayTutorial(Tutorial.EnemyCity) {
+            viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
+                .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
+        }
+        displayTutorial(Tutorial.ApolloProgram) { viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts") }
+        displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
+        displayTutorial(Tutorial.Embarking) { viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units") }
+        displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }
     }
 
-    private fun exitGamePrompt() {
+    private fun backButtonAndESCHandler() {
+
+        // Since Popups including the Main Menu and the Options screen have no own back button
+        // listener and no trivial way to set one, back/esc with one of them open ends up here.
+        // Also, the reaction of other popups like 'disband this unit' to back/esc feels nicer this way.
+        // After removeListener just in case this is slow (enumerating all stage actors)
+        if (hasOpenPopups()) {
+            val closedName = closeOneVisiblePopup() ?: return
+            if (closedName.startsWith(Constants.tutorialPopupNamePrefix)) {
+                closedName.removePrefix(Constants.tutorialPopupNamePrefix)
+                tutorialController.removeTutorial(closedName)
+            }
+            return
+        }
 
         // don't show a dialog, if it can't exit the game
-        if (game.exitEvent == null)
+        if (game.exitEvent == null) {
             return
-
-        // remove current listener for the "BACK" button to avoid showing the dialog twice
-        stage.removeListener( backButtonListener )
+        }
 
         val promptWindow = Popup(this)
         promptWindow.addGoodSizedLabel("Do you want to exit the game?".tr())
         promptWindow.row()
-        promptWindow.addButton("Yes"){game.exitEvent?.invoke()}
+        promptWindow.addButton("Yes") { game.exitEvent?.invoke() }
         promptWindow.addButton("No") {
-            // restore the listener back
-            stage.addListener(backButtonListener)
             promptWindow.close()
         }
         // show the dialog
-        promptWindow.open()
+        promptWindow.open (true)     // true = always on top
     }
 }
 

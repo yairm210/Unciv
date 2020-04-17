@@ -1,5 +1,6 @@
 package com.unciv.ui.saves
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -10,6 +11,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import kotlin.concurrent.thread
@@ -44,11 +46,9 @@ class SaveGameScreen : PickerScreen() {
 
         val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
         showAutosavesCheckbox.isChecked = false
-        showAutosavesCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
+        showAutosavesCheckbox.onChange {
                 updateShownSaves(showAutosavesCheckbox.isChecked)
             }
-        })
         newSave.add(showAutosavesCheckbox).row()
 
         topTable.add(newSave)
@@ -58,7 +58,7 @@ class SaveGameScreen : PickerScreen() {
         rightSideButton.onClick {
             rightSideButton.setText("Saving...".tr())
             thread(name="SaveGame"){
-                GameSaver().saveGame(UncivGame.Current.gameInfo, textField.text)
+                GameSaver.saveGame(UncivGame.Current.gameInfo, textField.text)
                 UncivGame.Current.setWorldScreen()
             }
         }
@@ -67,8 +67,8 @@ class SaveGameScreen : PickerScreen() {
 
     fun updateShownSaves(showAutosaves:Boolean){
         currentSaves.clear()
-        val saves = GameSaver().getSaves()
-                .sortedByDescending { GameSaver().getSave(it).lastModified() }
+        val saves = GameSaver.getSaves()
+                .sortedByDescending { GameSaver.getSave(it).lastModified() }
         for (saveGameName in saves) {
             if(saveGameName.startsWith("Autosave") && !showAutosaves) continue
             val textButton = TextButton(saveGameName, skin)

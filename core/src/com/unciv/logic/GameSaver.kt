@@ -9,9 +9,10 @@ import com.unciv.ui.utils.ImageGetter
 import java.io.File
 import kotlin.concurrent.thread
 
-class GameSaver {
-    private val saveFilesFolder = "SaveFiles"
-    private val multiplayerFilesFolder = "MultiplayerGames"
+object GameSaver {
+    private const val saveFilesFolder = "SaveFiles"
+    private const val multiplayerFilesFolder = "MultiplayerGames"
+    private const val settingsFileName = "GameSettings.json"
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
@@ -49,16 +50,24 @@ class GameSaver {
     }
 
     fun getGeneralSettingsFile(): FileHandle {
-        return Gdx.files.local("GameSettings.json")
+        return Gdx.files.local(settingsFileName)
     }
 
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
-        if(!settingsFile.exists()) return GameSettings()
-        var settings = json().fromJson(GameSettings::class.java, settingsFile)
-        // I'm not sure of the circumstances,
-        // but some people were getting null settings, even though the file existed??? Very odd.
-        if(settings==null) settings = GameSettings()
+        val settings: GameSettings =
+            if(!settingsFile.exists())
+                GameSettings().apply { isFreshlyCreated = true }
+            else try {
+                json().fromJson(GameSettings::class.java, settingsFile)
+            } catch (ex:Exception){
+                // I'm not sure of the circumstances,
+                // but some people were getting null settings, even though the file existed??? Very odd.
+                // ...Json broken or otherwise unreadable is the only possible reason.
+                println("Error reading settings file: ${ex.localizedMessage}")
+                println("  cause: ${ex.cause}")
+                GameSettings().apply { isFreshlyCreated = true }
+            }
 
         val currentTileSets = ImageGetter.atlas.regions.asSequence()
                 .filter { it.name.startsWith("TileSets") }
@@ -76,25 +85,26 @@ class GameSaver {
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
         val gameInfoClone = gameInfo.clone()
-        thread(name="Autosave") {
-            saveGame(gameInfoClone, "Autosave")
-
-            // keep auto-saves for the last 10 turns for debugging purposes
-            val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfoClone.turns}"
-            getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
-
-            fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
-            while(getAutosaves().size>10){
-                val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
-                deleteSave(saveToDelete)
-            }
-
+        thread(name = "Autosave") {
+            autoSaveSingleThreaded(gameInfoClone)
             // do this on main thread
             Gdx.app.postRunnable {
                 postRunnable()
             }
         }
+    }
+    fun autoSaveSingleThreaded (gameInfo: GameInfo) {
+        saveGame(gameInfo, "Autosave")
 
+        // keep auto-saves for the last 10 turns for debugging purposes
+        val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
+        getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
+
+        fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
+        while(getAutosaves().size>10){
+            val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
+            deleteSave(saveToDelete)
+        }
     }
 
     /**

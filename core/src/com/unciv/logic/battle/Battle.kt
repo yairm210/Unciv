@@ -42,8 +42,17 @@ object Battle {
             if(attacker.isDefeated()) return
         }
 
-        var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
-        var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
+        // Withdraw from melee ability
+        if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant ) {
+            val withdraw = defender.unit.getUniques().firstOrNull { it.startsWith("May withdraw before melee")}
+            if (withdraw != null) {
+                if (doWithdrawFromMeleeAbility(attacker, defender, withdraw))
+                    return
+            }
+        }
+
+        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,defender)
+        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker,defender)
 
         if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
@@ -138,7 +147,7 @@ object Battle {
         if (defender.isDefeated()
                 && defender is MapUnitCombatant
                 && attacker is MapUnitCombatant) {
-            val regex = Regex("""Heals \[(\d*)\] damage if it kills a unit""")
+            val regex = Regex(BattleDamage.HEAL_WHEN_KILL)
             for (unique in attacker.unit.getUniques()) {
                 val match = regex.matchEntire(unique)
                 if (match == null) continue
@@ -374,7 +383,7 @@ object Battle {
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
 
-            var damage = BattleDamage().calculateDamageToDefender(MapUnitCombatant(interceptor), attacker)
+            var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), attacker)
             damage += damage * interceptor.interceptDamagePercentBonus() / 100
             if (attacker.unit.hasUnique("Reduces damage taken from interception by 50%")) damage /= 2
 
@@ -402,4 +411,69 @@ object Battle {
             return
         }
     }
+
+    private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, withdraw: String): Boolean {
+        // Some notes...
+        // unit.getUniques() is a union of baseunit uniques and promotion effects.
+        // according to some strategy guide the slinger's withdraw ability is inherited on upgrade,
+        // according to the Ironclad entry of the wiki the Caravel's is lost on upgrade.
+        // therefore: Implement the flag as unique for the Caravel and Destroyer, as promotion for the Slinger.
+        // I want base chance for Slingers to be 133% (so they still get 76% against the Brute)
+        // but I want base chance for navals to be 50% (assuming their attacker will often be the same baseunit)
+        // the diverging base chance is coded into the effect string as (133%) for now, with 50% as default
+        if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
+        if (defender !is MapUnitCombatant) return false
+        // if (!attacker.isMelee()) return false                // checked in attack()
+
+        // Embarked units should never use the ability
+        // I see this as a rule detail, therefore I did not move the check outside this function
+        if (defender.unit.isEmbarked()) return false
+        // Calculate success chance: Base chance from json, then ratios of *base* strength and mobility
+        // Promotions have no effect as per what I could find in available documentation
+        val attackBaseUnit = attacker.unit.baseUnit
+        val defendBaseUnit = defender.unit.baseUnit
+        val withdrawMatch = Regex("""\((\d+)%\)""").find(withdraw)
+        val percentChance = (
+                (if(withdrawMatch!=null) withdrawMatch.groups[1]!!.value.toFloat() else 50f)
+                        * defendBaseUnit.strength / attackBaseUnit.strength
+                        * defendBaseUnit.movement / attackBaseUnit.movement).toInt()
+        // Roll the dice - note the effect of the surroundings, namely how much room there is to evade to,
+        // isn't yet factored in. But it should, and that's factored in by allowing the dice to choose
+        // any geometrically fitting tile first and *then* fail when checking the tile for viability.
+        val dice = Random().nextInt(100)
+        if (dice > percentChance) return false
+        // Calculate candidate tiles, geometry only
+        val fromTile = defender.getTile()
+        val attTile = attacker.getTile()
+        //assert(fromTile in attTile.neighbors)                 // function should never be called with attacker not adjacent to defender
+        // the following yields almost always exactly three tiles in a half-moon shape (exception: edge of map)
+        val candidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
+        if (candidateTiles.isEmpty()) return false              // impossible on our map shapes? No - corner of a rectangular map
+        val toTile = candidateTiles.random()
+        // Now make sure the move is allowed - if not, sorry, bad luck
+        if (!defender.unit.movement.canMoveTo(toTile)) {        // forbid impassable or blocked
+            val blocker = toTile.militaryUnit
+            if (blocker != null) {
+                val notificationString = "[" + defendBaseUnit.name + "] could not withdraw from a [" +
+                        attackBaseUnit.name + "] - blocked."
+                defender.getCivInfo().addNotification(notificationString, toTile.position, Color.RED)
+                attacker.getCivInfo().addNotification(notificationString, toTile.position, Color.GREEN)
+            }
+            return false
+        }
+        if (defendBaseUnit.unitType.isLandUnit() && !toTile.isLand) return false        // forbid retreat from land to sea - embarked already excluded
+        if (toTile.isCityCenter()) return false                                         // forbid retreat into city
+        // Withdraw success: Do it - move defender to toTile for no cost
+        // NOT defender.unit.movement.moveToTile(toTile) - we want a free teleport
+        // no need for any stats recalculation as neither fromTile nor toTile can be a city
+        defender.unit.removeFromTile()
+        defender.unit.putInTile(toTile)
+        // and count 1 attack for attacker but leave it in place
+        reduceAttackerMovementPointsAndAttacks(attacker,defender)
+        val notificationString = "[" + defendBaseUnit.name + "] withdrew from a [" + attackBaseUnit.name + "]"
+        defender.getCivInfo().addNotification(notificationString, toTile.position, Color.GREEN)
+        attacker.getCivInfo().addNotification(notificationString, toTile.position, Color.RED)
+        return true
+    }
+
 }

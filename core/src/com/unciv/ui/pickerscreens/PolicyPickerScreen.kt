@@ -93,7 +93,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             rightSideButton.enable()
         }
         pickedPolicy = policy
-        var policyText = policy.name.tr() + "\r\n" + policy.description.tr() + "\r\n"
+        var policyText = policy.name.tr() + "\r\n" + policy.effect.tr() + "\r\n"
         if (!policy.name.endsWith("Complete")){
             if(policy.requires!!.isNotEmpty())
                 policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
@@ -109,7 +109,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name)
             policyButton.add(policyImage).size(30f)
         } else {
-            policyButton = TextButton(policy.name.tr(), skin)
+            policyButton = policy.name.toTextButton()
         }
 
         if (viewingCiv.policies.isAdopted(policy.name)) { // existing

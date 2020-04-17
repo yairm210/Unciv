@@ -5,6 +5,7 @@ object Constants {
     const val settler = "Settler"
     const val greatGeneral = "Great General"
 
+    const val impassable = "Impassable"
     const val ocean = "Ocean"
     const val coast = "Coast"
     const val mountain = "Mountain"
@@ -44,12 +45,20 @@ object Constants {
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val random = "Random"
-    val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house")
+    val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house", "Citadel")
 
-    val unitActionSetUp = "Set Up"
-    val unitActionSleep = "Sleep"
-    val unitActionSleepUntilHealed = "Sleep until healed"
-    val unitActionAutomation = "Automate"
-    val unitActionExplore = "Explore"
-    val futureTech = "Future Tech"
+    const val fort = "Fort"
+    const val citadel = "Citadel"
+
+    const val unitActionSetUp = "Set Up"
+    const val unitActionSleep = "Sleep"
+    const val unitActionSleepUntilHealed = "Sleep until healed"
+    const val unitActionAutomation = "Automate"
+    const val unitActionExplore = "Explore"
+    const val futureTech = "Future Tech"
+
+    const val cancelImprovementOrder = "Cancel improvement order"
+    const val tutorialPopupNamePrefix = "Tutorial: "
+
+    const val close = "Close"
 }

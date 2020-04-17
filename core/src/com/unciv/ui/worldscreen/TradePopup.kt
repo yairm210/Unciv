@@ -1,16 +1,18 @@
 package com.unciv.ui.worldscreen
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.addSeparator
+import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.toLabel
 import kotlin.math.max
 import kotlin.math.min
@@ -46,7 +48,7 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
 
         addGoodSizedLabel(nation.tradeRequest).colspan(columns).row()
 
-        addButton("Sounds good!"){
+        val soundsGoodButton = addButton("Sounds good!"){
             val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
@@ -65,11 +67,16 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
             }
             requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", Color.GOLD)
         }
+
+        // In the meantime this became invalid, perhaps because we accepted previous trades
+        if(!TradeEvaluation().isTradeValid(trade,viewingCiv,requestingCiv))
+            soundsGoodButton.actor.disable()
+
         addButton("Not this time.".tr()){
             val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
-            if(trade.ourOffers.any { it.type==TradeType.Agreement && it.name==Constants.researchAgreement })
+            if(trade.ourOffers.any { it.name==Constants.researchAgreement })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedResearchAgreement,20) // offer again in 20 turns
 
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name== Constants.peaceTreaty })

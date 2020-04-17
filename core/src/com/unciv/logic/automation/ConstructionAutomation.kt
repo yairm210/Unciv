@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
-import com.unciv.logic.city.SpecialConstruction
+import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.Building
@@ -50,7 +50,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         if (!UncivGame.Current.settings.autoAssignCityProduction
                 && civInfo.playerType== PlayerType.Human && !cityInfo.isPuppet)
             return
-        if (cityConstructions.getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
+        if (cityConstructions.getCurrentConstruction() !is PerpetualConstruction) return  // don't want to be stuck on these forever
 
         addFoodBuildingChoice()
         addProductionBuildingChoice()
@@ -75,9 +75,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         val theChosenOne: String
         if (relativeCostEffectiveness.isEmpty()) { // choose one of the special constructions instead
             // add science!
-            if (SpecialConstruction.science.isBuildable(cityConstructions))
+            if (PerpetualConstruction.science.isBuildable(cityConstructions))
                 theChosenOne = "Science"
-            else if (SpecialConstruction.gold.isBuildable(cityConstructions))
+            else if (PerpetualConstruction.gold.isBuildable(cityConstructions))
                 theChosenOne = "Gold"
             else theChosenOne = "Nothing"
         } else if (relativeCostEffectiveness.any { it.remainingWork < production * 30 }) {
@@ -89,14 +89,14 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
         else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice
 
         civInfo.addNotification("Work has started on [$theChosenOne]", Color.BROWN, CityAction(cityInfo.location))
-        cityConstructions.currentConstruction = theChosenOne
+        cityConstructions.currentConstructionFromQueue = theChosenOne
     }
 
     private fun addMilitaryUnitChoice() {
         if(!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
         if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < cities * 2)
                 || (isAtWar && civInfo.gold > -50)) {
-            val militaryUnit = Automation().chooseMilitaryUnit(cityInfo)
+            val militaryUnit = Automation.chooseMilitaryUnit(cityInfo)
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
             var modifier = sqrt(unitsToCitiesRatio) / 2
@@ -212,7 +212,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
             // If this city is the closest city to another civ, that makes it a likely candidate for attack
             if (civInfo.getKnownCivs().filter { it.cities.isNotEmpty() }
-                            .any { NextTurnAutomation().getClosestCities(civInfo, it).city1 == cityInfo })
+                            .any { NextTurnAutomation.getClosestCities(civInfo, it).city1 == cityInfo })
                 modifier *= 1.5f
 
             addChoice(relativeCostEffectiveness, defensiveBuilding.name, modifier)

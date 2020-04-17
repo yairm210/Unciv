@@ -3,8 +3,10 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -16,9 +18,12 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.utils.YesNoPopup
+import com.unciv.ui.utils.hasOpenPopups
 import com.unciv.ui.worldscreen.WorldScreen
 
 object UnitActions {
+
+    const val CAN_UNDERTAKE = "Can undertake"
 
     fun getUnitActions(unit: MapUnit, worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
@@ -70,10 +75,12 @@ object UnitActions {
         actionList += UnitAction(
                 type = UnitActionType.DisbandUnit,
                 action = {
-                    val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
-                        "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
-                    else "Do you really want to disband this unit?".tr()
-                    YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+                    if (!worldScreen.hasOpenPopups()) {
+                        val disbandText = if (unit.currentTile.getOwner() == unit.civInfo)
+                            "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
+                        else "Do you really want to disband this unit?".tr()
+                        YesNoPopup(disbandText, { unit.disband(); worldScreen.shouldUpdate = true }).open()
+                    }
                 }.takeIf {unit.currentMovement > 0} )
     }
 
@@ -176,8 +183,14 @@ object UnitActions {
                         tile.turnsToImprovement = 2
                     }
                     tile.improvement = null
-                    if (!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+                    if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
+
+                    if (!unit.hasUnique("No movement cost to pillage") &&
+                            (!unit.type.isMelee() || unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
+                                    unit.useMovementPoints(1f)
+
                     unit.healBy(25)
+
                 }.takeIf { unit.currentMovement > 0 && canPillage(unit, tile) })
     }
 
@@ -187,8 +200,8 @@ object UnitActions {
             actionList += UnitAction(
                     type = UnitActionType.Explore,
                     action = {
-                        UnitAutomation().automatedExplore(unit)
                         unit.action = Constants.unitActionExplore
+                        if(unit.currentMovement>0) UnitAutomation.automatedExplore(unit)
                     })
         } else {
             actionList += UnitAction(
@@ -274,6 +287,7 @@ object UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         unit.civInfo.tech.hurryResearch()
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { unit.civInfo.tech.currentTechnologyName() != null && unit.currentMovement > 0 })
         }
@@ -284,6 +298,7 @@ object UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         unit.civInfo.goldenAges.enterGoldenAge()
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0 })
         }
@@ -303,6 +318,7 @@ object UnitActions {
                             addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                             constructIfEnough()
                         }
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { canHurryWonder })
         }
@@ -320,10 +336,11 @@ object UnitActions {
                         if (unit.civInfo.policies.isAdopted("Commerce Complete"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
-                        val relevantUnique = unit.getUniques().first { it.startsWith("Can undertake") }
+                        val relevantUnique = unit.getUniques().first { it.startsWith(CAN_UNDERTAKE) }
                         val influenceEarned = Regex("\\d+").find(relevantUnique)!!.value.toInt()
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned.toInt()}] gold and [$influenceEarned] influence!", null, Color.GOLD)
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { canConductTradeMission })
         }
@@ -341,14 +358,34 @@ object UnitActions {
                     title = "Create [$improvementName]",
                     uncivSound = UncivSound.Chimes,
                     action = {
-                        unit.getTile().terrainFeature = null // remove forest/jungle/marsh
-                        unit.getTile().improvement = improvementName
-                        unit.getTile().improvementInProgress = null
-                        unit.getTile().turnsToImprovement = 0
+                        val unitTile = unit.getTile()
+                        unitTile.terrainFeature = null // remove forest/jungle/marsh
+                        unitTile.improvement = improvementName
+                        unitTile.improvementInProgress = null
+                        unitTile.turnsToImprovement = 0
+                        val city = unitTile.getCity()
+                        if (city != null) {
+                            city.cityStats.update()
+                            city.civInfo.updateDetailedCivResources()
+                        }
+                        addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
-                    }.takeIf { unit.currentMovement > 0f && !tile.isWater && !tile.isCityCenter() && !tile.getLastTerrain().unbuildable })
+                    }.takeIf { unit.currentMovement > 0f && !tile.isWater &&
+                            !tile.isCityCenter() && !tile.getLastTerrain().impassable &&
+                            tile.improvement != improvementName })
         }
         return null
+    }
+
+    private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {
+        val uniqueText = "Provides a sum of gold each time you spend a Great Person"
+        val cityWithMausoleum = civInfo.cities.firstOrNull { it.containsBuildingUnique(uniqueText) }
+                ?: return
+        val goldEarned = (100 * civInfo.gameInfo.gameParameters.gameSpeed.modifier).toInt()
+        civInfo.gold += goldEarned
+
+        val mausoleum = cityWithMausoleum.cityConstructions.getBuiltBuildings().first { it.uniques.contains(uniqueText) }
+        civInfo.addNotification("[${mausoleum.name}] has provided [$goldEarned] Gold!", cityWithMausoleum.location, Color.GOLD)
     }
 
     private fun addFortifyActions(actionList: ArrayList<UnitAction>, unit: MapUnit, unitTable: UnitTable) {
@@ -368,7 +405,7 @@ object UnitActions {
                     action = {
                         unit.fortifyUntilHealed()
                         unitTable.selectedUnit = null
-                    })
+                    }.takeIf { unit.currentMovement > 0 })
             actionList += actionForWounded
         }
 

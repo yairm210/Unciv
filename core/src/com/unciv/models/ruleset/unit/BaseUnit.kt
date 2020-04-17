@@ -1,7 +1,6 @@
 package com.unciv.models.ruleset.unit
 
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
@@ -71,8 +70,11 @@ class BaseUnit : INamed, IConstruction {
         for(unique in uniques)
             sb.appendln(Translations.translateBonusOrPenalty(unique))
 
-        for(promotion in promotions)
-            sb.appendln(promotion.tr())
+        if (promotions.isNotEmpty()) {
+            sb.append((if (promotions.size==1) "Free promotion:" else "Free promotions:").tr())
+            for (promotion in promotions)
+                sb.appendln(" " + promotion.tr())
+        }
 
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
@@ -115,7 +117,9 @@ class BaseUnit : INamed, IConstruction {
 
     override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
         val rejectionReason = getRejectionReason(construction)
-        return rejectionReason=="" || rejectionReason.startsWith("Requires")
+        return rejectionReason==""
+                || rejectionReason.startsWith("Requires")
+                || rejectionReason.startsWith("Consumes")
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
@@ -132,11 +136,11 @@ class BaseUnit : INamed, IConstruction {
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
-        if (!UncivGame.Current.settings.nuclearWeaponEnabled
-                && (name == "Manhattan Project" || uniques.contains("Requires Manhattan Project"))) return "Disabled by setting"
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
+                && uniques.contains("Requires Manhattan Project")) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
         if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
@@ -144,13 +148,15 @@ class BaseUnit : INamed, IConstruction {
 
     fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        return getRejectionReason(construction) == ""
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
+        return getRejectionReason(cityConstructions) == ""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
+    override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return false // couldn't place the unit, so there's actually no unit =(
+
+        if(this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War")) XP += 15
@@ -160,8 +166,14 @@ class BaseUnit : INamed, IConstruction {
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
 
+        //movement penalty
+        if(!unit.hasUnique("Can move directly once bought") && wasBought)
+            unit.currentMovement = 0f
+
         return true
     }
+
+    override fun getResource(): String? = requiredResource
 
     fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
         return civInfo.getEquivalentUnit(upgradesTo!!)

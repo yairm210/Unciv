@@ -52,7 +52,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 " " + cityInfo.population.getFreePopulation().toString() + "/" + cityInfo.population.population
 
         var turnsToExpansionString =
-                if (cityInfo.cityStats.currentCityStats.culture > 0) {
+                if (cityInfo.cityStats.currentCityStats.culture > 0 && cityInfo.expansion.chooseNewTileToOwn() != null) {
                     val remainingCulture = cityInfo.expansion.getCultureToNextTile() - cityInfo.expansion.cultureStored
                     var turnsToExpansion = ceil(remainingCulture / cityInfo.cityStats.currentCityStats.culture).toInt()
                     if (turnsToExpansion < 1) turnsToExpansion = 1
@@ -60,14 +60,15 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 } else {
                     "Stopped expansion".tr()
                 }
-        turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
+        if (!cityInfo.expansion.isAreaMaxed())
+            turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
                 cityInfo.expansion.getCultureToNextTile() + ")"
 
         var turnsToPopString =
                 when {
                     cityInfo.isGrowing() -> "[${cityInfo.getNumTurnsToNewPopulation()}] turns to new population".tr()
                     cityInfo.isStarving() -> "[${cityInfo.getNumTurnsToStarvation()}] turns to lose population".tr()
-                    cityInfo.cityConstructions.currentConstruction == Constants.settler -> "Food converts to production".tr()
+                    cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler -> "Food converts to production".tr()
                     else -> "Stopped population growth".tr()
                 }
         turnsToPopString += " (" + cityInfo.population.foodStored + "/" + cityInfo.population.getFoodToNextPopulation() + ")"

@@ -3,6 +3,7 @@ package com.unciv.models.ruleset
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.JsonParser
+import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -13,7 +14,13 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
-class Ruleset() {
+class ModOptions {
+    var techsToRemove = HashSet<String>()
+    var buildingsToRemove = HashSet<String>()
+    var unitsToRemove = HashSet<String>()
+}
+
+class Ruleset {
 
     private val jsonParser = JsonParser()
 
@@ -28,7 +35,8 @@ class Ruleset() {
     val nations = LinkedHashMap<String, Nation>()
     val policyBranches = LinkedHashMap<String, PolicyBranch>()
     val difficulties = LinkedHashMap<String, Difficulty>()
-    val mods = HashSet<String>()
+    val mods = LinkedHashSet<String>()
+    var modOptions = ModOptions()
 
     fun clone(): Ruleset {
         val newRuleset = Ruleset()
@@ -45,16 +53,18 @@ class Ruleset() {
 
     fun add(ruleset: Ruleset) {
         buildings.putAll(ruleset.buildings)
+        for(buildingToRemove in ruleset.modOptions.buildingsToRemove) buildings.remove(buildingToRemove)
         difficulties.putAll(ruleset.difficulties)
         nations.putAll(ruleset.nations)
         policyBranches.putAll(ruleset.policyBranches)
         technologies.putAll(ruleset.technologies)
-        buildings.putAll(ruleset.buildings)
+        for(techToRemove in ruleset.modOptions.techsToRemove) technologies.remove(techToRemove)
         terrains.putAll(ruleset.terrains)
         tileImprovements.putAll(ruleset.tileImprovements)
         tileResources.putAll(ruleset.tileResources)
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
+        for(unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
     }
 
     fun clear() {
@@ -72,8 +82,17 @@ class Ruleset() {
         mods.clear()
     }
 
+
     fun load(folderHandle :FileHandle ) {
         val gameBasicsStartTime = System.currentTimeMillis()
+
+        val modOptionsFile = folderHandle.child("ModOptions.json")
+        if(modOptionsFile.exists()){
+            try {
+                modOptions = jsonParser.getFromJson(ModOptions::class.java, modOptionsFile)
+            }
+            catch (ex:Exception){}
+        }
 
         val techFile =folderHandle.child("Techs.json")
         if(techFile.exists()) {
@@ -88,15 +107,7 @@ class Ruleset() {
         }
 
         val buildingsFile = folderHandle.child("Buildings.json")
-        if(buildingsFile.exists()) {
-            buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
-            for (building in buildings.values) {
-                if (building.requiredTech == null) continue
-                val column = technologies[building.requiredTech!!]!!.column
-                if (building.cost == 0)
-                    building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
-            }
-        }
+        if(buildingsFile.exists()) buildings += createHashmap(jsonParser.getFromJson(Array<Building>::class.java, buildingsFile))
 
         val terrainsFile = folderHandle.child("Terrains.json")
         if(terrainsFile.exists()) terrains += createHashmap(jsonParser.getFromJson(Array<Terrain>::class.java, terrainsFile))
@@ -139,36 +150,58 @@ class Ruleset() {
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
         println("Loading game basics - " + gameBasicsLoadTime + "ms")
     }
+
+    /** Building costs are unique in that they are dependant on info in the technology part.
+     *  This means that if you add a building in a mod, you want it to depend on the original tech values.
+     *  Alternatively, if you edit a tech column's building costs, you want it to affect all buildings in that column.
+     *  This deals with that
+     *  */
+    fun updateBuildingCosts(){
+        for (building in buildings.values) {
+            if (building.cost == 0) {
+                val column = technologies[building.requiredTech]?.column
+                        ?: throw UncivShowableException("Building (${building.name}) must either have an explicit cost or reference an existing tech")
+                building.cost = if (building.isWonder || building.isNationalWonder) column.wonderCost else column.buildingCost
+            }
+        }
+    }
 }
 
 /** Loading mods is expensive, so let's only do it once and
  * save all of the loaded rulesets somewhere for later use
  *  */
-object RulesetCache :HashMap<String,Ruleset>(){
-    fun loadRulesets(){
+object RulesetCache :HashMap<String,Ruleset>() {
+    fun loadRulesets() {
         this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
 
-        for(modFolder in Gdx.files.local("mods").list()){
-            try{
+        for (modFolder in Gdx.files.local("mods").list()) {
+            if (modFolder.name().startsWith('.')) continue
+            try {
                 val modRuleset = Ruleset()
                 modRuleset.load(modFolder.child("jsons"))
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
+                println("Mod loaded successfully: " + modRuleset.name)
+            } catch (ex: Exception) {
+                println("Exception loading mod '${modFolder.name()}':")
+                println("  ${ex.localizedMessage}")
+                println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
             }
-            catch (ex:Exception){}
         }
     }
 
     fun getBaseRuleset() = this[""]!!
 
-    fun getComplexRuleset(mods:Collection<String>): Ruleset {
+    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
         newRuleset.add(getBaseRuleset())
-        for(mod in mods)
-            if(containsKey(mod)) {
+        for (mod in mods)
+            if (containsKey(mod)) {
                 newRuleset.add(this[mod]!!)
-                newRuleset.mods+=mod
+                newRuleset.mods += mod
             }
+        newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
+
         return newRuleset
     }
 }

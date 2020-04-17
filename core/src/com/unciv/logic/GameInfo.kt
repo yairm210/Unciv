@@ -17,6 +17,8 @@ import com.unciv.models.ruleset.RulesetCache
 import java.util.*
 import kotlin.collections.ArrayList
 
+class UncivShowableException(missingMods: String) : Exception(missingMods)
+
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
     @Transient lateinit var currentPlayerCiv:CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
@@ -87,7 +89,7 @@ class GameInfo {
                 || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
-                NextTurnAutomation().automateCivMoves(thisPlayer)
+                NextTurnAutomation.automateCivMoves(thisPlayer)
 
                 // Placing barbarians after their turn
                 if (thisPlayer.isBarbarian()
@@ -219,13 +221,22 @@ class GameInfo {
     fun setTransients() {
         tileMap.gameInfo = this
         ruleSet = RulesetCache.getComplexRuleset(gameParameters.mods)
+        // any mod the saved game lists that is currently not installed causes null pointer
+        // exceptions in this routine unless it contained no new objects or was very simple.
+        // Player's fault, so better complain early:
+        val missingMods = gameParameters.mods
+                .filterNot { it in ruleSet.mods }
+                .joinToString(limit = 120) { it }
+        if (missingMods.isNotEmpty()) {
+            throw UncivShowableException("Missing mods: [$missingMods]")
+        }
 
         // Renames as of version 3.1.8, because of translation conflicts with the property "Range" and the difficulty "Immortal"
         // Needs to be BEFORE tileMap.setTransients, because the units' setTransients is called from there
-        for(tile in tileMap.values)
-            for(unit in tile.getUnits()){
-                if(unit.name=="Immortal") unit.name="Persian Immortal"
-                if(unit.promotions.promotions.contains("Range")){
+        for (tile in tileMap.values)
+            for (unit in tile.getUnits()) {
+                if (unit.name == "Immortal") unit.name = "Persian Immortal"
+                if (unit.promotions.promotions.contains("Range")) {
                     unit.promotions.promotions.remove("Range")
                     unit.promotions.promotions.add("Extended Range")
                 }
@@ -233,18 +244,13 @@ class GameInfo {
 
         tileMap.setTransients(ruleSet)
 
-        if(currentPlayer=="") currentPlayer=civilizations.first { it.isPlayerCivilization() }.civName
-        currentPlayerCiv=getCivilization(currentPlayer)
+        if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
+        currentPlayerCiv = getCivilization(currentPlayer)
 
         // this is separated into 2 loops because when we activate updateVisibleTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
         for (civInfo in civilizations) civInfo.gameInfo = this
 
-        // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
-        if(civilizations.all { it.playerType==PlayerType.AI })
-            getCurrentPlayerCivilization().playerType=PlayerType.Human
-        if(getCurrentPlayerCivilization().difficulty!="Chieftain")
-            difficulty= getCurrentPlayerCivilization().difficulty
         difficultyObject = ruleSet.difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
@@ -253,32 +259,15 @@ class GameInfo {
         // which can fail if there's an "unregistered" building anywhere
         for (civInfo in civilizations) {
             // As of 3.3.7, Facism -> Fascism
-            if(civInfo.policies.adoptedPolicies.contains("Facism")){
+            if (civInfo.policies.adoptedPolicies.contains("Facism")) {
                 civInfo.policies.adoptedPolicies.remove("Facism")
                 civInfo.policies.adoptedPolicies.add("Fascism")
-            }
-
-            for (cityInfo in civInfo.cities) {
-                val cityConstructions = cityInfo.cityConstructions
-
-                // As of 2.9.6, removed hydro plant, since it requires rivers, which we do not yet have
-                if ("Hydro Plant" in cityConstructions.builtBuildings)
-                    cityConstructions.builtBuildings.remove("Hydro Plant")
-                if (cityConstructions.currentConstruction == "Hydro Plant") {
-                    cityConstructions.currentConstruction = ""
-                    cityConstructions.chooseNextConstruction()
-                }
-
-                // As of 2.14.1, changed Machu Pichu to Machu Picchu
-                changeBuildingName(cityConstructions, "Machu Pichu", "Machu Picchu")
-                // As of 2.16.1, changed Colloseum to Colosseum
-                changeBuildingName(cityConstructions, "Colloseum", "Colosseum")
             }
 
             // This doesn't HAVE to go here, but why not.
             // As of version 3.1.3, trade offers of "Declare war on X" and "Introduction to X" were changed to X,
             //   with the extra text being added only on UI display (solved a couple of problems).
-            for(trade in civInfo.tradeRequests.map { it.trade }) {
+            for (trade in civInfo.tradeRequests.map { it.trade }) {
                 for (offer in trade.theirOffers.union(trade.ourOffers)) {
                     offer.name = offer.name.removePrefix("Declare war on ")
                     offer.name = offer.name.removePrefix("Introduction to ")
@@ -287,15 +276,15 @@ class GameInfo {
 
             // As of 3.4.9 cities are referenced by id, not by name
             // So try to update every tradeRequest (if there are no conflicting names)
-            for(tradeRequest in civInfo.tradeRequests) {
+            for (tradeRequest in civInfo.tradeRequests) {
                 val trade = tradeRequest.trade
                 val toRemove = ArrayList<TradeOffer>()
                 for (offer in trade.ourOffers) {
                     if (offer.type == TradeType.City) {
-                        val countNames = civInfo.cities.count { it.name == offer.name}
+                        val countNames = civInfo.cities.count { it.name == offer.name }
 
                         if (countNames == 1)
-                            offer.name = civInfo.cities.first { it.name == offer.name}.id
+                            offer.name = civInfo.cities.first { it.name == offer.name }.id
                         // There are conflicting names: we can't guess what city was being offered
                         else if (countNames > 1)
                             toRemove.add(offer)
@@ -308,10 +297,10 @@ class GameInfo {
                 val themCivInfo = getCivilization(tradeRequest.requestingCiv)
                 for (offer in trade.theirOffers) {
                     if (offer.type == TradeType.City) {
-                        val countNames = themCivInfo.cities.count { it.name == offer.name}
+                        val countNames = themCivInfo.cities.count { it.name == offer.name }
 
                         if (countNames == 1)
-                            offer.name = themCivInfo.cities.first { it.name == offer.name}.id
+                            offer.name = themCivInfo.cities.first { it.name == offer.name }.id
                         // There are conflicting names: we can't guess what city was being offered
                         else if (countNames > 1)
                             toRemove.add(offer)
@@ -340,8 +329,8 @@ class GameInfo {
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations) civInfo.updateSightAndResources()
 
-        for (civInfo in civilizations){
-            for(unit in civInfo.getCivUnits())
+        for (civInfo in civilizations) {
+            for (unit in civInfo.getCivUnits())
                 unit.updateVisibleTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
 
             // Since this depends on the cities of ALL civilizations,
@@ -350,9 +339,19 @@ class GameInfo {
             civInfo.initialSetCitiesConnectedToCapitalTransients()
 
             // We need to determine the GLOBAL happiness state in order to determine the city stats
-            for(cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
+            for (cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
 
-            for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
+            for (cityInfo in civInfo.cities) {
+                if(cityInfo.cityConstructions.currentConstruction!="") { // move it to the top of the queue
+                    val constructionQueue = cityInfo.cityConstructions.constructionQueue
+                    val itemsInQueue = constructionQueue.toList()
+                    constructionQueue.clear()
+                    constructionQueue.add(cityInfo.cityConstructions.currentConstruction)
+                    constructionQueue.addAll(itemsInQueue)
+                    cityInfo.cityConstructions.currentConstruction = ""
+                }
+                cityInfo.cityStats.update()
+            }
         }
     }
 
@@ -361,8 +360,7 @@ class GameInfo {
             cityConstructions.builtBuildings.remove(oldBuildingName)
             cityConstructions.builtBuildings.add(newBuildingName)
         }
-        if (cityConstructions.currentConstruction == oldBuildingName)
-            cityConstructions.currentConstruction = newBuildingName
+        cityConstructions.constructionQueue.replaceAll { if(it==oldBuildingName) newBuildingName else it }
         if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
             cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
@@ -370,3 +368,4 @@ class GameInfo {
     }
 
 }
+

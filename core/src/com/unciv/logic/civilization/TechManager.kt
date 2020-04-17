@@ -234,14 +234,18 @@ class TechManager {
                     )
                 }
             }
-            getRuleset().policyBranches.values.filter { it.era == currentEra }
-                    .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE) }
+            for (it in getRuleset().policyBranches.values.filter { it.era == currentEra }) {
+                civInfo.addNotification("[" + it.name + "] policy branch unlocked!", null, Color.PURPLE)
+            }
         }
 
         for(revealedResource in getRuleset().tileResources.values.filter{ techName == it.revealedBy }){
-            for (tileInfo in civInfo.gameInfo.tileMap.values
-                    .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
+            val resourcesCloseToCities = civInfo.cities.asSequence()
+                    .flatMap { it.getCenterTile().getTilesInDistance(3) + it.getTiles() }
+                    .filter { it.resource==revealedResource.name && (it.getOwner()==civInfo || it.getOwner()==null) }
+                    .distinct()
 
+            for (tileInfo in resourcesCloseToCities) {
                 val closestCityTile = tileInfo.getTilesInDistance(4)
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
@@ -252,11 +256,12 @@ class TechManager {
             }
         }
 
-        val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }
+        val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
         for (city in civInfo.cities)
-            if (city.cityConstructions.getCurrentConstruction() in obsoleteUnits) {
-                val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
-                city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
+            for(constructionName in city.cityConstructions.constructionQueue.toList()){ // copy, since we're changing the queue
+                if(constructionName !in obsoleteUnits) continue
+                val constructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
+                city.cityConstructions.constructionQueue.replaceAll { if(it==constructionName) constructionUnit.upgradesTo!! else it }
             }
 
         if(techName=="Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY

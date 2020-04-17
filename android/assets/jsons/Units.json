@@ -110,12 +110,11 @@
 		"upgradesTo": "Crossbowman",
 		"attackSound": "arrow"
 	},
-	/*
 	{
 		"name": "Slinger",
 		"unitType": "Ranged",
-		"replaces": "Archer",
 		"uniqueTo": "Inca",
+		"replaces": "Archer",
 		"movement": 2,
 		"strength": 4,
 		"rangedStrength": 7,
@@ -123,12 +122,10 @@
 		"hurryCostModifier": 20,
 		"requiredTech": "Archery",
 		"obsoleteTech": "Machinery",
-		"uniques": ["May withdraw before melee"],
 		"upgradesTo": "Crossbowman",
+		"promotions": ["Slinger Withdraw"],
 		"attackSound": "arrow"
-		//Incan unique unit
 	},
-	*/
 	{
 		"name": "Work Boats",
 		"unitType": "WaterCivilian",
@@ -145,7 +142,7 @@
 		"strength": 10,
 		"cost": 45,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles"],
+		"uniques": ["Cannot enter ocean tiles",],
 		"upgradesTo": "Caravel",
 		"obsoleteTech": "Astronomy",
 		"hurryCostModifier": 20,
@@ -487,7 +484,6 @@
 		"attackSound": "metalhit"
 		//Aside from the Great Generals II promotion, Samurai should also create Fishing Boats (not now, surely)
 	},
-	/*
 	{
 		"name": "Berserker",
 		"replaces": "Longswordsman",
@@ -496,7 +492,7 @@
 		"movement": 3,
 		"strength": 21,
 		"cost": 120,
-		"requiredTech": "Steel",
+		"requiredTech": "Metal Casting",
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Metallurgy",
 		"requiredResource": "Iron",
@@ -506,7 +502,6 @@
 		"attackSound": "metalhit"
 		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
 	},
-	*/
 	{
 		"name": "Pikeman",
 		"unitType": "Melee",
@@ -530,7 +525,7 @@
 		"strength": 16,
 		"cost": 45,
 		"requiredTech": "Civil Service",
-		"uniques": ["Bonus vs Mounted 50%"],
+		"uniques": ["Bonus vs Mounted 50%", "Can move immediately once bought" ],
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Gunpowder",
 		"hurryCostModifier": 20,
@@ -661,7 +656,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range"],
+		"uniques": ["+1 Visibility Range","May withdraw before melee"],
 		"hurryCostModifier": 20
 	},
 	{
@@ -859,6 +854,7 @@
 		"unitType": "WaterAircraftCarrier",
 		"movement": 5,
 		"strength": 40,
+		"rangedStrength": 40,
 		"cost": 375,
 		"requiredTech": "Electronics",
         "uniques": ["Can carry 2 aircraft"],
@@ -896,10 +892,8 @@
 		"hurryCostModifier": 20,
 		"attackSound": "shot"
 	},
-	
-	/*
 	{
-		"name": "Norvegian Ski Infantry",
+		"name": "Norwegian Ski Infantry",
 		"unitType": "Melee",
 		"replaces": "Rifleman",
 		"uniqueTo": "Denmark",
@@ -909,11 +903,10 @@
 		"requiredTech": "Rifling",
 		"obsoleteTech": "Replaceable Parts",
 		"upgradesTo": "Great War Infantry",
-		"uniques": ["Bonus in Snow, Tundra and Hills"],
+		"uniques": ["+25% bonus in Snow, Tundra and Hills", "Double movement in Snow, Tundra and Hills"],
 		"hurryCostModifier": 20,
 		"attackSound": "shot"
 	},
-	*/
 	{
 		"name": "Cavalry",
 		"unitType": "Mounted",
@@ -1074,7 +1067,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines","[40]% chance to intercept air attacks"], // todo: add bonus vs submarines
+		"uniques": ["Can attack submarines","[40]% chance to intercept air attacks","May withdraw before melee"], // todo: add bonus vs submarines
 		"hurryCostModifier": 20
 	},
 	{
@@ -1326,8 +1319,7 @@
 		"name": "Great General",
 		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"],
-		//todo : should be able to build mega-fort
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Can build improvement: Citadel"],
 		"movement": 2
 	},
 	{
@@ -1336,8 +1328,7 @@
 		"unitType": "Civilian",
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Heal adjacent units for an additional 15 HP per turn"],
-		//todo : should be able to build mega-fort
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Heal adjacent units for an additional 15 HP per turn", "Can build improvement: Citadel"],
 		"movement": 5
 	}
 ]

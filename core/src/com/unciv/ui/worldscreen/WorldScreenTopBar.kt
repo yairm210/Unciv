@@ -13,7 +13,10 @@ import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.EmpireOverviewScreen
+import com.unciv.ui.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -31,9 +34,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private val happinessImage = Group()
     // These are all to improve performance IE reduce update time (was 150 ms on my phone, which is a lot!)
     private val malcontentColor = Color.valueOf("ef5350")
-    val happinessColor = colorFromRGB(92, 194, 77)
-    val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
-    val happinessGroup = ImageGetter.getStatIcon("Happiness")
+    private val happinessColor = colorFromRGB(92, 194, 77)
+    private val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
+    private val happinessGroup = ImageGetter.getStatIcon("Happiness")
 
     init {
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
@@ -67,30 +70,52 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             val resourceLabel = "0".toLabel()
             resourceLabels[resource.name] = resourceLabel
             resourceTable.add(resourceLabel)
+            val invokeResourcesPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+            resourceLabel.onClick(invokeResourcesPage)
+            resourceImage.onClick(invokeResourcesPage)
         }
         resourceTable.pack()
+
         return resourceTable
     }
 
     private fun getStatsTable(): Table {
         val statsTable = Table()
         statsTable.defaults().pad(3f)//.align(Align.top)
+
         statsTable.add(goldLabel)
-        statsTable.add(ImageGetter.getStatIcon("Gold")).padRight(20f).size(20f)
+        val goldImage = ImageGetter.getStatIcon("Gold")
+        statsTable.add(goldImage).padRight(20f).size(20f)
+        val invokeStatsPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Stats")) }
+        goldLabel.onClick(invokeStatsPage)
+        goldImage.onClick(invokeStatsPage)
+
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
-        statsTable.add(ImageGetter.getStatIcon("Science")).padRight(20f).size(20f)
+        val scienceImage = ImageGetter.getStatIcon("Science")
+        statsTable.add(scienceImage).padRight(20f).size(20f)
+        val invokeTechScreen =  { UncivGame.Current.setScreen(TechPickerScreen(worldScreen.viewingCiv)) }
+        scienceLabel.onClick(invokeTechScreen)
+        scienceImage.onClick(invokeTechScreen)
 
         statsTable.add(happinessImage).size(20f)
         statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
+        val invokeResourcesPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+        happinessImage.onClick(invokeResourcesPage)
+        happinessLabel.onClick(invokeResourcesPage)
 
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
-        statsTable.add(ImageGetter.getStatIcon("Culture")).size(20f)
+        val cultureImage = ImageGetter.getStatIcon("Culture")
+        statsTable.add(cultureImage).size(20f)
+        val invokePoliciesPage = { UncivGame.Current.setScreen(PolicyPickerScreen(worldScreen)) }
+        cultureLabel.onClick(invokePoliciesPage)
+        cultureImage.onClick(invokePoliciesPage)
+
         statsTable.pack()
         statsTable.width = worldScreen.stage.width - 20
         return statsTable
     }
 
-    internal fun getMenuButton(): Image {
+    private fun getMenuButton(): Image {
         val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
@@ -130,6 +155,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val yearText = "["+ abs(year)+"] "+ if (year<0) "BC" else "AD"
         turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ yearText.tr())
+        turnsLabel.onClick { UncivGame.Current.setScreen(VictoryScreen()) }
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"

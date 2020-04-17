@@ -81,7 +81,7 @@ class Building : NamedStats(), IConstruction{
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         if(requiredResource!=null)
-            stringBuilder.appendln("Requires [$requiredResource]".tr())
+            stringBuilder.appendln("Consumes 1 [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
@@ -194,10 +194,10 @@ class Building : NamedStats(), IConstruction{
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
+        if (!isWonder && culture != 0f && civInfo.policies.hasEffect("Building time of culture buildings reduced by 15%"))
             productionCost *= 0.85f
 
-        if (name == "Courthouse" && civInfo.policies.isAdopted("Police State"))
+        if (name == "Courthouse" && civInfo.policies.hasEffect("+3 Happiness from every Courthouse. Build Courthouses in half the usual time."))
             productionCost *= 0.5f
 
         if (civInfo.isPlayerCivilization()) {
@@ -217,11 +217,10 @@ class Building : NamedStats(), IConstruction{
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
-        if (civInfo.policies.isAdopted("Mercantilism")) cost *= 0.75
+        if (civInfo.policies.hasEffect("-25% to purchasing items in cities")) cost *= 0.75
         if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
-        if (civInfo.policies.isAdopted("Patronage")
-                && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
-                        .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
+        if (civInfo.policies.hasEffect( "Cost of purchasing culture buildings reduced by 50%")
+                && culture !=0f && !isWonder)
             cost *= 0.5
 
         return (cost / 10).toInt() * 10
@@ -277,14 +276,14 @@ class Building : NamedStats(), IConstruction{
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         // Regular wonders
-        if (isWonder){
-            if(civInfo.gameInfo.getCities().any {it.cityConstructions.isBuilt(name)})
+        if (isWonder) {
+            if (civInfo.gameInfo.getCities().any { it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
 
-            if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any { it != construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 return "Wonder is being built elsewhere"
 
-            if(civInfo.isCityState())
+            if (civInfo.isCityState())
                 return "No world wonders for city-states"
         }
 
@@ -297,7 +296,7 @@ class Building : NamedStats(), IConstruction{
                     && civInfo.cities.any { !it.isPuppet && !it.cityConstructions
                             .containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
-            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructedOrEnqueued(name) })
                 return "National Wonder is being built elsewhere"
             if(civInfo.isCityState())
                 return "No national wonders for city-states"
@@ -309,7 +308,7 @@ class Building : NamedStats(), IConstruction{
             return "Cannot be built with $cannotBeBuiltWith"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return "Requires [$requiredResource]"
+            return "Consumes 1 [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
@@ -334,40 +333,44 @@ class Building : NamedStats(), IConstruction{
         return ""
     }
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        return getRejectionReason(construction)==""
+    override fun isBuildable(cityConstructions: CityConstructions): Boolean {
+        return getRejectionReason(cityConstructions)==""
     }
 
-    override fun postBuildEvent(construction: CityConstructions): Boolean {
-        val civInfo = construction.cityInfo.civInfo
+    override fun postBuildEvent(cityConstructions: CityConstructions, wasBought: Boolean): Boolean {
+        val civInfo = cityConstructions.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
             civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return true
         }
-        construction.addBuilding(name)
+        cityConstructions.addBuilding(name)
 
-        if (providesFreeBuilding != null && !construction.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
+        if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
             for(building in civInfo.gameInfo.ruleSet.buildings.values)
                 if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
                     buildingToAdd = building.name
 
-            construction.addBuilding(buildingToAdd)
+            cityConstructions.addBuilding(buildingToAdd)
         }
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
-        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+        if ("2 free Great Artists appear" in uniques) {
+            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+        }
         if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
-        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
         if ("2 free great scientists appear" in uniques) {
-            civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
-            civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
+            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
         }
         if ("Provides 2 free workers" in uniques) {
-            civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
-            civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
+            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
+            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
         }
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
@@ -385,8 +388,15 @@ class Building : NamedStats(), IConstruction{
 
         if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
 
+
+        cityConstructions.cityInfo.cityStats.update() // new building, new stats
+        civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
+        civInfo.transients().updateCitiesConnectedToCapital(false) // could be a connecting building, like a harbor
+
         return true
     }
+
+    override fun getResource(): String? = requiredResource
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true

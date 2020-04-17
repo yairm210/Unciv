@@ -1,13 +1,15 @@
 package com.unciv.ui.pickerscreens
 
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton = TextButton("Close".tr(), skin)
+    internal var closeButton: TextButton = TextButton(Constants.close.tr(), skin)
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
@@ -25,7 +27,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         val labelScroll = ScrollPane(descriptionLabel)
         bottomTable.add(labelScroll).pad(5f).fill().expand()
 
-        rightSideButton = TextButton("", skin)
+        rightSideButton = "".toTextButton()
         rightSideButton.disable()
         rightSideGroup.addActor(rightSideButton)
 
