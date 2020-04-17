@@ -21,11 +21,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         if (civInfo.cities.size > 1) {
             val prevCityButton = TextButton("<", CameraStageBaseScreen.skin)
-            prevCityButton.onClick {
-                val indexOfCity = civInfo.cities.indexOf(city)
-                val indexOfNextCity = if (indexOfCity == 0) civInfo.cities.size - 1 else indexOfCity - 1
-                cityScreen.game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
-            }
+            prevCityButton.onClick { cityScreen.page(-1) }
             add(prevCityButton).pad(20f)
         } else add()
 
@@ -72,11 +68,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         if (civInfo.cities.size > 1) {
             val nextCityButton = TextButton(">", CameraStageBaseScreen.skin)
-            nextCityButton.onClick {
-                val indexOfCity = civInfo.cities.indexOf(city)
-                val indexOfNextCity = if (indexOfCity == civInfo.cities.size - 1) 0 else indexOfCity + 1
-                cityScreen.game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
-            }
+            nextCityButton.onClick { cityScreen.page(1) }
             add(nextCityButton).pad(20f)
         } else add()
         row()
@@ -84,12 +76,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         val exitCityButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
         exitCityButton.labelCell.pad(10f)
 
-        exitCityButton.onClick {
-            val game = cityScreen.game
-            game.setWorldScreen()
-            game.worldScreen.mapHolder.setCenterPosition(city.location)
-            game.worldScreen.bottomUnitTable.selectedUnit=null
-        }
+        exitCityButton.onClick { cityScreen.exit() }
 
         add(exitCityButton).pad(10f).colspan(columns)
 
