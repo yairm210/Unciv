@@ -309,13 +309,26 @@ class CityConstructions {
         builtBuildings.remove(buildingName)
     }
 
-    fun purchaseConstruction(constructionName: String): Boolean {
+    /**
+     *  Purchase a construction for gold
+     *  called from NextTurnAutomation and the City UI
+     *  Build / place the new item, deduct cost, and maintain queue.
+     *
+     *  @param constructionName What to buy (needed since buying something not queued is allowed)
+     *  @param queuePosition    Position in the queue or -1 if not from queue
+     *                          Note: -1 does not guarantee queue will remain unchanged (validation)
+     *  @param automatic        Flag whether automation should try to choose what next to build (not coming from UI)
+     *                          Note: settings.autoAssignCityProduction is handled later
+     *  @return                 Success (false e.g. unit cannot be placed
+     */
+    fun purchaseConstruction(constructionName: String, queuePosition: Int, automatic: Boolean): Boolean {
         if (!getConstruction(constructionName).postBuildEvent(this, true))
             return false // nothing built - no pay
 
         cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
-        if (currentConstructionFromQueue == constructionName)
-            removeCurrentConstruction()
+
+        if (queuePosition in 0 until constructionQueue.size)
+            removeFromQueue(queuePosition, automatic)
         validateConstructionQueue()
 
         return true

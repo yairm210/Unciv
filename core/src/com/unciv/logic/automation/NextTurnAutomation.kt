@@ -116,7 +116,7 @@ object NextTurnAutomation{
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction.canBePurchased()
                     && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo)) {
-                city.cityConstructions.purchaseConstruction(construction.name)
+                city.cityConstructions.purchaseConstruction(construction.name, 0, true)
             }
         }
     }
