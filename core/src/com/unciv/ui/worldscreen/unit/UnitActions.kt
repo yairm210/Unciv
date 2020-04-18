@@ -7,6 +7,7 @@ import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -364,6 +365,8 @@ object UnitActions {
                         unitTile.improvement = improvementName
                         unitTile.improvementInProgress = null
                         unitTile.turnsToImprovement = 0
+                        if (improvementName == Constants.citadel)
+                            takeOverTilesAround(unit)
                         val city = unitTile.getCity()
                         if (city != null) {
                             city.cityStats.update()
@@ -373,9 +376,35 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0f && !tile.isWater &&
                             !tile.isCityCenter() && !tile.getLastTerrain().impassable &&
-                            tile.improvement != improvementName })
+                            tile.improvement != improvementName &&
+                            // citadel can be built only next to or within own borders
+                            (improvementName != Constants.citadel ||
+                                    tile.neighbors.any { it.getOwner() == unit.civInfo })})
         }
         return null
+    }
+
+    private fun takeOverTilesAround(unit: MapUnit) {
+        // one of the neighbour tile must belong to unit's civ, so nearestCity will be never `null`
+        val nearestCity = unit.currentTile.neighbors.first { it.getOwner() == unit.civInfo }.getCity()
+        // capture all tiles which do not belong to unit's civ and are not enemy cities
+        // we use getTilesInDistance here, not neighbours to include the current tile as well
+        val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
+                .filter { !it.isCityCenter() && it.getOwner() != unit.civInfo }
+        // make a set of civs to be notified (a set - in order to not repeat notification on each tile)
+        val notifications = mutableSetOf<CivilizationInfo>()
+        // take over the ownership
+        for (tile in tilesToTakeOver) {
+            val otherCiv = tile.getOwner()
+            if (otherCiv != null) {
+                // decrease relations for -10 pt/tile
+                otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                notifications.add(otherCiv)
+            }
+            nearestCity!!.expansion.takeOwnership(tile)
+        }
+        for (otherCiv in notifications)
+            otherCiv.addNotification("${unit.civInfo} has stolen your territory!", unit.currentTile.position, Color.RED)
     }
 
     private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {
