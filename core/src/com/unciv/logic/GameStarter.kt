@@ -91,6 +91,8 @@ object GameStarter {
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
             gameInfo.civilizations.add(civ)
+            for(tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+                civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
         }
     }
 
