@@ -8,6 +8,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.tile.TileResource
 import kotlin.math.*
 import kotlin.random.Random
 
@@ -371,15 +372,66 @@ class MapGenerator(val ruleset: Ruleset) {
 
     // Here, we need each specific resource to be spread over the map - it matters less if specific resources are near each other
     private fun spreadStrategicResources(tileMap: TileMap, distance: Int) {
-        val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
-        // passable land tiles (no mountains, no wonders) without resources yet
-        val candidateTiles = tileMap.values.filter { it.resource == null && it.isLand && !it.getLastTerrain().impassable }
-        val totalNumberOfResources = candidateTiles.size * tileMap.mapParameters.resourceRichness
-        val resourcesPerType = (totalNumberOfResources/strategicResources.size).toInt()
+        // Extensive but fast preparations - not many terrains therefore all collections are very small
+        // What, including terrain features, can count as land or water, respectively?
+        // This would make little sense with the vanilla ruleset but with this we allow some pretty free modding
+        val baseLand = ruleset.terrains.values.asSequence().filter { it.type == TerrainType.Land }
+        val landFeatures = ruleset.terrains.values.asSequence().filter { it.type == TerrainType.TerrainFeature && it.occursOn != null && it.occursOn.any { it in baseLand.map { it.name } } }
+        val allLand = (baseLand+landFeatures).map { it.name }.toHashSet()
+        val baseWater = ruleset.terrains.values.asSequence().filter { it.type == TerrainType.Water }
+        val waterFeatures = ruleset.terrains.values.asSequence().filter { it.type == TerrainType.TerrainFeature && it.occursOn != null && it.occursOn.any { it in baseWater.map { it.name } } }
+        val allWater = (baseWater+waterFeatures).map { it.name }.toHashSet()
+
+        // Now, per resource: Can they occur on land and/or water?
+        data class LandOrWater(val land: Boolean = false, val water: Boolean = false)
+        fun getLandOrWater(resource: TileResource): LandOrWater {
+            return LandOrWater(resource.terrainsCanBeFoundOn.any { it in allLand }, resource.terrainsCanBeFoundOn.any { it in allWater} )
+        }
+        val strategicResources =
+                ruleset.tileResources.values
+                .filter { it.resourceType == ResourceType.Strategic }
+        val landOrWaterMap =
+                strategicResources
+                .map { Pair<String,LandOrWater>(it.name, getLandOrWater(it)) }
+                .toMap()
+
+        // Get all base terrain any strategic resource can occur on / all features
+        // (could use only allOccursOn, benefit is small, but every little bit counts to speed up filtering later)
+        val allOccursOn = strategicResources.flatMap { it.terrainsCanBeFoundOn }.toHashSet()
+        val allBaseOccursOn = allOccursOn.map { ruleset.terrains[it]!! }.filter { it.type == TerrainType.Water || it.type == TerrainType.Land }.map { it.name }.toHashSet()
+        val allFeaturesOccursOn = allOccursOn.map { ruleset.terrains[it]!! }.filter { it.type == TerrainType.TerrainFeature }.map { it.name }.toHashSet()
+
+        // Get filtered sequences for allowable tiles without resources yet (nat wonders aren't spawned yet) - for all domain types
+        // Could be simplified by basing landCandidates/waterCandidates on allCandidates, but it should enumerate faster with cheapest tests first
+        val allCandidates =
+                tileMap.values.asSequence().filter {
+                    it.resource == null
+                    && (it.baseTerrain in allBaseOccursOn || it.terrainFeature in allFeaturesOccursOn) }
+        val landCandidates =
+                tileMap.values.asSequence().filter {
+                    it.isLand && it.resource == null
+                    && (it.baseTerrain in allBaseOccursOn || it.terrainFeature in allFeaturesOccursOn) }
+        val waterCandidates =
+                tileMap.values.asSequence().filter {
+                    it.isWater && it.resource == null
+                    && (it.baseTerrain in allBaseOccursOn || it.terrainFeature in allFeaturesOccursOn) }
+
+        // This is a good formula taking distributions over land/water into account and measuring precisely, but at the cost of enumerating the candidates one extra time
+        // measurement says it's fast so i'll not replace it with a guesstimate.
+        val totalNumberOfResources = (
+                landCandidates.count() * landOrWaterMap.count { it.value.land }
+                + waterCandidates.count() * landOrWaterMap.count { it.value.water }
+            ) * tileMap.mapParameters.resourceRichness / landOrWaterMap.size
+        val resourcesPerType = (totalNumberOfResources / strategicResources.size).toInt()
+
+        // finally, place the resources type by type - below is the first time larger lists of tiles are actually materialized as chooseSpreadOutLocations needs them
         for (resource in strategicResources) {
-            // remove the tiles where previous resources have been placed
-            val suitableTiles = candidateTiles
-                    .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getBaseTerrain().name)}
+            // Filter land, sea or both candidates for suitable tiles without those where previous resources have been placed
+            // as the candidates are sequences, they start over every time, therefore taking resources already placed into account - no need to repeat the it.resource == null test
+            val suitableTiles =
+                    (if(landOrWaterMap[resource.name]?.land == false) waterCandidates else if(landOrWaterMap[resource.name]?.water == false) landCandidates else allCandidates)
+                    .filter { it.baseTerrain in resource.terrainsCanBeFoundOn || it.terrainFeature in resource.terrainsCanBeFoundOn }
+                    .toList()
 
             val locations = chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
 
