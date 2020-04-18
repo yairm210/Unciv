@@ -172,6 +172,9 @@ class Ruleset {
     }
 
     fun getEraNumber(era:String) = getEras().indexOf(era)
+
+    fun containsMapEditorObjects() =
+            terrains.isNotEmpty() || tileResources.isNotEmpty() || tileImprovements.isNotEmpty()
 }
 
 /** Loading mods is expensive, so let's only do it once and

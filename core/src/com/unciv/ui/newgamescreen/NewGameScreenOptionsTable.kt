@@ -25,6 +25,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private var mapTypeSpecificTable = Table()
     private val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
+    private lateinit var modPickerTable: ModPickerTable
 
     init {
         pad(10f)
@@ -77,7 +78,10 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         // activate once, so when we had a file map before we'll have the right things set for another one
         updateOnMapTypeChange()
 
-        mapTypeSelectBox.onChange { updateOnMapTypeChange() }
+        mapTypeSelectBox.onChange { 
+			updateOnMapTypeChange() 
+            updateModsDependentOnMap()
+		}
 
         add(mapTypeSelectBox).row()
         add(mapTypeSpecificTable).colspan(2).row()
@@ -91,7 +95,10 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         mapFileSelectBox.items = mapNames
         if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
 
-        mapFileSelectBox.onChange { mapParameters.name = mapFileSelectBox.selected!! }
+        mapFileSelectBox.onChange { 
+			mapParameters.name = mapFileSelectBox.selected!! 
+            updateModsDependentOnMap()
+		}
         return mapFileSelectBox
     }
 
@@ -190,41 +197,41 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     }
 
 
-    fun addModCheckboxes() {
-        val modRulesets = RulesetCache.filter { it.key!="" }.values
-        if(modRulesets.isEmpty()) return
-
-        fun reloadMods(){
+    private fun addModCheckboxes() {
+        fun notifyChangedMods(modList: LinkedHashSet<String>, activatedMod: String) {
             ruleset.clear()
-            ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
-            ruleset.mods+=newGameParameters.mods
+            ruleset.add(RulesetCache.getComplexRuleset(modList))
+            ruleset.mods += modList
 
             ImageGetter.ruleset=ruleset
             ImageGetter.setTextureRegionDrawables()
-        }
 
-        add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
-        val modCheckboxTable = Table().apply { defaults().pad(5f) }
-        for(mod in modRulesets){
-            val checkBox = CheckBox(mod.name.tr(),CameraStageBaseScreen.skin)
-            if (mod.name in newGameParameters.mods) checkBox.isChecked = true
-            checkBox.onChange {
-                if (checkBox.isChecked) newGameParameters.mods.add(mod.name)
-                else newGameParameters.mods.remove(mod.name)
-                reloadMods()
-                var desiredCiv = ""
-                if (checkBox.isChecked) {
-                    val modNations = RulesetCache[mod.name]?.nations
-                    if (modNations != null && modNations.size > 0) {
-                        desiredCiv = modNations.keys.first()
-                    }
+            var desiredCiv = ""
+            if (activatedMod.isNotEmpty()) {
+                val modNations = RulesetCache[activatedMod]?.nations
+                if (modNations != null && modNations.size > 0) {
+                    desiredCiv = modNations.keys.first()
                 }
-                updatePlayerPickerTable(desiredCiv)
             }
-            modCheckboxTable.add(checkBox).row()
+            updatePlayerPickerTable(desiredCiv)
         }
 
-        add(modCheckboxTable).colspan(2).row()
+        modPickerTable = ModPickerTable(newGameParameters.mods) { modList, activatedMod -> notifyChangedMods(modList,activatedMod) }
+        add(modPickerTable).colspan(2).row()
+    }
+
+    private fun updateModsDependentOnMap() {
+/*  Upcoming...
+        // Clarify for the user that mods required by the selected map are now mandatory
+        var lockMods = HashSet<String>()
+        if (mapParameters.type == MapType.custom) {
+            try {
+                val mapInfo = MapSaver.loadMapInfo(mapParameters.name)
+                lockMods = mapInfo.requiredMods
+            } catch (ex: Exception) {}
+        }
+        modPickerTable.updateLockedMods (lockMods)
+*/
     }
 
 }
