@@ -121,17 +121,23 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.add(ScrollPane(nationsTable)).height(mapEditorScreen.stage.height*0.7f)
     }
 
+    private fun getRedCross(size: Float, alpha: Float): Actor {
+        val redCross = ImageGetter.getImage("OtherIcons/Close")
+        redCross.setSize( size, size)
+        redCross.color = Color.RED.cpy().apply { a = alpha }
+        return redCross
+    }
 
-    fun setTerrainsAndResources(){
+    private fun setTerrainsAndResources(){
 
         val baseTerrainTable = Table().apply { defaults().pad(20f) }
         val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
 
-        terrainFeaturesTable.add(getHex(Color.WHITE).apply {
+        terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
             onClick {
                 clearSelection()
                 clearTerrainFeature = true
-                setCurrentHex(getHex(Color.WHITE), "Clear terrain features")
+                setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
             }
         }).row()
 
@@ -160,13 +166,21 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.add(terrainsAndResourcesTable)
     }
 
+    private fun getCrossedResource() : Actor {
+        val redCross = getRedCross(45f, 0.5f)
+        val group = IconCircleGroup(40f, redCross, false)
+        group.circle.color = ImageGetter.foodCircleColor
+        return group
+    }
+
+
     private fun getResourceActors(): ArrayList<Actor> {
         val resources = ArrayList<Actor>()
-        resources.add(getHex(Color.WHITE).apply {
+        resources.add(getHex(Color.WHITE, getCrossedResource()).apply {
             onClick {
                 clearSelection()
                 clearResource = true
-                setCurrentHex(getHex(Color.WHITE), "Clear resource")
+                setCurrentHex(getHex(Color.WHITE, getCrossedResource()), "Clear resource")
             }
         })
 
@@ -278,7 +292,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
 
-    fun getHex(color: Color, image: Actor?=null): Group {
+    private fun getHex(color: Color, image: Actor?=null): Group {
         val hex = ImageGetter.getImage(tileSetLocation + "Hexagon")
         hex.color = color
         hex.width*=0.3f
@@ -297,7 +311,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
 
-    fun clearSelection(){
+    private fun clearSelection(){
         clearTerrainFeature=false
         selectedTerrain=null
         clearResource=false
@@ -402,7 +416,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         setCurrentHex(tileGroup,text)
     }
 
-    fun setCurrentHex(actor:Actor, text:String){
+    private fun setCurrentHex(actor:Actor, text:String){
         currentHex.remove()
         val currentHexTable = Table()
         currentHexTable.add(text.toLabel()).padRight(20f)
