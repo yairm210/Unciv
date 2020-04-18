@@ -254,6 +254,7 @@ class CityConstructions {
      * @return Boolean: true when any change has been applied
     */
     fun validateConstructionQueue(): Boolean {
+        if (constructionQueue.isEmpty()) return false
         val tempQueue = mutableListOf<String>()
         var anyChange = false
         val lastConstruction = constructionQueue.last()
