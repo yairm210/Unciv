@@ -134,7 +134,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 .filter { it.resourceType == ResourceType.Strategic }
         val civResources = civInfo.getCivResources()
         for (resource in revealedStrategicResources) {
-            val isRevealed = civInfo.tech.isResearched(resource.revealedBy!!)
+            val isRevealed = resource.revealedBy == null || civInfo.tech.isResearched(resource.revealedBy!!)
             resourceLabels[resource.name]!!.isVisible = isRevealed
             resourceImages[resource.name]!!.isVisible = isRevealed
             if (!civResources.any { it.resource==resource}) resourceLabels[resource.name]!!.setText("0")
