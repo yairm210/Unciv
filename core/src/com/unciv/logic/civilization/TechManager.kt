@@ -260,7 +260,7 @@ class TechManager {
         for (city in civInfo.cities)
             for(constructionName in city.cityConstructions.constructionQueue.toList()){ // copy, since we're changing the queue
                 if(constructionName !in obsoleteUnits) continue
-                val constructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
+                val constructionUnit = city.cityConstructions.getConstruction(constructionName) as BaseUnit
                 city.cityConstructions.constructionQueue.replaceAll { if(it==constructionName) constructionUnit.upgradesTo!! else it }
             }
 
