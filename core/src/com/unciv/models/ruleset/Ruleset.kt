@@ -209,6 +209,9 @@ object RulesetCache :HashMap<String,Ruleset>() {
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name
+            if(mod.modOptions.isBaseRuleset){
+                newRuleset.modOptions = mod.modOptions
+            }
         }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 

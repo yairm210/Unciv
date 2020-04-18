@@ -194,12 +194,14 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         val modRulesets = RulesetCache.filter { it.key!="" }.values
         if(modRulesets.isEmpty()) return
 
-        fun reloadMods(){
+        fun reloadMods() {
             ruleset.clear()
-            ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
-            ruleset.mods+=newGameParameters.mods
+            val newRuleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+            ruleset.add(newRuleset)
+            ruleset.mods += newGameParameters.mods
+            ruleset.modOptions = newRuleset.modOptions
 
-            ImageGetter.ruleset=ruleset
+            ImageGetter.ruleset = ruleset
             ImageGetter.setTextureRegionDrawables()
         }
 

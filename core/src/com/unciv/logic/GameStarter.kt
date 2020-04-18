@@ -60,7 +60,7 @@ object GameStarter {
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
-        availableCivNames.remove(Constants.barbarianEncampment)
+        availableCivNames.remove(Constants.barbarians)
 
         if(!newGameParameters.noBarbarians && ruleset.modOptions.barbarians!=Constants.disabled) {
             val barbarianCivilization = CivilizationInfo(Constants.barbarians)
