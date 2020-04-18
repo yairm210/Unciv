@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.RoadStatus
@@ -22,7 +21,7 @@ import com.unciv.ui.utils.*
 
 
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
-    val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
+    private val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
 
     var clearTerrainFeature=false
     var selectedTerrain : Terrain?=null
@@ -37,12 +36,14 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     var toggleBottomRiver=false
     var toggleBottomLeftRiver=false
 
-    val editorPickTable = Table()
+    private val editorPickTable = Table()
 
     var brushSize = 1
     private var currentHex: Actor = Group()
 
-    val ruleset = mapEditorScreen.ruleset
+    private val ruleset = mapEditorScreen.ruleset
+
+    private val scrollPanelHeight = mapEditorScreen.stage.height*0.7f - 100f // -100 reserved for currentHex table
 
     init{
         height = mapEditorScreen.stage.height
@@ -104,7 +105,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
             improvementsTable.add(improvementImage).row()
         }
-        editorPickTable.add(ScrollPane(improvementsTable)).height(mapEditorScreen.stage.height*0.7f)
+        editorPickTable.add(ScrollPane(improvementsTable)).height(scrollPanelHeight)
 
         val nationsTable = Table()
         for(nation in ruleset.nations.values){
@@ -118,7 +119,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             nationsTable.add(nationImage).row()
         }
 
-        editorPickTable.add(ScrollPane(nationsTable)).height(mapEditorScreen.stage.height*0.7f)
+        editorPickTable.add(ScrollPane(nationsTable)).height(scrollPanelHeight)
     }
 
     private fun getRedCross(size: Float, alpha: Float): Actor {
@@ -151,14 +152,14 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a = 0.7f })
 
         val terrainsAndResourcesTable = Table()
-        terrainsAndResourcesTable.add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f)
+        terrainsAndResourcesTable.add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
-        terrainsAndResourcesTable.add(ScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f)
+        terrainsAndResourcesTable.add(ScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
         val resourcesTable = Table()
         for(resource in resources) resourcesTable.add(resource).row()
         resourcesTable.pack()
-        terrainsAndResourcesTable.add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f).row()
+        terrainsAndResourcesTable.add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
 
         terrainsAndResourcesTable.pack()
 
@@ -406,24 +407,25 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
 
-    fun setCurrentHex(tileInfo: TileInfo, text:String){
+    private fun setCurrentHex(tileInfo: TileInfo, text:String){
         val tileGroup = TileGroup(tileInfo,TileSetStrings())
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
                     update()
                 }
+        tileGroup.baseLayerGroup.moveBy(-10f, 10f)
         setCurrentHex(tileGroup,text)
     }
 
     private fun setCurrentHex(actor:Actor, text:String){
         currentHex.remove()
         val currentHexTable = Table()
-        currentHexTable.add(text.toLabel()).padRight(20f)
-        currentHexTable.add(actor).pad(10f)
+        currentHexTable.add(text.toLabel()).padRight(30f)
+        currentHexTable.add(actor)
         currentHexTable.pack()
         currentHex=currentHexTable
-        currentHex.setPosition(stage.width-currentHex.width-10, 10f)
+        currentHex.setPosition(stage.width - currentHex.width-10, 10f)
         stage.addActor(currentHex)
     }
 
