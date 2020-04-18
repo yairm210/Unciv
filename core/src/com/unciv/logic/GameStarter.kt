@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
@@ -59,11 +60,12 @@ object GameStarter {
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
-        availableCivNames.remove("Barbarians")
+        availableCivNames.remove(Constants.barbarianEncampment)
 
-
-        val barbarianCivilization = CivilizationInfo("Barbarians")
-        gameInfo.civilizations.add(barbarianCivilization)
+        if(!newGameParameters.noBarbarians && ruleset.modOptions.barbarians!=Constants.disabled) {
+            val barbarianCivilization = CivilizationInfo(Constants.barbarians)
+            gameInfo.civilizations.add(barbarianCivilization)
+        }
 
         for (player in newGameParameters.players.sortedBy { it.chosenCiv == "Random" }) {
             val nationName = if (player.chosenCiv != "Random") player.chosenCiv

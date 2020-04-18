@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.tech.TechColumn
@@ -16,6 +17,7 @@ import kotlin.collections.set
 
 class ModOptions {
     var isBaseRuleset = false
+    var barbarians = Constants.enabled
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()

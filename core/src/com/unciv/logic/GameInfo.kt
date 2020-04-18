@@ -59,7 +59,7 @@ class GameInfo {
 
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
     fun getCurrentPlayerCivilization() = currentPlayerCiv
-    fun getBarbarianCivilization() = getCivilization("Barbarians")
+    fun getBarbarianCivilization() = getCivilization(Constants.barbarians)
     fun getDifficulty() = difficultyObject
     fun getCities() = civilizations.flatMap { it.cities }
     //endregion

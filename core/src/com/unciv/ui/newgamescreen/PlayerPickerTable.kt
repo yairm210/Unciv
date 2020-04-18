@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
@@ -154,7 +155,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
 
         for (nation in newGameScreen.ruleset.nations.values
-                .filter { !it.isCityState() && it.name != "Barbarians" }) {
+                .filter { !it.isCityState() && it.name != Constants.barbarians }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 

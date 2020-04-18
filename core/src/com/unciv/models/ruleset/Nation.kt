@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
@@ -47,7 +48,7 @@ class Nation : INamed {
 
     fun isCityState()= cityStateType != null
     fun isMajorCiv() = !isBarbarian() && !isCityState()
-    fun isBarbarian() = name=="Barbarians"
+    fun isBarbarian() = name== Constants.barbarians
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false
