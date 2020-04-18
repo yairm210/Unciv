@@ -67,7 +67,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val nationTable = getNationTable(player)
         playerTable.add(nationTable)
 
-        val playerTypeTextbutton = TextButton(player.playerType.name.tr(), CameraStageBaseScreen.skin)
+        val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
@@ -98,14 +98,14 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
             playerIdTextfield.addListener { onPlayerIdTextUpdated(); true }
             val currentUserId = UncivGame.Current.settings.userId
-            val setCurrentUserButton = TextButton("Set current user".tr(), CameraStageBaseScreen.skin)
+            val setCurrentUserButton = "Set current user".toTextButton()
             setCurrentUserButton.onClick {
                 playerIdTextfield.text = currentUserId
                 onPlayerIdTextUpdated()
             }
             playerTable.add(setCurrentUserButton).colspan(3).fillX().pad(5f).row()
 
-            val copyFromClipboardButton = TextButton("Player ID from clipboard".tr(),CameraStageBaseScreen.skin)
+            val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
             copyFromClipboardButton.onClick {
                 playerIdTextfield.text = Gdx.app.clipboard.contents
                 onPlayerIdTextUpdated()

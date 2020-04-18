@@ -49,7 +49,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
             Gdx.app.postRunnable {
                 scrollableMapTable.apply { defaults().pad(10f) }
                 for (downloadableMap in folderList.entries) {
-                    val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
+                    val downloadMapButton = downloadableMap.name.toTextButton()
                     listOfMaps.add(downloadMapButton)
                     downloadMapButton.onClick {
                         thread(name = "MapDownload") { loadMap(downloadableMap) }

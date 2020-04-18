@@ -48,7 +48,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         pack()
         addActor(getMenuButton()) // needs to be after pack
 
-        val overviewButton = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
+        val overviewButton = "Overview".toTextButton()
         overviewButton.labelCell.pad(10f)
         overviewButton.pack()
         overviewButton.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv)) }

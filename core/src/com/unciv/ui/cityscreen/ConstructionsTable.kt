@@ -267,7 +267,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val button: TextButton
 
         if (isSelectedQueueEntry()) {
-            button = TextButton("Remove from queue".tr(), CameraStageBaseScreen.skin)
+            button = "Remove from queue".toTextButton()
             if (!UncivGame.Current.worldScreen.isPlayersTurn || city.isPuppet) button.disable()
             else {
                 button.onClick {
@@ -278,7 +278,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 }
             }
         } else {
-            button = TextButton("Add to queue".tr(), CameraStageBaseScreen.skin)
+            button = "Add to queue".toTextButton()
             if (construction == null
                     || cityConstructions.isQueueFull()
                     || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
@@ -322,7 +322,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
-        val button = TextButton("", CameraStageBaseScreen.skin)
+        val button = "".toTextButton()
 
         if (construction == null || !construction.canBePurchased()
         ) {

@@ -6,10 +6,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.models.Tutorial
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
 data class TutorialForRender(val tutorial: Tutorial, val texts: Array<String>)
 
@@ -33,7 +30,7 @@ class TutorialRender(private val screen: CameraStageBaseScreen) {
 
             tutorialPopup.addGoodSizedLabel(texts[0]).row()
 
-            val button = TextButton(Constants.close.tr(), CameraStageBaseScreen.skin)
+            val button = Constants.close.toTextButton()
             button.onClick {
                 tutorialPopup.remove()
                 texts.removeIndex(0)

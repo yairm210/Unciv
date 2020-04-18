@@ -154,7 +154,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addMusicVolumeSlider()
 
         if(Gdx.app.type==Application.ApplicationType.Desktop) {
-            val generateTranslationsButton = TextButton("Generate translation files".tr(), CameraStageBaseScreen.skin)
+            val generateTranslationsButton = "Generate translation files".toTextButton()
             generateTranslationsButton.onClick {
                 val translations = Translations()
                 translations.readAllLanguagesTranslation()
@@ -202,7 +202,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             }
             innerTable.add(musicVolumeSlider).pad(10f).row()
         } else {
-            val downloadMusicButton = TextButton("Download music".tr(), CameraStageBaseScreen.skin)
+            val downloadMusicButton = "Download music".toTextButton()
             innerTable.add(downloadMusicButton).colspan(2).row()
             val errorTable = Table()
             innerTable.add(errorTable).colspan(2).row()
