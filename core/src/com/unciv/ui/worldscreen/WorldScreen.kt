@@ -386,6 +386,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateTechButton() {
+        if(gameInfo.ruleSet.technologies.isEmpty()) return
         techButtonHolder.isVisible = viewingCiv.cities.isNotEmpty()
         techButtonHolder.clearChildren()
 

@@ -220,8 +220,11 @@ class CivilizationInfo {
     }
     //endregion
 
-    fun shouldOpenTechPicker() = tech.freeTechs != 0
-            || tech.currentTechnology()==null && cities.isNotEmpty()
+    fun shouldOpenTechPicker(): Boolean {
+        if (gameInfo.ruleSet.technologies.isEmpty()) return false
+        if (tech.freeTechs != 0) return true
+        return tech.currentTechnology() == null && cities.isNotEmpty()
+    }
 
 
 
@@ -435,7 +438,8 @@ class CivilizationInfo {
 
         gold += nextTurnStats.gold.toInt()
 
-        if (cities.isNotEmpty()) tech.nextTurn(nextTurnStats.science.toInt())
+        if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
+            tech.nextTurn(nextTurnStats.science.toInt())
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 

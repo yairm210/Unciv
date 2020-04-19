@@ -541,13 +541,17 @@ class CityInfo {
     }
 
     private fun tryUpdateRoadStatus(){
-        if(getCenterTile().roadStatus==RoadStatus.None
-                && getRuleset().tileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
+        if(getCenterTile().roadStatus==RoadStatus.None){
+            val roadImprovement = getRuleset().tileImprovements["Road"]
+            if(roadImprovement!=null && roadImprovement.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus=RoadStatus.Road
+        }
 
-        else if(getCenterTile().roadStatus!=RoadStatus.Railroad
-                && getRuleset().tileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
-            getCenterTile().roadStatus=RoadStatus.Railroad
+        else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
+            val railroadImprovement = getRuleset().tileImprovements["Railroad"]
+            if (railroadImprovement != null && railroadImprovement.techRequired in civInfo.tech.techsResearched)
+                getCenterTile().roadStatus = RoadStatus.Railroad
+        }
     }
 
     fun getGoldForSellingBuilding(buildingName:String) = getRuleset().buildings[buildingName]!!.cost / 10

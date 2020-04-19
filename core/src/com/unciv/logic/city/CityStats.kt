@@ -73,7 +73,9 @@ class CityStats {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        val techEnablingRailroad = cityInfo.getRuleset().tileImprovements["Railroad"]!!.techRequired!!
+        val railroadImprovement = cityInfo.getRuleset().tileImprovements["Railroad"]
+        if (railroadImprovement == null) return stats // for mods
+        val techEnablingRailroad = railroadImprovement.techRequired!!
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
         // we shouldn't get bonuses, it's as if the tracks aare layed out but we can't operate them.
         if (cityInfo.civInfo.tech.isResearched(techEnablingRailroad)
