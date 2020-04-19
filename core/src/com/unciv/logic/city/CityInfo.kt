@@ -332,12 +332,12 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             population.population--
-            if (population.population <= 0) { // there are strange cases where we geet to -1
+            if (population.population <= 0) { // there are strange cases where we get to -1
                 civInfo.addNotification("[$name] has been razed to the ground!", location, Color.RED)
                 destroyCity()
-            } else {//if not razed yet:
-                if (population.foodStored >= population.getFoodToNextPopulation()) {//if surplus in the granary...
-                    population.foodStored = population.getFoodToNextPopulation() - 1//...reduce below the new growth treshold
+            } else { //if not razed yet:
+                if (population.foodStored >= population.getFoodToNextPopulation()) { //if surplus in the granary...
+                    population.foodStored = population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
                 }
             }
         } else population.nextTurn(foodForNextTurn())
