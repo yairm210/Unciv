@@ -480,7 +480,7 @@ class CityStats {
 
         if (cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler && totalFood > 0) {
             newFinalStatList["Excess food to production"] =
-                    Stats().apply { production=totalFood; food=-totalFood }
+                    Stats().apply { production = totalFood; food = -totalFood }
         }
 
         if (cityInfo.isInResistance())

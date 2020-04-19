@@ -135,8 +135,8 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         }
         toggleIconTable.add(populationImage).row()
 
-        val resourceImage = ImageGetter.getImage("ResourceImages/Cattle").surroundWithCircle(40f)
-        resourceImage.circle.color = Color.BLACK
+        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle").surroundWithCircle(40f)
+//        resourceImage.circle.color = Color.BLACK
         resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
