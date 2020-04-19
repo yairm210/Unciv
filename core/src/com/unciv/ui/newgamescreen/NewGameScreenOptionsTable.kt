@@ -129,12 +129,15 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private fun addCityStatesSelectBox() {
         add("{Number of city-states}:".tr())
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
-        val cityStatesArray = Array<Int>()
 
-        (0..ruleset.nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
+
+        val cityStatesArray = Array<Int>(numberOfCityStates+1)
+        (0..numberOfCityStates).forEach { cityStatesArray.add(it) }
+
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
-        add(cityStatesSelectBox).row()
+        add(cityStatesSelectBox).width(50f).row()
         cityStatesSelectBox.onChange {
             newGameParameters.numberOfCityStates = cityStatesSelectBox.selected
         }
