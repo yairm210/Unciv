@@ -46,9 +46,11 @@ class OfferColumnsTable(val tradeLogic: TradeLogic, stage: Stage, val onChange: 
     }
 
     fun update() {
-        ourAvailableOffersTable.update(tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers))
-        ourOffersTable.update(tradeLogic.currentTrade.ourOffers)
-        theirOffersTable.update(tradeLogic.currentTrade.theirOffers)
-        theirAvailableOffersTable.update(tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers))
+        val ourFilteredOffers = tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers)
+        val theirFilteredOffers = tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers)
+        ourAvailableOffersTable.update(ourFilteredOffers, tradeLogic.theirAvailableOffers)
+        ourOffersTable.update(tradeLogic.currentTrade.ourOffers, tradeLogic.theirAvailableOffers)
+        theirOffersTable.update(tradeLogic.currentTrade.theirOffers, tradeLogic.ourAvailableOffers)
+        theirAvailableOffersTable.update(theirFilteredOffers, tradeLogic.ourAvailableOffers)
     }
 }
