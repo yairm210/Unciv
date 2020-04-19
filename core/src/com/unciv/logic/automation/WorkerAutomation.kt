@@ -177,7 +177,7 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeature == "Marsh" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
+            tile.terrainFeature == Constants.marsh && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
             tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Fallout"    // for really mad modders
             tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Jungle"
             tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Forest"
@@ -200,7 +200,7 @@ class WorkerAutomation(val unit: MapUnit) {
             uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
 
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
-            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == Constants.marsh -> "Remove Marsh"
             tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"

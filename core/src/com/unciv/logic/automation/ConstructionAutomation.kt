@@ -119,6 +119,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkerChoice() {
+        if(!civInfo.gameInfo.ruleSet.units.containsKey(Constants.worker)) return // for mods
         if(civInfo.getIdleUnits().any { it.name==Constants.worker && it.action== Constants.unitActionAutomation})
             return // If we have automated workers who have no work to do then it's silly to construct new workers.
 
