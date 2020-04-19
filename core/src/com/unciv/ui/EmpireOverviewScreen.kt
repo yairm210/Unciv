@@ -113,12 +113,24 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
         stage.addActor(table)
     }
 
-
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
-        for(diplomacy in viewingPlayer.diplomacy.values)
-            for(trade in diplomacy.trades)
-                tradesTable.add(createTradeTable(trade,diplomacy.otherCiv())).row()
+        val diplomacies = viewingPlayer.diplomacy.values.filter { it.trades.isNotEmpty() }
+                .sortedWith(Comparator { d0, d1 ->
+                    val d0offers = d0.trades.first().ourOffers
+                    val d1offers = d1.trades.first().ourOffers
+                    val d0max = if (d0offers.isEmpty()) 0 else d0offers.maxBy { it.duration }!!.duration
+                    val d1max = if (d1offers.isEmpty()) 0 else d1offers.maxBy { it.duration }!!.duration
+                    when {
+                        d0max > d1max -> 1
+                        d0max == d1max -> 0
+                        else -> -1
+                    }
+                })
+        for(diplomacy in diplomacies) {
+            for (trade in diplomacy.trades)
+                tradesTable.add(createTradeTable(trade, diplomacy.otherCiv())).row()
+        }
 
         return tradesTable
     }
