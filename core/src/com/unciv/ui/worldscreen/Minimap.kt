@@ -29,7 +29,6 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     }
 
     init{
-        setScrollingDisabled(true,true)
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
@@ -39,7 +38,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-            val groupSize = mapHolder.worldScreen.stage.height / 8f / mapHolder.tileMap.mapParameters.size.radius * (mapHolder.worldScreen.stage.height / 600f)
+            val groupSize = 10f
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
@@ -110,7 +109,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
 
     fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
-        internalMinimapWrapper.add(minimap)
+        internalMinimapWrapper.add(minimap).size(worldScreen.stage.width/5,worldScreen.stage.height/5)
         internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
         internalMinimapWrapper.pack()
 
