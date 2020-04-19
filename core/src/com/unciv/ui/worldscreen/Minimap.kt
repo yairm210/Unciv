@@ -17,6 +17,7 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     val allTiles = Group()
@@ -109,7 +110,15 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
 
     fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
-        internalMinimapWrapper.add(minimap).size(worldScreen.stage.width/5,worldScreen.stage.height/5)
+
+        val sizePercent = worldScreen.game.settings.minimapSize
+        val sizeWinX = worldScreen.stage.width * sizePercent / 100
+        val sizeWinY = worldScreen.stage.height * sizePercent / 100
+        val isSquare = worldScreen.game.settings.minimapSquare
+        val sizeX = if (isSquare) sqrt(sizeWinX * sizeWinY) else sizeWinX
+        val sizeY = if (isSquare) sizeX else sizeWinY
+        internalMinimapWrapper.add(minimap).size(sizeX,sizeY)
+
         internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
         internalMinimapWrapper.pack()
 
