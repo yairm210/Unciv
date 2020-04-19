@@ -82,9 +82,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addYesNoRow ("Show tutorials", settings.showTutorials, true) {
             settings.showTutorials = it
         }
-        addYesNoRow ("Show minimap", settings.showMinimap, true) {
-            settings.showMinimap = it
-        }
+
+        addMinimapControl()
+
         addYesNoRow ("Show pixel units", settings.showPixelUnits, true) {
             settings.showPixelUnits = it
         }
@@ -326,6 +326,35 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         reloadWorldAndOptions()
     }
 
+    private fun addMinimapControl() {
+        innerTable.add("Show minimap".toLabel())
+        val minimapSelectBox = SelectBox<String>(skin)
+        val minimapArray = Array<String>()
+        minimapArray.addAll("Off".tr(), "Default".tr(), "Square".tr())
+        minimapSelectBox.items = minimapArray
+        minimapSelectBox.selected = minimapArray[if (settings.showMinimap) if (settings.minimapSquare) 2 else 1 else 0]
+        innerTable.add(minimapSelectBox).minWidth(240f).pad(10f).row()
+
+        minimapSelectBox.onChange {
+            when (minimapSelectBox.selected) {
+                minimapArray[1] -> { settings.minimapSquare = false; settings.showMinimap = true }
+                minimapArray[2] -> { settings.minimapSquare = true; settings.showMinimap = true }
+                else -> { settings.showMinimap = false }
+            }
+            reloadWorldAndOptions()
+        }
+
+        innerTable.add("Minimap size".tr())
+        val minimapSlider = Slider(15f, 40f, 5f, false, skin)
+        minimapSlider.value = settings.minimapSize.toFloat()
+        innerTable.add(minimapSlider).pad(10f).row()
+
+        minimapSlider.onChange {
+            settings.minimapSize = minimapSlider.value.toInt()
+            settings.save()
+            reloadWorldAndOptions()
+        }
+    }
 }
 
 /*
