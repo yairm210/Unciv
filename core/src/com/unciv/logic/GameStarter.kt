@@ -62,7 +62,7 @@ object GameStarter {
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
 
-        if(!newGameParameters.noBarbarians && ruleset.modOptions.barbarians!=Constants.disabled) {
+        if(!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
             val barbarianCivilization = CivilizationInfo(Constants.barbarians)
             gameInfo.civilizations.add(barbarianCivilization)
         }

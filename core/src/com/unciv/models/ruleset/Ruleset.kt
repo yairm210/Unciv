@@ -17,7 +17,6 @@ import kotlin.collections.set
 
 class ModOptions {
     var isBaseRuleset = false
-    var barbarians = Constants.enabled
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
