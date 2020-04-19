@@ -1,5 +1,6 @@
 package com.unciv.ui.trade
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -23,7 +24,11 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
 
     private val expanderTabs = HashMap<TradeType, ExpanderTab>()
 
-    fun update(offersToDisplay:TradeOffersList) {
+    /**
+     *   offersToDisplay - the offers which should be displayed as buttons
+     *   otherOffers - the list of other side's offers to compare with whether these offers are unique
+     */
+    fun update(offersToDisplay:TradeOffersList, otherOffers: TradeOffersList) {
         table.clear()
         expanderTabs.clear()
 
@@ -45,7 +50,9 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
 
         for (offerType in values()) {
             val offersOfType = offersToDisplay.filter { it.type == offerType }
-                    .sortedWith(compareBy({if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0},{if (it.type==City) it.getOfferText() else it.name.tr()}))
+                    .sortedWith(compareBy({
+                        if (UncivGame.Current.settings.orderTradeOffersByAmount) -it.amount else 0},
+                            {if (it.type==City) it.getOfferText() else it.name.tr()}))
 
             if (expanderTabs.containsKey(offerType)) {
                 expanderTabs[offerType]!!.innerTable.clear()
@@ -57,11 +64,19 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1
-                if (offer.amount > 0 && offer.name != Constants.peaceTreaty && offer.name != Constants.researchAgreement) // can't disable peace treaty!
+                if (offer.amount > 0 && offer.name != Constants.peaceTreaty && // can't disable peace treaty!
+                        offer.name != Constants.researchAgreement) {
+
+                    // highlight unique suggestions
+                    if (offerType in listOf(Luxury_Resource, Strategic_Resource)
+                            && otherOffers.all { it.type != offer.type || it.name != offer.name })
+                        tradeButton.color = Color.GREEN
+
                     tradeButton.onClick {
                         val amountTransferred = min(amountPerClick, offer.amount)
                         onOfferClicked(offer.copy(amount = amountTransferred))
                     }
+                }
                 else tradeButton.disable()  // for instance we have negative gold
 
 
@@ -72,5 +87,4 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
         }
         actor = table
     }
-
 }
