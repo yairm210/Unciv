@@ -34,6 +34,8 @@ class GameSettings {
     var orderTradeOffersByAmount = true
     var windowState = WindowState()
     var isFreshlyCreated = false
+    var minimapSize = 20
+    var minimapSquare = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
