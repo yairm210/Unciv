@@ -33,7 +33,7 @@ class MapGenerator(val ruleset: Ruleset) {
             return map
 
         seedRNG(seed)
-        generateLand(map)
+        generateLand(map,ruleset)
         raiseMountainsAndHills(map)
         applyHumidityAndTemperature(map)
         spawnLakesAndCoasts(map)
@@ -565,7 +565,12 @@ class MapGenerator(val ruleset: Ruleset) {
     companion object MapLandmassGenerator {
         var RNG = Random(42)
 
-        fun generateLand(tileMap: TileMap) {
+        fun generateLand(tileMap: TileMap, ruleset: Ruleset) {
+            if(ruleset.terrains.values.none { it.type==TerrainType.Water }) {
+                for (tile in tileMap.values)
+                    tile.baseTerrain = Constants.grassland
+                return
+            }
             when (tileMap.mapParameters.type) {
                 MapType.pangaea -> createPangea(tileMap)
                 MapType.continents -> createTwoContinents(tileMap)

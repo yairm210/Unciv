@@ -8,7 +8,7 @@ import com.unciv.models.ruleset.tech.TechEra
 class GameParameters { // Default values are the default new game
     var difficulty = "Prince"
     var gameSpeed = GameSpeed.Standard
-    var players = ArrayList<Player>().apply {
+    var players = mutableListOf<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
     }
