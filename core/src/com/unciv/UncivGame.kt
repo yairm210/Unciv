@@ -84,6 +84,7 @@ class UncivGame(
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
+                ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
                 thread(name="Music") { startMusic() }
                 restoreSize()
 
