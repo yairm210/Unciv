@@ -80,14 +80,10 @@ open class TileInfo {
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
-    fun getUnits(): Sequence<MapUnit> {
-        if(militaryUnit==null && civilianUnit==null && airUnits.isEmpty())
-            return emptySequence() // for performance reasons - costs much less to initialize than an empty ArrayList or list()
-        val list = ArrayList<MapUnit>(2)
-        if(militaryUnit!=null) list.add(militaryUnit!!)
-        if(civilianUnit!=null) list.add(civilianUnit!!)
-        list.addAll(airUnits)
-        return list.asSequence()
+    fun getUnits() = sequence {
+        if (militaryUnit != null) yield(militaryUnit!!)
+        if (civilianUnit != null) yield(civilianUnit!!)
+        if (airUnits.isNotEmpty()) yieldAll(airUnits)
     }
 
     fun getCity(): CityInfo? = owningCity
@@ -115,7 +111,9 @@ open class TileInfo {
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @delegate:Transient
-    val neighbors: Sequence<TileInfo> by lazy { getTilesAtDistance(1) }
+    val neighbors: Sequence<TileInfo> by lazy { getTilesAtDistance(1).toList().asSequence() }
+    // We have to .toList() so that the values are stored together once for caching,
+    // and the toSequence so that aggregations (like neighbors.flatMap{it.units} don't take up their own space
 
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4

@@ -257,12 +257,19 @@ class TechManager {
         }
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
-        for (city in civInfo.cities)
-            for(constructionName in city.cityConstructions.constructionQueue.toList()){ // copy, since we're changing the queue
-                if(constructionName !in obsoleteUnits) continue
-                val constructionUnit = city.cityConstructions.getConstruction(constructionName) as BaseUnit
-                city.cityConstructions.constructionQueue.replaceAll { if(it==constructionName) constructionUnit.upgradesTo!! else it }
+        for (city in civInfo.cities) {
+                // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
+            val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
+            city.cityConstructions.constructionQueue.clear()
+            for (constructionName in oldQueue) {
+                var newConstructionName = constructionName
+                if (constructionName in obsoleteUnits) {
+                    val constructionUnit = city.cityConstructions.getConstruction(constructionName) as BaseUnit
+                    newConstructionName = civInfo.getEquivalentUnit(constructionUnit.upgradesTo!!).name
+                }
+                city.cityConstructions.constructionQueue.add(newConstructionName)
             }
+        }
 
         if(techName=="Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY
                 && civInfo.cities.any())
