@@ -80,14 +80,14 @@ open class TileInfo {
     //region pure functions
 
     /** Returns military, civilian and air units in tile */
-    fun getUnits(): List<MapUnit> {
+    fun getUnits(): Sequence<MapUnit> {
         if(militaryUnit==null && civilianUnit==null && airUnits.isEmpty())
-            return emptyList() // for performance reasons - costs much less to initialize than an empty ArrayList or list()
+            return emptySequence() // for performance reasons - costs much less to initialize than an empty ArrayList or list()
         val list = ArrayList<MapUnit>(2)
         if(militaryUnit!=null) list.add(militaryUnit!!)
         if(civilianUnit!=null) list.add(civilianUnit!!)
         list.addAll(airUnits)
-        return list
+        return list.asSequence()
     }
 
     fun getCity(): CityInfo? = owningCity
@@ -115,7 +115,7 @@ open class TileInfo {
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
     // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @delegate:Transient
-    val neighbors: List<TileInfo> by lazy { getTilesAtDistance(1).toList() }
+    val neighbors: Sequence<TileInfo> by lazy { getTilesAtDistance(1) }
 
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
@@ -400,7 +400,7 @@ open class TileInfo {
 
     fun hasEnemySubmarine(viewingCiv:CivilizationInfo): Boolean {
         val unitsInTile = getUnits()
-        if (unitsInTile.isEmpty()) return false
+        if (unitsInTile.none()) return false
         if (unitsInTile.first().civInfo!=viewingCiv &&
                 unitsInTile.firstOrNull { it.isInvisible() } != null) {
             return true

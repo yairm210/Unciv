@@ -22,9 +22,9 @@ class CityExpansionManager {
     }
 
     fun tilesClaimed(): Int {
-        val tilesAroundCity = cityInfo.getCenterTile().getTilesInDistance(1)
+        val tilesAroundCity = cityInfo.getCenterTile().neighbors
                 .map { it.position }
-        return cityInfo.tiles.filterNot { it in tilesAroundCity }.size
+        return cityInfo.tiles.count { it != cityInfo.location && it !in tilesAroundCity}
     }
     fun isAreaMaxed(): Boolean = cityInfo.tiles.size >= 90
 

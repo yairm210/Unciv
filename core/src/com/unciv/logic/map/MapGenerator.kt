@@ -253,7 +253,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     .filter { it.resource == null && it.improvement == null
                             && wonder.occursOn!!.contains(it.getLastTerrain().name)
                             && it.neighbors.all{ it.isWater } }
-                    .random()
+                    .toList().random()
 
             location2.naturalWonder = wonder.name
             location2.baseTerrain = wonder.turnsInto!!
