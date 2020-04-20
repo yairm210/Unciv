@@ -177,29 +177,28 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
 
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel(fontSize = 24)).row()
-        if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
+        if (otherCivDiplomacyManager.relationshipLevel() <= RelationshipLevel.Enemy)
             diplomacyTable.add(otherCiv.nation.hateHello.toLabel()).row()
         else
             diplomacyTable.add(otherCiv.nation.neutralHello.toLabel()).row()
         diplomacyTable.addSeparator()
 
-        if(!viewingCiv.isAtWarWith(otherCiv)) {
+        if (!viewingCiv.isAtWarWith(otherCiv)) {
             val tradeButton = "Trade".toTextButton()
             tradeButton.onClick {
                 setTrade(otherCiv).apply {
-                    tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type==TradeType.Treaty }) }
-                    tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type==TradeType.Treaty }) }
+                    tradeLogic.ourAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
+                    tradeLogic.theirAvailableOffers.apply { remove(firstOrNull { it.type == TradeType.Treaty }) }
                     offerColumnsTable.update()
                 }
             }
             diplomacyTable.add(tradeButton).row()
-            if(isNotPlayersTurn()) tradeButton.disable()
-        }
-        else{
+            if (isNotPlayersTurn()) tradeButton.disable()
+        } else {
             val negotiatePeaceButton = "Negotiate Peace".toTextButton()
             negotiatePeaceButton.onClick {
                 val tradeTable = setTrade(otherCiv)
-                val peaceTreaty = TradeOffer(Constants.peaceTreaty,TradeType.Treaty)
+                val peaceTreaty = TradeOffer(Constants.peaceTreaty, TradeType.Treaty)
                 tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
                 tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
                 tradeTable.offerColumnsTable.update()
@@ -212,22 +211,21 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
         val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
 
-
-
         if (!viewingCiv.isAtWarWith(otherCiv)) {
-            if(otherCivDiplomacyManager.relationshipLevel() > RelationshipLevel.Neutral
-                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
-                    && !diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)){
-                val declareFriendshipButton = "Declare Friendship ([30] turns)".toTextButton()
+            if(!diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
+                val declareFriendshipButton = "Offer Declaration of Friendship ([30] turns)".toTextButton()
                 declareFriendshipButton.onClick {
-                    diplomacyManager.signDeclarationOfFriendship()
-                        setRightSideFlavorText(otherCiv,"May our nations forever remain united!","Indeed!")
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DeclarationOfFriendship, viewingCiv.civName))
+                    declareFriendshipButton.disable()
                 }
                 diplomacyTable.add(declareFriendshipButton).row()
-                if(isNotPlayersTurn()) declareFriendshipButton.disable()
+                if (isNotPlayersTurn() || otherCiv.popupAlerts
+                                .any { it.type == AlertType.DeclarationOfFriendship && it.value == viewingCiv.civName })
+                    declareFriendshipButton.disable()
             }
 
-            if(viewingCiv.canSignResearchAgreementsWith(otherCiv)){
+
+            if (viewingCiv.canSignResearchAgreementsWith(otherCiv)) {
                 val researchAgreementButton = "Research Agreement".toTextButton()
 
                 val requiredGold = viewingCiv.getResearchAgreementCost(otherCiv)
@@ -248,31 +246,31 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 diplomacyTable.add(researchAgreementButton).row()
             }
 
-            if(!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)
-                            && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+            if (!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
                 val denounceButton = "Denounce ([30] turns)".toTextButton()
                 denounceButton.onClick {
                     diplomacyManager.denounce()
-                    setRightSideFlavorText(otherCiv,"We will remember this.","Very well.")
+                    setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
                 }
                 diplomacyTable.add(denounceButton).row()
-                if(isNotPlayersTurn()) denounceButton.disable()
+                if (isNotPlayersTurn()) denounceButton.disable()
             }
 
             val declareWarButton = getDeclareWarButton(diplomacyManager, otherCiv)
             diplomacyTable.add(declareWarButton).row()
-            if(isNotPlayersTurn()) declareWarButton.disable()
+            if (isNotPlayersTurn()) declareWarButton.disable()
         }
 
         val demandsButton = "Demands".toTextButton()
         demandsButton.onClick {
             rightSideTable.clear()
-            rightSideTable.add(getDemandsTable(viewingCiv,otherCiv))
+            rightSideTable.add(getDemandsTable(viewingCiv, otherCiv))
         }
         diplomacyTable.add(demandsButton).row()
-        if(isNotPlayersTurn()) demandsButton.disable()
+        if (isNotPlayersTurn()) demandsButton.disable()
 
-        if(!otherCiv.isPlayerCivilization()) { // human players make their own choices
+        if (!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
             diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
         }

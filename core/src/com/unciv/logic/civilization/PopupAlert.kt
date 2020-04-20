@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization
 
-enum class AlertType{
+enum class AlertType {
     Defeated,
     WonderBuilt,
     TechResearched,
@@ -11,6 +11,7 @@ enum class AlertType{
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
     GoldenAge,
+    DeclarationOfFriendship,
 }
 
 class PopupAlert {
