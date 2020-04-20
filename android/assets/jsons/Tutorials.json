@@ -15,15 +15,15 @@
       "The first thing coming out of your city should be either a Scout or Warrior.\nI generally prefer the Warrior because it can be used for defense and because it can be upgraded\n  to the Swordsman unit later in the game for a relatively modest sum of gold.\nScouts can be effective, however, if you seem to be located in an area of dense forest and hills.\nScouts don’t suffer a movement penalty in this terrain.\nIf you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.\nFast expanding is absolutely critical in most games of this type."
   ],
   _Slow_Start: [
-      "In your first couple of turns,\n  you will have very little options,\n  but as your civilization grows, so do the \n  number of things requiring your attention"    
+      "In your first couple of turns, you will have very little options, but as your civilization grows, so do the number of things requiring your attention"
   ],
   Culture_and_Policies: [
-      "Each turn, the culture you gain from all your \n  cities is added to your Civilization's culture.\nWhen you have enough culture, you may pick a \n  Social Policy, each one giving you a certain bonus."	,
-      "The policies are organized into branches, with each\n  branch providing a bonus ability when all policies \n  in the branch have been adopted."    ,
+      "Each turn, the culture you gain from all your cities is added to your Civilization's culture.\nWhen you have enough culture, you may pick a Social Policy, each one giving you a certain bonus."	,
+      "The policies are organized into branches, with each branch providing a bonus ability when all policies in the branch have been adopted."    ,
       "With each policy adopted, and with each city built,\n  the cost of adopting another policy rises - so choose wisely!"    
   ],
   City_Expansion: [
-	"Once a city has gathered enough Culture, it will expand into a neighboring tile.\nyou have no control over the tile it will expand into, but tiles with resources and higher yields are prioritized.",
+	"Once a city has gathered enough Culture, it will expand into a neighboring tile.\nYou have no control over the tile it will expand into, but tiles with resources and higher yields are prioritized.",
 	"Each additional tile will require more culture, but generally your first cities will eventually expand to a wide tile range."
 	"Although your city will keep expanding forever, your citizens can only work 3 tiles away from city center.\nThis should be taken into account when placing new cities."
   ]
@@ -33,7 +33,7 @@
       "This means that it is very difficult to expand quickly in Unciv.\nIt isn’t impossible, but as a new player you probably shouldn’t do it.\nSo what should you do? Chill out, scout, and improve the land that you do have by building Workers.\nOnly build new cities once you have found a spot that you believe is appropriate."    
   ],
   Unhappiness: [    
-      "It seems that your citizens are unhappy!\nWhile unhappy, cities  will grow at 1/4 the speed,\n  and your units will suffer a 2% penalty for each unhappiness",
+      "It seems that your citizens are unhappy!\nWhile unhappy, cities  will grow at 1/4 the speed, and your units will suffer a 2% penalty for each unhappiness",
       "Unhappiness has two main causes: Population and cities\n  Each city causes 3 unhappiness, and each population, 1",
       "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders"  
   ],
@@ -50,7 +50,7 @@
       "So to sum it up, these are the basics of Unciv – Found a prosperous first city, expand slowly to manage happiness,\n   and set yourself up for the victory condition you wish to pursue.\nObviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim."
   ],
   Enemy_City: [
-      "Cities can be conquered by reducing their health to 1,\n  and entering the city with a melee unit.\nSince cities heal each turn, it is best to attack with ranged units\n  and use your melee units to defend them until the city has been defeated!"
+      "Cities can be conquered by reducing their health to 1, and entering the city with a melee unit.\nSince cities heal each turn, it is best to attack with ranged units and use your melee units to defend them until the city has been defeated!"
   ],
   Luxury_Resource: [
       "Luxury resources within your domain and with their specific improvement are connected to your trade network.\nEach unique Luxury resource you have adds 5 happiness to your civilization, but extra resources of the same type don't add anything, so use them for trading with other civilizations!"   
@@ -90,7 +90,7 @@
       "If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.\nIf you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - \n  units in Fortify or Sleep are not considered idle units.\nIf you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units"
   ],
   Contact_Me: [
-      "Hi there! If you've played this far, you've probably\n  seen that the game is currently incomplete.\nUnCiv is meant to be open-source and free, forever.\n  That means no ads or any other nonsense.",
+      "Hi there! If you've played this far, you've probably seen that the game is currently incomplete.\n UnCiv is meant to be open-source and free, forever.\n That means no ads or any other nonsense.",
       "What motivates me to keep working on it, \n  besides the fact I think it's amazingly cool that I can,\n  is the support from the players - you guys are the best!",
       "Every rating and review that I get puts a smile on my face =)\n  So contact me! Send me an email, review, Github issue\n  or mail pigeon, and let's figure out how to make the game \n  even more awesome!\n(Contact info is in the Play Store)"
   ],
