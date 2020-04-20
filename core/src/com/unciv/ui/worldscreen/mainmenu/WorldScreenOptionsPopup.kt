@@ -14,6 +14,7 @@ import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import java.util.*
 import kotlin.concurrent.thread
 
 class Language(val language:String, val percentComplete:Int){
@@ -73,24 +74,14 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addHeader("Display options")
 
-        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) {
-            settings.showWorkedTiles = it
-        }
+        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow ("Show resources and improvements", settings.showResourcesAndImprovements, true) {
             settings.showResourcesAndImprovements = it
         }
-        addYesNoRow ("Show tutorials", settings.showTutorials, true) {
-            settings.showTutorials = it
-        }
-        addYesNoRow ("Show minimap", settings.showMinimap, true) {
-            settings.showMinimap = it
-        }
-        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) {
-            settings.showPixelUnits = it
-        }
-        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) {
-            settings.showPixelImprovements = it
-        }
+        addYesNoRow ("Show tutorials", settings.showTutorials, true) {settings.showTutorials = it }
+        addYesNoRow ("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
+        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
+        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
         addLanguageSelectBox()
 
@@ -108,12 +99,8 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addHeader("Gameplay options")
 
-        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) {
-            settings.checkForDueUnits = it
-        }
-        addYesNoRow ("Move units with a single tap", settings.singleTapMove) {
-            settings.singleTapMove = it
-        }
+        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+        addYesNoRow ("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
         addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human) {
@@ -122,38 +109,66 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 }
             }
         }
-        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) {
-            settings.autoBuildingRoads = it
-        }
-        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) {
-            settings.orderTradeOffersByAmount = it
-        }
+        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
 
         addAutosaveTurnsSelectBox()
 
         // at the moment the notification service only exists on Android
-        if (Gdx.app.type == Application.ApplicationType.Android) {
-            addHeader("Multiplayer options")
-
-            addYesNoRow ("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
-                settings.multiplayerTurnCheckerEnabled = it
-            }
-
-            if (settings.multiplayerTurnCheckerEnabled) {
-                addMultiplayerTurnCheckerDelayBox()
-
-                addYesNoRow ("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled) {
-                    settings.multiplayerTurnCheckerPersistentNotificationEnabled = it
-                }
-            }
-        }
+        addNotificationOptions()
 
         addHeader("Other options")
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
+        addTranslationGeneration()
+        addSetUserId()
 
-        if(Gdx.app.type==Application.ApplicationType.Desktop) {
+        innerTable.add("Version".toLabel()).pad(10f)
+        innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
+    }
+
+    private fun addSetUserId() {
+        val idSetLabel = "".toLabel()
+        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
+                .onClick {
+                    try {
+                        val clipboardContents = Gdx.app.clipboard.contents.trim()
+                        UUID.fromString(clipboardContents)
+                        YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                                {
+                                    settings.userId = clipboardContents
+                                    settings.save()
+                                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!")
+                                }).open(true)
+                        idSetLabel.isVisible = true
+                    } catch (ex: Exception) {
+                        idSetLabel.isVisible = true
+                        idSetLabel.setFontColor(Color.RED).setText("Invalid ID!")
+                    }
+                }
+        innerTable.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
+        innerTable.add(idSetLabel).colspan(2).row()
+    }
+
+    private fun addNotificationOptions() {
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            addHeader("Multiplayer options")
+
+            addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled)
+            { settings.multiplayerTurnCheckerEnabled = it }
+
+            if (settings.multiplayerTurnCheckerEnabled) {
+                addMultiplayerTurnCheckerDelayBox()
+
+                addYesNoRow("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+                { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
+            }
+        }
+    }
+
+    private fun addTranslationGeneration() {
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
             val generateTranslationsButton = "Generate translation files".toTextButton()
             generateTranslationsButton.onClick {
                 val translations = Translations()
@@ -165,9 +180,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             }
             innerTable.add(generateTranslationsButton).colspan(2).row()
         }
-
-        innerTable.add("Version".toLabel()).pad(10f)
-        innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
     }
 
     private fun addSoundEffectsVolumeSlider() {
