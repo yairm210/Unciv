@@ -327,7 +327,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         }
         demandsTable.add(dontSettleCitiesButton).row()
 
-        demandsTable.add(TextButton(Constants.close.tr(),skin).onClick { updateRightSide(otherCiv) })
+        demandsTable.add(Constants.close.toTextButton().onClick { updateRightSide(otherCiv) })
         return demandsTable
     }
 
@@ -364,7 +364,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 diplomacyManager.declareWar()
                 setRightSideFlavorText(otherCiv, otherCiv.nation.attacked, "Very well.")
                 updateLeftSideTable()
-            }, this).open()
+                }, this).open()
         }
         return declareWarButton
     }

@@ -11,10 +11,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.translations.tr
 import com.unciv.ui.saves.Gzip
-import com.unciv.ui.utils.Popup
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.isEnabled
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.DropBox
 import kotlin.concurrent.thread
 
@@ -26,13 +23,13 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         mapNameEditor.maxLength = 240       // A few under max for most filesystems
         mapEditorScreen.stage.keyboardFocus = mapNameEditor
 
-        val newMapButton = TextButton("New map".tr(),skin)
+        val newMapButton = "New map".toTextButton()
         newMapButton.onClick {
             UncivGame.Current.setScreen(NewMapScreen())
         }
         add(newMapButton).row()
 
-        val clearCurrentMapButton = TextButton("Clear current map".tr(),skin)
+        val clearCurrentMapButton = "Clear current map".toTextButton()
         clearCurrentMapButton.onClick {
             for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values)
             {
@@ -51,7 +48,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         }
         add(clearCurrentMapButton).row()
 
-        val saveMapButton = TextButton("Save map".tr(), skin)
+        val saveMapButton = "Save map".toTextButton()
         saveMapButton.onClick {
             mapEditorScreen.tileMap.mapParameters.name=mapEditorScreen.mapName
             mapEditorScreen.tileMap.mapParameters.type=MapType.custom
@@ -78,7 +75,7 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             true
         }
 
-        val copyMapAsTextButton = TextButton("Copy to clipboard".tr(), skin)
+        val copyMapAsTextButton = "Copy to clipboard".toTextButton()
         copyMapAsTextButton.onClick {
             val json = Json().toJson(mapEditorScreen.tileMap)
             val base64Gzip = Gzip.zip(json)
@@ -86,13 +83,13 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         }
         add(copyMapAsTextButton).row()
 
-        val loadMapButton = TextButton("Load map".tr(), skin)
+        val loadMapButton = "Load map".toTextButton()
         loadMapButton.onClick {
             UncivGame.Current.setScreen(LoadMapScreen(mapEditorScreen.tileMap))
         }
         add(loadMapButton).row()
 
-        val uploadMapButton = TextButton("Upload map".tr(), skin)
+        val uploadMapButton = "Upload map".toTextButton()
         uploadMapButton.onClick {
             thread(name="MapUpload") {
                 try {
@@ -116,11 +113,11 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         add(uploadMapButton).row()
 
 
-        val exitMapEditorButton = TextButton("Exit map editor".tr(), skin)
+        val exitMapEditorButton = "Exit map editor".toTextButton()
         exitMapEditorButton.onClick { UncivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
 
-        val closeOptionsButton = TextButton(Constants.close.tr(), skin)
+        val closeOptionsButton = Constants.close.toTextButton()
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
     }

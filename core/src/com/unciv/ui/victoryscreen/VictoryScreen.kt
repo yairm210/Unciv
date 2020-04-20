@@ -10,10 +10,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class VictoryScreen : PickerScreen() {
 
@@ -28,14 +25,11 @@ class VictoryScreen : PickerScreen() {
 
     init {
         val tabsTable = Table().apply { defaults().pad(10f) }
-        val setMyVictoryButton = TextButton("Our status".tr(),skin)
-        setMyVictoryButton.onClick { setMyVictoryTable() }
+        val setMyVictoryButton = "Our status".toTextButton().onClick { setMyVictoryTable() }
         tabsTable.add(setMyVictoryButton)
-        val setGlobalVictoryButton = TextButton("Global status".tr(),skin)
-        setGlobalVictoryButton .onClick { setGlobalVictoryTable() }
+        val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
-        val setCivRankingsButton = TextButton("Rankings".tr(),skin)
-        setCivRankingsButton.onClick { setCivRankingsTable() }
+        val setCivRankingsButton = "Rankings".toTextButton().onClick { setCivRankingsTable() }
         tabsTable.add(setCivRankingsButton)
         topTable.add(tabsTable)
         topTable.addSeparator()
@@ -124,7 +118,8 @@ class VictoryScreen : PickerScreen() {
     private fun scienceVictoryColumn():Table {
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program",playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program",
+                playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 
@@ -159,7 +154,7 @@ class VictoryScreen : PickerScreen() {
     }
 
     fun getMilestone(text:String, achieved:Boolean): TextButton {
-        val textButton = TextButton(text.tr(),skin)
+        val textButton = text.toTextButton()
         if(achieved) textButton.color = Color.GREEN
         else textButton.color = Color.GRAY
         return textButton

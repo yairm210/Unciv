@@ -383,7 +383,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
         for(unit in viewingPlayer.getCivUnits().sortedWith(compareBy({it.name},{!it.due},
                 {it.currentMovement<0.1f},{abs(it.currentTile.position.x)+abs(it.currentTile.position.y)}))) {
             val baseUnit = unit.baseUnit()
-            val button = TextButton(unit.name.tr(), skin)
+            val button = unit.name.toTextButton()
             button.onClick {
                 UncivGame.Current.setWorldScreen()
                 UncivGame.Current.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)

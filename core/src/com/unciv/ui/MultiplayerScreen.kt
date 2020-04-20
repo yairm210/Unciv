@@ -271,7 +271,7 @@ class MultiplayerScreen() : PickerScreen() {
         if (!currentlyRunningGame.gameParameters.isOnlineMultiplayer || gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
             return
 
-        val currentGameButton = TextButton("Add Currently Running Game".tr(), skin)
+        val currentGameButton = "Add Currently Running Game".toTextButton()
         currentGameButton.onClick {
             if (gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
                 return@onClick
@@ -321,7 +321,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         //TODO Change delete to "give up"
             //->turn a player into an AI so everyone can still play without the user
                 //->should only be possible on the users turn because it has to be uploaded afterwards
-        val deleteButton = TextButton("Delete save".tr(), skin)
+        val deleteButton = "Delete save".toTextButton()
         deleteButton.onClick {
             val askPopup = Popup(this)
             askPopup.addGoodSizedLabel("Are you sure you want to delete this map?".tr()).row()

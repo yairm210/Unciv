@@ -9,7 +9,7 @@ import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton = TextButton(Constants.close.tr(), skin)
+    internal var closeButton: TextButton = Constants.close.toTextButton()
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton

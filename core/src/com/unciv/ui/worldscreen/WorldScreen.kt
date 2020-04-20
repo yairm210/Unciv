@@ -375,7 +375,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         .filterNot {  it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)
-            val btn = TextButton("Diplomacy".tr(), skin)
+            val btn = "Diplomacy".toTextButton()
             btn.onClick { UncivGame.Current.setScreen(DiplomacyScreen(viewingCiv)) }
             btn.label.setFontSize(30)
             btn.labelCell.pad(10f)
