@@ -398,23 +398,21 @@ class MapGenerator(val ruleset: Ruleset) {
         // Get all base terrain any strategic resource can occur on / all features
         // (could use only allOccursOn, benefit is small, but every little bit counts to speed up filtering later)
         val allOccursOn = strategicResources.flatMap { it.terrainsCanBeFoundOn }.toHashSet()
-        val allBaseOccursOn = allOccursOn.map { ruleset.terrains[it]!! }.filter { it.type == TerrainType.Water || it.type == TerrainType.Land }.map { it.name }.toHashSet()
-        val allFeaturesOccursOn = allOccursOn.map { ruleset.terrains[it]!! }.filter { it.type == TerrainType.TerrainFeature }.map { it.name }.toHashSet()
 
         // Get filtered sequences for allowable tiles without resources yet (nat wonders aren't spawned yet) - for all domain types
         // Could be simplified by basing landCandidates/waterCandidates on allCandidates, but it should enumerate faster with cheapest tests first
         val allCandidates =
                 tileMap.values.asSequence().filter {
                     it.resource == null
-                    && (it.baseTerrain in allBaseOccursOn || it.terrainFeature in allFeaturesOccursOn) }
+                    && (it.baseTerrain in allOccursOn || it.terrainFeature in allOccursOn) }
         val landCandidates =
                 tileMap.values.asSequence().filter {
                     it.isLand && it.resource == null
-                    && (it.baseTerrain in allBaseOccursOn || it.terrainFeature in allFeaturesOccursOn) }
+                    && (it.baseTerrain in allOccursOn || it.terrainFeature in allOccursOn) }
         val waterCandidates =
                 tileMap.values.asSequence().filter {
                     it.isWater && it.resource == null
-                    && (it.baseTerrain in allBaseOccursOn || it.terrainFeature in allFeaturesOccursOn) }
+                    && (it.baseTerrain in allOccursOn || it.terrainFeature in allOccursOn) }
 
         // This is a good formula taking distributions over land/water into account and measuring precisely, but at the cost of enumerating the candidates one extra time
         // measurement says it's fast so i'll not replace it with a guesstimate.
@@ -428,8 +426,12 @@ class MapGenerator(val ruleset: Ruleset) {
         for (resource in strategicResources) {
             // Filter land, sea or both candidates for suitable tiles without those where previous resources have been placed
             // as the candidates are sequences, they start over every time, therefore taking resources already placed into account - no need to repeat the it.resource == null test
-            val suitableTiles =
-                    (if(landOrWaterMap[resource.name]?.land == false) waterCandidates else if(landOrWaterMap[resource.name]?.water == false) landCandidates else allCandidates)
+            val candidates = when {
+                landOrWaterMap[resource.name]?.land == false -> waterCandidates
+                landOrWaterMap[resource.name]?.water == false -> landCandidates
+                else -> allCandidates
+            }
+            val suitableTiles = candidates
                     .filter { it.baseTerrain in resource.terrainsCanBeFoundOn || it.terrainFeature in resource.terrainsCanBeFoundOn }
                     .toList()
 
