@@ -52,7 +52,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         addSquareButton("Multiplayer".tr()){
-            worldScreen.game.setScreen(MultiplayerScreen())
+            worldScreen.game.setScreen(MultiplayerScreen(worldScreen.game))
             close()
         }.size(width,height)
         addSeparator()
@@ -91,7 +91,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
 
         // Create a new map
         mapEditorPopup.addButton("New map") {
-            UncivGame.Current.setScreen(NewMapScreen())
+            worldScreen.game.setScreen(NewMapScreen())
             mapEditorPopup.close()
         }
 
@@ -100,9 +100,9 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
             val loadMapScreen = LoadMapScreen(null)
             loadMapScreen.closeButton.isVisible = true
             loadMapScreen.closeButton.onClick {
-                UncivGame.Current.setWorldScreen()
+                worldScreen.game.setWorldScreen()
                 loadMapScreen.dispose() }
-            UncivGame.Current.setScreen(loadMapScreen)
+            worldScreen.game.setScreen(loadMapScreen)
             mapEditorPopup.close()
         }
 

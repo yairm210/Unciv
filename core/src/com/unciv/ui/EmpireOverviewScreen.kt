@@ -28,11 +28,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
     private val centerTable = Table().apply {  defaults().pad(20f) }
 
     init {
-        onBackButtonClicked { UncivGame.Current.setWorldScreen() }
+        onBackButtonClicked { game.setWorldScreen() }
         val clicks = HashMap<String,() -> Unit>()
 
         val closeButton = Constants.close.toTextButton()
-        closeButton.onClick { UncivGame.Current.setWorldScreen() }
+        closeButton.onClick { game.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
@@ -351,7 +351,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
         for (city in cityList) {
             val button = Button(city.name.toLabel(), skin)
             button.onClick {
-                UncivGame.Current.setScreen(CityScreen(city))
+                game.setScreen(CityScreen(city))
             }
             citiesTable.add(button)
             citiesTable.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
@@ -385,8 +385,8 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
             val baseUnit = unit.baseUnit()
             val button = unit.name.toTextButton()
             button.onClick {
-                UncivGame.Current.setWorldScreen()
-                UncivGame.Current.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
+                game.setWorldScreen()
+                game.worldScreen.mapHolder.setCenterPosition(unit.currentTile.position)
             }
             table.add(button).left()
             val mapUnitAction = unit.mapUnitAction
@@ -404,7 +404,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
             if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(baseUnit.upgradesTo!!, Color.GREEN)).size(28f).padLeft(8f)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
-                    UncivGame.Current.setScreen(PromotionPickerScreen(unit))
+                    game.setScreen(PromotionPickerScreen(unit))
                 }
             }
             table.add(promotionsTable)
@@ -600,7 +600,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
     }
 
     companion object {
-        fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String,currentPlayer:CivilizationInfo): Table {
+        fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String, currentPlayer:CivilizationInfo): Table {
             val civGroup = Table()
 
             var labelText = civ.civName.tr()+afterCivNameText
@@ -611,7 +611,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 backgroundColor = Color.LIGHT_GRAY
                 labelColor = Color.BLACK
-            } else if (currentPlayer==civ || UncivGame.Current.viewEntireMapForDebug
+            } else if (currentPlayer==civ // game.viewEntireMapForDebug
                     || currentPlayer.knows(civ) || currentPlayer.isDefeated() || currentPlayer.victoryManager.hasWon()) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
                 backgroundColor = civ.nation.getOuterColor()

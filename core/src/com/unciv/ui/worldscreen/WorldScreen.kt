@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -246,7 +245,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         bottomUnitTable.update()
         bottomTileInfoTable.updateTileTable(mapHolder.selectedTile)
         bottomTileInfoTable.x = stage.width - bottomTileInfoTable.width
-        bottomTileInfoTable.y = if (UncivGame.Current.settings.showMinimap) minimapWrapper.height else 0f
+        bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
 
         tutorialTaskTable.clear()
@@ -341,7 +340,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun displayTutorialsOnUpdate() {
-        UncivGame.Current.crashController.showDialogIfNeeded()
+        game.crashController.showDialogIfNeeded()
 
         displayTutorial(Tutorial.Introduction)
 
@@ -376,7 +375,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)
             val btn = "Diplomacy".toTextButton()
-            btn.onClick { UncivGame.Current.setScreen(DiplomacyScreen(viewingCiv)) }
+            btn.onClick { game.setScreen(DiplomacyScreen(viewingCiv)) }
             btn.label.setFontSize(30)
             btn.labelCell.pad(10f)
             diplomacyButtonWrapper.add(btn)
@@ -453,7 +452,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     }
                 }
             } catch (ex: Exception) {
-                UncivGame.Current.crashController.crashOccurred()
+                game.crashController.crashOccurred()
                 throw ex
             }
 
@@ -478,7 +477,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
                 if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
                         && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    UncivGame.Current.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
+                    game.setScreen(PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization()))
                 else {
                     createNewWorldScreen()
                 }
@@ -577,7 +576,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun showTutorialsOnNextTurn(){
-        if (!UncivGame.Current.settings.showTutorials) return
+        if (!game.settings.showTutorials) return
         displayTutorial(Tutorial.SlowStart)
         displayTutorial(Tutorial.CityExpansion){ viewingCiv.cities.any { it.expansion.tilesClaimed()>0 } }
         displayTutorial(Tutorial.BarbarianEncountered) { viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } } }
@@ -585,7 +584,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         displayTutorial(Tutorial.Happiness) { viewingCiv.getHappiness() < 5 }
         displayTutorial(Tutorial.Unhappiness) { viewingCiv.getHappiness() < 0 }
         displayTutorial(Tutorial.GoldenAge) { viewingCiv.goldenAges.isGoldenAge() }
-        displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && UncivGame.Current.settings.checkForDueUnits }
+        displayTutorial(Tutorial.IdleUnits) { gameInfo.turns >= 50 && game.settings.checkForDueUnits }
         displayTutorial(Tutorial.ContactMe) { gameInfo.turns >= 100 }
         val resources = viewingCiv.detailedCivResources.asSequence().filter { it.origin == "All" }  // Avoid full list copy
         displayTutorial(Tutorial.LuxuryResource) { resources.any { it.resource.resourceType==ResourceType.Luxury } }

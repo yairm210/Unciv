@@ -26,7 +26,7 @@ class Language(val language:String, val percentComplete:Int){
 
 class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) {
     var selectedLanguage: String = "English"
-    private val settings = UncivGame.Current.settings
+    private val settings = worldScreen.game.settings
     private val innerTable = Table(CameraStageBaseScreen.skin)
 
     init {
@@ -43,7 +43,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addCloseButton() { worldScreen.enableNextTurnButtonAfterOptions() }
 
         pack() // Needed to show the background.
-        center(UncivGame.Current.worldScreen.stage)
+        center(worldScreen.game.worldScreen.stage)
     }
 
     private fun addHeader (text: String) {
@@ -56,16 +56,16 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             action(it)
             settings.save()
             if (updateWorld)
-                UncivGame.Current.worldScreen.shouldUpdate = true
+                worldScreen.game.worldScreen.shouldUpdate = true
         }
         innerTable.add(button).row()
     }
 
     private fun reloadWorldAndOptions() {
         settings.save()
-        UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-        UncivGame.Current.setWorldScreen()
-        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        worldScreen.game.worldScreen = WorldScreen(worldScreen.viewingCiv)
+        worldScreen.game.setWorldScreen()
+        WorldScreenOptionsPopup(worldScreen.game.worldScreen).open()
     }
 
     private fun rebuildInnerTable() {
@@ -104,7 +104,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human) {
-                UncivGame.Current.gameInfo.currentPlayerCiv.cities.forEach {
+                worldScreen.game.gameInfo.currentPlayerCiv.cities.forEach {
                     city -> city.cityConstructions.chooseNextConstruction()
                 }
             }
@@ -125,7 +125,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addSetUserId()
 
         innerTable.add("Version".toLabel()).pad(10f)
-        innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
+        innerTable.add(worldScreen.game.version.toLabel()).pad(10f).row()
     }
 
     private fun addSetUserId() {
@@ -196,7 +196,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     }
 
     private fun addMusicVolumeSlider() {
-        val musicLocation = Gdx.files.local(UncivGame.Current.musicLocation)
+        val musicLocation = Gdx.files.local(worldScreen.game.musicLocation)
         if (musicLocation.exists()) {
             innerTable.add("Music volume".tr())
 
@@ -206,9 +206,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 settings.musicVolume = musicVolumeSlider.value
                 settings.save()
 
-                val music = UncivGame.Current.music
+                val music = worldScreen.game.music
                 if (music == null) // restart music, if it was off at the app start
-                    thread(name = "Music") { UncivGame.Current.startMusic() }
+                    thread(name = "Music") { worldScreen.game.startMusic() }
 
                 music?.volume = 0.4f * musicVolumeSlider.value
             }
@@ -229,7 +229,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                         val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
                         musicLocation.write(file, false)
                         rebuildInnerTable()
-                        UncivGame.Current.startMusic()
+                        worldScreen.game.startMusic()
                     } catch (ex: Exception) {
                         errorTable.clear()
                         errorTable.add("Could not download music!".toLabel(Color.RED))
@@ -310,7 +310,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     private fun addLanguageSelectBox() {
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        UncivGame.Current.translations.percentCompleteOfLanguages
+        worldScreen.game.translations.percentCompleteOfLanguages
                 .map { Language(it.key, if (it.key == "English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
@@ -333,7 +333,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
     private fun selectLanguage() {
         settings.language = selectedLanguage
-        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
+        worldScreen.game.translations.tryReadTranslationForCurrentLanguage()
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         reloadWorldAndOptions()
     }

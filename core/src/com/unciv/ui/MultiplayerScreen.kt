@@ -15,7 +15,7 @@ import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
 
-class MultiplayerScreen() : PickerScreen() {
+class MultiplayerScreen(val uncivGame: UncivGame) : PickerScreen() {
 
     private lateinit var selectedGame: GameInfo
     private lateinit var selectedGameName: String
@@ -77,7 +77,7 @@ class MultiplayerScreen() : PickerScreen() {
 
         //rightTable Setup
         copyUserIdButton.onClick {
-            Gdx.app.clipboard.contents = UncivGame.Current.settings.userId
+            Gdx.app.clipboard.contents = uncivGame.settings.userId
             ResponsePopup("UserID copied to clipboard".tr(), this)
         }
         rightSideTable.add(copyUserIdButton).pad(10f).padBottom(30f).row()
@@ -89,14 +89,14 @@ class MultiplayerScreen() : PickerScreen() {
         rightSideTable.add(copyGameIdButton).pad(10f).row()
 
         editButton.onClick {
-            UncivGame.Current.setScreen(EditMultiplayerGameInfoScreen(selectedGame, selectedGameName, this))
+            uncivGame.setScreen(EditMultiplayerGameInfoScreen(selectedGame, selectedGameName, this))
             //game must be unselected in case the game gets deleted inside the EditScreen
             unselectGame()
         }
         rightSideTable.add(editButton).pad(10f).row()
 
         addGameButton.onClick {
-            UncivGame.Current.setScreen(AddMultiplayerGameScreen(this))
+            uncivGame.setScreen(AddMultiplayerGameScreen(this))
         }
         rightSideTable.add(addGameButton).pad(10f).padBottom(30f).row()
 
@@ -161,7 +161,7 @@ class MultiplayerScreen() : PickerScreen() {
     //the game will be downloaded opon joining it anyway
     private fun joinMultiplaerGame(){
         try {
-            UncivGame.Current.loadGame(selectedGame)
+            uncivGame.loadGame(selectedGame)
         } catch (ex: Exception) {
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Could not download game!".tr())
@@ -267,7 +267,7 @@ class MultiplayerScreen() : PickerScreen() {
 
     //Adds a Button to add the currently running game to multiplayerGameList
     private fun addCurrentGameButton(){
-        val currentlyRunningGame = UncivGame.Current.gameInfo
+        val currentlyRunningGame = uncivGame.gameInfo
         if (!currentlyRunningGame.gameParameters.isOnlineMultiplayer || gameIsAlreadySavedAsMultiplayer(currentlyRunningGame.gameId))
             return
 
@@ -301,7 +301,7 @@ class MultiplayerScreen() : PickerScreen() {
 
     //check if its the users turn
     private fun isUsersTurn(game: GameInfo) : Boolean{
-        return (game.currentPlayerCiv.playerId == UncivGame.Current.settings.userId)
+        return (game.currentPlayerCiv.playerId == uncivGame.settings.userId)
     }
 
     fun removeFromList(gameId: String){
@@ -328,7 +328,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
             askPopup.addButton("Yes"){
                 try {
                     GameSaver.deleteSave(gameName, true)
-                    UncivGame.Current.setScreen(backScreen)
+                    backScreen.uncivGame.setScreen(backScreen)
                     backScreen.reloadGameListUI()
                 }catch (ex: Exception) {
                     askPopup.close()
@@ -346,7 +346,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            UncivGame.Current.setScreen(backScreen)
+            backScreen.uncivGame.setScreen(backScreen)
         }
 
         //RightSideButton Setup
@@ -359,7 +359,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
                 //using addMultiplayerGame will download the game from Dropbox so the descriptionLabel displays the right things
                 backScreen.addMultiplayerGame(game.gameId, textField.text)
                 GameSaver.deleteSave(gameName, true)
-                UncivGame.Current.setScreen(backScreen)
+                backScreen.uncivGame.setScreen(backScreen)
                 backScreen.reloadGameListUI()
             }catch (ex: Exception) {
                 val errorPopup = Popup(this)
@@ -393,7 +393,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
         //CloseButton Setup
         closeButton.setText("Back".tr())
         closeButton.onClick {
-            UncivGame.Current.setScreen(backScreen)
+            backScreen.uncivGame.setScreen(backScreen)
         }
 
         //RightSideButton Setup
@@ -408,7 +408,7 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
             }
 
             backScreen.addMultiplayerGame(gameIDTextField.text.trim(), gameNameTextField.text.trim())
-            UncivGame.Current.setScreen(backScreen)
+            backScreen.uncivGame.setScreen(backScreen)
         }
     }
 }
