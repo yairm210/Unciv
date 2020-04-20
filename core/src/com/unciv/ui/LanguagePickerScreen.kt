@@ -3,6 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.MenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -32,7 +33,7 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
 
 }
 
-class LanguagePickerScreen(val previousScreen: CameraStageBaseScreen): PickerScreen(){
+class LanguagePickerScreen(): PickerScreen(){
     var chosenLanguage = "English"
 
     private val languageTables = ArrayList<LanguageTable>()
@@ -80,7 +81,7 @@ class LanguagePickerScreen(val previousScreen: CameraStageBaseScreen): PickerScr
 
         game.translations.tryReadTranslationForCurrentLanguage()
         resetFonts()
-        game.setScreen(previousScreen)
+        game.setScreen(MenuScreen())
         dispose()
     }
 }

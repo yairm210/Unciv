@@ -94,7 +94,10 @@ class UncivGame(
                 CameraStageBaseScreen.resetFonts()
                 thread(name="Music") { startMusic() }
                 restoreSize()
-                setScreen(MenuScreen())
+
+                if (settings.isFreshlyCreated) {
+                    setScreen(LanguagePickerScreen())
+                } else { setScreen(MenuScreen()) }
                 isInitialized = true
             }
         }
@@ -207,35 +210,31 @@ class MenuScreen:CameraStageBaseScreen() {
     }
 
     init {
-        if (game.settings.isFreshlyCreated) {
-            game.setScreen(LanguagePickerScreen(this))
-        } else {
-            val table = Table().apply { defaults().pad(10f) }
-            val autosaveGame = GameSaver.getSave(autosave, false)
-            if(autosaveGame.exists()) {
-                val resumeTable = getTableBlock("Resume")
-                resumeTable.onClick { autoLoadGame() }
-                table.add(resumeTable).row()
-            }
-
-            val quickstartTable = getTableBlock("Quickstart")
-            quickstartTable.onClick { startNewGame() }
-            table.add(quickstartTable).row()
-
-            val newGameButton = getTableBlock("Start new game")
-            newGameButton.onClick { UncivGame.Current.setScreen(NewGameScreen(this)) }
-            table.add(newGameButton).row()
-
-            if(GameSaver.getSaves(false).any()) {
-                val loadGameTable = getTableBlock("Load game")
-                loadGameTable.onClick { UncivGame.Current.setScreen(LoadGameScreen(this)) }
-                table.add(loadGameTable).row()
-            }
-
-            table.pack()
-            table.center(stage)
-            stage.addActor(table)
+        val table = Table().apply { defaults().pad(10f) }
+        val autosaveGame = GameSaver.getSave(autosave, false)
+        if (autosaveGame.exists()) {
+            val resumeTable = getTableBlock("Resume")
+            resumeTable.onClick { autoLoadGame() }
+            table.add(resumeTable).row()
         }
+
+        val quickstartTable = getTableBlock("Quickstart")
+        quickstartTable.onClick { startNewGame() }
+        table.add(quickstartTable).row()
+
+        val newGameButton = getTableBlock("Start new game")
+        newGameButton.onClick { UncivGame.Current.setScreen(NewGameScreen(this)) }
+        table.add(newGameButton).row()
+
+        if (GameSaver.getSaves(false).any()) {
+            val loadGameTable = getTableBlock("Load game")
+            loadGameTable.onClick { UncivGame.Current.setScreen(LoadGameScreen(this)) }
+            table.add(loadGameTable).row()
+        }
+
+        table.pack()
+        table.center(stage)
+        stage.addActor(table)
     }
 
     fun autoLoadGame() {
