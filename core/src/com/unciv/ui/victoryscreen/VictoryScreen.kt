@@ -3,7 +3,6 @@ package com.unciv.ui.victoryscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
@@ -11,10 +10,11 @@ import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.WorldScreen
 
-class VictoryScreen : PickerScreen() {
+class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
-    private val playerCivInfo = UncivGame.Current.gameInfo.getPlayerToViewAs()
+    private val playerCivInfo = worldScreen.viewingCiv
     val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
     private val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
     private val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
@@ -85,13 +85,13 @@ class VictoryScreen : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            UncivGame.Current.setScreen(NewGameScreen())
+            game.setScreen(NewGameScreen(this, worldScreen.gameInfo))
         }
 
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
             playerCivInfo.gameInfo.oneMoreTurnMode = true
-            UncivGame.Current.setWorldScreen()
+            game.setWorldScreen()
         }
     }
 

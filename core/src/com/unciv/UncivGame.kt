@@ -5,7 +5,10 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Music
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -16,6 +19,8 @@ import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.Translations
 import com.unciv.ui.LanguagePickerScreen
+import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -87,32 +92,33 @@ class UncivGame(
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
-                autoLoadGame()
                 thread(name="Music") { startMusic() }
+                restoreSize()
+                setScreen(MenuScreen())
                 isInitialized = true
             }
         }
         crashController = CrashController.Impl(crashReportSender)
     }
 
-    private fun restoreSize() {
+    fun restoreSize() {
         if (!isSizeRestored && Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
             isSizeRestored = true
             Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
         }
     }
 
-    fun autoLoadGame() {
-        // IMHO better test for fresh installs than Autosave.exists()
-        // e.g. should someone delete the settings file only or kill the language picker screen
-        if (settings.isFreshlyCreated) {
-            return setScreen(LanguagePickerScreen())
-        }
-        try {
-            loadGame("Autosave")
-        } catch (ex: Exception) { // silent fail if we can't read the autosave
-            startNewGame()
-        }
+
+    fun loadGame(gameInfo: GameInfo) {
+        this.gameInfo = gameInfo
+        ImageGetter.ruleset = gameInfo.ruleSet
+        ImageGetter.refreshAtlas()
+        worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+        setWorldScreen()
+    }
+
+    fun loadGame(gameName: String) {
+        loadGame(GameSaver.loadGameByName(gameName))
     }
 
     fun startMusic() {
@@ -132,24 +138,6 @@ class UncivGame(
         super.setScreen(screen)
     }
 
-    fun loadGame(gameInfo: GameInfo) {
-        this.gameInfo = gameInfo
-        ImageGetter.ruleset = gameInfo.ruleSet
-        ImageGetter.refreshAtlas()
-        restoreSize()
-        worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
-        setWorldScreen()
-    }
-
-    fun loadGame(gameName: String) {
-        loadGame(GameSaver.loadGameByName(gameName))
-    }
-
-    fun startNewGame() {
-        val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
-        loadGame(newGame)
-    }
-
     fun setWorldScreen() {
         if (screen != null && screen != worldScreen) screen.dispose()
         setScreen(worldScreen)
@@ -163,14 +151,7 @@ class UncivGame(
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
         ImageGetter.refreshAtlas()
 
-        // This is to solve a rare problem -
-        // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
-        // Can happen if you resume to the language picker screen for instance.
-        if (!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
-            return autoLoadGame()
-
-        if (::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
-        loadGame(gameInfo)
+        setScreen(MenuScreen())
     }
 
     // Maybe this will solve the resume error on chrome OS, issue 322? Worth a shot
@@ -210,4 +191,64 @@ class LoadingScreen:CameraStageBaseScreen() {
                 Actions.rotateBy(360f, 0.5f)))
         stage.addActor(happinessImage)
     }
+}
+
+
+class MenuScreen:CameraStageBaseScreen() {
+    val autosave = "Autosave"
+
+    fun getTableBlock(text:String): Table {
+        val table = Table()
+        table.background = ImageGetter.getBackground(colorFromRGB(11, 135, 133))
+        table.add(text.toLabel().setFontSize(30).apply { setAlignment(Align.center) }).pad(40f).width(200f)
+        table.touchable=Touchable.enabled
+        table.pack()
+        return table
+    }
+
+    init {
+        if (game.settings.isFreshlyCreated) {
+            game.setScreen(LanguagePickerScreen(this))
+        } else {
+            val table = Table().apply { defaults().pad(10f) }
+            val autosaveGame = GameSaver.getSave(autosave, false)
+            if(autosaveGame.exists()) {
+                val resumeTable = getTableBlock("Resume")
+                resumeTable.onClick { autoLoadGame() }
+                table.add(resumeTable).row()
+            }
+
+            val quickstartTable = getTableBlock("Quickstart")
+            quickstartTable.onClick { startNewGame() }
+            table.add(quickstartTable).row()
+
+            val newGameButton = getTableBlock("Start new game")
+            newGameButton.onClick { UncivGame.Current.setScreen(NewGameScreen(this)) }
+            table.add(newGameButton).row()
+
+            if(GameSaver.getSaves(false).any()) {
+                val loadGameTable = getTableBlock("Load game")
+                loadGameTable.onClick { UncivGame.Current.setScreen(LoadGameScreen(this)) }
+                table.add(loadGameTable).row()
+            }
+
+            table.pack()
+            table.center(stage)
+            stage.addActor(table)
+        }
+    }
+
+    fun autoLoadGame() {
+        try {
+            game.loadGame(autosave)
+        } catch (ex: Exception) { // silent fail if we can't read the autosave
+            ResponsePopup("Cannot resume game!", this)
+        }
+    }
+
+    fun startNewGame() {
+        val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
+        game.loadGame(newGame)
+    }
+
 }

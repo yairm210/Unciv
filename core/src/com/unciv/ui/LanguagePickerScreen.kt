@@ -6,10 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 
 class LanguageTable(val language:String, val percentComplete: Int):Table(){
@@ -35,7 +32,7 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
 
 }
 
-class LanguagePickerScreen: PickerScreen(){
+class LanguagePickerScreen(val previousScreen: CameraStageBaseScreen): PickerScreen(){
     var chosenLanguage = "English"
 
     private val languageTables = ArrayList<LanguageTable>()
@@ -77,13 +74,13 @@ class LanguagePickerScreen: PickerScreen(){
     }
 
     fun pickLanguage(){
-        UncivGame.Current.settings.language = chosenLanguage
-        UncivGame.Current.settings.isFreshlyCreated = false     // mark so the picker isn't called next launch
-        UncivGame.Current.settings.save()
+        game.settings.language = chosenLanguage
+        game.settings.isFreshlyCreated = false     // mark so the picker isn't called next launch
+        game.settings.save()
 
-        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
+        game.translations.tryReadTranslationForCurrentLanguage()
         resetFonts()
-        UncivGame.Current.startNewGame()
+        game.setScreen(previousScreen)
         dispose()
     }
 }

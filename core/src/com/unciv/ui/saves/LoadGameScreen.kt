@@ -15,7 +15,7 @@ import com.unciv.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LoadGameScreen : PickerScreen() {
+class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
     lateinit var selectedSave:String
     private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
@@ -23,7 +23,7 @@ class LoadGameScreen : PickerScreen() {
     private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
 
     init {
-        setDefaultCloseAction()
+        setDefaultCloseAction(previousScreen)
 
         resetWindowState()
         topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)

@@ -11,6 +11,8 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.MapParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -19,14 +21,14 @@ import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
 
-class NewGameScreen: PickerScreen(){
+class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=null): PickerScreen(){
 
-    val newGameParameters= UncivGame.Current.gameInfo.gameParameters.clone()
-    val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
+    val newGameParameters= currentGame?.gameParameters?.clone() ?: GameParameters()
+    val mapParameters = currentGame?.tileMap?.mapParameters ?: MapParameters()
     val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
-        setDefaultCloseAction()
+        setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
