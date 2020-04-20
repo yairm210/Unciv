@@ -94,10 +94,6 @@ open class TileInfo {
             if (resource == null) throw Exception("No resource exists for this tile!")
             else ruleset.tileResources[resource!!]!!
 
-    fun getTileResourceOrNull(): TileResource? =
-            if (resource == null) null
-            else ruleset.tileResources.getOrElse(resource!!) {null }
-
     fun getNaturalWonder() : Terrain =
             if (naturalWonder == null) throw Exception("No natural wonder exists for this tile!")
             else ruleset.terrains[naturalWonder!!]!!
@@ -323,9 +319,13 @@ open class TileInfo {
 
     fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
 
-    fun toString(viewingCiv: CivilizationInfo): String {
+    override fun toString():String { // for debugging, it helps to see what you're doing
+        return toString(null)
+    }
+
+    fun toString(viewingCiv: CivilizationInfo?): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
-        val isViewableToPlayer = UncivGame.Current.viewEntireMapForDebug
+        val isViewableToPlayer = viewingCiv==null || UncivGame.Current.viewEntireMapForDebug
                 || viewingCiv.viewableTiles.contains(this)
 
         if (isCityCenter()) {
