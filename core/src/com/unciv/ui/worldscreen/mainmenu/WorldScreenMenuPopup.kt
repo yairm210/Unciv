@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
+import com.unciv.MenuScreen
 import com.unciv.UncivGame
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
@@ -22,8 +23,8 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     init {
         val width = 200f
         val height = 30f
-        addSquareButton("Map editor".tr()){
-            openMapEditorPopup()
+        addSquareButton("Main menu".tr()){
+            worldScreen.game.setScreen(MenuScreen())
             close()
         }.size(width,height)
         addSeparator()
@@ -34,25 +35,8 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.size(width,height)
         addSeparator()
 
-        addSquareButton("Load game".tr()){
-            worldScreen.game.setScreen(LoadGameScreen(worldScreen))
-            close()
-        }.size(width,height)
-        addSeparator()
-
         addSquareButton("Save game".tr()){
             worldScreen.game.setScreen(SaveGameScreen())
-            close()
-        }.size(width,height)
-        addSeparator()
-
-        addSquareButton("Start new game".tr()){
-            worldScreen.game.setScreen(NewGameScreen(worldScreen, worldScreen.gameInfo))
-        }.size(width,height)
-        addSeparator()
-
-        addSquareButton("Multiplayer".tr()){
-            worldScreen.game.setScreen(MultiplayerScreen(worldScreen.game))
             close()
         }.size(width,height)
         addSeparator()
@@ -81,34 +65,6 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
     }
 
 
-    /** Shows the [Popup] with the map editor initialization options */
-    private fun openMapEditorPopup() {
-
-        close()
-        val mapEditorPopup = Popup(screen)
-
-        mapEditorPopup.addGoodSizedLabel("Map editor".tr()).row()
-
-        // Create a new map
-        mapEditorPopup.addButton("New map") {
-            worldScreen.game.setScreen(NewMapScreen())
-            mapEditorPopup.close()
-        }
-
-        // Load the map
-        mapEditorPopup.addButton("Load map") {
-            val loadMapScreen = LoadMapScreen(null)
-            loadMapScreen.closeButton.isVisible = true
-            loadMapScreen.closeButton.onClick {
-                worldScreen.game.setWorldScreen()
-                loadMapScreen.dispose() }
-            worldScreen.game.setScreen(loadMapScreen)
-            mapEditorPopup.close()
-        }
-
-        mapEditorPopup.addCloseButton()
-        mapEditorPopup.open(force = true)
-    }
 
 }
 
