@@ -139,7 +139,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             return slider
         }
 
-        addSlider("Map Height", {mapParameters.elevationExponent}, 0.5f,1f)
+        addSlider("Map Height", {mapParameters.elevationExponent}, 0.6f,0.8f)
             {mapParameters.elevationExponent=it}
 
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
