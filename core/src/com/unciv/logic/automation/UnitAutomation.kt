@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -19,8 +20,8 @@ object UnitAutomation {
     internal fun tryExplore(unit: MapUnit): Boolean {
         if (tryGoToRuin(unit) && unit.currentMovement == 0f) return true
 
-        for (tile in unit.currentTile.getTilesInDistance(10))
-            if (unit.movement.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
+        for (tile in unit.currentTile.getTilesInDistance(5)) // number increases exponentially with distance - at 10 this took a looong time
+            if (unit.movement.canMoveTo(tile) && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
                     && unit.movement.canReach(tile)
                     && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())) {
                 unit.movement.headTowards(tile)
