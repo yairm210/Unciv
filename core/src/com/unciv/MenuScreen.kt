@@ -69,28 +69,29 @@ class MenuScreen: CameraStageBaseScreen() {
     private fun openMapEditorPopup() {
 
         val mapEditorPopup = Popup(this)
+        mapEditorPopup.defaults().pad(10f)
 
-        mapEditorPopup.addGoodSizedLabel("Map editor".tr()).row()
+        val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-        // Create a new map
-        mapEditorPopup.addButton("New map") {
-            game.setScreen(NewMapScreen())
-            mapEditorPopup.close()
-        }
+        val newMapButton = getTableBlock("New map", "OtherIcons/New") { game.setScreen(NewMapScreen()) }
+        newMapButton.background = tableBackground
+        mapEditorPopup.add(newMapButton).row()
 
-        // Load the map
-        mapEditorPopup.addButton("Load map") {
+        val loadMapButton = getTableBlock("Load map", "OtherIcons/Load") {
             val loadMapScreen = LoadMapScreen(null)
             loadMapScreen.closeButton.isVisible = true
             loadMapScreen.closeButton.onClick {
-                game.setWorldScreen()
+                game.setScreen(MenuScreen())
                 loadMapScreen.dispose()
             }
             game.setScreen(loadMapScreen)
-            mapEditorPopup.close()
         }
+        loadMapButton.background = tableBackground
+        mapEditorPopup.add(loadMapButton).row()
 
-        mapEditorPopup.addCloseButton()
+        mapEditorPopup.add(getTableBlock("Close", "OtherIcons/Close") { mapEditorPopup.close() }
+                .apply { background=tableBackground })
+
         mapEditorPopup.open(force = true)
     }
 

@@ -231,7 +231,7 @@ object ImageGetter {
             Constants.modernEra -> techIconColor = colorFromRGB(33, 150, 243)
             Constants.informationEra -> techIconColor = colorFromRGB(0, 150, 136)
             Constants.futureEra -> techIconColor = colorFromRGB(76,176,81)
-            else -> Color.WHITE
+            else -> Color.WHITE.cpy()
         }
         return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK,0.6f) }
                 .surroundWithCircle(circleSize)
