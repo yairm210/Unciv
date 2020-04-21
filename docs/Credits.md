@@ -519,6 +519,14 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
 
+## Main menu
+
+* [Lightning](https://thenounproject.com/search/?q=lightning&i=102300) by Rohith M S for Quickstart
+* [Loading](https://thenounproject.com/search/?q=load&i=208033) by Universal Icons for Load Game
+* [New](https://thenounproject.com/search/?q=new&i=1886943) by Alice Design for New Game
+* [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
+* [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
+
 # Sound credits
 
 Sounds are from FreeSound.org and are either Creative Commons or Public Domain

@@ -340,16 +340,15 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             if(resource.terrainsCanBeFoundOn.none { it==tileInfo.baseTerrain || it==tileInfo.terrainFeature })
                 tileInfo.resource=null
         }
-        if(tileInfo.improvement!=null){
-            if(tileInfo.improvement!!.startsWith("StartingLocation")){
-                if(tileInfo.isWater || tileInfo.getBaseTerrain().impassable)
-                    tileInfo.improvement=null
-            }
-            else {
+        if(tileInfo.improvement!=null) {
+            if (tileInfo.improvement!!.startsWith("StartingLocation")) {
+                if (tileInfo.isWater || tileInfo.getBaseTerrain().impassable)
+                    tileInfo.improvement = null
+            } else {
                 val improvement = tileInfo.getTileImprovement()!!
-                if(tileInfo.getBaseTerrain().impassable) tileInfo.improvement=null
-                if(improvement.terrainsCanBeBuiltOn.isEmpty() && tileInfo.isWater)
-                    tileInfo.improvement=null
+                if (tileInfo.getBaseTerrain().impassable) tileInfo.improvement = null
+                if (improvement.terrainsCanBeBuiltOn.isEmpty() && tileInfo.isWater)
+                    tileInfo.improvement = null
                 if (improvement.terrainsCanBeBuiltOn.isNotEmpty() // for "everywhere" improvements like city ruins, encampments, ancient ruins
                         && improvement.terrainsCanBeBuiltOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
                     tileInfo.improvement = null
