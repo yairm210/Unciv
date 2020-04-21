@@ -684,6 +684,7 @@ class MapUnit {
 
             if (health <= 0) {
                 civInfo.addNotification("An enemy [Citadel] has destroyed our [$name]", currentTile.position, Color.RED)
+                // todo - add notification for attacking civ
                 destroy()
             } else {
                 civInfo.addNotification("An enemy [Citadel] has attacked our [$name]", currentTile.position, Color.RED)

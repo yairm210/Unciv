@@ -77,7 +77,7 @@ object ImageGetter {
         return Image(getDrawable(fileName))
     }
 
-    private fun getDrawable(fileName: String): TextureRegionDrawable {
+    fun getDrawable(fileName: String): TextureRegionDrawable {
         if(textureRegionDrawables.containsKey(fileName)) return textureRegionDrawables[fileName]!!
         else return textureRegionDrawables[whiteDotLocation]!!
     }

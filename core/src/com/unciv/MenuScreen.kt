@@ -1,8 +1,11 @@
 package com.unciv
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -31,6 +34,15 @@ class MenuScreen: CameraStageBaseScreen() {
     }
 
     init {
+        val backgroundWhite = ImageGetter.getWhiteDot()
+        backgroundWhite.setFillParent(true)
+        stage.addActor(backgroundWhite)
+        val drawable = ImageGetter.getDrawable("OtherIcons/RepeatingBackground")
+        val tiledDrawable = TiledDrawable(drawable)
+        val backgroundImage = Image(tiledDrawable).apply { color = Color.WHITE.cpy().apply { a=0.5f } }
+        backgroundImage.setFillParent(true)
+        stage.addActor(backgroundImage)
+
         val table = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {

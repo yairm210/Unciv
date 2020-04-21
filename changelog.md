@@ -1,3 +1,23 @@
+## 3.8.0
+
+Game starts and defaults to a new Main Menu - should help solve errors as well as allow for cleaner disambiguation of problems
+
+Map height normalized to feasable amounts of mountains
+
+Resolved #1936 - can sign Declarations of Friendship in Multiplayer
+
+Resolved #2360 - can now change the current user ID for multiplayer when changing devices
+
+Much more turn-efficient exploration!
+
+City tiles are always contiguous, otherwise loads of wierd bugs happen
+
+Fixed the auto-unassigning extra specialists
+
+Allow scandinavian lowercase vowels (capitalized are very rare) - By SomeTroglodyte
+
+Translation updates
+
 ## 3.7.6
 
 Can specify a mod as a 'base ruleset' - 
