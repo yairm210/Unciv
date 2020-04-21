@@ -21,7 +21,7 @@ object NextTurnAutomation{
     fun automateCivMoves(civInfo: CivilizationInfo) {
         if (civInfo.isBarbarian()) return BarbarianAutomation(civInfo).automate()
 
-        respondToDemands(civInfo)
+        respondToPopupAlerts(civInfo)
         respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
@@ -45,7 +45,6 @@ object NextTurnAutomation{
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
 
-        civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
@@ -64,16 +63,27 @@ object NextTurnAutomation{
         civInfo.tradeRequests.clear()
     }
 
-    private fun respondToDemands(civInfo: CivilizationInfo) {
-        for(popupAlert in civInfo.popupAlerts){
-            if(popupAlert.type==AlertType.DemandToStopSettlingCitiesNear){  // we're called upon to make a decision
+    private fun respondToPopupAlerts(civInfo: CivilizationInfo) {
+        for(popupAlert in civInfo.popupAlerts) {
+            if (popupAlert.type == AlertType.DemandToStopSettlingCitiesNear) {  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)
-                if(Automation.threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
+                if (Automation.threatAssessment(civInfo, demandingCiv) >= ThreatLevel.High)
                     diploManager.agreeNotToSettleNear()
                 else diploManager.refuseDemandNotToSettleNear()
             }
+            if (popupAlert.type == AlertType.DeclarationOfFriendship) {
+                val requestingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                val diploManager = civInfo.getDiplomacyManager(requestingCiv)
+                if (diploManager.relationshipLevel() > RelationshipLevel.Neutral
+                        && !diploManager.otherCivDiplomacy().hasFlag(DiplomacyFlags.Denunceation)) {
+                    diploManager.signDeclarationOfFriendship()
+                    requestingCiv.addNotification("We have signed a Declaration of Friendship with [${civInfo.civName}]!", Color.GOLD)
+                } else requestingCiv.addNotification("[${civInfo.civName}] has denied our Declaration of Friendship!", Color.GOLD)
+            }
         }
+
+        civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
     private fun tryGainInfluence(civInfo: CivilizationInfo, cityState:CivilizationInfo) {

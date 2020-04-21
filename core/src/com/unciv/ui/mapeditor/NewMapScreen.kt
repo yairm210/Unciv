@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.MenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapGenerator
 import com.unciv.logic.map.MapParameters
@@ -21,7 +22,7 @@ class NewMapScreen : PickerScreen() {
     private var generatedMap: TileMap? = null
 
     init {
-        setDefaultCloseAction()
+        setDefaultCloseAction(MenuScreen())
 
         val newMapScreenOptionsTable = Table(skin).apply {
             pad(10f)

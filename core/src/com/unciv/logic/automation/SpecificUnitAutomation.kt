@@ -119,9 +119,7 @@ object SpecificUnitAutomation {
                                      luxuryResourcesInCivArea: Sequence<TileResource>): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
-                .toList()
-        val top5Tiles = tileInfo.neighbors.union(bestTilesFromOuterLayer)
-                .asSequence()
+        val top5Tiles = (tileInfo.neighbors + bestTilesFromOuterLayer)
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
         var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()

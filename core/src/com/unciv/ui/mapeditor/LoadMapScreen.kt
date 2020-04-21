@@ -15,7 +15,7 @@ import com.unciv.ui.utils.*
 
 class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
     var chosenMap = ""
-    val deleteMapButton = TextButton("Delete map".tr(),skin)
+    val deleteMapButton = "Delete map".toTextButton()
 
     init {
         rightSideButton.setText("Load map".tr())
@@ -40,7 +40,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         val rightSideTable = Table().apply { defaults().pad(10f) }
 
-        val downloadMapButton = TextButton("Download map".tr(), skin)
+        val downloadMapButton = "Download map".toTextButton()
         downloadMapButton.onClick {
             MapDownloadPopup(this).open()
         }
@@ -49,7 +49,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
         rightSideTable.addSeparator()
 
 
-        val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
+        val loadFromClipboardButton = "Load copied data".toTextButton()
         val couldNotLoadMapLabel = "Could not load map!".toLabel(Color.RED).apply { isVisible=false }
         loadFromClipboardButton.onClick {
             try {

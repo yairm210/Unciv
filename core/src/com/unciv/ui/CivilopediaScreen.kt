@@ -82,7 +82,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
         buttonTable.defaults().pad(10f)
 
         for (category in categoryToEntries.keys) {
-            val button = TextButton(category.tr(), skin)
+            val button = category.toTextButton()
             button.style = TextButton.TextButtonStyle(button.style)
             categoryToButtons[category] = button
             button.onClick { select(category) }

@@ -1,3 +1,24 @@
+## 3.7.6
+
+Can specify a mod as a 'base ruleset' - 
+supports mods with no techs, alternate tech trees, no barbarians, no workers
+
+Unique units need not replace existing ones
+
+Tile variants!
+
+By SomeTroglodyte:
+
+- Fix minimap mouse dragging 
+- Fixed modded strategic resource without tech prerequisite
+
+By JackRainy:
+
+- Highlight unique offer suggestions 
+- Sort trades by expiration 
+- Citadel improvements + improved AI for forts 
+- Map Editor UI improvements
+
 ## 3.7.5
 
 By SomeTroglodyte:

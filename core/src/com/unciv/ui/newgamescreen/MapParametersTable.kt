@@ -9,10 +9,7 @@ import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 /** Table for editing [mapParameters]
  *
@@ -110,7 +107,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
     }
 
     private fun addAdvancedSettings() {
-        val button = TextButton("Show advanced settings".tr(), skin)
+        val button = "Show advanced settings".toTextButton()
         val advancedSettingsTable = Table()
                 .apply {isVisible = false; defaults().pad(5f)}
 
@@ -133,16 +130,16 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         val sliders = HashMap<Slider, ()->Float>()
 
         fun addSlider(text:String, getValue:()->Float, min:Float, max:Float, onChange: (value:Float)->Unit): Slider {
-            val slider = Slider(min, max, (max-min)/20,false,skin)
+            val slider = Slider(min, max, (max - min) / 20, false, skin)
             slider.value = getValue()
             slider.onChange { onChange(slider.value) }
             advancedSettingsTable.add(text.toLabel()).left()
             advancedSettingsTable.add(slider).fillX().row()
-            sliders.put(slider, getValue)
+            sliders[slider] = getValue
             return slider
         }
 
-        addSlider("Map Height", {mapParameters.elevationExponent}, 0.5f,1f)
+        addSlider("Map Height", {mapParameters.elevationExponent}, 0.6f,0.8f)
             {mapParameters.elevationExponent=it}
 
         addSlider("Temperature extremeness", {mapParameters.temperatureExtremeness}, 0.4f,0.8f)
@@ -166,7 +163,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         addSlider("Water level", {mapParameters.waterThreshold}, -0.1f, 0.1f)
             { mapParameters.waterThreshold = it }
 
-        val resetToDefaultButton = TextButton("Reset to default".tr(), skin)
+        val resetToDefaultButton = "Reset to default".toTextButton()
         resetToDefaultButton.onClick {
             mapParameters.resetAdvancedSettings()
             for(entry in sliders)

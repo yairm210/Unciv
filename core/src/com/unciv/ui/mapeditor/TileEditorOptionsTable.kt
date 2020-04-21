@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -19,22 +18,10 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
-
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
     private val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
 
-    var clearTerrainFeature=false
-    var selectedTerrain : Terrain?=null
-
-    var clearResource=false
-    var selectedResource: TileResource?=null
-
-    var clearImprovement=false
-    var selectedImprovement:TileImprovement?=null
-
-    var toggleBottomRightRiver=false
-    var toggleBottomRiver=false
-    var toggleBottomLeftRiver=false
+    var tileAction:(TileInfo)->Unit = {}
 
     private val editorPickTable = Table()
 
@@ -63,7 +50,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val sliderTab = Table()
 
-        val slider = Slider(1f,5f,1f, false, skin)
+        val slider = Slider(1f, 5f, 1f, false, skin)
         val sliderLabel = "{Brush Size} $brushSize".toLabel()
 
         slider.onChange {
@@ -76,7 +63,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         sliderTab.add(slider)
 
         add(sliderTab).row()
-        add(ScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
+        add(AutoScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
 
         add(editorPickTable).row()
     }
@@ -88,38 +75,54 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val improvementsTable = Table()
         improvementsTable.add(getHex(Color.WHITE).apply {
             onClick {
-                clearSelection()
-                clearImprovement = true
+                tileAction = {it.improvement=null}
                 setCurrentHex(getHex(Color.WHITE), "Clear improvements")
             }
         }).row()
 
         for(improvement in ruleset.tileImprovements.values){
             if(improvement.name.startsWith("Remove")) continue
-            val improvementImage = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
+            val improvementImage = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
             improvementImage.onClick {
-                clearSelection()
-                selectedImprovement=improvement
-                val improvementIcon = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
+                tileAction = {
+                    when (improvement.name) {
+                        "Road" -> it.roadStatus = RoadStatus.Road
+                        "Railroad" -> it.roadStatus = RoadStatus.Railroad
+                        else -> it.improvement = improvement.name
+                    }
+
+                }
+                val improvementIcon = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
                 setCurrentHex(improvementIcon, improvement.name.tr()+"\n"+improvement.clone().toString())
             }
             improvementsTable.add(improvementImage).row()
         }
-        editorPickTable.add(ScrollPane(improvementsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(improvementsTable)).height(scrollPanelHeight)
 
         val nationsTable = Table()
         for(nation in ruleset.nations.values){
-            val nationImage = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
+            val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
             nationImage.onClick {
-                clearSelection()
-                selectedImprovement=TileImprovement().apply { name="StartingLocation "+nation.name }
-                val nationIcon = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
+                val improvementName = "StartingLocation "+nation.name
+
+                tileAction = {
+                    it.improvement = improvementName
+                    for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+                        val tile = tileGroup.tileInfo
+                        if (tile.improvement == improvementName && tile != it)
+                            tile.improvement = null
+                        tile.setTransients()
+                        tileGroup.update()
+                    }
+                }
+
+                val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
                 setCurrentHex(nationIcon, "[${nation.name}] starting location")
             }
             nationsTable.add(nationImage).row()
         }
 
-        editorPickTable.add(ScrollPane(nationsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight)
     }
 
     private fun getRedCross(size: Float, alpha: Float): Actor {
@@ -136,8 +139,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
             onClick {
-                clearSelection()
-                clearTerrainFeature = true
+                tileAction = { it.terrainFeature=null; it.naturalWonder = null }
                 setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
             }
         }).row()
@@ -152,14 +154,14 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a = 0.7f })
 
         val terrainsAndResourcesTable = Table()
-        terrainsAndResourcesTable.add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
+        terrainsAndResourcesTable.add(AutoScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
-        terrainsAndResourcesTable.add(ScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
+        terrainsAndResourcesTable.add(AutoScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
         val resourcesTable = Table()
         for(resource in resources) resourcesTable.add(resource).row()
         resourcesTable.pack()
-        terrainsAndResourcesTable.add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
+        terrainsAndResourcesTable.add(AutoScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
 
         terrainsAndResourcesTable.pack()
 
@@ -179,8 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val resources = ArrayList<Actor>()
         resources.add(getHex(Color.WHITE, getCrossedResource()).apply {
             onClick {
-                clearSelection()
-                clearResource = true
+                tileAction = {it.resource=null}
                 setCurrentHex(getHex(Color.WHITE, getCrossedResource()), "Clear resource")
             }
         })
@@ -188,11 +189,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         for (resource in ruleset.tileResources.values) {
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
             resourceHex.onClick {
-                clearSelection()
-                selectedResource = resource
+                tileAction = {it.resource = resource.name}
+
+                // for the tile image
                 val tileInfo = TileInfo()
                 tileInfo.ruleset = mapEditorScreen.ruleset
-
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
@@ -204,6 +205,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
                 tileInfo.resource = resource.name
                 tileInfo.setTransients()
+
                 setCurrentHex(tileInfo, resource.name.tr() + "\n" + resource.clone().toString())
             }
             resources.add(resourceHex)
@@ -222,12 +224,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 }
                 tileInfo.terrainFeature = terrain.name
             } else tileInfo.baseTerrain = terrain.name
-
             val group = makeTileGroup(tileInfo)
 
             group.onClick {
-                clearSelection()
-                selectedTerrain = terrain
+                tileAction = {
+                    when (terrain.type) {
+                        TerrainType.TerrainFeature -> it.terrainFeature = terrain.name
+                        TerrainType.NaturalWonder -> it.naturalWonder = terrain.name
+                        else -> it.baseTerrain = terrain.name
+                    }
+                }
                 setCurrentHex(tileInfo, terrain.name.tr() + "\n" + terrain.clone().toString())
             }
 
@@ -244,14 +250,13 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun addRiverToggleOptions(baseTerrainTable: Table) {
         baseTerrainTable.addSeparator()
 
-
         val tileInfoBottomRightRiver = TileInfo()
         tileInfoBottomRightRiver.baseTerrain = Constants.plains
         tileInfoBottomRightRiver.hasBottomRightRiver = true
         val tileGroupBottomRightRiver = makeTileGroup(tileInfoBottomRightRiver)
         tileGroupBottomRightRiver.onClick {
-            clearSelection()
-            toggleBottomRightRiver = true
+            tileAction = {it.hasBottomRightRiver = !it.hasBottomRightRiver}
+
             setCurrentHex(tileInfoBottomRightRiver, "Bottom right river")
         }
         baseTerrainTable.add(tileGroupBottomRightRiver).row()
@@ -262,8 +267,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         tileInfoBottomRiver.hasBottomRiver = true
         val tileGroupBottomRiver = makeTileGroup(tileInfoBottomRiver)
         tileGroupBottomRiver.onClick {
-            clearSelection()
-            toggleBottomRiver = true
+            tileAction = {it.hasBottomRiver = !it.hasBottomRiver}
             setCurrentHex(tileInfoBottomRiver, "Bottom river")
         }
         baseTerrainTable.add(tileGroupBottomRiver).row()
@@ -274,8 +278,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         tileInfoBottomLeftRiver.baseTerrain = Constants.plains
         val tileGroupBottomLeftRiver = makeTileGroup(tileInfoBottomLeftRiver)
         tileGroupBottomLeftRiver.onClick {
-            clearSelection()
-            toggleBottomLeftRiver = true
+            tileAction = {it.hasBottomLeftRiver = !it.hasBottomLeftRiver}
             setCurrentHex(tileInfoBottomLeftRiver, "Bottom left river")
         }
         baseTerrainTable.add(tileGroupBottomLeftRiver).row()
@@ -312,58 +315,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
 
-    private fun clearSelection(){
-        clearTerrainFeature=false
-        selectedTerrain=null
-        clearResource=false
-        selectedResource=null
-        clearImprovement=false
-        selectedImprovement=null
-        toggleBottomLeftRiver = false
-        toggleBottomRightRiver = false
-        toggleBottomRiver = false
-    }
-
     fun updateTileWhenClicked(tileInfo: TileInfo) {
-        when {
-            clearTerrainFeature -> {
-                tileInfo.terrainFeature = null
-                tileInfo.naturalWonder = null
-            }
-            clearResource -> tileInfo.resource = null
-            selectedResource != null -> tileInfo.resource = selectedResource!!.name
-            selectedTerrain != null -> {
-                if (selectedTerrain!!.type == TerrainType.TerrainFeature)
-                    tileInfo.terrainFeature = selectedTerrain!!.name
-                else if (selectedTerrain!!.type == TerrainType.NaturalWonder)
-                    tileInfo.naturalWonder = selectedTerrain!!.name
-                else
-                    tileInfo.baseTerrain = selectedTerrain!!.name
-            }
-            clearImprovement -> {
-                tileInfo.improvement = null
-                tileInfo.roadStatus = RoadStatus.None
-            }
-            selectedImprovement != null -> {
-                val improvement = selectedImprovement!!
-                if (improvement.name == "Road") tileInfo.roadStatus = RoadStatus.Road
-                else if (improvement.name == "Railroad") tileInfo.roadStatus = RoadStatus.Railroad
-                else tileInfo.improvement = improvement.name
-
-                if(improvement.name.startsWith("StartingLocation"))
-                    for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values){
-                        val tile = tileGroup.tileInfo
-                        if(tile.improvement==improvement.name && tile!=tileInfo)
-                            tile.improvement=null
-                        tile.setTransients()
-                        tileGroup.update()
-                    }
-            }
-            toggleBottomLeftRiver -> tileInfo.hasBottomLeftRiver = !tileInfo.hasBottomLeftRiver
-            toggleBottomRiver -> tileInfo.hasBottomRiver = !tileInfo.hasBottomRiver
-            toggleBottomRightRiver -> tileInfo.hasBottomRightRiver = !tileInfo.hasBottomRightRiver
-        }
-
+        tileAction(tileInfo)
         normalizeTile(tileInfo)
     }
 
@@ -403,12 +356,12 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }
         if(tileInfo.getBaseTerrain().impassable || tileInfo.isWater)
-            tileInfo.roadStatus=RoadStatus.None
+            tileInfo.roadStatus= RoadStatus.None
     }
 
 
     private fun setCurrentHex(tileInfo: TileInfo, text:String){
-        val tileGroup = TileGroup(tileInfo,TileSetStrings())
+        val tileGroup = TileGroup(tileInfo, TileSetStrings())
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
@@ -418,7 +371,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         setCurrentHex(tileGroup,text)
     }
 
-    private fun setCurrentHex(actor:Actor, text:String){
+    private fun setCurrentHex(actor: Actor, text:String){
         currentHex.remove()
         val currentHexTable = Table()
         currentHexTable.add(text.toLabel()).padRight(30f)

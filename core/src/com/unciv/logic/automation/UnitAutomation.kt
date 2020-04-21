@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
@@ -16,13 +17,29 @@ object UnitAutomation {
     const val CLOSE_ENEMY_TILES_AWAY_LIMIT = 5
     const val CLOSE_ENEMY_TURNS_AWAY_LIMIT = 3f
 
+    private fun isGoodTileToExplore(unit:MapUnit, tile:TileInfo): Boolean {
+        return unit.movement.canMoveTo(tile)
+                && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())
+                && tile.neighbors.any { it.position !in unit.civInfo.exploredTiles }
+                && unit.movement.canReach(tile)
+    }
+
     internal fun tryExplore(unit: MapUnit): Boolean {
         if (tryGoToRuin(unit) && unit.currentMovement == 0f) return true
 
-        for (tile in unit.currentTile.getTilesInDistance(10))
-            if (unit.movement.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
-                    && unit.movement.canReach(tile)
-                    && (tile.getOwner() == null || !tile.getOwner()!!.isCityState())) {
+        val explorableTilesThisTurn =
+                unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
+        if (explorableTilesThisTurn.any()) {
+            val bestTile = explorableTilesThisTurn
+                    .sortedByDescending { it.getHeight() }  // secondary sort is by 'how far can you see'
+                    .maxBy { it.aerialDistanceTo(unit.currentTile) }!! // primary sort is by 'how far can you go'
+            unit.movement.headTowards(bestTile)
+            return true
+        }
+
+        // Nothing immediate, let's look further. Number increases exponentially with distance - at 10 this took a looong time
+        for (tile in unit.currentTile.getTilesInDistance(5))
+            if (isGoodTileToExplore(unit, tile)) {
                 unit.movement.headTowards(tile)
                 return true
             }
