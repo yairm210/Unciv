@@ -68,11 +68,11 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
 
-        //leftTable Setup
+        // leftTable Setup
         reloadGameListUI()
 
-        //A Button to add the currently running game to multiplayerGameList if not yet done
-        addCurrentGameButton()
+        // A Button to add the currently running game to multiplayerGameList if not yet done
+//        addCurrentGameButton()
 
         //rightTable Setup
         copyUserIdButton.onClick {

@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -19,7 +18,6 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 
-
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
     private val tileSetLocation = "TileSets/"+ UncivGame.Current.settings.tileSet +"/"
 
@@ -30,7 +28,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     var selectedResource: TileResource?=null
 
     var clearImprovement=false
-    var selectedImprovement:TileImprovement?=null
+    var selectedImprovement: TileImprovement?=null
 
     var toggleBottomRightRiver=false
     var toggleBottomRiver=false
@@ -63,7 +61,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val sliderTab = Table()
 
-        val slider = Slider(1f,5f,1f, false, skin)
+        val slider = Slider(1f, 5f, 1f, false, skin)
         val sliderLabel = "{Brush Size} $brushSize".toLabel()
 
         slider.onChange {
@@ -76,7 +74,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         sliderTab.add(slider)
 
         add(sliderTab).row()
-        add(ScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
+        add(AutoScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
 
         add(editorPickTable).row()
     }
@@ -96,30 +94,30 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         for(improvement in ruleset.tileImprovements.values){
             if(improvement.name.startsWith("Remove")) continue
-            val improvementImage = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
+            val improvementImage = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
             improvementImage.onClick {
                 clearSelection()
                 selectedImprovement=improvement
-                val improvementIcon = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
+                val improvementIcon = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
                 setCurrentHex(improvementIcon, improvement.name.tr()+"\n"+improvement.clone().toString())
             }
             improvementsTable.add(improvementImage).row()
         }
-        editorPickTable.add(ScrollPane(improvementsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(improvementsTable)).height(scrollPanelHeight)
 
         val nationsTable = Table()
         for(nation in ruleset.nations.values){
-            val nationImage = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
+            val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
             nationImage.onClick {
                 clearSelection()
-                selectedImprovement=TileImprovement().apply { name="StartingLocation "+nation.name }
-                val nationIcon = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
+                selectedImprovement= TileImprovement().apply { name="StartingLocation "+nation.name }
+                val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
                 setCurrentHex(nationIcon, "[${nation.name}] starting location")
             }
             nationsTable.add(nationImage).row()
         }
 
-        editorPickTable.add(ScrollPane(nationsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight)
     }
 
     private fun getRedCross(size: Float, alpha: Float): Actor {
@@ -152,14 +150,14 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a = 0.7f })
 
         val terrainsAndResourcesTable = Table()
-        terrainsAndResourcesTable.add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
+        terrainsAndResourcesTable.add(AutoScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
-        terrainsAndResourcesTable.add(ScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
+        terrainsAndResourcesTable.add(AutoScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
         val resourcesTable = Table()
         for(resource in resources) resourcesTable.add(resource).row()
         resourcesTable.pack()
-        terrainsAndResourcesTable.add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
+        terrainsAndResourcesTable.add(AutoScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
 
         terrainsAndResourcesTable.pack()
 
@@ -403,12 +401,12 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }
         if(tileInfo.getBaseTerrain().impassable || tileInfo.isWater)
-            tileInfo.roadStatus=RoadStatus.None
+            tileInfo.roadStatus= RoadStatus.None
     }
 
 
     private fun setCurrentHex(tileInfo: TileInfo, text:String){
-        val tileGroup = TileGroup(tileInfo,TileSetStrings())
+        val tileGroup = TileGroup(tileInfo, TileSetStrings())
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
@@ -418,7 +416,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         setCurrentHex(tileGroup,text)
     }
 
-    private fun setCurrentHex(actor:Actor, text:String){
+    private fun setCurrentHex(actor: Actor, text:String){
         currentHex.remove()
         val currentHexTable = Table()
         currentHexTable.add(text.toLabel()).padRight(30f)

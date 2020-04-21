@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
+import com.unciv.MenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
@@ -114,8 +115,8 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
 
 
         val exitMapEditorButton = "Exit map editor".toTextButton()
-        exitMapEditorButton.onClick { UncivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
+        exitMapEditorButton.onClick { mapEditorScreen.game.setScreen(MenuScreen()); mapEditorScreen.dispose() }
 
         val closeOptionsButton = Constants.close.toTextButton()
         closeOptionsButton.onClick { close() }
