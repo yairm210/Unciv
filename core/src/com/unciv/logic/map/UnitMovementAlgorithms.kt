@@ -255,7 +255,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         unit.removeFromTile()
         unit.putInTile(destination)
 
-        for (payload in origin.getUnits().filter { it.isTransported }) {  // bring along the payloads
+        // The .toList() here is because we have a sequence that's running on the units in the tile,
+        // then if we move one of the units we'll get a ConcurrentModificationException, se we save them all to a list
+        for (payload in origin.getUnits().filter { it.isTransported }.toList()) {  // bring along the payloads
             if (unit.canTransport(payload)) {
                 payload.removeFromTile()
                 payload.putInTile(destination)
