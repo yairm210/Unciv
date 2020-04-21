@@ -117,7 +117,6 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                         val distance = tileEditorOptions.brushSize - 1
 
                         for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
-
                             tileEditorOptions.updateTileWhenClicked(tileInfo)
 
                             tileInfo.setTransients()
