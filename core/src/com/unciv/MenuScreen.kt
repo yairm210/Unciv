@@ -19,10 +19,11 @@ import com.unciv.ui.utils.*
 class MenuScreen: CameraStageBaseScreen() {
     val autosave = "Autosave"
 
-    private fun getTableBlock(text: String, function: () -> Unit): Table {
-        val table = Table()
+    private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
+        val table = Table().pad(30f)
         table.background = ImageGetter.getBackground(colorFromRGB(11, 135, 133))
-        table.add(text.toLabel().setFontSize(30).apply { setAlignment(Align.center) }).pad(40f).width(200f)
+        table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
+        table.add(text.toLabel().setFontSize(30).apply { /* setAlignment(Align.center) */ }).width(200f)
         table.touchable= Touchable.enabled
         table.onClick(function)
         table.pack()
@@ -33,25 +34,25 @@ class MenuScreen: CameraStageBaseScreen() {
         val table = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume") { autoLoadGame() }
+            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
             table.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart") { startNewGame() }
+        val quickstartTable = getTableBlock("Quickstart","OtherIcons/Quickstart") { startNewGame() }
         table.add(quickstartTable).row()
 
-        val newGameButton = getTableBlock("Start new game") { game.setScreen(NewGameScreen(this)) }
+        val newGameButton = getTableBlock("Start new game","OtherIcons/New") { game.setScreen(NewGameScreen(this)) }
         table.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
-            val loadGameTable = getTableBlock("Load game") { game.setScreen(LoadGameScreen(this)) }
+            val loadGameTable = getTableBlock("Load game","OtherIcons/Load") { game.setScreen(LoadGameScreen(this)) }
             table.add(loadGameTable).row()
         }
 
-        val multiplayerTable = getTableBlock("Multiplayer") { game.setScreen(MultiplayerScreen(this)) }
+        val multiplayerTable = getTableBlock("Multiplayer","OtherIcons/Multiplayer") { game.setScreen(MultiplayerScreen(this)) }
         table.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getTableBlock("Map editor") { openMapEditorPopup() }
+        val mapEditorScreenTable = getTableBlock("Map editor","OtherIcons/MapEditor") { openMapEditorPopup() }
         table.add(mapEditorScreenTable)
 
 
