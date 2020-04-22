@@ -39,7 +39,7 @@ class MenuScreen: CameraStageBaseScreen() {
         val table = Table().pad(30f)
         table.background = ImageGetter.getBackground(colorFromRGB(11, 135, 133))
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
-        table.add(text.toLabel().setFontSize(30).apply { /* setAlignment(Align.center) */ }).width(200f)
+        table.add(text.toLabel().setFontSize(30).apply { /* setAlignment(Align.center) */ }).minWidth(200f)
         table.touchable= Touchable.enabled
         table.onClick(function)
         table.pack()
@@ -100,6 +100,11 @@ class MenuScreen: CameraStageBaseScreen() {
         val mapEditorScreenTable = getTableBlock("Map editor","OtherIcons/MapEditor") { openMapEditorPopup() }
         table.add(mapEditorScreenTable)
 
+        // set the same width for all buttons
+        table.pack()
+        table.children.filterIsInstance<Table>().forEach {
+            it.moveBy( (it.width - table.width) / 2, 0f)
+            it.width = table.width }
 
         table.pack()
         val scroll = ScrollPane(table)
