@@ -14,13 +14,13 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
     val tileGroups = HashMap<TileInfo, TileGroup>()
     lateinit var tileGroupMap: TileGroupMap<TileGroup>
 
-    internal fun addTiles() {
+    internal fun addTiles(padding:Float) {
 
         val tileSetStrings = TileSetStrings()
         for (tileGroup in tileMap.values.map { TileGroup(it, tileSetStrings) })
             tileGroups[tileGroup.tileInfo] = tileGroup
 
-        tileGroupMap = TileGroupMap(tileGroups.values, mapEditorScreen.stage.width)
+        tileGroupMap = TileGroupMap(tileGroups.values, padding)
         actor = tileGroupMap
 
         for (tileGroup in tileGroups.values) {

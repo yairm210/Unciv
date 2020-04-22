@@ -1,7 +1,9 @@
 package com.unciv
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -9,18 +11,29 @@ import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
+import com.unciv.logic.map.MapGenerator
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.MultiplayerScreen
+import com.unciv.ui.map.TileGroupMap
+import com.unciv.ui.mapeditor.EditorMapHolder
 import com.unciv.ui.mapeditor.LoadMapScreen
+import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.WorldMapHolder
+import kotlin.concurrent.thread
+import kotlin.concurrent.timer
 
 class MenuScreen: CameraStageBaseScreen() {
     val autosave = "Autosave"
+    val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(30f)
@@ -34,14 +47,32 @@ class MenuScreen: CameraStageBaseScreen() {
     }
 
     init {
-        val backgroundWhite = ImageGetter.getWhiteDot()
-        backgroundWhite.setFillParent(true)
-        stage.addActor(backgroundWhite)
-        val drawable = ImageGetter.getDrawable("OtherIcons/RepeatingBackground")
-        val tiledDrawable = TiledDrawable(drawable)
-        val backgroundImage = Image(tiledDrawable).apply { color = Color.WHITE.cpy().apply { a=0.5f } }
-        backgroundImage.setFillParent(true)
-        stage.addActor(backgroundImage)
+        stage.addActor(backgroundTable)
+        backgroundTable.center(stage)
+
+        thread(name="ShowMapBackground") {
+            val newMap = MapGenerator(RulesetCache.getBaseRuleset())
+                    .generateMap(MapParameters().apply { size = MapSize.Small; type=MapType.default })
+            Gdx.app.postRunnable { // for GL context
+                val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
+                backgroundTable.addAction(Actions.sequence(
+                        Actions.fadeOut(0f),
+                        Actions.run {
+                            mapHolder.apply {
+                                addTiles(30f)
+                                touchable = Touchable.disabled
+                                setScale(1f)
+                                center(this@MenuScreen.stage)
+                                layout()
+                            }
+                            backgroundTable.add(mapHolder).size(stage.width, stage.height)
+                        },
+                        Actions.fadeIn(0.3f)
+                ))
+
+
+            }
+        }
 
         val table = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
