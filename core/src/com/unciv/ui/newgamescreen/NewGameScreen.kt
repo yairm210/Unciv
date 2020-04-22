@@ -69,41 +69,45 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=
 
             thread(name="NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
-                try {
-                    newGame = GameStarter.startNewGame(newGameParameters,mapParameters)
-                    if (newGameParameters.isOnlineMultiplayer) {
-                        newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
-                        try {
-                            OnlineMultiplayer().tryUploadGame(newGame!!)
-                            GameSaver.autoSave(newGame!!){}
-
-                            //Saved as Multiplayer game to show up in the session browser
-                            GameSaver.saveGame(newGame!!, newGame!!.gameId,true)
-                            //Save gameId to clipboard because you have to do it anyway.
-                            Gdx.app.clipboard.contents = newGame!!.gameId
-                            //Popup to notify the User that the gameID got copied to the clipboard
-                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
-                        } catch (ex: Exception) {
-                            val cantUploadNewGamePopup = Popup(this)
-                            cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
-                            cantUploadNewGamePopup.addCloseButton()
-                            cantUploadNewGamePopup.open()
-                            newGame = null
-                        }
-                    }
-                } catch (exception: Exception) {
-                    val cantMakeThatMapPopup = Popup(this)
-                    cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
-                    cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
-                    cantMakeThatMapPopup.addCloseButton()
-                    cantMakeThatMapPopup.open()
-                    Gdx.input.inputProcessor = stage
-                    rightSideButton.enable()
-                    rightSideButton.setText("Start game!".tr())
-                }
-                Gdx.graphics.requestRendering()
+                newGameThread()
             }
         }
+    }
+
+    private fun newGameThread() {
+        try {
+            newGame = GameStarter.startNewGame(newGameParameters, mapParameters)
+            if (newGameParameters.isOnlineMultiplayer) {
+                newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+                try {
+                    OnlineMultiplayer().tryUploadGame(newGame!!)
+                    GameSaver.autoSave(newGame!!) {}
+
+                    //Saved as Multiplayer game to show up in the session browser
+                    GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
+                    //Save gameId to clipboard because you have to do it anyway.
+                    Gdx.app.clipboard.contents = newGame!!.gameId
+                    //Popup to notify the User that the gameID got copied to the clipboard
+                    ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
+                } catch (ex: Exception) {
+                    val cantUploadNewGamePopup = Popup(this)
+                    cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
+                    cantUploadNewGamePopup.addCloseButton()
+                    cantUploadNewGamePopup.open()
+                    newGame = null
+                }
+            }
+        } catch (exception: Exception) {
+            val cantMakeThatMapPopup = Popup(this)
+            cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
+            cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
+            cantMakeThatMapPopup.addCloseButton()
+            cantMakeThatMapPopup.open()
+            Gdx.input.inputProcessor = stage
+            rightSideButton.enable()
+            rightSideButton.setText("Start game!".tr())
+        }
+        Gdx.graphics.requestRendering()
     }
 
     fun setNewGameButtonEnabled(bool:Boolean){

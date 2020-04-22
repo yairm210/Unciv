@@ -41,6 +41,13 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.size(width,height)
         addSeparator()
 
+
+        addSquareButton("Start new game".tr()){
+            worldScreen.game.setScreen(NewGameScreen(worldScreen, worldScreen.gameInfo))
+            close()
+        }.size(width,height)
+        addSeparator()
+
         addSquareButton("Victory status".tr()){
             worldScreen.game.setScreen(VictoryScreen(worldScreen))
             close()

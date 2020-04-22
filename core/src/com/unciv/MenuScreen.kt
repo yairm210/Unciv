@@ -84,7 +84,9 @@ class MenuScreen: CameraStageBaseScreen() {
         val quickstartTable = getTableBlock("Quickstart","OtherIcons/Quickstart") { startNewGame() }
         table.add(quickstartTable).row()
 
-        val newGameButton = getTableBlock("Start new game","OtherIcons/New") { game.setScreen(NewGameScreen(this)) }
+        val newGameButton = getTableBlock("Start new game","OtherIcons/New") {
+            game.setScreen(NewGameScreen(this))
+        }
         table.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
