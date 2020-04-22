@@ -22,7 +22,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.translations.tr
-import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -30,11 +29,13 @@ import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
+import java.util.*
 import kotlin.concurrent.thread
 
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
@@ -126,9 +127,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
         if(gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
-            stage.addAction(Actions.forever(Actions.sequence(Actions.run {
-                loadLatestMultiplayerState()
-            }, Actions.delay(10f)))) // delay is in seconds
+            // restart the timer
+            if (multiPlayerRefresher != null) {
+                multiPlayerRefresher?.cancel()
+                multiPlayerRefresher?.purge()
+            }
+            // isDaemon = true, in order to not block the app closing
+            multiPlayerRefresher = Timer("multiPlayerRefresh", true).apply {
+                scheduleAtFixedRate(object : TimerTask() {
+                    override fun run() { Gdx.app.postRunnable{ loadLatestMultiplayerState() } }
+                }, 0, 10000) // 10 sec
+            }
         }
 
         tutorialController.allTutorialsShowedCallback = {
@@ -221,7 +230,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     return@thread
                 }
                 latestGame.isUpToDate=true
-                // Since we're making a screen this needs to run from the man thread which has a GL context
+                // Since we're making a screen this needs to run from the main thread which has a GL context
                 Gdx.app.postRunnable { game.loadGame(latestGame) }
 
             } catch (ex: Exception) {
@@ -628,6 +637,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
         // show the dialog
         promptWindow.open (true)     // true = always on top
+    }
+
+
+    companion object {
+        // these object must not be created multiple times
+        private var multiPlayerRefresher : Timer? = null
     }
 }
 
