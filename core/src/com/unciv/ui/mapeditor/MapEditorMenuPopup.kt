@@ -54,7 +54,8 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             thread ( name = "SaveMap" ) {
                 try {
                     MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
-                    UncivGame.Current.setWorldScreen()
+                    close()
+                    ResponsePopup("Map saved", mapEditorScreen) // todo - add this text to translations
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     Gdx.app.postRunnable {
