@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapGenerator
@@ -25,8 +26,8 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
-    val autosave = "Autosave"
-    val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
+    private val autosave = "Autosave"
+    private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(30f)
@@ -139,7 +140,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         mapEditorPopup.open(force = true)
     }
 
-    fun autoLoadGame() {
+    private fun autoLoadGame() {
         try {
             game.loadGame(autosave)
         } catch (ex: Exception) { // silent fail if we can't read the autosave
@@ -147,7 +148,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
     }
 
-    fun startNewGame() {
+    private fun startNewGame() {
         val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
         game.loadGame(newGame)
     }
