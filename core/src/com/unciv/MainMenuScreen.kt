@@ -4,11 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapGenerator
@@ -17,9 +14,7 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.MultiplayerScreen
-import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.mapeditor.EditorMapHolder
 import com.unciv.ui.mapeditor.LoadMapScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
@@ -27,17 +22,15 @@ import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.WorldMapHolder
 import kotlin.concurrent.thread
-import kotlin.concurrent.timer
 
-class MenuScreen: CameraStageBaseScreen() {
+class MainMenuScreen: CameraStageBaseScreen() {
     val autosave = "Autosave"
     val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(30f)
-        table.background = ImageGetter.getBackground(colorFromRGB(11, 135, 133))
+        table.background = ImageGetter.getBackground(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30).apply { /* setAlignment(Align.center) */ }).width(200f)
         table.touchable= Touchable.enabled
@@ -62,7 +55,7 @@ class MenuScreen: CameraStageBaseScreen() {
                                 addTiles(30f)
                                 touchable = Touchable.disabled
                                 setScale(1f)
-                                center(this@MenuScreen.stage)
+                                center(this@MainMenuScreen.stage)
                                 layout()
                             }
                             backgroundTable.add(mapHolder).size(stage.width, stage.height)
@@ -126,7 +119,7 @@ class MenuScreen: CameraStageBaseScreen() {
             val loadMapScreen = LoadMapScreen(null)
             loadMapScreen.closeButton.isVisible = true
             loadMapScreen.closeButton.onClick {
-                game.setScreen(MenuScreen())
+                game.setScreen(MainMenuScreen())
                 loadMapScreen.dispose()
             }
             game.setScreen(loadMapScreen)
