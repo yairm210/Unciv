@@ -221,19 +221,18 @@ object ImageGetter {
     }
 
     fun getTechIconGroup(techName: String, circleSize: Float): Group {
-        var techIconColor = Color.WHITE
-        when (ruleset.technologies[techName]!!.era()) {
-            Constants.ancientEra -> techIconColor = colorFromRGB(255, 87, 35)
-            Constants.classicalEra -> techIconColor = colorFromRGB(233, 31, 99)
-            Constants.medievalEra -> techIconColor = colorFromRGB(157, 39, 176)
-            Constants.renaissanceEra -> techIconColor = colorFromRGB(104, 58, 183)
-            Constants.industrialEra -> techIconColor = colorFromRGB(63, 81, 182)
-            Constants.modernEra -> techIconColor = colorFromRGB(33, 150, 243)
-            Constants.informationEra -> techIconColor = colorFromRGB(0, 150, 136)
-            Constants.futureEra -> techIconColor = colorFromRGB(76,176,81)
+        val techIconColor = when (ruleset.technologies[techName]!!.era()) {
+            Constants.ancientEra -> colorFromRGB(255, 87, 35)
+            Constants.classicalEra -> colorFromRGB(233, 31, 99)
+            Constants.medievalEra -> colorFromRGB(157, 39, 176)
+            Constants.renaissanceEra -> colorFromRGB(104, 58, 183)
+            Constants.industrialEra -> colorFromRGB(63, 81, 182)
+            Constants.modernEra -> colorFromRGB(33, 150, 243)
+            Constants.informationEra -> colorFromRGB(0, 150, 136)
+            Constants.futureEra -> colorFromRGB(76, 176, 81)
             else -> Color.WHITE.cpy()
         }
-        return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK,0.6f) }
+        return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK, 0.6f) }
                 .surroundWithCircle(circleSize)
     }
 

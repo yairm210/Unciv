@@ -34,8 +34,9 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        if(newGameParameters.players.size>newGameScreen.ruleset.nations.size)
-            newGameParameters.players=newGameParameters.players.subList(0,newGameScreen.ruleset.nations.size)
+        val newRulesetPlayableCivs = newGameScreen.ruleset.nations.count { it.key!=Constants.barbarians }
+        if(newGameParameters.players.size > newRulesetPlayableCivs)
+            newGameParameters.players=newGameParameters.players.subList(0,newRulesetPlayableCivs)
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in newGameParameters.players) {

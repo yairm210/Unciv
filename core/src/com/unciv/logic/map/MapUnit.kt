@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.logic.map.action.StringAction
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType

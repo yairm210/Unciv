@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.UncivGame
@@ -20,7 +19,6 @@ import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.models.ruleset.tech.TechEra
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
