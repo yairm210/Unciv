@@ -2,19 +2,13 @@ package com.unciv.ui.worldscreen.mainmenu
 
 import com.badlogic.gdx.Gdx
 import com.unciv.Constants
-import com.unciv.MenuScreen
-import com.unciv.UncivGame
+import com.unciv.MainMenuScreen
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.MultiplayerScreen
-import com.unciv.ui.mapeditor.LoadMapScreen
-import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
-import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.onClick
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -24,7 +18,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         val width = 200f
         val height = 30f
         addSquareButton("Main menu".tr()){
-            worldScreen.game.setScreen(MenuScreen())
+            worldScreen.game.setScreen(MainMenuScreen())
             close()
         }.size(width,height)
         addSeparator()
@@ -76,18 +70,18 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
 }
 
 class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
-    init{
-        addButton("Discord"){
+    init {
+        addButton("Discord") {
             Gdx.net.openURI("https://discord.gg/bjrB4Xw")
             close()
         }
 
-        addButton("Github"){
+        addButton("Github") {
             Gdx.net.openURI("https://github.com/yairm210/UnCiv")
             close()
         }
 
-        addButton("Reddit"){
+        addButton("Reddit") {
             Gdx.net.openURI("https://www.reddit.com/r/Unciv/")
             close()
         }

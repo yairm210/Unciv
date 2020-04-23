@@ -132,7 +132,7 @@ class CityExpansionManager {
         cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
 
-        for (unit in tileInfo.getUnits())
+        for (unit in tileInfo.getUnits().toList()) // tolisted because we're modifying
             if (!unit.civInfo.canEnterTiles(cityInfo.civInfo))
                 unit.movement.teleportToClosestMoveableTile()
 

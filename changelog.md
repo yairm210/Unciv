@@ -1,3 +1,19 @@
+## 3.8.1
+
+Solved concurrency problems
+
+Fixed #2492 - trading cities with units in them no longer crashes the game
+
+Can start a new game from within a game, to copy over the game's parameters
+
+Fixed resource display bug in tile table in multiplayer
+
+Added a randomly-generated map as background for the main menu
+
+Decrease CPU load for multiplayer game - By Jack Rainy
+
+Translation updates
+
 ## 3.8.0
 
 Game starts and defaults to a new Main Menu - should help solve errors as well as allow for cleaner disambiguation of problems
@@ -511,7 +527,7 @@ Translation updates
 
 ## 3.5.9
 
-Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated city states, as well as many other minor bugs
+Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated City-States, as well as many other minor bugs
 
 By Jack Rainy:
 - Nuclear missile is able to target any tile within the range
@@ -566,7 +582,7 @@ Translation updates
 
 Research agreements! - by lishaoxia1985
 
-Exploring units no longer auto-enter city states
+Exploring units no longer auto-enter City-States
 
 Map editor menu fix - by lyrjie
 
@@ -648,7 +664,7 @@ barbarian automation - by Vladimir Tanakov
 
 Idle units select properly after settling a city - by lyrjie
 
-Proper destruction notification for city states
+Proper destruction notification for City-States
 
 Added Fur resource image
 
@@ -726,7 +742,7 @@ Translation updates
 
 ## 3.4.5
 
-Resolved #1533 - Defeated city states no longer "declare war" if you attack their ally
+Resolved #1533 - Defeated City-States no longer "declare war" if you attack their ally
 
 Ancient Ruins are now spread out instead of randomized
 
@@ -760,7 +776,7 @@ Most players said Cultural victory was too easy - now requires 5 branches instea
 
 By r3versi:
 - Unique promotions listed in Promotion screen
-- Fixed Greece City states influence unique
+- Fixed Greece City-States influence unique
 - Added notifications on losing city state relationship
 
 Misc. rare bugfixes when:

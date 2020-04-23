@@ -1,4 +1,4 @@
-package com.unciv
+﻿package com.unciv
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapGenerator
@@ -25,7 +24,7 @@ import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
-class MenuScreen: CameraStageBaseScreen() {
+class MainMenuScreen: CameraStageBaseScreen() {
     val autosave = "Autosave"
     val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
@@ -56,7 +55,7 @@ class MenuScreen: CameraStageBaseScreen() {
                                 addTiles(30f)
                                 touchable = Touchable.disabled
                                 setScale(1f)
-                                center(this@MenuScreen.stage)
+                                center(this@MainMenuScreen.stage)
                                 layout()
                             }
                             backgroundTable.add(mapHolder).size(stage.width, stage.height)
@@ -126,7 +125,7 @@ class MenuScreen: CameraStageBaseScreen() {
             val loadMapScreen = LoadMapScreen(null)
             loadMapScreen.closeButton.isVisible = true
             loadMapScreen.closeButton.onClick {
-                game.setScreen(MenuScreen())
+                game.setScreen(MainMenuScreen())
                 loadMapScreen.dispose()
             }
             game.setScreen(loadMapScreen)

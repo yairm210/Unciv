@@ -517,7 +517,7 @@ class CivilizationInfo {
     }
 
     fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
-        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
+        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with City-States!")
         gold -= giftAmount
         otherCiv.getDiplomacyManager(this).influence += giftAmount/10
         otherCiv.updateAllyCivForCityState()

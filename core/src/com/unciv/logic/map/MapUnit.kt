@@ -534,8 +534,8 @@ class MapUnit {
     }
 
     fun disband() {
-        // evacuation of transported units before disbanding, if possible
-        for (unit in currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }) {
+        // evacuation of transported units before disbanding, if possible. toListed because we're modifying the unit list.
+        for (unit in currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }.toList()) {
             // we disbanded a carrier in a city, it can still stay in the city
             if (currentTile.isCityCenter() && unit.movement.canMoveTo(currentTile)) continue
             // if no "fuel" to escape, should be disbanded as well
@@ -582,7 +582,7 @@ class MapUnit {
         actions.add {
             val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior")
                     .filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }.random(tileBasedRandom)
-            if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City states and OCC don't get settler from ruins
+            if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)
                 civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
             }
