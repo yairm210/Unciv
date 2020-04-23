@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.TiledDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -17,9 +15,7 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.MultiplayerScreen
-import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.mapeditor.EditorMapHolder
 import com.unciv.ui.mapeditor.LoadMapScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
@@ -27,9 +23,7 @@ import com.unciv.ui.mapeditor.NewMapScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.WorldMapHolder
 import kotlin.concurrent.thread
-import kotlin.concurrent.timer
 
 class MenuScreen: CameraStageBaseScreen() {
     val autosave = "Autosave"
@@ -39,7 +33,7 @@ class MenuScreen: CameraStageBaseScreen() {
         val table = Table().pad(30f)
         table.background = ImageGetter.getBackground(colorFromRGB(11, 135, 133))
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
-        table.add(text.toLabel().setFontSize(30).apply { /* setAlignment(Align.center) */ }).minWidth(200f)
+        table.add(text.toLabel().setFontSize(30)).minWidth(200f)
         table.touchable= Touchable.enabled
         table.onClick(function)
         table.pack()
@@ -103,6 +97,7 @@ class MenuScreen: CameraStageBaseScreen() {
         // set the same width for all buttons
         table.pack()
         table.children.filterIsInstance<Table>().forEach {
+            it.align(Align.left)
             it.moveBy( (it.width - table.width) / 2, 0f)
             it.width = table.width }
 
