@@ -126,6 +126,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
+        
         if(gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
             // restart the timer
             if (multiPlayerRefresher != null) {
@@ -136,7 +137,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             multiPlayerRefresher = Timer("multiPlayerRefresh", true).apply {
                 scheduleAtFixedRate(object : TimerTask() {
                     override fun run() { Gdx.app.postRunnable{ loadLatestMultiplayerState() } }
-                }, 0, 10000) // 10 sec
+                }, 0, 10000) // 10 seconds
             }
         }
 
@@ -641,7 +642,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
 
     companion object {
-        // these object must not be created multiple times
+        // this object must not be created multiple times
         private var multiPlayerRefresher : Timer? = null
     }
 }
