@@ -221,7 +221,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun loadLatestMultiplayerState(){
         val loadingGamePopup = Popup(this)
-        loadingGamePopup.add("Loading latest game state...")
+        loadingGamePopup.add("Loading latest game state...".tr())
         loadingGamePopup.open()
         thread(name="MultiplayerLoad") {
             try {
