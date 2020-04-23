@@ -76,18 +76,18 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
 }
 
 class WorldScreenCommunityPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
-    init{
-        addButton("Discord"){
+    init {
+        addButton("Discord") {
             Gdx.net.openURI("https://discord.gg/bjrB4Xw")
             close()
         }
 
-        addButton("Github"){
+        addButton("Github") {
             Gdx.net.openURI("https://github.com/yairm210/UnCiv")
             close()
         }
 
-        addButton("Reddit"){
+        addButton("Reddit") {
             Gdx.net.openURI("https://www.reddit.com/r/Unciv/")
             close()
         }

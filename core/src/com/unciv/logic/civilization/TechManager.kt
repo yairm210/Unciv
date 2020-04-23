@@ -132,7 +132,7 @@ class TechManager {
     }
 
     fun addCurrentScienceToScienceOfLast8Turns() {
-        // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City States.
+        // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
         civInfo.cities.forEach{ it ->
             val totalBaseScience= it.cityStats.baseStatList.values.map { it.science }.sum()

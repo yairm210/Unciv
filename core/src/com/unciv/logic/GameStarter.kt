@@ -85,8 +85,8 @@ object GameStarter {
                         .map { it.improvement!!.replace("StartingLocation ", "") }
 
         val availableCityStatesNames = Stack<String>()
-        // since we shuffle and then order by, we end up with all the city states with starting tiles first in a random order,
-        //   and then all the other city states in a random order! Because the sortedBy function is stable!
+        // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
+        //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
