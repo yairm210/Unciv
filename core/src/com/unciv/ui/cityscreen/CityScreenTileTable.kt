@@ -41,7 +41,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
             && selectedTile in city.tilesInRange){
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
 
-            val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
+            val buyTileButton = "Buy for [$goldCostOfTile] gold".toTextButton()
             buyTileButton.onClick(UncivSound.Coin) {
                 city.expansion.buyTile(selectedTile)
                 UncivGame.Current.setScreen(CityScreen(city))
@@ -53,7 +53,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
             innerTable.add("You have [${city.civInfo.gold}] gold".toLabel(Color.YELLOW, 16)).padTop(2f)
         }
         if(city.canAcquireTile(selectedTile)) {
-            val acquireTileButton = TextButton("Acquire".tr(), CameraStageBaseScreen.skin)
+            val acquireTileButton = "Acquire".toTextButton()
             acquireTileButton.onClick {
                 city.expansion.takeOwnership(selectedTile)
                 UncivGame.Current.setScreen(CityScreen(city))
@@ -63,7 +63,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
 
         if(city.workedTiles.contains(selectedTile.position)){
             if(selectedTile.isLocked()) {
-                val unlockButton = TextButton("Unlock", CameraStageBaseScreen.skin)
+                val unlockButton = "Unlock".toTextButton()
                 unlockButton.onClick {
                     city.lockedTiles.remove(selectedTile.position)
                     update(selectedTile)
@@ -72,7 +72,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
                 innerTable.add(unlockButton).row()
             }
             else {
-                val lockButton = TextButton("Lock", CameraStageBaseScreen.skin)
+                val lockButton = "Lock".toTextButton()
                 lockButton.onClick {
                     city.lockedTiles.add(selectedTile.position)
                     update(selectedTile)

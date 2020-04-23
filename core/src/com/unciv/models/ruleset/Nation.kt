@@ -1,6 +1,7 @@
 package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
@@ -47,7 +48,7 @@ class Nation : INamed {
 
     fun isCityState()= cityStateType != null
     fun isMajorCiv() = !isBarbarian() && !isCityState()
-    fun isBarbarian() = name=="Barbarians"
+    fun isBarbarian() = name== Constants.barbarians
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false
@@ -123,27 +124,32 @@ class Nation : INamed {
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (unit in ruleset.units.values
                 .filter { it.uniqueTo == name }) {
-            val originalUnit = ruleset.units[unit.replaces!!]!!
-
-            textList += unit.name.tr() + " - "+"Replaces [${originalUnit.name}]".tr()
-            if (unit.cost != originalUnit.cost)
-                textList += "  {Cost} " + "[${unit.cost}] vs [${originalUnit.cost}]".tr()
-            if (unit.strength != originalUnit.strength)
-                textList += "  {Strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
-            if (unit.rangedStrength != originalUnit.rangedStrength)
-                textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
-            if (unit.range != originalUnit.range)
-                textList += "  {Range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
-            if (unit.movement != originalUnit.movement)
-                textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
-            if (originalUnit.requiredResource != null && unit.requiredResource == null)
-                textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
-            for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
-                textList += "  " + Translations.translateBonusOrPenalty(unique)
-            for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
-                textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
-            for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
-                textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
+            if(unit.replaces != null) {
+                val originalUnit = ruleset.units[unit.replaces!!]!!
+                textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
+                if (unit.cost != originalUnit.cost)
+                    textList += "  {Cost} " + "[${unit.cost}] vs [${originalUnit.cost}]".tr()
+                if (unit.strength != originalUnit.strength)
+                    textList += "  {Strength} " + "[${unit.strength}] vs [${originalUnit.strength}]".tr()
+                if (unit.rangedStrength != originalUnit.rangedStrength)
+                    textList += "  {Ranged strength} " + "[${unit.rangedStrength}] vs [${originalUnit.rangedStrength}]".tr()
+                if (unit.range != originalUnit.range)
+                    textList += "  {Range} " + "[${unit.range}] vs [${originalUnit.range}]".tr()
+                if (unit.movement != originalUnit.movement)
+                    textList += "  {Movement} " + "[${unit.movement}] vs [${originalUnit.movement}]".tr()
+                if (originalUnit.requiredResource != null && unit.requiredResource == null)
+                    textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
+                for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
+                    textList += "  " + Translations.translateBonusOrPenalty(unique)
+                for (unique in originalUnit.uniques.filterNot { it in unit.uniques })
+                    textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
+                for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
+                    textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
+            }
+            else {
+                textList += unit.name.tr()
+                textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
+            }
 
             textList += ""
         }

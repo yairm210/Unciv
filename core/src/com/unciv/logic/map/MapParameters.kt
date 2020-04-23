@@ -40,7 +40,7 @@ class MapParameters {
     var seed: Long = 0
     var tilesPerBiomeArea = 6
     var maxCoastExtension = 2
-    var elevationExponent = 0.8f
+    var elevationExponent = 0.7f
     var temperatureExtremeness = 0.6f
     var vegetationRichness = 0.4f
     var rareFeaturesRichness = 0.05f
@@ -50,7 +50,7 @@ class MapParameters {
     fun resetAdvancedSettings() {
         tilesPerBiomeArea = 6
         maxCoastExtension = 2
-        elevationExponent = 0.8f
+        elevationExponent = 0.7f
         temperatureExtremeness = 0.6f
         vegetationRichness = 0.4f
         rareFeaturesRichness = 0.05f

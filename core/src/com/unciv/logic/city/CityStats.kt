@@ -64,7 +64,7 @@ class CityStats {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
-                if (cityInfo.civInfo.policies.hasEffect("Production to science conversion in cities increased by 33%")) scienceProduced *= 1.33f
+                if (cityInfo.civInfo.policies.hasEffect(Constants.scienceConversionEffect)) scienceProduced *= 1.33f
                 stats.science += scienceProduced
             }
         }
@@ -73,7 +73,9 @@ class CityStats {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        val techEnablingRailroad = cityInfo.getRuleset().tileImprovements["Railroad"]!!.techRequired!!
+        val railroadImprovement = cityInfo.getRuleset().tileImprovements["Railroad"]
+        if (railroadImprovement == null) return stats // for mods
+        val techEnablingRailroad = railroadImprovement.techRequired!!
         // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
         // we shouldn't get bonuses, it's as if the tracks aare layed out but we can't operate them.
         if (cityInfo.civInfo.tech.isResearched(techEnablingRailroad)
@@ -373,7 +375,7 @@ class CityStats {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
-        newBaseStatList["City States"] = getStatsFromCityStates()
+        newBaseStatList["City-States"] = getStatsFromCityStates()
 
         baseStatList = newBaseStatList
     }
@@ -478,7 +480,7 @@ class CityStats {
 
         if (cityInfo.cityConstructions.currentConstructionFromQueue == Constants.settler && totalFood > 0) {
             newFinalStatList["Excess food to production"] =
-                    Stats().apply { production=totalFood; food=-totalFood }
+                    Stats().apply { production = totalFood; food = -totalFood }
         }
 
         if (cityInfo.isInResistance())

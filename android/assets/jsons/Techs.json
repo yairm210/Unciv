@@ -1,21 +1,21 @@
 [
 	{
 		"columnNumber": 0,
-		"era": "Ancient",
+		"era": "Ancient era",
 		"techCost": 20,
 		"buildingCost": 40,
 		"techs": [
 			{
 				"name": "Agriculture",
 				"row": 5,
-				"quote": "'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster"
+				"quote": "'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster",
+				"uniques": ["Starting tech"]
 			}
-			
 		]	
 	},
 	{
 		"columnNumber": 1,
-		"era": "Ancient",
+		"era": "Ancient era",
 		"techCost": 35, 
 		"buildingCost": 60,
 		"techs": [
@@ -48,7 +48,7 @@
 	},
 	{
 		"columnNumber": 2,
-		"era": "Ancient",
+		"era": "Ancient era",
 		"techCost": 55, 
 		"buildingCost": 75,
 		"wonderCost": 185,
@@ -99,7 +99,7 @@
 	},
 	{
 		"columnNumber": 3,
-		"era": "Classical",
+		"era": "Classical era",
 		"techCost": 105, 
 		"buildingCost": 100,
 		"wonderCost": 250,
@@ -134,7 +134,7 @@
 	},
 	{
 		"columnNumber": 4,
-		"era": "Classical",
+		"era": "Classical era",
 		"techCost": 175, 
 		"buildingCost": 120,
 		"wonderCost": 300,
@@ -167,7 +167,7 @@
 	},
 	{
 		"columnNumber": 5,
-		"era": "Medieval",
+		"era": "Medieval era",
 		"techCost": 275,
 		"buildingCost": 160,
 		"wonderCost": 400,
@@ -202,7 +202,7 @@
 	},
 	{
 		"columnNumber": 6,
-		"era": "Medieval",
+		"era": "Medieval era",
 		"techCost": 485, 
 		"buildingCost": 200,
 		"wonderCost": 500,
@@ -250,7 +250,7 @@
 	},
 	{
 		"columnNumber": 7,
-		"era": "Renaissance",
+		"era": "Renaissance era",
 		"techCost": 780, 
 		"buildingCost": 250,
 		"wonderCost": 625,
@@ -290,7 +290,7 @@
 	},
 	{
 		"columnNumber": 8,
-		"era": "Renaissance",
+		"era": "Renaissance era",
 		"techCost": 1150, 
 		"buildingCost": 300,
 		"wonderCost": 750,
@@ -329,7 +329,7 @@
 	},
 	{
 		"columnNumber": 9,
-		"era": "Industrial",
+		"era": "Industrial era",
 		"techCost": 1600,
 		"buildingCost": 360,
 		"wonderCost": 920,
@@ -374,7 +374,7 @@
 	},
 	{
 		"columnNumber": 10,
-		"era": "Industrial",
+		"era": "Industrial era",
 		"techCost": 2350,
 		"buildingCost": 500,
 		"wonderCost": 1060,
@@ -408,7 +408,7 @@
 	},
 	{
 		"columnNumber": 11,
-		"era": "Modern",
+		"era": "Modern era",
 		"techCost": 3100,
 		"buildingCost": 500,
 		"wonderCost": 1250,
@@ -447,7 +447,7 @@
 	},
 	{
 		"columnNumber": 12,
-		"era": "Modern",
+		"era": "Modern era",
 		"techCost": 4100,
 		"buildingCost": 500,
 		"wonderCost": 1250,
@@ -480,7 +480,7 @@
 	},
 	{
 		"columnNumber": 13,
-		"era": "Information",
+		"era": "Information era",
 		"techCost": 5100,
 		"buildingCost": 500,
 		"wonderCost": 1250,
@@ -513,7 +513,7 @@
 	},
 	{
 		"columnNumber": 14,
-		"era": "Information",
+		"era": "Information era",
 		"techCost": 6400,
 		"buildingCost": 750,
 		"wonderCost": 2000,
@@ -547,7 +547,7 @@
 	},
 	{
 		"columnNumber": 15,
-		"era": "Future",
+		"era": "Future era",
 		"techCost": 7700,
 		"buildingCost": 750,
 		"wonderCost": 1250,
@@ -581,7 +581,7 @@
 	
 	{
 		"columnNumber": 16,
-		"era": "Future",
+		"era": "Future era",
 		"techCost": 8800,
 		"buildingCost": 750,
 		"wonderCost": 1250,
@@ -602,7 +602,7 @@
 	},
 	{
 		"columnNumber": 17,
-		"era": "Future",
+		"era": "Future era",
 		"techCost": 9500,
 		"buildingCost": 750,
 		"wonderCost": 1250,

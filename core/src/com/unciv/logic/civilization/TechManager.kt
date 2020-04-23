@@ -132,7 +132,7 @@ class TechManager {
     }
 
     fun addCurrentScienceToScienceOfLast8Turns() {
-        // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City States.
+        // The Science the Great Scientist generates does not include Science from Policies, Trade routes and City-States.
         var allCitiesScience = 0f
         civInfo.cities.forEach{ it ->
             val totalBaseScience= it.cityStats.baseStatList.values.map { it.science }.sum()
@@ -223,12 +223,12 @@ class TechManager {
         civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched,techName))
 
         val currentEra = civInfo.getEra()
-        if (previousEra < currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra era]!", null, Color.GOLD)
+        if (previousEra != currentEra) {
+            civInfo.addNotification("You have entered the [$currentEra]!", null, Color.GOLD)
             if (civInfo.isMajorCiv()) {
                 for (knownCiv in civInfo.getKnownCivs()) {
                     knownCiv.addNotification(
-                        "[${civInfo.civName}] has entered the [$currentEra era]!",
+                        "[${civInfo.civName}] has entered the [$currentEra]!",
                         null,
                         Color.BLUE
                     )
@@ -257,12 +257,19 @@ class TechManager {
         }
 
         val obsoleteUnits = getRuleset().units.values.filter { it.obsoleteTech == techName }.map { it.name }
-        for (city in civInfo.cities)
-            for(constructionName in city.cityConstructions.constructionQueue.toList()){ // copy, since we're changing the queue
-                if(constructionName !in obsoleteUnits) continue
-                val constructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
-                city.cityConstructions.constructionQueue.replaceAll { if(it==constructionName) constructionUnit.upgradesTo!! else it }
+        for (city in civInfo.cities) {
+                // Do not use replaceAll - that's a Java 8 feature and will fail on older phones!
+            val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
+            city.cityConstructions.constructionQueue.clear()
+            for (constructionName in oldQueue) {
+                var newConstructionName = constructionName
+                if (constructionName in obsoleteUnits) {
+                    val constructionUnit = city.cityConstructions.getConstruction(constructionName) as BaseUnit
+                    newConstructionName = civInfo.getEquivalentUnit(constructionUnit.upgradesTo!!).name
+                }
+                city.cityConstructions.constructionQueue.add(newConstructionName)
             }
+        }
 
         if(techName=="Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY
                 && civInfo.cities.any())

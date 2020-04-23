@@ -16,10 +16,11 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     private var yieldGroup = YieldGroup()
 
     init {
-        isTransform=false // performance helper - nothing here is rotated or scaled
+        isTransform = false // performance helper - nothing here is rotated or scaled
         addActor(yieldGroup)
         if (city.location == tileInfo.position) {
-            icons.addPopulationIcon(ImageGetter.getImage("StatIcons/City_Center_(Civ6)"))
+            icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Star")
+                    .apply { color = Color.GOLD })
         }
 
     }

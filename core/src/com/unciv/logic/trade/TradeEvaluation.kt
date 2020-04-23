@@ -247,6 +247,6 @@ class TradeEvaluation{
     }
 
     fun evaluateResearchAgreementCostForThem(ourCivilization: CivilizationInfo, otherCivilization: CivilizationInfo): Int {
-        return -100 * (ourCivilization.getEra().ordinal-otherCivilization.getEra().ordinal)
+        return -100 * (ourCivilization.getEraNumber()-otherCivilization.getEraNumber())
     }
 }

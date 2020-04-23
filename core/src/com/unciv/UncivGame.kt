@@ -9,9 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.logic.GameStarter
-import com.unciv.logic.map.MapParameters
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.Translations
@@ -87,32 +84,37 @@ class UncivGame(
             // This stuff needs to run on the main thread because it needs the GL context
             Gdx.app.postRunnable {
                 CameraStageBaseScreen.resetFonts()
-                autoLoadGame()
+                ImageGetter.ruleset = RulesetCache.getBaseRuleset() // so that we can enter the map editor without having to load a game first
                 thread(name="Music") { startMusic() }
+                restoreSize()
+
+                if (settings.isFreshlyCreated) {
+                    setScreen(LanguagePickerScreen())
+                } else { setScreen(MenuScreen()) }
                 isInitialized = true
             }
         }
         crashController = CrashController.Impl(crashReportSender)
     }
 
-    private fun restoreSize() {
+    fun restoreSize() {
         if (!isSizeRestored && Gdx.app.type == Application.ApplicationType.Desktop && settings.windowState.height>39 && settings.windowState.width>39) {
             isSizeRestored = true
             Gdx.graphics.setWindowedMode(settings.windowState.width, settings.windowState.height)
         }
     }
 
-    fun autoLoadGame() {
-        // IMHO better test for fresh installs than Autosave.exists()
-        // e.g. should someone delete the settings file only or kill the language picker screen
-        if (settings.isFreshlyCreated) {
-            return setScreen(LanguagePickerScreen())
-        }
-        try {
-            loadGame("Autosave")
-        } catch (ex: Exception) { // silent fail if we can't read the autosave
-            startNewGame()
-        }
+
+    fun loadGame(gameInfo: GameInfo) {
+        this.gameInfo = gameInfo
+        ImageGetter.ruleset = gameInfo.ruleSet
+        ImageGetter.refreshAtlas()
+        worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
+        setWorldScreen()
+    }
+
+    fun loadGame(gameName: String) {
+        loadGame(GameSaver.loadGameByName(gameName))
     }
 
     fun startMusic() {
@@ -132,24 +134,6 @@ class UncivGame(
         super.setScreen(screen)
     }
 
-    fun loadGame(gameInfo: GameInfo) {
-        this.gameInfo = gameInfo
-        ImageGetter.ruleset = gameInfo.ruleSet
-        ImageGetter.refreshAtlas()
-        restoreSize()
-        worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
-        setWorldScreen()
-    }
-
-    fun loadGame(gameName: String) {
-        loadGame(GameSaver.loadGameByName(gameName))
-    }
-
-    fun startNewGame() {
-        val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
-        loadGame(newGame)
-    }
-
     fun setWorldScreen() {
         if (screen != null && screen != worldScreen) screen.dispose()
         setScreen(worldScreen)
@@ -163,14 +147,7 @@ class UncivGame(
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
         ImageGetter.refreshAtlas()
 
-        // This is to solve a rare problem -
-        // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
-        // Can happen if you resume to the language picker screen for instance.
-        if (!::gameInfo.isInitialized || gameInfo.civilizations.isEmpty())
-            return autoLoadGame()
-
-        if (::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
-        loadGame(gameInfo)
+        setScreen(MenuScreen())
     }
 
     // Maybe this will solve the resume error on chrome OS, issue 322? Worth a shot
@@ -211,3 +188,5 @@ class LoadingScreen:CameraStageBaseScreen() {
         stage.addActor(happinessImage)
     }
 }
+
+

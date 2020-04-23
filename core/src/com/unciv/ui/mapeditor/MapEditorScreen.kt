@@ -5,12 +5,10 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
@@ -50,7 +48,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         tileMap.setTransients(ruleset)
 
         mapHolder = EditorMapHolder(this, tileMap)
-        mapHolder.addTiles()
+        mapHolder.addTiles(stage.width)
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
@@ -119,7 +117,6 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                         val distance = tileEditorOptions.brushSize - 1
 
                         for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
-
                             tileEditorOptions.updateTileWhenClicked(tileInfo)
 
                             tileInfo.setTransients()
@@ -145,4 +142,5 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         })
     }
 }
+
 

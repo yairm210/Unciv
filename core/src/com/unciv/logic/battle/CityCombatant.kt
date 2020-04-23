@@ -40,9 +40,10 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         val cityTile = city.getCenterTile()
         if(cityTile.baseTerrain== Constants.hill) strength+=5
         // as tech progresses so does city strength
-        val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
-                getCivInfo().gameInfo.ruleSet.technologies.count()
+        val techCount = getCivInfo().gameInfo.ruleSet.technologies.count()
+        val techsPercentKnown: Float = if(techCount>0) city.civInfo.tech.techsResearched.count().toFloat() / techCount else 0.5f // for mods with no tech
         strength += (techsPercentKnown * 5.5).pow(2.8).toFloat()
+
 
         // The way all of this adds up...
         // All ancient techs - 0.5 extra, Classical - 2.7, Medieval - 8, Renaissance - 17.5,

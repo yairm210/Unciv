@@ -2,6 +2,7 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.logic.UncivShowableException
 import com.unciv.models.ruleset.tech.TechColumn
@@ -15,6 +16,7 @@ import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
 class ModOptions {
+    var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
@@ -165,6 +167,12 @@ class Ruleset {
             }
         }
     }
+
+    fun getEras(): List<String> {
+        return technologies.values.map { it.column!!.era }.distinct()
+    }
+
+    fun getEraNumber(era:String) = getEras().indexOf(era)
 }
 
 /** Loading mods is expensive, so let's only do it once and
@@ -194,12 +202,16 @@ object RulesetCache :HashMap<String,Ruleset>() {
 
     fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
         val newRuleset = Ruleset()
-        newRuleset.add(getBaseRuleset())
-        for (mod in mods)
-            if (containsKey(mod)) {
-                newRuleset.add(this[mod]!!)
-                newRuleset.mods += mod
+        val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
+        if (loadedMods.none { it.modOptions.isBaseRuleset })
+            newRuleset.add(getBaseRuleset())
+        for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
+            newRuleset.add(mod)
+            newRuleset.mods += mod.name
+            if(mod.modOptions.isBaseRuleset){
+                newRuleset.modOptions = mod.modOptions
             }
+        }
         newRuleset.updateBuildingCosts() // only after we've added all the mods can we calculate the building costs
 
         return newRuleset

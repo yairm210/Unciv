@@ -17,8 +17,8 @@ import com.unciv.ui.cityscreen.ConstructionInfoTable.Companion.turnOrTurns
 import com.unciv.ui.utils.*
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
-    /* -2 = Nothing, -1 = current construction, >= 0 queue entry */
-    private var selectedQueueEntry = -2 // None
+    /* -1 = Nothing, >= 0 queue entry (0 = current construction) */
+    private var selectedQueueEntry = -1 // None
 
     private val showCityInfoTableButton: TextButton
     private val constructionsQueueScrollPane: ScrollPane
@@ -31,7 +31,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private val pad = 10f
 
     init {
-        showCityInfoTableButton = TextButton("Show stats drilldown".tr(), skin)
+        showCityInfoTableButton = "Show stats drilldown".toTextButton()
         showCityInfoTableButton.onClick {
             cityScreen.showConstructionsTable = false
             cityScreen.update()
@@ -252,14 +252,14 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.onClick {
             cityScreen.selectedConstruction = construction
             cityScreen.selectedTile = null
-            selectedQueueEntry = -2
+            selectedQueueEntry = -1
             cityScreen.update()
         }
 
         return pickProductionButton
     }
 
-    private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry > -2
+    private fun isSelectedQueueEntry(): Boolean = selectedQueueEntry >= 0
 
     private fun getQueueButton(construction: IConstruction?): TextButton {
         val city = cityScreen.city
@@ -267,18 +267,18 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val button: TextButton
 
         if (isSelectedQueueEntry()) {
-            button = TextButton("Remove from queue".tr(), CameraStageBaseScreen.skin)
+            button = "Remove from queue".toTextButton()
             if (!UncivGame.Current.worldScreen.isPlayersTurn || city.isPuppet) button.disable()
             else {
                 button.onClick {
                     cityConstructions.removeFromQueue(selectedQueueEntry,false)
                     cityScreen.selectedConstruction = null
-                    selectedQueueEntry = -2
+                    selectedQueueEntry = -1
                     cityScreen.update()
                 }
             }
         } else {
-            button = TextButton("Add to queue".tr(), CameraStageBaseScreen.skin)
+            button = "Add to queue".toTextButton()
             if (construction == null
                     || cityConstructions.isQueueFull()
                     || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
@@ -303,12 +303,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     fun purchaseConstruction(construction: IConstruction) {
         val city = cityScreen.city
-        val cityConstructions = city.cityConstructions
-        // We can't trust the isSelectedQueueEntry because that fails when we have the same unit as both the current construction and in the queue,
-        // and then we purchase the unit from the queue - see #2157
-        val constructionIsCurrentConstruction = construction.name==cityConstructions.currentConstructionFromQueue
-
-        if (!cityConstructions.purchaseConstruction(construction.name)) {
+        if (!city.cityConstructions.purchaseConstruction(construction.name, selectedQueueEntry, false)) {
             Popup(cityScreen).apply {
                 add("No space available to place [${construction.name}] near [${city.name}]".tr()).row()
                 addCloseButton()
@@ -317,14 +312,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             return
         }
         if (isSelectedQueueEntry()) {
-            // currentConstruction is removed from the queue by purchaseConstruction
-            // to avoid conflicts with NextTurnAutomation
-            if (!constructionIsCurrentConstruction && cityConstructions.constructionQueue[selectedQueueEntry] == construction.name)
-                cityConstructions.removeFromQueue(selectedQueueEntry,false)
-            selectedQueueEntry = -2
+            selectedQueueEntry = -1
             cityScreen.selectedConstruction = null
         }
-        if (!construction.shouldBeDisplayed(cityConstructions)) cityScreen.selectedConstruction = null
         cityScreen.update()
     }
 
@@ -332,7 +322,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
 
-        val button = TextButton("", CameraStageBaseScreen.skin)
+        val button = "".toTextButton()
 
         if (construction == null || !construction.canBePurchased()
         ) {

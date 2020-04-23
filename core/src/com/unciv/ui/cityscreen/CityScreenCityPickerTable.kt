@@ -6,11 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.translations.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
-import com.unciv.ui.utils.Popup
+import com.unciv.ui.utils.*
 
 class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
@@ -20,12 +16,8 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         val civInfo = city.civInfo
 
         if (civInfo.cities.size > 1) {
-            val prevCityButton = TextButton("<", CameraStageBaseScreen.skin)
-            prevCityButton.onClick {
-                val indexOfCity = civInfo.cities.indexOf(city)
-                val indexOfNextCity = if (indexOfCity == 0) civInfo.cities.size - 1 else indexOfCity - 1
-                cityScreen.game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
-            }
+            val prevCityButton = "<".toTextButton()
+            prevCityButton.onClick { cityScreen.page(-1) }
             add(prevCityButton).pad(20f)
         } else add()
 
@@ -71,25 +63,16 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
 
         if (civInfo.cities.size > 1) {
-            val nextCityButton = TextButton(">", CameraStageBaseScreen.skin)
-            nextCityButton.onClick {
-                val indexOfCity = civInfo.cities.indexOf(city)
-                val indexOfNextCity = if (indexOfCity == civInfo.cities.size - 1) 0 else indexOfCity + 1
-                cityScreen.game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
-            }
+            val nextCityButton = ">".toTextButton()
+            nextCityButton.onClick { cityScreen.page(1) }
             add(nextCityButton).pad(20f)
         } else add()
         row()
 
-        val exitCityButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
+        val exitCityButton = "Exit city".toTextButton()
         exitCityButton.labelCell.pad(10f)
 
-        exitCityButton.onClick {
-            val game = cityScreen.game
-            game.setWorldScreen()
-            game.worldScreen.mapHolder.setCenterPosition(city.location)
-            game.worldScreen.bottomUnitTable.selectedUnit=null
-        }
+        exitCityButton.onClick { cityScreen.exit() }
 
         add(exitCityButton).pad(10f).colspan(columns)
 

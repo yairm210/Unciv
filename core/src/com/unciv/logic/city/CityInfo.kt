@@ -88,7 +88,6 @@ class CityInfo {
 
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")
-            cityConstructions.currentConstructionFromQueue = Constants.worker // Default for first city only!
         }
 
         civInfo.policies.tryAddLegalismBuildings()
@@ -99,7 +98,7 @@ class CityInfo {
 
         tryUpdateRoadStatus()
 
-        if (listOf(Constants.forest, Constants.jungle, "Marsh").contains(tile.terrainFeature))
+        if (getRuleset().tileImprovements.containsKey("Remove "+tile.terrainFeature))
             tile.terrainFeature = null
 
         workedTiles = hashSetOf() //reassign 1st working tile
@@ -308,10 +307,10 @@ class CityInfo {
         attackedThisTurn = false
         if (isInResistance()) resistanceCounter--
 
-        if (isPuppet) reassignWorkers()
+        if (isPuppet) reassignPopulation()
     }
 
-    fun reassignWorkers() {
+    fun reassignPopulation() {
         var foodWeight = 1f
         var foodPerTurn = 0f
         while (foodWeight < 3 && foodPerTurn <= 0) {
@@ -333,12 +332,12 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if (isBeingRazed) {
             population.population--
-            if (population.population <= 0) { // there are strange cases where we geet to -1
+            if (population.population <= 0) { // there are strange cases where we get to -1
                 civInfo.addNotification("[$name] has been razed to the ground!", location, Color.RED)
                 destroyCity()
-            } else {//if not razed yet:
-                if (population.foodStored >= population.getFoodToNextPopulation()) {//if surplus in the granary...
-                    population.foodStored = population.getFoodToNextPopulation() - 1//...reduce below the new growth treshold
+            } else { //if not razed yet:
+                if (population.foodStored >= population.getFoodToNextPopulation()) { //if surplus in the granary...
+                    population.foodStored = population.getFoodToNextPopulation() - 1 //...reduce below the new growth threshold
                 }
             }
         } else population.nextTurn(foodForNextTurn())
@@ -394,7 +393,7 @@ class CityInfo {
 
 
         if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
-        reassignWorkers()
+        reassignPopulation()
 
         resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
         isPuppet = true
@@ -446,7 +445,7 @@ class CityInfo {
         moveToCiv(foundingCiv)
         health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
 
-        reassignWorkers()
+        reassignPopulation()
 
         if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
         isPuppet = false
@@ -542,13 +541,17 @@ class CityInfo {
     }
 
     private fun tryUpdateRoadStatus(){
-        if(getCenterTile().roadStatus==RoadStatus.None
-                && getRuleset().tileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
+        if(getCenterTile().roadStatus==RoadStatus.None){
+            val roadImprovement = getRuleset().tileImprovements["Road"]
+            if(roadImprovement!=null && roadImprovement.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus=RoadStatus.Road
+        }
 
-        else if(getCenterTile().roadStatus!=RoadStatus.Railroad
-                && getRuleset().tileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
-            getCenterTile().roadStatus=RoadStatus.Railroad
+        else if (getCenterTile().roadStatus != RoadStatus.Railroad) {
+            val railroadImprovement = getRuleset().tileImprovements["Railroad"]
+            if (railroadImprovement != null && railroadImprovement.techRequired in civInfo.tech.techsResearched)
+                getCenterTile().roadStatus = RoadStatus.Railroad
+        }
     }
 
     fun getGoldForSellingBuilding(buildingName:String) = getRuleset().buildings[buildingName]!!.cost / 10

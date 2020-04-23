@@ -1,6 +1,7 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
@@ -42,7 +43,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             for (tech in ruleset.technologies.values
-                    .filter { it.era() < newGameParameters.startingEra })
+                    .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(newGameParameters.startingEra) })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
 
@@ -59,17 +60,20 @@ object GameStarter {
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
-        availableCivNames.remove("Barbarians")
+        availableCivNames.remove(Constants.barbarians)
 
-
-        val barbarianCivilization = CivilizationInfo("Barbarians")
-        gameInfo.civilizations.add(barbarianCivilization)
+        if(!newGameParameters.noBarbarians && ruleset.nations.containsKey(Constants.barbarians)) {
+            val barbarianCivilization = CivilizationInfo(Constants.barbarians)
+            gameInfo.civilizations.add(barbarianCivilization)
+        }
 
         for (player in newGameParameters.players.sortedBy { it.chosenCiv == "Random" }) {
             val nationName = if (player.chosenCiv != "Random") player.chosenCiv
             else availableCivNames.pop()
 
             val playerCiv = CivilizationInfo(nationName)
+            for (tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+                playerCiv.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
             playerCiv.playerType = player.playerType
             playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
@@ -81,16 +85,17 @@ object GameStarter {
                         .map { it.improvement!!.replace("StartingLocation ", "") }
 
         val availableCityStatesNames = Stack<String>()
-        // since we shuffle and then order by, we end up with all the city states with starting tiles first in a random order,
-        //   and then all the other city states in a random order! Because the sortedBy function is stable!
+        // since we shuffle and then order by, we end up with all the City-States with starting tiles first in a random order,
+        //   and then all the other City-States in a random order! Because the sortedBy function is stable!
         availableCityStatesNames.addAll(ruleset.nations.filter { it.value.isCityState() }.keys
                 .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
             gameInfo.civilizations.add(civ)
+            for(tech in ruleset.technologies.values.filter { it.uniques.contains("Starting tech") })
+                civ.tech.techsResearched.add(tech.name) // can't be .addTechnology because the civInfo isn't assigned yet
         }
-
     }
 
     private fun addCivStartingUnits(gameInfo: GameInfo) {
@@ -137,7 +142,8 @@ object GameStarter {
 
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
-                .filter { it.isLand && !it.getBaseTerrain().impassable }
+                // Games starting on snow might as well start over...
+                .filter { it.isLand && !it.getBaseTerrain().impassable && it.baseTerrain!=Constants.snow }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
         while (landTiles.any()) {

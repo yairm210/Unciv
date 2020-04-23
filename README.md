@@ -1,6 +1,6 @@
 # Unciv - Civ V for Android (+Desktop)
 
-![](https://lh3.googleusercontent.com/l8fuQ2DnNjoD9pFnHLsli1xt8OClfr6O9GSBJJ9w7IIb2VHOyxqKZ9lNZXtMqOabCfyI=w1920-h867-rw)
+![](/extraImages/Feature%20graphic.png)
 
 
 [![Google Play](https://img.shields.io/badge/Google-Play-black.svg)](https://play.google.com/store/apps/details?id=com.unciv.app)
@@ -10,9 +10,7 @@
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)  
 
 [![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.50-orange.svg)](http://kotlinlang.org/)
-
-
+[![Kotlin](https://img.shields.io/badge/kotlin-1.3.710-orange.svg)](http://kotlinlang.org/)
 
 
 # What is this?
@@ -40,17 +38,16 @@ Is this order:
 
 ## How can I help?
 
-If you're a programmer, get started at [here!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
+Programmers start [here!](https://github.com/yairm210/Unciv/wiki/Getting-Started)
 
-If you want to help with the translation, get started [here!](https://github.com/yairm210/Unciv/wiki/Translating)
+Translators start [here!](https://github.com/yairm210/Unciv/wiki/Translating)
+
+Modders start [here!](https://github.com/yairm210/Unciv/wiki/Mods)
 
 You can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
 
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
-If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
-        
-If you want to mod, see [here!](https://github.com/yairm210/Unciv/wiki/Mods)
 
 # FAQ
 
@@ -65,6 +62,8 @@ If not, then the feature won't be added until we've finished all the features fr
 ## Please add {Civilization}
 
 THE most common request, hands down. Everyone wants their favorite Civ in the game, I get that. But there are so many other things to work on - automations, AI, UI, graphics, bugs, and of course other features from the original game that are currently missing. Eventually we'll have them all, but the key word is "eventually".
+
+In the meantime, you can [mod it yourself!](https://github.com/yairm210/Unciv/wiki/Mods)
 
 ## Will you implement Civ VI?
 

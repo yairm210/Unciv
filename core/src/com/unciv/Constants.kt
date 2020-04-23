@@ -61,4 +61,18 @@ object Constants {
     const val tutorialPopupNamePrefix = "Tutorial: "
 
     const val close = "Close"
+    const val disabled="disabled"
+    const val enabled="enabled"
+
+    const val scienceConversionEffect = "Production to science conversion in cities increased by 33%"
+
+    const val ancientEra = "Ancient era"
+    const val classicalEra = "Classical era"
+    const val medievalEra = "Medieval era"
+    const val renaissanceEra = "Renaissance era"
+    const val industrialEra = "Industrial era"
+    const val modernEra = "Modern era"
+    const val informationEra = "Information era"
+    const val futureEra = "Future era"
+    const val barbarians = "Barbarians"
 }

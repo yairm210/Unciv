@@ -8,7 +8,7 @@ class YesNoPopup(question:String, action:()->Unit,
                  screen: CameraStageBaseScreen = UncivGame.Current.worldScreen, restoredefault:()->Unit = {}) : Popup(screen){
     init{
         add(question.toLabel()).colspan(2).row()
-        add(TextButton("No".tr(), skin).onClick { close(); restoredefault() })
-        add(TextButton("Yes".tr(), skin).onClick { close(); action() })
+        add("No".toTextButton().onClick { close(); restoredefault() })
+        add("Yes".toTextButton().onClick { close(); action() })
     }
 }

@@ -1,7 +1,7 @@
 [
 	{
 		"name": "Tradition",
-		"era": "Ancient",
+		"era": "Ancient era",
 		"effect": "+3 culture in capital and increased rate of border expansion",
 		"policies": [
 			{
@@ -44,7 +44,7 @@
 	},
 	{
 		"name": "Liberty",
-		"era": "Ancient",
+		"era": "Ancient era",
 		"effect": "+1 culture in every city",
 		"policies": [
 			{
@@ -88,7 +88,7 @@
 	},
 	{
 		"name": "Honor",
-		"era": "Ancient",
+		"era": "Ancient era",
 		"effect": "+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
 		"policies": [
 			{
@@ -131,7 +131,7 @@
 		]
 	},{
 		"name": "Piety",
-		"era": "Classical",
+		"era": "Classical era",
 		"effect": "Building time of culture buildings reduced by 15%",
 		"policies": [
 			{
@@ -174,7 +174,7 @@
 		]
 	},/*{
 		"name": "Patronage",
-		"era": "Classical",
+		"era": "Classical era",
 		"effect": "Influence with City-States degrades 25% slower than normal",
 		"policies": [
 			{
@@ -219,7 +219,7 @@
 	{
 		"name": "Commerce",
 		"effect": "+25% gold in capital",
-		"era": "Medieval",
+		"era": "Medieval era",
 		"policies": [
 			{
 				"name": "Trade Unions",
@@ -262,7 +262,7 @@
 	},
 	{
 		"name": "Rationalism",
-		"era": "Renaissance",
+		"era": "Renaissance era",
 		"effect": "Production to science conversion in cities increased by 33%",
 		"policies": [
 			{
@@ -306,7 +306,7 @@
 	},
 	/*{
 		"name": "Order",
-		"era": "Industrial",
+		"era": "Industrial era",
 		"effect": "+1 Happiness per City",
 		"policies": [
 			{
@@ -349,7 +349,7 @@
 	},*/
 	{
 		"name": "Freedom",
-		"era": "Renaissance",
+		"era": "Renaissance era",
 		"effect": "+25% great people rate",
 		"policies": [
 			{
@@ -392,7 +392,7 @@
 	},
 	{
 		"name": "Autocracy",
-		"era": "Industrial",
+		"era": "Industrial era",
 		"effect": "-33% unit upkeep costs",
 		"policies": [
 			{

@@ -17,6 +17,7 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
 import kotlin.math.PI
 import kotlin.math.atan
+import kotlin.random.Random
 
 
 open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : Group() {
@@ -243,7 +244,20 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         for(image in tileBaseImages) image.remove()
         tileBaseImages.clear()
         for(location in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
-            val image = ImageGetter.getImage(location)
+            // Here we check what actual tiles exist, and pick one - not at random, but based on the tile location,
+            // so it stays consistent throughout the game
+            val existingImages = ArrayList<String>()
+            existingImages.add(location)
+            var i=2
+            while (true){
+                val tileVariant = location+i
+                if(ImageGetter.imageExists(location+i)) existingImages.add(tileVariant)
+                else break
+                i+=1
+            }
+            val finalLocation = existingImages.random(Random(tileInfo.position.hashCode()+location.hashCode()))
+
+            val image = ImageGetter.getImage(finalLocation)
             tileBaseImages.add(image)
             baseLayerGroup.addActor(image)
             setHexagonImageSize(image)

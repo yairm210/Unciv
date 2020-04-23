@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
@@ -33,6 +34,8 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
+        if(newGameParameters.players.size>newGameScreen.ruleset.nations.size)
+            newGameParameters.players=newGameParameters.players.subList(0,newGameScreen.ruleset.nations.size)
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in newGameParameters.players) {
@@ -67,7 +70,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val nationTable = getNationTable(player)
         playerTable.add(nationTable)
 
-        val playerTypeTextbutton = TextButton(player.playerType.name.tr(), CameraStageBaseScreen.skin)
+        val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
@@ -98,14 +101,14 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
             playerIdTextfield.addListener { onPlayerIdTextUpdated(); true }
             val currentUserId = UncivGame.Current.settings.userId
-            val setCurrentUserButton = TextButton("Set current user".tr(), CameraStageBaseScreen.skin)
+            val setCurrentUserButton = "Set current user".toTextButton()
             setCurrentUserButton.onClick {
                 playerIdTextfield.text = currentUserId
                 onPlayerIdTextUpdated()
             }
             playerTable.add(setCurrentUserButton).colspan(3).fillX().pad(5f).row()
 
-            val copyFromClipboardButton = TextButton("Player ID from clipboard".tr(),CameraStageBaseScreen.skin)
+            val copyFromClipboardButton = "Player ID from clipboard".toTextButton()
             copyFromClipboardButton.onClick {
                 playerIdTextfield.text = Gdx.app.clipboard.contents
                 onPlayerIdTextUpdated()
@@ -153,7 +156,8 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
 
-        for (nation in newGameScreen.ruleset.nations.values.filter { !it.isCityState() && it.name != "Barbarians" }) {
+        for (nation in newGameScreen.ruleset.nations.values
+                .filter { !it.isCityState() && it.name != Constants.barbarians }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 

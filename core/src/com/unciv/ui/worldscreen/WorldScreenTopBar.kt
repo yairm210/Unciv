@@ -48,10 +48,10 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         pack()
         addActor(getMenuButton()) // needs to be after pack
 
-        val overviewButton = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
+        val overviewButton = "Overview".toTextButton()
         overviewButton.labelCell.pad(10f)
         overviewButton.pack()
-        overviewButton.onClick { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv)) }
+        overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv)) }
         overviewButton.center(this)
         overviewButton.x = worldScreen.stage.width-overviewButton.width-10
         addActor(overviewButton)
@@ -70,7 +70,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             val resourceLabel = "0".toLabel()
             resourceLabels[resource.name] = resourceLabel
             resourceTable.add(resourceLabel)
-            val invokeResourcesPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+            val invokeResourcesPage = { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
             resourceLabel.onClick(invokeResourcesPage)
             resourceImage.onClick(invokeResourcesPage)
         }
@@ -86,27 +86,27 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         statsTable.add(goldLabel)
         val goldImage = ImageGetter.getStatIcon("Gold")
         statsTable.add(goldImage).padRight(20f).size(20f)
-        val invokeStatsPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Stats")) }
+        val invokeStatsPage = { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Stats")) }
         goldLabel.onClick(invokeStatsPage)
         goldImage.onClick(invokeStatsPage)
 
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
         val scienceImage = ImageGetter.getStatIcon("Science")
         statsTable.add(scienceImage).padRight(20f).size(20f)
-        val invokeTechScreen =  { UncivGame.Current.setScreen(TechPickerScreen(worldScreen.viewingCiv)) }
+        val invokeTechScreen =  { worldScreen.game.setScreen(TechPickerScreen(worldScreen.viewingCiv)) }
         scienceLabel.onClick(invokeTechScreen)
         scienceImage.onClick(invokeTechScreen)
 
         statsTable.add(happinessImage).size(20f)
         statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
-        val invokeResourcesPage = { UncivGame.Current.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
+        val invokeResourcesPage = { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.viewingCiv, "Resources")) }
         happinessImage.onClick(invokeResourcesPage)
         happinessLabel.onClick(invokeResourcesPage)
 
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
         val cultureImage = ImageGetter.getStatIcon("Culture")
         statsTable.add(cultureImage).size(20f)
-        val invokePoliciesPage = { UncivGame.Current.setScreen(PolicyPickerScreen(worldScreen)) }
+        val invokePoliciesPage = { worldScreen.game.setScreen(PolicyPickerScreen(worldScreen)) }
         cultureLabel.onClick(invokePoliciesPage)
         cultureImage.onClick(invokePoliciesPage)
 
@@ -134,7 +134,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
                 .filter { it.resourceType == ResourceType.Strategic }
         val civResources = civInfo.getCivResources()
         for (resource in revealedStrategicResources) {
-            val isRevealed = civInfo.tech.isResearched(resource.revealedBy!!)
+            val isRevealed = resource.revealedBy == null || civInfo.tech.isResearched(resource.revealedBy!!)
             resourceLabels[resource.name]!!.isVisible = isRevealed
             resourceImages[resource.name]!!.isVisible = isRevealed
             if (!civResources.any { it.resource==resource}) resourceLabels[resource.name]!!.setText("0")
@@ -155,7 +155,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
         val yearText = "["+ abs(year)+"] "+ if (year<0) "BC" else "AD"
         turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ yearText.tr())
-        turnsLabel.onClick { UncivGame.Current.setScreen(VictoryScreen()) }
+        turnsLabel.onClick { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
 
         val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + nextTurnStats.gold.roundToInt() + ")"

@@ -98,5 +98,5 @@ class Technology {
         return name
     }
 
-    fun era() = column!!.era
+    fun era(): String = column!!.era
 }

@@ -11,6 +11,8 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.IdChecker
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.MapParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -19,14 +21,14 @@ import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
 
-class NewGameScreen: PickerScreen(){
+class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=null): PickerScreen(){
 
-    val newGameParameters= UncivGame.Current.gameInfo.gameParameters.clone()
-    val mapParameters = UncivGame.Current.gameInfo.tileMap.mapParameters
+    val newGameParameters= currentGame?.gameParameters?.clone() ?: GameParameters()
+    val mapParameters = currentGame?.tileMap?.mapParameters ?: MapParameters()
     val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
 
     init {
-        setDefaultCloseAction()
+        setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true,true)
 
         val playerPickerTable = PlayerPickerTable(this, newGameParameters)
@@ -67,41 +69,45 @@ class NewGameScreen: PickerScreen(){
 
             thread(name="NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
-                try {
-                    newGame = GameStarter.startNewGame(newGameParameters,mapParameters)
-                    if (newGameParameters.isOnlineMultiplayer) {
-                        newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
-                        try {
-                            OnlineMultiplayer().tryUploadGame(newGame!!)
-                            GameSaver.autoSave(newGame!!){}
-
-                            //Saved as Multiplayer game to show up in the session browser
-                            GameSaver.saveGame(newGame!!, newGame!!.gameId,true)
-                            //Save gameId to clipboard because you have to do it anyway.
-                            Gdx.app.clipboard.contents = newGame!!.gameId
-                            //Popup to notify the User that the gameID got copied to the clipboard
-                            ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
-                        } catch (ex: Exception) {
-                            val cantUploadNewGamePopup = Popup(this)
-                            cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
-                            cantUploadNewGamePopup.addCloseButton()
-                            cantUploadNewGamePopup.open()
-                            newGame = null
-                        }
-                    }
-                } catch (exception: Exception) {
-                    val cantMakeThatMapPopup = Popup(this)
-                    cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
-                    cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
-                    cantMakeThatMapPopup.addCloseButton()
-                    cantMakeThatMapPopup.open()
-                    Gdx.input.inputProcessor = stage
-                    rightSideButton.enable()
-                    rightSideButton.setText("Start game!".tr())
-                }
-                Gdx.graphics.requestRendering()
+                newGameThread()
             }
         }
+    }
+
+    private fun newGameThread() {
+        try {
+            newGame = GameStarter.startNewGame(newGameParameters, mapParameters)
+            if (newGameParameters.isOnlineMultiplayer) {
+                newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+                try {
+                    OnlineMultiplayer().tryUploadGame(newGame!!)
+                    GameSaver.autoSave(newGame!!) {}
+
+                    //Saved as Multiplayer game to show up in the session browser
+                    GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
+                    //Save gameId to clipboard because you have to do it anyway.
+                    Gdx.app.clipboard.contents = newGame!!.gameId
+                    //Popup to notify the User that the gameID got copied to the clipboard
+                    ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
+                } catch (ex: Exception) {
+                    val cantUploadNewGamePopup = Popup(this)
+                    cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
+                    cantUploadNewGamePopup.addCloseButton()
+                    cantUploadNewGamePopup.open()
+                    newGame = null
+                }
+            }
+        } catch (exception: Exception) {
+            val cantMakeThatMapPopup = Popup(this)
+            cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
+            cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
+            cantMakeThatMapPopup.addCloseButton()
+            cantMakeThatMapPopup.open()
+            Gdx.input.inputProcessor = stage
+            rightSideButton.enable()
+            rightSideButton.setText("Start game!".tr())
+        }
+        Gdx.graphics.requestRendering()
     }
 
     fun setNewGameButtonEnabled(bool:Boolean){

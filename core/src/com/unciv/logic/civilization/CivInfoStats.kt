@@ -76,16 +76,16 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                 statMap.add(entry.key, entry.value)
         }
 
-        //City states culture bonus
+        //City-States culture bonus
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
-                var culture = 3f * (civInfo.getEra().ordinal+1)
+                var culture = 3f * (civInfo.getEraNumber()+1)
                 if(civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
                     culture*=1.5f
                 cultureBonus.add(Stat.Culture, culture)
-                statMap.add("City States",cultureBonus)
+                statMap.add("City-States",cultureBonus)
             }
         }
 
@@ -151,10 +151,10 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         for (otherCiv in civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
                     && otherCiv.getDiplomacyManager(civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
-                if (statMap.containsKey("City-states"))
-                    statMap["City-states"] = statMap["City-states"]!! + 3f
+                if (statMap.containsKey("City-States"))
+                    statMap["City-States"] = statMap["City-States"]!! + 3f
                 else
-                    statMap["City-states"] = 3f
+                    statMap["City-States"] = 3f
             }
         }
 

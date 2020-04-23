@@ -511,13 +511,21 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
-* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City states
+* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City-States
 * [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
 * [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
 * [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
 * [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
+
+## Main menu
+
+* [Lightning](https://thenounproject.com/search/?q=lightning&i=102300) by Rohith M S for Quickstart
+* [Loading](https://thenounproject.com/search/?q=load&i=208033) by Universal Icons for Load Game
+* [New](https://thenounproject.com/search/?q=new&i=1886943) by Alice Design for New Game
+* [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
+* [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
 
 # Sound credits
 

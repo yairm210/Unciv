@@ -33,7 +33,7 @@ class MapGenerator(val ruleset: Ruleset) {
             return map
 
         seedRNG(seed)
-        generateLand(map)
+        generateLand(map,ruleset)
         raiseMountainsAndHills(map)
         applyHumidityAndTemperature(map)
         spawnLakesAndCoasts(map)
@@ -253,7 +253,7 @@ class MapGenerator(val ruleset: Ruleset) {
                     .filter { it.resource == null && it.improvement == null
                             && wonder.occursOn!!.contains(it.getLastTerrain().name)
                             && it.neighbors.all{ it.isWater } }
-                    .random()
+                    .toList().random()
 
             location2.naturalWonder = wonder.name
             location2.baseTerrain = wonder.turnsInto!!
@@ -452,7 +452,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val elevationSeed = RNG.nextInt().toDouble()
         tileMap.setTransients(ruleset)
         for (tile in tileMap.values.filter { !it.isWater }) {
-            var elevation = getPerlinNoise(tile, elevationSeed, scale = 3.0)
+            var elevation = getPerlinNoise(tile, elevationSeed, scale = 2.0)
                     elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
             if (elevation <= 0.5) tile.baseTerrain = Constants.plains
@@ -565,7 +565,12 @@ class MapGenerator(val ruleset: Ruleset) {
     companion object MapLandmassGenerator {
         var RNG = Random(42)
 
-        fun generateLand(tileMap: TileMap) {
+        fun generateLand(tileMap: TileMap, ruleset: Ruleset) {
+            if(ruleset.terrains.values.none { it.type==TerrainType.Water }) {
+                for (tile in tileMap.values)
+                    tile.baseTerrain = Constants.grassland
+                return
+            }
             when (tileMap.mapParameters.type) {
                 MapType.pangaea -> createPangea(tileMap)
                 MapType.continents -> createTwoContinents(tileMap)

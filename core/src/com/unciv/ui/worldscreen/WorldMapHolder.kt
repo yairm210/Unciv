@@ -78,12 +78,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
-        if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
+        if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian) {
             val unitsInTile = selectedTile!!.getUnits()
-            if(previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
+            if (previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
-                    && unitsInTile.isNotEmpty()
-                    && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)){
+                    && unitsInTile.any()
+                    && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)) {
                 // try to select the closest city to bombard this guy
                 unitTable.citySelected(previousSelectedCity)
             }
@@ -216,7 +216,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 tileGroup.showCircle(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
-            val canSeeEnemy = unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
+            val canSeeEnemy = unitsInTile.any() && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
                     && tileGroup.showMilitaryUnit(viewingCiv)
             if(tileGroup.isViewable(viewingCiv) && canSeeEnemy)
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units

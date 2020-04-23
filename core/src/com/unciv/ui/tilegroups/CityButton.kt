@@ -7,10 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.UncivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.PerpetualConstruction
@@ -18,7 +16,9 @@ import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 
-class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
+class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Table(CameraStageBaseScreen.skin){
+    val worldScreen = tileGroup.worldScreen
+    val uncivGame = worldScreen.game
 
     init {
         isTransform = true // If this is not set then the city button won't scale!
@@ -126,11 +126,11 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
         add(airUnitTable).row()
     }
 
-    private fun belongsToViewingCiv() = city.civInfo == UncivGame.Current.worldScreen.viewingCiv
+    private fun belongsToViewingCiv() = city.civInfo == worldScreen.viewingCiv
 
     private fun setButtonActions() {
 
-        val unitTable = tileGroup.worldScreen.bottomUnitTable
+        val unitTable = worldScreen.bottomUnitTable
 
         // So you can click anywhere on the button to go to the city
         touchable = Touchable.childrenOnly
@@ -139,16 +139,16 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             if (isButtonMoved) {
-                val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
+                val viewingCiv = worldScreen.viewingCiv
                 // second tap on the button will go to the city screen
                 // if this city belongs to you
-                if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()) {
-                    UncivGame.Current.setScreen(CityScreen(city))
+                if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv()) {
+                    uncivGame.setScreen(CityScreen(city))
                 } else if (viewingCiv.knows(city.civInfo)) {
                     // If city doesn't belong to you, go directly to its owner's diplomacy screen.
                     val screen = DiplomacyScreen(viewingCiv)
                     screen.updateRightSide(city.civInfo)
-                    UncivGame.Current.setScreen(screen)
+                    uncivGame.setScreen(screen)
                 }
             } else {
                 moveButtonDown()
@@ -203,7 +203,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
         }
 
-        iconTable.add(getPopulationGroup(UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv()))
+        iconTable.add(getPopulationGroup(uncivGame.viewEntireMapForDebug || belongsToViewingCiv()))
                 .padLeft(10f)
 
         val cityButtonText = city.name
@@ -211,7 +211,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup, skin
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
 
-        if (UncivGame.Current.viewEntireMapForDebug || belongsToViewingCiv())
+        if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f).padLeft(10f)
         else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)

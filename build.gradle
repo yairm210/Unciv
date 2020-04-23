@@ -1,6 +1,6 @@
 buildscript {
 
-    ext.kotlinVersion = '1.3.61'
+    ext.kotlinVersion = '1.3.71'
 
     repositories {
         // Chinese mirrors for quicker loading for chinese devs - uncomment if you're chinese
@@ -18,7 +18,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:3.6.3'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
 
         // This is for wrapping the .jar file into a standalone executable
@@ -33,8 +33,8 @@ allprojects {
     version = '1.0.1'
     ext {
         appName = "Unciv"
-        appCodeNumber = 410
-        appVersion = "3.7.4"
+        appCodeNumber = 416
+        appVersion = "3.8.0"
 
         gdxVersion = '1.9.10'
         roboVMVersion = '2.3.1'

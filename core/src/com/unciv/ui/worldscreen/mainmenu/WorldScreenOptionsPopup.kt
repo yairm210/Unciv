@@ -14,6 +14,7 @@ import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import java.util.*
 import kotlin.concurrent.thread
 
 class Language(val language:String, val percentComplete:Int){
@@ -25,7 +26,7 @@ class Language(val language:String, val percentComplete:Int){
 
 class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) {
     var selectedLanguage: String = "English"
-    private val settings = UncivGame.Current.settings
+    private val settings = worldScreen.game.settings
     private val innerTable = Table(CameraStageBaseScreen.skin)
 
     init {
@@ -42,7 +43,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addCloseButton() { worldScreen.enableNextTurnButtonAfterOptions() }
 
         pack() // Needed to show the background.
-        center(UncivGame.Current.worldScreen.stage)
+        center(worldScreen.game.worldScreen.stage)
     }
 
     private fun addHeader (text: String) {
@@ -55,16 +56,16 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             action(it)
             settings.save()
             if (updateWorld)
-                UncivGame.Current.worldScreen.shouldUpdate = true
+                worldScreen.game.worldScreen.shouldUpdate = true
         }
         innerTable.add(button).row()
     }
 
     private fun reloadWorldAndOptions() {
         settings.save()
-        UncivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
-        UncivGame.Current.setWorldScreen()
-        WorldScreenOptionsPopup(UncivGame.Current.worldScreen).open()
+        worldScreen.game.worldScreen = WorldScreen(worldScreen.viewingCiv)
+        worldScreen.game.setWorldScreen()
+        WorldScreenOptionsPopup(worldScreen.game.worldScreen).open()
     }
 
     private fun rebuildInnerTable() {
@@ -73,24 +74,14 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addHeader("Display options")
 
-        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) {
-            settings.showWorkedTiles = it
-        }
+        addYesNoRow ("Show worked tiles", settings.showWorkedTiles, true) { settings.showWorkedTiles = it }
         addYesNoRow ("Show resources and improvements", settings.showResourcesAndImprovements, true) {
             settings.showResourcesAndImprovements = it
         }
-        addYesNoRow ("Show tutorials", settings.showTutorials, true) {
-            settings.showTutorials = it
-        }
-        addYesNoRow ("Show minimap", settings.showMinimap, true) {
-            settings.showMinimap = it
-        }
-        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) {
-            settings.showPixelUnits = it
-        }
-        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) {
-            settings.showPixelImprovements = it
-        }
+        addYesNoRow ("Show tutorials", settings.showTutorials, true) {settings.showTutorials = it }
+        addYesNoRow ("Show minimap", settings.showMinimap, true) { settings.showMinimap = it }
+        addYesNoRow ("Show pixel units", settings.showPixelUnits, true) { settings.showPixelUnits = it }
+        addYesNoRow ("Show pixel improvements", settings.showPixelImprovements, true) { settings.showPixelImprovements = it }
 
         addLanguageSelectBox()
 
@@ -108,53 +99,77 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addHeader("Gameplay options")
 
-        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) {
-            settings.checkForDueUnits = it
-        }
-        addYesNoRow ("Move units with a single tap", settings.singleTapMove) {
-            settings.singleTapMove = it
-        }
+        addYesNoRow ("Check for idle units", settings.checkForDueUnits, true) { settings.checkForDueUnits = it }
+        addYesNoRow ("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
         addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
             if (it && worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human) {
-                UncivGame.Current.gameInfo.currentPlayerCiv.cities.forEach {
+                worldScreen.game.gameInfo.currentPlayerCiv.cities.forEach {
                     city -> city.cityConstructions.chooseNextConstruction()
                 }
             }
         }
-        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) {
-            settings.autoBuildingRoads = it
-        }
-        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) {
-            settings.orderTradeOffersByAmount = it
-        }
+        addYesNoRow ("Auto-build roads", settings.autoBuildingRoads) { settings.autoBuildingRoads = it }
+        addYesNoRow ("Order trade offers by amount", settings.orderTradeOffersByAmount) { settings.orderTradeOffersByAmount = it }
 
         addAutosaveTurnsSelectBox()
 
         // at the moment the notification service only exists on Android
-        if (Gdx.app.type == Application.ApplicationType.Android) {
-            addHeader("Multiplayer options")
-
-            addYesNoRow ("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled) {
-                settings.multiplayerTurnCheckerEnabled = it
-            }
-
-            if (settings.multiplayerTurnCheckerEnabled) {
-                addMultiplayerTurnCheckerDelayBox()
-
-                addYesNoRow ("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled) {
-                    settings.multiplayerTurnCheckerPersistentNotificationEnabled = it
-                }
-            }
-        }
+        addNotificationOptions()
 
         addHeader("Other options")
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
+        addTranslationGeneration()
+        addSetUserId()
 
-        if(Gdx.app.type==Application.ApplicationType.Desktop) {
-            val generateTranslationsButton = TextButton("Generate translation files".tr(), CameraStageBaseScreen.skin)
+        innerTable.add("Version".toLabel()).pad(10f)
+        innerTable.add(worldScreen.game.version.toLabel()).pad(10f).row()
+    }
+
+    private fun addSetUserId() {
+        val idSetLabel = "".toLabel()
+        val takeUserIdFromClipboardButton = "Take user ID from clipboard".toTextButton()
+                .onClick {
+                    try {
+                        val clipboardContents = Gdx.app.clipboard.contents.trim()
+                        UUID.fromString(clipboardContents)
+                        YesNoPopup("Doing this will reset your current user ID to the clipboard contents - are you sure?",
+                                {
+                                    settings.userId = clipboardContents
+                                    settings.save()
+                                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!")
+                                }).open(true)
+                        idSetLabel.isVisible = true
+                    } catch (ex: Exception) {
+                        idSetLabel.isVisible = true
+                        idSetLabel.setFontColor(Color.RED).setText("Invalid ID!")
+                    }
+                }
+        innerTable.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
+        innerTable.add(idSetLabel).colspan(2).row()
+    }
+
+    private fun addNotificationOptions() {
+        if (Gdx.app.type == Application.ApplicationType.Android) {
+            addHeader("Multiplayer options")
+
+            addYesNoRow("Enable out-of-game turn notifications", settings.multiplayerTurnCheckerEnabled)
+            { settings.multiplayerTurnCheckerEnabled = it }
+
+            if (settings.multiplayerTurnCheckerEnabled) {
+                addMultiplayerTurnCheckerDelayBox()
+
+                addYesNoRow("Show persistent notification for turn notifier service", settings.multiplayerTurnCheckerPersistentNotificationEnabled)
+                { settings.multiplayerTurnCheckerPersistentNotificationEnabled = it }
+            }
+        }
+    }
+
+    private fun addTranslationGeneration() {
+        if (Gdx.app.type == Application.ApplicationType.Desktop) {
+            val generateTranslationsButton = "Generate translation files".toTextButton()
             generateTranslationsButton.onClick {
                 val translations = Translations()
                 translations.readAllLanguagesTranslation()
@@ -165,9 +180,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             }
             innerTable.add(generateTranslationsButton).colspan(2).row()
         }
-
-        innerTable.add("Version".toLabel()).pad(10f)
-        innerTable.add(UncivGame.Current.version.toLabel()).pad(10f).row()
     }
 
     private fun addSoundEffectsVolumeSlider() {
@@ -184,7 +196,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     }
 
     private fun addMusicVolumeSlider() {
-        val musicLocation = Gdx.files.local(UncivGame.Current.musicLocation)
+        val musicLocation = Gdx.files.local(worldScreen.game.musicLocation)
         if (musicLocation.exists()) {
             innerTable.add("Music volume".tr())
 
@@ -194,15 +206,15 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 settings.musicVolume = musicVolumeSlider.value
                 settings.save()
 
-                val music = UncivGame.Current.music
+                val music = worldScreen.game.music
                 if (music == null) // restart music, if it was off at the app start
-                    thread(name = "Music") { UncivGame.Current.startMusic() }
+                    thread(name = "Music") { worldScreen.game.startMusic() }
 
                 music?.volume = 0.4f * musicVolumeSlider.value
             }
             innerTable.add(musicVolumeSlider).pad(10f).row()
         } else {
-            val downloadMusicButton = TextButton("Download music".tr(), CameraStageBaseScreen.skin)
+            val downloadMusicButton = "Download music".toTextButton()
             innerTable.add(downloadMusicButton).colspan(2).row()
             val errorTable = Table()
             innerTable.add(errorTable).colspan(2).row()
@@ -217,7 +229,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                         val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
                         musicLocation.write(file, false)
                         rebuildInnerTable()
-                        UncivGame.Current.startMusic()
+                        worldScreen.game.startMusic()
                     } catch (ex: Exception) {
                         errorTable.clear()
                         errorTable.add("Could not download music!".toLabel(Color.RED))
@@ -298,7 +310,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     private fun addLanguageSelectBox() {
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        UncivGame.Current.translations.percentCompleteOfLanguages
+        worldScreen.game.translations.percentCompleteOfLanguages
                 .map { Language(it.key, if (it.key == "English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
@@ -321,7 +333,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
     private fun selectLanguage() {
         settings.language = selectedLanguage
-        UncivGame.Current.translations.tryReadTranslationForCurrentLanguage()
+        worldScreen.game.translations.tryReadTranslationForCurrentLanguage()
         CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         reloadWorldAndOptions()
     }

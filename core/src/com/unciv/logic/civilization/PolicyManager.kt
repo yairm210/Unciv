@@ -86,7 +86,7 @@ class PolicyManager {
         if(isAdopted(policy.name)) return false
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
-        if (policy.branch.era > civInfo.getEra()) return false
+        if (civInfo.gameInfo.ruleSet.getEraNumber(policy.branch.era) > civInfo.getEraNumber()) return false
         return true
     }
 

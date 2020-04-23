@@ -49,6 +49,7 @@ enum class DiplomaticModifiers{
     BetrayedPromiseToNotSettleCitiesNearUs,
     UnacceptableDemands,
     UsedNuclearWeapons,
+    StealingTerritory,
 
     YearsOfPeace,
     SharedEnemy,
@@ -300,12 +301,14 @@ class DiplomacyManager() {
             influence = min(restingPoint, influence + increment)
         else influence = restingPoint
 
-        val civCapitalLocation = if(civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
-        if (getTurnsToRelationshipChange() == 1)
-            otherCiv().addNotification("Your relationship with [${civInfo.civName}] is about to degrade", civCapitalLocation, Color.GOLD)
+        if(!civInfo.isDefeated()) { // don't display city state relationship notifications when the city state is currently defeated
+            val civCapitalLocation = if (civInfo.cities.isNotEmpty()) civInfo.getCapital().location else null
+            if (getTurnsToRelationshipChange() == 1)
+                otherCiv().addNotification("Your relationship with [${civInfo.civName}] is about to degrade", civCapitalLocation, Color.GOLD)
 
-        if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel())
-            otherCiv().addNotification("Your relationship with [${civInfo.civName}] degraded", civCapitalLocation, Color.GOLD)
+            if (initialRelationshipLevel >= RelationshipLevel.Friend && initialRelationshipLevel != relationshipLevel())
+                otherCiv().addNotification("Your relationship with [${civInfo.civName}] degraded", civCapitalLocation, Color.GOLD)
+        }
     }
 
     private fun nextTurnFlags() {

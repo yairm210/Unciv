@@ -1,9 +1,10 @@
-package com.unciv.logic.automation
+﻿package com.unciv.logic.automation
 
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceType
@@ -59,9 +60,37 @@ object SpecificUnitAutomation {
             return
         }
 
+        // try to revenge and capture their tiles
+        val enemyCities = unit.civInfo.gameInfo.civilizations
+                .filter { unit.civInfo.knows(it) &&
+                        unit.civInfo.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
+                .flatMap { it.cities }.asSequence()
+        // find the suitable tiles (or their neigbours)
+        val tileToSteal = enemyCities.flatMap { it.getTiles() }.flatMap { it.neighbors.asSequence() }
+                .filter { it in unit.civInfo.viewableTiles // we can see them
+                        && unit.movement.canReach(it) // we can reach it
+                        && it.neighbors.any { tile -> tile.getOwner() == unit.civInfo} } // they are close to our borders
+                .sortedBy {
+                    // get closest tiles
+                    val distance = it.aerialDistanceTo(unit.currentTile)
+                    // ...also get priorities to steal the most valuable for them
+                    val owner = it.getOwner()
+                    if (owner != null)
+                        distance - WorkerAutomation(unit).getPriority(it, owner)
+                    else distance }.firstOrNull()
+        // if there is a good tile to steal - go there
+        if (tileToSteal != null) {
+            unit.movement.headTowards(tileToSteal)
+            if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
+                UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+            return
+        }
+
         // try to build a citadel
-        if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo))
-            UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
+        if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo, true)) {
+            UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+            return
+        }
 
         //if no unit to follow, take refuge in city or build citadel there.
         val reachableTest : (TileInfo) -> Boolean = {it.civilianUnit == null &&
@@ -75,10 +104,12 @@ object SpecificUnitAutomation {
             // try to find a good place for citadel nearby
             val potentialTilesNearCity = cityToGarrison.getTilesInDistanceRange(3..4)
             val tileForCitadel = potentialTilesNearCity.firstOrNull { reachableTest(it) &&
-                    WorkerAutomation(unit).evaluateFortPlacement(it, unit.civInfo) }
-            if (tileForCitadel != null)
+                    WorkerAutomation(unit).evaluateFortPlacement(it, unit.civInfo, true) }
+            if (tileForCitadel != null) {
                 unit.movement.headTowards(tileForCitadel)
-            else
+                if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
+                    UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+            } else
                 unit.movement.headTowards(cityToGarrison)
             return
         }
@@ -88,9 +119,7 @@ object SpecificUnitAutomation {
                                      luxuryResourcesInCivArea: Sequence<TileResource>): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
-                .toList()
-        val top5Tiles = tileInfo.neighbors.union(bestTilesFromOuterLayer)
-                .asSequence()
+        val top5Tiles = (tileInfo.neighbors + bestTilesFromOuterLayer)
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
         var rank = top5Tiles.map { nearbyTileRankings.getValue(it) }.sum()
@@ -189,7 +218,7 @@ object SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getGreatPersonBuildImprovementAction(unit)?.action?.invoke()
+                UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
             return
         }
     }

@@ -1,3 +1,65 @@
+## 3.8.0
+
+Game starts and defaults to a new Main Menu - should help solve errors as well as allow for cleaner disambiguation of problems
+
+Map height normalized to feasable amounts of mountains
+
+Resolved #1936 - can sign Declarations of Friendship in Multiplayer
+
+Resolved #2360 - can now change the current user ID for multiplayer when changing devices
+
+Much more turn-efficient exploration!
+
+City tiles are always contiguous, otherwise loads of wierd bugs happen
+
+Fixed the auto-unassigning extra specialists
+
+Allow scandinavian lowercase vowels (capitalized are very rare) - By SomeTroglodyte
+
+Translation updates
+
+## 3.7.6
+
+Can specify a mod as a 'base ruleset' - 
+supports mods with no techs, alternate tech trees, no barbarians, no workers
+
+Unique units need not replace existing ones
+
+Tile variants!
+
+By SomeTroglodyte:
+
+- Fix minimap mouse dragging 
+- Fixed modded strategic resource without tech prerequisite
+
+By JackRainy:
+
+- Highlight unique offer suggestions 
+- Sort trades by expiration 
+- Citadel improvements + improved AI for forts 
+- Map Editor UI improvements
+
+## 3.7.5
+
+By SomeTroglodyte:
+- Keyboard: Left/Right arrows work in city screen
+- Small optimizations
+- Rationalism effect visible in city UI
+- Mods can have improvements above terrain features
+
+By Jack Rainy:
+- Player's automated workers don't build forts
+- Better Domination victory checks
+- Can continue turns after defeat, as spectator
+
+New screen for "Add Game" - By GGGuenni
+
+Resolved #2348 - construction queue 'cleaned' after every construction
+
+Resolved #2413 - Hotkeys for unit actions always displayed
+
+Translation updates
+
 ## 3.7.4
 
 By Jack Rainy:
@@ -449,7 +511,7 @@ Translation updates
 
 ## 3.5.9
 
-Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated city states, as well as many other minor bugs
+Resolved #1820 - Fixed a crashing bug with the AI trying to ally with defeated City-States, as well as many other minor bugs
 
 By Jack Rainy:
 - Nuclear missile is able to target any tile within the range
@@ -504,7 +566,7 @@ Translation updates
 
 Research agreements! - by lishaoxia1985
 
-Exploring units no longer auto-enter city states
+Exploring units no longer auto-enter City-States
 
 Map editor menu fix - by lyrjie
 
@@ -586,7 +648,7 @@ barbarian automation - by Vladimir Tanakov
 
 Idle units select properly after settling a city - by lyrjie
 
-Proper destruction notification for city states
+Proper destruction notification for City-States
 
 Added Fur resource image
 
@@ -664,7 +726,7 @@ Translation updates
 
 ## 3.4.5
 
-Resolved #1533 - Defeated city states no longer "declare war" if you attack their ally
+Resolved #1533 - Defeated City-States no longer "declare war" if you attack their ally
 
 Ancient Ruins are now spread out instead of randomized
 
@@ -698,7 +760,7 @@ Most players said Cultural victory was too easy - now requires 5 branches instea
 
 By r3versi:
 - Unique promotions listed in Promotion screen
-- Fixed Greece City states influence unique
+- Fixed Greece City-States influence unique
 - Added notifications on losing city state relationship
 
 Misc. rare bugfixes when:

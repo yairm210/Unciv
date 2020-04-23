@@ -15,15 +15,15 @@ import com.unciv.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LoadGameScreen : PickerScreen() {
+class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
     lateinit var selectedSave:String
-    private val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard".tr(),skin)
+    private val copySavedGameToClipboardButton = "Copy saved game to clipboard".toTextButton()
     private val saveTable = Table()
-    private val deleteSaveButton = TextButton("Delete save".tr(), skin)
+    private val deleteSaveButton = "Delete save".toTextButton()
     private val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
 
     init {
-        setDefaultCloseAction()
+        setDefaultCloseAction(previousScreen)
 
         resetWindowState()
         topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
@@ -61,7 +61,7 @@ class LoadGameScreen : PickerScreen() {
         val rightSideTable = Table()
 
         val errorLabel = "".toLabel(Color.RED)
-        val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
+        val loadFromClipboardButton = "Load copied data".toTextButton()
         loadFromClipboardButton.onClick {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()

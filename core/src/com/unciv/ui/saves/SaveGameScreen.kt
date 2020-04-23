@@ -10,10 +10,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onChange
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
 
@@ -35,7 +32,7 @@ class SaveGameScreen : PickerScreen() {
         newSave.add("Saved game name".toLabel()).row()
         newSave.add(textField).width(300f).pad(10f).row()
 
-        val copyJsonButton = TextButton("Copy to clipboard".tr(),skin)
+        val copyJsonButton = "Copy to clipboard".toTextButton()
         copyJsonButton.onClick {
             val json = Json().toJson(game.gameInfo)
             val base64Gzip = Gzip.zip(json)

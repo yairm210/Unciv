@@ -160,7 +160,7 @@ class WorkerAutomation(val unit: MapUnit) {
         return false // cou;dn't find anything to construct here
     }
 
-    private fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
+    fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
         var priority = 0
         if (tileInfo.getOwner() == civInfo){
             priority += 2
@@ -177,7 +177,7 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeature == "Marsh" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
+            tile.terrainFeature == Constants.marsh && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
             tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Fallout"    // for really mad modders
             tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Jungle"
             tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Forest"
@@ -195,12 +195,12 @@ class WorkerAutomation(val unit: MapUnit) {
 
             // Defence is more important that civilian improvements
             // While AI sucks in strategical placement of forts, allow a human does it manually
-            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,civInfo) -> Constants.fort
+            !civInfo.isPlayerCivilization() && evaluateFortPlacement(tile,civInfo,false) -> Constants.fort
             // I think we can assume that the unique improvement is better
             uniqueImprovement!=null && tile.canBuildImprovement(uniqueImprovement,civInfo) -> uniqueImprovement.name
 
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
-            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == Constants.marsh -> "Remove Marsh"
             tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
@@ -226,21 +226,21 @@ class WorkerAutomation(val unit: MapUnit) {
 
     private fun isAcceptableTileForFort(tile: TileInfo, civInfo: CivilizationInfo): Boolean
     {
-        // don't build fort in the city
-        if (tile.isCityCenter()) return false
-        // don't build fort if it is already here
-        if (tile.improvement == Constants.fort) return false
-        // don't build on resource tiles
-        if (tile.hasViewableResource(civInfo)) return false
-        // don't build on great improvements
-        if (tile.containsGreatImprovement() || tile.containsUnfinishedGreatImprovement()) return false
+        if (tile.isCityCenter() // don't build fort in the city
+                || !tile.isLand // don't build fort in the water
+                || tile.improvement == Constants.fort // don't build fort if it is already here
+                || tile.hasViewableResource(civInfo) // don't build on resource tiles
+                || tile.containsGreatImprovement() // don't build on great improvements (including citadel)
+                || tile.containsUnfinishedGreatImprovement()) return false
 
         return true
     }
 
-    fun evaluateFortPlacement(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+    fun evaluateFortPlacement(tile: TileInfo, civInfo: CivilizationInfo, isCitadel: Boolean): Boolean {
         // build on our land only
-        if ((tile.owningCity?.civInfo != civInfo) ||
+        if ((tile.owningCity?.civInfo != civInfo &&
+                        // except citadel which can be built near-by
+                        (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo })) ||
                 !isAcceptableTileForFort(tile, civInfo)) return false
 
         val isHills = tile.getBaseTerrain().name == Constants.hill
@@ -286,11 +286,14 @@ class WorkerAutomation(val unit: MapUnit) {
         val distanceToEnemy = tile.aerialDistanceTo(closestEnemyCity)
 
         // find closest our city to defend from this enemy city
-        val closestOurCity = tile.owningCity!!.getCenterTile()
+        val closestOurCity = civInfo.cities.minBy { it.getCenterTile().aerialDistanceTo(tile) }!!.getCenterTile()
+        val distanceToOurCity = tile.aerialDistanceTo(closestOurCity)
+
         val distanceBetweenCities = closestEnemyCity.aerialDistanceTo(closestOurCity)
 
         // let's build fort on the front line, not behind the city
-        return distanceBetweenCities > distanceToEnemy
+        // +2 is a acceptable deviation from the straight line between cities
+        return distanceBetweenCities + 2 > distanceToEnemy + distanceToOurCity
     }
 
 }

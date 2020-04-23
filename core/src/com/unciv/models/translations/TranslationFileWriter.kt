@@ -87,14 +87,15 @@ object TranslationFileWriter {
 
             countOfTranslatedLines[language] = translationsOfThisLanguage
 
-            val fileWriter = getFileHandle(modFolder,languageFileLocation.format(language))
+            val fileWriter = getFileHandle(modFolder, languageFileLocation.format(language))
             fileWriter.writeString(stringBuilder.toString(), false, TranslationFileReader.charset)
         }
 
         // Calculate the percentages of translations
         // It should be done after the loop of languages, since the countOfTranslatableLines is not known in the 1st iteration
         for (key in countOfTranslatedLines.keys)
-            countOfTranslatedLines[key] = countOfTranslatedLines.getValue(key)*100/countOfTranslatableLines
+            countOfTranslatedLines[key] = if (countOfTranslatableLines > 0) countOfTranslatedLines.getValue(key) * 100 / countOfTranslatableLines
+            else 100
 
         return countOfTranslatedLines
     }

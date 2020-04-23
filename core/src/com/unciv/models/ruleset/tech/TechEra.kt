@@ -1,6 +1,6 @@
 package com.unciv.models.ruleset.tech
 
-enum class TechEra{
+enum class TechEra {
     Ancient,
     Classical,
     Medieval,

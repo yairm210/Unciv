@@ -116,6 +116,13 @@ class PopulationManager {
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
         }
 
+        // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
+        val maxSpecialists = getMaxSpecialists().toHashMap()
+        val specialistsHashmap = specialists.toHashMap()
+        for(entry in maxSpecialists)
+            if(specialistsHashmap[entry.key]!! > entry.value)
+                specialists.add(entry.key,maxSpecialists[entry.key]!! - specialistsHashmap[entry.key]!!)
+
         while (getFreePopulation()<0) {
             //evaluate tiles
             val worstWorkedTile: TileInfo? = if(cityInfo.workedTiles.isEmpty()) null
@@ -148,12 +155,6 @@ class PopulationManager {
             }
         }
 
-        // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
-        val maxSpecialists = getMaxSpecialists().toHashMap()
-        val specialistsHashmap = specialists.toHashMap()
-        for(entry in maxSpecialists)
-            if(specialistsHashmap[entry.key]!! > entry.value)
-                specialists.add(entry.key,specialistsHashmap[entry.key]!! - maxSpecialists[entry.key]!!)
     }
 
     fun getMaxSpecialists(): Stats {

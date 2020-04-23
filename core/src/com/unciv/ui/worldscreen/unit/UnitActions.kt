@@ -7,6 +7,7 @@ import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -110,16 +111,17 @@ object UnitActions {
     }
 
     private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
+        val improvement = RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet) ?: return
         if (unit.hasUnique("Can construct roads")
                 && tile.roadStatus == RoadStatus.None
                 && tile.improvementInProgress != "Road"
                 && tile.isLand
-                && unit.civInfo.tech.isResearched(RoadStatus.Road.improvement(unit.civInfo.gameInfo.ruleSet)!!.techRequired!!))
+                && (improvement.techRequired==null || unit.civInfo.tech.isResearched(improvement.techRequired!!)))
             actionList += UnitAction(
                     type = UnitActionType.ConstructRoad,
                     action = {
                         tile.improvementInProgress = "Road"
-                        tile.turnsToImprovement = 4
+                        tile.turnsToImprovement = improvement.getTurnsToBuild(unit.civInfo)
                     }.takeIf { unit.currentMovement > 0 })
     }
 
@@ -332,7 +334,7 @@ object UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
-                        var goldEarned = (350 + 50 * unit.civInfo.getEra().ordinal) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
+                        var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
                         if (unit.civInfo.policies.isAdopted("Commerce Complete"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
@@ -345,11 +347,11 @@ object UnitActions {
                     }.takeIf { canConductTradeMission })
         }
 
-        val buildImprovementAction = getGreatPersonBuildImprovementAction(unit)
+        val buildImprovementAction = getBuildImprovementAction(unit)
         if (buildImprovementAction != null) actionList += buildImprovementAction
     }
 
-    fun getGreatPersonBuildImprovementAction(unit: MapUnit): UnitAction? {
+    fun getBuildImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
         for (unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }) {
             val improvementName = unique.replace("Can build improvement: ", "")
@@ -363,6 +365,8 @@ object UnitActions {
                         unitTile.improvement = improvementName
                         unitTile.improvementInProgress = null
                         unitTile.turnsToImprovement = 0
+                        if (improvementName == Constants.citadel)
+                            takeOverTilesAround(unit)
                         val city = unitTile.getCity()
                         if (city != null) {
                             city.cityStats.update()
@@ -372,9 +376,35 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0f && !tile.isWater &&
                             !tile.isCityCenter() && !tile.getLastTerrain().impassable &&
-                            tile.improvement != improvementName })
+                            tile.improvement != improvementName &&
+                            // citadel can be built only next to or within own borders
+                            (improvementName != Constants.citadel ||
+                                    tile.neighbors.any { it.getOwner() == unit.civInfo })})
         }
         return null
+    }
+
+    private fun takeOverTilesAround(unit: MapUnit) {
+        // one of the neighbour tile must belong to unit's civ, so nearestCity will be never `null`
+        val nearestCity = unit.currentTile.neighbors.first { it.getOwner() == unit.civInfo }.getCity()
+        // capture all tiles which do not belong to unit's civ and are not enemy cities
+        // we use getTilesInDistance here, not neighbours to include the current tile as well
+        val tilesToTakeOver = unit.currentTile.getTilesInDistance(1)
+                .filter { !it.isCityCenter() && it.getOwner() != unit.civInfo }
+        // make a set of civs to be notified (a set - in order to not repeat notification on each tile)
+        val notifications = mutableSetOf<CivilizationInfo>()
+        // take over the ownership
+        for (tile in tilesToTakeOver) {
+            val otherCiv = tile.getOwner()
+            if (otherCiv != null) {
+                // decrease relations for -10 pt/tile
+                otherCiv.getDiplomacyManager(unit.civInfo).addModifier(DiplomaticModifiers.StealingTerritory, -10f)
+                notifications.add(otherCiv)
+            }
+            nearestCity!!.expansion.takeOwnership(tile)
+        }
+        for (otherCiv in notifications)
+            otherCiv.addNotification("${unit.civInfo} has stolen your territory!", unit.currentTile.position, Color.RED)
     }
 
     private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {

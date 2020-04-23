@@ -1,12 +1,12 @@
 package com.unciv.ui.worldscreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
@@ -17,6 +17,7 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     val allTiles = Group()
@@ -29,7 +30,6 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     }
 
     init{
-        setScrollingDisabled(true,true)
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
@@ -39,7 +39,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-            val groupSize = mapHolder.worldScreen.stage.height / 8f / mapHolder.tileMap.mapParameters.size.radius * (mapHolder.worldScreen.stage.height / 600f)
+            val groupSize = 10f
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
@@ -110,7 +110,15 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
 
     fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
-        internalMinimapWrapper.add(minimap)
+
+        val sizePercent = worldScreen.game.settings.minimapSize
+        val sizeWinX = worldScreen.stage.width * sizePercent / 100
+        val sizeWinY = worldScreen.stage.height * sizePercent / 100
+        val isSquare = worldScreen.game.settings.minimapSquare
+        val sizeX = if (isSquare) sqrt(sizeWinX * sizeWinY) else sizeWinX
+        val sizeY = if (isSquare) sizeX else sizeWinY
+        internalMinimapWrapper.add(minimap).size(sizeX,sizeY)
+
         internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
         internalMinimapWrapper.pack()
 
@@ -136,8 +144,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         }
         toggleIconTable.add(populationImage).row()
 
-        val resourceImage = ImageGetter.getResourceImage("Cattle",30f).surroundWithCircle(40f)
-        resourceImage.circle.color = Color.BLACK
+        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle").surroundWithCircle(40f)
         resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements

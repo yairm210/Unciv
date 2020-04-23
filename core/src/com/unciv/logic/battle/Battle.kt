@@ -448,8 +448,8 @@ object Battle {
         //assert(fromTile in attTile.neighbors)                 // function should never be called with attacker not adjacent to defender
         // the following yields almost always exactly three tiles in a half-moon shape (exception: edge of map)
         val candidateTiles = fromTile.neighbors.filterNot { it == attTile || it in attTile.neighbors }
-        if (candidateTiles.isEmpty()) return false              // impossible on our map shapes? No - corner of a rectangular map
-        val toTile = candidateTiles.random()
+        if (candidateTiles.none()) return false              // impossible on our map shapes? No - corner of a rectangular map
+        val toTile = candidateTiles.toList().random()
         // Now make sure the move is allowed - if not, sorry, bad luck
         if (!defender.unit.movement.canMoveTo(toTile)) {        // forbid impassable or blocked
             val blocker = toTile.militaryUnit

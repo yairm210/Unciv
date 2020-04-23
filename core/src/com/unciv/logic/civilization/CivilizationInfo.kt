@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const
 import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.UncivGame
@@ -82,7 +83,6 @@ class CivilizationInfo {
 
     constructor(civName: String) {
         this.civName = civName
-        tech.techsResearched.add("Agriculture") // can't be .addTechnology because the civInfo isn't assigned yet
     }
 
     fun clone(): CivilizationInfo {
@@ -103,7 +103,7 @@ class CivilizationInfo {
 
         // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
         // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still led to concurrency prolems.
-        // Cloning it  by iiterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
+        // Cloning it  by iterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
@@ -220,8 +220,11 @@ class CivilizationInfo {
     }
     //endregion
 
-    fun shouldOpenTechPicker() = tech.freeTechs != 0
-            || tech.currentTechnology()==null && cities.isNotEmpty()
+    fun shouldOpenTechPicker(): Boolean {
+        if (gameInfo.ruleSet.technologies.isEmpty()) return false
+        if (tech.freeTechs != 0) return true
+        return tech.currentTechnology() == null && cities.isNotEmpty()
+    }
 
 
 
@@ -268,13 +271,17 @@ class CivilizationInfo {
             && !isBarbarian() // Barbarians can be never defeated
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
-    fun getEra(): TechEra {
+    fun getEra(): String {
         val maxEraOfTech =  tech.researchedTechnologies
                 .asSequence()
-                .map { it.era() }
-                .max()
-        if(maxEraOfTech!=null) return maxEraOfTech
-        else return TechEra.Ancient
+                .map { it.column!! }
+                .maxBy { it.columnNumber }!!
+                .era
+        return maxEraOfTech
+    }
+
+    fun getEraNumber(): Int {
+        return gameInfo.ruleSet.getEraNumber(getEra())
     }
 
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
@@ -431,7 +438,8 @@ class CivilizationInfo {
 
         gold += nextTurnStats.gold.toInt()
 
-        if (cities.isNotEmpty()) tech.nextTurn(nextTurnStats.science.toInt())
+        if (cities.isNotEmpty() && gameInfo.ruleSet.technologies.isNotEmpty())
+            tech.nextTurn(nextTurnStats.science.toInt())
 
         if (isMajorCiv()) greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn()) // City-states don't get great people!
 
@@ -509,7 +517,7 @@ class CivilizationInfo {
     }
 
     fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
-        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
+        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with City-States!")
         gold -= giftAmount
         otherCiv.getDiplomacyManager(this).influence += giftAmount/10
         otherCiv.updateAllyCivForCityState()
@@ -518,12 +526,11 @@ class CivilizationInfo {
 
     fun getResearchAgreementCost(otherCiv: CivilizationInfo): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
-        val highestEra = sequenceOf(getEra(),otherCiv.getEra()).maxBy { it.ordinal }!!
-        val basicGoldCostOfSignResearchAgreement = when(highestEra){
-            TechEra.Medieval, TechEra.Renaissance -> 250
-            TechEra.Industrial -> 300
-            TechEra.Modern -> 350
-            TechEra.Information, TechEra.Future -> 400
+        val basicGoldCostOfSignResearchAgreement = when(getEra()){
+            Constants.medievalEra, Constants.renaissanceEra -> 250
+            Constants.industrialEra -> 300
+            Constants.modernEra -> 350
+            Constants.informationEra, Constants.futureEra -> 400
             else -> 0
         }
         return (basicGoldCostOfSignResearchAgreement * gameInfo.gameParameters.gameSpeed.modifier).toInt()

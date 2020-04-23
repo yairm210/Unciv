@@ -193,8 +193,8 @@ class UnitMovementAlgorithmsTests {
         tile.setTransients()
 
         val otherCiv = CivilizationInfo()
-        otherCiv.civName = "Barbarians" // they are always enemies
-        otherCiv.nation = Nation().apply { name = "Barbarians" }
+        otherCiv.civName = Constants.barbarians // they are always enemies
+        otherCiv.nation = Nation().apply { name = Constants.barbarians }
         val otherUnit = MapUnit()
         otherUnit.civInfo = otherCiv
         tile.militaryUnit = otherUnit

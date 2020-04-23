@@ -51,7 +51,7 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
     }
 
     fun addButton(text: String, action: () -> Unit): Cell<TextButton> {
-        val button = TextButton(text.tr(), skin).apply { color = ImageGetter.getBlue() }
+        val button = text.toTextButton().apply { color = ImageGetter.getBlue() }
         button.onClick(action)
         return add(button).apply { row() }
     }

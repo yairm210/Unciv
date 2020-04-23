@@ -129,12 +129,15 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     private fun addCityStatesSelectBox() {
         add("{Number of city-states}:".tr())
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
-        val cityStatesArray = Array<Int>()
 
-        (0..ruleset.nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
+
+        val cityStatesArray = Array<Int>(numberOfCityStates+1)
+        (0..numberOfCityStates).forEach { cityStatesArray.add(it) }
+
         cityStatesSelectBox.items = cityStatesArray
         cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
-        add(cityStatesSelectBox).row()
+        add(cityStatesSelectBox).width(50f).row()
         cityStatesSelectBox.onChange {
             newGameParameters.numberOfCityStates = cityStatesSelectBox.selected
         }
@@ -158,10 +161,9 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     }
 
     private fun addEraSelectBox() {
-        // The eras enum values are "Medieval" etc. but are shown to the player as "Medieval era".tr()
-        // because in other languages "Medieval era" is one word
-        addSelectBox("{Starting Era}:", TechEra.values().map { it.name + " era" }, newGameParameters.startingEra.name + " era")
-            {newGameParameters.startingEra = TechEra.valueOf(it.replace(" era", ""))}
+        val eras = ruleset.technologies.values.map { it.era() }.distinct()
+        addSelectBox("{Starting Era}:", eras, newGameParameters.startingEra)
+            { newGameParameters.startingEra = it }
     }
 
 
@@ -195,12 +197,14 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         val modRulesets = RulesetCache.filter { it.key!="" }.values
         if(modRulesets.isEmpty()) return
 
-        fun reloadMods(){
+        fun reloadMods() {
             ruleset.clear()
-            ruleset.add(RulesetCache.getComplexRuleset(newGameParameters.mods))
-            ruleset.mods+=newGameParameters.mods
+            val newRuleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+            ruleset.add(newRuleset)
+            ruleset.mods += newGameParameters.mods
+            ruleset.modOptions = newRuleset.modOptions
 
-            ImageGetter.ruleset=ruleset
+            ImageGetter.ruleset = ruleset
             ImageGetter.setTextureRegionDrawables()
         }
 
