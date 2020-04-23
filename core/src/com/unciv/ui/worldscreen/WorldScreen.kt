@@ -129,10 +129,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         
         if(gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
             // restart the timer
-            if (multiPlayerRefresher != null) {
-                multiPlayerRefresher?.cancel()
-                multiPlayerRefresher?.purge()
-            }
+            stopMultiPlayerRefresher()
             // isDaemon = true, in order to not block the app closing
             multiPlayerRefresher = Timer("multiPlayerRefresh", true).apply {
                 scheduleAtFixedRate(object : TimerTask() {
@@ -152,6 +149,13 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // don't run update() directly, because the UncivGame.worldScreen should be set so that the city buttons and tile groups
         //  know what the viewing civ is.
         shouldUpdate = true
+    }
+
+    private fun stopMultiPlayerRefresher() {
+        if (multiPlayerRefresher != null) {
+            multiPlayerRefresher?.cancel()
+            multiPlayerRefresher?.purge()
+        }
     }
 
     private fun cleanupKeyDispatcher() {
@@ -232,7 +236,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
                 latestGame.isUpToDate=true
                 // Since we're making a screen this needs to run from the main thread which has a GL context
-                Gdx.app.postRunnable { game.loadGame(latestGame) }
+                Gdx.app.postRunnable {
+                    stopMultiPlayerRefresher()
+                    game.loadGame(latestGame)
+                }
 
             } catch (ex: Exception) {
                 loadingGamePopup.close()
