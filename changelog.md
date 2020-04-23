@@ -1,3 +1,19 @@
+## 3.8.1
+
+Solved concurrency problems
+
+Fixed #2492 - trading cities with units in them no longer crashes the game
+
+Can start a new game from within a game, to copy over the game's parameters
+
+Fixed resource display bug in tile table in multiplayer
+
+Added a randomly-generated map as background for the main menu
+
+Decrease CPU load for multiplayer game - By Jack Rainy
+
+Translation updates
+
 ## 3.8.0
 
 Game starts and defaults to a new Main Menu - should help solve errors as well as allow for cleaner disambiguation of problems
