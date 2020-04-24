@@ -23,15 +23,15 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     private val showHideEditorOptionsButton = ">".toTextButton()
 
 
-    constructor(mapNameToLoad: String?): this() {
+    constructor(mapNameToLoad: String?) : this() {
         var mapToLoad = mapNameToLoad
         if (mapToLoad == null) {
             val existingSaves = MapSaver.getMaps()
-            if(existingSaves.isNotEmpty())
+            if (existingSaves.isNotEmpty())
                 mapToLoad = existingSaves.first()
         }
 
-        if(mapToLoad != null){
+        if (mapToLoad != null) {
             mapName = mapToLoad
             tileMap = MapSaver.loadMap(mapName)
         }
@@ -39,7 +39,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         initialize()
     }
 
-    constructor(map: TileMap): this() {
+    constructor(map: TileMap) : this() {
         tileMap = map
         initialize()
     }
@@ -73,7 +73,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
         val optionsMenuButton = "Menu".toTextButton()
         optionsMenuButton.onClick {
-            if(popups.any { it is MapEditorMenuPopup })
+            if (popups.any { it is MapEditorMenuPopup })
                 return@onClick // already open
             MapEditorMenuPopup(this).open(force = true)
         }
@@ -84,7 +84,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         optionsMenuButton.y = 30f
         stage.addActor(optionsMenuButton)
 
-        mapHolder.addCaptureListener(object: InputListener() {
+        mapHolder.addCaptureListener(object : InputListener() {
             var isDragging = false
             var isPainting = false
             var touchDownTime = System.currentTimeMillis()
@@ -140,6 +140,12 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                 isPainting = false
             }
         })
+    }
+
+    override fun resize(width: Int, height: Int) {
+        if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
+            game.setScreen(MapEditorScreen(mapHolder.tileMap))
+        }
     }
 }
 
