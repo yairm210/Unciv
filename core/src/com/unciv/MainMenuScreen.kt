@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
@@ -93,13 +92,14 @@ class MainMenuScreen: CameraStageBaseScreen() {
         table.add(mapEditorScreenTable)
 
         if (game.importExport?.isSupported() == true) {
-            table.add(getTableBlock("Import / Export", "OtherIcons/Up") {
+            table.row()
+            table.add(getTableBlock("Import / Export", "OtherIcons/UpDown") {
                 ImportExportPopup(this)
             })
         }
 
         table.pack()
-        val scroll = ScrollPane(table)
+        val scroll = AutoScrollPane(table)
         scroll.setSize(table.width, stage.height * 0.8f)
         scroll.center(stage)
         scroll.setOverscroll(false, false)
