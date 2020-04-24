@@ -10,10 +10,12 @@ class ImportExportDesktop(private val debug: Boolean): IImportExport {
     }
 
     override fun requestExport(params: ImportExportParameters, notify: ((status: ImportExportStatus, msg: String) -> Unit)?) {
-        notify?.invoke(ImportExportStatus.Success,"Export-test")
+        notify?.invoke(ImportExportStatus.ExportSuccess,"Export-test")
     }
 
     override fun requestImport(params: ImportExportParameters, notify: ((status:ImportExportStatus, msg: String) -> Unit)?) {
-        notify?.invoke(ImportExportStatus.Success,"Import-test")
+        notify?.invoke(ImportExportStatus.ImportSuccess,"Import-test")
     }
+
+    override fun isInProgress(): Boolean = false
 }

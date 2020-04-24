@@ -1,12 +1,13 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.models.translations.tr
 
-class ImportExportPopup (screen: CameraStageBaseScreen) : Popup(screen) {
+class ImportExportPopup (screen: CameraStageBaseScreen, notify: (()->Unit)?) : Popup(screen) {
     private val resultLabel = Label("", skin)
     private val configCheckBox = CheckBox("Settings".tr(), skin)
     private val autosaveCheckBox = CheckBox("Autosave".tr(), skin)
@@ -37,7 +38,7 @@ class ImportExportPopup (screen: CameraStageBaseScreen) : Popup(screen) {
         musicCheckBox.onChange (::onParamChange)
         onParamChange()
 
-        add("Import / Export".toLabel(fontSize = 24)).minWidth(screen.stage.width * 0.25f).colspan(2).row()
+        add("Import / Export".toLabel(fontSize = 24).apply { setAlignment(Align.center) }).minWidth(screen.stage.width * 0.25f).colspan(2).row()
 
         addSeparator()
         add(configCheckBox)
@@ -50,23 +51,12 @@ class ImportExportPopup (screen: CameraStageBaseScreen) : Popup(screen) {
         // Import".toTextButton().apply { color = ImageGetter.getBlue() }
         exportButton.onClick {
             enableButtons(false)
-            screen.game.importExport?.requestExport(getParams()) { status:ImportExportStatus, msg: String ->
-                resultLabel.setText(msg)
-                if (status != ImportExportStatus.Progress)
-                    onParamChange()
-            }
+            screen.game.importExport?.requestExport(getParams(), this::processCallback)
         }
         add(exportButton)
         importButton.onClick {
             enableButtons(false)
-            screen.game.importExport?.requestImport(getParams()) { status:ImportExportStatus, msg: String ->
-                resultLabel.setText(msg)
-                if (status == ImportExportStatus.Success && this.parameters.config ) {
-                    screen.game.settings = GameSaver.getGeneralSettings()
-                }
-                if (status != ImportExportStatus.Progress)
-                    onParamChange()
-            }
+            screen.game.importExport?.requestImport(getParams(), this::processCallback)
         }
         add(importButton).row()
 
@@ -76,6 +66,7 @@ class ImportExportPopup (screen: CameraStageBaseScreen) : Popup(screen) {
 
         addCloseButton {
             screen.game.settings.importExportParameters = getParams().nullIfDefault()
+            notify?.invoke()
         }.colspan(2)
 
         pack()
@@ -95,6 +86,25 @@ class ImportExportPopup (screen: CameraStageBaseScreen) : Popup(screen) {
                 configCheckBox.isChecked, savesCheckBox.isChecked, autosaveCheckBox.isChecked,
                 mapsCheckBox.isChecked, modsCheckBox.isChecked, musicCheckBox.isChecked )
         return parameters
+    }
+    
+    private fun processCallback(status:ImportExportStatus, msg: String) {
+        println("ImportExport callback: status=$status, msg=$msg")
+        if (status == ImportExportStatus.ChosenFolder) {
+            parameters.suggestFolder = msg
+            screen.game.settings.importExportParameters = parameters
+            screen.game.settings.save()
+        } else {
+            if (status == ImportExportStatus.ImportSuccess && this.parameters.config) {
+                screen.game.settings = GameSaver.getGeneralSettings()
+                screen.game.settings.importExportParameters = parameters
+            }
+            Gdx.app.postRunnable {
+                resultLabel.setText(msg.tr())
+                if (status != ImportExportStatus.Progress)
+                    onParamChange()
+            }
+        }
     }
 }
 

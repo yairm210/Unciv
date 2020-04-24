@@ -95,7 +95,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         if (game.importExport?.isSupported() == true) {
             table.row()
             table.add(getTableBlock("Import / Export", "OtherIcons/UpDown") {
-                ImportExportPopup(this)
+                ImportExportPopup(this) {
+                    game.setScreen(MainMenuScreen())
+                }
             })
         }
 
