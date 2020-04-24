@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
 import com.unciv.ui.utils.IImportExport
 import com.unciv.ui.utils.ImportExportParameters
+import com.unciv.ui.utils.ImportExportStatus
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -20,28 +21,34 @@ class ImportExportAndroid(private val activity: Activity): IImportExport {
     }
 
     private var parameters = ImportExportParameters()
-    private var callback: ((success:Boolean, msg:String)->Unit)? = null
+    private var callback: ((status:ImportExportStatus, msg:String)->Unit)? = null
 
     fun activityResult(resultCode: Int, requestCode: Int, uri: Uri) {
         println("activityResult: resultCode=$resultCode, requestCode=$requestCode, uri=$uri")
         if (requestCode != REQUESTCODE_EXPORT && requestCode != REQUESTCODE_IMPORT) return
         if (resultCode == Activity.RESULT_CANCELED) {
-            callback?.invoke(false, "Cancelled")
+            callback?.invoke(ImportExportStatus.Failure, "Cancelled")
         }
         if (resultCode != Activity.RESULT_OK) return
 
         thread(start = true,  name = "ImportExport", isDaemon = false) {
             try {
-                callback?.invoke(true, "Working...")
+                callback?.invoke(ImportExportStatus.Progress, "Working")
                 if (parameters.config) copyItem(requestCode, uri, GameSaver.settingsFileName)
                 if (parameters.autosave) copyItem(requestCode, uri, GameSaver.saveFilesFolder + File.separator + GameSaver.autosaveName)
+                callback?.invoke(ImportExportStatus.Progress, "{Working}.")
                 if (parameters.saves) copyItem(requestCode, uri, GameSaver.saveFilesFolder, true)
+                callback?.invoke(ImportExportStatus.Progress, "{Working}..")
                 if (parameters.maps) copyItem(requestCode, uri, "maps")
-                callback?.invoke(true, "OK")
+                callback?.invoke(ImportExportStatus.Progress, "{Working}...")
+                if (parameters.mods) copyItem(requestCode, uri, "mods")
+                callback?.invoke(ImportExportStatus.Progress, "{Working}....")
+                if (parameters.music) copyItem(requestCode, uri, "music")
+                callback?.invoke(ImportExportStatus.Success, "OK")
             } catch (ex: Exception) {
                 println("Import/Export exception: ${ex.localizedMessage}")
                 ex.printStackTrace()
-                callback?.invoke(false, "Sorry, there was an error.")
+                callback?.invoke(ImportExportStatus.Failure, "Sorry, there was an error.")
             }
         }
     }
@@ -52,7 +59,9 @@ class ImportExportAndroid(private val activity: Activity): IImportExport {
         val fromFile = File(if(requestCode== REQUESTCODE_EXPORT) localPath else exportPath)
         val toFile = File(if(requestCode== REQUESTCODE_EXPORT) exportPath else localPath)
         if (!fromFile.exists()) return
-        if (exceptAuto && fromFile.isDirectory) {
+        if (fromFile.isFile) {
+            fromFile.copyTo(toFile, true)
+        } else if (exceptAuto)  {
             fromFile.listFiles()?.forEach { file ->
                 if ( file.isFile && !file.name.startsWith(GameSaver.autosaveName) ) {
                     val fileTo = File(toFile.path + File.separator + file.name)
@@ -60,11 +69,11 @@ class ImportExportAndroid(private val activity: Activity): IImportExport {
                 }
             }
         } else {
-            fromFile.copyTo(toFile, true)       // does files and directories
+            fromFile.copyRecursively(toFile, true)
         }
     }
 
-    private fun startRequest(requestCode: Int, params: ImportExportParameters, notify: ((success:Boolean, msg:String)->Unit)?) {
+    private fun startRequest(requestCode: Int, params: ImportExportParameters, notify: ((status:ImportExportStatus, msg:String)->Unit)?) {
         if (!isSupported()) return
         if (!(params.config || params.autosave || params.saves || params.maps)) return
         parameters = params
@@ -79,11 +88,11 @@ class ImportExportAndroid(private val activity: Activity): IImportExport {
 
     override fun isSupported(): Boolean = Build.VERSION.SDK_INT >= 21
 
-    override fun requestExport(params: ImportExportParameters, notify: ((success:Boolean, msg:String)->Unit)?) {
+    override fun requestExport(params: ImportExportParameters, notify: ((status:ImportExportStatus, msg:String)->Unit)?) {
         startRequest(REQUESTCODE_EXPORT, params, notify)
     }
 
-    override fun requestImport(params: ImportExportParameters, notify: ((success:Boolean, msg:String)->Unit)?) {
+    override fun requestImport(params: ImportExportParameters, notify: ((status:ImportExportStatus, msg:String)->Unit)?) {
         startRequest(REQUESTCODE_IMPORT, params, notify)
     }
 
