@@ -417,5 +417,6 @@ open class TileInfo {
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
             civInfo.nation.forestsAndJunglesAreRoads
                     && (terrainFeature == Constants.jungle || terrainFeature == Constants.forest)
+                    && isFriendlyTerritory(civInfo)
     //endregion
 }
