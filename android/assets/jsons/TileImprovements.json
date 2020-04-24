@@ -186,12 +186,11 @@
 		"uniqueTo": "Inca",
 		"food": 1,
 		"turnsToBuild": 7,
-		"uniques": ["+1 food for each adjacent Mountain","Cannot improve a resource"],
+		"uniques": ["+1 food for each adjacent Mountain"],
 		"techRequired": "Construction",
 		"improvingTech": "Fertilizer",
 		"improvingTechStats": {"food":1},
 		"terrainsCanBeBuiltOn": ["Hill"]
-		//It can be colored in lemon
 	},
 	
 	{ "name": "Ancient ruins" },
