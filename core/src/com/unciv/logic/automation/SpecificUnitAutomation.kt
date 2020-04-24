@@ -212,6 +212,7 @@ object SpecificUnitAutomation {
                     .filter {
                         it.isLand && it.resource == null && !it.isCityCenter()
                                 && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                                && !it.containsGreatImprovement()
                     }.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
                     .firstOrNull { unit.movement.canReach(it) } // to another city
             if (chosenTile == null) continue
