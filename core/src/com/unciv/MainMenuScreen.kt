@@ -1,4 +1,4 @@
-package com.unciv
+﻿package com.unciv
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.map.MapGenerator
@@ -25,14 +26,14 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
-    val autosave = "Autosave"
-    val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
+    private val autosave = "Autosave"
+    private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
         val table = Table().pad(30f)
-        table.background = ImageGetter.getBackground(ImageGetter.getBlue())
+        table.background = ImageGetter.getRoundedEdgeTableBackground(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
-        table.add(text.toLabel().setFontSize(30).apply { /* setAlignment(Align.center) */ }).width(200f)
+        table.add(text.toLabel().setFontSize(30)).minWidth(200f)
         table.touchable= Touchable.enabled
         table.onClick(function)
         table.pack()
@@ -93,6 +94,12 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val mapEditorScreenTable = getTableBlock("Map editor","OtherIcons/MapEditor") { openMapEditorPopup() }
         table.add(mapEditorScreenTable)
 
+        // set the same width for all buttons
+        table.pack()
+        table.children.filterIsInstance<Table>().forEach {
+            it.align(Align.left)
+            it.moveBy( (it.width - table.width) / 2, 0f)
+            it.width = table.width }
 
         table.pack()
         val scroll = ScrollPane(table)
@@ -133,7 +140,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         mapEditorPopup.open(force = true)
     }
 
-    fun autoLoadGame() {
+    private fun autoLoadGame() {
         try {
             game.loadGame(autosave)
         } catch (ex: Exception) { // silent fail if we can't read the autosave
@@ -141,7 +148,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
     }
 
-    fun startNewGame() {
+    private fun startNewGame() {
         val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
         game.loadGame(newGame)
     }
