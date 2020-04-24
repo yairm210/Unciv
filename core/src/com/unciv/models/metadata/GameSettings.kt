@@ -3,6 +3,7 @@ package com.unciv.models.metadata
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameSaver
+import com.unciv.ui.utils.ImportExportParameters
 
 data class WindowState (val width:Int=0, val height:Int=0)
 
@@ -36,6 +37,7 @@ class GameSettings {
     var isFreshlyCreated = false
     var minimapSize = 20
     var minimapSquare = false
+    var importExportParameters: ImportExportParameters? = null
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
