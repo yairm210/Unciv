@@ -22,7 +22,8 @@ class UncivGame(
         val version: String,
         private val crashReportSender: CrashReportSender? = null,
         val exitEvent: (()->Unit)? = null,
-        val cancelDiscordEvent: (()->Unit)? = null
+        val cancelDiscordEvent: (()->Unit)? = null,
+        val importExport: IImportExport? = null
 ) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
     constructor(version: String) : this(version, null)
