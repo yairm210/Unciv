@@ -32,7 +32,16 @@ internal object DesktopLauncher {
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        val game = UncivGame ( versionFromJar, null, { exitProcess(0) }, { discordTimer?.cancel() } )
+        // set the debug command line parameter in 'Edit configurations'
+        val importExportDummy = ImportExportDesktop(arg.any { it.toLowerCase(Locale.ROOT) == "debug" })
+
+        val game = UncivGame (
+                version = versionFromJar,
+                crashReportSender = null,
+                exitEvent = { exitProcess(0) },
+                cancelDiscordEvent = { discordTimer?.cancel() },
+                importExport = importExportDummy
+        )
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
@@ -76,7 +85,7 @@ internal object DesktopLauncher {
     private fun packImagesIfOutdated (settings: TexturePacker.Settings, input: String, output: String, packFileName: String) {
         fun File.listTree(): Sequence<File> = when {
                 this.isFile -> sequenceOf(this)
-                this.isDirectory -> this.listFiles().asSequence().flatMap { it.listTree() }
+                this.isDirectory -> this.listFiles()!!.asSequence().flatMap { it.listTree() }
                 else -> sequenceOf()
             }
 

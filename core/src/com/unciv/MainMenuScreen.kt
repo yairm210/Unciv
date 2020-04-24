@@ -26,7 +26,6 @@ import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
-    private val autosave = "Autosave"
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
@@ -69,7 +68,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
 
         val table = Table().apply { defaults().pad(10f) }
-        val autosaveGame = GameSaver.getSave(autosave, false)
+        val autosaveGame = GameSaver.getSave(GameSaver.autosaveName, false)
         if (autosaveGame.exists()) {
             val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
             table.add(resumeTable).row()
@@ -93,6 +92,12 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val mapEditorScreenTable = getTableBlock("Map editor","OtherIcons/MapEditor") { openMapEditorPopup() }
         table.add(mapEditorScreenTable)
+
+        if (game.importExport?.isSupported() == true) {
+            table.add(getTableBlock("Import / Export", "OtherIcons/Up") {
+                ImportExportPopup(this)
+            })
+        }
 
         // set the same width for all buttons
         table.pack()
@@ -142,7 +147,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
     private fun autoLoadGame() {
         try {
-            game.loadGame(autosave)
+            game.loadGame(GameSaver.autosaveName)
         } catch (ex: Exception) { // silent fail if we can't read the autosave
             ResponsePopup("Cannot resume game!", this)
         }

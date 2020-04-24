@@ -10,9 +10,10 @@ import java.io.File
 import kotlin.concurrent.thread
 
 object GameSaver {
-    private const val saveFilesFolder = "SaveFiles"
+    const val autosaveName = "Autosave"
+    const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
-    private const val settingsFileName = "GameSettings.json"
+    const val settingsFileName = "GameSettings.json"
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
@@ -85,7 +86,7 @@ object GameSaver {
         // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
         // So what we do is we clone all the game data and serialize the clone.
         val gameInfoClone = gameInfo.clone()
-        thread(name = "Autosave") {
+        thread(name = autosaveName) {
             autoSaveSingleThreaded(gameInfoClone)
             // do this on main thread
             Gdx.app.postRunnable {
@@ -94,13 +95,13 @@ object GameSaver {
         }
     }
     fun autoSaveSingleThreaded (gameInfo: GameInfo) {
-        saveGame(gameInfo, "Autosave")
+        saveGame(gameInfo, autosaveName)
 
         // keep auto-saves for the last 10 turns for debugging purposes
-        val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
-        getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
+        val newAutosaveFilename = "$saveFilesFolder${File.separator}$autosaveName-${gameInfo.currentPlayer}-${gameInfo.turns}"
+        getSave(autosaveName).copyTo(Gdx.files.local(newAutosaveFilename))
 
-        fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
+        fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith(autosaveName) } }
         while(getAutosaves().size>10){
             val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
             deleteSave(saveToDelete)

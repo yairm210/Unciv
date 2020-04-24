@@ -1,5 +1,7 @@
 package com.unciv.app
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
@@ -10,6 +12,8 @@ import com.unciv.UncivGame
 import java.io.File
 
 class AndroidLauncher : AndroidApplication() {
+    private lateinit var importExport: ImportExportAndroid
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
@@ -20,10 +24,14 @@ class AndroidLauncher : AndroidApplication() {
 		}
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
+
+        importExport = ImportExportAndroid(this)
+
         val game = UncivGame (
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
-                exitEvent = this::finish
+                exitEvent = this::finish,
+                importExport = importExport
             )
         initialize(game, config)
     }
@@ -66,5 +74,9 @@ class AndroidLauncher : AndroidApplication() {
             cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
         }
         super.onResume()
+    }
+
+    override fun onActivityResult( requestCode: Int, resultCode: Int, resultData: Intent? ) {
+        resultData?.data?.also { uri -> importExport.activityResult(resultCode, requestCode, uri) }
     }
 }
