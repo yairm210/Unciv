@@ -374,14 +374,22 @@ open class TileInfo {
 
     //region state-changing functions
     fun setTransients(){
+        setTerrainTransients()
+        setUnitTransients(true)
+    }
+
+    fun setTerrainTransients(){
         baseTerrainObject = ruleset.terrains[baseTerrain]!! // This is a HACK.
         isWater = getBaseTerrain().type==TerrainType.Water
         isLand = getBaseTerrain().type==TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
+    }
 
+    fun setUnitTransients(unitCivTransients: Boolean) {
         for (unit in getUnits()) {
             unit.currentTile = this
-            unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner),false)
+            if(unitCivTransients)
+                unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner),false)
             unit.setTransients(ruleset)
         }
     }

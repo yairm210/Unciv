@@ -45,7 +45,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     }
 
     fun initialize() {
-        tileMap.setTransients(ruleset)
+        tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles(stage.width)

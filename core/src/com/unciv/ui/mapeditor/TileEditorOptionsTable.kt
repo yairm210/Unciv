@@ -3,16 +3,16 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.UncivGame
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.ruleset.tile.Terrain
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.tile.TileImprovement
-import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -43,9 +43,13 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .onClick { setTerrainsAndResources() }
         tabPickerTable.add(terrainsAndResourcesTabButton)
 
-        val civLocationsButton = "Improvements".toTextButton()
+        val improvementsButton = "Improvements".toTextButton()
                 .onClick { setImprovements() }
-        tabPickerTable.add(civLocationsButton)
+        tabPickerTable.add(improvementsButton)
+
+//        val unitsButton = "Units".toTextButton().onClick { setUnits() }
+//        tabPickerTable.add(unitsButton)
+
         tabPickerTable.pack()
 
         val sliderTab = Table()
@@ -90,7 +94,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                         "Railroad" -> it.roadStatus = RoadStatus.Railroad
                         else -> it.improvement = improvement.name
                     }
-
                 }
                 val improvementIcon = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
                 setCurrentHex(improvementIcon, improvement.name.tr()+"\n"+improvement.clone().toString())
@@ -123,6 +126,46 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
 
         editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight)
+    }
+
+    fun setUnits(){
+        editorPickTable.clear()
+        var currentNation = ruleset.nations.values.first()
+        var currentUnit = ruleset.units.values.first()
+        fun setUnitTileAction(){
+            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation.getInnerColor())
+                    .surroundWithCircle(40f).apply { color=currentNation.getOuterColor() }
+            setCurrentHex(unitImage, currentUnit.name.tr()+" - "+currentNation.name.tr())
+            tileAction = {
+                val unit = MapUnit()
+                unit.baseUnit = currentUnit
+                unit.name = currentUnit.name
+                unit.owner = currentNation.name
+                unit.civInfo = CivilizationInfo(currentNation.name).apply { nation=currentNation } // needed for the unit icon to render correctly
+                when {
+                    unit.type.isAirUnit() -> it.airUnits.add(unit)
+                    unit.type.isCivilian() -> it.civilianUnit=unit
+                    else -> it.militaryUnit=unit
+                }
+                unit.currentTile=it // needed for unit icon - unit needs to know if it's embarked or not...
+            }
+        }
+
+        val nationsTable = Table()
+        for(nation in ruleset.nations.values){
+            val nationImage = ImageGetter.getNationIndicator(nation, 40f)
+            nationsTable.add(nationImage).row()
+            nationImage.onClick { currentNation = nation; setUnitTileAction() }
+        }
+        editorPickTable.add(ScrollPane(nationsTable)).height(stage.height*0.8f)
+
+        val unitsTable = Table()
+        for(unit in ruleset.units.values){
+            val unitImage = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(40f)
+            unitsTable.add(unitImage).row()
+            unitImage.onClick { currentUnit = unit; setUnitTileAction() }
+        }
+        editorPickTable.add(ScrollPane(unitsTable)).height(stage.height*0.8f)
     }
 
     private fun getRedCross(size: Float, alpha: Float): Actor {
