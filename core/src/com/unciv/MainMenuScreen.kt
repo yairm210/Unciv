@@ -95,9 +95,12 @@ class MainMenuScreen: CameraStageBaseScreen() {
         if (game.importExport?.isSupported() == true) {
             table.row()
             table.add(getTableBlock("Import / Export", "OtherIcons/UpDown") {
-                ImportExportPopup(this)
+                ImportExportPopup(this) {
+                    game.setScreen(MainMenuScreen())
+                }
             })
         }
+        
         // set the same width for all buttons
         table.pack()
         table.children.filterIsInstance<Table>().forEach {
@@ -143,7 +146,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         mapEditorPopup.open(force = true)
     }
-
+    
     private fun autoLoadGame() {
         try {
             game.loadGame(GameSaver.autosaveName)

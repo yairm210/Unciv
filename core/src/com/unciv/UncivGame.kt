@@ -146,6 +146,10 @@ class UncivGame(
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
+        
+        // Are we just returning from a SAF Document picker?
+        if (importExport?.isInProgress() == true) return
+
         ImageGetter.refreshAtlas()
 
         setScreen(MainMenuScreen())

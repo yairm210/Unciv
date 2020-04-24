@@ -72,6 +72,18 @@ class LanguagePickerScreen(): PickerScreen(){
         rightSideButton.onClick {
             pickLanguage()
         }
+        
+        closeButton.setText("Import".tr())
+        closeButton.isVisible = true
+        closeButton.onClick { 
+            ImportExportPopup(this) {
+                if (!game.settings.isFreshlyCreated) {
+                    chosenLanguage = game.settings.language
+                    pickLanguage()
+                }
+            }
+        }
+        
     }
 
     fun pickLanguage(){
