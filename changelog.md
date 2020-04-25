@@ -1,3 +1,21 @@
+## 3.8.2
+
+Main screen buttons fit in all languages - by Jack Rainy
+
+Typo fixes and character organization - By SomeTroglodyte
+
+AI great people no longer raise improvements on tiles with great improvements
+
+Iroquois movement unique only applies to friendly territory
+
+Resolved #2503 - Resizing game no longer returns to main menu
+
+New game screen adjusts to base rulesets with small amounts of civs, including barbarians
+
+Saving a map from the map editor screen no longer changes the screen
+
+Translation updates
+
 ## 3.8.1
 
 Solved concurrency problems
