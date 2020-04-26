@@ -271,6 +271,8 @@ open class TileInfo {
             improvement.name == this.improvement -> false
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
+            "Cannot be built on bonus resource" in improvement.uniques && resource != null
+                            && getTileResource().resourceType == ResourceType.Bonus -> false
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
