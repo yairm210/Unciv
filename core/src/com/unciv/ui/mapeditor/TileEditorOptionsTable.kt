@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
@@ -85,7 +86,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }).row()
 
         for(improvement in ruleset.tileImprovements.values){
-            if(improvement.name.startsWith("Remove")) continue
+            if (improvement.name.startsWith("Remove")) continue
+            if (improvement.name == Constants.cancelImprovementOrder) continue
             val improvementImage = getHex(Color.WHITE, ImageGetter.getImprovementIcon(improvement.name, 40f))
             improvementImage.onClick {
                 tileAction = {
@@ -373,34 +375,60 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             tileInfo.improvement = null
         }
 
-        if(tileInfo.terrainFeature!=null){
+        if (tileInfo.terrainFeature != null) {
             val terrainFeature = tileInfo.getTerrainFeature()!!
             if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
                 tileInfo.terrainFeature=null
         }
-        if(tileInfo.resource!=null){
+        if (tileInfo.resource != null) {
             val resource = tileInfo.getTileResource()
             if(resource.terrainsCanBeFoundOn.none { it==tileInfo.baseTerrain || it==tileInfo.terrainFeature })
                 tileInfo.resource=null
         }
-        if(tileInfo.improvement!=null) {
-            if (tileInfo.improvement!!.startsWith("StartingLocation")) {
-                if (tileInfo.isWater || tileInfo.getBaseTerrain().impassable)
-                    tileInfo.improvement = null
-            } else {
-                val improvement = tileInfo.getTileImprovement()!!
-                if (tileInfo.getBaseTerrain().impassable) tileInfo.improvement = null
-                if (improvement.terrainsCanBeBuiltOn.isEmpty() && tileInfo.isWater)
-                    tileInfo.improvement = null
-                if (improvement.terrainsCanBeBuiltOn.isNotEmpty() // for "everywhere" improvements like city ruins, encampments, ancient ruins
-                        && improvement.terrainsCanBeBuiltOn.none { it == tileInfo.baseTerrain || it == tileInfo.terrainFeature })
-                    tileInfo.improvement = null
-            }
+        if (tileInfo.improvement!=null) {
+            normalizeTileImprovement(tileInfo)
         }
-        if(tileInfo.getBaseTerrain().impassable || tileInfo.isWater)
+        if (tileInfo.getBaseTerrain().impassable || tileInfo.isWater)
             tileInfo.roadStatus= RoadStatus.None
     }
 
+    private fun normalizeTileImprovement(tileInfo: TileInfo) {
+        if (tileInfo.improvement!!.startsWith("StartingLocation")) {
+            if (!tileInfo.isLand || tileInfo.getBaseTerrain().impassable)
+                tileInfo.improvement = null
+            return
+        }
+        val improvement = tileInfo.getTileImprovement()!!
+        val topTerrain = tileInfo.getLastTerrain()
+        val resource = if (tileInfo.resource!=null) tileInfo.getTileResource() else null
+        when {
+            // Precedence, simplified: terrainsCanBeBuiltOn, then improves-resource, then 'everywhere', default to false
+            // 'everywhere' improvements (city ruins, encampments, ancient ruins, great improvements)
+            // are recognized as without terrainsCanBeBuiltOn and with turnsToBuild == 0
+            "Cannot be built on bonus resource" in improvement.uniques
+                        && tileInfo.resource != null
+                        && resource?.resourceType == ResourceType.Bonus
+                -> tileInfo.improvement = null      // forbid if this unique matches
+            tileInfo.isLand      // Fishing boats have Coast allowed even though they're meant resource-only
+                        && topTerrain.name in improvement.terrainsCanBeBuiltOn
+                -> Unit     // allow where top terrain explicitly named
+            resource?.improvement == improvement.name
+                        && (!topTerrain.unbuildable || topTerrain.name in improvement.resourceTerrainAllow)
+                -> Unit     // allow where it improves a resource and feature OK
+            tileInfo.isWater || topTerrain.impassable
+                -> tileInfo.improvement = null      // forbid if water or mountains
+            improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0
+                    // Allow Great Improvement but clear unbuildable terrain feature
+                    // Allow barbarian camps, ruins and similar without clear
+                -> if (topTerrain.unbuildable && improvement.name in Constants.greatImprovements)
+                    tileInfo.terrainFeature = null
+            topTerrain.unbuildable
+                -> tileInfo.improvement = null      // forbid on unbuildable feature
+            "Can only be built on Coastal tiles" in improvement.uniques && tileInfo.isCoastalTile()
+                -> Unit                             // allow Moai where appropriate
+            else -> tileInfo.improvement = null
+        }
+    }
 
     private fun setCurrentHex(tileInfo: TileInfo, text:String){
         val tileGroup = TileGroup(tileInfo, TileSetStrings())
@@ -423,6 +451,5 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         currentHex.setPosition(stage.width - currentHex.width-10, 10f)
         stage.addActor(currentHex)
     }
-
 
 }
