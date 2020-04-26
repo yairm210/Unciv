@@ -189,6 +189,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return destinationTileThisTurn
     }
 
+    /** This is performance-heavy - use as last resort, only after checking everything else! */
     fun canReach(destination: TileInfo): Boolean {
         if (unit.type.isAirUnit())
             return unit.currentTile.aerialDistanceTo(destination) <= unit.getRange()*2
