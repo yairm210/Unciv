@@ -337,7 +337,7 @@ open class TileInfo {
         }
         lineList += baseTerrain.tr()
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
-        if (viewingCiv==null && resource!=null || viewingCiv!=null && hasViewableResource(viewingCiv)) lineList += resource!!.tr()
+        if (resource!=null && (viewingCiv==null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
