@@ -54,7 +54,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val distanceToTiles = PathsToTilesWithinTurn()
         if (unitMovement == 0f) return distanceToTiles
 
-        val unitTile = unit.getTile().tileMap[origin]
+        val currentUnitTile = unit.currentTile
+        // This is for performance, because this is called all the time
+        val unitTile = if(origin==currentUnitTile.position) currentUnitTile else currentUnitTile.tileMap[origin]
         distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile, 0f)
         var tilesToCheck = listOf(unitTile)
 
@@ -343,14 +345,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.naturalWonder != null) return false
 
         val tileOwner = tile.getOwner()
-        if (tileOwner != null && tileOwner.civName != unit.owner) {
+        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings?
             if (tile.isCityCenter() && !tile.getCity()!!.hasJustBeenConquered) return false
             if (!unit.civInfo.canEnterTiles(tileOwner)
                     && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
             // AIs won't enter city-state's border.
         }
 
-        val firstUnit = tile.getUnits().firstOrNull()
+        val firstUnit = tile.getFirstUnit()
         if (firstUnit != null && firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
             return false
 

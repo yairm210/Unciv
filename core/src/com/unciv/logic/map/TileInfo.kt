@@ -86,6 +86,14 @@ open class TileInfo {
         if (airUnits.isNotEmpty()) yieldAll(airUnits)
     }
 
+    /** This is for performance reasons of canPassThrough() - faster than getUnits().firstOrNull() */
+    fun getFirstUnit(): MapUnit? {
+        if (militaryUnit != null) return militaryUnit!!
+        if (civilianUnit != null) return civilianUnit!!
+        if (airUnits.isNotEmpty()) return airUnits.first()
+        return null
+    }
+
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if(naturalWonder != null) getNaturalWonder() else getBaseTerrain()

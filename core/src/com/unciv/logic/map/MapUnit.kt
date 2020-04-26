@@ -222,7 +222,7 @@ class MapUnit {
 
     fun isEmbarked(): Boolean {
         if(!type.isLandUnit()) return false
-        return currentTile.getBaseTerrain().type==TerrainType.Water
+        return currentTile.isWater
     }
 
     fun isInvisible(): Boolean {
