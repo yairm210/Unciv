@@ -409,8 +409,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                         && tileInfo.resource != null
                         && resource?.resourceType == ResourceType.Bonus
                 -> tileInfo.improvement = null      // forbid if this unique matches
-            tileInfo.isLand      // Fishing boats have Coast allowed even though they're meant resource-only
-                        && topTerrain.name in improvement.terrainsCanBeBuiltOn
+            topTerrain.name in improvement.terrainsCanBeBuiltOn
                 -> Unit     // allow where top terrain explicitly named
             resource?.improvement == improvement.name
                         && (!topTerrain.unbuildable || topTerrain.name in improvement.resourceTerrainAllow)

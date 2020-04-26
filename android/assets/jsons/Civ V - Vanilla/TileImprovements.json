@@ -74,7 +74,8 @@
 	},
 	{
 		"name": "Fishing Boats",
-		"terrainsCanBeBuiltOn": ["Coast"],
+		//"terrainsCanBeBuiltOn": ["Coast"] - no, this is a resouce-bound improvement
+		"turnsToBuild": 1,
 		"food": 1,
 		"techRequired": "Sailing",
 		"improvingTech": "Compass",
@@ -83,11 +84,11 @@
 
 	// Military improvement
 	{
-		name: "Fort",
-		terrainsCanBeBuiltOn: ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
-		turnsToBuild: 6,
-		techRequired: "Engineering",
-		uniques: ["Gives a defensive bonus of 50%"]
+		"name": "Fort",
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
+		"turnsToBuild": 6,
+		"techRequired": "Engineering",
+		"uniques": ["Gives a defensive bonus of 50%"]
 	},
 
 	// Transportation
@@ -165,9 +166,9 @@
 		"improvingTechStats": {"gold": 1}
 	},
 	{
-		name: "Citadel",
-		uniques: ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
-		// TODO (G&K): adds every tile around it to your territory
+		"name": "Citadel",
+		"uniques": ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
+		// Adds every tile around it to your territory: hardcoded in UnitActions.takeOverTilesAround()
 	},
 
 	//Civilization unique improvements

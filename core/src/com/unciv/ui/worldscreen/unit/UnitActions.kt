@@ -92,22 +92,23 @@ object UnitActions {
 
     fun getWaterImprovementAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
-        for (improvement in listOf("Fishing Boats", "Oil well")) {
-            if (unit.hasUnique("May create improvements on water resources") && tile.resource != null
-                    && tile.isWater // because fishing boats can enter cities, and if there's oil in the city... ;)
-                    && tile.improvement == null
-                    && tile.getTileResource().improvement == improvement
-                    && unit.civInfo.tech.isResearched(unit.civInfo.gameInfo.ruleSet.tileImprovements[improvement]!!.techRequired!!)
-            )
-                return UnitAction(
-                        type = UnitActionType.Create,
-                        title = "Create [$improvement]",
-                        action = {
-                            tile.improvement = improvement
-                            unit.destroy()
-                        }.takeIf {unit.currentMovement > 0})
-        }
-        return null
+        if ( unit.currentMovement <= 0          // movement exhausted -> cannot build
+                || !tile.isWater                // because fishing boats can enter cities, and if there's oil in the city... ;)
+                || tile.resource == null        // limitation of mod freedom: Water improvements that do not depend on a resource are TODO
+                || !unit.hasUnique("May create improvements on water resources") ) return null
+        val resource = tile.getTileResource()!!
+        val improvementName = resource.improvement ?: return null       // modder freedom safeguard
+        val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
+        if (improvement.techRequired != null && !unit.civInfo.tech.isResearched(improvement.techRequired!!))
+            return null
+
+        return UnitAction(
+                type = UnitActionType.Create,
+                title = "Create [$improvementName]",
+                action = {
+                    tile.improvement = improvementName
+                    unit.destroy()
+                })
     }
 
     private fun addConstructRoadsAction(unit: MapUnit, tile: TileInfo, actionList: ArrayList<UnitAction>) {
