@@ -15,6 +15,7 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -94,19 +95,29 @@ object UnitActions {
         val tile = unit.currentTile
         if ( unit.currentMovement <= 0          // movement exhausted -> cannot build
                 || !tile.isWater                // because fishing boats can enter cities, and if there's oil in the city... ;)
-                || tile.resource == null        // limitation of mod freedom: Water improvements that do not depend on a resource are TODO
                 || !unit.hasUnique("May create improvements on water resources") ) return null
-        val resource = tile.getTileResource()!!
-        val improvementName = resource.improvement ?: return null       // modder freedom safeguard
-        val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
-        if (improvement.techRequired != null && !unit.civInfo.tech.isResearched(improvement.techRequired!!))
-            return null
-
+        // This is oversimplified to keep to the one-potential-improvement signature
+        // Mods may enable several alternative water improvements possible on one tile, so we would need
+        // a picker for the human player and an optimizer for automation. This will allow
+        // replacing existing improvements, and resources have precedence.
+        var candidates: Sequence<TileImprovement> = emptySequence()
+        if (tile.resource != null) {
+            val resource = tile.getTileResource()
+            if (resource.improvement != null)
+                candidates = sequenceOf(tile.ruleset.tileImprovements[resource.improvement!!]!!)
+        }
+        candidates += tile.ruleset.tileImprovements.asSequence()
+                .map { it.value }
+                .filter { tile.getLastTerrain().name in it.terrainsCanBeBuiltOn }
+        val improvement = candidates
+                .firstOrNull { it.name != tile.improvement
+                        && (it.techRequired == null || unit.civInfo.tech.isResearched(it.techRequired!!)) }
+                ?: return null
         return UnitAction(
                 type = UnitActionType.Create,
-                title = "Create [$improvementName]",
+                title = "Create [${improvement.name}]",
                 action = {
-                    tile.improvement = improvementName
+                    tile.improvement = improvement.name
                     unit.destroy()
                 })
     }
