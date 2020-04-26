@@ -23,7 +23,7 @@ class TileImprovement : NamedStats() {
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()
 
-    private val turnsToBuild: Int = 0 // This is the base cost.
+    val turnsToBuild: Int = 0 // This is the base cost.
 
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
