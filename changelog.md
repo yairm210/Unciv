@@ -1,3 +1,24 @@
+## 3.8.3
+
+Performance improvement - by vainiovano 
+
+By SomeTroglodyte:
+
+- Terrace Farms: Bonus resource restriction 
+- Map editor: Placed improvement check updated, resolves #2489 
+
+Fixed 'auto assign production' not working when changing from manual to auto assign
+
+Fixed crashing error when loading mods
+
+Many performance improvements
+
+Fixed modification exception when destroying transported units
+
+Resource bonus from Fascism effective immediately
+
+Translation updates
+
 ## 3.8.2
 
 Main screen buttons fit in all languages - by Jack Rainy
