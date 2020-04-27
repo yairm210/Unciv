@@ -146,9 +146,9 @@ class CityConstructions {
     internal fun getConstruction(constructionName: String): IConstruction {
         val gameBasics = cityInfo.getRuleset()
         when {
+            constructionName == "" -> return getConstruction("Nothing")
             gameBasics.buildings.containsKey(constructionName) -> return gameBasics.buildings[constructionName]!!
             gameBasics.units.containsKey(constructionName) -> return gameBasics.units[constructionName]!!
-            constructionName == "" -> return getConstruction("Nothing")
             else -> {
                 val special = PerpetualConstruction.perpetualConstructionsMap[constructionName]
                 if (special != null) return special
@@ -358,8 +358,6 @@ class CityConstructions {
     private fun removeCurrentConstruction() = removeFromQueue(0,true)
 
     fun chooseNextConstruction() {
-        if(currentConstructionIsUserSet) return
-
         validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
             currentConstructionIsUserSet = true
