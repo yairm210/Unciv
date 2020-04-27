@@ -86,6 +86,14 @@ open class TileInfo {
         if (airUnits.isNotEmpty()) yieldAll(airUnits)
     }
 
+    /** This is for performance reasons of canPassThrough() - faster than getUnits().firstOrNull() */
+    fun getFirstUnit(): MapUnit? {
+        if (militaryUnit != null) return militaryUnit!!
+        if (civilianUnit != null) return civilianUnit!!
+        if (airUnits.isNotEmpty()) return airUnits.first()
+        return null
+    }
+
     fun getCity(): CityInfo? = owningCity
 
     fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if(naturalWonder != null) getNaturalWonder() else getBaseTerrain()
@@ -271,6 +279,8 @@ open class TileInfo {
             improvement.name == this.improvement -> false
             improvement.uniqueTo != null && improvement.uniqueTo != civInfo.civName -> false
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
+            "Cannot be built on bonus resource" in improvement.uniques && resource != null
+                            && getTileResource().resourceType == ResourceType.Bonus -> false
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
@@ -337,7 +347,7 @@ open class TileInfo {
         }
         lineList += baseTerrain.tr()
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
-        if (viewingCiv==null || hasViewableResource(viewingCiv)) lineList += resource!!.tr()
+        if (resource!=null && (viewingCiv==null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()

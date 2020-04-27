@@ -1,10 +1,13 @@
 package com.unciv.logic.map
 
+// Kotlin's ArrayDeque is experimental
+import java.util.ArrayDeque
+
 /**
  * Defines intermediate steps of a breadth-first search, for use in either get shortest path or get onnected tiles.
  */
 class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
-    var tilesToCheck = ArrayList<TileInfo>()
+    var tilesToCheck = ArrayDeque<TileInfo>()
     /** each tile reached points to its parent tile, where we got to it from */
     val tilesReached = HashMap<TileInfo, TileInfo>()
 
@@ -25,16 +28,13 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
     }
 
     fun nextStep(){
-        val newTilesToCheck = ArrayList<TileInfo>()
-        for(tileInfo in tilesToCheck){
-            for(neighbor in tileInfo.neighbors){
-                if(predicate(neighbor) && !tilesReached.containsKey(neighbor)){
-                    tilesReached[neighbor] = tileInfo
-                    newTilesToCheck.add(neighbor)
-                }
+        val current = tilesToCheck.remove()
+        for(neighbor in current.neighbors){
+            if(predicate(neighbor) && !tilesReached.containsKey(neighbor)){
+                tilesReached[neighbor] = current
+                tilesToCheck.add(neighbor)
             }
         }
-        tilesToCheck = newTilesToCheck
     }
 
     fun getPathTo(destination: TileInfo): ArrayList<TileInfo> {

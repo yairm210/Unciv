@@ -50,6 +50,7 @@ class CivilizationInfo {
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
     @Transient var statsForNextTurn = Stats()
+    @Transient var happinessForNextTurn = 0
     @Transient var detailedCivResources = ResourceSupplyList()
 
     var playerType = PlayerType.AI
@@ -146,11 +147,12 @@ class CivilizationInfo {
     fun stats() = CivInfoStats(this)
     fun transients() = CivInfoTransientUpdater(this)
 
-    fun updateStatsForNextTurn(){
-        statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
+    fun updateStatsForNextTurn() {
+        happinessForNextTurn = stats().getHappinessBreakdown().values.sum().roundToInt()
+        statsForNextTurn = stats().getStatMapForNextTurn().values.reduce { a, b -> a + b }
     }
 
-    fun getHappiness() = stats().getHappinessBreakdown().values.sum().roundToInt()
+    fun getHappiness() = happinessForNextTurn
 
 
     fun getCivResources(): ResourceSupplyList {
