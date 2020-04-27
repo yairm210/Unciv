@@ -145,12 +145,13 @@ class UncivGame(
     override fun resume() {
         super.resume()
         if (!isInitialized) return // The stuff from Create() is still happening, so the main screen will load eventually
-        ImageGetter.refreshAtlas()
-
-        setScreen(MainMenuScreen())
     }
 
-    // Maybe this will solve the resume error on chrome OS, issue 322? Worth a shot
+    override fun pause() {
+        if (this::gameInfo.isInitialized) GameSaver.autoSave(this.gameInfo)
+        super.pause()
+    }
+
     override fun resize(width: Int, height: Int) {
         screen.resize(width, height)
     }
