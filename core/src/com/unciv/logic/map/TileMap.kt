@@ -215,7 +215,7 @@ class TileMap {
         return viewableTiles
     }
 
-    fun setTransients(ruleset: Ruleset) {
+    fun setTransients(ruleset: Ruleset, setUnitCivTransients:Boolean=true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients
         val topY= tileList.asSequence().map { it.position.y.toInt() }.max()!!
         bottomY= tileList.asSequence().map { it.position.y.toInt() }.min()!!
         val rightX= tileList.asSequence().map { it.position.x.toInt() }.max()!!
@@ -231,7 +231,8 @@ class TileMap {
             tileMatrix[tileInfo.position.x.toInt()-leftX][tileInfo.position.y.toInt()-bottomY] = tileInfo
             tileInfo.tileMap = this
             tileInfo.ruleset = ruleset
-            tileInfo.setTransients()
+            tileInfo.setTerrainTransients()
+            tileInfo.setUnitTransients(setUnitCivTransients)
         }
     }
 }

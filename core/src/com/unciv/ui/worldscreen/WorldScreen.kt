@@ -572,7 +572,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            super.resize(width, height)
             game.worldScreen = WorldScreen(viewingCiv) // start over.
             game.setWorldScreen()
         }

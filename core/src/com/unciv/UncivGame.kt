@@ -152,7 +152,7 @@ class UncivGame(
 
     // Maybe this will solve the resume error on chrome OS, issue 322? Worth a shot
     override fun resize(width: Int, height: Int) {
-        resume()
+        screen.resize(width, height)
     }
 
     override fun dispose() {

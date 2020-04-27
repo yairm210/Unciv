@@ -184,14 +184,13 @@
 	{
 		"name": "Terrace farm",
 		"uniqueTo": "Inca",
+		"terrainsCanBeBuiltOn": ["Hill"],
 		"food": 1,
 		"turnsToBuild": 7,
-		"uniques": ["+1 food for each adjacent Mountain","Cannot improve a resource"],
+		"uniques": ["+1 food for each adjacent Mountain", "Cannot be built on bonus resource"],
 		"techRequired": "Construction",
 		"improvingTech": "Fertilizer",
-		"improvingTechStats": {"food":1},
-		"terrainsCanBeBuiltOn": ["Hill"]
-		//It can be colored in lemon
+		"improvingTechStats": {"food":1}
 	},
 	
 	{ "name": "Ancient ruins" },

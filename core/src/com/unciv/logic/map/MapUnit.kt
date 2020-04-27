@@ -222,7 +222,7 @@ class MapUnit {
 
     fun isEmbarked(): Boolean {
         if(!type.isLandUnit()) return false
-        return currentTile.getBaseTerrain().type==TerrainType.Water
+        return currentTile.isWater
     }
 
     fun isInvisible(): Boolean {
@@ -477,7 +477,7 @@ class MapUnit {
         civInfo.removeUnit(this)
         civInfo.updateViewableTiles()
         // all transported units should be destroyed as well
-        currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }
+        currentTile.getUnits().filter { it.isTransported && isTransportTypeOf(it) }.toList() // because we're changing the list
                 .forEach { unit -> unit.destroy() }
     }
 

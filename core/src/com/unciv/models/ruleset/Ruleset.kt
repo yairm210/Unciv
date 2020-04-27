@@ -179,8 +179,9 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
+    val vanillaRuleset = "Civ V - Vanilla"
     fun loadRulesets() {
-        this[""] = Ruleset().apply { load(Gdx.files.internal("jsons")) }
+        this[""] = Ruleset().apply { load(Gdx.files.internal("jsons/$vanillaRuleset")) }
 
         for (modFolder in Gdx.files.local("mods").list()) {
             if (modFolder.name().startsWith('.')) continue

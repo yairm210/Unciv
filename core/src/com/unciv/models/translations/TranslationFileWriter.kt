@@ -46,6 +46,9 @@ object TranslationFileWriter {
             linesFromTemplates.addAll(templateFile.reader().readLines())
         // read the JSON files
         val generatedStrings = generateStringsFromJSONs(modFolder)
+        // Tutorials are a bit special
+        generatedStrings["Tutorials"] = generateTutorialsStrings()
+
         for (key in generatedStrings.keys) {
             linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
             linesFromTemplates.addAll(generatedStrings.getValue(key))
@@ -131,23 +134,19 @@ object TranslationFileWriter {
             it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
     }
 
-    private fun generateStringsFromJSONs(modFolder: FileHandle? = null): Map<String, MutableSet<String>> {
+    private fun generateStringsFromJSONs(modFolder: FileHandle? = null): LinkedHashMap<String, MutableSet<String>> {
 
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
         val generatedStrings = LinkedHashMap<String, MutableSet<String>>()
 
         var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
-        val folderHandler = getFileHandle(modFolder,"jsons")
+        val folderHandler = if(modFolder!=null) getFileHandle(modFolder,"jsons")
+        else getFileHandle(modFolder, "jsons/Civ V - Vanilla")
         val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
         for (jsonFile in listOfJSONFiles)
         {
             val filename = jsonFile.nameWithoutExtension()
-            // Tutorials are a bit special
-            if (filename == "Tutorials") {
-                generatedStrings[filename] = generateTutorialsStrings()
-                continue
-            }
 
             val javaClass = getJavaClassByName(filename)
             if (javaClass == this.javaClass)

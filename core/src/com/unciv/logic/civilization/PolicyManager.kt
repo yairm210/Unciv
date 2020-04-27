@@ -123,13 +123,17 @@ class PolicyManager {
         }
 
         val hasCapital = civInfo.cities.any { it.isCapital() }
-        when (policy.name) {
-            "Collective Rule" -> if (hasCapital && !civInfo.isOneCityChallenger())
-                civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.settler)
-            "Citizenship" -> if (hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
-            "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
-            "Free Religion" -> freePolicies++
-            "Liberty Complete" -> {
+        when (policy.effect) {
+            "Training of settlers increased +50% in capital, receive a new settler near the capital" ->
+                if (hasCapital && !civInfo.isOneCityChallenger())
+                    civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.settler)
+            "Tile improvement speed +25%, receive a free worker near the capital" ->
+                if (hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
+            "+1 culture for each monument, temple and monastery. Gain a free policy." -> freePolicies++
+            "Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
+            "+33% culture in all cities with a world wonder, immediately enter a golden age" ->
+                civInfo.goldenAges.enterGoldenAge()
+            "Free Great Person of choice near capital" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                 else {
                     val preferredVictoryType = civInfo.victoryType()
@@ -142,7 +146,8 @@ class PolicyManager {
                     civInfo.addGreatPerson(greatPerson)
                 }
             }
-            "Autocracy Complete" -> autocracyCompletedTurns = 30
+            "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
+            "+20% attack bonus to all Military Units for 30 turns" -> autocracyCompletedTurns = 30
         }
         tryAddLegalismBuildings()
 

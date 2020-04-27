@@ -15,13 +15,22 @@ object Fonts {
 
         val startTime = System.currentTimeMillis()
 
-        val defaultText = "AÀÁBCČĆDĐEÈÉFGHIÌÍÏJKLMNOÒÓÖPQRSŠTUÙÚÜVWXYZŽaäàâăbcčćçdđeéèfghiìîjklmnoòöpqrsșštțuùüvwxyzž" +
-                "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" + // Russian
-                "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +  // Greek
-                "ÀÄĂÂĎÊĚÉÈÍÎŁĹĽÔÓÖƠŘŔŚŤƯŮÚÜÝŻŹäâąďêęěłĺľńňñôöơřŕśťưůýżźáèìíóûú" +
-                "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛" +  // Thai
-                "İıÇŞşĞğ"+ /// turkish
-                "øæå" +   // Scandinavian
+        // Basic Character Set - symbols missing from this will not be displayed, unless one of the
+        // 'complex' languages is chosen, in which case the translation file is used as character set as well.
+        // This means that for example user-set city names might not be displayed as entered.
+        // Missing Characters will be entirely invisible, not even take up horizontal space.
+        // Note that " (normal double quotes) and _ (underscore) _are_ such invisible characters.
+        val defaultText =
+                "AÀÁÀÄĂÂEÈÉÊĚÉÈIÌÍÏÍÎOÒÓÖÔÓÖƠUÙÚÜƯŮÚÜ" +            // Latin uppercase vowels and similar symbols
+                "aäàâăäâąáeéèêęěèiìîìíoòöôöơóuùüưůûú" +             // Latin lowercase vowels and similar symbols
+                "BCČĆDĐĎFGHJKLŁĹĽMNPQRŘŔSŠŚTŤVWXYÝZŽŻŹ" +           // Latin uppercase consonants and similar symbols
+                "bcčćçdđďfghjklłĺľmnńňñpqrřŕsșšśtțťvwxyýzžżź" +     // Latin lowercase consonants and similar symbols
+                "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +  // Russian
+                "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +                         // Greek
+                "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛" +                 // Thai
+                "İıÇŞşĞğ"+      // Turkish
+                "øæå" +         // Scandinavian
+                "ÃÕãõ" +        // Portuguese
                 "1234567890" +
                 "‘?ʼ’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.…¡*|«»—∞✘✔"
         val charSet = HashSet<Char>()

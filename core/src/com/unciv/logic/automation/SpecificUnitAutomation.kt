@@ -61,15 +61,16 @@ object SpecificUnitAutomation {
         }
 
         // try to revenge and capture their tiles
-        val enemyCities = unit.civInfo.gameInfo.civilizations
-                .filter { unit.civInfo.knows(it) &&
-                        unit.civInfo.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
+        val enemyCities = unit.civInfo.getKnownCivs()
+                .filter { unit.civInfo.getDiplomacyManager(it).hasModifier(DiplomaticModifiers.StealingTerritory) }
                 .flatMap { it.cities }.asSequence()
         // find the suitable tiles (or their neigbours)
-        val tileToSteal = enemyCities.flatMap { it.getTiles() }.flatMap { it.neighbors.asSequence() }
+        val tileToSteal = enemyCities.flatMap { it.getTiles() } // City tiles
+                .filter { it.neighbors.any { it.getOwner()!=unit.civInfo } } // Edge city tiles
+                .flatMap { it.neighbors.asSequence() } // Neighbors of edge city tiles
                 .filter { it in unit.civInfo.viewableTiles // we can see them
-                        && unit.movement.canReach(it) // we can reach it
-                        && it.neighbors.any { tile -> tile.getOwner() == unit.civInfo} } // they are close to our borders
+                        && it.neighbors.any { tile -> tile.getOwner() == unit.civInfo}// they are close to our borders
+                        }
                 .sortedBy {
                     // get closest tiles
                     val distance = it.aerialDistanceTo(unit.currentTile)
@@ -77,7 +78,8 @@ object SpecificUnitAutomation {
                     val owner = it.getOwner()
                     if (owner != null)
                         distance - WorkerAutomation(unit).getPriority(it, owner)
-                    else distance }.firstOrNull()
+                    else distance }
+                .firstOrNull{ unit.movement.canReach(it) } // canReach is perfrmance-heavy and always a last resort
         // if there is a good tile to steal - go there
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
@@ -212,6 +214,7 @@ object SpecificUnitAutomation {
                     .filter {
                         it.isLand && it.resource == null && !it.isCityCenter()
                                 && (unit.currentTile == it || unit.movement.canMoveTo(it))
+                                && !it.containsGreatImprovement()
                     }.sortedByDescending { Automation.rankTile(it, unit.civInfo) }
                     .firstOrNull { unit.movement.canReach(it) } // to another city
             if (chosenTile == null) continue
