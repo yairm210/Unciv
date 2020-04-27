@@ -45,8 +45,8 @@ class AndroidLauncher : AndroidApplication() {
 		if (internalModsDir.exists()) internalModsDir.deleteRecursively()
 
 		// Copy external mod directory (with data user put in it) to internal (where it can be read)
-		if (!externalModsDir.exists()) externalModsDir.mkdirs()
-		externalModsDir.copyRecursively(internalModsDir)
+		if (!externalModsDir.exists()) externalModsDir.mkdirs() // this can fail sometimes, which is why we check if it exists again in the next line
+        if (externalModsDir.exists()) externalModsDir.copyRecursively(internalModsDir)
 	}
 
     override fun onPause() {

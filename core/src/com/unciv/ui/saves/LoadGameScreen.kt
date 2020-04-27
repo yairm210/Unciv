@@ -69,7 +69,10 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                 val loadedGame = GameSaver.gameInfoFromString(decoded)
                 UncivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
-                errorLabel.setText("Could not load game from clipboard!".tr())
+                var text = "Could not load game from clipboard!".tr()
+                if (ex is UncivShowableException) text += "\n"+ex.message
+                errorLabel.setText(text)
+
                 ex.printStackTrace()
             }
         }
