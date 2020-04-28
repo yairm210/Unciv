@@ -142,6 +142,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 }
 
+
 // we don't need to allocate different memory for these every time we .tr() - or recompile them.
 
         // Expect a literal [ followed by a captured () group and a literal ].
@@ -149,10 +150,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 val squareBraceRegex = Regex("""\[([^]]*)]""")
 
         // Just look for either [ or ]
-val eitherSquareBraceRegex=Regex("""\[|]""")
+val eitherSquareBraceRegex = Regex("""\[|]""")
 
         // Analogous as above: Expect a {} pair with any chars but } in between and capture that
-val curlyBraceRegex =Regex("""\{([^}]*)}""")
+val curlyBraceRegex = Regex("""\{([^}]*)}""")
 
 
 fun String.tr(): String {
