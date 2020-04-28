@@ -55,7 +55,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             // The key for placeholder-containing entries was unused before, let's make it useful
             // What was previously stored as entryWithShortenedSquareBrackets is now the key
             val hashKey = if (translation.key.contains('['))
-                translation.key.replace(squareBraceRegex,"[]")
+                    translation.key.replace(squareBraceRegex,"[]")
                 else translation.key
             if (!containsKey(hashKey))
                 this[hashKey] = TranslationEntry(translation.key)

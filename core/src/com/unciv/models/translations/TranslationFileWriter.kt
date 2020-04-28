@@ -75,13 +75,21 @@ object TranslationFileWriter {
                 }
 
                 val translationKey = line.split(" = ")[0].replace("\\n", "\n")
+                val hashMapKey = if (translationKey.contains('['))
+                            translationKey.replace(squareBraceRegex,"[]")
+                        else translationKey
                 var translationValue = ""
 
-                val translationEntry = translations[translationKey]
+                val translationEntry = translations[hashMapKey]
                 if (translationEntry != null && translationEntry.containsKey(language)) {
                     translationValue = translationEntry[language]!!
                     translationsOfThisLanguage++
                 } else stringBuilder.appendln(" # Requires translation!")
+
+                // Testing assertion only
+                if (translationEntry != null && translationEntry.entry != translationKey) {
+                    println("Assertion failure in generateTranslationFiles: translationEntry.entry != translationKey")
+                }
 
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
@@ -143,7 +151,10 @@ object TranslationFileWriter {
         val jsonParser = JsonParser()
         val folderHandler = if(modFolder!=null) getFileHandle(modFolder,"jsons")
         else getFileHandle(modFolder, "jsons/Civ V - Vanilla")
-        val listOfJSONFiles = folderHandler.list{file -> file.name.endsWith(".json", true)}
+        val listOfJSONFiles = folderHandler
+                .list{file -> file.name.endsWith(".json", true)}
+                .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
+
         for (jsonFile in listOfJSONFiles)
         {
             val filename = jsonFile.nameWithoutExtension()
