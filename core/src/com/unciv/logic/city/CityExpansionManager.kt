@@ -26,7 +26,6 @@ class CityExpansionManager {
                 .map { it.position }
         return cityInfo.tiles.count { it != cityInfo.location && it !in tilesAroundCity}
     }
-    fun isAreaMaxed(): Boolean = cityInfo.tiles.size >= 90
 
     // This one has conflicting sources -
     // http://civilization.wikia.com/wiki/Mathematics_of_Civilization_V says it's 20+(10(t-1))^1.1
@@ -98,10 +97,6 @@ class CityExpansionManager {
     }
 
     private fun addNewTileWithCulture(): Boolean {
-        if (isAreaMaxed()) {
-            cultureStored = 0
-            return false
-        }
         val chosenTile = chooseNewTileToOwn()
         if (chosenTile != null) {
             cultureStored -= getCultureToNextTile()

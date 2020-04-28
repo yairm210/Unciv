@@ -116,7 +116,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                         val tile = tileGroup.tileInfo
                         if (tile.improvement == improvementName && tile != it)
                             tile.improvement = null
-                        tile.setTransients()
+                        tile.setTerrainTransients()
                         tileGroup.update()
                     }
                 }
@@ -249,7 +249,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 } else tileInfo.baseTerrain = terrain
 
                 tileInfo.resource = resource.name
-                tileInfo.setTransients()
+                tileInfo.setTerrainTransients()
 
                 setCurrentHex(tileInfo, resource.name.tr() + "\n" + resource.clone().toString())
             }
@@ -332,7 +332,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun makeTileGroup(tileInfo: TileInfo): TileGroup {
-        tileInfo.setTransients()
+        tileInfo.setTerrainTransients()
         val group = TileGroup(tileInfo, TileSetStrings())
         group.showEntireMap = true
         group.forMapEditorIcon = true

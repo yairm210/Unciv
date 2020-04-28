@@ -60,7 +60,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
                 } else {
                     "Stopped expansion".tr()
                 }
-        if (!cityInfo.expansion.isAreaMaxed())
+        if (cityInfo.expansion.chooseNewTileToOwn()!=null)
             turnsToExpansionString += " (" + cityInfo.expansion.cultureStored + "/" +
                 cityInfo.expansion.getCultureToNextTile() + ")"
 
