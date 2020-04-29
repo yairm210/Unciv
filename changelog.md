@@ -1,3 +1,19 @@
+## 3.8.4
+
+Better "declare war" and city battle decisions (hopefully) for AI
+
+Minimap shows entire map again - now looks good for both rectangular and hexagonal maps
+
+Resolved #2536 - cities correctly expand to the last available tile
+
+Game always resume previous screen on resume(), and autosaves on pause
+
+By SomeTroglodyte:
+- Performance improvements
+- Translation generation for mods doesn't add entries that exist in base translation
+
+Translation updates
+
 ## 3.8.3
 
 Performance improvement - by vainiovano 

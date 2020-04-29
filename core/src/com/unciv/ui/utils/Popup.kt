@@ -40,7 +40,8 @@ open class Popup(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen
 
     open fun close() {
         remove()
-        if (screen.popups.isNotEmpty()) screen.popups[0].isVisible = true
+        val nextPopup = screen.stage.actors.firstOrNull { it is Popup }
+        if (nextPopup != null) nextPopup.isVisible = true
     }
 
     fun addGoodSizedLabel(text: String, size:Int=18): Cell<Label> {
