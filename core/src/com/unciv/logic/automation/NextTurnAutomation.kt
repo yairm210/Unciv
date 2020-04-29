@@ -413,6 +413,7 @@ object NextTurnAutomation{
         val combatStrengthRatio = ourCombatStrength / theirCombatStrength
         val combatStrengthModifier = when {
             combatStrengthRatio > 3f -> 30
+            combatStrengthRatio > 2.5f -> 25
             combatStrengthRatio > 2f -> 20
             combatStrengthRatio > 1.5f -> 10
             else -> 0
@@ -436,10 +437,23 @@ object NextTurnAutomation{
         if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
             modifierMap["No land path"] = -10
 
-        if(civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.ResearchAgreement))
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        if(diplomacyManager.hasFlag(DiplomacyFlags.ResearchAgreement))
             modifierMap["Research Agreement"] = -5
 
-        if(civInfo.getDiplomacyManager(otherCiv).resourcesFromTrade().any { it.amount > 0 })
+        if(diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship))
+            modifierMap["Declaration of Friendship"] = -10
+
+        val relationshipModifier = when(diplomacyManager.relationshipLevel()){
+            RelationshipLevel.Unforgivable -> 10
+            RelationshipLevel.Enemy -> 5
+            RelationshipLevel.Ally -> -5 // this is so that ally + DoF is not too unbalanced -
+            // still possible for AI to declare war for isolated city
+            else -> 0
+        }
+        modifierMap["Relationship"] = relationshipModifier
+
+        if(diplomacyManager.resourcesFromTrade().any { it.amount > 0 })
             modifierMap["Receiving trade resources"] = -5
 
         if(theirCity.getTiles().none { it.neighbors.any { it.getOwner()==theirCity.civInfo && it.getCity() != theirCity } })
