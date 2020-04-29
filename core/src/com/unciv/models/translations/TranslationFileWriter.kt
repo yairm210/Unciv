@@ -87,11 +87,6 @@ object TranslationFileWriter {
                     translationsOfThisLanguage++
                 } else stringBuilder.appendln(" # Requires translation!")
 
-                // Testing assertion only
-                if (translationEntry != null && translationEntry.entry != translationKey) {
-                    println("Assertion failure in generateTranslationFiles: translationEntry.entry != translationKey")
-                }
-
                 val lineToWrite = translationKey.replace("\n", "\\n") +
                         " = " + translationValue.replace("\n", "\\n")
                 stringBuilder.appendln(lineToWrite)
@@ -222,6 +217,11 @@ object TranslationFileWriter {
     }
 
     private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
+        // Exclude fields by name that contain references to items defined elsewhere
+        // - the definition should cause the inclusion in our translatables list, not the reference.
+        // This prevents duplication within the base game (e.g. Mines were duplicated by being output
+        // by both TerrainResources and TerrainImprovements) and duplication of base game items into
+        // mods. Note "uniques" is not in this list and might still generate dupes - TODO
         return  fieldValue != null &&
                 fieldValue != "" &&
                 field.name !in setOf (
