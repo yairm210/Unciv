@@ -30,6 +30,8 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     }
 
     init{
+        setScrollingDisabled(true,true)
+
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
@@ -39,7 +41,8 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-            val groupSize = 10f
+            val groupSize = mapHolder.worldScreen.stage.height / 4f /
+                    mapHolder.tileMap.mapParameters.size.radius * (mapHolder.worldScreen.stage.height / 600f)
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
@@ -85,7 +88,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             else if (tileInfo.getCity() != null && !tileInfo.isWater)
                 hex.color = tileInfo.getOwner()!!.nation.getOuterColor()
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
-            if (tileInfo.isCityCenter() && tileInfo.owningCity!!.getTiles().any { cloneCivilization.exploredTiles.contains(it.position) }) {
+            if (tileInfo.isCityCenter() && cloneCivilization.exploredTiles.contains(tileInfo.getCity()!!.getCenterTile().position)) {
                 val nationIcon= ImageGetter.getNationIndicator(tileInfo.owningCity!!.civInfo.nation,hex.width * 3)
                 nationIcon.setPosition(hex.x - nationIcon.width/3,hex.y - nationIcon.height/3)
                 nationIcon.onClick {
@@ -110,14 +113,15 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
 
     fun getWrappedMinimap(): Table {
         val internalMinimapWrapper = Table()
-
-        val sizePercent = worldScreen.game.settings.minimapSize
-        val sizeWinX = worldScreen.stage.width * sizePercent / 100
-        val sizeWinY = worldScreen.stage.height * sizePercent / 100
-        val isSquare = worldScreen.game.settings.minimapSquare
-        val sizeX = if (isSquare) sqrt(sizeWinX * sizeWinY) else sizeWinX
-        val sizeY = if (isSquare) sizeX else sizeWinY
-        internalMinimapWrapper.add(minimap).size(sizeX,sizeY)
+//         // Temporarily disabled until we can make them work nicely together
+//        val sizePercent = worldScreen.game.settings.minimapSize
+//        val sizeWinX = worldScreen.stage.width * sizePercent / 100
+//        val sizeWinY = worldScreen.stage.height * sizePercent / 100
+//        val isSquare = worldScreen.game.settings.minimapSquare
+//        val sizeX = if (isSquare) sqrt(sizeWinX * sizeWinY) else sizeWinX
+//        val sizeY = if (isSquare) sizeX else sizeWinY
+        internalMinimapWrapper.add(minimap) //.size(sizeX,sizeY)
+        minimap
 
         internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
         internalMinimapWrapper.pack()
