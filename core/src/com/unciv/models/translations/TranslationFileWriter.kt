@@ -1,4 +1,4 @@
-﻿package com.unciv.models.translations
+package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
@@ -47,7 +47,8 @@ object TranslationFileWriter {
         // read the JSON files
         val generatedStrings = generateStringsFromJSONs(modFolder)
         // Tutorials are a bit special
-        generatedStrings["Tutorials"] = generateTutorialsStrings()
+        if (modFolder == null)          // this is for base only, not mods
+            generatedStrings["Tutorials"] = generateTutorialsStrings()
 
         for (key in generatedStrings.keys) {
             linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
@@ -212,9 +213,15 @@ object TranslationFileWriter {
     private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
         return  fieldValue != null &&
                 fieldValue != "" &&
-                field.name !in setOf("startBias", "requiredTech", "uniqueTo",
-                "aiFreeTechs", "aiFreeUnits", "techRequired", "improvingTech", "promotions",
-                "building", "revealedBy", "attackSound", "requiredResource", "obsoleteTech")
+                field.name !in setOf (
+                        "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
+                        "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
+                        "obsoleteTech", "occursOn", "prerequisites", "promotions",
+                        "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities",
+                        "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires",
+                        "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
+                        "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo"
+                    )
     }
 
     private fun getJavaClassByName(name: String): Class<Any> {
