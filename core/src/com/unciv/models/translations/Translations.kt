@@ -52,13 +52,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
 
         for (translation in languageTranslations) {
-            if (!containsKey(translation.key))
-                this[translation.key] = TranslationEntry(translation.key)
+            // The key for placeholder-containing entries was unused before, let's make it useful
+            // What was previously stored as entryWithShortenedSquareBrackets is now the key
+            val hashKey = if (translation.key.contains('['))
+                    translation.key.replace(squareBraceRegex,"[]")
+                else translation.key
+            if (!containsKey(hashKey))
+                this[hashKey] = TranslationEntry(translation.key)
 
             // why not in one line, Because there were actual crashes.
             // I'm pretty sure I solved this already, but hey double-checking doesn't cost anything.
-            val entry = this[translation.key]
-            if(entry!=null) entry[language] = translation.value
+            val entry = this[hashKey]
+            if (entry!=null) entry[language] = translation.value
         }
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
@@ -137,14 +142,34 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 }
 
-val squareBraceRegex = Regex("\\[(.*?)\\]") // we don't need to allocate different memory for this every time we .tr()
 
-val eitherSquareBraceRegex=Regex("\\[|\\]")
+// we don't need to allocate different memory for these every time we .tr() - or recompile them.
+
+        // Expect a literal [ followed by a captured () group and a literal ].
+        // The group may contain any number of any character except ] - pattern [^]]
+val squareBraceRegex = Regex("""\[([^]]*)]""")
+
+        // Just look for either [ or ]
+val eitherSquareBraceRegex = Regex("""\[|]""")
+
+        // Analogous as above: Expect a {} pair with any chars but } in between and capture that
+val curlyBraceRegex = Regex("""\{([^}]*)}""")
+
 
 fun String.tr(): String {
+    // Latest optimizations: cached precompiled curlyBraceRegex and converted loop-based placeholder
+    // lookup into hash key lookup. Test result: 50s -> 24s
+    // *Discarded optimizations*:
+    //      String.indexOf(Char) looks like it might be better than String.contains(String),
+    //      (Char test should be cheaper than string comparison, and contains delegates to indexOf anyway)
+    //      but measurements are equal within margin of error.
+    //      Making our get() overload do two hash lookups instead of up to five: Zero difference.
+    //          val entry: TranslationEntry = this[text] ?: return text
+    //          return entry[language] ?: text
+
 
     // THIS IS INCREDIBLY INEFFICIENT and causes loads of memory problems!
-    if(contains("[")){ // Placeholders!
+    if (contains("[")) { // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
          * So what's all this then?
@@ -158,12 +183,12 @@ fun String.tr(): String {
          * We will find the german placeholder text, and replace the placeholders with what was filled in the text we got!
          */
 
-        val translationStringWithSquareBracketsOnly = replace(squareBraceRegex,"[]")
+        // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
+        val translationStringWithSquareBracketsOnly = this.replace(squareBraceRegex,"[]")
+        // That is now the key into the translation HashMap!
+        val translationEntry = UncivGame.Current.translations[translationStringWithSquareBracketsOnly]
 
-        val translationEntry = UncivGame.Current.translations.values
-                .firstOrNull { translationStringWithSquareBracketsOnly == it.entryWithShortenedSquareBrackets }
-
-        if(translationEntry==null ||
+        if (translationEntry==null ||
                 !translationEntry.containsKey(UncivGame.Current.settings.language)){
             // Translation placeholder doesn't exist for this language, default to English
             return this.replace(eitherSquareBraceRegex,"")
@@ -171,18 +196,18 @@ fun String.tr(): String {
 
         val termsInMessage = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
         val termsInTranslationPlaceholder = squareBraceRegex.findAll(translationEntry.entry).map { it.value }.toList()
-        if(termsInMessage.size!=termsInTranslationPlaceholder.size)
+        if (termsInMessage.size!=termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
         var languageSpecificPlaceholder = translationEntry[UncivGame.Current.settings.language]!!
-        for(i in termsInMessage.indices){
+        for (i in termsInMessage.indices) {
             languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
         }
-        return languageSpecificPlaceholder.tr()
+        return languageSpecificPlaceholder      // every component is already translated
     }
 
-    if(contains("{")){ // sentence
-        return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
+    if (contains("{")) { // sentence
+        return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
 
     return UncivGame.Current.translations

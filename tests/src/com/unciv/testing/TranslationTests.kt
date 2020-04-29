@@ -46,11 +46,13 @@ class TranslationTests {
     }
 
     private fun allStringAreTranslated(strings: Set<String>): Boolean {
+        val squareBraceRegex = Regex("""\[([^]]*)]""")
         var allStringsHaveTranslation = true
-        for (key in strings) {
+        for (entry in strings) {
+            val key = if(entry.contains('[')) entry.replace(squareBraceRegex,"[]") else entry
             if (!translations.containsKey(key)) {
                 allStringsHaveTranslation = false
-                println(key)
+                println(entry)
             }
         }
         return allStringsHaveTranslation
@@ -72,12 +74,14 @@ class TranslationTests {
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
         for (key in translations.keys) {
-            val placeholders = placeholderPattern.findAll(key).map { it.value }.toList()
+            val translationEntry = translations[key]!!.entry
+            val placeholders = placeholderPattern.findAll(translationEntry).map { it.value }.toList()
             for (language in languages) {
                 for (placeholder in placeholders) {
-                    if (!translations.get(key, language).contains(placeholder)) {
+                    val output = translations.get(translationEntry, language)
+                    if (!output.contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
-                        println("Placeholder `$placeholder` not found in `$language` for key `$key`")
+                        println("Placeholder `$placeholder` not found in `$language` for entry `$translationEntry`")
                     }
                 }
             }
@@ -85,6 +89,26 @@ class TranslationTests {
         Assert.assertTrue(
                 "This test will only pass when all translations' placeholders match those of the key",
                 allTranslationsHaveCorrectPlaceholders
+        )
+    }
+
+    @Test
+    fun allPlaceholderKeysMatchEntry() {
+        val squareBraceRegex = Regex("""\[([^]]*)]""")
+        var allPlaceholderKeysMatchEntry = true
+        for (key in translations.keys) {
+            if ( !key.contains('[') ) continue
+            val translationEntry = translations[key]!!.entry
+            val keyFromEntry = translationEntry.replace(squareBraceRegex,"[]")
+            if (key != keyFromEntry) {
+                allPlaceholderKeysMatchEntry = false
+                println("Entry $translationEntry found under bad key $key")
+                break
+            }
+        }
+        Assert.assertTrue(
+                "This test will only pass when all placeholder translations'keys match their entry with shortened placeholders",
+                allPlaceholderKeysMatchEntry
         )
     }
 
