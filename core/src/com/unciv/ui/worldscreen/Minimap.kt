@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Event
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputListener
@@ -37,12 +38,18 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
         var bottomX = 0f
         var bottomY = 0f
 
+        fun hexRow(vector2: Vector2) = vector2.x+vector2.y
+        val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.max()!!
+        val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.min()!!
+        val totalHexRows = maxHexRow-minHexRow
+
         for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
-            val groupSize = mapHolder.worldScreen.stage.height / 4f /
-                    mapHolder.tileMap.mapParameters.size.radius * (mapHolder.worldScreen.stage.height / 600f)
+
+
+            val groupSize = 400f/totalHexRows
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
