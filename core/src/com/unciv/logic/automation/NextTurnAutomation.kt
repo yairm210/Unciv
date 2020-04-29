@@ -8,11 +8,13 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
+import java.lang.reflect.Modifier
 import kotlin.math.min
 
 object NextTurnAutomation{
@@ -394,24 +396,56 @@ object NextTurnAutomation{
                 .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar() }
         if (enemyCivs.isEmpty()) return
 
-        var enemyCivsToEvaluate = enemyCivs.filter { getMinDistanceBetweenCities(civInfo, it) <= 7 }
+        val civWithBestMotivationToAttack = enemyCivs
+                .map { Pair(it, motivationToAttack(civInfo, it)) }
+                .maxBy { it.second }!!
 
-        var isFightingFarAway = false
-        if (enemyCivsToEvaluate.isEmpty()) { // so, there ARE civs we can declare war on, just not close by
-            if (civInfo.victoryType() != VictoryType.Domination) return // No point in attacking civs that are too far away
-            enemyCivsToEvaluate = enemyCivs
-            isFightingFarAway = true
+        if (civWithBestMotivationToAttack.second >= 20)
+            civInfo.getDiplomacyManager(civWithBestMotivationToAttack.first).declareWar()
+    }
+
+    private fun motivationToAttack(civInfo:CivilizationInfo, otherCiv:CivilizationInfo): Int {
+        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo).toFloat()
+        val theirCombatStrength = Automation.evaluteCombatStrength(otherCiv)
+        if (theirCombatStrength > ourCombatStrength) return 0
+
+        val modifierMap = HashMap<String, Int>()
+        val combatStrengthRatio = ourCombatStrength / theirCombatStrength
+        val combatStrengthModifier = when {
+            combatStrengthRatio > 3f -> 30
+            combatStrengthRatio > 2f -> 20
+            combatStrengthRatio > 1.5f -> 10
+            else -> 0
+        }
+        modifierMap["Relative combat strength"] = combatStrengthModifier
+
+        val closestCities = getClosestCities(civInfo, otherCiv)
+        val ourCity = closestCities.city1
+        val theirCity = closestCities.city2
+
+        if (closestCities.aerialDistance > 7)
+            modifierMap["Far away cities"] = -10
+
+        val landPathBFS = BFS(ourCity.getCenterTile()) {
+            val owner = it.getOwner();
+            it.isLand && !it.getBaseTerrain().impassable
+                    && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
         }
 
-        val weakestCloseCiv = enemyCivsToEvaluate.minBy { Automation.evaluteCombatStrength(it) }!!
-        val weakestCloseCivCombatStrength = Automation.evaluteCombatStrength(weakestCloseCiv)
-        val ourCombatStrength = Automation.evaluteCombatStrength(civInfo)
+        landPathBFS.stepUntilDestination(theirCity.getCenterTile())
+        if (!landPathBFS.hasReachedTile(theirCity.getCenterTile()))
+            modifierMap["No land path"] = -10
 
-        val amountWeNeedToBeStronger =
-                if (civInfo.victoryType() == VictoryType.Domination && !isFightingFarAway) 1.5f else 2f
+        if(civInfo.getDiplomacyManager(otherCiv).hasFlag(DiplomacyFlags.ResearchAgreement))
+            modifierMap["Research Agreement"] = -5
 
-        if (weakestCloseCivCombatStrength * amountWeNeedToBeStronger < ourCombatStrength)
-            civInfo.getDiplomacyManager(weakestCloseCiv).declareWar()
+        if(civInfo.getDiplomacyManager(otherCiv).resourcesFromTrade().any { it.amount > 0 })
+            modifierMap["Receiving trade resources"] = -5
+
+        if(theirCity.getTiles().none { it.neighbors.any { it.getOwner()==theirCity.civInfo && it.getCity() != theirCity } })
+            modifierMap["Isolated city"] = 15
+
+        return modifierMap.values.sum()
     }
 
     private fun automateUnits(civInfo: CivilizationInfo) {

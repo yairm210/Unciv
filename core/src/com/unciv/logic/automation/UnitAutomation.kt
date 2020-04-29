@@ -281,9 +281,37 @@ object UnitAutomation {
                 .firstOrNull { unit.movement.canReach(it) }
 
         if (closestReachableEnemyCity != null) {
-            val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+            return headTowardsEnemyCity(unit, closestReachableEnemyCity)
+        }
+        return false
+    }
 
+    private fun headTowardsEnemyCity(unit: MapUnit, closestReachableEnemyCity: TileInfo): Boolean {
+        val unitDistanceToTiles = unit.movement.getDistanceToTiles()
+        val unitRange = unit.getRange()
 
+        if (unitRange > 2) { // long-ranged unit, should never be in a bombardable position
+            val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
+            val tileToMoveTo =
+                    unitDistanceToTiles.asSequence()
+                            .filter {
+                                it.key.aerialDistanceTo(closestReachableEnemyCity) <=
+                                        unitRange && it.key !in tilesInBombardRange
+                            }
+                            .minBy { it.value.totalDistance }?.key
+
+            // move into position far away enough that the bombard doesn't hurt
+            if (tileToMoveTo != null) {
+                unit.movement.headTowards(tileToMoveTo)
+                return true
+            }
+            return false // didn't move
+        }
+
+        val numberOfUnitsAroundCity = closestReachableEnemyCity.getTilesInDistance(4)
+                .count { it.militaryUnit != null && it.militaryUnit!!.civInfo == unit.civInfo }
+
+        if (numberOfUnitsAroundCity < 3) {
             // don't head straight to the city, try to head to landing grounds -
             // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
             val tileToHeadTo = closestReachableEnemyCity.getTilesInDistanceRange(3..4)
@@ -291,43 +319,15 @@ object UnitAutomation {
                     .sortedBy { it.aerialDistanceTo(unit.currentTile) }
                     .firstOrNull { unit.movement.canReach(it) }
 
-            if (tileToHeadTo != null) // no need to worry, keep going as the movement alg. says
+            if (tileToHeadTo != null) { // no need to worry, keep going as the movement alg. says
                 unit.movement.headTowards(tileToHeadTo)
-            else {
-                val unitRange = unit.getRange()
-                if (unitRange > 2) { // should never be in a bombardable position
-                    val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2).toSet()
-                    val tileToMoveTo =
-                            unitDistanceToTiles.asSequence()
-                                    .filter {
-                                        it.key.aerialDistanceTo(closestReachableEnemyCity) <=
-                                                unitRange && it.key !in tilesInBombardRange
-                                    }
-                                    .minBy { it.value.totalDistance }?.key
-
-                    // move into position far away enough that the bombard doesn't hurt
-                    if (tileToMoveTo != null)
-                        unit.movement.headTowards(tileToMoveTo)
-                } else { // unit range <= 2
-                    // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
-                    val militaryUnitsAroundEnemyCity =
-                            closestReachableEnemyCity.getTilesInDistance(3)
-                                    .map { it.militaryUnit }.filterNotNull()
-                                    .filter { it.civInfo == unit.civInfo }
-                    //todo: use CONSTANT for 20
-                    var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
-                    val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)
-                    for (militaryUnit in militaryUnitsAroundEnemyCity) {
-                        totalAttackOnCityPerTurn += BattleDamage.calculateDamageToDefender(MapUnitCombatant(militaryUnit), enemyCityCombatant)
-                    }
-                    if (totalAttackOnCityPerTurn * 3 > closestReachableEnemyCity.getCity()!!.health) // if we can defeat it in 3 turns with the current units,
-                        unit.movement.headTowards(closestReachableEnemyCity) // go for it!
-                }
+                return true
             }
-
-            return true
         }
-        return false
+
+        unit.movement.headTowards(closestReachableEnemyCity) // go for it!
+
+        return true
     }
 
     fun tryBombardEnemy(city: CityInfo): Boolean {
