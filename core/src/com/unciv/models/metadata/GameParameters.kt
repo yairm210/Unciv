@@ -7,7 +7,7 @@ import com.unciv.models.ruleset.VictoryType
 class GameParameters { // Default values are the default new game
     var difficulty = "Prince"
     var gameSpeed = GameSpeed.Standard
-    var players = mutableListOf<Player>().apply {
+    var players = ArrayList<Player>().apply {
         add(Player().apply { playerType = PlayerType.Human })
         for (i in 1..3) add(Player())
     }

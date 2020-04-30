@@ -145,8 +145,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
     companion object {
+        // Regex compilation is expensive, best to save it
+        val bonusOrPenaltyRegex = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""")
         fun translateBonusOrPenalty(unique:String): String {
-            val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
+            val regexResult = bonusOrPenaltyRegex.matchEntire(unique)
             if(regexResult==null) return unique.tr()
             else{
                 var separatorCharacter = " "
