@@ -143,17 +143,19 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 }
 
 
-// we don't need to allocate different memory for these every time we .tr() - or recompile them.
+// We don't need to allocate different memory for these every time we .tr() - or recompile them.
+// Please note: The extra \] and \} are NOT removable, despite what Android Studio might recommend -
+//   they are necessary for Android Java 6 phones to parse the regex properly!
 
-        // Expect a literal [ followed by a captured () group and a literal ].
-        // The group may contain any number of any character except ] - pattern [^]]
-val squareBraceRegex = Regex("""\[([^]]*)]""")
+// Expect a literal [ followed by a captured () group and a literal ].
+// The group may contain any number of any character except ] - pattern [^]]
+val squareBraceRegex = Regex("""\[([^]]*)\]""")
 
-        // Just look for either [ or ]
-val eitherSquareBraceRegex = Regex("""\[|]""")
+// Just look for either [ or ]
+val eitherSquareBraceRegex = Regex("""\[|\]""")
 
-        // Analogous as above: Expect a {} pair with any chars but } in between and capture that
-val curlyBraceRegex = Regex("""\{([^}]*)}""")
+// Analogous as above: Expect a {} pair with any chars but } in between and capture that
+val curlyBraceRegex = Regex("""\{([^}]*)\}""")
 
 
 fun String.tr(): String {
