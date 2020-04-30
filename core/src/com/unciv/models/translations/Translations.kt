@@ -5,6 +5,25 @@ import com.unciv.UncivGame
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ *  This collection holds all translations for the game.
+ *
+ *  The collection may be instantiated loading any number of languages, but normally it contains
+ *  either one (player-selected) language or all of them for the translation file writer.
+ *
+ *  Translatables have two forms: normal or containing placeholders (delimited by square brackets).
+ *  Translation _requests_ can have a third form: containing {subsentences} - these are split into their
+ *  components and passed individually back into the translator, therefore they need no entry in this collection
+ *
+ *  @property keys:     The key is a copy of the translatable string in the normal case.
+ *                       For the placeholder case, the key is modified: placeholders reduced to empty [] pairs.
+ *  @property values:   Each a [TranslationEntry] containing the original translatable and 0..n translations.
+ *  @property percentCompleteOfLanguages:   Holds the completion percentage for each language,
+ *                      read from its file "completionPercentages.properties" which is generated
+ *                      by the [TranslationFileWriter] utility.
+ *
+ *  @see    String.tr   for more explanations (below)
+ */
 class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     var percentCompleteOfLanguages = HashMap<String,Int>()
@@ -52,8 +71,6 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         }
 
         for (translation in languageTranslations) {
-            // The key for placeholder-containing entries was unused before, let's make it useful
-            // What was previously stored as entryWithShortenedSquareBrackets is now the key
             val hashKey = if (translation.key.contains('['))
                     translation.key.replace(squareBraceRegex,"[]")
                 else translation.key
@@ -155,20 +172,22 @@ val eitherSquareBraceRegex = Regex("""\[|]""")
         // Analogous as above: Expect a {} pair with any chars but } in between and capture that
 val curlyBraceRegex = Regex("""\{([^}]*)}""")
 
-
+/**
+ *  This function does the actual translation work,
+ *      using an instance of [Translations] stored in UncivGame.Current
+ *
+ *  @receiver   The string to be translated, can take three forms:
+ *                  plain - translated directly by hashset lookup
+ *                  placeholders - contains at least one '[' - see below
+ *                  sentences - contains at least one '{'
+ *                  - phrases between curly braces are translated individually
+ *  @return     The translated string
+ *                  defaults to the input string if no translation is available,
+ *                  but with placeholder or sentence brackets removed.
+ */
 fun String.tr(): String {
-    // Latest optimizations: cached precompiled curlyBraceRegex and converted loop-based placeholder
-    // lookup into hash key lookup. Test result: 50s -> 24s
-    // *Discarded optimizations*:
-    //      String.indexOf(Char) looks like it might be better than String.contains(String),
-    //      (Char test should be cheaper than string comparison, and contains delegates to indexOf anyway)
-    //      but measurements are equal within margin of error.
-    //      Making our get() overload do two hash lookups instead of up to five: Zero difference.
-    //          val entry: TranslationEntry = this[text] ?: return text
-    //          return entry[language] ?: text
 
-
-    // THIS IS INCREDIBLY INEFFICIENT and causes loads of memory problems!
+    // There might still be optimization potential here!
     if (contains("[")) { // Placeholders!
         /**
          * I'm SURE there's an easier way to do this but I can't think of it =\
