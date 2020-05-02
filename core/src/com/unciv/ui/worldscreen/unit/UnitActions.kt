@@ -404,7 +404,7 @@ object UnitActions {
             nearestCity!!.expansion.takeOwnership(tile)
         }
         for (otherCiv in notifications)
-            otherCiv.addNotification("${unit.civInfo} has stolen your territory!", unit.currentTile.position, Color.RED)
+            otherCiv.addNotification("[${unit.civInfo}] has stolen your territory!", unit.currentTile.position, Color.RED)
     }
 
     private fun addGoldPerGreatPersonUsage(civInfo: CivilizationInfo) {
