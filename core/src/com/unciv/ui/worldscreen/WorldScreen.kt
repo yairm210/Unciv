@@ -231,7 +231,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             try {
                 val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
                 if(gameInfo.isUpToDate && gameInfo.currentPlayer==latestGame.currentPlayer) { // we were trying to download this to see when it's our turn...nothing changed
-                    loadingGamePopup.close()
+                    Gdx.app.postRunnable { loadingGamePopup.close() }
                     return@thread
                 }
                 latestGame.isUpToDate=true
@@ -242,12 +242,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
             } catch (ex: Exception) {
-                loadingGamePopup.close()
-                val couldntDownloadLatestGame = Popup(this)
-                couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
-                couldntDownloadLatestGame.addCloseButton()
-                couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
-                couldntDownloadLatestGame.open()
+                Gdx.app.postRunnable { // otherwise the popups of the screen could be concurrently modified, and we'll get an unhappy thread
+                    loadingGamePopup.close()
+                    val couldntDownloadLatestGame = Popup(this)
+                    couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
+                    couldntDownloadLatestGame.addCloseButton()
+                    couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
+                    couldntDownloadLatestGame.open()
+                }
             }
         }
     }
