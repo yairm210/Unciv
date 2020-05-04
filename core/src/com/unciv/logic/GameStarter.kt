@@ -129,10 +129,11 @@ object GameStarter {
 
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
+            for (tile in startingLocation.getTilesInDistance(3))
+                tile.improvement = null // Remove ancient ruins in immediate vicinity
 
-            fun placeNearStartingPosition(unitName:String) {
-                val newUnit = civ.placeUnitNearTile(startingLocation.position, unitName)
-                if (newUnit != null) newUnit.currentTile.improvement = null
+            fun placeNearStartingPosition(unitName: String) {
+                civ.placeUnitNearTile(startingLocation.position, unitName)
             }
             placeNearStartingPosition(Constants.settler)
             placeNearStartingPosition(getWarriorEquivalent(civ))
@@ -144,7 +145,6 @@ object GameStarter {
                 }
             }
         }
-
     }
 
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {

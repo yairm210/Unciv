@@ -1,3 +1,13 @@
+## 3.8.5
+
+Maps no longer spawn ancient ruins in immediate vicinity of civ spawns
+
+Invisible Romanian characters are now visible
+
+Fixed thread crashes due to concurrent actor changes in multiplayer update popups
+
+Translation updates
+
 ## 3.8.4
 
 Better "declare war" and city battle decisions (hopefully) for AI
