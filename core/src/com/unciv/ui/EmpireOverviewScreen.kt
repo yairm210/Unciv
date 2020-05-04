@@ -542,8 +542,11 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, private v
 
         // First row of table has all the icons
         resourcesTable.add()
+        // Order of source ResourceSupplyList: by tiles, enumerating the map in that spiral pattern
+        // UI should not surprise player, thus we need a deterministic and guessable order
         val resources = resourceDrilldown.map { it.resource }
-                .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
+                .filter { it.resourceType!=ResourceType.Bonus }.distinct()
+                .sortedWith(compareBy( { it.resourceType }, { it.name.tr() } ))
 
         var visibleLabel: Label? = null
         for(resource in resources) {
