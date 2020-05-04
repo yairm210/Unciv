@@ -121,4 +121,10 @@ From what I understand, intellectual property rights apply to names, characters 
 
 If anyone has any real legal sources, or can shed some light on the limits of what is and is not allowed, I'd be happy to hear!
 
+## Disclosure
+
+Multiplayer takes advantage of Dropbox, which is *non-free software*, for syncing purposes.
+
+Single player does not use this feature.
+
 # [Credits and 3rd parties](docs/Credits.md)
