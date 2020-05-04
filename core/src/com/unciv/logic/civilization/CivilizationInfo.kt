@@ -252,8 +252,8 @@ class CivilizationInfo {
 
         otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
-
         popupAlerts.add(PopupAlert(AlertType.FirstContact,otherCiv.civName))
+
         if(isCurrentPlayer() || otherCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")
     }
