@@ -158,15 +158,23 @@ class UncivGame(
 
     override fun dispose() {
         cancelDiscordEvent?.invoke()
-        if (::gameInfo.isInitialized){
-            GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
-            settings.save()
-        }
 
         // Log still running threads (should be only this one and "DestroyJavaVM")
         val numThreads = Thread.activeCount()
-        val threadList = Array<Thread>(numThreads) { _ -> Thread() }
+        val threadList = Array(numThreads) { _ -> Thread() }
         Thread.enumerate(threadList)
+
+        if (::gameInfo.isInitialized){
+            val autoSaveThread = threadList.firstOrNull { it.name == "Autosave" }
+            if (autoSaveThread != null && autoSaveThread.isAlive) {
+                // auto save is already in progress (e.g. started by onPause() event)
+                // let's allow it to finish and do not try to autosave second time
+                autoSaveThread.join()
+            } else
+                GameSaver.autoSaveSingleThreaded(gameInfo)      // NO new thread
+            settings.save()
+        }
+
         threadList.filter { it !== Thread.currentThread() && it.name != "DestroyJavaVM"}.forEach {
             println ("    Thread ${it.name} still running in UncivGame.dispose().")
         }

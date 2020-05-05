@@ -71,7 +71,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
                 && worldScreen.isPlayersTurn
-                && previousSelectedUnit.movement.canMoveTo(tileInfo) && previousSelectedUnit.movement.canReach(tileInfo)) {
+                && previousSelectedUnit.movement.canMoveTo(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnit, tileInfo)
         }
@@ -93,6 +93,9 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
     private fun addTileOverlaysWithUnitMovement(selectedUnit: MapUnit, tileInfo: TileInfo) {
+        // some code is copied from canReach not to call getShortestPath on the main thread before calling it on this thread
+        if (selectedUnit.type.isAirUnit() && selectedUnit.currentTile.aerialDistanceTo(tileInfo) > selectedUnit.getRange()*2)
+            return
         thread(name="TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
@@ -101,6 +104,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
              */
             val turnsToGetThere = if(selectedUnit.type.isAirUnit()) 1
                 else selectedUnit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
+            if (turnsToGetThere == 0) // there is no path to tileInfo
+                return@thread
 
             Gdx.app.postRunnable {
                 if(UncivGame.Current.settings.singleTapMove && turnsToGetThere==1) {

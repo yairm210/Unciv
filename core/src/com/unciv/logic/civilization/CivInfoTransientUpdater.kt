@@ -29,19 +29,20 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         civInfo.exploredTiles.addAll(newlyExploredTiles)
 
 
-        val viewedCivs = HashSet<CivilizationInfo>()
+        val viewedCivs = HashMap<CivilizationInfo,TileInfo>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
-            if (tileOwner != null) viewedCivs += tileOwner
-            for (unit in tile.getUnits()) viewedCivs += unit.civInfo
+            if (tileOwner != null) viewedCivs[civInfo] = tile
+            for (unit in tile.getUnits()) viewedCivs[unit.civInfo] = tile
         }
 
         if (!civInfo.isBarbarian()) {
-            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() }) {
-                if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
-                    civInfo.meetCivilization(otherCiv)
-                    civInfo.addNotification("We have encountered [" + otherCiv.civName + "]!", null, Color.GOLD)
-                }
+            for (entry in viewedCivs) {
+                val metCiv = entry.key
+                if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+                civInfo.meetCivilization(metCiv)
+                civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, Color.GOLD)
+                metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, Color.GOLD)
             }
 
             discoverNaturalWonders()
