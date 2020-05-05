@@ -1,3 +1,19 @@
+## 3.8.6
+
+Performance improvement when selecting a tile to move to - By vainiovano
+
+Autosaves no longer garbled when exiting extremely large games - By JackRainy
+
+By SomeTroglodyte:
+- Better Resource order in empire overview screen
+- Typo fixes
+
+Resolved #2576 - Clicking on "Encountering" notifications now moves the map to the encounter location
+
+Differentiated between Portuguese and Brazilian Portuguese translations
+
+Translation updates
+
 ## 3.8.5
 
 Maps no longer spawn ancient ruins in immediate vicinity of civ spawns
