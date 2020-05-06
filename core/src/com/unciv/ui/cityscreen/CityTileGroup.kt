@@ -30,17 +30,21 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {
-            tileInfo.getCity()!=city -> { // outside of city
+            tileInfo.getOwner()!=city.civInfo -> { // outside of civ boundary
                 baseLayerGroup.color.a = 0.3f
                 yieldGroup.isVisible = false
-                if (city.canAcquireTile(tileInfo))
-                    icons.addPopulationIcon(ImageGetter.getStatIcon("Acquire"))
             }
 
             tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
                 yieldGroup.isVisible = false
                 baseLayerGroup.color.a = 0.5f
             }
+
+            city.civInfo.cities.filterNot { it==city } // worked by another city
+                    .any { it.workedTiles.contains(tileInfo.position) } -> {
+                // Don't fade out, but don't add a population icon either.
+            }
+
 
             tileInfo.isLocked() -> {
                 icons.addPopulationIcon(ImageGetter.getImage("OtherIcons/Lock"))
@@ -70,7 +74,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
         yieldGroup.centerX(this)
         yieldGroup.y= height * 0.25f - yieldGroup.height / 2
 
-        if (tileInfo.isWorked() || city.canAcquireTile(tileInfo)) {
+        if (tileInfo.isWorked()) {
             yieldGroup.color = Color.WHITE
         }
         else if(!tileInfo.isCityCenter()){
@@ -85,7 +89,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             populationIcon.setPosition(width / 2 - populationIcon.width / 2,
                     height * 0.85f - populationIcon.height / 2)
 
-            if (tileInfo.isWorked() || city.canAcquireTile(tileInfo)) {
+            if (tileInfo.isWorked()) {
                 populationIcon.color = Color.WHITE
             }
             else if(!tileInfo.isCityCenter()){

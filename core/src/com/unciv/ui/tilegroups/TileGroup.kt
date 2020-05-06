@@ -241,21 +241,21 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val identifier = tileBaseImageLocations.joinToString(";")
         if (identifier == tileImagesIdentifier) return
 
-        for(image in tileBaseImages) image.remove()
+        for (image in tileBaseImages) image.remove()
         tileBaseImages.clear()
-        for(location in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
+        for (location in tileBaseImageLocations.reversed()) { // reversed because we send each one to back
             // Here we check what actual tiles exist, and pick one - not at random, but based on the tile location,
             // so it stays consistent throughout the game
             val existingImages = ArrayList<String>()
             existingImages.add(location)
-            var i=2
-            while (true){
-                val tileVariant = location+i
-                if(ImageGetter.imageExists(location+i)) existingImages.add(tileVariant)
+            var i = 2
+            while (true) {
+                val tileVariant = location + i
+                if (ImageGetter.imageExists(tileVariant)) existingImages.add(tileVariant)
                 else break
-                i+=1
+                i += 1
             }
-            val finalLocation = existingImages.random(Random(tileInfo.position.hashCode()+location.hashCode()))
+            val finalLocation = existingImages.random(Random(tileInfo.position.hashCode() + location.hashCode()))
 
             val image = ImageGetter.getImage(finalLocation)
             tileBaseImages.add(image)
@@ -268,7 +268,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileInfo)
-            || (!tileInfo.hasEnemySubmarine(viewingCiv))
+            || !tileInfo.hasEnemySubmarine(viewingCiv)
 
     fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableTiles.contains(tileInfo)

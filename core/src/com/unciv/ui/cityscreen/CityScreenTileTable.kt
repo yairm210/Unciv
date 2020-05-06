@@ -2,12 +2,10 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.UncivSound
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
 
@@ -52,13 +50,10 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
             innerTable.add(buyTileButton).row()
             innerTable.add("You have [${city.civInfo.gold}] gold".toLabel(Color.YELLOW, 16)).padTop(2f)
         }
-        if(city.canAcquireTile(selectedTile)) {
-            val acquireTileButton = "Acquire".toTextButton()
-            acquireTileButton.onClick {
-                city.expansion.takeOwnership(selectedTile)
-                UncivGame.Current.setScreen(CityScreen(city))
-            }
-            innerTable.add(acquireTileButton).row()
+
+        if(city.civInfo.cities.filterNot { it==city }
+                        .any { it.workedTiles.contains(selectedTile.position) }) {
+            innerTable.add("Worked by [${selectedTile.getCity()!!.name}]".toLabel()).row()
         }
 
         if(city.workedTiles.contains(selectedTile.position)){
