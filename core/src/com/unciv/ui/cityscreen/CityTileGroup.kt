@@ -30,7 +30,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {
-            tileInfo.getOwner()!=city.civInfo -> { // outside of civ boundary
+            tileInfo.getOwner() != city.civInfo -> { // outside of civ boundary
                 baseLayerGroup.color.a = 0.3f
                 yieldGroup.isVisible = false
             }
@@ -40,9 +40,10 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
                 baseLayerGroup.color.a = 0.5f
             }
 
-            city.civInfo.cities.filterNot { it==city } // worked by another city
+            city.civInfo.cities.filterNot { it == city } // worked by another city
                     .any { it.workedTiles.contains(tileInfo.position) } -> {
                 // Don't fade out, but don't add a population icon either.
+                baseLayerGroup.color.a = 0.5f
             }
 
 
