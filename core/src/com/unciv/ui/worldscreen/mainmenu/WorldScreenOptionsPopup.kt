@@ -139,12 +139,12 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                                 {
                                     settings.userId = clipboardContents
                                     settings.save()
-                                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!")
+                                    idSetLabel.setFontColor(Color.WHITE).setText("ID successfully set!".tr())
                                 }).open(true)
                         idSetLabel.isVisible = true
                     } catch (ex: Exception) {
                         idSetLabel.isVisible = true
-                        idSetLabel.setFontColor(Color.RED).setText("Invalid ID!")
+                        idSetLabel.setFontColor(Color.RED).setText("Invalid ID!".tr())
                     }
                 }
         innerTable.add(takeUserIdFromClipboardButton).pad(5f).colspan(2).row()
