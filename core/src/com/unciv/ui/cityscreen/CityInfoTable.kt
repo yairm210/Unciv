@@ -1,10 +1,8 @@
 package com.unciv.ui.cityscreen
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.city.CityInfo
@@ -14,6 +12,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     private val pad = 10f

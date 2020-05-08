@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
@@ -14,6 +13,7 @@ import com.unciv.ui.newgamescreen.MapParametersTable
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 /** New map generation screen */
 class NewMapScreen : PickerScreen() {

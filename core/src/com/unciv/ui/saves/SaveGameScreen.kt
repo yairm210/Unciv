@@ -1,10 +1,10 @@
 package com.unciv.ui.saves
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
 import com.unciv.logic.GameSaver
@@ -12,6 +12,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 
 class SaveGameScreen : PickerScreen() {
