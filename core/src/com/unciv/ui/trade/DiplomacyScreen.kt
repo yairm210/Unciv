@@ -1,6 +1,5 @@
 package com.unciv.ui.trade
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -21,6 +20,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import kotlin.math.roundToInt
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 

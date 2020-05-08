@@ -5,7 +5,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 

@@ -1,9 +1,7 @@
 package com.unciv.ui.trade
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.trade.TradeOffer
@@ -17,6 +15,7 @@ import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toTextButton
 import kotlin.math.min
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }

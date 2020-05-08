@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
-import com.unciv.models.translations.tr
 
 /**
  * Base class for all Popups, i.e. Tables that get rendered in the middle of a screen and on top of everything else

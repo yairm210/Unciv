@@ -2,7 +2,6 @@ package com.unciv.ui.trade
 
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeRequest
