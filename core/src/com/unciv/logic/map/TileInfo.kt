@@ -147,15 +147,19 @@ open class TileInfo {
     fun getTerrainFeature(): Terrain? =
             if (terrainFeature == null) null else ruleset.terrains[terrainFeature!!]
 
+    fun getWorkingCity():CityInfo? {
+        val civInfo = getOwner()
+        if (civInfo == null) return null
+        return civInfo.cities.firstOrNull { it.workedTiles.contains(position) }
+    }
 
     fun isWorked(): Boolean {
-        val city = getCity()
-        return city!=null && city.workedTiles.contains(position)
+        return getWorkingCity() != null
     }
 
     fun isLocked(): Boolean{
-        val city = getCity()
-        return city!=null && city.lockedTiles.contains(position)
+        val workingCity = getWorkingCity()
+        return workingCity!=null && workingCity.lockedTiles.contains(position)
     }
 
     fun getTileStats(observingCiv: CivilizationInfo): Stats = getTileStats(getCity(), observingCiv)

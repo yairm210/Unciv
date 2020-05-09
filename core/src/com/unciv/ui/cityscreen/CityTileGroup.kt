@@ -25,7 +25,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     }
 
     fun update() {
-        super.update(city.civInfo,true)
+        super.update(city.civInfo, true)
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {
@@ -56,7 +56,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
             }
         }
 
-        terrainFeatureLayerGroup.color.a=0.5f
+        terrainFeatureLayerGroup.color.a = 0.5f
         icons.improvementIcon?.setColor(1f, 1f, 1f, 0.5f)
         resourceImage?.setColor(1f, 1f, 1f, 0.5f)
         cityImage?.setColor(1f, 1f, 1f, 0.5f)
