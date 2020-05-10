@@ -20,6 +20,7 @@ import com.unciv.ui.mapeditor.EditorMapHolder
 import com.unciv.ui.mapeditor.LoadMapScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.mapeditor.NewMapScreen
+import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
@@ -75,7 +76,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
             table.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart","OtherIcons/Quickstart") { startNewGame() }
+        val quickstartTable = getTableBlock("Quickstart","OtherIcons/Quickstart") { QuickstartNewGame() }
         table.add(quickstartTable).row()
 
         val newGameButton = getTableBlock("Start new game","OtherIcons/New") {
@@ -148,8 +149,8 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
     }
 
-    private fun startNewGame() {
-        val newGame = GameStarter.startNewGame(GameParameters().apply { difficulty = "Chieftain" }, MapParameters())
+    private fun QuickstartNewGame() {
+        val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain" })
         game.loadGame(newGame)
     }
 
