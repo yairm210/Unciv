@@ -103,6 +103,8 @@ object Automation {
 
     internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
         if (tile == null) return 0f
+        val tileOwner = tile.getOwner()
+        if (tileOwner != null && tileOwner != civInfo) return 0f // Already belongs to another civilization, useless to us
         val stats = tile.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
