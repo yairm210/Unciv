@@ -110,9 +110,9 @@ class PopulationManager {
 
     fun unassignExtraPopulation() {
         for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] }) {
-            if (tile.getCity() != cityInfo)
+            if (tile.getOwner() != cityInfo.civInfo)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
-            if(tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3)
+            if (tile.aerialDistanceTo(cityInfo.getCenterTile()) > 3)
                 cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
         }
 
