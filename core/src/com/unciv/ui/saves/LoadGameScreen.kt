@@ -115,7 +115,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
     private fun updateLoadableGames(showAutosaves:Boolean) {
         saveTable.clear()
         for (save in GameSaver.getSaves().sortedByDescending { GameSaver.getSave(it).lastModified() }) {
-            if(save.startsWith("Autosave") && !showAutosaves) continue
+            if (save.startsWith("Autosave") && !showAutosaves) continue
             val textButton = TextButton(save, skin)
             textButton.onClick {
                 selectedSave = save

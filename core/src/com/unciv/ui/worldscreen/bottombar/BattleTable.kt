@@ -208,14 +208,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         else {
             attackButton.onClick {
-                try {
-                    Battle.moveAndAttack(attacker, attackableTile)
-                    worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
-                    worldScreen.shouldUpdate = true
-                }
-                catch (ex:Exception){
-                    openBugReportPopup()
-                }
+                Battle.moveAndAttack(attacker, attackableTile)
+                worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                worldScreen.shouldUpdate = true
             }
         }
 
@@ -285,15 +280,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else {
             attackButton.onClick {
-                try {
-                        Battle.nuke(attacker, targetTile)
-                        worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
-                        worldScreen.shouldUpdate = true
-
-                }
-                catch (ex:Exception){
-                    openBugReportPopup()
-                }
+                Battle.nuke(attacker, targetTile)
+                worldScreen.mapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
+                worldScreen.shouldUpdate = true
             }
         }
 
