@@ -27,19 +27,24 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
 }
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PickerScreen(){
+class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PickerScreen() {
 
-    var gameSetupInfo:GameSetupInfo= _gameSetupInfo ?: GameSetupInfo()
+    var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
     val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
 
     init {
         setDefaultCloseAction(previousScreen)
-        scrollPane.setScrollingDisabled(true,true)
+        scrollPane.setScrollingDisabled(true, true)
 
         val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
         val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-        topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
-        topTable.add(playerPickerTable).height(topTable.parent.height)
+        topTable.add(ScrollPane(MapOptionsTable(this)).apply { setOverscroll(false, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.addSeparatorVertical()
+        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.addSeparatorVertical()
+        topTable.add(ScrollPane(newGameScreenOptionsTable).apply { setOverscroll(false, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.pack()
         topTable.setFillParent(true)
 
@@ -72,7 +77,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            thread(name="NewGame") {
+            thread(name = "NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 newGameThread()
             }
@@ -115,16 +120,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         Gdx.graphics.requestRendering()
     }
 
-    fun setNewGameButtonEnabled(bool:Boolean){
-        if(bool) rightSideButton.enable()
+    fun setNewGameButtonEnabled(bool: Boolean) {
+        if (bool) rightSideButton.enable()
         else rightSideButton.disable()
     }
 
 
-    var newGame:GameInfo?=null
+    var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null){
+        if (newGame != null) {
             game.loadGame(newGame!!)
         }
         super.render(delta)
@@ -145,4 +150,3 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         selected = if (defaultItem != null) defaultItem else array.first()
     }
 }
-

@@ -9,17 +9,17 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
-class MapOptionsTable(val newGameScreen: NewGameScreen): Table(){
+class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
     val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     private var mapTypeSpecificTable = Table()
     private val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
 
-    init{
+    init {
         defaults().pad(5f)
 
-        add("Map options".toLabel(fontSize = 24)).colspan(2).row()
+        add("Map options".toLabel(fontSize = 24)).top().colspan(2).row()
         addMapTypeSelection()
     }
 

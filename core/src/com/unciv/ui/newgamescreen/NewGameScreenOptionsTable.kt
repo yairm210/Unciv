@@ -23,11 +23,8 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
         top()
         defaults().pad(5f)
 
-        val mapOptionsColumn = MapOptionsTable(newGameScreen)
-        add(mapOptionsColumn).row()
-
         val gameOptionsColumn = Table().apply { defaults().pad(5f) }
-        gameOptionsColumn.add("Game options".toLabel(fontSize = 24)).colspan(2).row()
+        gameOptionsColumn.add("Game options".toLabel(fontSize = 24)).padTop(0f).colspan(2).row()
         gameOptionsColumn.addDifficultySelectBox()
         gameOptionsColumn.addGameSpeedSelectBox()
         gameOptionsColumn.addEraSelectBox()
@@ -43,23 +40,23 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
         pack()
     }
 
-    private fun Table.addCheckbox(text:String, initialState:Boolean, onChange:(newValue:Boolean)->Unit){
+    private fun Table.addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
         val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
         checkbox.isChecked = initialState
         checkbox.onChange { onChange(checkbox.isChecked) }
         add(checkbox).colspan(2).row()
     }
 
-    private fun Table.addBarbariansCheckbox()  =
-        addCheckbox("No barbarians", newGameParameters.noBarbarians)
+    private fun Table.addBarbariansCheckbox() =
+            addCheckbox("No barbarians", newGameParameters.noBarbarians)
             { newGameParameters.noBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
-        addCheckbox("One City Challenge", newGameParameters.oneCityChallenge)
+            addCheckbox("One City Challenge", newGameParameters.oneCityChallenge)
             { newGameParameters.oneCityChallenge = it }
 
     private fun Table.addNuclearWeaponsCheckbox() =
-        addCheckbox("Enable nuclear weapons", newGameParameters.nuclearWeaponsEnabled)
+            addCheckbox("Enable nuclear weapons", newGameParameters.nuclearWeaponsEnabled)
             { newGameParameters.nuclearWeaponsEnabled = it }
 
 
@@ -80,7 +77,7 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
 
         val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
 
-        val cityStatesArray = Array<Int>(numberOfCityStates+1)
+        val cityStatesArray = Array<Int>(numberOfCityStates + 1)
         (0..numberOfCityStates).forEach { cityStatesArray.add(it) }
 
         cityStatesSelectBox.items = cityStatesArray
@@ -91,7 +88,7 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
         }
     }
 
-    fun Table.addSelectBox(text:String, values:Collection<String>, initialState:String, onChange: (newValue: String) -> Unit){
+    fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
         add(text.toLabel())
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.onChange { onChange(selectBox.selected.value) }
@@ -100,18 +97,18 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
 
     private fun Table.addDifficultySelectBox() {
         addSelectBox("{Difficulty}:", ruleset.difficulties.keys, newGameParameters.difficulty)
-            {newGameParameters.difficulty = it}
+        { newGameParameters.difficulty = it }
     }
 
     private fun Table.addGameSpeedSelectBox() {
         addSelectBox("{Game Speed}:", GameSpeed.values().map { it.name }, newGameParameters.gameSpeed.name)
-            {newGameParameters.gameSpeed = GameSpeed.valueOf(it)}
+        { newGameParameters.gameSpeed = GameSpeed.valueOf(it) }
     }
 
     private fun Table.addEraSelectBox() {
         val eras = ruleset.technologies.values.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, newGameParameters.startingEra)
-            { newGameParameters.startingEra = it }
+        { newGameParameters.startingEra = it }
     }
 
 
@@ -142,8 +139,8 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
 
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.filter { it.key!="" }.values
-        if(modRulesets.isEmpty()) return
+        val modRulesets = RulesetCache.filter { it.key != "" }.values
+        if (modRulesets.isEmpty()) return
 
         fun reloadMods() {
             ruleset.clear()
@@ -158,8 +155,8 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
 
         add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
         val modCheckboxTable = Table().apply { defaults().pad(5f) }
-        for(mod in modRulesets){
-            val checkBox = CheckBox(mod.name.tr(),CameraStageBaseScreen.skin)
+        for (mod in modRulesets) {
+            val checkBox = CheckBox(mod.name.tr(), CameraStageBaseScreen.skin)
             if (mod.name in newGameParameters.mods) checkBox.isChecked = true
             checkBox.onChange {
                 if (checkBox.isChecked) newGameParameters.mods.add(mod.name)
@@ -181,4 +178,3 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
     }
 
 }
-
