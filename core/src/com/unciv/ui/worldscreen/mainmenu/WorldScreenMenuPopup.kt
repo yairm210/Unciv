@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
+import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.Popup
@@ -37,7 +38,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
 
 
         addSquareButton("Start new game".tr()){
-            worldScreen.game.setScreen(NewGameScreen(worldScreen, worldScreen.gameInfo))
+            worldScreen.game.setScreen(NewGameScreen(worldScreen, GameSetupInfo(worldScreen.gameInfo)))
             close()
         }.size(width,height)
         addSeparator()

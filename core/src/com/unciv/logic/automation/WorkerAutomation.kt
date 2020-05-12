@@ -162,15 +162,15 @@ class WorkerAutomation(val unit: MapUnit) {
 
     fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
         var priority = 0
-        if (tileInfo.getOwner() == civInfo){
+        if (tileInfo.getOwner() == civInfo) {
             priority += 2
             if (tileInfo.isWorked()) priority += 3
         }
         // give a minor priority to tiles that we could expand onto
-        else if (tileInfo.getOwner()==null && tileInfo.neighbors.any { it.getOwner() ==civInfo })
+        else if (tileInfo.getOwner() == null && tileInfo.neighbors.any { it.getOwner() == civInfo })
             priority += 1
 
-        if (priority!=0 && tileInfo.hasViewableResource(civInfo)) priority += 1
+        if (priority != 0 && tileInfo.hasViewableResource(civInfo)) priority += 1
         return priority
     }
 

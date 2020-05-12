@@ -1,3 +1,13 @@
+## 3.8.7
+
+Small update this time!
+
+Resolved #2588 - instead of tile ownership being transferrable between cities, cities can now work tiles belonging to other cities.
+
+Size optimization - By vainiovano
+
+Translation updates
+
 ## 3.8.6
 
 Performance improvement when selecting a tile to move to - By vainiovano

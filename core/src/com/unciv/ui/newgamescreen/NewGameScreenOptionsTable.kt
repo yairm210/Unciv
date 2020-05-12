@@ -17,8 +17,8 @@ import com.unciv.ui.utils.toLabel
 
 class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
-    val newGameParameters = newGameScreen.newGameParameters
-    val mapParameters = newGameScreen.mapParameters
+    val newGameParameters = newGameScreen.gameSetupInfo.gameParameters
+    val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     val ruleset = newGameScreen.ruleset
 
     private var mapTypeSpecificTable = Table()
