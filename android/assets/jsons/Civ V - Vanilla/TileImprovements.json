@@ -107,13 +107,15 @@
 		"name": "Remove Forest",
 		"turnsToBuild": 4,
 		"terrainsCanBeBuiltOn": ["Forest"],
-		"techRequired": "Mining"
+		"techRequired": "Mining",
+		"productionOnCompletion": 20
 	},
 	{
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
 		"terrainsCanBeBuiltOn": ["Jungle"],
-		"techRequired": "Bronze Working"
+		"techRequired": "Bronze Working",
+		"productionOnCompletion": 20
 	},
 	{
 		"name": "Remove Fallout",
