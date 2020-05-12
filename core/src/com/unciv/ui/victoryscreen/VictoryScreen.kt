@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
 import com.unciv.ui.EmpireOverviewScreen
+import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
@@ -85,7 +86,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            game.setScreen(NewGameScreen(this, worldScreen.gameInfo))
+            game.setScreen(NewGameScreen(this, GameSetupInfo(worldScreen.gameInfo)))
         }
 
         closeButton.setText("One more turn...!".tr())

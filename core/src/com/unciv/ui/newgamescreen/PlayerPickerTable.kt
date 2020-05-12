@@ -22,10 +22,12 @@ import java.util.*
 class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters: GameParameters): Table() {
     val playerListTable = Table()
     val nationsPopupWidth = newGameScreen.stage.width / 2f
+    val civBlocksWidth = newGameScreen.stage.width / 3
 
     init {
         top()
-        add(ScrollPane(playerListTable).apply{setOverscroll(false,false)}).width(newGameScreen.stage.width/2)
+        add("Civilizations".toLabel(fontSize = 24)).padBottom(20f).row()
+        add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
     }
 
@@ -34,19 +36,19 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = newGameScreen.ruleset.nations.count { it.key!=Constants.barbarians }
-        if(newGameParameters.players.size > newRulesetPlayableCivs)
-            newGameParameters.players=ArrayList(newGameParameters.players.subList(0,newRulesetPlayableCivs))
+        val newRulesetPlayableCivs = newGameScreen.ruleset.nations.count { it.key != Constants.barbarians }
+        if (newGameParameters.players.size > newRulesetPlayableCivs)
+            newGameParameters.players = ArrayList(newGameParameters.players.subList(0, newRulesetPlayableCivs))
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
         for (player in newGameParameters.players) {
-            playerListTable.add(getPlayerTable(player, gameBasics)).pad(10f).row()
+            playerListTable.add(getPlayerTable(player, gameBasics)).width(civBlocksWidth).padBottom(20f).row()
         }
-        if(newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
-            playerListTable.add("+".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
+        if (newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
+            playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
         }
-        newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size>1)
+        newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size > 1)
     }
 
     private fun reassignRemovedModReferences() {
@@ -58,9 +60,9 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
     private fun assignDesiredCiv(desiredCiv: String) {
         // No auto-select if desiredCiv already used
-        if (newGameParameters.players.any {it.chosenCiv == desiredCiv}) return
+        if (newGameParameters.players.any { it.chosenCiv == desiredCiv }) return
         // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
-        newGameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType==PlayerType.Human }?.chosenCiv = desiredCiv
+        newGameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
@@ -69,7 +71,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         playerTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.8f))
 
         val nationTable = getNationTable(player)
-        playerTable.add(nationTable)
+        playerTable.add(nationTable).left()
 
         val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
@@ -78,11 +80,11 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             else player.playerType = PlayerType.AI
             update()
         }
-        playerTable.add(playerTypeTextbutton).width(100f).pad(5f)
-        playerTable.add("-".toLabel(Color.BLACK,30).apply { this.setAlignment(Align.center) }
+        playerTable.add(playerTypeTextbutton).width(100f).pad(5f).right()
+        playerTable.add("-".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(40f)
-                .onClick { newGameParameters.players.remove(player); update() }).pad(5f).row()
-        if(newGameParameters.isOnlineMultiplayer && player.playerType==PlayerType.Human) {
+                .onClick { newGameParameters.players.remove(player); update() }).pad(5f).right().row()
+        if (newGameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
 
             val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
             playerIdTextfield.messageText = "Please input Player ID!".tr()
@@ -90,7 +92,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             var errorLabel = "✘".toLabel(Color.RED)
             playerTable.add(errorLabel).pad(5f).row()
 
-            fun onPlayerIdTextUpdated(){
+            fun onPlayerIdTextUpdated() {
                 try {
                     UUID.fromString(IdChecker.checkAndReturnPlayerUuid(playerIdTextfield.text))
                     player.playerId = playerIdTextfield.text.trim()
@@ -122,13 +124,13 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.WHITE,25)
+        val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.WHITE, 25)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
-                .surroundWithCircle(40f,false).apply { circle.color = Color.WHITE }
+                .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
         else ImageGetter.getNationIndicator(newGameScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
-        nationTable.add(player.chosenCiv.toLabel()).width(230f).pad(5f)
+        nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
         nationTable.onClick {
             popupNationPicker(player)
@@ -146,7 +148,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         randomPlayerTable.add("?".toLabel(Color.WHITE, 30)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(45f).apply { circle.color = Color.BLACK }
-                .surroundWithCircle(50f,false).apply { circle.color = Color.WHITE }).pad(10f)
+                .surroundWithCircle(50f, false).apply { circle.color = Color.WHITE }).pad(10f)
         randomPlayerTable.add("Random".toLabel())
         randomPlayerTable.touchable = Touchable.enabled
         randomPlayerTable.onClick {
@@ -162,7 +164,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth,newGameScreen.ruleset).onClick {
+            nationListTable.add(NationTable(nation, nationsPopupWidth, newGameScreen.ruleset).onClick {
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
@@ -173,5 +175,3 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         update()
     }
 }
-
-

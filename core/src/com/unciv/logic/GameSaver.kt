@@ -93,6 +93,7 @@ object GameSaver {
             }
         }
     }
+
     fun autoSaveSingleThreaded (gameInfo: GameInfo) {
         saveGame(gameInfo, "Autosave")
 

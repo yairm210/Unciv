@@ -367,5 +367,6 @@ class GameInfo {
         }
     }
 
+
 }
 

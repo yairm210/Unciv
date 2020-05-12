@@ -21,27 +21,37 @@ import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
 import kotlin.concurrent.thread
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=null): PickerScreen(){
 
-    val newGameParameters= currentGame?.gameParameters?.clone() ?: GameParameters()
-    val mapParameters = currentGame?.tileMap?.mapParameters ?: MapParameters()
-    val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
+    constructor() : this("", GameParameters(), MapParameters())
+    constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
+}
+
+class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PickerScreen() {
+
+    var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
+    val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
 
     init {
         setDefaultCloseAction(previousScreen)
-        scrollPane.setScrollingDisabled(true,true)
+        scrollPane.setScrollingDisabled(true, true)
 
-        val playerPickerTable = PlayerPickerTable(this, newGameParameters)
-        val newGameScreenOptionsTable = NewGameScreenOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-        topTable.add(ScrollPane(newGameScreenOptionsTable).apply{setOverscroll(false,false)}).height(topTable.parent.height)
-        topTable.add(playerPickerTable).height(topTable.parent.height)
+        val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+        val newGameScreenOptionsTable = NewGameParametersTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+        topTable.add(ScrollPane(MapOptionsTable(this)).apply { setOverscroll(false, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.addSeparatorVertical()
+        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.addSeparatorVertical()
+        topTable.add(ScrollPane(newGameScreenOptionsTable).apply { setOverscroll(false, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.pack()
         topTable.setFillParent(true)
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
-            if (newGameParameters.players.none { it.playerType == PlayerType.Human }) {
+            if (gameSetupInfo.gameParameters.players.none { it.playerType == PlayerType.Human }) {
                 val noHumanPlayersPopup = Popup(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
@@ -49,8 +59,8 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=
                 return@onClick
             }
 
-            if (newGameParameters.isOnlineMultiplayer) {
-                for (player in newGameParameters.players.filter { it.playerType == PlayerType.Human }) {
+            if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+                for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(IdChecker.checkAndReturnPlayerUuid(player.playerId))
                     } catch (ex: Exception) {
@@ -67,7 +77,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
 
-            thread(name="NewGame") {
+            thread(name = "NewGame") {
                 // Creating a new game can take a while and we don't want ANRs
                 newGameThread()
             }
@@ -76,8 +86,8 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=
 
     private fun newGameThread() {
         try {
-            newGame = GameStarter.startNewGame(newGameParameters, mapParameters)
-            if (newGameParameters.isOnlineMultiplayer) {
+            newGame = GameStarter.startNewGame(gameSetupInfo)
+            if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
                 newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                 try {
                     OnlineMultiplayer().tryUploadGame(newGame!!)
@@ -110,16 +120,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, currentGame:GameInfo?=
         Gdx.graphics.requestRendering()
     }
 
-    fun setNewGameButtonEnabled(bool:Boolean){
-        if(bool) rightSideButton.enable()
+    fun setNewGameButtonEnabled(bool: Boolean) {
+        if (bool) rightSideButton.enable()
         else rightSideButton.disable()
     }
 
 
-    var newGame:GameInfo?=null
+    var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null){
+        if (newGame != null) {
             game.loadGame(newGame!!)
         }
         super.render(delta)
@@ -140,4 +150,3 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         selected = if (defaultItem != null) defaultItem else array.first()
     }
 }
-

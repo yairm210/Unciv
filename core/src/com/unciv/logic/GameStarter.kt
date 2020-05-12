@@ -7,25 +7,26 @@ import com.unciv.logic.map.*
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.newgamescreen.GameSetupInfo
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
 
 object GameStarter {
 
-    fun startNewGame(newGameParameters: GameParameters, mapParameters: MapParameters): GameInfo {
+    fun startNewGame(gameSetupInfo: GameSetupInfo): GameInfo {
         val gameInfo = GameInfo()
 
-        gameInfo.gameParameters = newGameParameters
-        val ruleset = RulesetCache.getComplexRuleset(newGameParameters.mods)
+        gameInfo.gameParameters = gameSetupInfo.gameParameters
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
-        if (mapParameters.name != "")
-            gameInfo.tileMap = MapSaver.loadMap(mapParameters.name)
-        else gameInfo.tileMap = MapGenerator(ruleset).generateMap(mapParameters)
-        gameInfo.tileMap.mapParameters = mapParameters
+        if (gameSetupInfo.mapParameters.name != "")
+            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapParameters.name)
+        else gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
+        gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
 
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-        addCivilizations(newGameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
+        addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
 
         for(tile in gameInfo.tileMap.values)
             for(unit in tile.getUnits())
@@ -36,7 +37,7 @@ object GameStarter {
 
         gameInfo.tileMap.setTransients(ruleset) // if we're starting from a map with preplaced units, they need the civs to exist first
 
-        gameInfo.difficulty = newGameParameters.difficulty
+        gameInfo.difficulty = gameSetupInfo.gameParameters.difficulty
 
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
@@ -49,7 +50,7 @@ object GameStarter {
                     civInfo.tech.addTechnology(tech)
 
             for (tech in ruleset.technologies.values
-                    .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(newGameParameters.startingEra) })
+                    .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(gameSetupInfo.gameParameters.startingEra) })
                 if (!civInfo.tech.isResearched(tech.name))
                     civInfo.tech.addTechnology(tech.name)
 
