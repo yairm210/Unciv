@@ -4,8 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
-import com.unciv.logic.MapSaver
-import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
@@ -15,106 +13,57 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
+class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.gameSetupInfo.gameParameters
-    val mapParameters = newGameScreen.gameSetupInfo.mapParameters
     val ruleset = newGameScreen.ruleset
-
-    private var mapTypeSpecificTable = Table()
-    private val generatedMapOptionsTable = MapParametersTable(mapParameters)
-    private val savedMapOptionsTable = Table()
 
     init {
         pad(10f)
         top()
         defaults().pad(5f)
-        add("Map options".toLabel(fontSize = 24)).colspan(2).row()
-        addMapTypeSelection()
 
-        add("Game options".toLabel(fontSize = 24)).colspan(2).row()
-        addDifficultySelectBox()
-        addGameSpeedSelectBox()
-        addEraSelectBox()
-        addCityStatesSelectBox()
-        addVictoryTypeCheckboxes()
-        addBarbariansCheckbox()
-        addOneCityChallengeCheckbox()
-        addNuclearWeaponsCheckbox()
-        addIsOnlineMultiplayerCheckbox()
-        addModCheckboxes()
+        val mapOptionsColumn = MapOptionsTable(newGameScreen)
+        add(mapOptionsColumn).row()
+
+        val gameOptionsColumn = Table().apply { defaults().pad(5f) }
+        gameOptionsColumn.add("Game options".toLabel(fontSize = 24)).colspan(2).row()
+        gameOptionsColumn.addDifficultySelectBox()
+        gameOptionsColumn.addGameSpeedSelectBox()
+        gameOptionsColumn.addEraSelectBox()
+        gameOptionsColumn.addCityStatesSelectBox()
+        gameOptionsColumn.addVictoryTypeCheckboxes()
+        gameOptionsColumn.addBarbariansCheckbox()
+        gameOptionsColumn.addOneCityChallengeCheckbox()
+        gameOptionsColumn.addNuclearWeaponsCheckbox()
+        gameOptionsColumn.addIsOnlineMultiplayerCheckbox()
+        gameOptionsColumn.addModCheckboxes()
+        add(gameOptionsColumn).row()
 
         pack()
     }
 
-    private fun addMapTypeSelection() {
-        add("{Map type}:".toLabel())
-        val mapTypes = arrayListOf("Generated")
-        if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
-        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
-
-        val mapFileSelectBox = getMapFileSelectBox()
-        savedMapOptionsTable.defaults().pad(5f)
-        savedMapOptionsTable.add("{Map file}:".toLabel()).left()
-        // because SOME people gotta give the hugest names to their maps
-        savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
-                .right().row()
-
-        fun updateOnMapTypeChange() {
-            mapTypeSpecificTable.clear()
-            if (mapTypeSelectBox.selected.value == MapType.custom) {
-                mapParameters.type = MapType.custom
-                mapParameters.name = mapFileSelectBox.selected
-                mapTypeSpecificTable.add(savedMapOptionsTable)
-            } else {
-                mapParameters.name = ""
-                mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
-                mapTypeSpecificTable.add(generatedMapOptionsTable)
-            }
-        }
-
-        // activate once, so when we had a file map before we'll have the right things set for another one
-        updateOnMapTypeChange()
-
-        mapTypeSelectBox.onChange { updateOnMapTypeChange() }
-
-        add(mapTypeSelectBox).row()
-        add(mapTypeSpecificTable).colspan(2).row()
-    }
-
-
-    private fun getMapFileSelectBox(): SelectBox<String> {
-        val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val mapNames = Array<String>()
-        for (mapName in MapSaver.getMaps()) mapNames.add(mapName)
-        mapFileSelectBox.items = mapNames
-        if (mapParameters.name in mapNames) mapFileSelectBox.selected = mapParameters.name
-
-        mapFileSelectBox.onChange { mapParameters.name = mapFileSelectBox.selected!! }
-        return mapFileSelectBox
-    }
-
-    private fun addCheckbox(text:String, initialState:Boolean, onChange:(newValue:Boolean)->Unit){
+    private fun Table.addCheckbox(text:String, initialState:Boolean, onChange:(newValue:Boolean)->Unit){
         val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
         checkbox.isChecked = initialState
         checkbox.onChange { onChange(checkbox.isChecked) }
         add(checkbox).colspan(2).row()
     }
 
-    private fun addBarbariansCheckbox()  =
+    private fun Table.addBarbariansCheckbox()  =
         addCheckbox("No barbarians", newGameParameters.noBarbarians)
             { newGameParameters.noBarbarians = it }
 
-    private fun addOneCityChallengeCheckbox() =
+    private fun Table.addOneCityChallengeCheckbox() =
         addCheckbox("One City Challenge", newGameParameters.oneCityChallenge)
             { newGameParameters.oneCityChallenge = it }
 
-    private fun addNuclearWeaponsCheckbox() =
+    private fun Table.addNuclearWeaponsCheckbox() =
         addCheckbox("Enable nuclear weapons", newGameParameters.nuclearWeaponsEnabled)
             { newGameParameters.nuclearWeaponsEnabled = it }
 
 
-    private fun addIsOnlineMultiplayerCheckbox() {
+    private fun Table.addIsOnlineMultiplayerCheckbox() {
 
         val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
         isOnlineMultiplayerCheckbox.isChecked = newGameParameters.isOnlineMultiplayer
@@ -125,8 +74,8 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         add(isOnlineMultiplayerCheckbox).colspan(2).row()
     }
 
-    private fun addCityStatesSelectBox() {
-        add("{Number of city-states}:".tr())
+    private fun Table.addCityStatesSelectBox() {
+        add("{Number of city-states}:".toLabel())
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
 
         val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
@@ -142,31 +91,31 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
         }
     }
 
-    fun addSelectBox(text:String, values:Collection<String>, initialState:String, onChange: (newValue: String) -> Unit){
-        add(text.tr())
+    fun Table.addSelectBox(text:String, values:Collection<String>, initialState:String, onChange: (newValue: String) -> Unit){
+        add(text.toLabel())
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.onChange { onChange(selectBox.selected.value) }
         add(selectBox).fillX().row()
     }
 
-    private fun addDifficultySelectBox() {
+    private fun Table.addDifficultySelectBox() {
         addSelectBox("{Difficulty}:", ruleset.difficulties.keys, newGameParameters.difficulty)
             {newGameParameters.difficulty = it}
     }
 
-    private fun addGameSpeedSelectBox() {
+    private fun Table.addGameSpeedSelectBox() {
         addSelectBox("{Game Speed}:", GameSpeed.values().map { it.name }, newGameParameters.gameSpeed.name)
             {newGameParameters.gameSpeed = GameSpeed.valueOf(it)}
     }
 
-    private fun addEraSelectBox() {
+    private fun Table.addEraSelectBox() {
         val eras = ruleset.technologies.values.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, newGameParameters.startingEra)
             { newGameParameters.startingEra = it }
     }
 
 
-    private fun addVictoryTypeCheckboxes() {
+    private fun Table.addVictoryTypeCheckboxes() {
         add("{Victory conditions}:".toLabel()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
@@ -192,7 +141,7 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     }
 
 
-    fun addModCheckboxes() {
+    fun Table.addModCheckboxes() {
         val modRulesets = RulesetCache.filter { it.key!="" }.values
         if(modRulesets.isEmpty()) return
 
@@ -232,3 +181,4 @@ class NewGameScreenOptionsTable(val newGameScreen: NewGameScreen, val updatePlay
     }
 
 }
+
