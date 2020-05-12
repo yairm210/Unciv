@@ -62,7 +62,7 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
 
     private fun Table.addIsOnlineMultiplayerCheckbox()  =
         addCheckbox("Online Multiplayer", newGameParameters.isOnlineMultiplayer)
-        {newGameParameters.isOnlineMultiplayer = it
+        { newGameParameters.isOnlineMultiplayer = it
             updatePlayerPickerTable("") }
 
     private fun addCityStatesSelectBox() {

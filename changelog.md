@@ -1,3 +1,19 @@
+## 3.8.8
+
+Redid layout for the New Game screen - see #2549
+
+Better jungles and lakes - by The Bucketeer
+
+Normalized "Buy" and "Fortify" sounds, so they're not overly loud
+
+Solved ANR when loading game to display its metadata
+
+Population assigned to tiles of other cities do not auto-unassign
+
+Settler automation takes into account which tiles already belong to other civs
+
+Translation updates
+
 ## 3.8.7
 
 Small update this time!
