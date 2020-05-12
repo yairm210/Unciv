@@ -13,54 +13,51 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
+class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.gameSetupInfo.gameParameters
     val ruleset = newGameScreen.ruleset
 
     init {
-        pad(10f)
         top()
         defaults().pad(5f)
 
-        val gameOptionsColumn = Table().apply { defaults().pad(5f) }
-        gameOptionsColumn.add("Game options".toLabel(fontSize = 24)).padTop(0f).colspan(2).row()
-        gameOptionsColumn.addDifficultySelectBox()
-        gameOptionsColumn.addGameSpeedSelectBox()
-        gameOptionsColumn.addEraSelectBox()
-        gameOptionsColumn.addCityStatesSelectBox()
-        gameOptionsColumn.addVictoryTypeCheckboxes()
-        gameOptionsColumn.addBarbariansCheckbox()
-        gameOptionsColumn.addOneCityChallengeCheckbox()
-        gameOptionsColumn.addNuclearWeaponsCheckbox()
-        gameOptionsColumn.addIsOnlineMultiplayerCheckbox()
-        gameOptionsColumn.addModCheckboxes()
-        add(gameOptionsColumn).row()
+        add("Game options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
+        addDifficultySelectBox()
+        addGameSpeedSelectBox()
+        addEraSelectBox()
+        addCityStatesSelectBox()
+        addVictoryTypeCheckboxes()
+        addBarbariansCheckbox()
+        addOneCityChallengeCheckbox()
+        addNuclearWeaponsCheckbox()
+        addIsOnlineMultiplayerCheckbox()
+        addModCheckboxes()
 
         pack()
     }
 
-    private fun Table.addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
+    private fun addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
         val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
         checkbox.isChecked = initialState
         checkbox.onChange { onChange(checkbox.isChecked) }
         add(checkbox).colspan(2).row()
     }
 
-    private fun Table.addBarbariansCheckbox() =
+    private fun addBarbariansCheckbox() =
             addCheckbox("No barbarians", newGameParameters.noBarbarians)
             { newGameParameters.noBarbarians = it }
 
-    private fun Table.addOneCityChallengeCheckbox() =
+    private fun addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", newGameParameters.oneCityChallenge)
             { newGameParameters.oneCityChallenge = it }
 
-    private fun Table.addNuclearWeaponsCheckbox() =
+    private fun addNuclearWeaponsCheckbox() =
             addCheckbox("Enable nuclear weapons", newGameParameters.nuclearWeaponsEnabled)
             { newGameParameters.nuclearWeaponsEnabled = it }
 
 
-    private fun Table.addIsOnlineMultiplayerCheckbox() {
+    private fun addIsOnlineMultiplayerCheckbox() {
 
         val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
         isOnlineMultiplayerCheckbox.isChecked = newGameParameters.isOnlineMultiplayer
@@ -71,7 +68,7 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
         add(isOnlineMultiplayerCheckbox).colspan(2).row()
     }
 
-    private fun Table.addCityStatesSelectBox() {
+    private fun addCityStatesSelectBox() {
         add("{Number of city-states}:".toLabel())
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
 
@@ -88,31 +85,31 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
         }
     }
 
-    fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
+    fun addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
         add(text.toLabel())
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.onChange { onChange(selectBox.selected.value) }
         add(selectBox).fillX().row()
     }
 
-    private fun Table.addDifficultySelectBox() {
+    private fun addDifficultySelectBox() {
         addSelectBox("{Difficulty}:", ruleset.difficulties.keys, newGameParameters.difficulty)
         { newGameParameters.difficulty = it }
     }
 
-    private fun Table.addGameSpeedSelectBox() {
+    private fun addGameSpeedSelectBox() {
         addSelectBox("{Game Speed}:", GameSpeed.values().map { it.name }, newGameParameters.gameSpeed.name)
         { newGameParameters.gameSpeed = GameSpeed.valueOf(it) }
     }
 
-    private fun Table.addEraSelectBox() {
+    private fun addEraSelectBox() {
         val eras = ruleset.technologies.values.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, newGameParameters.startingEra)
         { newGameParameters.startingEra = it }
     }
 
 
-    private fun Table.addVictoryTypeCheckboxes() {
+    private fun addVictoryTypeCheckboxes() {
         add("{Victory conditions}:".toLabel()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
@@ -138,7 +135,7 @@ class NewGameScreenOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPi
     }
 
 
-    fun Table.addModCheckboxes() {
+    fun addModCheckboxes() {
         val modRulesets = RulesetCache.filter { it.key != "" }.values
         if (modRulesets.isEmpty()) return
 

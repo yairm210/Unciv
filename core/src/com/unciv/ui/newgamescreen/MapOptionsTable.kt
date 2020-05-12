@@ -19,12 +19,12 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
     init {
         defaults().pad(5f)
 
-        add("Map options".toLabel(fontSize = 24)).top().colspan(2).row()
+        add("Map options".toLabel(fontSize = 24)).top().padBottom(20f).colspan(2).row()
         addMapTypeSelection()
     }
 
 
-    private fun Table.addMapTypeSelection() {
+    private fun addMapTypeSelection() {
         add("{Map type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
