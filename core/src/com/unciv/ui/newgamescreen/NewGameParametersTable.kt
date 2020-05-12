@@ -28,45 +28,42 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
         addEraSelectBox()
         addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
-        addBarbariansCheckbox()
-        addOneCityChallengeCheckbox()
-        addNuclearWeaponsCheckbox()
-        addIsOnlineMultiplayerCheckbox()
-        addModCheckboxes()
+
+        val checkboxTable = Table().apply { defaults().pad(5f) }
+        checkboxTable.addBarbariansCheckbox()
+        checkboxTable.addOneCityChallengeCheckbox()
+        checkboxTable.addNuclearWeaponsCheckbox()
+        checkboxTable.addIsOnlineMultiplayerCheckbox()
+        checkboxTable.addModCheckboxes()
+        add(checkboxTable).colspan(2).row()
 
         pack()
     }
 
-    private fun addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
+    private fun Table.addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
         val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
         checkbox.isChecked = initialState
         checkbox.onChange { onChange(checkbox.isChecked) }
-        add(checkbox).colspan(2).row()
+        add(checkbox).colspan(2).left().row()
     }
 
-    private fun addBarbariansCheckbox() =
+    private fun Table.addBarbariansCheckbox() =
             addCheckbox("No barbarians", newGameParameters.noBarbarians)
             { newGameParameters.noBarbarians = it }
 
-    private fun addOneCityChallengeCheckbox() =
+    private fun Table.addOneCityChallengeCheckbox() =
             addCheckbox("One City Challenge", newGameParameters.oneCityChallenge)
             { newGameParameters.oneCityChallenge = it }
 
-    private fun addNuclearWeaponsCheckbox() =
+    private fun Table.addNuclearWeaponsCheckbox() =
             addCheckbox("Enable nuclear weapons", newGameParameters.nuclearWeaponsEnabled)
             { newGameParameters.nuclearWeaponsEnabled = it }
 
 
-    private fun addIsOnlineMultiplayerCheckbox() {
-
-        val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
-        isOnlineMultiplayerCheckbox.isChecked = newGameParameters.isOnlineMultiplayer
-        isOnlineMultiplayerCheckbox.onChange {
-            newGameParameters.isOnlineMultiplayer = isOnlineMultiplayerCheckbox.isChecked
-            updatePlayerPickerTable("")
-        }
-        add(isOnlineMultiplayerCheckbox).colspan(2).row()
-    }
+    private fun Table.addIsOnlineMultiplayerCheckbox()  =
+        addCheckbox("Online Multiplayer", newGameParameters.isOnlineMultiplayer)
+        {newGameParameters.isOnlineMultiplayer = it
+            updatePlayerPickerTable("") }
 
     private fun addCityStatesSelectBox() {
         add("{Number of city-states}:".toLabel())
@@ -135,7 +132,7 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
     }
 
 
-    fun addModCheckboxes() {
+    fun Table.addModCheckboxes() {
         val modRulesets = RulesetCache.filter { it.key != "" }.values
         if (modRulesets.isEmpty()) return
 
