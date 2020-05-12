@@ -24,8 +24,6 @@ class TileImprovement : NamedStats() {
     var uniques = ArrayList<String>()
 
     val turnsToBuild: Int = 0 // This is the base cost.
-    val productionOnCompletion: Int? = null // for chopping forest/jungle, get 20 production
-
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
