@@ -1,4 +1,5 @@
-[	
+[
+
 	{
 		"name": "Farm",
 		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Flood plains"],
@@ -107,15 +108,13 @@
 		"name": "Remove Forest",
 		"turnsToBuild": 4,
 		"terrainsCanBeBuiltOn": ["Forest"],
-		"techRequired": "Mining",
-		"productionOnCompletion": 20
+		"techRequired": "Mining"
 	},
 	{
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
 		"terrainsCanBeBuiltOn": ["Jungle"],
-		"techRequired": "Bronze Working",
-		"productionOnCompletion": 20
+		"techRequired": "Bronze Working"
 	},
 	{
 		"name": "Remove Fallout",
