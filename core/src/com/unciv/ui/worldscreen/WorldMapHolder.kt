@@ -347,4 +347,12 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         worldScreen.shouldUpdate=true
     }
+
+    override fun zoom(zoomScale:Float){
+        super.zoom(zoomScale)
+        val scale = 1/scaleX  // don't use zoomScale itself, in case it was out of bounds and not applied
+        if(scale < 1 && scale > 0.5f)
+        for(tileGroup in tileGroups.values)
+            tileGroup.cityButtonLayerGroup.setScale(scale)
+    }
 }

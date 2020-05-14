@@ -16,7 +16,7 @@ open class ZoomableScrollPane: ScrollPane(null) {
         addZoomListeners()
     }
 
-    fun zoom(zoomScale: Float) {
+    open fun zoom(zoomScale: Float) {
         if (zoomScale < 0.5f || zoomScale > 10) return
         setScale(zoomScale)
     }

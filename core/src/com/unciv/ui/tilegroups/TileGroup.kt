@@ -67,7 +67,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     val unitLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize);touchable = Touchable.disabled }
 
-    val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);touchable = Touchable.childrenOnly }
+    val cityButtonLayerGroup = Group().apply { isTransform = true; setSize(groupSize, groupSize);
+        touchable = Touchable.childrenOnly; setOrigin(Align.center) }
 
     val circleCrosshairFogLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
