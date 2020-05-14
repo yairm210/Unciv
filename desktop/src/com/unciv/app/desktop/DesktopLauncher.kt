@@ -15,7 +15,6 @@ import java.util.*
 import kotlin.concurrent.timer
 import kotlin.system.exitProcess
 
-
 internal object DesktopLauncher {
     private var discordTimer: Timer? = null
 
@@ -32,7 +31,7 @@ internal object DesktopLauncher {
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        val game = UncivGame ( versionFromJar, null, { exitProcess(0) }, { discordTimer?.cancel() } )
+        val game = UncivGame ( versionFromJar, null, { exitProcess(0) }, { discordTimer?.cancel() }, NativeFontDesktop(45) )
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)

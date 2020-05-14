@@ -23,7 +23,8 @@ class AndroidLauncher : AndroidApplication() {
         val game = UncivGame (
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
-                exitEvent = this::finish
+                exitEvent = this::finish,
+                fontImplementation = NativeFontAndroid(45)
             )
         initialize(game, config)
     }

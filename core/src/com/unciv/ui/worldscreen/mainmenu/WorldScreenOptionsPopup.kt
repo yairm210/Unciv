@@ -1,12 +1,10 @@
 package com.unciv.ui.worldscreen.mainmenu
 
-import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
@@ -16,6 +14,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
+import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class Language(val language:String, val percentComplete:Int){
     override fun toString(): String {
@@ -334,7 +333,6 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     private fun selectLanguage() {
         settings.language = selectedLanguage
         worldScreen.game.translations.tryReadTranslationForCurrentLanguage()
-        CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         reloadWorldAndOptions()
     }
 

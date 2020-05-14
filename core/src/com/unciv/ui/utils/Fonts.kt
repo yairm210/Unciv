@@ -1,73 +1,103 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.BitmapFont.BitmapFontData
+import com.badlogic.gdx.graphics.g2d.BitmapFont.Glyph
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
+import com.badlogic.gdx.graphics.g2d.PixmapPacker
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.Disposable
 import com.unciv.UncivGame
-import core.java.nativefont.NativeFont
-import core.java.nativefont.NativeFontPaint
 
-object Fonts {
-    // caches for memory and time saving
-    private val characterSetCache = HashMap<String, String>()
-    private val fontCache = HashMap<String, BitmapFont>()
+interface NativeFontImplementation {
+    fun getFontSize(): Int
+    fun getCharPixmap(char: Char): Pixmap
+}
 
-    private fun getCharactersForFont(language: String = ""): String {
-        if (characterSetCache.containsKey(language)) return characterSetCache[language]!!
+// This class is loosely based on libgdx's FreeTypeBitmapFontData
+class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : BitmapFontData(), Disposable {
+    val regions: Array<TextureRegion>
 
-        val startTime = System.currentTimeMillis()
+    private var dirty = false
+    private val packer: PixmapPacker
 
-        // Basic Character Set - symbols missing from this will not be displayed, unless one of the
-        // 'complex' languages is chosen, in which case the translation file is used as character set as well.
-        // This means that for example user-set city names might not be displayed as entered.
-        // Missing Characters will be entirely invisible, not even take up horizontal space.
-        // Note that " (normal double quotes) and _ (underscore) _are_ such invisible characters.
-        val defaultText =
-                "AÀÁÀÄĂÂEÈÉÊĚÉÈIÌÍÏÍÎOÒÓÖÔÓÖƠUÙÚÜƯŮÚÜ" +            // Latin uppercase vowels and similar symbols
-                        "aäàâăäâąáeéèêęěèiìîìíoòöôöơóuùüưůûú" +             // Latin lowercase vowels and similar symbols
-                        "BCČĆDĐĎFGHJKLŁĹĽMNPQRŘŔSŠŚTŤVWXYÝZŽŻŹ" +           // Latin uppercase consonants and similar symbols
-                        "bcčćçdđďfghjklłĺľmnńňñpqrřŕsșšśtțťvwxyýzžżź" +     // Latin lowercase consonants and similar symbols
-                        "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +  // Russian
-                        "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" +                         // Greek
-                        "กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรฤลฦวศษสหฬอฮฯะัาำิีึืฺุู฿เแโใไๅๆ็่้๊๋์ํ๎๏๐๑๒๓๔๕๖๗๘๙๚๛" +                 // Thai
-                        "İıÇŞşĞğ" +      // Turkish
-                        "øæå" +         // Scandinavian
-                        "ÃÕãõ" +        // Portuguese
-                        "şţșț" + // Romanian
-                        "1234567890" +
-                        "‘?ʼ’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.…¡*|«»—∞✘✔"
-        val charSet = HashSet<Char>()
-        charSet.addAll(defaultText.asIterable())
+    private val filter = Texture.TextureFilter.Linear
 
-        if (language != "") {
-            for (entry in UncivGame.Current.translations.entries) {
-                for (lang in entry.value) {
-                    if (lang.key == language) charSet.addAll(lang.value.asIterable())
-                }
-            }
-        }
-        val characterSetString = charSet.joinToString("")
-        characterSetCache[language] = characterSetString
+    init {
+        // set general font data
+        flipped = false
+        lineHeight = fontImplementation.getFontSize().toFloat()
+        capHeight = lineHeight
+        ascent = -lineHeight
+        down = -lineHeight
 
-        val totalTime = System.currentTimeMillis() - startTime
-        println("Loading characters for font - " + totalTime + "ms")
+        // Create a packer.
+        val size = 1024
+        val packStrategy = PixmapPacker.GuillotineStrategy()
+        packer = PixmapPacker(size, size, Pixmap.Format.RGBA8888, 1, false, packStrategy)
+        packer.transparentColor = Color.WHITE
+        packer.transparentColor.a = 0f
 
-        return characterSetString
+        // Generate texture regions.
+        regions = Array()
+        packer.updateTextureRegions(regions, filter, filter, false)
+
+        // Set space glyph.
+        val spaceGlyph = getGlyph(' ')
+        spaceXadvance = spaceGlyph.xadvance.toFloat()
     }
 
-    fun getFont(size: Int): BitmapFont {
-        val language = UncivGame.Current.settings.language
-        val fontForLanguage = "Nativefont"
-        val isUniqueFont = language.contains("Chinese") || language == "Korean" || language == "Japanese"
-        val keyForFont = if (!isUniqueFont) "$fontForLanguage $size" else "$fontForLanguage $size $language"
-        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
+    override fun getGlyph(ch: Char): Glyph {
+        var glyph: Glyph? = super.getGlyph(ch)
+        if (glyph == null) {
+            val charPixmap = fontImplementation.getCharPixmap(ch)
 
-        val font = NativeFont(NativeFontPaint(size))
-        val charsForFont = getCharactersForFont(if (isUniqueFont) language else "")
+            glyph = Glyph()
+            glyph.id = ch.toInt()
+            glyph.width = charPixmap.width
+            glyph.height = charPixmap.height
+            glyph.xadvance = glyph.width
 
+            val rect = packer.pack(charPixmap)
+            charPixmap.dispose()
+            glyph.page = packer.pages.size - 1 // Glyph is always packed into the last page for now.
+            glyph.srcX = rect.x.toInt()
+            glyph.srcY = rect.y.toInt()
 
-        font.appendText(charsForFont)
+            // If a page was added, create a new texture region for the incrementally added glyph.
+            if (regions.size <= glyph.page)
+                packer.updateTextureRegions(regions, filter, filter, false)
 
+            setGlyphRegion(glyph, regions.get(glyph.page))
+            setGlyph(ch.toInt(), glyph)
+            dirty = true
+        }
+        return glyph
+    }
 
-        fontCache[keyForFont] = font
-        return font
+    override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: Glyph?) {
+        packer.packToTexture = true // All glyphs added after this are packed directly to the texture.
+        super.getGlyphs(run, str, start, end, lastGlyph)
+        if (dirty) {
+            dirty = false
+            packer.updateTextureRegions(regions, filter, filter, false)
+        }
+    }
+
+    override fun dispose() {
+        packer.dispose()
+    }
+}
+
+object Fonts {
+    val font by lazy {
+        val fontData = NativeBitmapFontData(UncivGame.Current.fontImplementation!!)
+        val font = BitmapFont(fontData, fontData.regions, false)
+        font.setOwnsTexture(true)
+        font
     }
 }
