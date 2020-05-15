@@ -230,6 +230,7 @@ fun String.toTextButton() = TextButton(this.tr(), CameraStageBaseScreen.skin)
 
 /** also translates */
 fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)
+fun Int.toLabel() = this.toString().toLabel()
 
 // We don't want to use setFontSize and setFontColor because they set the font,
 //  which means we need to rebuild the font cache which means more memory allocation.

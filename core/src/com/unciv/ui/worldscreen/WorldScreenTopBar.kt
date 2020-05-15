@@ -6,13 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
-import com.unciv.ui.EmpireOverviewScreen
+import com.unciv.ui.overviewscreen.EmpireOverviewScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
