@@ -48,6 +48,12 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     /** Displays city name, allows switching between cities - sits on BOTTOM CENTER */
     private var cityPickerTable = CityScreenCityPickerTable(this)
 
+    /** Button for exiting the city - sits on BOTTOM CENTER */
+    val exitCityButton = "Exit city".toTextButton().apply {
+        labelCell.pad(10f)
+        onClick { exit() }
+    }
+
     /** Holds City tiles group*/
     private var tileGroups = ArrayList<CityTileGroup>()
 
@@ -63,6 +69,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         stage.addActor(tileTable)
         stage.addActor(selectedConstructionTable)
         stage.addActor(cityPickerTable)
+        stage.addActor(exitCityButton)
         stage.addActor(cityInfoTable)
         update()
 
@@ -87,8 +94,11 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         cityInfoTable.update()
         cityInfoTable.setPosition(5f, stage.height - 5f, Align.topLeft)
 
+        exitCityButton.centerX(stage)
+        exitCityButton.y = 10f
         cityPickerTable.update()
         cityPickerTable.centerX(stage)
+        cityPickerTable.setY(exitCityButton.top+10f, Align.bottom)
 
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width - 5f, 5f, Align.bottomRight)
@@ -218,5 +228,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             if (event.keyCode == Input.Keys.RIGHT) page(1)
             return true
         }
+    }
+
+    fun updateExitCityButton(){
+
     }
 }

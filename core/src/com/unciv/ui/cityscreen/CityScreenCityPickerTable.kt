@@ -10,14 +10,18 @@ import com.unciv.ui.utils.*
 class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
     fun update() {
-        clear()
         val city = cityScreen.city
         val civInfo = city.civInfo
+        background = ImageGetter.getRoundedEdgeTableBackground(civInfo.nation.getOuterColor())
+        clear()
 
         if (civInfo.cities.size > 1) {
-            val prevCityButton = "<".toTextButton()
+            val prevCityButton = Table() // so we gt a wider clickable area than just the image itself
+            val image = ImageGetter.getImage("OtherIcons/BackArrow")
+            image.color = civInfo.nation.getInnerColor()
+            prevCityButton.add(image).size(25f).pad(10f)
             prevCityButton.onClick { cityScreen.page(-1) }
-            add(prevCityButton).pad(20f)
+            add(prevCityButton).pad(10f)
         } else add()
 
         val cityNameTable = Table()
@@ -42,7 +46,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             cityNameTable.add(resistanceImage).size(20f).padRight(5f)
         }
 
-        val currentCityLabel = city.name.toLabel(fontSize = 30)
+        val currentCityLabel = city.name.toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
         currentCityLabel.onClick {
             val editCityNamePopup = Popup(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
@@ -58,23 +62,21 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         cityNameTable.add(currentCityLabel)
 
-        add(cityNameTable)
+        add(cityNameTable).width(stage.width/3)
 
 
         if (civInfo.cities.size > 1) {
-            val nextCityButton = ">".toTextButton()
+
+            val nextCityButton = Table() // so we gt a wider clickable area than just the image itself
+            val image = ImageGetter.getImage("OtherIcons/BackArrow")
+            image.setSize(25f,25f)
+            image.setOrigin(Align.center)
+            image.rotation = 180f
+            image.color = civInfo.nation.getInnerColor()
+            nextCityButton.add(image).size(25f).pad(10f)
             nextCityButton.onClick { cityScreen.page(1) }
-            add(nextCityButton).pad(20f)
+            add(nextCityButton).pad(10f)
         } else add()
-        row()
-
-        val exitCityButton = "Exit city".toTextButton()
-        exitCityButton.labelCell.pad(10f)
-
-        exitCityButton.onClick { cityScreen.exit() }
-
-        add(exitCityButton).pad(10f).colspan(columns)
-
         pack()
     }
 
