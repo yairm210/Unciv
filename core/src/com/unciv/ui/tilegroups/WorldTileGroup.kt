@@ -26,7 +26,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         icons.removePopulationIcon()
         val tileIsViewable = isViewable(viewingCiv)
         if (tileIsViewable && tileInfo.isWorked() && UncivGame.Current.settings.showWorkedTiles
-                && city!!.civInfo.isPlayerCivilization())
+                && city!!.civInfo == viewingCiv)
             icons.addPopulationIcon()
 
         val currentPlayerCiv = worldScreen.viewingCiv
