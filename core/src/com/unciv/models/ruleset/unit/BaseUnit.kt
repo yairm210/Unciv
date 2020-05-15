@@ -156,6 +156,10 @@ class BaseUnit : INamed, IConstruction {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if(unit==null) return false // couldn't place the unit, so there's actually no unit =(
 
+        //movement penalty
+        if(!unit.hasUnique("Can move directly once bought") && wasBought)
+            unit.currentMovement = 0f
+
         if(this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
@@ -165,10 +169,6 @@ class BaseUnit : INamed, IConstruction {
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
-
-        //movement penalty
-        if(!unit.hasUnique("Can move directly once bought") && wasBought)
-            unit.currentMovement = 0f
 
         return true
     }
