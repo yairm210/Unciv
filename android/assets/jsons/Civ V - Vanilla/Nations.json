@@ -4,7 +4,7 @@
 		"name": "Babylon",
 		"leaderName": "Nebuchadnezzar II",
 		"adjective": ["Babylonian"],
-		"startBias": ["Avoid Tundra"],
+		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Scientific",
 		
 		"startIntroPart1": "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
@@ -84,7 +84,7 @@
 		"name": "Egypt",
 		"leaderName": "Ramesses II",
 		"adjective": ["Egyptian"],
-		"startBias": ["Avoid Jungle","Avoid Forest"],
+		"startBias": ["Avoid [Jungle]","Avoid [Forest]"],
 		"preferredVictoryType": "Cultural",
 		
 		"startIntroPart1": "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud.",
@@ -452,7 +452,7 @@
 		"name": "Siam",
 		"leaderName": "Ramkhamhaeng",
 		"adjective": ["Siamese"],
-		"startBias": ["Avoid Forest"],
+		"startBias": ["Avoid [Forest]"],
 //		"preferredVictoryType":"Diplomatic",
 		
 		"startIntroPart1": "Greetings to you, Great King Ramkhamhaeng, leader of the glorious Siamese people! O mighty King, your people bow down before you in awe and fear! You are the ruler of Siam, an ancient country in the heart of Southeast Asia, a beautiful and mysterious land. Surrounded by foes, beset by bloody war and grinding poverty, the clever and loyal Siamese people have endured and trumphed. King Ramkhamhaeng, your empire was once part of the Khmer Empire, until the 13th century AD, when your ancestors revolted, forming the small Sukhothai kingdom. Through successful battle and cunning diplomacy, the tiny kingdom grew into a mighty empire, an empire which would dominate South East Asia for more than a century!",
@@ -500,7 +500,7 @@
 		"name": "Songhai",
 		"leaderName": "Askia",
 		"adjective": ["Songhai"],
-		"startBias": ["Avoid Tundra"],
+		"startBias": ["Avoid [Tundra]"],
 		"preferredVictoryType": "Domination",
 
 		"startIntroPart1": "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen.",
