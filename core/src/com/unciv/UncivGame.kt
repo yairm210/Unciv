@@ -40,7 +40,7 @@ class UncivGame(
     val superchargedForDebug = false
 
     /** Simulate until this turn on the first "Next turn" button press.
-     *  Also finishes simulation when player wins or looses.
+     *  Also finishes simulation when player wins or loses.
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
@@ -198,5 +198,4 @@ class LoadingScreen:CameraStageBaseScreen() {
         stage.addActor(happinessImage)
     }
 }
-
 
