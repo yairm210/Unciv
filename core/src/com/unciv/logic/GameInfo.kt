@@ -96,7 +96,7 @@ class GameInfo {
                         && !gameParameters.noBarbarians
                         && turns % 10 == 0) placeBarbarians()
 
-                // exit simulation mode when player wins or looses
+                // exit simulation mode when player wins or loses
                 if (thisPlayer.isDefeated() || thisPlayer.victoryManager.hasWon()) {
                     // stop simulation
                     UncivGame.Current.simulateUntilTurnForDebug = turns
@@ -380,4 +380,3 @@ class GameInfo {
 
 
 }
-
