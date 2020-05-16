@@ -20,7 +20,7 @@ import kotlin.concurrent.thread
 class Language(val language:String, val percentComplete:Int){
     override fun toString(): String {
         val spaceSplitLang = language.replace("_"," ")
-        return "$spaceSplitLang- $percentComplete%"
+        return "$spaceSplitLang - $percentComplete%"
     }
 }
 
