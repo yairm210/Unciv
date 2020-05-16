@@ -149,14 +149,14 @@ class DiplomacyManager() {
         // maybe we need to average their views of each other? That makes sense to me.
 
         val opinion = opinionOfOtherCiv()
-        if(opinion <= -80) return RelationshipLevel.Unforgivable
-        if(opinion <= -40 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
-        if(opinion <= -15) return RelationshipLevel.Competitor
         return when {
-            opinion >= 80 -> RelationshipLevel.Ally
-            opinion >= 40 -> RelationshipLevel.Friend
-            opinion >= 15 -> RelationshipLevel.Favorable
-            else          -> RelationshipLevel.Neutral
+            opinion >= 80  -> RelationshipLevel.Ally
+            opinion >= 40  -> RelationshipLevel.Friend
+            opinion >= 15  -> RelationshipLevel.Favorable
+            opinion <= -80 -> RelationshipLevel.Unforgivable
+            opinion <= -40 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
+            opinion <= -15 -> RelationshipLevel.Competitor
+            else           -> RelationshipLevel.Neutral
         }
     }
 
