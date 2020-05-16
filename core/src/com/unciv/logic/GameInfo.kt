@@ -95,6 +95,17 @@ class GameInfo {
                 if (thisPlayer.isBarbarian()
                         && !gameParameters.noBarbarians
                         && turns % 10 == 0) placeBarbarians()
+
+                // exit simulation mode when player wins or looses
+                if (thisPlayer.isDefeated() || thisPlayer.victoryManager.hasWon()) {
+                    // stop simulation
+                    UncivGame.Current.simulateUntilTurnForDebug = turns
+                    println("Simulation stopped on turn $turns")
+                    for (civ in UncivGame.Current.gameInfo.civilizations) {
+                        val victoryType = civ.victoryManager.hasWonVictoryType()
+                        if (civ.victoryManager.hasWon()) {println("$civ won $victoryType victory")}
+                    }
+                }
             }
             switchTurn()
         }

@@ -40,10 +40,11 @@ class UncivGame(
     val superchargedForDebug = false
 
     /** Simulate until this turn on the first "Next turn" button press.
+     *  Also finishes simulation when player wins or looses.
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
-    val simulateUntilTurnForDebug: Int = 0
+    var simulateUntilTurnForDebug: Int = 0
 
     lateinit var worldScreen: WorldScreen
 
