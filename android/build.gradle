@@ -3,26 +3,26 @@ android {
     compileSdkVersion 29
     sourceSets {
         main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-            jniLibs.srcDirs = ['libs']
+            manifest.srcFile "AndroidManifest.xml"
+            java.srcDirs = ["src"]
+            aidl.srcDirs = ["src"]
+            renderscript.srcDirs = ["src"]
+            res.srcDirs = ["res"]
+            assets.srcDirs = ["assets"]
+            jniLibs.srcDirs = ["libs"]
         }
 
-        androidTest.setRoot('tests')
+        androidTest.setRoot("tests")
     }
     packagingOptions {
-        exclude 'META-INF/robovm/ios/robovm.xml'
+        exclude "META-INF/robovm/ios/robovm.xml"
     }
     defaultConfig {
-        applicationId "com.unciv.app"
-        minSdkVersion 14
-        targetSdkVersion 29
-        versionCode appCodeNumber
-        versionName appVersion
+        applicationId = "com.unciv.app"
+        minSdkVersion(14)
+        targetSdkVersion(29)
+        versionCode = appCodeNumber
+        versionName = appVersion
 
         archivesBaseName = "Unciv"
     }
@@ -37,10 +37,10 @@ android {
 
     signingConfigs {
         debug {
-            storeFile rootProject.file('debug.keystore')
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-            storePassword 'android'
+            storeFile(rootProject.file("debug.keystore"))
+            keyAlias("androiddebugkey")
+            keyPassword("android")
+            storePassword("android")
         }
     }
 
@@ -48,22 +48,22 @@ android {
         release {
             // Don't add local save files and fonts to release, obviously
             aaptOptions {
-                ignoreAssetsPattern "!SaveFiles:!fonts:!maps:!music:!mods"
+                ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
             }
 
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
 
         debug {
             // Don't add local save files and fonts to release, obviously
             aaptOptions {
-                ignoreAssetsPattern "!SaveFiles:!fonts:!maps:!music"
+                ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music"
             }
         }
     }
     lintOptions {
-        disable 'MissingTranslation'
+        disable("MissingTranslation")
     }
 }
 
@@ -98,7 +98,7 @@ task copyAndroidNatives() {
 
 tasks.whenTaskAdded { packageTask ->
     if (packageTask.name.contains("package")) {
-        packageTask.dependsOn 'copyAndroidNatives'
+        packageTask.dependsOn "copyAndroidNatives"
     }
 }
 
@@ -110,7 +110,7 @@ task run(type: Exec) {
         localProperties.withInputStream { instr ->
             properties.load(instr)
         }
-        def sdkDir = properties.getProperty('sdk.dir')
+        def sdkDir = properties.getProperty("sdk.dir")
         if (sdkDir) {
             path = sdkDir
         } else {
@@ -121,12 +121,12 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.unciv.app/AndroidLauncher'
+    commandLine "$adb", "shell", "am", "start", "-n", "com.unciv.app/AndroidLauncher"
 }
 
 dependencies {
-    implementation 'androidx.core:core:1.2.0'
-    implementation "androidx.work:work-runtime-ktx:2.3.2"
+    implementation("androidx.core:core:1.2.0")
+    implementation("androidx.work:work-runtime-ktx:2.3.2")
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
@@ -135,7 +135,7 @@ eclipse {
     // ignores any nodes added in classpath.file.withXml
     sourceSets {
         main {
-            java.srcDirs "src", 'gen'
+            java.srcDirs "src", "gen"
         }
     }
 
@@ -146,17 +146,17 @@ eclipse {
 
     classpath {
         plusConfigurations += [ project.configurations.compile ]
-        containers 'com.android.ide.eclipse.adt.ANDROID_FRAMEWORK', 'com.android.ide.eclipse.adt.LIBRARIES'
+        containers("com.android.ide.eclipse.adt.ANDROID_FRAMEWORK", "com.android.ide.eclipse.adt.LIBRARIES")
     }
 
     project {
         name = appName + "-android"
-        natures 'com.android.ide.eclipse.adt.AndroidNature'
+        natures("com.android.ide.eclipse.adt.AndroidNature")
         buildCommands.clear()
-        buildCommand "com.android.ide.eclipse.adt.ResourceManagerBuilder"
-        buildCommand "com.android.ide.eclipse.adt.PreCompilerBuilder"
-        buildCommand "org.eclipse.jdt.core.javabuilder"
-        buildCommand "com.android.ide.eclipse.adt.ApkBuilder"
+        buildCommand("com.android.ide.eclipse.adt.ResourceManagerBuilder")
+        buildCommand("com.android.ide.eclipse.adt.PreCompilerBuilder")
+        buildCommand("org.eclipse.jdt.core.javabuilder")
+        buildCommand("com.android.ide.eclipse.adt.ApkBuilder")
     }
 }
 

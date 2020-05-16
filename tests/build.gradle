@@ -1,16 +1,17 @@
 
-
-apply plugin: "java"
+plugins {
+    id("java")
+}
 
 sourceCompatibility = 1.6
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.encoding = "UTF-8"
 
 
 
 sourceSets {
 	test {
         java {
-            srcDir 'src'
+            srcDir "src"
         }
     }
     
