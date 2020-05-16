@@ -130,18 +130,18 @@ class DiplomacyManager() {
     fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
 
     fun relationshipLevel(): RelationshipLevel {
-        if (civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
+        if(civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
             return RelationshipLevel.Neutral // People make their own choices.
 
-        if (civInfo.isPlayerCivilization())
+        if(civInfo.isPlayerCivilization())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
-        if (civInfo.isCityState()) {
-            if (influence <= -60) return RelationshipLevel.Unforgivable
-            if (influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Enemy
+        if(civInfo.isCityState()) {
+            if(influence <= -60) return RelationshipLevel.Unforgivable
+            if(influence <= -30 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Enemy
 
-            if (influence >= 60) return RelationshipLevel.Ally
-            if (influence >= 30) return RelationshipLevel.Friend
+            if(influence >= 60) return RelationshipLevel.Ally
+            if(influence >= 30) return RelationshipLevel.Friend
             return RelationshipLevel.Neutral
         }
 
@@ -149,9 +149,9 @@ class DiplomacyManager() {
         // maybe we need to average their views of each other? That makes sense to me.
 
         val opinion = opinionOfOtherCiv()
-        if (opinion <= -80) return RelationshipLevel.Unforgivable
-        if (opinion <= -40 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
-        if (opinion <= -15) return RelationshipLevel.Competitor
+        if(opinion <= -80) return RelationshipLevel.Unforgivable
+        if(opinion <= -40 || civInfo.isAtWarWith(otherCiv())) return RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
+        if(opinion <= -15) return RelationshipLevel.Competitor
         return when {
             opinion >= 80 -> RelationshipLevel.Ally
             opinion >= 40 -> RelationshipLevel.Friend
@@ -226,7 +226,6 @@ class DiplomacyManager() {
     fun getCommonKnownCivs(): Set<CivilizationInfo> = civInfo.getKnownCivs().intersect(otherCiv().getKnownCivs())
 
     /** Returns true when the [civInfo]'s territory is considered allied for [otherCiv].
-     *
      *  This includes friendly and allied city-states and the open border treaties.
      */
     fun isConsideredFriendlyTerritory(): Boolean {
