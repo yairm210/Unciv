@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -18,11 +17,9 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.mainmenu.WorldScreenMenuPopup
-import java.time.Year
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.roundToInt
-import kotlin.system.exitProcess
 
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
@@ -144,20 +141,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
             else resourceLabels[resource.name]!!.setText(civResources.first { it.resource == resource }.amount.toString())
         }
 
-        val marathon = listOf<YearsToTurn>(YearsToTurn(100, 15.0), YearsToTurn(400, 10.0), YearsToTurn(570, 5.0), YearsToTurn(771, 2.0), YearsToTurn(900, 1.0), YearsToTurn(1000, 0.5), YearsToTurn(1500, 0.25))
-        val epic     = listOf<YearsToTurn>(YearsToTurn(140, 25.0), YearsToTurn(230, 15.0), YearsToTurn(270, 10.0), YearsToTurn(360, 5.0), YearsToTurn(430, 2.0), YearsToTurn(530, 1.0), YearsToTurn(1500, 0.5))
-        val standard = listOf<YearsToTurn>(YearsToTurn(75, 40.0), YearsToTurn(135, 25.0), YearsToTurn(160, 15.0), YearsToTurn(211, 10.0), YearsToTurn(270, 5.0), YearsToTurn(315, 2.0), YearsToTurn(440, 1.0))
-        val quick    = listOf<YearsToTurn>(YearsToTurn(50, 60.0), YearsToTurn(80, 40.0), YearsToTurn(100, 25.0), YearsToTurn(130, 15.0), YearsToTurn(155, 10.0), YearsToTurn(195, 5.0), YearsToTurn(260, 2.0))
-
-        val turns = civInfo.gameInfo.turns
-        val gameSpeed: List<YearsToTurn> = when (civInfo.gameInfo.gameParameters.gameSpeed) {
-            GameSpeed.Marathon -> marathon
-            GameSpeed.Epic -> epic
-            GameSpeed.Standard -> standard
-            GameSpeed.Quick -> quick
-        }
-
-        val year = getYear(gameSpeed, turns).toInt()
+        val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, civInfo.gameInfo.turns).toInt()
 
         val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
         turnsLabel.setText("Turn".tr() + " " + civInfo.gameInfo.turns + " | " + yearText.tr())
@@ -207,16 +191,29 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     private class YearsToTurn(val toTurn: Int, val yearInterval: Double) // enum class with lists for each value group potentially more efficient?
 
 
+    // Best to initialize these once only
+    private val marathon = listOf(YearsToTurn(100, 15.0), YearsToTurn(400, 10.0), YearsToTurn(570, 5.0), YearsToTurn(771, 2.0), YearsToTurn(900, 1.0), YearsToTurn(1000, 0.5), YearsToTurn(1500, 0.25))
+    private val epic     = listOf(YearsToTurn(140, 25.0), YearsToTurn(230, 15.0), YearsToTurn(270, 10.0), YearsToTurn(360, 5.0), YearsToTurn(430, 2.0), YearsToTurn(530, 1.0), YearsToTurn(1500, 0.5))
+    private val standard = listOf(YearsToTurn(75, 40.0), YearsToTurn(135, 25.0), YearsToTurn(160, 15.0), YearsToTurn(211, 10.0), YearsToTurn(270, 5.0), YearsToTurn(315, 2.0), YearsToTurn(440, 1.0))
+    private val quick    = listOf(YearsToTurn(50, 60.0), YearsToTurn(80, 40.0), YearsToTurn(100, 25.0), YearsToTurn(130, 15.0), YearsToTurn(155, 10.0), YearsToTurn(195, 5.0), YearsToTurn(260, 2.0))
 
-    private fun getYear(speed: List<YearsToTurn>, turn: Int): Float {
+    private fun getYear(gameSpeed: GameSpeed, turn: Int): Float {
+
+        val yearToTurnList: List<YearsToTurn> = when (gameSpeed) {
+            GameSpeed.Marathon -> marathon
+            GameSpeed.Epic -> epic
+            GameSpeed.Standard -> standard
+            GameSpeed.Quick -> quick
+        }
+
         var year: Float = -4000f
-        var i: Int = 0;
+        var i = 0
         var yearsPerTurn: Float
         // if macros are ever added to kotlin, this is one hell of a place for em'
         while (i < turn) {
-            yearsPerTurn = speed.firstOrNull { turn < it.toTurn }?.yearInterval?.toFloat() ?: 0.5f
-            year += yearsPerTurn;
-            ++i;
+            yearsPerTurn = yearToTurnList.firstOrNull { i < it.toTurn }?.yearInterval?.toFloat() ?: 0.5f
+            year += yearsPerTurn
+            ++i
         }
 
         return year
