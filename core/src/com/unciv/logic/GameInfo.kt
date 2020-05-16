@@ -103,7 +103,7 @@ class GameInfo {
                     println("Simulation stopped on turn $turns")
                     for (civ in UncivGame.Current.gameInfo.civilizations) {
                         val victoryType = civ.victoryManager.hasWonVictoryType()
-                        if (civ.victoryManager.hasWon()) {println("$civ won $victoryType victory")}
+                        if (civ.victoryManager.hasWon()) println("$civ won $victoryType victory")
                     }
                 }
             }
