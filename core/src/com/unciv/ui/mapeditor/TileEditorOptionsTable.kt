@@ -191,7 +191,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
 
         addTerrainOptions(terrainFeaturesTable, baseTerrainTable)
-//        addRiverToggleOptions(baseTerrainTable)
+        addRiverToggleOptions(baseTerrainTable)
 
 
         val resources = getResourceActors()
@@ -261,7 +261,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun addTerrainOptions(terrainFeaturesTable: Table, baseTerrainTable: Table) {
         for (terrain in ruleset.terrains.values) {
             val tileInfo = TileInfo()
-            tileInfo.ruleset = mapEditorScreen.ruleset
             if (terrain.type == TerrainType.TerrainFeature) {
                 tileInfo.baseTerrain = when {
                     terrain.occursOn != null -> terrain.occursOn.first()
@@ -332,6 +331,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun makeTileGroup(tileInfo: TileInfo): TileGroup {
+        tileInfo.ruleset = mapEditorScreen.ruleset
         tileInfo.setTerrainTransients()
         val group = TileGroup(tileInfo, TileSetStrings())
         group.showEntireMap = true
