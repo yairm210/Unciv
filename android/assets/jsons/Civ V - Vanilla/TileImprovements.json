@@ -1,4 +1,5 @@
-[	
+[
+
 	{
 		"name": "Farm",
 		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Flood plains"],
