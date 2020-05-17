@@ -1,3 +1,26 @@
+## 3.8.9
+
+City-states no longer spawn Great Generals
+
+Can no longer see other human players' assigned tiles
+
+Resolved #2618 - better inter-city navigation in city screen
+
+Resolved #2611 - City button shrinks on zoom-in
+
+Fixed rare citadel crash
+
+Better trading posts by The Bucketeer!
+
+Years per turn normalized to game speed - By AcridBrimistic
+
+By JackRainy:
+
+- Civilian units no longer move when bought 
+- Fixed translation for civ start biases
+
+Translation updates
+
 ## 3.8.8
 
 Redid layout for the New Game screen - see #2549

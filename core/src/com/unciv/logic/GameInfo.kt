@@ -84,6 +84,7 @@ class GameInfo {
 
         while (thisPlayer.playerType == PlayerType.AI
             || UncivGame.Current.simulateUntilTurnForDebug > turns
+                || UncivGame.Current.simulateUntilWinOrLose > turns
                 // For multiplayer, if there are 3+ players and one is defeated,
                 // we'll want to skip over their turn
                 || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
@@ -95,6 +96,19 @@ class GameInfo {
                 if (thisPlayer.isBarbarian()
                         && !gameParameters.noBarbarians
                         && turns % 10 == 0) placeBarbarians()
+
+                // exit simulation mode when player wins or loses
+                if (thisPlayer.isDefeated() || thisPlayer.victoryManager.hasWon()
+                        && UncivGame.Current.simulateUntilWinOrLose != 0
+                ) {
+                    // stop simulation
+                    UncivGame.Current.simulateUntilWinOrLose = turns
+                    println("Simulation stopped on turn $turns")
+                    for (civ in UncivGame.Current.gameInfo.civilizations) {
+                        val victoryType = civ.victoryManager.hasWonVictoryType()
+                        if (civ.victoryManager.hasWon()) println("$civ won $victoryType victory")
+                    }
+                }
             }
             switchTurn()
         }
@@ -369,4 +383,3 @@ class GameInfo {
 
 
 }
-

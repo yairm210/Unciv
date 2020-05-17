@@ -36,7 +36,7 @@ task dist(dependsOn: classes, type: Jar) { // Compiles the jar file
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
     from({configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }})
     from(files(project.assetsDir))
-    // This is for the .dll and .so files to ake the Discord RPC work on all desktops
+    // This is for the .dll and .so files to make the Discord RPC work on all desktops
     from(files(project.discordDir))
     archiveFileName  = "${appName}.jar"
  
@@ -60,8 +60,10 @@ for(platform in PackrConfig.Platform.values()) {
                 config.jdk = System.env."JAVA_HOME"
             // take the jdk straight from the building linux computer
 
-            if (platform == PackrConfig.Platform.Windows32 || platform == PackrConfig.Platform.Windows64)
-                config.jdk = "jdk-windows.zip" // see how we download and name this in travis yml
+            if (platform == PackrConfig.Platform.Windows64)
+                config.jdk = "jdk-windows-64.zip" // see how we download and name this in travis yml
+            if (platform == PackrConfig.Platform.Windows32)
+                config.jdk = "jdk-windows-32.zip" // see how we download and name this in travis yml
         }
         else {
             // for my computer

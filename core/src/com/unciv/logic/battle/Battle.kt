@@ -33,8 +33,10 @@ object Battle {
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
-        println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+
-                defender.getCivInfo().civName+" "+defender.getName())
+        if (UncivGame.Current.alertBattle) {
+            println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+
+                    defender.getCivInfo().civName+" "+defender.getName())
+        }
         val attackedTile = defender.getTile()
 
         if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()){
@@ -242,14 +244,16 @@ object Battle {
         thisCombatant.unit.promotions.XP += XPGained
 
 
-        var greatGeneralPointsModifier = 1f
-        if(thisCombatant.getCivInfo().nation.unique == UniqueAbility.ART_OF_WAR)
-            greatGeneralPointsModifier += 0.5f
-        if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
-            greatGeneralPointsModifier += 1f
+        if(thisCombatant.getCivInfo().isMajorCiv()) {
+            var greatGeneralPointsModifier = 1f
+            if (thisCombatant.getCivInfo().nation.unique == UniqueAbility.ART_OF_WAR)
+                greatGeneralPointsModifier += 0.5f
+            if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
+                greatGeneralPointsModifier += 1f
 
-        val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
-        thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
+            val greatGeneralPointsGained = (XPGained * greatGeneralPointsModifier).toInt()
+            thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += greatGeneralPointsGained
+        }
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {

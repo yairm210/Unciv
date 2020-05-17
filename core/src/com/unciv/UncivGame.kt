@@ -45,6 +45,17 @@ class UncivGame(
      */
     val simulateUntilTurnForDebug: Int = 0
 
+    /** Simulate until any player wins or loses,
+     *  or turns exceeds indicated number
+     *  Does not update World View changes until finished.
+     *  Set to 0 to disable.
+     */
+    var simulateUntilWinOrLose: Int = 0
+
+    /** Console log battles
+     */
+    val alertBattle = true
+
     lateinit var worldScreen: WorldScreen
 
     var music: Music? = null
@@ -197,5 +208,4 @@ class LoadingScreen:CameraStageBaseScreen() {
         stage.addActor(happinessImage)
     }
 }
-
 

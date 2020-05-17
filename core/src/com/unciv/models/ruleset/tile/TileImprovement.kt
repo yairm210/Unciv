@@ -25,7 +25,6 @@ class TileImprovement : NamedStats() {
 
     val turnsToBuild: Int = 0 // This is the base cost.
 
-
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
         if (civInfo.containsBuildingUnique("Worker construction increased 25%"))
