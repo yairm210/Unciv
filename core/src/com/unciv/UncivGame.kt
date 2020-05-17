@@ -50,7 +50,7 @@ class UncivGame(
      *  Does not update World View changes until finished.
      *  Set to 0 to disable.
      */
-    var simulateUntilWinOrLose: Int = 1000
+    var simulateUntilWinOrLose: Int = 0
 
     /** Console log battles
      */
