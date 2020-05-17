@@ -33,8 +33,10 @@ object Battle {
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
-        println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+
-                defender.getCivInfo().civName+" "+defender.getName())
+        if (UncivGame.Current.alertBattle) {
+            println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+
+                    defender.getCivInfo().civName+" "+defender.getName())
+        }
         val attackedTile = defender.getTile()
 
         if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()){
