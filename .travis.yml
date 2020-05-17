@@ -27,7 +27,9 @@ script:
 - ./gradlew check
 - ./gradlew tests:test  
 - if [ -n "$TRAVIS_TAG" ]; then
-    wget  -O jdk-windows.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip;
+    wget  -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip;
+    wget  -O jdk-windows-32.zip https://developers.redhat.com/download-manager/file/java-1.8.0-openjdk-1.8.0.252-2.b09.redhat.windows.x86.zip;
+
     ./gradlew desktop:packrWindows32;
     ./gradlew desktop:packrWindows64;
     ./gradlew desktop:packrLinux32;
