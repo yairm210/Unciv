@@ -65,7 +65,6 @@ class MainMenuScreen: CameraStageBaseScreen() {
                         Actions.fadeIn(0.3f)
                 ))
 
-
             }
         }
 

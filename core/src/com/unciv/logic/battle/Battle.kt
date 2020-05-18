@@ -29,7 +29,7 @@ object Battle {
                 attacker.unit.useMovementPoints(1f)
             }
         }
-        attack(attacker,getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+        attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {

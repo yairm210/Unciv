@@ -461,17 +461,19 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     try {
                         OnlineMultiplayer().tryUploadGame(gameInfoClone)
                     } catch (ex: Exception) {
-                        val cantUploadNewGamePopup = Popup(this)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
+                        Gdx.app.postRunnable { // Since we're changing the UI, that should be done on the main thread
+                            val cantUploadNewGamePopup = Popup(this)
+                            cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
+                            cantUploadNewGamePopup.addCloseButton()
+                            cantUploadNewGamePopup.open()
+                        }
                         isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
                         shouldUpdate = true
                         return@thread
                     }
                 }
             } catch (ex: Exception) {
-                game.crashController.crashOccurred()
+                Gdx.app.postRunnable { game.crashController.crashOccurred() }
                 throw ex
             }
 

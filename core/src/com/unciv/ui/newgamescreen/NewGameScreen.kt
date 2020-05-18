@@ -98,12 +98,14 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                     //Save gameId to clipboard because you have to do it anyway.
                     Gdx.app.clipboard.contents = newGame!!.gameId
                     //Popup to notify the User that the gameID got copied to the clipboard
-                    ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500)
+                    Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
                 } catch (ex: Exception) {
-                    val cantUploadNewGamePopup = Popup(this)
-                    cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
-                    cantUploadNewGamePopup.addCloseButton()
-                    cantUploadNewGamePopup.open()
+                    Gdx.app.postRunnable {
+                        val cantUploadNewGamePopup = Popup(this)
+                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
+                        cantUploadNewGamePopup.addCloseButton()
+                        cantUploadNewGamePopup.open()
+                    }
                     newGame = null
                 }
             }

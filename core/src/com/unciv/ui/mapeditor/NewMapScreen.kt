@@ -54,13 +54,15 @@ class NewMapScreen : PickerScreen() {
                     }
 
                 } catch (exception: Exception) {
-                    rightButtonSetEnabled(true)
-                    val cantMakeThatMapPopup = Popup(this)
-                    cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr())
-                        .row()
-                    cantMakeThatMapPopup.addCloseButton()
-                    cantMakeThatMapPopup.open()
-                    Gdx.input.inputProcessor = stage
+                    Gdx.app.postRunnable {
+                        rightButtonSetEnabled(true)
+                        val cantMakeThatMapPopup = Popup(this)
+                        cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr())
+                                .row()
+                        cantMakeThatMapPopup.addCloseButton()
+                        cantMakeThatMapPopup.open()
+                        Gdx.input.inputProcessor = stage
+                    }
                 }
             }
 

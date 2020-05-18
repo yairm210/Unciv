@@ -59,14 +59,16 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
 
     fun onMoveButtonClick() {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-        thread(name="TileToMoveTo") {
+        thread(name = "TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
             // then it might change until we get to the getTileToMoveTo, so we just try/catch it
-            val tileToMoveTo:TileInfo
-            try{
+            val tileToMoveTo: TileInfo
+            try {
                 tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
-            }catch (ex:Exception){ return@thread } // can't move here
+            } catch (ex: Exception) {
+                return@thread
+            } // can't move here
 
             Gdx.app.postRunnable {
                 try {
@@ -76,7 +78,7 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                     selectedUnit.movement.moveToTile(tileToMoveTo)
-                    if(selectedUnit.action == Constants.unitActionExplore) selectedUnit.action = null // remove explore on manual move
+                    if (selectedUnit.action == Constants.unitActionExplore) selectedUnit.action = null // remove explore on manual move
                     Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
@@ -86,8 +88,7 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
 
                     tileMapHolder.worldScreen.shouldUpdate = true
                     tileMapHolder.unitActionOverlay?.remove()
-                } catch (e: Exception) {
-                }
+                } catch (e: Exception) {}
 
             }
         }

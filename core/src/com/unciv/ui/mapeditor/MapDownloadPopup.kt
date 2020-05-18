@@ -67,7 +67,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
                 open()
             }
         } catch (ex: Exception) {
-            addGoodSizedLabel("Could not get list of maps!").row()
+            Gdx.app.postRunnable { addGoodSizedLabel("Could not get list of maps!").row() }
         }
     }
 

@@ -220,19 +220,24 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
             innerTable.add(errorTable).colspan(2).row()
 
             downloadMusicButton.onClick {
+                downloadMusicButton.disable()
+                errorTable.clear()
+                errorTable.add("Downloading...".toLabel())
+
                 // So the whole game doesn't get stuck while downloading the file
                 thread(name = "Music") {
                     try {
-                        downloadMusicButton.disable()
-                        errorTable.clear()
-                        errorTable.add("Downloading...".toLabel())
                         val file = DropBox.downloadFile("/Music/thatched-villagers.mp3")
                         musicLocation.write(file, false)
-                        rebuildInnerTable()
-                        worldScreen.game.startMusic()
+                        Gdx.app.postRunnable {
+                            rebuildInnerTable()
+                            worldScreen.game.startMusic()
+                        }
                     } catch (ex: Exception) {
-                        errorTable.clear()
-                        errorTable.add("Could not download music!".toLabel(Color.RED))
+                        Gdx.app.postRunnable {
+                            errorTable.clear()
+                            errorTable.add("Could not download music!".toLabel(Color.RED))
+                        }
                     }
                 }
             }

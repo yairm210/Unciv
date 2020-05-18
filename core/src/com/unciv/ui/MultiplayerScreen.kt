@@ -143,13 +143,15 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 else
                     GameSaver.saveGame(game, gameName, true)
 
-                reloadGameListUI()
+                Gdx.app.postRunnable { reloadGameListUI() }
             } catch (ex: Exception) {
-                val errorPopup = Popup(this)
-                errorPopup.addGoodSizedLabel("Could not download game!".tr())
-                errorPopup.row()
-                errorPopup.addCloseButton()
-                errorPopup.open()
+                Gdx.app.postRunnable {
+                    val errorPopup = Popup(this)
+                    errorPopup.addGoodSizedLabel("Could not download game!".tr())
+                    errorPopup.row()
+                    errorPopup.addCloseButton()
+                    errorPopup.open()
+                }
             }
             addGameButton.setText(addGameText)
             addGameButton.enable()
