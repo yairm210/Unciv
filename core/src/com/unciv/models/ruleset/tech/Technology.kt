@@ -74,8 +74,8 @@ class Technology {
         val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
         enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
 
-        if (civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
-            enabledBuildings=enabledBuildings.filterNot { it.name=="Manhattan Project" }
+        if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)
+            enabledBuildings = enabledBuildings.filterNot { it.name == "Manhattan Project" }
 
         return enabledBuildings
     }
