@@ -80,7 +80,6 @@ class LanguagePickerScreen(): PickerScreen(){
         game.settings.save()
 
         game.translations.tryReadTranslationForCurrentLanguage()
-        resetFonts()
         game.setScreen(MainMenuScreen())
         dispose()
     }
