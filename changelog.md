@@ -1,3 +1,15 @@
+## 3.8.10
+
+Font system rewrite to accept all characters and speed up game loading - By vainiovano
+
+More new tiles by The Bucketeer!
+
+New river-ready tiles by The Bucketeer!
+
+Fixed Manhattan Project being inversely affected by nuclear weapons disabling
+
+Translation updates
+
 ## 3.8.9
 
 City-states no longer spawn Great Generals
