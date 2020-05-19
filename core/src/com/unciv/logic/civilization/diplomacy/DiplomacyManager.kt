@@ -150,12 +150,13 @@ class DiplomacyManager() {
 
         val opinion = opinionOfOtherCiv()
         return when {
-            opinion >= 80  -> RelationshipLevel.Ally
-            opinion >= 40  -> RelationshipLevel.Friend
-            opinion >= 15  -> RelationshipLevel.Favorable
             opinion <= -80 -> RelationshipLevel.Unforgivable
             opinion <= -40 || civInfo.isAtWarWith(otherCiv()) -> RelationshipLevel.Enemy  /* During wartime, the estimation in which you are held may be enemy OR unforgivable */
             opinion <= -15 -> RelationshipLevel.Competitor
+            
+            opinion >= 80  -> RelationshipLevel.Ally
+            opinion >= 40  -> RelationshipLevel.Friend
+            opinion >= 15  -> RelationshipLevel.Favorable
             else           -> RelationshipLevel.Neutral
         }
     }
