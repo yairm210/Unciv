@@ -8,6 +8,43 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 
 class Terrain : NamedStats() {
+
+    lateinit var type: TerrainType
+
+    var overrideStats = false
+
+    /** If true, other terrain layers can come over this one. For mountains, lakes etc. this is false  */
+    var canHaveOverlay = true
+
+    /** If true, nothing can be built here - not even resource improvements */
+    var unbuildable = false
+
+    /** For terrain features */
+    val occursOn: Collection<String>? = null
+
+    /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
+    val turnsInto: String? = null
+
+    /** Uniques (currently used only for Natural Wonders) */
+    val uniques = ArrayList<String>()
+
+    /** Natural Wonder weight: probability to be picked */
+    var weight = 10
+
+    /** RGB color of base terrain  */
+    var RGB: List<Int>? = null
+    var movementCost = 1
+    var defenceBonus:Float = 0f
+    var impassable = false
+    var rough = false
+
+
+    fun getColor(): Color { // Can't be a lazy initialize. because w play around with the resulting color with lerp()s and the like
+        if (RGB == null) return Color.GOLD
+        return colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
+    }
+
+
     fun getDescription(ruleset: Ruleset): String {
         val sb = StringBuilder()
         sb.appendln(this.clone().toString())
@@ -36,54 +73,5 @@ class Terrain : NamedStats() {
             sb.appendln("Rough Terrain".tr())
 
         return sb.toString()
-    }
-
-    lateinit var type: TerrainType
-
-    var overrideStats = false
-
-    /***
-     * If true, other terrain layers can come over this one. For mountains, lakes etc. this is false
-     */
-
-    var canHaveOverlay = true
-
-    /***
-     * If true, nothing can be built here - not even resource improvements
-     */
-    var unbuildable = false
-
-    /***
-     * For terrain features
-     */
-    val occursOn: Collection<String>? = null
-
-    /***
-     * Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed
-     */
-    val turnsInto: String? = null
-
-    /**
-     * Uniques (currently used only for Natural Wonders)
-     */
-    val uniques = ArrayList<String>()
-
-    /*
-     * Natural Wonder weight: probability to be picked
-     */
-    var weight = 10
-
-    /**
-     * RGB color of base terrain
-     */
-    var RGB: List<Int>? = null
-    var movementCost = 1
-    var defenceBonus:Float = 0f
-    var impassable = false
-    var rough = false
-
-    fun getColor(): Color {
-        if (RGB == null) return Color.GOLD
-        return colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
     }
 }

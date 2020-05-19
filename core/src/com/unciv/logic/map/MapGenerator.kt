@@ -379,7 +379,9 @@ class MapGenerator(val ruleset: Ruleset) {
         for (resource in strategicResources) {
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
-                    .filter { it.resource == null && resource.terrainsCanBeFoundOn.contains(it.getBaseTerrain().name)}
+                    .filter { it.resource == null
+                            && resource.terrainsCanBeFoundOn.contains(it.getBaseTerrain().name)
+                            && (it.terrainFeature==null || ruleset.tileImprovements.containsKey("Remove "+it.terrainFeature)) }
 
             val locations = chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
 
