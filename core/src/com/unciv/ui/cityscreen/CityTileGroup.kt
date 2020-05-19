@@ -39,8 +39,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
                 baseLayerGroup.color.a = 0.5f
             }
 
-            city.civInfo.cities.filterNot { it == city } // worked by another city
-                    .any { it.workedTiles.contains(tileInfo.position) } -> {
+            tileInfo.isWorked() && tileInfo.getWorkingCity()!=city -> {
                 // Don't fade out, but don't add a population icon either.
                 baseLayerGroup.color.a = 0.5f
             }

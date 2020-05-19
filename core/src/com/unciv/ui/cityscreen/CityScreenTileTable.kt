@@ -53,7 +53,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
 
         if(city.civInfo.cities.filterNot { it==city }
                         .any { it.workedTiles.contains(selectedTile.position) }) {
-            innerTable.add("Worked by [${selectedTile.getCity()!!.name}]".toLabel()).row()
+            innerTable.add("Worked by [${selectedTile.getWorkingCity()!!.name}]".toLabel()).row()
         }
 
         if(city.workedTiles.contains(selectedTile.position)){

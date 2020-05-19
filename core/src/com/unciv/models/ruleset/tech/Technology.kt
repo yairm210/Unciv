@@ -56,7 +56,8 @@ class Technology {
                 lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription(ruleset) + ")"
         }
 
-        val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
+        val revealedResource = ruleset.tileResources.values.filter { it.revealedBy == name }
+                .map { it.name }.firstOrNull() // can only be one
         if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
 
         val tileImprovements = ruleset.tileImprovements.values.filter { it.techRequired == name }
