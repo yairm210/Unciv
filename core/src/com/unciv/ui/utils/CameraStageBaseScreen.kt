@@ -6,7 +6,9 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
@@ -71,17 +73,19 @@ open class CameraStageBaseScreen : Screen {
 
     companion object {
         val skin by lazy {
-            val skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
+            val skin = Skin().apply {
+                add("Nativefont", Fonts.font, BitmapFont::class.java)
+                addRegions(TextureAtlas("skin/flat-earth-ui.atlas"))
+                load(Gdx.files.internal("skin/flat-earth-ui.json"))
+            }
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts.font.apply { data.setScale(20/45f) }
             skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts.font.apply { data.setScale(20/45f) }
-            skin.get(Label.LabelStyle::class.java).apply {
-                font = Fonts.font.apply { data.setScale(18/45f) }
-                fontColor= Color.WHITE
-            }
+            skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
+            skin.get(Label.LabelStyle::class.java).font= Fonts.font.apply { data.setScale(18/45f) }
+            skin.get(Label.LabelStyle::class.java).fontColor= Color.WHITE
             skin.get(TextField.TextFieldStyle::class.java).font = Fonts.font.apply { data.setScale(18/45f) }
             skin.get(SelectBox.SelectBoxStyle::class.java).font = Fonts.font.apply { data.setScale(20/45f) }
             skin.get(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts.font.apply { data.setScale(20/45f) }
-            skin.get(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
             skin
         }
         internal var batch: Batch = SpriteBatch()
