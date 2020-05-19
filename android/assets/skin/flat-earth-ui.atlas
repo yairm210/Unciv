@@ -50,27 +50,6 @@ earth
   orig: 178, 164
   offset: 0, 0
   index: -1
-font-button-export
-  rotate: false
-  xy: 1, 180
-  size: 139, 139
-  orig: 139, 139
-  offset: 0, 0
-  index: -1
-font-export
-  rotate: false
-  xy: 1, 90
-  size: 88, 88
-  orig: 88, 88
-  offset: 0, 0
-  index: -1
-font-title-export
-  rotate: false
-  xy: 264, 262
-  size: 247, 249
-  orig: 247, 249
-  offset: 0, 0
-  index: -1
 list
   rotate: false
   xy: 142, 280

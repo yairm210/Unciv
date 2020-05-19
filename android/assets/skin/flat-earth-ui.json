@@ -1,14 +1,8 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	button: {
-		file: font-button-export.fnt
-	}
-	font: {
-		file: font-export.fnt
-	}
-	title: {
-		file: font-title-export.fnt
-	}
+	button: "Nativefont"
+	font: "Nativefont"
+	title: "Nativefont"
 }
 com.badlogic.gdx.graphics.Color: {
 	black: {
