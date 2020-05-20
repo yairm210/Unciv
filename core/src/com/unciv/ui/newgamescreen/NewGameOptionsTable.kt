@@ -23,9 +23,12 @@ class NewGameOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTa
         defaults().pad(5f)
 
         add("Game Options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
-        addDifficultySelectBox()
-        addGameSpeedSelectBox()
-        addEraSelectBox()
+        add(Table().apply {
+            defaults().pad(5f)
+            addDifficultySelectBox()
+            addGameSpeedSelectBox()
+            addEraSelectBox()
+        }).colspan(2).row()
         addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
 
@@ -82,8 +85,8 @@ class NewGameOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTa
         }
     }
 
-    fun addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
-        add(text.toLabel())
+    fun Table.addSelectBox(text: String, values: Collection<String>, initialState: String, onChange: (newValue: String) -> Unit) {
+        add(text.toLabel()).left()
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.onChange { onChange(selectBox.selected.value) }
         add(selectBox).fillX().row()
