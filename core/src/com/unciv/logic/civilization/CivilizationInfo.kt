@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException
 import com.unciv.Constants
 import com.unciv.JsonParser
 import com.unciv.UncivGame
@@ -28,6 +29,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.roundToInt
+import kotlin.system.exitProcess
 
 class CivilizationInfo {
 
@@ -135,6 +137,7 @@ class CivilizationInfo {
     fun isCityState(): Boolean = nation.isCityState()
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
+    fun isUncontacted(): Boolean = !(diplomacy.values.map { it.otherCiv() }.size > 1)
 
     fun victoryType(): VictoryType {
         if(gameInfo.gameParameters.victoryTypes.size==1)
@@ -161,7 +164,6 @@ class CivilizationInfo {
             newResourceSupplyList.add(resourceSupply.resource,resourceSupply.amount,"All")
         return newResourceSupplyList
     }
-
 
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
@@ -245,14 +247,16 @@ class CivilizationInfo {
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
+        if (otherCiv.isCityState()) gold += if(otherCiv.isUncontacted()) 30 else 15
+
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
-
-        otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact,civName))
-
         otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
+        otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact,civName))
         popupAlerts.add(PopupAlert(AlertType.FirstContact,otherCiv.civName))
+
+
 
         if(isCurrentPlayer() || otherCiv.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Meet another civilization")

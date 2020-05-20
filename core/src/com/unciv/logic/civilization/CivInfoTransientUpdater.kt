@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.UniqueAbility
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
+import kotlin.system.exitProcess
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
@@ -39,8 +40,13 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         if (!civInfo.isBarbarian()) {
             for (entry in viewedCivs) {
                 val metCiv = entry.key
-                if (metCiv == civInfo || metCiv.isBarbarian() || civInfo.diplomacy.containsKey(metCiv.civName)) continue
+
+                if (metCiv.isCurrentPlayer() || metCiv.isBarbarian() || civInfo.knows(metCiv)) continue
+
                 civInfo.meetCivilization(metCiv)
+                if(metCiv.isCityState())
+                    civInfo.addNotification("We have received a gift of gold from the City-State of [" + metCiv.civName + "]!", entry.value.position, Color.GOLD)
+
                 civInfo.addNotification("We have encountered [" + metCiv.civName + "]!", entry.value.position, Color.GOLD)
                 metCiv.addNotification("We have encountered [" + civInfo.civName + "]!", entry.value.position, Color.GOLD)
             }
@@ -71,6 +77,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
     }
+
 
     private fun discoverNaturalWonders() {
         val newlyViewedNaturalWonders = HashSet<TileInfo>()
