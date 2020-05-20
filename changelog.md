@@ -179,7 +179,7 @@ Translation updates
 ## 3.7.6
 
 Can specify a mod as a 'base ruleset' - 
-supports mods with no techs, alternate tech trees, no barbarians, no workers
+supports mods with no techs, alternate tech trees, No Barbarians, no workers
 
 Unique units need not replace existing ones
 
@@ -858,7 +858,7 @@ Spain civ added - by r3versi
 
 Background work towards enabling mods
 
-Resolved #1598 - we now save map options for new games started
+Resolved #1598 - we now save Map Options for new games started
 
 Specific AI automation for Missile units means they won't try to move to tiles that they can't move to
 

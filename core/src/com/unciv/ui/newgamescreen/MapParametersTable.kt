@@ -45,7 +45,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
                 mapParameters.shape = mapShapeSelectBox.selected.value
             }
 
-        add ("{Map shape}:".toLabel()).left()
+        add ("{Map Shape}:".toLabel()).left()
         add(mapShapeSelectBox).fillX().row()
     }
 
@@ -70,7 +70,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
                 noNaturalWondersCheckbox.isVisible = mapParameters.type != MapType.empty
             }
 
-        add("{Map generation type}:".toLabel()).left()
+        add("{Map Generation Type}:".toLabel()).left()
         add(mapTypeSelectBox).fillX().row()
     }
 
@@ -86,12 +86,12 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
                 mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
             }
 
-        add("{World size}:".toLabel()).left()
+        add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
     }
 
     private fun addNoRuinsCheckbox() {
-        noRuinsCheckbox = CheckBox("No ancient ruins".tr(), skin)
+        noRuinsCheckbox = CheckBox("No Ancient Ruins".tr(), skin)
         noRuinsCheckbox.isChecked = mapParameters.noRuins
         noRuinsCheckbox.onChange { mapParameters.noRuins = noRuinsCheckbox.isChecked }
         add(noRuinsCheckbox).colspan(2).row()

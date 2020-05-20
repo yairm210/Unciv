@@ -39,7 +39,7 @@ class Terrain : NamedStats() {
     var rough = false
 
 
-    fun getColor(): Color { // Can't be a lazy initialize. because w play around with the resulting color with lerp()s and the like
+    fun getColor(): Color { // Can't be a lazy initialize, because we play around with the resulting color with lerp()s and the like
         if (RGB == null) return Color.GOLD
         return colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
     }
@@ -52,7 +52,7 @@ class Terrain : NamedStats() {
             sb.appendln("Occurs on [${occursOn.joinToString(", ")}]".tr())
 
         if (turnsInto != null)
-            sb.appendln("Placed on [${turnsInto.tr()}]".tr())
+            sb.appendln("Placed on [$turnsInto]".tr())
 
         val resourcesFound = ruleset.tileResources.values.filter { it.terrainsCanBeFoundOn.contains(name) }
         if (resourcesFound.isNotEmpty())

@@ -37,13 +37,13 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         scrollPane.setScrollingDisabled(true, true)
 
         val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-        val newGameScreenOptionsTable = NewGameParametersTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+        val newGameOptionsTable = NewGameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
         topTable.add(ScrollPane(MapOptionsTable(this)).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(newGameScreenOptionsTable).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.pack()
         topTable.setFillParent(true)

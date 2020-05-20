@@ -13,7 +13,7 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
 
-class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
+class NewGameOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
     val newGameParameters = newGameScreen.gameSetupInfo.gameParameters
     val ruleset = newGameScreen.ruleset
@@ -22,7 +22,7 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
         top()
         defaults().pad(5f)
 
-        add("Game options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
+        add("Game Options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
         addEraSelectBox()
@@ -48,7 +48,7 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
     }
 
     private fun Table.addBarbariansCheckbox() =
-            addCheckbox("No barbarians", newGameParameters.noBarbarians)
+            addCheckbox("No Barbarians", newGameParameters.noBarbarians)
             { newGameParameters.noBarbarians = it }
 
     private fun Table.addOneCityChallengeCheckbox() =
@@ -66,7 +66,7 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
             updatePlayerPickerTable("") }
 
     private fun addCityStatesSelectBox() {
-        add("{Number of city-states}:".toLabel())
+        add("{Number of City-States}:".toLabel())
         val cityStatesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
 
         val numberOfCityStates = ruleset.nations.filter { it.value.isCityState() }.size
@@ -89,17 +89,17 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
         add(selectBox).fillX().row()
     }
 
-    private fun addDifficultySelectBox() {
+    private fun Table.addDifficultySelectBox() {
         addSelectBox("{Difficulty}:", ruleset.difficulties.keys, newGameParameters.difficulty)
         { newGameParameters.difficulty = it }
     }
 
-    private fun addGameSpeedSelectBox() {
+    private fun Table.addGameSpeedSelectBox() {
         addSelectBox("{Game Speed}:", GameSpeed.values().map { it.name }, newGameParameters.gameSpeed.name)
         { newGameParameters.gameSpeed = GameSpeed.valueOf(it) }
     }
 
-    private fun addEraSelectBox() {
+    private fun Table.addEraSelectBox() {
         val eras = ruleset.technologies.values.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, newGameParameters.startingEra)
         { newGameParameters.startingEra = it }
@@ -107,7 +107,7 @@ class NewGameParametersTable(newGameScreen: NewGameScreen, val updatePlayerPicke
 
 
     private fun addVictoryTypeCheckboxes() {
-        add("{Victory conditions}:".toLabel()).colspan(2).row()
+        add("{Victory Conditions}:".toLabel()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
         var i = 0
