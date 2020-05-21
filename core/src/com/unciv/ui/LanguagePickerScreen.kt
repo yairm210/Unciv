@@ -17,6 +17,7 @@ class LanguageTable(val language:String, val percentComplete: Int):Table(){
     init{
         pad(10f)
         defaults().pad(10f)
+        left()
         if(ImageGetter.imageExists("FlagIcons/$language"))
             add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
 
@@ -52,6 +53,11 @@ class LanguagePickerScreen(): PickerScreen(){
             |  instructions are in the Github readme! (Menu > Community > Github)
             """.trimMargin()
         topTable.add(translationDisclaimer.toLabel()).pad(10f).row()
+        val tableLanguages = Table();
+        tableLanguages.defaults().uniformX();
+        tableLanguages.defaults().pad(10.0f);
+        tableLanguages.defaults().fillX();
+        topTable.add(tableLanguages).row();
 
         val languageCompletionPercentage = UncivGame.Current.translations
                 .percentCompleteOfLanguages
@@ -65,7 +71,7 @@ class LanguagePickerScreen(): PickerScreen(){
                 rightSideButton.enable()
                 update()
             }
-            topTable.add(it).pad(10f).row()
+            tableLanguages.add(it).row()
         }
 
         rightSideButton.setText("Pick language".tr())

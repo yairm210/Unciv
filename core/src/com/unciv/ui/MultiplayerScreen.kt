@@ -68,6 +68,10 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
 
+        rightSideTable.defaults().uniformX();
+        rightSideTable.defaults().fillX();
+        rightSideTable.defaults().pad(10.0f);
+
         // leftTable Setup
         reloadGameListUI()
 
@@ -79,30 +83,30 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             Gdx.app.clipboard.contents = game.settings.userId
             ResponsePopup("UserID copied to clipboard".tr(), this)
         }
-        rightSideTable.add(copyUserIdButton).pad(10f).padBottom(30f).row()
+        rightSideTable.add(copyUserIdButton).padBottom(30f).row()
 
         copyGameIdButton.onClick {
             Gdx.app.clipboard.contents = selectedGame.gameId
             ResponsePopup("GameID copied to clipboard".tr(), this)
         }
-        rightSideTable.add(copyGameIdButton).pad(10f).row()
+        rightSideTable.add(copyGameIdButton).row()
 
         editButton.onClick {
             game.setScreen(EditMultiplayerGameInfoScreen(selectedGame, selectedGameName, this))
             //game must be unselected in case the game gets deleted inside the EditScreen
             unselectGame()
         }
-        rightSideTable.add(editButton).pad(10f).row()
+        rightSideTable.add(editButton).row()
 
         addGameButton.onClick {
             game.setScreen(AddMultiplayerGameScreen(this))
         }
-        rightSideTable.add(addGameButton).pad(10f).padBottom(30f).row()
+        rightSideTable.add(addGameButton).padBottom(30f).row()
 
         refreshButton.onClick {
             redownloadAllGames()
         }
-        rightSideTable.add(refreshButton).pad(10f).row()
+        rightSideTable.add(refreshButton).row()
 
         //RightSideButton Setup
         rightSideButton.setText("Join Game".tr())
