@@ -1,3 +1,23 @@
+## 3.8.11
+
+Gold deficit only affects science when the civ has negative gold
+
+Resolved #2642 - added difficulty settings to Civilopedia
+
+Resolved #2549 - fixed New Game Screen capitalization, options alignment and placing
+
+Resources no longer spawn under unbuildable, unremovable terrain features
+
+Resolved #2638 - Auto-assign of population no longer "double books" tiles
+
+Uniformed the size of buttons on LanguagePickerScreen and MultiplayerScreen - By panchenco
+
+Don't reveal submarine position by city markers - By JackRainy
+
+Size optimization - By lishaoxia1985
+
+Translation updates
+
 ## 3.8.10
 
 Font system rewrite to accept all characters and speed up game loading - By vainiovano
