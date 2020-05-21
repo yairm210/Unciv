@@ -62,6 +62,9 @@ open class TileInfo {
         toReturn.improvementInProgress = improvementInProgress
         toReturn.roadStatus = roadStatus
         toReturn.turnsToImprovement = turnsToImprovement
+        toReturn.hasBottomLeftRiver = hasBottomLeftRiver
+        toReturn.hasBottomRightRiver = hasBottomRightRiver
+        toReturn.hasBottomRiver = hasBottomRiver
         return toReturn
     }
 
