@@ -435,7 +435,7 @@ open class TileInfo {
         turnsToImprovement = 0
     }
 
-    fun hasEnemySubmarine(viewingCiv: CivilizationInfo): Boolean {
+    fun hasEnemyInvisibleUnit(viewingCiv: CivilizationInfo): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.none()) return false
         if (unitsInTile.first().civInfo != viewingCiv &&

@@ -77,13 +77,13 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
                     (tile.civilianUnit != null) && direction.epsilonEquals(0f, 1f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Left)
                     // detect military under the city
-                    (tile.militaryUnit != null) && direction.epsilonEquals(1f, 1f) ->
+                    (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(worldScreen.viewingCiv)) && direction.epsilonEquals(1f, 1f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Center)
                     // detect civilian right-below the city
                     (tile.civilianUnit != null) && direction.epsilonEquals(1f, 0f) ->
                         insertHiddenUnitMarker(HiddenUnitMarkerPosition.Right)
                 }
-            } else if (tile.militaryUnit != null) {
+            } else if (tile.militaryUnit != null && !tile.hasEnemyInvisibleUnit(worldScreen.viewingCiv)) {
                 when {
                     // detect military left from the city
                     direction.epsilonEquals(0f, 1f) ->

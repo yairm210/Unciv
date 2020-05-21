@@ -269,7 +269,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileInfo)
-            || !tileInfo.hasEnemySubmarine(viewingCiv)
+            || !tileInfo.hasEnemyInvisibleUnit(viewingCiv)
 
     fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableTiles.contains(tileInfo)
