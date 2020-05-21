@@ -100,7 +100,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         // negative gold hurts science
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
-        if (statMap.values.map { it.gold }.sum() < 0) {
+        if (statMap.values.map { it.gold }.sum() < 0 && civInfo.gold < 0) {
             val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
                     1 - statMap.values.map { it.science }.sum())// Leave at least 1
             statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
