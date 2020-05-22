@@ -29,13 +29,18 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     var percentCompleteOfLanguages = HashMap<String,Int>()
             .apply { put("English",100) } // So even if we don't manage to load the percentages, we can still pass the language screen
 
-    fun get(text:String,language:String): String {
-        if(!hasTranslation(text,language)) return text
-        return get(text)!![language]!!
-    }
+    private var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 
-    private fun hasTranslation(text:String,language:String): Boolean {
-        return containsKey(text) && get(text)!!.containsKey(language)
+
+    fun get(text: String, language: String, activeMods: HashSet<String>? = null): String {
+        activeMods?.forEach {
+            modsWithTranslations[it]?.let { modTranslations ->
+                val translation = modTranslations[text]?.get(language)
+                if (translation != null) return translation
+            }
+        }
+
+        return this[text]?.get(language) ?: text
     }
 
     fun getLanguages(): List<String> {
@@ -55,7 +60,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val translationFileName = "jsons/translations/$language.properties"
         if (!Gdx.files.internal(translationFileName).exists()) return
 
-        val languageTranslations:HashMap<String,String>
+        val languageTranslations: HashMap<String, String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
              languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
@@ -66,25 +71,35 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         // try to load the translations from the mods
         for(modFolder in Gdx.files.local("mods").list()) {
             val modTranslationFile = modFolder.child(translationFileName)
-            if (modTranslationFile.exists())
-                languageTranslations.putAll(TranslationFileReader.read(modTranslationFile))
+            if (modTranslationFile.exists()) {
+                val translationsForMod = Translations()
+                createTranslations(language, TranslationFileReader.read(modTranslationFile), translationsForMod)
+
+                modsWithTranslations[modFolder.name()] = translationsForMod
+            }
         }
 
-        for (translation in languageTranslations) {
-            val hashKey = if (translation.key.contains('['))
-                    translation.key.replace(squareBraceRegex,"[]")
-                else translation.key
-            if (!containsKey(hashKey))
-                this[hashKey] = TranslationEntry(translation.key)
-
-            // why not in one line, Because there were actual crashes.
-            // I'm pretty sure I solved this already, but hey double-checking doesn't cost anything.
-            val entry = this[hashKey]
-            if (entry!=null) entry[language] = translation.value
-        }
+        createTranslations(language, languageTranslations)
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
         println("Loading translation file for $language - "+translationFilesTime+"ms")
+    }
+
+    private fun createTranslations(language: String,
+                                  languageTranslations: HashMap<String,String>,
+                                  targetTranslations: Translations = this) {
+        for (translation in languageTranslations) {
+            val hashKey = if (translation.key.contains('['))
+                translation.key.replace(squareBraceRegex,"[]")
+            else translation.key
+            if (!containsKey(hashKey))
+                targetTranslations[hashKey] = TranslationEntry(translation.key)
+
+            // why not in one line, Because there were actual crashes.
+            // I'm pretty sure I solved this already, but hey double-checking doesn't cost anything.
+            val entry = targetTranslations[hashKey]
+            if (entry!=null) entry[language] = translation.value
+        }
     }
 
     fun tryReadTranslationForCurrentLanguage(){
@@ -233,6 +248,12 @@ fun String.tr(): String {
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
 
+    val activeMods = if (UncivGame.Current.isGameInfoInitialized()) {
+        UncivGame.Current.gameInfo.gameParameters.mods
+    } else {
+        null
+    }
+
     return UncivGame.Current.translations
-            .get(this, UncivGame.Current.settings.language)
+            .get(this, UncivGame.Current.settings.language, activeMods)
 }
