@@ -11,13 +11,14 @@ import com.unciv.models.ruleset.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
 
+    fun containsEnemyMilitaryUnit(tileInfo: TileInfo) = tileInfo.militaryUnit != null
+            && tileInfo.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
+
     fun automateWorkerAction() {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
-                .filter {
-                    it.militaryUnit != null && it.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
-                }
+                .filter(this::containsEnemyMilitaryUnit)
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+        if (enemyUnitsInWalkingDistance.isNotEmpty()) return runAway()
 
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
@@ -60,6 +61,25 @@ class WorkerAutomation(val unit: MapUnit) {
         unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
     }
 
+
+    fun countDistanceToClosestEnemy(tile: TileInfo): Int {
+        for(i in 1..3)
+            if(tile.getTilesAtDistance(i).any(this::containsEnemyMilitaryUnit))
+                return i
+        return 4
+    }
+
+    private fun runAway() {
+        val reachableTiles = unit.movement.getDistanceToTiles()
+        val enterableCity = reachableTiles.keys.firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }
+        if(enterableCity!=null) {
+            unit.movement.moveToTile(enterableCity)
+            return
+        }
+        val tileFurthestFromEnemy = reachableTiles.keys.filter {  unit.movement.canMoveTo(it) }
+                .maxBy(this::countDistanceToClosestEnemy)!!
+        unit.movement.moveToTile(tileFurthestFromEnemy)
+    }
 
 
     private fun tryConnectingCities(unit: MapUnit):Boolean { // returns whether we actually did anything
