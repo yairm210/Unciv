@@ -206,6 +206,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             table.add(getLowerPriorityButton(constructionQueueIndex, name, city)).right()
         else table.add().right()
 
+        table.add(getRemoveFromQueueButton(constructionQueueIndex, city)).right()
+
         table.touchable = Touchable.enabled
         table.onClick {
             cityScreen.selectedConstruction = cityConstructions.getConstruction(name)
@@ -385,6 +387,21 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 cityScreen.selectedConstruction = cityScreen.city.cityConstructions.getConstruction(name)
                 cityScreen.selectedTile = null
                 selectedQueueEntry = constructionQueueIndex + 1
+                cityScreen.update()
+            }
+        }
+        return tab
+    }
+
+    private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: CityInfo): Table {
+        val tab = Table()
+        tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
+        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+            tab.touchable = Touchable.enabled
+            tab.onClick {
+                tab.touchable = Touchable.disabled
+                city.cityConstructions.removeFromQueue(constructionQueueIndex,false)
+                cityScreen.selectedConstruction = null
                 cityScreen.update()
             }
         }
