@@ -409,11 +409,10 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     private fun getHeader(title: String): Table {
-        val headerTable = Table()
-        headerTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        headerTable.add(title.toLabel(fontSize = 24)).fillX()
-        headerTable.pad(4f)
-        return headerTable
+        return Table()
+                .background(ImageGetter.getBackground(ImageGetter.getBlue()))
+                .addCell(title.toLabel(fontSize = 24))
+                .pad(4f)
     }
 
     private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float) {

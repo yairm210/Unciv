@@ -22,6 +22,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private val innerTable = Table(skin)
 
     init {
+        align(Align.topLeft)
+
         showConstructionsTableButton.onClick {
             cityScreen.showConstructionsTable = true
             cityScreen.update()
@@ -52,15 +54,25 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun Table.addCategory(str: String, showHideTable: Table) {
-        val titleTable = Table().background(ImageGetter.getBackground(ImageGetter.getBlue()))
-        val width = cityScreen.stage.width/4 - 2*pad
+        val width = cityScreen.stage.width / 4 - 2 * pad
         val showHideTableWrapper = Table()
-        showHideTableWrapper.add(showHideTable).minWidth(width)
-        titleTable.add(str.toLabel(fontSize = 24))
-        titleTable.onClick {
-            if(showHideTableWrapper.hasChildren()) showHideTableWrapper.clear()
-            else showHideTableWrapper.add(showHideTable).minWidth(width)
-        }
+                .add(showHideTable)
+                .minWidth(width)
+                .table
+
+        val titleTable = Table()
+                .background(ImageGetter.getBackground(ImageGetter.getBlue()))
+                .pad(4f)
+                .addCell(str.toLabel(fontSize = FONT_SIZE_CATEGORY_HEADER))
+                .onClick {
+                    if (showHideTableWrapper.hasChildren()) {
+                        showHideTableWrapper.clear()
+                    } else {
+                        showHideTableWrapper.add(showHideTable).minWidth(width)
+                    }
+                }
+        addSeparator()
+
         add(titleTable).minWidth(width).row()
         add(showHideTableWrapper).row()
     }
@@ -166,7 +178,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             val statValuesTable = Table().apply { defaults().pad(2f) }
             addCategory(stat.name, statValuesTable)
 
-            statValuesTable.add("Base values".toLabel(fontSize= 24)).colspan(2).row()
+            statValuesTable.add("Base values".toLabel(fontSize= FONT_SIZE_STAT_INFO_HEADER)).pad(4f).colspan(2).row()
             var sumOfAllBaseValues = 0f
             for(entry in relevantBaseStats) {
                 val specificStatValue = entry.value.get(stat)
@@ -180,7 +192,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
             val relevantBonuses = cityStats.statPercentBonusList.filter { it.value.get(stat)!=0f }
             if(relevantBonuses.isNotEmpty()) {
-                statValuesTable.add("Bonuses".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
+                statValuesTable.add("Bonuses".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
                 var sumOfBonuses = 0f
                 for (entry in relevantBonuses) {
                     val specificStatValue = entry.value.get(stat)
@@ -198,7 +210,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             }
 
 
-            statValuesTable.add("Final".toLabel(fontSize = 24)).colspan(2).padTop(20f).row()
+            statValuesTable.add("Final".toLabel(fontSize = FONT_SIZE_STAT_INFO_HEADER)).colspan(2).padTop(20f).row()
             var finalTotal = 0f
             for (entry in cityStats.finalStatList) {
                 val specificStatValue = entry.value.get(stat)
@@ -210,6 +222,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             statValuesTable.addSeparator()
             statValuesTable.add("Total".toLabel())
             statValuesTable.add(DecimalFormat("0.#").format(finalTotal).toLabel()).row()
+
+            statValuesTable.padBottom(4f)
         }
     }
 
@@ -230,6 +244,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 greatPersonTable.add(DecimalFormat("0.#").format(value).toLabel()).row()
             }
         }
+    }
+
+    companion object {
+        private const val FONT_SIZE_CATEGORY_HEADER: Int = 24
+        private const val FONT_SIZE_STAT_INFO_HEADER = 22
     }
 
 }
