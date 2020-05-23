@@ -395,6 +395,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val headerTable = Table()
         headerTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
         headerTable.add(title.toLabel(fontSize = 24)).fillX()
+        headerTable.pad(4f)
         return headerTable
     }
 
@@ -402,7 +403,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (list.isEmpty()) return
 
         addSeparator()
-        add(getHeader(title)).fill().row()
+        add(getHeader(title).pad(4f)).fill().row()
         addSeparator()
 
         for (table in list) {
