@@ -193,6 +193,11 @@ fun Table.addSeparatorVertical(): Cell<Image> {
     return cell
 }
 
+fun <T : Actor> Table.addCell(actor: T): Table {
+    add(actor)
+    return this
+}
+
 /**
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
