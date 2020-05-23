@@ -47,7 +47,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         add(showCityInfoTableButton).left().padLeft(pad).padBottom(pad).row()
         add(constructionsQueueScrollPane).left().padBottom(pad).row()
-        add(buttons).center().bottom().padBottom(pad).row()
+        add(buttons).left().bottom().padBottom(pad).row()
         add(availableConstructionsScrollPane).left().bottom().row()
     }
 
