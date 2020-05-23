@@ -97,6 +97,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         constructionsQueueTable.defaults().pad(0f)
         constructionsQueueTable.add(getHeader("Current construction".tr())).fillX()
+
         constructionsQueueTable.addSeparator()
 
         if (currentConstruction != "")
@@ -107,7 +108,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         constructionsQueueTable.addSeparator()
         constructionsQueueTable.add(getHeader("Construction queue".tr())).fillX()
-        constructionsQueueTable.addSeparator()
 
         if (queue.isNotEmpty()) {
             queue.forEachIndexed { i, constructionName ->
@@ -403,7 +403,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (list.isEmpty()) return
 
         addSeparator()
-        add(getHeader(title).pad(4f)).prefWidth(prefWidth).fill().row()
+        add(getHeader(title)).prefWidth(prefWidth).fill().row()
         addSeparator()
 
         for (table in list) {
