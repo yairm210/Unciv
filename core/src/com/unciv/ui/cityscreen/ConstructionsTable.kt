@@ -165,11 +165,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                             + specialConstruction.getProductionTooltip(city))
         }
 
-        availableConstructionsTable.addCategory("Units", units)
-        availableConstructionsTable.addCategory("Wonders", buildableWonders)
-        availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders)
-        availableConstructionsTable.addCategory("Buildings", buildableBuildings)
-        availableConstructionsTable.addCategory("Other", specialConstructions)
+        availableConstructionsTable.addCategory("Units", units, constructionsQueueTable.width)
+        availableConstructionsTable.addCategory("Wonders", buildableWonders, constructionsQueueTable.width)
+        availableConstructionsTable.addCategory("National Wonders", buildableNationalWonders, constructionsQueueTable.width)
+        availableConstructionsTable.addCategory("Buildings", buildableBuildings, constructionsQueueTable.width)
+        availableConstructionsTable.addCategory("Other", specialConstructions, constructionsQueueTable.width)
     }
 
     private fun getQueueEntry(constructionQueueIndex: Int, name: String): Table {
@@ -399,11 +399,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         return headerTable
     }
 
-    private fun Table.addCategory(title: String, list: ArrayList<Table>) {
+    private fun Table.addCategory(title: String, list: ArrayList<Table>, prefWidth: Float) {
         if (list.isEmpty()) return
 
         addSeparator()
-        add(getHeader(title).pad(4f)).fill().row()
+        add(getHeader(title).pad(4f)).prefWidth(prefWidth).fill().row()
         addSeparator()
 
         for (table in list) {
