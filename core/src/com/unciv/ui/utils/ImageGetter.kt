@@ -149,7 +149,7 @@ object ImageGetter {
     fun getConstructionImage(construction: String): Image {
         if(ruleset.buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
         if(ruleset.units.containsKey(construction)) return getUnitIcon(construction)
-        if(construction=="Nothing") return getImage("OtherIcons/Stop")
+        if(construction=="Nothing") return getImage("OtherIcons/Sleep")
         return getStatIcon(construction)
     }
 
