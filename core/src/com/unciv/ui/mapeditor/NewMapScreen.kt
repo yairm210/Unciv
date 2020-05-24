@@ -33,7 +33,8 @@ class NewMapScreen : PickerScreen() {
 
 
         topTable.apply {
-            add(ScrollPane(newMapScreenOptionsTable)).height(topTable.parent.height)
+            add(ScrollPane(newMapScreenOptionsTable).apply { setOverscroll(false,false) })
+                    .height(topTable.parent.height)
             pack()
             setFillParent(true)
         }
