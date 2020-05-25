@@ -2,12 +2,9 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
@@ -24,7 +21,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
         touchable = Touchable.enabled
     }
 
-    private fun getIconAnKeyForUnitAction(unitAction: String): UnitIconAndKey {
+    private fun getIconAndKeyForUnitAction(unitAction: String): UnitIconAndKey {
         when {
             unitAction.startsWith("Upgrade to") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
@@ -74,7 +71,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
 
     private fun getUnitActionButton(unitAction: UnitAction): Button {
-        val iconAndKey = getIconAnKeyForUnitAction(unitAction.title)
+        val iconAndKey = getIconAndKeyForUnitAction(unitAction.title)
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(iconAndKey.Icon).size(20f).pad(5f)
         val fontColor = if (unitAction.isCurrentAction) Color.YELLOW else Color.WHITE
