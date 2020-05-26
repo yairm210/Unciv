@@ -221,7 +221,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
     }
 
-    private fun getKeyboardListener(): InputListener = object: InputListener() {
+    private fun getKeyboardListener(): InputListener = object : InputListener() {
         override fun keyDown(event: InputEvent?, keyCode: Int): Boolean {
             if (event == null) return super.keyDown(event, keyCode)
             when(event.keyCode) {
