@@ -77,7 +77,8 @@ class WorkerAutomation(val unit: MapUnit) {
             return
         }
         val tileFurthestFromEnemy = reachableTiles.keys.filter {  unit.movement.canMoveTo(it) }
-                .maxBy(this::countDistanceToClosestEnemy)!!
+                .maxBy(this::countDistanceToClosestEnemy)
+        if(tileFurthestFromEnemy==null) return // can't move anywhere!
         unit.movement.moveToTile(tileFurthestFromEnemy)
     }
 
