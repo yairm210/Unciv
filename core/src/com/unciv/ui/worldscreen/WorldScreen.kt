@@ -634,6 +634,22 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             return
         }
 
+        // Deselect Unit
+        if (bottomUnitTable.selectedUnit != null) {
+            bottomUnitTable.selectedUnit = null
+            bottomUnitTable.isVisible = false
+            shouldUpdate = true
+            return
+        }
+
+        // Deselect city
+        if (bottomUnitTable.selectedCity != null) {
+            bottomUnitTable.selectedCity = null
+            bottomUnitTable.isVisible = false
+            shouldUpdate = true
+            return
+        }
+
         // don't show a dialog, if it can't exit the game
         if (game.exitEvent == null) {
             return

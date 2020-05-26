@@ -1,3 +1,17 @@
+## 3.8.12
+
+By dbaelz:
+
+- Minor UI improvements construction menu 
+- Evaluate translations for mods only when the mod is active in a game. Fixes #2622 
+- Add remove button for construction queue items 
+
+Resolved #2647 - Automated workers run away from enemy military units
+
+Advanced sliders work on New Map Screen
+
+Translation updates
+
 ## 3.8.11
 
 Gold deficit only affects science when the civ has negative gold

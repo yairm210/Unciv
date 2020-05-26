@@ -221,11 +221,14 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         game.setScreen(CityScreen(civInfo.cities[indexOfNextCity]))
     }
 
-    private fun getKeyboardListener(): InputListener = object : InputListener() {
-        override fun keyTyped(event: InputEvent?, character: Char): Boolean {
-            if (character != 0.toChar() || event == null) return super.keyTyped(event, character)
-            if (event.keyCode == Input.Keys.LEFT) page(-1)
-            if (event.keyCode == Input.Keys.RIGHT) page(1)
+    private fun getKeyboardListener(): InputListener = object: InputListener() {
+        override fun keyDown(event: InputEvent?, keyCode: Int): Boolean {
+            if (event == null) return super.keyDown(event, keyCode)
+            when(event.keyCode) {
+                Input.Keys.LEFT -> page(-1)
+                Input.Keys.RIGHT -> page(1)
+                else -> return super.keyDown(event, keyCode)
+            }
             return true
         }
     }
