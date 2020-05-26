@@ -48,8 +48,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .onClick { setImprovements() }
         tabPickerTable.add(improvementsButton)
 
-//        val unitsButton = "Units".toTextButton().onClick { setUnits() }
-//        tabPickerTable.add(unitsButton)
+        val unitsButton = "Units".toTextButton().onClick { setUnits() }
+        tabPickerTable.add(unitsButton)
 
         tabPickerTable.pack()
 
