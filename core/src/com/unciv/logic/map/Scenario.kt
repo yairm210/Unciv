@@ -1,0 +1,8 @@
+package com.unciv.logic.map
+
+import com.unciv.models.metadata.GameParameters
+
+class Scenario {
+    lateinit var tileMap: TileMap
+    lateinit var gameParameters: GameParameters
+}
