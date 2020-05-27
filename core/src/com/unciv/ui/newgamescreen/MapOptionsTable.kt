@@ -1,10 +1,12 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
+import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
@@ -36,6 +38,8 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         // because SOME people gotta give the hugest names to their maps
         savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
+        val loadScenarioCheckBox = getLoadScenarioCheckbox()
+        savedMapOptionsTable.add(loadScenarioCheckBox).colspan(2).row()
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
@@ -69,6 +73,13 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
 
         mapFileSelectBox.onChange { mapParameters.name = mapFileSelectBox.selected!! }
         return mapFileSelectBox
+    }
+
+    private fun getLoadScenarioCheckbox(): CheckBox {
+        val loadScenarioCheckbox = CheckBox("Load Scenario".tr(), CameraStageBaseScreen.skin)
+        loadScenarioCheckbox.isChecked = mapParameters.loadScenario
+        loadScenarioCheckbox.onChange { mapParameters.loadScenario = loadScenarioCheckbox.isChecked }
+        return loadScenarioCheckbox
     }
 
 }
