@@ -56,6 +56,9 @@ class UncivGame(
     /** Console log battles
      */
     val alertBattle = true
+    /** Console log battles
+     */
+    val scenarioDebugSwitch = true
 
     lateinit var worldScreen: WorldScreen
 

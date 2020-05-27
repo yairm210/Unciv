@@ -48,8 +48,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .onClick { setImprovements() }
         tabPickerTable.add(improvementsButton)
 
-        val unitsButton = "Units".toTextButton().onClick { setUnits() }
-        tabPickerTable.add(unitsButton)
+        if (UncivGame.Current.scenarioDebugSwitch) {
+            val unitsButton = "Units".toTextButton().onClick { setUnits() }
+            tabPickerTable.add(unitsButton)
+        }
 
         tabPickerTable.pack()
 
