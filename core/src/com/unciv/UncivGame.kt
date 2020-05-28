@@ -56,7 +56,7 @@ class UncivGame(
     /** Console log battles
      */
     val alertBattle = true
-    /** Console log battles
+    /** Debug new Scenario functionality
      */
     val scenarioDebugSwitch = true
 
