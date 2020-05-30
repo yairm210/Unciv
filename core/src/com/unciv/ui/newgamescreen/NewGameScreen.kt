@@ -2,16 +2,16 @@ package com.unciv.ui.newgamescreen
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
-import com.unciv.logic.GameStarter
-import com.unciv.logic.IdChecker
+import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.Scenario
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -31,6 +31,8 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
     var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
     val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
+    var loadedScenario: Scenario ?= null
+    var useLoadedScenario = false
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -38,15 +40,24 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
         val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
         val newGameOptionsTable = NewGameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-        topTable.add(ScrollPane(MapOptionsTable(this)).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(MapOptionsTable(this).apply {name = "MapOptionsTable"})
+                .apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(playerPickerTable.apply {name = "PlayerPickerTable"}).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(newGameOptionsTable.apply {name = "NewGameOptionsTable"})
+                .apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.pack()
         topTable.setFillParent(true)
+
+        if (UncivGame.Current.scenarioDebugSwitch
+//                && loadedScenario != null
+        ) {
+            var loadScenarioCheckBox = getLoadScenarioCheckbox()
+            bottomTable.add(loadScenarioCheckBox)
+        }
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
@@ -127,7 +138,27 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         else rightSideButton.disable()
     }
 
+    private fun getLoadScenarioCheckbox(): CheckBox {
+        val loadScenarioCheckbox = CheckBox("Load Scenario".tr(), skin)
+        var playerPickerTable = topTable.findActor<PlayerPickerTable>("PlayerPickerTable")
+        var newGameOptionsTable = topTable.findActor<NewGameOptionsTable>("NewGameOptionsTable")
 
+        loadScenarioCheckbox.isChecked = useLoadedScenario
+        loadScenarioCheckbox.onChange {
+            if (loadScenarioCheckbox.isChecked) {
+                var scenarioName = "MyTestScenario"
+                var scenario = MapSaver.loadScenario(scenarioName)
+
+                playerPickerTable.newGameParameters = scenario.gameParameters
+                playerPickerTable.update()
+            } else {
+
+            }
+            useLoadedScenario = loadScenarioCheckbox.isChecked
+
+        }
+        return loadScenarioCheckbox
+    }
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {

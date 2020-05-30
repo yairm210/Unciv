@@ -5,10 +5,16 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
+import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
@@ -16,6 +22,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     var mapName = ""
 
     var tileMap = TileMap()
+    var gameParameters = GameParameters()
     lateinit var mapHolder: EditorMapHolder
 
     val tileEditorOptions = TileEditorOptionsTable(this)
@@ -146,6 +153,21 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(MapEditorScreen(mapHolder.tileMap))
         }
+    }
+}
+
+class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
+    class TranslatedString(val value: String) {
+        val translation = value.tr()
+        override fun toString() = translation
+    }
+
+    init {
+        val array = Array<TranslatedString>()
+        values.forEach { array.add(TranslatedString(it)) }
+        items = array
+        val defaultItem = array.firstOrNull { it.value == default }
+        selected = if (defaultItem != null) defaultItem else array.first()
     }
 }
 

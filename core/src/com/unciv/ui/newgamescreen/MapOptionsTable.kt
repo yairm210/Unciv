@@ -38,8 +38,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         // because SOME people gotta give the hugest names to their maps
         savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
-        val loadScenarioCheckBox = getLoadScenarioCheckbox()
-        savedMapOptionsTable.add(loadScenarioCheckBox).colspan(2).row()
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
@@ -74,12 +72,4 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         mapFileSelectBox.onChange { mapParameters.name = mapFileSelectBox.selected!! }
         return mapFileSelectBox
     }
-
-    private fun getLoadScenarioCheckbox(): CheckBox {
-        val loadScenarioCheckbox = CheckBox("Load Scenario".tr(), CameraStageBaseScreen.skin)
-        loadScenarioCheckbox.isChecked = mapParameters.loadScenario
-        loadScenarioCheckbox.onChange { mapParameters.loadScenario = loadScenarioCheckbox.isChecked }
-        return loadScenarioCheckbox
-    }
-
 }

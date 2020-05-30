@@ -1,4 +1,4 @@
-package com.unciv.ui.newgamescreen
+package com.unciv.ui.mapeditor
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
@@ -16,13 +16,14 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
+import com.unciv.ui.newgamescreen.NationTable
 import com.unciv.ui.utils.*
 import java.util.*
 
-class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters: GameParameters): Table() {
+class MapEditorPlayerPickerTable(val mapEditorScreen: MapEditorScreen, val newGameParameters: GameParameters): Table() {
     val playerListTable = Table()
-    val nationsPopupWidth = newGameScreen.stage.width / 2f
-    val civBlocksWidth = newGameScreen.stage.width / 3
+    val nationsPopupWidth = mapEditorScreen.stage.width / 2f
+    val civBlocksWidth = mapEditorScreen.stage.width / 3
 
     init {
         top()
@@ -33,10 +34,10 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
 
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
-        val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
+        val gameBasics = mapEditorScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = newGameScreen.ruleset.nations.count { it.key != Constants.barbarians }
+        val newRulesetPlayableCivs = mapEditorScreen.ruleset.nations.count { it.key != Constants.barbarians }
         if (newGameParameters.players.size > newRulesetPlayableCivs)
             newGameParameters.players = ArrayList(newGameParameters.players.subList(0, newRulesetPlayableCivs))
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
@@ -48,12 +49,11 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
         }
-        newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size > 1)
     }
 
     private fun reassignRemovedModReferences() {
         for (player in newGameParameters.players) {
-            if (!newGameScreen.ruleset.nations.containsKey(player.chosenCiv))
+            if (!mapEditorScreen.ruleset.nations.containsKey(player.chosenCiv))
                 player.chosenCiv = "Random"
         }
     }
@@ -128,7 +128,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
                 .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
-        else ImageGetter.getNationIndicator(newGameScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+        else ImageGetter.getNationIndicator(mapEditorScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
@@ -139,7 +139,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
     }
 
     private fun popupNationPicker(player: Player) {
-        val nationsPopup = Popup(newGameScreen)
+        val nationsPopup = Popup(mapEditorScreen)
         val nationListTable = Table()
 
         val randomPlayerTable = Table()
@@ -159,18 +159,18 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
         nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
 
-        for (nation in newGameScreen.ruleset.nations.values
+        for (nation in mapEditorScreen.ruleset.nations.values
                 .filter { !it.isCityState() && it.name != Constants.barbarians }) {
             if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth, newGameScreen.ruleset).onClick {
+            nationListTable.add(NationTable(nation, nationsPopupWidth, mapEditorScreen.ruleset).onClick {
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
             }).pad(10f).width(nationsPopupWidth).row()
         }
-        nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
+        nationsPopup.add(ScrollPane(nationListTable)).height(mapEditorScreen.stage.height * 0.8f)
         nationsPopup.open()
         update()
     }

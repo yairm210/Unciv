@@ -7,8 +7,12 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.Scenario
+import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.Player
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.DropBox
@@ -112,6 +116,30 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         }
         add(uploadMapButton).row()
 
+        if (UncivGame.Current.scenarioDebugSwitch) {
+            val createScenarioButton = "Create scenario".toTextButton()
+            add(createScenarioButton).row()
+            createScenarioButton.onClick {
+                remove()
+                mapEditorScreen.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap) // update players list from tileMap starting locations
+
+                val scenarioGameOptionsPopup = Popup(screen)
+                val mapEditorGameOptionsTable = MapEditorGameOptionsTable(mapEditorScreen)
+                val mapEditorPlayerPickerTable = MapEditorPlayerPickerTable(mapEditorScreen, mapEditorScreen.gameParameters)
+
+                scenarioGameOptionsPopup.add(mapEditorPlayerPickerTable)
+                scenarioGameOptionsPopup.addSeparatorVertical()
+                scenarioGameOptionsPopup.add(mapEditorGameOptionsTable).row()
+                scenarioGameOptionsPopup.addButton("Save scenario"){
+                    var scenarioName = "MyTestScenario"
+                    MapSaver.saveScenario(scenarioName, Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameParameters))
+                    println("$scenarioName saved")
+                    scenarioGameOptionsPopup.close()
+                }.row()
+                scenarioGameOptionsPopup.addCloseButton().row()
+                scenarioGameOptionsPopup.open()
+            }
+        }
 
         val exitMapEditorButton = "Exit map editor".toTextButton()
         add(exitMapEditorButton ).row()
@@ -121,4 +149,16 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
     }
+}
+
+private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
+    val tilesWithStartingLocations = tileMap.values
+            .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+    var players = ArrayList<Player>()
+    for (tile in tilesWithStartingLocations) {
+        players.add(Player().apply{
+            chosenCiv = tile.improvement!!.removePrefix("StartingLocation ")
+        })
+    }
+    return players
 }

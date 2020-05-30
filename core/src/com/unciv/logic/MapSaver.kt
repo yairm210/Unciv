@@ -3,7 +3,6 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileMap
-import com.unciv.models.metadata.GameParameters
 import com.unciv.ui.saves.Gzip
 
 object MapSaver {
@@ -19,9 +18,9 @@ object MapSaver {
     fun saveMap(mapName: String,tileMap: TileMap) {
         getMap(mapName).writeString(Gzip.zip(json().toJson(tileMap)), false)
     }
-    
+
     fun saveScenario(scenarioName:String, scenario: Scenario) {
-        getScenario(scenarioName).writeString(Gzip.zip(json().toJson(scenario)), false)
+        getScenario(scenarioName).writeString(json().toJson(scenario), false)
     }
 
     fun loadMap(mapName: String): TileMap {
@@ -29,11 +28,10 @@ object MapSaver {
         val unzippedJson = Gzip.unzip(gzippedString)
         return json().fromJson(TileMap::class.java, unzippedJson)
     }
-    
+
     fun loadScenario(scenarioName: String): Scenario {
-        val gzippedString = getMap(scenarioName).readString()
-        val unzippedJson = Gzip.unzip(gzippedString)
-        return json().fromJson(Scenario::class.java, unzippedJson)
+        val scenarioJson = getScenario(scenarioName).readString()
+        return json().fromJson(Scenario::class.java, scenarioJson)
     }
 
     fun deleteMap(mapName: String) = getMap(mapName).delete()

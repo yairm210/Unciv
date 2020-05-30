@@ -36,7 +36,6 @@ class MapParameters {
     var size: MapSize = MapSize.Medium
     var noRuins = false
     var noNaturalWonders = false
-    var loadScenario = false
 
     var seed: Long = 0
     var tilesPerBiomeArea = 6
