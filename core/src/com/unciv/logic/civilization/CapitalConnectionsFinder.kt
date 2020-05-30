@@ -53,7 +53,7 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 cityToConnectFrom,
                 transportType = road,
                 overridingTransportType = railroad,
-                tileFilter = { tile -> tile.hasRoad(civInfo) || tile.hasRailroad() || tile.isCityCenter() }
+                tileFilter = { tile -> tile.hasConnection(civInfo) || tile.isCityCenter() }
         )
     }
 

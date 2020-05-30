@@ -451,9 +451,6 @@ open class TileInfo {
     fun hasConnection(civInfo: CivilizationInfo) =
             roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
 
-    fun hasRoad(civInfo: CivilizationInfo) =
-            roadStatus == RoadStatus.Road || forestOrJungleAreRoads(civInfo)
-
     fun hasRailroad() =
             roadStatus == RoadStatus.Railroad
 
