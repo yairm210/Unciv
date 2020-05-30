@@ -151,6 +151,9 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
                 playerPickerTable.newGameParameters = scenario.gameParameters
                 playerPickerTable.update()
+                newGameOptionsTable.newGameParameters = scenario.gameParameters
+                newGameOptionsTable.update()
+
             } else {
 
             }

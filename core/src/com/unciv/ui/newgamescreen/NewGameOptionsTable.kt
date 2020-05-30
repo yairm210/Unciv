@@ -15,7 +15,7 @@ import com.unciv.ui.utils.toLabel
 
 class NewGameOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
-    val newGameParameters = newGameScreen.gameSetupInfo.gameParameters
+    var newGameParameters = newGameScreen.gameSetupInfo.gameParameters
     val ruleset = newGameScreen.ruleset
 
     init {
@@ -172,6 +172,32 @@ class NewGameOptionsTable(newGameScreen: NewGameScreen, val updatePlayerPickerTa
         }
 
         add(modCheckboxTable).colspan(2).row()
+    }
+
+    fun update() {
+        clear()
+        top()
+        defaults().pad(5f)
+
+        add("Game Options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
+        add(Table().apply {
+            defaults().pad(5f)
+            addDifficultySelectBox()
+            addGameSpeedSelectBox()
+            addEraSelectBox()
+        }).colspan(2).row()
+        addCityStatesSelectBox()
+        addVictoryTypeCheckboxes()
+
+        val checkboxTable = Table().apply { defaults().pad(5f) }
+        checkboxTable.addBarbariansCheckbox()
+        checkboxTable.addOneCityChallengeCheckbox()
+        checkboxTable.addNuclearWeaponsCheckbox()
+        checkboxTable.addIsOnlineMultiplayerCheckbox()
+        checkboxTable.addModCheckboxes()
+        add(checkboxTable).colspan(2).row()
+
+        pack()
     }
 
 }
