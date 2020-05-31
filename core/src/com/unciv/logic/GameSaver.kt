@@ -16,17 +16,14 @@ object GameSaver {
 
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
+    fun getSubfolder(multiplayer: Boolean=false) = if(multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
-        if (multiplayer)
-            return Gdx.files.local("$multiplayerFilesFolder/$GameName")
-        return Gdx.files.local("$saveFilesFolder/$GameName")
+        return Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
     }
 
     fun getSaves(multiplayer: Boolean = false): List<String> {
-        if (multiplayer)
-            return Gdx.files.local(multiplayerFilesFolder).list().map { it.name() }
-        return Gdx.files.local(saveFilesFolder).list().map { it.name() }
+        return Gdx.files.local(getSubfolder(multiplayer)).list().map { it.name() }
     }
 
     fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
