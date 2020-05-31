@@ -234,6 +234,7 @@ object UnitAutomation {
         ).filter {
             // Ignore units that would 1-shot you if you attacked
             BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                    it.tileToAttackFrom,
                 Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
         }
 
@@ -404,4 +405,30 @@ object UnitAutomation {
         unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
         unit.action = null
     }
+
+
+    fun runAway(unit: MapUnit) {
+        val reachableTiles = unit.movement.getDistanceToTiles()
+        val enterableCity = reachableTiles.keys.firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }
+        if(enterableCity!=null) {
+            unit.movement.moveToTile(enterableCity)
+            return
+        }
+        val tileFurthestFromEnemy = reachableTiles.keys.filter {  unit.movement.canMoveTo(it) }
+                .maxBy{ countDistanceToClosestEnemy(unit, it)}
+        if(tileFurthestFromEnemy==null) return // can't move anywhere!
+        unit.movement.moveToTile(tileFurthestFromEnemy)
+    }
+
+
+    fun countDistanceToClosestEnemy(unit: MapUnit, tile: TileInfo): Int {
+        for(i in 1..3)
+            if(tile.getTilesAtDistance(i).any{containsEnemyMilitaryUnit(unit,it)})
+                return i
+        return 4
+    }
+
+    fun containsEnemyMilitaryUnit(unit: MapUnit, tileInfo: TileInfo) = tileInfo.militaryUnit != null
+            && tileInfo.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
+
 }

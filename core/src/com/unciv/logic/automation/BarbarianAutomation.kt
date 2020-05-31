@@ -48,14 +48,13 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
             val possibleDamage = nearEnemyTiles
                     .map {
                         BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                                it.tileToAttackFrom,
                                 Battle.getMapCombatantOfTile(it.tileToAttack)!!)
                     }
                     .sum()
             val possibleHeal = unit.rankTileForHealing(unit.currentTile)
             if (possibleDamage > possibleHeal) {
-                // run
-                val furthestTile = findFurthestTileCanMoveTo(unit, unitDistanceToTiles, nearEnemyTiles)
-                if(furthestTile!=null) unit.movement.moveToTile(furthestTile)
+                UnitAutomation.runAway(unit)
             }
             unit.fortifyIfCan()
             return
@@ -85,10 +84,7 @@ class BarbarianAutomation(val civInfo: CivilizationInfo) {
 
         // 1 - heal or run if death is near
         if (unit.health < 50) {
-            if (nearEnemyTiles.isNotEmpty()) {
-                val furthestTile = findFurthestTileCanMoveTo(unit, unitDistanceToTiles, nearEnemyTiles)
-                if(furthestTile!=null) unit.movement.moveToTile(furthestTile)
-            }
+            if (nearEnemyTiles.isNotEmpty()) UnitAutomation.runAway(unit)
             unit.fortifyIfCan()
 
             return
