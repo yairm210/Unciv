@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.*
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
