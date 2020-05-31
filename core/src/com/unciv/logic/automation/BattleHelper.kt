@@ -17,6 +17,7 @@ object BattleHelper {
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                            it.tileToAttackFrom,
                             Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
 
@@ -112,6 +113,7 @@ object BattleHelper {
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage.calculateDamageToAttacker(MapUnitCombatant(unit),
+                            it.tileToAttackFrom,
                             Battle.getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
                 .filter { it.tileToAttackFrom.isLand }

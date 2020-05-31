@@ -110,12 +110,12 @@ object BattleDamage {
         return modifiers
     }
 
-    fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
+    fun getAttackModifiers(attacker: ICombatant, tileToAttackFrom:TileInfo?, defender: ICombatant): HashMap<String, Float> {
         val modifiers = getGeneralModifiers(attacker, defender)
         val policies = attacker.getCivInfo().policies
 
         if(attacker is MapUnitCombatant) {
-            modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
+            modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
                 val regexResult = Regex(BONUS_AS_ATTACKER).matchEntire(ability) //to do: extend to defender, and penalyy
@@ -138,8 +138,8 @@ object BattleDamage {
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
 
-                if (attacker.getTile().isConnectedByRiver(defender.getTile())){
-                    if (!attacker.getTile().hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
+                if (tileToAttackFrom!=null && tileToAttackFrom.isConnectedByRiver(defender.getTile())){
+                    if (!tileToAttackFrom.hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                             || !defender.getTile().hasConnection(attacker.getCivInfo())
                             || !attacker.getCivInfo().tech.roadsConnectAcrossRivers){
                         modifiers["Across river"] = -0.2f
@@ -272,8 +272,8 @@ object BattleDamage {
     /**
      * Includes attack modifiers
      */
-    private fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
-        val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,defender))
+    private fun getAttackingStrength(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Float {
+        val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,tileToAttackFrom, defender))
         return attacker.getAttackingStrength() * attackModifier
     }
 
@@ -287,15 +287,15 @@ object BattleDamage {
         return defender.getDefendingStrength() * defenceModifier
     }
 
-    fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
+    fun calculateDamageToAttacker(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
         if(defender.getUnitType().isCivilian()) return 0
-        val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
+        val ratio = getAttackingStrength(attacker, tileToAttackFrom, defender) / getDefendingStrength(attacker,defender)
         return (damageModifier(ratio, true) * getHealthDependantDamageRatio(defender)).roundToInt()
     }
 
-    fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
-        val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
+    fun calculateDamageToDefender(attacker: ICombatant, tileToAttackFrom: TileInfo?, defender: ICombatant): Int {
+        val ratio = getAttackingStrength(attacker,tileToAttackFrom, defender) / getDefendingStrength(attacker,defender)
         return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).roundToInt()
     }
 
