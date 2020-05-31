@@ -137,6 +137,14 @@ object BattleDamage {
                 }
                 if (numberOfAttackersSurroundingDefender > 1)
                     modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+
+                if (attacker.getTile().isConnectedByRiver(defender.getTile())){
+                    if (!attacker.getTile().hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
+                            || !defender.getTile().hasConnection(attacker.getCivInfo())
+                            || !attacker.getCivInfo().tech.roadsConnectAcrossRivers){
+                        modifiers["Across river"] = -0.2f
+                    }
+                }
             }
 
             if (policies.autocracyCompletedTurns > 0 && policies.hasEffect("+20% attack bonus to all Military Units for 30 turns"))
@@ -152,8 +160,6 @@ object BattleDamage {
                     && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
         }
-
-
 
         return modifiers
     }
@@ -217,7 +223,8 @@ object BattleDamage {
                         || tile.terrainFeature != Constants.jungle))
             modifiers[tile.baseTerrain] = 0.25f
 
-        if(unit.getCivInfo().nation.unique == UniqueAbility.WAYFINDING && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
+        if(unit.getCivInfo().nation.unique == UniqueAbility.WAYFINDING
+                && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
             modifiers["Moai"] = 0.1f
 
         if(tile.neighbors.flatMap { it.getUnits() }

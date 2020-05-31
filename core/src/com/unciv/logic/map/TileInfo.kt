@@ -341,12 +341,14 @@ open class TileInfo {
         return toString(null)
     }
 
+    /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile:TileInfo): Boolean {
-        if(otherTile !in neighbors) throw Exception("Should never call this function on a non-neighbor!")
         val xDifference = this.position.x - otherTile.position.x
         val yDifference = this.position.y - otherTile.position.y
 
         return when {
+            yDifference < -1f || xDifference < -1f || yDifference > 1f || xDifference > 1f ->
+                throw Exception("Should never call this function on a non-neighbor!")
             xDifference == 1f && yDifference == 1f -> hasBottomRiver // we're directly above it
             xDifference == 1f -> hasBottomRightRiver // we're to the top-left of it
             yDifference == 1f -> hasBottomLeftRiver // we're to the top-right of it
