@@ -1,3 +1,17 @@
+## 3.9.0
+
+Added rivers, and river generation!
+
+Game now saves save files in external storage on Android when possible.
+
+Resolved #2672 - Difficulties are sorted by ascending difficulty in Civilopedia
+
+Resolved #2660 - Remove Fallout now enabled by Atomic Theory, not Agriculture
+
+Great person uniques can be added to any modded unit
+
+Translation updates
+
 ## 3.8.12
 
 By dbaelz:
