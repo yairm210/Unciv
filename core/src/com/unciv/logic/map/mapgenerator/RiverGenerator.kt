@@ -52,13 +52,12 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
 
         while(getAdjacentTiles(riverCoordinate,map).none { it.isWater }){
             val possibleCoordinates = riverCoordinate.getAdjacentPositions()
+                    .filter { map.contains(it.position) }
             if(possibleCoordinates.none()) return // end of the line
             val newCoordinate = possibleCoordinates
-//                    .sortedBy { numberOfConnectedRivers(it,map) }
                     .groupBy { getAdjacentTiles(it,map).map { it.aerialDistanceTo(endPosition) }.min()!! }
                     .minBy { it.key }!!
                     .component2().random(randomness.RNG)
-//                    .minBy { getAdjacentTiles(it,map).map { it.aerialDistanceTo(endPosition) }.min()!! }!!
 
             // set new rivers in place
             val riverCoordinateTile = map[riverCoordinate.position]

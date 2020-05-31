@@ -110,14 +110,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 }
             }
         } catch (exception: Exception) {
-            val cantMakeThatMapPopup = Popup(this)
-            cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
-            cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
-            cantMakeThatMapPopup.addCloseButton()
-            cantMakeThatMapPopup.open()
-            Gdx.input.inputProcessor = stage
-            rightSideButton.enable()
-            rightSideButton.setText("Start game!".tr())
+            Gdx.app.postRunnable {
+                val cantMakeThatMapPopup = Popup(this)
+                cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
+                cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
+                cantMakeThatMapPopup.addCloseButton()
+                cantMakeThatMapPopup.open()
+                Gdx.input.inputProcessor = stage
+                rightSideButton.enable()
+                rightSideButton.setText("Start game!".tr())
+            }
         }
         Gdx.graphics.requestRendering()
     }
