@@ -44,6 +44,7 @@ class MapGenerator(val ruleset: Ruleset) {
         spawnVegetation(map)
         spawnRareFeatures(map)
         spawnIce(map)
+        RiverGenerator(randomness).spawnRivers(map)
         spreadResources(map)
         spreadAncientRuins(map)
         NaturalWonderGenerator(ruleset).spawnNaturalWonders(map, randomness)
@@ -104,7 +105,7 @@ class MapGenerator(val ruleset: Ruleset) {
         if(map.mapParameters.noRuins)
             return
         val suitableTiles = map.values.filter { it.isLand && !it.getBaseTerrain().impassable }
-        val locations = chooseSpreadOutLocations(suitableTiles.size/100,
+        val locations = randomness.chooseSpreadOutLocations(suitableTiles.size/100,
                 suitableTiles, 10)
         for(tile in locations)
             tile.improvement = Constants.ancientRuins
@@ -135,7 +136,7 @@ class MapGenerator(val ruleset: Ruleset) {
                             && resource.terrainsCanBeFoundOn.contains(it.getBaseTerrain().name)
                             && (it.terrainFeature==null || ruleset.tileImprovements.containsKey("Remove "+it.terrainFeature)) }
 
-            val locations = chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
+            val locations = randomness.chooseSpreadOutLocations(resourcesPerType, suitableTiles, distance)
 
             for (location in locations) location.resource = resource.name
         }
@@ -152,7 +153,7 @@ class MapGenerator(val ruleset: Ruleset) {
                 .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
         val numberOfResources = tileMap.values.count { it.isLand && !it.getBaseTerrain().impassable } *
                 tileMap.mapParameters.resourceRichness
-        val locations = chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, distance)
+        val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, distance)
 
         val resourceToNumber = Counter<String>()
 
@@ -167,37 +168,6 @@ class MapGenerator(val ruleset: Ruleset) {
         }
     }
 
-    private fun chooseSpreadOutLocations(numberOfResources: Int, suitableTiles: List<TileInfo>, initialDistance: Int): ArrayList<TileInfo> {
-
-        for (distanceBetweenResources in initialDistance downTo 1) {
-            var availableTiles = suitableTiles.toList()
-            val chosenTiles = ArrayList<TileInfo>()
-
-            // If possible, we want to equalize the base terrains upon which
-            //  the resources are found, so we save how many have been
-            //  found for each base terrain and try to get one from the lowerst
-            val baseTerrainsToChosenTiles = HashMap<String, Int>()
-            for(tileInfo in availableTiles){
-                if(tileInfo.baseTerrain !in baseTerrainsToChosenTiles)
-                    baseTerrainsToChosenTiles[tileInfo.baseTerrain] = 0
-            }
-
-            for (i in 1..numberOfResources) {
-                if (availableTiles.isEmpty()) break
-                val orderedKeys = baseTerrainsToChosenTiles.entries
-                        .sortedBy { it.value }.map { it.key }
-                val firstKeyWithTilesLeft = orderedKeys
-                        .first { availableTiles.any { tile -> tile.baseTerrain== it} }
-                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
-                availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
-                chosenTiles.add(chosenTile)
-                baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1
-            }
-            // Either we got them all, or we're not going to get anything better
-            if (chosenTiles.size == numberOfResources || distanceBetweenResources == 1) return chosenTiles
-        }
-        throw Exception("Couldn't choose suitable tiles for $numberOfResources resources!")
-    }
 
     /**
      * [MapParameters.elevationExponent] favors high elevation
@@ -280,6 +250,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val rareFeatures = ruleset.terrains.values.filter {
             it.type == TerrainType.TerrainFeature &&
             it.name !in Constants.vegetation &&
+            it.name != Constants.floodPlains &&
             it.name != Constants.ice
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
@@ -331,29 +302,63 @@ class MapGenerationRandomness{
         val worldCoords = HexMath.hex2WorldCoords(tile.position)
         return Perlin.noise3d(worldCoords.x.toDouble(), worldCoords.y.toDouble(), seed, nOctaves, persistence, lacunarity, scale)
     }
+
+
+    fun chooseSpreadOutLocations(number: Int, suitableTiles: List<TileInfo>, initialDistance: Int): ArrayList<TileInfo> {
+        for (distanceBetweenResources in initialDistance downTo 1) {
+            var availableTiles = suitableTiles.toList()
+            val chosenTiles = ArrayList<TileInfo>()
+
+            // If possible, we want to equalize the base terrains upon which
+            //  the resources are found, so we save how many have been
+            //  found for each base terrain and try to get one from the lowerst
+            val baseTerrainsToChosenTiles = HashMap<String, Int>()
+            for(tileInfo in availableTiles){
+                if(tileInfo.baseTerrain !in baseTerrainsToChosenTiles)
+                    baseTerrainsToChosenTiles[tileInfo.baseTerrain] = 0
+            }
+
+            for (i in 1..number) {
+                if (availableTiles.isEmpty()) break
+                val orderedKeys = baseTerrainsToChosenTiles.entries
+                        .sortedBy { it.value }.map { it.key }
+                val firstKeyWithTilesLeft = orderedKeys
+                        .first { availableTiles.any { tile -> tile.baseTerrain== it} }
+                val chosenTile = availableTiles.filter { it.baseTerrain==firstKeyWithTilesLeft }.random()
+                availableTiles = availableTiles.filter { it.aerialDistanceTo(chosenTile) > distanceBetweenResources }
+                chosenTiles.add(chosenTile)
+                baseTerrainsToChosenTiles[firstKeyWithTilesLeft] = baseTerrainsToChosenTiles[firstKeyWithTilesLeft]!!+1
+            }
+            // Either we got them all, or we're not going to get anything better
+            if (chosenTiles.size == number || distanceBetweenResources == 1) return chosenTiles
+        }
+        throw Exception("Couldn't choose suitable tiles for $number resources!")
+    }
 }
 
-class RiverGenerator(){
 
-    public class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft){
-        enum class BottomRightOrLeft{
-            BottomLeft, BottomRight
-        }
+class RiverCoordinate(val position: Vector2, val bottomRightOrLeft: BottomRightOrLeft){
+    enum class BottomRightOrLeft{
+        /** 7 O'Clock of the tile */
+        BottomLeft,
+        /** 5 O'Clock of the tile */
+        BottomRight
+    }
 
-        fun getAdjacentPositions(): Sequence<RiverCoordinate> {
-            // What's nice is that adjacents are always the OPPOSITE in terms of right-left - rights are adjacent to only lefts, and vice-versa
-            // This means that a lot of obviously-wrong assignments are simple to spot
-            if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
-                return sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomRight), // same tile, other side
-                        RiverCoordinate(position.cpy().add(1f, 0f), BottomRightOrLeft.BottomRight), // tile to MY top-left, take its bottom right corner
-                        RiverCoordinate(position.cpy().add(0f, -1f), BottomRightOrLeft.BottomRight) // Tile to MY bottom-left, take its bottom right
-                )
-            } else {
-                return sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomLeft), // same tile, other side
-                        RiverCoordinate(position.cpy().add(0f, 1f), BottomRightOrLeft.BottomLeft), // tile to MY top-right, take its bottom left
-                        RiverCoordinate(position.cpy().add(-1f, 0f), BottomRightOrLeft.BottomLeft)  // tile to MY bottom-right, take its bottom left
-                )
-            }
+    fun getAdjacentPositions(): Sequence<RiverCoordinate> {
+        // What's nice is that adjacents are always the OPPOSITE in terms of right-left - rights are adjacent to only lefts, and vice-versa
+        // This means that a lot of obviously-wrong assignments are simple to spot
+        if (bottomRightOrLeft == BottomRightOrLeft.BottomLeft) {
+            return sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomRight), // same tile, other side
+                    RiverCoordinate(position.cpy().add(1f, 0f), BottomRightOrLeft.BottomRight), // tile to MY top-left, take its bottom right corner
+                    RiverCoordinate(position.cpy().add(0f, -1f), BottomRightOrLeft.BottomRight) // Tile to MY bottom-left, take its bottom right
+            )
+        } else {
+            return sequenceOf(RiverCoordinate(position, BottomRightOrLeft.BottomLeft), // same tile, other side
+                    RiverCoordinate(position.cpy().add(0f, 1f), BottomRightOrLeft.BottomLeft), // tile to MY top-right, take its bottom left
+                    RiverCoordinate(position.cpy().add(-1f, 0f), BottomRightOrLeft.BottomLeft)  // tile to MY bottom-right, take its bottom left
+            )
         }
     }
 }
+
