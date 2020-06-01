@@ -387,7 +387,7 @@ object Battle {
         for (interceptor in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }) {
             if (Random().nextFloat() > 100f / interceptor.interceptChance()) continue
 
-            var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), interceptor.getTile(), attacker)
+            var damage = BattleDamage.calculateDamageToDefender(MapUnitCombatant(interceptor), null, attacker)
             damage += damage * interceptor.interceptDamagePercentBonus() / 100
             if (attacker.unit.hasUnique("Reduces damage taken from interception by 50%")) damage /= 2
 
