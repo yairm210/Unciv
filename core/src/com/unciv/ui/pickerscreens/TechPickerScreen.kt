@@ -154,6 +154,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         lines.clear()
 
         for (tech in civInfo.gameInfo.ruleSet.technologies.values) {
+            if(!techNameToButton.containsKey(tech.name))
+                throw Exception("tech ${tech.name} not found!")
             val techButton = techNameToButton[tech.name]!!
             for (prerequisite in tech.prerequisites) {
                 val prerequisiteButton = techNameToButton[prerequisite]!!
