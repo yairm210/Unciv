@@ -12,6 +12,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.translations.tr
@@ -156,11 +158,15 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
 
         val nationsTable = Table()
-        for(nation in ruleset.nations.values){
+        val nations = nationsFromMap(mapEditorScreen.tileMap)
+        val barbarians = ruleset.nations.values.filter { it.isBarbarian()}
+
+        for(nation in nations + barbarians){
             val nationImage = ImageGetter.getNationIndicator(nation, 40f)
             nationsTable.add(nationImage).row()
             nationImage.onClick { currentNation = nation; setUnitTileAction() }
         }
+
         editorPickTable.add(ScrollPane(nationsTable)).height(stage.height*0.8f)
 
         val unitsTable = Table()
@@ -171,6 +177,18 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
         editorPickTable.add(ScrollPane(unitsTable)).height(stage.height*0.8f)
     }
+
+    private fun nationsFromMap(tileMap: TileMap): ArrayList<Nation> {
+        val tilesWithStartingLocations = tileMap.values
+                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+        var nations = ArrayList<Nation>()
+        for (tile in tilesWithStartingLocations) {
+            var civName =  tile.improvement!!.removePrefix("StartingLocation ")
+            nations.add(ruleset.nations[civName]!!)
+        }
+        return nations
+    }
+
 
     private fun getRedCross(size: Float, alpha: Float): Actor {
         val redCross = ImageGetter.getImage("OtherIcons/Close")

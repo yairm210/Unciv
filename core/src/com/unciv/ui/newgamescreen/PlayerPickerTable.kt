@@ -18,10 +18,12 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import java.util.*
 
-class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters: GameParameters): Table() {
+class PlayerPickerTable(val previousScreen: GameParametersPreviousScreen, var gameParameters: GameParameters): Table() {
     val playerListTable = Table()
-    val nationsPopupWidth = newGameScreen.stage.width / 2f
-    val civBlocksWidth = newGameScreen.stage.width / 3
+    val nationsPopupWidth = previousScreen.stage.width / 2f
+    val civBlocksWidth = previousScreen.stage.width / 3
+    var locked = false
+
 
     init {
         top()
@@ -32,36 +34,37 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
 
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
-        val gameBasics = newGameScreen.ruleset // the mod picking changes this ruleset
+        val gameBasics = previousScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = newGameScreen.ruleset.nations.count { it.key != Constants.barbarians }
-        if (newGameParameters.players.size > newRulesetPlayableCivs)
-            newGameParameters.players = ArrayList(newGameParameters.players.subList(0, newRulesetPlayableCivs))
+        val newRulesetPlayableCivs = previousScreen.ruleset.nations.count { it.key != Constants.barbarians }
+        if (gameParameters.players.size > newRulesetPlayableCivs)
+            gameParameters.players = ArrayList(gameParameters.players.subList(0, newRulesetPlayableCivs))
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
 
-        for (player in newGameParameters.players) {
+        for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player, gameBasics)).width(civBlocksWidth).padBottom(20f).row()
         }
-        if (newGameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }) {
+        if (gameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }
+                && !locked) {
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                    .surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() }).pad(10f)
+                    .surroundWithCircle(50f).onClick { gameParameters.players.add(Player()); update() }).pad(10f)
         }
-        newGameScreen.setNewGameButtonEnabled(newGameParameters.players.size > 1)
+        previousScreen.setRightSideButtonEnabled(gameParameters.players.size > 1)
     }
 
     private fun reassignRemovedModReferences() {
-        for (player in newGameParameters.players) {
-            if (!newGameScreen.ruleset.nations.containsKey(player.chosenCiv))
+        for (player in gameParameters.players) {
+            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv))
                 player.chosenCiv = "Random"
         }
     }
 
     private fun assignDesiredCiv(desiredCiv: String) {
         // No auto-select if desiredCiv already used
-        if (newGameParameters.players.any { it.chosenCiv == desiredCiv }) return
+        if (gameParameters.players.any { it.chosenCiv == desiredCiv }) return
         // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
-        newGameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
+        gameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
     fun getPlayerTable(player: Player, ruleset: Ruleset): Table {
@@ -130,7 +133,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
                 .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
-        else ImageGetter.getNationIndicator(newGameScreen.ruleset.nations[player.chosenCiv]!!, 40f)
+        else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
@@ -141,7 +144,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
     }
 
     private fun popupNationPicker(player: Player) {
-        val nationsPopup = Popup(newGameScreen)
+        val nationsPopup = Popup(previousScreen)
         val nationListTable = Table()
 
         val randomPlayerTable = Table()
@@ -161,18 +164,18 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
         nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row()
 
 
-        for (nation in newGameScreen.ruleset.nations.values
+        for (nation in previousScreen.ruleset.nations.values
                 .filter { !it.isCityState() && it.name != Constants.barbarians }) {
-            if (player.chosenCiv != nation.name && newGameParameters.players.any { it.chosenCiv == nation.name })
+            if (player.chosenCiv != nation.name && gameParameters.players.any { it.chosenCiv == nation.name })
                 continue
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth, newGameScreen.ruleset).onClick {
+            nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.ruleset).onClick {
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
             }).pad(10f).width(nationsPopupWidth).row()
         }
-        nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
+        nationsPopup.add(ScrollPane(nationListTable)).height(previousScreen.stage.height * 0.8f)
         nationsPopup.open()
         update()
     }

@@ -2,7 +2,6 @@ package com.unciv.ui.newgamescreen
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
@@ -11,7 +10,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.Scenario
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
@@ -38,26 +37,17 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)
 
-        val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-        val newGameOptionsTable = NewGameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-        topTable.add(ScrollPane(MapOptionsTable(this).apply {name = "MapOptionsTable"})
-                .apply { setOverscroll(false, false) })
+//        val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+//        val newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+        topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(newGameOptionsTable.apply {name = "NewGameOptionsTable"})
-                .apply { setOverscroll(false, false) })
+        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.pack()
         topTable.setFillParent(true)
-
-        if (UncivGame.Current.scenarioDebugSwitch
-//                && loadedScenario != null
-        ) {
-            var loadScenarioCheckBox = getLoadScenarioCheckbox()
-            bottomTable.add(loadScenarioCheckBox)
-        }
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
