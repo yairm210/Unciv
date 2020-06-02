@@ -15,7 +15,6 @@ import com.unciv.logic.map.Scenario
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
@@ -27,12 +26,13 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
 }
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PickerScreen() {
+class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): GameParametersPreviousScreen() {
 
-    var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
-    val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
-    var loadedScenario: Scenario ?= null
-    var useLoadedScenario = false
+    override var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
+    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
+    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+    var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    var mapOptionsTable = MapOptionsTable(this)
 
     init {
         setDefaultCloseAction(previousScreen)
@@ -44,7 +44,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 .apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(playerPickerTable.apply {name = "PlayerPickerTable"}).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(ScrollPane(newGameOptionsTable.apply {name = "NewGameOptionsTable"})
                 .apply { setOverscroll(false, false) })
@@ -133,35 +133,28 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         Gdx.graphics.requestRendering()
     }
 
-    fun setNewGameButtonEnabled(bool: Boolean) {
-        if (bool) rightSideButton.enable()
-        else rightSideButton.disable()
+//    fun setNewGameButtonEnabled(bool: Boolean) {
+//        if (bool) rightSideButton.enable()
+//        else rightSideButton.disable()
+//    }
+
+    fun lockTables() {
+        playerPickerTable.locked = true
+        newGameOptionsTable.locked = true
     }
 
-    private fun getLoadScenarioCheckbox(): CheckBox {
-        val loadScenarioCheckbox = CheckBox("Load Scenario".tr(), skin)
-        var playerPickerTable = topTable.findActor<PlayerPickerTable>("PlayerPickerTable")
-        var newGameOptionsTable = topTable.findActor<NewGameOptionsTable>("NewGameOptionsTable")
-
-        loadScenarioCheckbox.isChecked = useLoadedScenario
-        loadScenarioCheckbox.onChange {
-            if (loadScenarioCheckbox.isChecked) {
-                var scenarioName = "MyTestScenario"
-                var scenario = MapSaver.loadScenario(scenarioName)
-
-                playerPickerTable.newGameParameters = scenario.gameParameters
-                playerPickerTable.update()
-                newGameOptionsTable.newGameParameters = scenario.gameParameters
-                newGameOptionsTable.update()
-
-            } else {
-
-            }
-            useLoadedScenario = loadScenarioCheckbox.isChecked
-
-        }
-        return loadScenarioCheckbox
+    fun unlockTables() {
+        playerPickerTable.locked = false
+        newGameOptionsTable.locked = false
     }
+
+    fun updateTables() {
+        playerPickerTable.gameParameters = gameSetupInfo.gameParameters
+        playerPickerTable.update()
+        newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters
+        newGameOptionsTable.update()
+    }
+
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {

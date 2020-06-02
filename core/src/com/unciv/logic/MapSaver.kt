@@ -38,6 +38,8 @@ object MapSaver {
 
     fun getMaps() = Gdx.files.local(mapsFolder).list().map { it.name() }
 
+    fun getScenarios() = Gdx.files.local(scenariosFolder).list().map { it.name() }
+
     fun mapFromJson(json:String): TileMap = json().fromJson(TileMap::class.java, json)
 
 }

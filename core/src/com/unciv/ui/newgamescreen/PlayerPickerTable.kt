@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
@@ -75,16 +74,19 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, var newGameParameters:
 
         val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
+            if (locked) return@onClick
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
             else player.playerType = PlayerType.AI
             update()
         }
         playerTable.add(playerTypeTextbutton).width(100f).pad(5f).right()
-        playerTable.add("-".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(40f)
-                .onClick { newGameParameters.players.remove(player); update() }).pad(5f).right().row()
-        if (newGameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
+        if (!locked) {
+            playerTable.add("-".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
+                    .surroundWithCircle(40f)
+                    .onClick { gameParameters.players.remove(player); update() }).pad(5f).right().row()
+        }
+        if (gameParameters.isOnlineMultiplayer && player.playerType == PlayerType.Human) {
 
             val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
             playerIdTextfield.messageText = "Please input Player ID!".tr()

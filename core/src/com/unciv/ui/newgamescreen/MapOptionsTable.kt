@@ -1,12 +1,10 @@
 package com.unciv.ui.newgamescreen
 
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
-import com.unciv.models.translations.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onChange
 import com.unciv.ui.utils.toLabel
@@ -17,10 +15,10 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
     private var mapTypeSpecificTable = Table()
     private val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
+    private val savedScenarioOptionsTable = Table()
 
     init {
         defaults().pad(5f)
-
         add("Map Options".toLabel(fontSize = 24)).top().padBottom(20f).colspan(2).row()
         addMapTypeSelection()
     }
@@ -30,6 +28,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         add("{Map Type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
+        if (MapSaver.getScenarios().isNotEmpty()) mapTypes.add(MapType.scenario)
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
         val mapFileSelectBox = getMapFileSelectBox()
@@ -39,16 +38,38 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
 
+        val scenarioFileSelectBox = getScenarioFileSelectBox()
+        savedScenarioOptionsTable.defaults().pad(5f)
+        savedScenarioOptionsTable.add("{Scenario file}:".toLabel()).left()
+        // because SOME people gotta give the hugest names to their maps
+        savedScenarioOptionsTable.add(scenarioFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
+                .right().row()
+
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
             if (mapTypeSelectBox.selected.value == MapType.custom) {
                 mapParameters.type = MapType.custom
                 mapParameters.name = mapFileSelectBox.selected
                 mapTypeSpecificTable.add(savedMapOptionsTable)
+                newGameScreen.gameSetupInfo = GameSetupInfo()
+                newGameScreen.unlockTables()
+                newGameScreen.updateTables()
+            } else if (mapTypeSelectBox.selected.value == MapType.scenario) {
+                mapParameters.type = MapType.scenario
+                mapParameters.name = scenarioFileSelectBox.selected
+                mapTypeSpecificTable.add(savedScenarioOptionsTable)
+                val scenario = MapSaver.loadScenario(mapParameters.name)
+                newGameScreen.gameSetupInfo.gameParameters = scenario.gameParameters
+                // update PlayerTable and GameOptionsTable
+                newGameScreen.lockTables()
+                newGameScreen.updateTables()
             } else {
                 mapParameters.name = ""
                 mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
+                newGameScreen.gameSetupInfo = GameSetupInfo()
+                newGameScreen.unlockTables()
+                newGameScreen.updateTables()
             }
         }
 
@@ -61,7 +82,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         add(mapTypeSpecificTable).colspan(2).row()
     }
 
-
     private fun getMapFileSelectBox(): SelectBox<String> {
         val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
         val mapNames = Array<String>()
@@ -72,4 +92,22 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         mapFileSelectBox.onChange { mapParameters.name = mapFileSelectBox.selected!! }
         return mapFileSelectBox
     }
+
+    private fun getScenarioFileSelectBox(): SelectBox<String> {
+        val scenarioFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+        val scenarioNames = Array<String>()
+        for (scenarioName in MapSaver.getScenarios()) scenarioNames.add(scenarioName)
+        scenarioFileSelectBox.items = scenarioNames
+        if (mapParameters.name in scenarioNames) scenarioFileSelectBox.selected = mapParameters.name
+
+        scenarioFileSelectBox.onChange {
+            mapParameters.name = scenarioFileSelectBox.selected!!
+            val scenario = MapSaver.loadScenario(mapParameters.name)
+            newGameScreen.gameSetupInfo.gameParameters = scenario.gameParameters
+            newGameScreen.updateTables()
+        }
+        return scenarioFileSelectBox
+    }
+
+
 }

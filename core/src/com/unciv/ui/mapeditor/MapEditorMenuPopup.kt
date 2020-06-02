@@ -7,12 +7,13 @@ import com.unciv.Constants
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
+import com.unciv.ui.newgamescreen.GameOptionsTable
+import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.DropBox
@@ -121,23 +122,25 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             add(createScenarioButton).row()
             createScenarioButton.onClick {
                 remove()
-                mapEditorScreen.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap) // update players list from tileMap starting locations
+                mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap) // update players list from tileMap starting locations
 
-                val scenarioGameOptionsPopup = Popup(screen)
-                val mapEditorGameOptionsTable = MapEditorGameOptionsTable(mapEditorScreen)
-                val mapEditorPlayerPickerTable = MapEditorPlayerPickerTable(mapEditorScreen, mapEditorScreen.gameParameters)
+                val gameParametersPopup = Popup(screen)
+                val playerPickerTable = PlayerPickerTable(mapEditorScreen, mapEditorScreen.gameSetupInfo.gameParameters)
+                val gameOptionsTable = GameOptionsTable(mapEditorScreen) {desiredCiv: String -> playerPickerTable.update(desiredCiv)}
+                val scenarioNameEditor = TextField(mapEditorScreen.mapName, skin)
 
-                scenarioGameOptionsPopup.add(mapEditorPlayerPickerTable)
-                scenarioGameOptionsPopup.addSeparatorVertical()
-                scenarioGameOptionsPopup.add(mapEditorGameOptionsTable).row()
-                scenarioGameOptionsPopup.addButton("Save scenario"){
-                    var scenarioName = "MyTestScenario"
-                    MapSaver.saveScenario(scenarioName, Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameParameters))
-                    println("$scenarioName saved")
-                    scenarioGameOptionsPopup.close()
+                gameParametersPopup.add(playerPickerTable)
+                gameParametersPopup.addSeparatorVertical()
+                gameParametersPopup.add(gameOptionsTable).row()
+                gameParametersPopup.add(scenarioNameEditor)
+                gameParametersPopup.addButton("Save scenario"){
+                    mapEditorScreen.tileMap.mapParameters.type=MapType.scenario
+                    MapSaver.saveScenario(scenarioNameEditor.text, Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters))
+                    ResponsePopup("Scenario saved", mapEditorScreen)
+                    gameParametersPopup.close()
                 }.row()
-                scenarioGameOptionsPopup.addCloseButton().row()
-                scenarioGameOptionsPopup.open()
+                gameParametersPopup.addCloseButton().row()
+                gameParametersPopup.open()
             }
         }
 
