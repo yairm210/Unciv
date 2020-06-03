@@ -53,14 +53,13 @@ android {
 
     buildTypes {
         getByName("release") {
-            // Don't add local save files and fonts to release, obviously
-
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
 
     }
     aaptOptions {
+        // Don't add local save files and fonts to release, obviously
         ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
     lintOptions {
