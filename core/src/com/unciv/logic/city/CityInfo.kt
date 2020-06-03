@@ -136,7 +136,7 @@ class CityInfo {
 
     fun getCenterTile(): TileInfo = centerTileInfo
     fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
-    fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
+    fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
