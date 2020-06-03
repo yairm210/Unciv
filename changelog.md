@@ -1,3 +1,17 @@
+## 3.9.1
+
+Buildings requiring a nearby resource can be constructed even when the tile belongs to another city
+
+Natural wonders spawned before rivers, so we don't retroactively get rivers on coast tiles
+
+Added civilopedia info for great people and great improvements, removing terrain features, and strategic resource provision - see #1492
+
+Resolved #2613 - added a close button to the Civ-picking popup in the New Game screen
+
+Battle calculation takes into account the tile that the unit will attack from
+
+Translation updates
+
 ## 3.9.0
 
 Added rivers, and river generation!
