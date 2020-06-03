@@ -343,6 +343,7 @@ open class TileInfo {
 
     /** The two tiles have a river between them */
     fun isConnectedByRiver(otherTile:TileInfo): Boolean {
+        if(otherTile==this) throw Exception("Should not be called to compare to self!")
         val xDifference = this.position.x - otherTile.position.x
         val yDifference = this.position.y - otherTile.position.y
 

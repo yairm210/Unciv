@@ -32,7 +32,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
             unitAction.startsWith("Create ") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
                 // What you find between the first [ and the first ] that comes after it, will be group no. 1
-                val improvementName = Regex("""Create \[([^]]*)]""").find(unitAction)!!.groups[1]!!.value
+                val improvementName = Regex("""Create \[([^]]*)\]""").find(unitAction)!!.groups[1]!!.value
                 return UnitIconAndKey(ImageGetter.getImprovementIcon(improvementName), 'i')
             }
             unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'f')

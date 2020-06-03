@@ -44,10 +44,10 @@ class MapGenerator(val ruleset: Ruleset) {
         spawnVegetation(map)
         spawnRareFeatures(map)
         spawnIce(map)
+        NaturalWonderGenerator(ruleset).spawnNaturalWonders(map, randomness)
         RiverGenerator(randomness).spawnRivers(map)
         spreadResources(map)
         spreadAncientRuins(map)
-        NaturalWonderGenerator(ruleset).spawnNaturalWonders(map, randomness)
         return map
     }
 

@@ -18,7 +18,8 @@ class AndroidLauncher : AndroidApplication() {
 		// Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			copyMods()
-            GameSaver.externalFilesDirForAndroid = getExternalFilesDir(null)!!.path
+            val externalfilesDir = getExternalFilesDir(null)
+            if(externalfilesDir!=null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
 		}
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
