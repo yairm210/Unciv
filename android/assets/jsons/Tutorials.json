@@ -123,5 +123,8 @@
   ],
   Removing_Terrain_Features: [
 	"Certain tiles have terrain features - like Flood plains or Forests -  on top of them. Some of these layers, like Jungle, Marsh and Forest, can be removed by workers.\nRemoving the terrain feature does not remove any resources in the tile, and is usually required in order to work those resources."
+  ],
+  Natural_Wonders: [
+    "Natural Wonders, such as the Mt. Fuji, the Rock of Gibraltar and the Great Barrier Reef, are unique, impassable terrain features, masterpieces of mother Nature, which possess exceptional qualities that make them very different from the average terrain.\nThey benefit by giving you large sums of Culture, Science, Gold or Production if worked by your Cities, which is why you might need to bring them under your empire as soon as possible."
   ]
 }
