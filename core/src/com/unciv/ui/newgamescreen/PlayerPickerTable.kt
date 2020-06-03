@@ -3,6 +3,7 @@ package com.unciv.ui.newgamescreen
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -171,6 +172,18 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             }).pad(10f).width(nationsPopupWidth).row()
         }
         nationsPopup.add(ScrollPane(nationListTable)).height(newGameScreen.stage.height * 0.8f)
+        nationsPopup.pack()
+
+        val closeImage = ImageGetter.getImage("OtherIcons/Close")
+        closeImage.setSize(30f,30f)
+        val closeImageHolder = Group() // This is to add it some more clickable space, to make it easier to click on the phone
+        closeImageHolder.setSize(50f,50f)
+        closeImage.center(closeImageHolder)
+        closeImageHolder.addActor(closeImage)
+        closeImageHolder.onClick { nationsPopup.close() }
+        closeImageHolder.setPosition(0f, nationsPopup.height, Align.topLeft)
+        nationsPopup.addActor(closeImageHolder)
+
         nationsPopup.open()
         update()
     }
