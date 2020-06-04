@@ -60,6 +60,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 mapTypeSpecificTable.add(savedScenarioOptionsTable)
                 val scenario = MapSaver.loadScenario(mapParameters.name)
                 newGameScreen.gameSetupInfo.gameParameters = scenario.gameParameters
+                newGameScreen.gameSetupInfo.mapParameters = mapParameters
                 // update PlayerTable and GameOptionsTable
                 newGameScreen.lockTables()
                 newGameScreen.updateTables()
