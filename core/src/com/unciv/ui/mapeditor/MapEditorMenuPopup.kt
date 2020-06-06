@@ -55,7 +55,9 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
                 try {
                     MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
                     close()
-                    ResponsePopup("Map saved", mapEditorScreen) // todo - add this text to translations
+                    Gdx.app.postRunnable {
+                        ResponsePopup("Map saved", mapEditorScreen) // todo - add this text to translations
+                    }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                     Gdx.app.postRunnable {
@@ -97,16 +99,20 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
                     DropBox.uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
 
                     remove()
-                    val uploadedSuccessfully = Popup(screen)
-                    uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
-                    uploadedSuccessfully.addCloseButton()
-                    uploadedSuccessfully.open()
+                    Gdx.app.postRunnable {
+                        val uploadedSuccessfully = Popup(screen)
+                        uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
+                        uploadedSuccessfully.addCloseButton()
+                        uploadedSuccessfully.open()
+                    }
                 } catch (ex: Exception) {
                     remove()
-                    val couldNotUpload = Popup(screen)
-                    couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
-                    couldNotUpload.addCloseButton()
-                    couldNotUpload.open()
+                    Gdx.app.postRunnable {
+                        val couldNotUpload = Popup(screen)
+                        couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
+                        couldNotUpload.addCloseButton()
+                        couldNotUpload.open()
+                    }
                 }
             }
         }
