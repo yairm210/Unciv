@@ -114,7 +114,7 @@ object BattleDamage {
         val modifiers = getGeneralModifiers(attacker, defender)
         val policies = attacker.getCivInfo().policies
 
-        if(attacker is MapUnitCombatant) {
+        if (attacker is MapUnitCombatant) {
             modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
@@ -122,11 +122,11 @@ object BattleDamage {
                 if (regexResult == null) continue
                 val bonus = regexResult.groups[1]!!.value.toFloat() / 100
                 if (modifiers.containsKey("Attacker Bonus"))
-                    modifiers["Attacker Bonus"] =modifiers["Attacker Bonus"]!! + bonus
+                    modifiers["Attacker Bonus"] = modifiers["Attacker Bonus"]!! + bonus
                 else modifiers["Attacker Bonus"] = bonus
             }
 
-            if(attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
+            if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
                 modifiers["Landing"] = -0.5f
 
             if (attacker.isMelee()) {
@@ -136,12 +136,12 @@ object BattleDamage {
                             && MapUnitCombatant(it.militaryUnit!!).isMelee()
                 }
                 if (numberOfAttackersSurroundingDefender > 1)
-                    modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+                    modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender - 1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
 
-                if (tileToAttackFrom!=null && tileToAttackFrom.isConnectedByRiver(defender.getTile())){
+                if (tileToAttackFrom != null && tileToAttackFrom.isConnectedByRiver(defender.getTile())) {
                     if (!tileToAttackFrom.hasConnection(attacker.getCivInfo()) // meaning, the tiles are not road-connected for this civ
                             || !defender.getTile().hasConnection(attacker.getCivInfo())
-                            || !attacker.getCivInfo().tech.roadsConnectAcrossRivers){
+                            || !attacker.getCivInfo().tech.roadsConnectAcrossRivers) {
                         modifiers["Across river"] = -0.2f
                     }
                 }
@@ -153,9 +153,7 @@ object BattleDamage {
             if (defender is CityCombatant &&
                     attacker.getCivInfo().containsBuildingUnique("+15% Combat Strength for all units when attacking Cities"))
                 modifiers["Statue of Zeus"] = 0.15f
-        }
-
-        else if (attacker is CityCombatant) {
+        } else if (attacker is CityCombatant) {
             if (policies.hasEffect("Units in cities cost no Maintenance, garrisoned city +50% attacking strength")
                     && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
