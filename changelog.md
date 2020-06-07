@@ -1,3 +1,15 @@
+## 3.9.2
+
+Move units out of cities when liberating
+
+Thread crash fixes - By vainiovano
+
+New translation language - Lithuanian
+
+Clicking the menu button when it is open closes the menu
+
+Translation updates
+
 ## 3.9.1
 
 Buildings requiring a nearby resource can be constructed even when the tile belongs to another city
