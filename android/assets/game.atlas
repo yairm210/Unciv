@@ -3118,6 +3118,48 @@ TechIcons/Writing
   orig: 100, 100
   offset: 0, 0
   index: -1
+TileSets/Default/Tiles/River-Bottom
+  rotate: false
+  xy: 718, 46
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-Bottom
+  rotate: false
+  xy: 718, 46
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/Default/Tiles/River-BottomLeft
+  rotate: false
+  xy: 752, 48
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-BottomLeft
+  rotate: false
+  xy: 752, 48
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/Default/Tiles/River-BottomRight
+  rotate: false
+  xy: 786, 70
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
+TileSets/FantasyHex/Tiles/River-BottomRight
+  rotate: false
+  xy: 786, 70
+  size: 32, 28
+  orig: 32, 28
+  offset: 0, 0
+  index: -1
 TileSets/Default/road
   rotate: false
   xy: 1226, 909
@@ -3968,27 +4010,6 @@ TileSets/FantasyHex/Tiles/Quarry+Marble
 TileSets/FantasyHex/Tiles/Quarry+Stone
   rotate: false
   xy: 888, 117
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/River-Bottom
-  rotate: false
-  xy: 718, 46
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/River-BottomLeft
-  rotate: false
-  xy: 752, 48
-  size: 32, 28
-  orig: 32, 28
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/Tiles/River-BottomRight
-  rotate: false
-  xy: 786, 70
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
