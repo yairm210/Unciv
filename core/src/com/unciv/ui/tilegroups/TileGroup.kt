@@ -139,9 +139,21 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         if (viewingCiv==null  && !showEntireMap) return listOf(tileSetStrings.hexagon)
 
         if (tileInfo.isCityCenter()) {
-            val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain)
+            // Temporarily disabled until we can see the rivers behind the era cities =)
+//            val era = tileInfo.getOwner()!!.getEra()
+//            val terrainAndCityWithEra = tileSetStrings.getCityTile(tileInfo.baseTerrain, era)
+//            if (ImageGetter.imageExists(terrainAndCityWithEra))
+//                return listOf(terrainAndCityWithEra)
+//
+//            val cityWithEra = tileSetStrings.getCityTile(null, era)
+//            if (ImageGetter.imageExists(cityWithEra))
+//                return listOf(cityWithEra)
+
+            val terrainAndCity = tileSetStrings.getCityTile(tileInfo.baseTerrain, null)
             if (ImageGetter.imageExists(terrainAndCity))
                 return listOf(terrainAndCity)
+
+//            val cityWithEra = tileSetStrings.getCityTile()
             if (ImageGetter.imageExists(tileSetStrings.cityTile))
                 return listOf(tileSetStrings.cityTile)
         }
