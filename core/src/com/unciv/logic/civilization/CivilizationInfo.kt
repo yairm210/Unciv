@@ -479,7 +479,7 @@ class CivilizationInfo {
 
     fun addNotification(text: String, color: Color, action: NotificationAction?=null) {
         if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, color, action))
+        notifications.add(Notification(text.tr(), color, action))
     }
 
     fun addGreatPerson(greatPerson: String){
