@@ -17,3 +17,32 @@ You don't need to download anything, all translation work can be done on the Git
 Note that Right-to-Left languages such as Arabic and Hebrew are not supported by the framework :/
 
 If you're done with all of that, then there's always the Google Play page to translate... ;)
+
+For the Google Play translation, we'll need you to translate 2 parts.
+
+The first is the short description for the game, `Open source 4X civilization-building game`
+
+The second is the long description for the game:
+
+```
+An open-source reimplementation of the most famous civilization-building game ever - fast, small, no ads, free forever!
+
+Build your civilization, research technologies, expand your cities and defeat your foes!
+
+Requests? Bugs? Todo list for the application is https://github.com/yairm210/UnCiv/issues, every small help is welcome!
+
+Questions? Comments? Just bored? Join us on the new discord server at https://discord.gg/bjrB4Xw ;)
+
+Want to help translating the game into your language? See https://github.com/yairm210/UnCiv#how-can-i-translate-to-language
+
+Grok Java, Kotlin or C#? Join us at https://github.com/yairm210/UnCiv!
+
+Play on a 10' or 7' Tablet? We'd be glad to have a good-looking screenshot!
+
+The world awaits! Will you build 
+your civilization into an empire that will stand the test of time?
+
+* Internet permissions required for Multiplayer
+
+* If you want to donate, I have a Paypal at https://www.paypal.me/yairm210
+```
