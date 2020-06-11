@@ -31,16 +31,32 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
 
     private var modsWithTranslations: HashMap<String, Translations> = hashMapOf() // key == mod name
 
-
-    fun get(text: String, language: String, activeMods: HashSet<String>? = null): String {
+    /**
+     * Searches for the translation entry of a given [text] for a given [language].
+     * This includes translations provided by mods from [activeMods]
+     *
+     * @param text the input text for the translate entry
+     * @param language the inquired language
+     * @param activeMods set of the active mods that should include in the search
+     *
+     * @return the translation entry or null when not available
+     */
+    fun get(text: String, language: String, activeMods: HashSet<String>? = null): TranslationEntry? {
         activeMods?.forEach {
             modsWithTranslations[it]?.let { modTranslations ->
-                val translation = modTranslations[text]?.get(language)
-                if (translation != null) return translation
+                val translationEntry = modTranslations[text]?.get(language)
+                if (translationEntry != null) return modTranslations[text]
             }
         }
 
-        return this[text]?.get(language) ?: text
+        return this[text]
+    }
+
+    /**
+     * @see get
+     */
+    fun getText(text: String, language: String, activeMods: HashSet<String>? = null): String {
+        return get(text, language, activeMods)?.get(language) ?: text
     }
 
     fun getLanguages(): List<String> {
@@ -205,6 +221,11 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  *                  but with placeholder or sentence brackets removed.
  */
 fun String.tr(): String {
+    val activeMods = if (UncivGame.Current.isGameInfoInitialized()) {
+        UncivGame.Current.gameInfo.gameParameters.mods
+    } else {
+        null
+    }
 
     // There might still be optimization potential here!
     if (contains("[")) { // Placeholders!
@@ -224,7 +245,7 @@ fun String.tr(): String {
         // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
         val translationStringWithSquareBracketsOnly = this.replace(squareBraceRegex,"[]")
         // That is now the key into the translation HashMap!
-        val translationEntry = UncivGame.Current.translations[translationStringWithSquareBracketsOnly]
+        val translationEntry = UncivGame.Current.translations.get(translationStringWithSquareBracketsOnly, UncivGame.Current.settings.language, activeMods)
 
         if (translationEntry==null ||
                 !translationEntry.containsKey(UncivGame.Current.settings.language)){
@@ -248,12 +269,5 @@ fun String.tr(): String {
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
 
-    val activeMods = if (UncivGame.Current.isGameInfoInitialized()) {
-        UncivGame.Current.gameInfo.gameParameters.mods
-    } else {
-        null
-    }
-
-    return UncivGame.Current.translations
-            .get(this, UncivGame.Current.settings.language, activeMods)
+    return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
 }
