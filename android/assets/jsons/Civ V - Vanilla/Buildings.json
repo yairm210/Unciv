@@ -117,6 +117,29 @@
 		"requiredTech": "Masonry",
 		"quote": "'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
+	/*
+	{
+		"name": "Water mill",
+		"maintenance": 2,
+		"food": 2,
+		"production": 1,
+		"hurryCostModifier": 25,
+		"uniques": ["Must be near River"],
+		"requiredTech": "The Wheel"
+	},
+	{
+		"name": "Floating gardens",
+		"replaces": "Water mill",
+		"uniqueTo": "Aztecs",
+		"maintenance": 2,
+		"food": 2,
+		"production": 1,
+		"hurryCostModifier": 25,
+		"percentStatBonus": {"food": 15},
+		"uniques": ["Must be near River","Buildable next to Lakes","+2 Food for each worked Lake tile],
+		"requiredTech": "The Wheel"
+	},
+	*/
 	{
 		"name": "Barracks",
 		"xpForNewUnits": 15,
@@ -231,6 +254,16 @@
 		"requiredTech": "Construction",
 		"quote": "'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 	},
+	/*
+	{
+		"name": "Heroic Epic",
+		"culture": 1,
+		"isNationalWonder": true,
+		"requiredBuildingInAllCities": "Barracks",
+		"requiredTech": "Iron Working"
+		"uniques": ["All newly-trained units in this city receive the Morale promotion"]
+	},
+	*/
 	{
 		"name": "Temple",
 		"culture": 3,
@@ -291,6 +324,16 @@
 			"+2 Gold for each source of Oil and oasis"],
 		"requiredTech": "Currency"
 	},
+	/*
+	{
+		"name": "National Treasury",
+		"culture": 1,
+		"gold": 8,
+		"isNationalWonder": true,
+		"requiredBuildingInAllCities": "Market",
+		"requiredTech": "Currency"
+	},
+	*/
 	{
 		"name": "Mint",
 		"maintenance": 0,
@@ -339,6 +382,15 @@
 		"hurryCostModifier": 25,
 		"requiredTech": "Theology"
 	},
+	/*
+	{
+		"name": "Garden",
+		"maintenance": 1,
+		"hurryCostModifier": 25,
+		"requiredTech": "Theology"
+		"uniques": ["+25% great person generation in all cities","Must be near River, Lake or Oasis"],
+	},
+	*/
 	{
 		"name": "Hagia Sophia",
 		"culture": 1,
