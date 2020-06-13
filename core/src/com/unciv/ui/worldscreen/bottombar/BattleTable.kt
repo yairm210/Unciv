@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
 import com.unciv.logic.automation.UnitAutomation
@@ -122,7 +121,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
         val attackerModifiers =
-                BattleDamage.getAttackModifiers(attacker,defender).map {
+                BattleDamage.getAttackModifiers(attacker,null,defender).map {
                     val description = if(it.key.startsWith("vs ")) ("vs ["+it.key.replace("vs ","")+"]").tr() else it.key.tr()
                     val percentage = (if(it.value>0)"+" else "")+(it.value*100).toInt()+"%"
                     "$description: $percentage"
@@ -142,8 +141,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             row().pad(2f)
         }
 
-        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,defender)
-        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker,defender)
+        var damageToDefender = BattleDamage.calculateDamageToDefender(attacker,null,defender)
+        var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker,null,defender)
 
 
         if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers

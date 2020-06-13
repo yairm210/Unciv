@@ -23,7 +23,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (from.roadStatus == RoadStatus.Railroad && to.roadStatus == RoadStatus.Railroad)
             return 1 / 10f + extraCost
 
-        if (from.hasConnection(civInfo) && to.hasConnection(civInfo))
+        val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
+        if(from.isConnectedByRiver(to) &&
+                (!areConnectedByRoad || !civInfo.tech.roadsConnectAcrossRivers)){
+            return 100f // Rivers take the entire turn to cross
+        }
+
+        if (areConnectedByRoad)
         {
             return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
             else 1 / 2f + extraCost

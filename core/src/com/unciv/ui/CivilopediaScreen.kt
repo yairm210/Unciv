@@ -27,8 +27,10 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
     fun select(category: String) {
         entrySelectTable.clear()
-        for (entry in categoryToEntries[category]!!
-                .sortedBy { it.name.tr() }){  // Alphabetical order of localized names
+        var entries = categoryToEntries[category]!!
+        if(category!="Difficulty levels") // this is the only case where we need them in order
+                entries = entries.sortedBy { it.name.tr() }   // Alphabetical order of localized names
+        for (entry in entries){
             val entryButton = Button(skin)
             if(entry.image!=null)
                 if (category=="Terrains")

@@ -283,7 +283,7 @@ object UnitActions {
 
     private fun addGreatPersonActions(unit: MapUnit, actionList: ArrayList<UnitAction>, tile: TileInfo) {
 
-        if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
+        if (unit.hasUnique("Can hurry technology research") && !unit.isEmbarked()) {
             actionList += UnitAction(
                     type = UnitActionType.HurryResearch,
                     uncivSound = UncivSound.Chimes,
@@ -305,7 +305,7 @@ object UnitActions {
                     }.takeIf { unit.currentMovement > 0 })
         }
 
-        if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
+        if (unit.hasUnique("Can speed up construction of a wonder") && !unit.isEmbarked()) {
             val canHurryWonder = if (unit.currentMovement == 0f || !tile.isCityCenter()) false
             else {
                 val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
@@ -325,7 +325,8 @@ object UnitActions {
                     }.takeIf { canHurryWonder })
         }
 
-        if (unit.name == "Great Merchant" && !unit.isEmbarked()) {
+        if (unit.hasUnique("Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence")
+                && !unit.isEmbarked()) {
             val canConductTradeMission = tile.owningCity?.civInfo?.isCityState() == true
                     && tile.owningCity?.civInfo?.isAtWarWith(unit.civInfo) == false
                     && unit.currentMovement > 0

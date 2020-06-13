@@ -272,6 +272,8 @@ class CivilizationInfo {
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): String {
+        if(tech.researchedTechnologies.isEmpty())
+            return gameInfo.ruleSet.getEras().first()
         val maxEraOfTech =  tech.researchedTechnologies
                 .asSequence()
                 .map { it.column!! }

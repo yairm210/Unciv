@@ -184,6 +184,7 @@
 		"name": "Rome",
 		"leaderName": "Augustus Caesar",
 		"adjective": ["Roman"],
+		"startBias":["Avoid [Tundra]","Avoid [Desert]"]
 		"preferredVictoryType": "Scientific",
 		
 		"startIntroPart1": "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed.",

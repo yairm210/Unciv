@@ -11,14 +11,12 @@ import com.unciv.models.ruleset.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
 
-    fun containsEnemyMilitaryUnit(tileInfo: TileInfo) = tileInfo.militaryUnit != null
-            && tileInfo.militaryUnit!!.civInfo.isAtWarWith(unit.civInfo)
 
     fun automateWorkerAction() {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
-                .filter(this::containsEnemyMilitaryUnit)
+                .filter { UnitAutomation.containsEnemyMilitaryUnit(unit, it) }
 
-        if (enemyUnitsInWalkingDistance.isNotEmpty()) return runAway()
+        if (enemyUnitsInWalkingDistance.isNotEmpty()) return UnitAutomation.runAway(unit)
 
         val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
@@ -34,7 +32,7 @@ class WorkerAutomation(val unit: MapUnit) {
         }
 
         if (currentTile.improvementInProgress == null && currentTile.isLand
-                && tileCanBeImproved(currentTile,unit.civInfo)) {
+                && tileCanBeImproved(currentTile, unit.civInfo)) {
             return currentTile.startWorkingOnImprovement(chooseImprovement(currentTile, unit.civInfo)!!, unit.civInfo)
         }
 
@@ -59,26 +57,6 @@ class WorkerAutomation(val unit: MapUnit) {
         }
 
         unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
-    }
-
-
-    fun countDistanceToClosestEnemy(tile: TileInfo): Int {
-        for(i in 1..3)
-            if(tile.getTilesAtDistance(i).any(this::containsEnemyMilitaryUnit))
-                return i
-        return 4
-    }
-
-    private fun runAway() {
-        val reachableTiles = unit.movement.getDistanceToTiles()
-        val enterableCity = reachableTiles.keys.firstOrNull { it.isCityCenter() && unit.movement.canMoveTo(it) }
-        if(enterableCity!=null) {
-            unit.movement.moveToTile(enterableCity)
-            return
-        }
-        val tileFurthestFromEnemy = reachableTiles.keys.filter {  unit.movement.canMoveTo(it) }
-                .maxBy(this::countDistanceToClosestEnemy)!!
-        unit.movement.moveToTile(tileFurthestFromEnemy)
     }
 
 

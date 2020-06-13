@@ -53,21 +53,14 @@ android {
 
     buildTypes {
         getByName("release") {
-            // Don't add local save files and fonts to release, obviously
-            aaptOptions {
-                ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
-            }
-
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
 
-        getByName("debug") {
-            // Don't add local save files and fonts to release, obviously
-            aaptOptions {
-                ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music"
-            }
-        }
+    }
+    aaptOptions {
+        // Don't add local save files and fonts to release, obviously
+        ignoreAssetsPattern = "!SaveFiles:!fonts:!maps:!music:!mods"
     }
     lintOptions {
         disable("MissingTranslation")

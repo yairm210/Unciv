@@ -120,7 +120,7 @@
 		"name": "Remove Fallout",
 		"turnsToBuild": 8,
 		"terrainsCanBeBuiltOn": ["Fallout"],
-		"techRequired": "Agriculture"
+		"techRequired": "Atomic Theory"
 	},
 	{
 		"name": "Remove Marsh",

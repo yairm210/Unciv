@@ -7,6 +7,7 @@ import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
+import com.unciv.logic.GameSaver
 import java.io.File
 
 class AndroidLauncher : AndroidApplication() {
@@ -17,6 +18,8 @@ class AndroidLauncher : AndroidApplication() {
 		// Only allow mods on KK+, to avoid READ_EXTERNAL_STORAGE permission earlier versions need
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			copyMods()
+            val externalfilesDir = getExternalFilesDir(null)
+            if(externalfilesDir!=null) GameSaver.externalFilesDirForAndroid = externalfilesDir.path
 		}
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }

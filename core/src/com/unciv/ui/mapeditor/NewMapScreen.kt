@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
-import com.unciv.logic.map.MapGenerator
+import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.TileMap
 import com.unciv.models.ruleset.RulesetCache

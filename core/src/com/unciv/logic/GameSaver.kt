@@ -14,19 +14,26 @@ object GameSaver {
     private const val multiplayerFilesFolder = "MultiplayerGames"
     private const val settingsFileName = "GameSettings.json"
 
+    /** When set, we know we're on Android and can save to the app's personal external file directory
+     * See https://developer.android.com/training/data-storage/app-specific#external-access-files */
+    var externalFilesDirForAndroid = ""
+
     fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
+    fun getSubfolder(multiplayer: Boolean=false) = if(multiplayer) multiplayerFilesFolder else saveFilesFolder
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
-        if (multiplayer)
-            return Gdx.files.local("$multiplayerFilesFolder/$GameName")
-        return Gdx.files.local("$saveFilesFolder/$GameName")
+        val localfile = Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
+        if(externalFilesDirForAndroid=="" || !Gdx.files.isExternalStorageAvailable) return localfile
+        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid+"/${getSubfolder(multiplayer)}/$GameName")
+        if(localfile.exists() && !externalFile.exists()) return localfile
+        return externalFile
     }
 
     fun getSaves(multiplayer: Boolean = false): List<String> {
-        if (multiplayer)
-            return Gdx.files.local(multiplayerFilesFolder).list().map { it.name() }
-        return Gdx.files.local(saveFilesFolder).list().map { it.name() }
+        val localSaves = Gdx.files.local(getSubfolder(multiplayer)).list().map { it.name() }
+        if(externalFilesDirForAndroid=="" || !Gdx.files.isExternalStorageAvailable) return localSaves
+        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid+"/${getSubfolder(multiplayer)}").list().map { it.name() }
     }
 
     fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {

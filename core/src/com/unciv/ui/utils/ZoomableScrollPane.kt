@@ -23,7 +23,7 @@ open class ZoomableScrollPane: ScrollPane(null) {
 
     private fun addZoomListeners() {
 
-        addListener(object: InputListener() {
+        addListener(object : InputListener() {
             override fun scrolled(event: InputEvent?, x: Float, y: Float, amount: Int): Boolean {
                 if(amount > 0) zoom(scaleX * 0.8f)
                 else zoom(scaleX / 0.8f)

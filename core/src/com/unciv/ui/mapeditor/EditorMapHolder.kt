@@ -75,7 +75,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
         val rounded = HexMath.roundHexCoords(hexPosition)
 
         if (tileMap.contains(rounded))
-            return tileMap.get(rounded)
+            return tileMap[rounded]
         else
             return null
     }

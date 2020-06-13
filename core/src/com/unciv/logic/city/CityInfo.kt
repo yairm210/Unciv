@@ -136,7 +136,7 @@ class CityInfo {
 
     fun getCenterTile(): TileInfo = centerTileInfo
     fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
-    fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
+    fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
@@ -450,6 +450,12 @@ class CityInfo {
         if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
         isPuppet = false
         cityStats.update()
+
+        // Move units out of the city when liberated
+        for(unit in getTiles().flatMap { it.getUnits() }.toList())
+            if(!unit.movement.canPassThrough(unit.currentTile))
+                unit.movement.teleportToClosestMoveableTile()
+
         UncivGame.Current.worldScreen.shouldUpdate=true
     }
 

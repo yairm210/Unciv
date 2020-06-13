@@ -155,6 +155,7 @@
 				"name": "Engineering",
 				"row": 8,
 				"prerequisites": ["Mathematics","Construction"],
+				"uniques": ["Roads connect tiles across rivers"],
 				"quote": "'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci"
 			},
 			{

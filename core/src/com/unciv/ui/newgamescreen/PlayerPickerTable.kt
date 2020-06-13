@@ -176,7 +176,6 @@ class PlayerPickerTable(val previousScreen: GameParametersPreviousScreen, var ga
                 update()
             }).pad(10f).width(nationsPopupWidth).row()
         }
-
         nationsPopup.add(ScrollPane(nationListTable)).height(previousScreen.stage.height * 0.8f)
         nationsPopup.pack()
 
