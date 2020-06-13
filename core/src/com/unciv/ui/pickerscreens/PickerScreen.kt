@@ -53,6 +53,11 @@ open class PickerScreen : CameraStageBaseScreen() {
         }
     }
 
+    fun setRightSideButtonEnabled(bool: Boolean) {
+        if (bool) rightSideButton.enable()
+        else rightSideButton.disable()
+    }
+
     protected fun pick(rightButtonText: String) {
         if(UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)

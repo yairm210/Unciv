@@ -2,20 +2,18 @@ package com.unciv.ui.newgamescreen
 
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
-import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
-import com.unciv.logic.GameStarter
-import com.unciv.logic.IdChecker
+import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
@@ -27,18 +25,21 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
 }
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PickerScreen() {
+class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): GameParametersPreviousScreen() {
 
-    var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
-    val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
+    override var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
+    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
+    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+    var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    var mapOptionsTable = MapOptionsTable(this)
 
     init {
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)
 
-        val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-        val newGameOptionsTable = NewGameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-        topTable.add(ScrollPane(MapOptionsTable(this)).apply { setOverscroll(false, false) })
+//        val playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+//        val newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+        topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
@@ -124,11 +125,27 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         Gdx.graphics.requestRendering()
     }
 
-    fun setNewGameButtonEnabled(bool: Boolean) {
-        if (bool) rightSideButton.enable()
-        else rightSideButton.disable()
+//    fun setNewGameButtonEnabled(bool: Boolean) {
+//        if (bool) rightSideButton.enable()
+//        else rightSideButton.disable()
+//    }
+
+    fun lockTables() {
+        playerPickerTable.locked = true
+        newGameOptionsTable.locked = true
     }
 
+    fun unlockTables() {
+        playerPickerTable.locked = false
+        newGameOptionsTable.locked = false
+    }
+
+    fun updateTables() {
+        playerPickerTable.gameParameters = gameSetupInfo.gameParameters
+        playerPickerTable.update()
+        newGameOptionsTable.gameParameters = gameSetupInfo.gameParameters
+        newGameOptionsTable.update()
+    }
 
     var newGame: GameInfo? = null
 

@@ -25,6 +25,9 @@ object MapType {
     // Non-generated maps
     const val custom = "Custom"
 
+    // Loaded scenario
+    const val scenario = "Scenario"
+
     // All ocean tiles
     const val empty = "Empty"
 }

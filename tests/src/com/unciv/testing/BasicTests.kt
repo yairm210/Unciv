@@ -39,7 +39,9 @@ class BasicTests {
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
-                        && game.simulateUntilTurnForDebug <= 0)
+                        && game.simulateUntilTurnForDebug <= 0
+                        && game.simulateUntilWinOrLose <= 0
+                        && !game.scenarioDebugSwitch)
     }
 
     // If there's a unit that obsoletes with no upgrade then when it obsoletes

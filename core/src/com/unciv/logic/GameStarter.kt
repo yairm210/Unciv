@@ -21,7 +21,9 @@ object GameStarter {
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
 
-        if (gameSetupInfo.mapParameters.name != "")
+        if (gameSetupInfo.mapParameters.type == MapType.scenario)
+            gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap
+        else if (gameSetupInfo.mapParameters.name != "")
             gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapParameters.name)
         else gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
         gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
