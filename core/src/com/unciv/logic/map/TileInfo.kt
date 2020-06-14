@@ -253,11 +253,9 @@ open class TileInfo {
     }
 
     fun getImprovementStats(improvement: TileImprovement, observingCiv: CivilizationInfo, city: CityInfo?): Stats {
-        val stats =
-                if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
-                    getTileResource().improvementStats!!.clone() // resource-specific improvement
-                else
-                    improvement.clone() // basic improvement
+        val stats = improvement.clone()
+        if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
+            stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
         if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
         if (improvement.name == "Trading post" && city != null
