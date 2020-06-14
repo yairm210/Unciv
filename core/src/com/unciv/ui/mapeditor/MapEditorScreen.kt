@@ -11,14 +11,14 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
-import com.unciv.ui.newgamescreen.GameParametersPreviousScreen
 import com.unciv.ui.newgamescreen.GameSetupInfo
+import com.unciv.ui.newgamescreen.PreviousScreenInterface
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): GameParametersPreviousScreen() {
-    override val ruleset = RulesetCache.getBaseRuleset()
+class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
+    override fun setRightSideButtonEnabled(boolean: Boolean) {}
+
     var mapName = ""
 
     var tileMap = TileMap()
@@ -52,7 +52,7 @@ class MapEditorScreen(): GameParametersPreviousScreen() {
     }
 
     fun initialize() {
-        tileMap.setTransients(ruleset,false)
+        tileMap.setTransients(gameSetupInfo.ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles(stage.width)
