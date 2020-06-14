@@ -199,12 +199,12 @@ class WorkerAutomation(val unit: MapUnit) {
 
             tile.terrainFeature == "Fallout" -> "Remove Fallout"
             tile.terrainFeature == Constants.marsh -> "Remove Marsh"
-            tile.terrainFeature == Constants.jungle -> "Trading post"
+            tile.terrainFeature == Constants.jungle -> Constants.tradingPost
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
             tile.baseTerrain in listOf(Constants.grassland,Constants.desert,Constants.plains) -> "Farm"
-            tile.baseTerrain == Constants.tundra -> "Trading post"
+            tile.baseTerrain == Constants.tundra -> Constants.tradingPost
             else -> null
         }
         if (improvementString == null) return null

@@ -50,6 +50,7 @@ object Constants {
 
     const val fort = "Fort"
     const val citadel = "Citadel"
+    const val tradingPost = "Trading post"
 
     const val unitActionSetUp = "Set Up"
     const val unitActionSleep = "Sleep"
