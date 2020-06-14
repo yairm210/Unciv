@@ -1,3 +1,11 @@
+## 3.9.3
+
+Resolved #2723 - resource-specific improvement bonuses are *in addition to* the regular improvement bonuses, and not instead.
+
+Resolved #2708 - added rivers to plain tileset
+
+Major translation updates
+
 ## 3.9.2
 
 Move units out of cities when liberating
