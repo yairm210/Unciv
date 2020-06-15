@@ -15,10 +15,7 @@ import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
-import com.unciv.ui.mapeditor.EditorMapHolder
-import com.unciv.ui.mapeditor.LoadMapScreen
-import com.unciv.ui.mapeditor.MapEditorScreen
-import com.unciv.ui.mapeditor.NewMapScreen
+import com.unciv.ui.mapeditor.*
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
@@ -130,8 +127,24 @@ class MainMenuScreen: CameraStageBaseScreen() {
             }
             game.setScreen(loadMapScreen)
         }
+
         loadMapButton.background = tableBackground
         mapEditorPopup.add(loadMapButton).row()
+
+        if (UncivGame.Current.scenarioDebugSwitch) {
+            val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Load") {
+                val loadScenarioScreen = LoadScenarioScreen(null)
+                loadScenarioScreen.closeButton.isVisible = true
+                loadScenarioScreen.closeButton.onClick {
+                    game.setScreen(MainMenuScreen())
+                    loadScenarioScreen.dispose()
+                }
+                game.setScreen(loadScenarioScreen)
+            }
+
+            loadScenarioButton.background = tableBackground
+            mapEditorPopup.add(loadScenarioButton).row()
+        }
 
         mapEditorPopup.add(getTableBlock("Close", "OtherIcons/Close") { mapEditorPopup.close() }
                 .apply { background=tableBackground })

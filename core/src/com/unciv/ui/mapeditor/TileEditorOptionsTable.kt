@@ -31,7 +31,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     var brushSize = 1
     private var currentHex: Actor = Group()
 
-    private val ruleset = mapEditorScreen.ruleset
+    private val ruleset = mapEditorScreen.gameSetupInfo.ruleset
 
     private val scrollPanelHeight = mapEditorScreen.stage.height*0.7f - 100f // -100 reserved for currentHex table
 
@@ -258,7 +258,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
                 // for the tile image
                 val tileInfo = TileInfo()
-                tileInfo.ruleset = mapEditorScreen.ruleset
+                tileInfo.ruleset = mapEditorScreen.gameSetupInfo.ruleset
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
@@ -351,7 +351,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun makeTileGroup(tileInfo: TileInfo): TileGroup {
-        tileInfo.ruleset = mapEditorScreen.ruleset
+        tileInfo.ruleset = mapEditorScreen.gameSetupInfo.ruleset
         tileInfo.setTerrainTransients()
         val group = TileGroup(tileInfo, TileSetStrings())
         group.showEntireMap = true

@@ -3,6 +3,7 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -28,7 +29,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         add("{Map Type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
-        if (MapSaver.getScenarios().isNotEmpty()) mapTypes.add(MapType.scenario)
+        if (MapSaver.getScenarios().isNotEmpty() && UncivGame.Current.scenarioDebugSwitch) mapTypes.add(MapType.scenario)
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
         val mapFileSelectBox = getMapFileSelectBox()
