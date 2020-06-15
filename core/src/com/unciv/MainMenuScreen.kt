@@ -131,18 +131,20 @@ class MainMenuScreen: CameraStageBaseScreen() {
         loadMapButton.background = tableBackground
         mapEditorPopup.add(loadMapButton).row()
 
-        val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Load") {
-            val loadScenarioScreen = LoadScenarioScreen(null)
-            loadScenarioScreen.closeButton.isVisible = true
-            loadScenarioScreen.closeButton.onClick {
-                game.setScreen(MainMenuScreen())
-                loadScenarioScreen.dispose()
+        if (UncivGame.Current.scenarioDebugSwitch) {
+            val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Load") {
+                val loadScenarioScreen = LoadScenarioScreen(null)
+                loadScenarioScreen.closeButton.isVisible = true
+                loadScenarioScreen.closeButton.onClick {
+                    game.setScreen(MainMenuScreen())
+                    loadScenarioScreen.dispose()
+                }
+                game.setScreen(loadScenarioScreen)
             }
-            game.setScreen(loadScenarioScreen)
-        }
 
-        loadScenarioButton.background = tableBackground
-        mapEditorPopup.add(loadScenarioButton).row()
+            loadScenarioButton.background = tableBackground
+            mapEditorPopup.add(loadScenarioButton).row()
+        }
 
         mapEditorPopup.add(getTableBlock("Close", "OtherIcons/Close") { mapEditorPopup.close() }
                 .apply { background=tableBackground })
