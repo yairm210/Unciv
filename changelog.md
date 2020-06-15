@@ -4,7 +4,9 @@ Resolved #2723 - resource-specific improvement bonuses are *in addition to* the 
 
 Resolved #2708 - added rivers to plain tileset
 
-Major translation updates
+Medium-sized translation updates
+
+Meanwhile, in Google Play, we've reached 500K downloads!
 
 ## 3.9.2
 

@@ -146,28 +146,32 @@
 	{
 		"name": "Academy",
 		"science": 8,
+		"uniques": ["Great improvement"],
 		"improvingTech": "Scientific Theory",
 		"improvingTechStats": {"science": 2}
 	},
 	{
 		"name": "Landmark",
-		"culture": 6
+		"culture": 6,
+		"uniques": ["Great improvement"],
 	},
 	{
 		"name": "Manufactory",
 		"production": 4,
 		"improvingTech": "Chemistry",
+		"uniques": ["Great improvement"],
 		"improvingTechStats": {"production": 1}
 	},
 	{
 		"name": "Customs house",
 		"gold": 4,
 		"improvingTech": "Economics",
+		"uniques": ["Great improvement"],
 		"improvingTechStats": {"gold": 1}
 	},
 	{
-		name: "Citadel",
-		uniques: ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units"]
+		"name": "Citadel",
+		"uniques": ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units", "Great improvement"]
 		// TODO (G&K): adds every tile around it to your territory
 	},
 
