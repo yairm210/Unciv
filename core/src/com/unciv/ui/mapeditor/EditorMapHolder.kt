@@ -31,7 +31,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
             // This is a hack to make the unit icons render correctly on the game, even though the map isn't part of a game
             // and the units aren't assigned to any "real" CivInfo
             tileGroup.tileInfo.getUnits().forEach { it.civInfo= CivilizationInfo()
-                    .apply { nation=mapEditorScreen.ruleset.nations[it.owner]!! } }
+                    .apply { nation=mapEditorScreen.gameSetupInfo.ruleset.nations[it.owner]!! } }
 
             tileGroup.showEntireMap = true
             tileGroup.update()

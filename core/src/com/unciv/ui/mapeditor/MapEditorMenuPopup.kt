@@ -19,44 +19,65 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.DropBox
 import kotlin.concurrent.thread
 
-class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
+class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
+    private val mapNameEditor: TextField = TextField(mapEditorScreen.mapName, skin)
+
     init{
-        val mapNameEditor = TextField(mapEditorScreen.mapName, skin)
         add(mapNameEditor).fillX().row()
         mapNameEditor.selectAll()
         mapNameEditor.maxLength = 240       // A few under max for most filesystems
         mapEditorScreen.stage.keyboardFocus = mapNameEditor
 
+        addNewMapButton()
+        addClearCurrentMapButton()
+        addSaveMapButton()
+        addCopyMapAsTextButton()
+        addLoadMapButton()
+        addUploadMapButton()
+
+        if (UncivGame.Current.scenarioDebugSwitch) {
+            addScenarioButton()
+            addLoadScenarioButton()
+        }
+
+        addExitMapEditorButton()
+        addCloseOptionsButton()
+    }
+
+    private fun Popup.addNewMapButton() {
         val newMapButton = "New map".toTextButton()
         newMapButton.onClick {
             UncivGame.Current.setScreen(NewMapScreen())
         }
         add(newMapButton).row()
+    }
 
+    private fun Popup.addClearCurrentMapButton() {
         val clearCurrentMapButton = "Clear current map".toTextButton()
         clearCurrentMapButton.onClick {
-            for(tileGroup in mapEditorScreen.mapHolder.tileGroups.values)
-            {
+            for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
                 val tile = tileGroup.tileInfo
-                tile.baseTerrain=Constants.ocean
-                tile.terrainFeature=null
-                tile.naturalWonder=null
-                tile.resource=null
-                tile.improvement=null
-                tile.improvementInProgress=null
-                tile.roadStatus=RoadStatus.None
+                tile.baseTerrain = Constants.ocean
+                tile.terrainFeature = null
+                tile.naturalWonder = null
+                tile.resource = null
+                tile.improvement = null
+                tile.improvementInProgress = null
+                tile.roadStatus = RoadStatus.None
                 tile.setTransients()
 
                 tileGroup.update()
             }
         }
         add(clearCurrentMapButton).row()
+    }
 
+    private fun Popup.addSaveMapButton() {
         val saveMapButton = "Save map".toTextButton()
         saveMapButton.onClick {
-            mapEditorScreen.tileMap.mapParameters.name=mapEditorScreen.mapName
-            mapEditorScreen.tileMap.mapParameters.type=MapType.custom
-            thread ( name = "SaveMap" ) {
+            mapEditorScreen.tileMap.mapParameters.name = mapEditorScreen.mapName
+            mapEditorScreen.tileMap.mapParameters.type = MapType.custom
+            thread(name = "SaveMap") {
                 try {
                     MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
                     close()
@@ -81,24 +102,30 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             saveMapButton.isEnabled = mapNameEditor.text.isNotEmpty()
             true
         }
+    }
 
+    private fun Popup.addCopyMapAsTextButton() {
         val copyMapAsTextButton = "Copy to clipboard".toTextButton()
         copyMapAsTextButton.onClick {
             val json = Json().toJson(mapEditorScreen.tileMap)
             val base64Gzip = Gzip.zip(json)
-            Gdx.app.clipboard.contents =  base64Gzip
+            Gdx.app.clipboard.contents = base64Gzip
         }
         add(copyMapAsTextButton).row()
+    }
 
+    private fun Popup.addLoadMapButton() {
         val loadMapButton = "Load map".toTextButton()
         loadMapButton.onClick {
             UncivGame.Current.setScreen(LoadMapScreen(mapEditorScreen.tileMap))
         }
         add(loadMapButton).row()
+    }
 
+    private fun Popup.addUploadMapButton() {
         val uploadMapButton = "Upload map".toTextButton()
         uploadMapButton.onClick {
-            thread(name="MapUpload") {
+            thread(name = "MapUpload") {
                 try {
                     val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
                     DropBox.uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
@@ -122,43 +149,68 @@ class MapEditorMenuPopup(mapEditorScreen: MapEditorScreen): Popup(mapEditorScree
             }
         }
         add(uploadMapButton).row()
+    }
 
-        if (UncivGame.Current.scenarioDebugSwitch) {
-            val createScenarioButton = "Create scenario".toTextButton()
-            add(createScenarioButton).row()
-            createScenarioButton.onClick {
-                remove()
-                mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap) // update players list from tileMap starting locations
-
-                val gameParametersPopup = Popup(screen)
-                val playerPickerTable = PlayerPickerTable(mapEditorScreen, mapEditorScreen.gameSetupInfo.gameParameters)
-                val gameOptionsTable = GameOptionsTable(mapEditorScreen) {desiredCiv: String -> playerPickerTable.update(desiredCiv)}
-                val scenarioNameEditor = TextField(mapEditorScreen.mapName, skin)
-
-                gameParametersPopup.add(playerPickerTable)
-                gameParametersPopup.addSeparatorVertical()
-                gameParametersPopup.add(gameOptionsTable).row()
-                gameParametersPopup.add(scenarioNameEditor)
-                gameParametersPopup.addButton("Save scenario"){
-                    mapEditorScreen.tileMap.mapParameters.type=MapType.scenario
-                    MapSaver.saveScenario(scenarioNameEditor.text, Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters))
-                    ResponsePopup("Scenario saved", mapEditorScreen)
-                    gameParametersPopup.close()
-                }.row()
-                gameParametersPopup.addCloseButton().row()
-                gameParametersPopup.open()
-            }
+    private fun Popup.addScenarioButton() {
+        var scenarioButton = "".toTextButton()
+        if (mapEditorScreen.scenario != null) {
+            scenarioButton.setText("Edit scenario")
+        } else {
+            scenarioButton.setText("Create scenario")
         }
+        add(scenarioButton).row()
+        scenarioButton.onClick {
+            remove()
+            // update players list from tileMap starting locations
+            if (mapEditorScreen.scenario == null) {
+                mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap)
+            }
 
+            val gameParametersPopup = Popup(screen)
+            val playerPickerTable = PlayerPickerTable(mapEditorScreen, mapEditorScreen.gameSetupInfo.gameParameters)
+            val gameOptionsTable = GameOptionsTable(mapEditorScreen) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+            val scenarioNameEditor = TextField(mapEditorScreen.scenarioName, skin)
+
+            gameParametersPopup.add(playerPickerTable)
+            gameParametersPopup.addSeparatorVertical()
+            gameParametersPopup.add(gameOptionsTable).row()
+            gameParametersPopup.add(scenarioNameEditor)
+            gameParametersPopup.addButton("Save scenario") {
+                mapEditorScreen.tileMap.mapParameters.type = MapType.scenario
+                mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
+                mapEditorScreen.scenarioName = scenarioNameEditor.text
+                MapSaver.saveScenario(scenarioNameEditor.text, mapEditorScreen.scenario!!)
+                ResponsePopup("Scenario saved", mapEditorScreen)
+                gameParametersPopup.close()
+            }.row()
+            gameParametersPopup.addCloseButton().row()
+            gameParametersPopup.open()
+        }
+    }
+
+    private fun Popup.addLoadScenarioButton() {
+        val loadScenarioButton = "Load scenario".toTextButton()
+        loadScenarioButton.onClick {
+            UncivGame.Current.setScreen(LoadScenarioScreen(mapEditorScreen.tileMap))
+        }
+        add(loadScenarioButton).row()
+
+    }
+
+    private fun Popup.addExitMapEditorButton() {
         val exitMapEditorButton = "Exit map editor".toTextButton()
-        add(exitMapEditorButton ).row()
+        add(exitMapEditorButton).row()
         exitMapEditorButton.onClick { mapEditorScreen.game.setScreen(MainMenuScreen()); mapEditorScreen.dispose() }
+    }
 
+    private fun Popup.addCloseOptionsButton() {
         val closeOptionsButton = Constants.close.toTextButton()
         closeOptionsButton.onClick { close() }
         add(closeOptionsButton).row()
     }
+
 }
+
 
 private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
     val tilesWithStartingLocations = tileMap.values
