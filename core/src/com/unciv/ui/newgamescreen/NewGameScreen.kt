@@ -24,6 +24,7 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 
     constructor() : this("", GameParameters(), MapParameters())
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
+    constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)
 }
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PreviousScreenInterface, PickerScreen() {

@@ -7,15 +7,15 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 
 /**
  * Interface to use as a previous screen for GameOptionsTable and PlayerPickerTable
- * It should be child of the PickerScreen during new game creation
- * or CameraBackStageScreen for for map editing
+ * It should be a child of the PickerScreen class during new game creation
+ * or CameraBackStageScreen class for map editing
  */
 
 interface PreviousScreenInterface {
     var gameSetupInfo: GameSetupInfo
     var stage: Stage
 
-    // added for compatibility with PickerScreen
+    // added for compatibility with NewGameScreen: PickerScreen
     fun setRightSideButtonEnabled(boolean: Boolean)
 }
 
