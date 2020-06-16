@@ -17,9 +17,6 @@ private data class UnitIconAndKey (val Icon: Actor, val key: Char = 0.toChar())
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
-    init {
-        touchable = Touchable.enabled
-    }
 
     private fun getIconAndKeyForUnitAction(unitAction: String): UnitIconAndKey {
         when {
