@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.Scenario
+import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.Player
 import com.unciv.ui.newgamescreen.GameOptionsTable
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.PlayerPickerTable
@@ -20,6 +22,11 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): PickerScreen()
     init {
         setDefaultCloseAction(mapEditorScreen)
         scrollPane.setScrollingDisabled(true, true)
+
+        // update players list from tileMap starting locations
+        if (mapEditorScreen.scenario == null) {
+            mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap)
+        }
 
         playerPickerTable.apply { locked = true }.update()
         val scenarioNameEditor = TextField(mapEditorScreen.scenarioName, skin)
@@ -60,4 +67,17 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): PickerScreen()
             true
         }
     }
+
+    private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
+        val tilesWithStartingLocations = tileMap.values
+                .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
+        var players = ArrayList<Player>()
+        for (tile in tilesWithStartingLocations) {
+            players.add(Player().apply{
+                chosenCiv = tile.improvement!!.removePrefix("StartingLocation ")
+            })
+        }
+        return players
+    }
 }
+

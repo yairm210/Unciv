@@ -161,8 +161,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         add(scenarioButton).row()
         scenarioButton.onClick {
             remove()
-            // update players list from tileMap starting locations
-            mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap)
             UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen))
         }
     }
@@ -188,17 +186,4 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         add(closeOptionsButton).row()
     }
 
-}
-
-
-private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
-    val tilesWithStartingLocations = tileMap.values
-            .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-    var players = ArrayList<Player>()
-    for (tile in tilesWithStartingLocations) {
-        players.add(Player().apply{
-            chosenCiv = tile.improvement!!.removePrefix("StartingLocation ")
-        })
-    }
-    return players
 }
