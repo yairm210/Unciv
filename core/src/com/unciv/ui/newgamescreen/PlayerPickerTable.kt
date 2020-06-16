@@ -24,7 +24,6 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
     val civBlocksWidth = previousScreen.stage.width / 3
     var locked = false
 
-
     init {
         top()
         add("Civilizations".toLabel(fontSize = 24)).padBottom(20f).row()
@@ -77,7 +76,7 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
 
         val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
-            if (locked) return@onClick
+//            if (locked) return@onClick
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
             else player.playerType = PlayerType.AI
@@ -138,7 +137,7 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
         nationTable.onClick {
-            popupNationPicker(player)
+            if (!locked) popupNationPicker(player)
         }
         return nationTable
     }
