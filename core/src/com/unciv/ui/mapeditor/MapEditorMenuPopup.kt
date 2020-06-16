@@ -164,7 +164,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         }
         add(scenarioButton).row()
         scenarioButton.onClick {
-            remove()
             UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen))
         }
     }
