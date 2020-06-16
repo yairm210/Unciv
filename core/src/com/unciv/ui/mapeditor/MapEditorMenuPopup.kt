@@ -163,50 +163,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             remove()
             // update players list from tileMap starting locations
             mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap)
-
-            val gameParametersPopup = Popup(screen)
-            val playerPickerTable = PlayerPickerTable(mapEditorScreen, mapEditorScreen.gameSetupInfo.gameParameters)
-            val gameOptionsTable = GameOptionsTable(mapEditorScreen) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-            val scenarioNameEditor = TextField(mapEditorScreen.scenarioName, skin)
-
-            gameParametersPopup.add(playerPickerTable)
-            gameParametersPopup.addSeparatorVertical()
-            gameParametersPopup.add(gameOptionsTable).row()
-            gameParametersPopup.add(scenarioNameEditor)
-            val saveScenarioButton = "Save scenario".toTextButton()
-            gameParametersPopup.add(saveScenarioButton)
-            saveScenarioButton.onClick {
-                thread(name = "SaveScenario") {
-                    try {
-                        mapEditorScreen.tileMap.mapParameters.type = MapType.scenario
-                        mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
-                        mapEditorScreen.scenarioName = scenarioNameEditor.text
-                        MapSaver.saveScenario(scenarioNameEditor.text, mapEditorScreen.scenario!!)
-
-                        gameParametersPopup.close()
-                        Gdx.app.postRunnable {
-                            ResponsePopup("Scenario saved", mapEditorScreen) // todo - add this text to translations
-                        }
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
-                        Gdx.app.postRunnable {
-                            val cantLoadGamePopup = Popup(mapEditorScreen)
-                            cantLoadGamePopup.addGoodSizedLabel("It looks like your scenario can't be saved!").row()
-                            cantLoadGamePopup.addCloseButton()
-                            cantLoadGamePopup.open(force = true)
-                        }
-                    }
-                }
-            }
-            gameParametersPopup.addCloseButton()
-            gameParametersPopup.open()
-
-            saveScenarioButton.isEnabled = scenarioNameEditor.text.isNotEmpty()
-            scenarioNameEditor.addListener {
-                mapEditorScreen.scenarioName = scenarioNameEditor.text
-                saveScenarioButton.isEnabled = scenarioNameEditor.text.isNotEmpty()
-                true
-            }
+            UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen))
         }
     }
 
