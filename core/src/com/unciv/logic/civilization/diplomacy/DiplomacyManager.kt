@@ -256,19 +256,18 @@ class DiplomacyManager() {
     }
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
-    fun updateHasOpenBorders(){
+    fun updateHasOpenBorders() {
         val newHasOpenBorders = trades.flatMap { it.theirOffers }
                 .any { it.name == Constants.openBorders && it.duration > 0 }
 
         val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
-        hasOpenBorders=newHasOpenBorders
+        hasOpenBorders = newHasOpenBorders
 
-        if(bordersWereClosed){ // borders were closed, get out!
-            for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }){
+        if (bordersWereClosed) { // borders were closed, get out!
+            for (unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }) {
                 unit.movement.teleportToClosestMoveableTile()
             }
         }
-
     }
 
     fun nextTurn(){
@@ -366,6 +365,8 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.UnacceptableDemands, 1 / 4f)
         revertToZero(DiplomaticModifiers.LiberatedCity, 1 / 8f)
 
+        setFriendshipBasedModifier()
+
         if (!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1 / 2f) //decreases slowly and will revert to full if it is declared later
 
@@ -417,11 +418,11 @@ class DiplomacyManager() {
             else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
         }
 
-        if(hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+        if(hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
             removeFlag(DiplomacyFlags.DeclarationOfFriendship)
             otherCivDiplomacy.removeModifier(DiplomaticModifiers.DeclarationOfFriendship)
-            for(knownCiv in civInfo.getKnownCivs()){
-                val amount = if(knownCiv==otherCiv) -40f else -20f
+            for (knownCiv in civInfo.getKnownCivs()) {
+                val amount = if (knownCiv == otherCiv) -40f else -20f
                 val diploManager = knownCiv.getDiplomacyManager(civInfo)
                 diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
                 diploManager.removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
@@ -520,12 +521,21 @@ class DiplomacyManager() {
 
         for (thirdCiv in getCommonKnownCivs().filter { it.isMajorCiv() }) {
             thirdCiv.addNotification("[${civInfo.civName}] and [${otherCiv().civName}] have signed the Declaration of Friendship!", null, Color.WHITE)
-            val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
-            when(thirdCivRelationshipWithOtherCiv){
-                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,-15f)
-                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,-5f)
-                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies,5f)
-                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies,15f)
+            thirdCiv.getDiplomacyManager(civInfo).setFriendshipBasedModifier()
+        }
+    }
+
+    fun setFriendshipBasedModifier(){
+        removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies)
+        removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies)
+        for(thirdCiv in getCommonKnownCivs()
+                .filter { it.getDiplomacyManager(civInfo).hasFlag(DiplomacyFlags.DeclarationOfFriendship) }) {
+            val otherCivRelationshipWithThirdCiv = otherCiv().getDiplomacyManager(thirdCiv).relationshipLevel()
+            when (otherCivRelationshipWithThirdCiv) {
+                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -15f)
+                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies, -5f)
+                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies, 5f)
+                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies, 15f)
             }
         }
     }
