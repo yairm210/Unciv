@@ -161,30 +161,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         add(scenarioButton).row()
         scenarioButton.onClick {
             remove()
-            // update players list from tileMap starting locations
-            if (mapEditorScreen.scenario == null) {
-                mapEditorScreen.gameSetupInfo.gameParameters.players = getPlayersFromMap(mapEditorScreen.tileMap)
-            }
-
-            val gameParametersPopup = Popup(screen)
-            val playerPickerTable = PlayerPickerTable(mapEditorScreen, mapEditorScreen.gameSetupInfo.gameParameters)
-            val gameOptionsTable = GameOptionsTable(mapEditorScreen) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
-            val scenarioNameEditor = TextField(mapEditorScreen.scenarioName, skin)
-
-            gameParametersPopup.add(playerPickerTable)
-            gameParametersPopup.addSeparatorVertical()
-            gameParametersPopup.add(gameOptionsTable).row()
-            gameParametersPopup.add(scenarioNameEditor)
-            gameParametersPopup.addButton("Save scenario") {
-                mapEditorScreen.tileMap.mapParameters.type = MapType.scenario
-                mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
-                mapEditorScreen.scenarioName = scenarioNameEditor.text
-                MapSaver.saveScenario(scenarioNameEditor.text, mapEditorScreen.scenario!!)
-                ResponsePopup("Scenario saved", mapEditorScreen)
-                gameParametersPopup.close()
-            }.row()
-            gameParametersPopup.addCloseButton().row()
-            gameParametersPopup.open()
+            UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen))
         }
     }
 
@@ -209,17 +186,4 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         add(closeOptionsButton).row()
     }
 
-}
-
-
-private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
-    val tilesWithStartingLocations = tileMap.values
-            .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-    var players = ArrayList<Player>()
-    for (tile in tilesWithStartingLocations) {
-        players.add(Player().apply{
-            chosenCiv = tile.improvement!!.removePrefix("StartingLocation ")
-        })
-    }
-    return players
 }
