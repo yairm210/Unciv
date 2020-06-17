@@ -12,7 +12,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
  */
 
 interface PreviousScreenInterface {
-    var gameSetupInfo: GameSetupInfo
+    val gameSetupInfo: GameSetupInfo
     var stage: Stage
 
     // added for compatibility with NewGameScreen: PickerScreen
