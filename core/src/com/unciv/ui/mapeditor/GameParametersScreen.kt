@@ -17,7 +17,7 @@ import kotlin.concurrent.thread
 
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): PickerScreen() {
     var playerPickerTable = PlayerPickerTable(mapEditorScreen, mapEditorScreen.gameSetupInfo.gameParameters)
-    var gameOptionsTable = GameOptionsTable(mapEditorScreen) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    var gameOptionsTable = GameOptionsTable(mapEditorScreen.gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
     init {
         setDefaultCloseAction(mapEditorScreen)

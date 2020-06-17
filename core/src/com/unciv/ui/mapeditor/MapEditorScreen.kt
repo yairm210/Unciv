@@ -27,7 +27,7 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
     var scenarioName = ""
     var scenario: Scenario? = null
 
-    override var gameSetupInfo = GameSetupInfo()
+    override val gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
     val tileEditorOptions = TileEditorOptionsTable(this)

@@ -52,7 +52,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 mapParameters.type = MapType.custom
                 mapParameters.name = mapFileSelectBox.selected
                 mapTypeSpecificTable.add(savedMapOptionsTable)
-                newGameScreen.gameSetupInfo = GameSetupInfo()
                 newGameScreen.unlockTables()
                 newGameScreen.updateTables()
             } else if (mapTypeSelectBox.selected.value == MapType.scenario) {
@@ -69,7 +68,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 mapParameters.name = ""
                 mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
-                newGameScreen.gameSetupInfo = GameSetupInfo()
                 newGameScreen.unlockTables()
                 newGameScreen.updateTables()
             }
