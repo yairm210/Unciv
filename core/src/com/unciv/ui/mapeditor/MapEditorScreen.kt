@@ -19,18 +19,18 @@ import com.unciv.ui.newgamescreen.PreviousScreenInterface
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
-    // need for compatibility with NewGameScreen: PickerScreen
+    // need for compatibility with PickerScreen
     override fun setRightSideButtonEnabled(boolean: Boolean) {}
 
     var mapName = ""
     var tileMap = TileMap()
-    var scenarioName = ""
-    var scenario: Scenario? = null
+    var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
+    var scenario: Scenario? = null // main indicator whether scenario information is present
 
     override var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
-    val tileEditorOptions = TileEditorOptionsTable(this)
+    lateinit var tileEditorOptions: TileEditorOptionsTable
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
@@ -45,6 +45,7 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
 
         if (mapToLoad != null) {
             mapName = mapToLoad
+            scenarioName = mapToLoad
             tileMap = MapSaver.loadMap(mapName)
         }
 
@@ -71,6 +72,7 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
+        tileEditorOptions = TileEditorOptionsTable(this)
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
 
@@ -165,6 +167,10 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(MapEditorScreen(mapHolder.tileMap))
         }
+    }
+
+    fun hasScenario(): Boolean {
+        return this.scenario != null
     }
 }
 

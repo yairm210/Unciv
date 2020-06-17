@@ -10,12 +10,14 @@ import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 
@@ -28,9 +30,15 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 }
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PreviousScreenInterface, PickerScreen() {
-    override var gameSetupInfo: GameSetupInfo = _gameSetupInfo ?: GameSetupInfo()
-    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
+
+    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters.apply {
+        players = ArrayList<Player>().apply {
+            add(Player().apply { playerType = PlayerType.Human })
+            for (i in 1..3) add(Player())
+        }
+    })
+    var newGameOptionsTable = GameOptionsTable(gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     var mapOptionsTable = MapOptionsTable(this)
 
     init {

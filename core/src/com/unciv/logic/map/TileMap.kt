@@ -215,6 +215,17 @@ class TileMap {
         return viewableTiles
     }
 
+    fun stripUnits(): TileMap {
+        val toReturn = TileMap()
+        toReturn.tileList.addAll(tileList.map { it.apply {
+            it.airUnits.clear()
+            it.civilianUnit=null
+            it.militaryUnit=null
+        } })
+        toReturn.mapParameters = mapParameters
+        return toReturn
+    }
+
     fun setTransients(ruleset: Ruleset, setUnitCivTransients:Boolean=true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients
         val topY= tileList.asSequence().map { it.position.y.toInt() }.max()!!
         bottomY= tileList.asSequence().map { it.position.y.toInt() }.min()!!
