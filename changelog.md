@@ -1,3 +1,15 @@
+## 3.9.4
+
+Opening the New Game screen from within a game saves the previous game parameters, map generation parameters work again
+
+Resolved #2662 - left side of the screen no longer becomes unresponsive to player input after changing from a selected unit to a selected city
+
+Resolved #2735 - Diplomatic "Friends with friend/enemy" modifiers are recalculated every turn
+
+Great improvements are marked as such in the Civilopedia
+
+Translation updates
+
 ## 3.9.3
 
 Resolved #2723 - resource-specific improvement bonuses are *in addition to* the regular improvement bonuses, and not instead.
