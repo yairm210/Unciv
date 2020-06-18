@@ -36,6 +36,7 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): PreviousScreen
             mapEditorScreen.gameSetupInfo = gameSetupInfo
             mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
             mapEditorScreen.tileEditorOptions.update()
+            mapEditorScreen.mapHolder.updateTileGroups()
             UncivGame.Current.setScreen(mapEditorScreen)
             dispose()
         }

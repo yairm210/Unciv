@@ -168,7 +168,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         add(scenarioButton).row()
         scenarioButton.onClick {
             close()
-            UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen))
+            UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen).apply {
+                playerPickerTable.noRandom = true
+            })
         }
     }
 
