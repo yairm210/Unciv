@@ -249,7 +249,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         fun setUnitTileAction(){
             if (currentNation == null) return
             val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation!!.getInnerColor())
-                    .surroundWithCircle(40f).apply { color=currentNation!!.getOuterColor() }
+                    .surroundWithCircle(40f*0.9f).apply { circle.color=currentNation!!.getOuterColor() }
+                    .surroundWithCircle(40f, false).apply { circle.color=currentNation!!.getInnerColor() }
             setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation!!.name.tr()+")")
             tileAction = {
                 val unit = MapUnit()
