@@ -231,9 +231,9 @@ class TileMap {
         return toReturn
     }
 
-    /** Strips all units and starting location from [TileMap] for specified [Player]
+    /** Strips all units and starting locations from [TileMap] for specified [Player]
      * Operation in place
-     * @param player units of player to be stripped off
+     * @param player units and starting location of [Player] to be stripped off
      */
     fun stripPlayer(player: Player) {
         tileList.forEach { it.apply {
@@ -246,10 +246,10 @@ class TileMap {
 
     /** Finds all units and starting location of [Player] and changes their [Nation]
      * Operation in place
-     * @param player player whose all units will be changed
+     * @param player [Player] whose all units and locations will be changed
      * @param newNation new nation to be set up
      */
-    fun switchPlayersNation(player: Player, newNation: Nation) {
+    fun switchPlayerNation(player: Player, newNation: Nation) {
         tileList.forEach { it.apply {
             if (improvement == "StartingLocation " + player.chosenCiv) {
                 improvement = "StartingLocation " + newNation.name

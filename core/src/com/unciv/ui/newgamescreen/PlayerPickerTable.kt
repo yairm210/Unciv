@@ -32,8 +32,6 @@ import java.util.*
  *          updated when player added/deleted/changed
  * @param gameParameters contains info about number of players and their chosen nation.
  */
-
-
 class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gameParameters: GameParameters): Table() {
     /**
      * Main table containing list of players, their nations,
@@ -242,7 +240,7 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
 
             nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.gameSetupInfo.ruleset).onClick {
                 if (previousScreen is GameParametersScreen) {
-                    previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
+                    previousScreen.mapEditorScreen.tileMap.switchPlayerNation(player, nation)
                 }
                 player.chosenCiv = nation.name
                 nationsPopup.close()
