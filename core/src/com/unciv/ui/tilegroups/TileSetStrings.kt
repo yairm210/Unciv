@@ -51,7 +51,7 @@ class TileSetStrings {
     val tag = "-"
     fun getTile(baseTerrain: String) = getString(tilesLocation, baseTerrain)
     fun getBaseTerrainOverlay(baseTerrain: String) = getString(tileSetLocation, baseTerrain, overlay)
-    fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tilesLocation, terrainFeature, overlay)
+    fun getTerrainFeatureOverlay(terrainFeature: String) = getString(tileSetLocation, terrainFeature, overlay)
 
     fun getCityTile(baseTerrain: String?, era: String?): String {
         if (baseTerrain != null && era != null) getString(tilesLocation, baseTerrain, city, tag, era)
