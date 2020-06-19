@@ -26,19 +26,31 @@ import java.util.*
  * which provides [GameSetupInfo] for ruleset and updates.
  * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
  * In case it is used in map editor, as a part of [GameParametersScreen], additionally tries to
- * update units/starting location on the [previousScreen] when player deleted or
+ * update units/starting locations on the [previousScreen] when player deleted or
  * switched nation.
- * @param [previousScreen] [Screen] where player table is inserted, should provide [GameSetupInfo] as property,
+ * @param previousScreen screen where player table is inserted, should provide [GameSetupInfo] as property,
  *          updated when player added/deleted/changed
- * @param [gameParameters] contains info about number of players.
+ * @param gameParameters contains info about number of players and their chosen nation.
  */
 
 
 class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gameParameters: GameParameters): Table() {
+    /**
+     * Main table containing list of players, their nations,
+     * AI or Human player types.
+     */
     val playerListTable = Table()
     val nationsPopupWidth = previousScreen.stage.width / 2f
     val civBlocksWidth = previousScreen.stage.width / 3
+
+    /**
+     * Locks player table for editing, used during new game creation with scenario.
+     */
     var locked = false
+
+    /**
+     * No random civilization is available, used during map editing.
+     */
     var noRandom = false
 
     init {
@@ -49,6 +61,11 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
     }
 
 
+    /**
+     * Updates view of main player table. Used when mod picked or player changed.
+     * Also sets desired civilization, that is preferable for human players.
+     * @param desiredCiv desired civilization name
+     */
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
         val oldRuleset = previousScreen.gameSetupInfo.ruleset // the mod picking changes this ruleset
@@ -75,13 +92,21 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         previousScreen.setRightSideButtonEnabled(gameParameters.players.size > 1)
     }
 
+    /**
+     * If new mod removes nations already chosen by some player
+     * sets first civilization available in the ruleset
+     */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
             if (!previousScreen.gameSetupInfo.ruleset.nations.containsKey(player.chosenCiv))
-                player.chosenCiv = "Random"
+                player.chosenCiv = getAvailablePlayerCivs().first().name
         }
     }
 
+    /**
+     * Assigns desired civilization for human players with 'random' choice
+     * @param desiredCiv string containing desired civilization name
+     */
     private fun assignDesiredCiv(desiredCiv: String) {
         // No auto-select if desiredCiv already used
         if (gameParameters.players.any { it.chosenCiv == desiredCiv }) return
@@ -89,6 +114,13 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         gameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
+    /**
+     * Creates [Table] for single player containing clickable
+     * player type button ("AI" or "Human"), nation [Table]
+     * and "-" remove player button.*
+     * @param player for which [Table] is generated
+     * @return [Table] containing the all the elements
+     */
     fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
         playerTable.pad(5f)
@@ -155,6 +187,12 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         return playerTable
     }
 
+    /**
+     * Creates clickable icon and nation name for some [Player]
+     * as a [Table]. Clicking creates [popupNationPicker] to choose new nation.
+     * @param player [Player] for which generated
+     * @return [Table] containing nation icon and name
+     */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
         val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.WHITE, 25)
@@ -171,6 +209,12 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         return nationTable
     }
 
+    /**
+     * Opens Nation picking popup with all nations,
+     * currently available for [player] to choose, depending on current
+     * ruleset and other players nation choice.
+     * @param player current player
+     */
     private fun popupNationPicker(player: Player) {
         val nationsPopup = Popup(previousScreen as CameraStageBaseScreen)
         val nationListTable = Table()
@@ -223,6 +267,11 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         update()
     }
 
+    /**
+     * Returns list of available civilization for all players, according
+     * to current ruleset, with exeption of city states nations and barbarians
+     * @return [ArrayList] of available [Nation]s
+     */
     private fun getAvailablePlayerCivs(): ArrayList<Nation> {
         var nations = ArrayList<Nation>()
         for (nation in previousScreen.gameSetupInfo.ruleset.nations.values
