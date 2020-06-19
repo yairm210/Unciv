@@ -92,12 +92,12 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
 
     /**
      * If new mod removes nations already chosen by some player
-     * sets first civilization available in the ruleset
+     * sets default player civilization
      */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
             if (!previousScreen.gameSetupInfo.ruleset.nations.containsKey(player.chosenCiv))
-                player.chosenCiv = getAvailablePlayerCivs().first().name
+                player.chosenCiv = "Random"
         }
     }
 
