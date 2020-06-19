@@ -222,11 +222,7 @@ class TileMap {
      */
     fun stripAllUnits(): TileMap {
         val toReturn = TileMap()
-        toReturn.tileList.addAll(tileList.map { it.apply {
-            it.airUnits.clear()
-            it.civilianUnit=null
-            it.militaryUnit=null
-        } })
+        toReturn.tileList.forEach { it.stripUnits() }
         toReturn.mapParameters = mapParameters
         return toReturn
     }
@@ -236,12 +232,10 @@ class TileMap {
      * @param player units of player to be stripped off
      */
     fun stripPlayer(player: Player) {
-        tileList.forEach { it.apply {
-            if (improvement == "StartingLocation " + player.chosenCiv) { improvement = null }
-            if (militaryUnit !=null && militaryUnit!!.owner == player.chosenCiv) { militaryUnit=null }
-            if (civilianUnit!=null && civilianUnit!!.owner == player.chosenCiv) { civilianUnit=null }
-            for (airUnit in airUnits) { if (airUnit.owner == player.chosenCiv) airUnits.clear() }
-        } }
+        tileList.forEach {
+            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = null }
+            for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
+        }
     }
 
     /** Finds all units and starting location of [Player] and changes their [Nation]
@@ -250,24 +244,13 @@ class TileMap {
      * @param newNation new nation to be set up
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
-        tileList.forEach { it.apply {
-            if (improvement == "StartingLocation " + player.chosenCiv) {
-                improvement = "StartingLocation " + newNation.name
+        tileList.forEach {
+            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = newNation.name }
+            for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
+                unit.owner = newNation.name
+                unit.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
             }
-
-            if (militaryUnit !=null && militaryUnit!!.owner == player.chosenCiv) {
-                militaryUnit!!.owner = newNation.name
-                militaryUnit!!.civInfo = CivilizationInfo(newNation!!.name).apply { nation=newNation }
-            }
-            if (civilianUnit!=null && civilianUnit!!.owner == player.chosenCiv) {
-                civilianUnit!!.owner = newNation.name
-                civilianUnit!!.civInfo = CivilizationInfo(newNation!!.name).apply { nation=newNation }
-            }
-            for (airUnit in airUnits) { if (airUnit.owner == player.chosenCiv) {
-                airUnit.owner = newNation.name
-                airUnit.civInfo = CivilizationInfo(newNation!!.name).apply { nation=newNation }
-            } }
-        } }
+        }
     }
 
     fun setTransients(ruleset: Ruleset, setUnitCivTransients:Boolean=true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients

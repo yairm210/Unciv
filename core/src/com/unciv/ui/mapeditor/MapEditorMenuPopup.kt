@@ -163,7 +163,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             scenarioButton.setText("Create scenario")
             // for newly created scenarios read players from tileMap
             val players = getPlayersFromMap(mapEditorScreen.tileMap)
-            if (players.isNotEmpty()) mapEditorScreen.gameSetupInfo.gameParameters.players = players
+            mapEditorScreen.gameSetupInfo.gameParameters.players = players
         }
         add(scenarioButton).row()
         scenarioButton.onClick {

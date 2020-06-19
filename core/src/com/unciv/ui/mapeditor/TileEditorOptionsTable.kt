@@ -159,29 +159,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         if (UncivGame.Current.scenarioDebugSwitch) {
             /** new scenario/improvements functionality
-             * Random players get their icons
+             * There shoudn't be random players in scenario
              * */
             for (player in gameParameters.players) {
                 val playerIndex = gameParameters.players.indexOf(player) + 1
                     if (player.chosenCiv == "Random") {
-                        val randomPlayerImage = getRandomPlayerIcon()
-                        randomPlayerImage.onClick {
-                            // TODO: starting location for Random player
-    //                    val improvementName = "StartingLocation Random"
-    //                    tileAction = {
-    //                        it.improvement = improvementName
-    //                        for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-    //                            val tile = tileGroup.tileInfo
-    //                            if (tile.improvement == improvementName && tile != it)
-    //                                tile.improvement = null
-    //                            tile.setTerrainTransients()
-    //                            tileGroup.update()
-    //                        }
-    //                    }
-                            val randomPlayerHex = getHex(Color.WHITE, getRandomPlayerIcon())
-                            setCurrentHex(randomPlayerHex,"Player $playerIndex starting location")
-                        }
-                        nationTable.add(randomPlayerImage).row()
                     } else {
                         val nation = ruleset.nations[player.chosenCiv]!!
                         val nationImage = ImageGetter.getNationIndicator(nation, 40f)
