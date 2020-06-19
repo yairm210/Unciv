@@ -59,7 +59,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnLakesAndCoasts(map: TileMap) {
 
         //define lakes
-        var waterTiles = map.values.filter { it.isWater }
+        val waterTiles = map.values.filter { it.isWater }.toMutableList()
 
         val tilesInArea = ArrayList<TileInfo>()
         val tilesToCheck = ArrayList<TileInfo>()
