@@ -126,7 +126,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spreadStrategicResources(tileMap: TileMap, distance: Int) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         // passable land tiles (no mountains, no wonders) without resources yet
-        val candidateTiles = tileMap.values.filter { it.resource == null && it.isLand && !it.getLastTerrain().impassable }
+        val candidateTiles = tileMap.values.filter { it.resource == null && !it.getLastTerrain().impassable }
         val totalNumberOfResources = candidateTiles.size * tileMap.mapParameters.resourceRichness
         val resourcesPerType = (totalNumberOfResources/strategicResources.size).toInt()
         for (resource in strategicResources) {
