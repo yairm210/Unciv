@@ -20,6 +20,20 @@ import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 import java.util.*
 
+/**
+ * This [Table] is used to pick or edit players information for new game/scenario creation.
+ * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen]
+ * which provides [GameSetupInfo] for ruleset and updates.
+ * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
+ * In case it is used in map editor, as a part of [GameParametersScreen], additionally tries to
+ * update units/starting location on the [previousScreen] when player deleted or
+ * switched nation.
+ * @param [previousScreen] [Screen] where player table is inserted, should provide [GameSetupInfo] as property,
+ *          updated when player added/deleted/changed
+ * @param [gameParameters] contains info about number of players.
+ */
+
+
 class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gameParameters: GameParameters): Table() {
     val playerListTable = Table()
     val nationsPopupWidth = previousScreen.stage.width / 2f
@@ -34,9 +48,10 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         update()
     }
 
+
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
-        val ruleset = previousScreen.gameSetupInfo.ruleset // the mod picking changes this ruleset
+        val oldRuleset = previousScreen.gameSetupInfo.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
         val newRulesetPlayableCivs = previousScreen.gameSetupInfo.ruleset.nations.count { it.key != Constants.barbarians }
@@ -47,7 +62,7 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
-        if (gameParameters.players.count() < ruleset.nations.values.count { it.isMajorCiv() }
+        if (gameParameters.players.count() < oldRuleset.nations.values.count { it.isMajorCiv() }
                 && !locked) {
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick {
