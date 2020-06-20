@@ -173,6 +173,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
                 tile.terrainFeature = null
                 tile.resource = null
                 tile.improvement = null
+                tile.setTerrainTransients()
             }
         }
     }
@@ -200,6 +201,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
                 tile.terrainFeature = null
                 tile.resource = null
                 tile.improvement = null
+                tile.setTerrainTransients()
             }
         }
     }
