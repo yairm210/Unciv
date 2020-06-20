@@ -523,6 +523,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 * [Lightning](https://thenounproject.com/search/?q=lightning&i=102300) by Rohith M S for Quickstart
 * [Loading](https://thenounproject.com/search/?q=load&i=208033) by Universal Icons for Load Game
+* [Script](https://thenounproject.com/search/?q=script&i=2153154) by omeneko for Load Scenario
 * [New](https://thenounproject.com/search/?q=new&i=1886943) by Alice Design for New Game
 * [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
