@@ -77,6 +77,49 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         add(editorPickTable).row()
     }
 
+    private fun setTerrainsAndResources(){
+
+        val baseTerrainTable = Table().apply { defaults().pad(20f) }
+        val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
+
+        terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
+            onClick {
+                tileAction = {
+                    it.terrainFeature=null
+                    it.naturalWonder = null
+                    it.hasBottomRiver=false
+                    it.hasBottomLeftRiver=false
+                    it.hasBottomRightRiver=false
+                }
+                setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
+            }
+        }).row()
+
+
+        addTerrainOptions(terrainFeaturesTable, baseTerrainTable)
+        addRiverToggleOptions(baseTerrainTable)
+
+
+        val resources = getResourceActors()
+
+        background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a = 0.7f })
+
+        val terrainsAndResourcesTable = Table()
+        terrainsAndResourcesTable.add(AutoScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
+
+        terrainsAndResourcesTable.add(AutoScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
+
+        val resourcesTable = Table()
+        for(resource in resources) resourcesTable.add(resource).row()
+        resourcesTable.pack()
+        terrainsAndResourcesTable.add(AutoScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
+
+        terrainsAndResourcesTable.pack()
+
+        editorPickTable.clear()
+        editorPickTable.add(terrainsAndResourcesTable)
+    }
+
     private fun setImprovements() {
 
         editorPickTable.clear()
@@ -189,49 +232,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         return nations
     }
 
-
     private fun getRedCross(size: Float, alpha: Float): Actor {
         val redCross = ImageGetter.getImage("OtherIcons/Close")
         redCross.setSize( size, size)
         redCross.color = Color.RED.cpy().apply { a = alpha }
         return redCross
-    }
-
-    private fun setTerrainsAndResources(){
-
-        val baseTerrainTable = Table().apply { defaults().pad(20f) }
-        val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
-
-        terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
-            onClick {
-                tileAction = { it.terrainFeature=null; it.naturalWonder = null }
-                setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
-            }
-        }).row()
-
-
-        addTerrainOptions(terrainFeaturesTable, baseTerrainTable)
-        addRiverToggleOptions(baseTerrainTable)
-
-
-        val resources = getResourceActors()
-
-        background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a = 0.7f })
-
-        val terrainsAndResourcesTable = Table()
-        terrainsAndResourcesTable.add(AutoScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
-
-        terrainsAndResourcesTable.add(AutoScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
-
-        val resourcesTable = Table()
-        for(resource in resources) resourcesTable.add(resource).row()
-        resourcesTable.pack()
-        terrainsAndResourcesTable.add(AutoScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight).row()
-
-        terrainsAndResourcesTable.pack()
-
-        editorPickTable.clear()
-        editorPickTable.add(terrainsAndResourcesTable)
     }
 
     private fun getCrossedResource() : Actor {
@@ -240,7 +245,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         group.circle.color = ImageGetter.foodCircleColor
         return group
     }
-
 
     private fun getResourceActors(): ArrayList<Actor> {
         val resources = ArrayList<Actor>()
