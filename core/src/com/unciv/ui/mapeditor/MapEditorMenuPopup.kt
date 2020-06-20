@@ -152,14 +152,14 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
     }
 
     private fun Popup.addScenarioButton() {
-        var scenarioButton = "".toTextButton()
+        val scenarioButton = "".toTextButton()
         if (mapEditorScreen.hasScenario()) {
             scenarioButton.setText("Edit scenario")
         } else {
             scenarioButton.setText("Create scenario")
             // for newly created scenarios read players from tileMap
             val players = getPlayersFromMap(mapEditorScreen.tileMap)
-            if (players.isNotEmpty()) mapEditorScreen.gameSetupInfo.gameParameters.players = players
+            mapEditorScreen.gameSetupInfo.gameParameters.players = players
         }
         add(scenarioButton).row()
         scenarioButton.onClick {
@@ -228,7 +228,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
     private fun getPlayersFromMap(tileMap: TileMap): ArrayList<Player> {
         val tilesWithStartingLocations = tileMap.values
                 .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-        var players = ArrayList<Player>()
+        val players = ArrayList<Player>()
         for (tile in tilesWithStartingLocations) {
             players.add(Player().apply{
                 chosenCiv = tile.improvement!!.removePrefix("StartingLocation ")

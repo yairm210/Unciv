@@ -32,12 +32,7 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PreviousScreenInterface, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
 
-    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters.apply {
-        players = ArrayList<Player>().apply {
-            add(Player().apply { playerType = PlayerType.Human })
-            for (i in 1..3) add(Player())
-        }
-    })
+    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var newGameOptionsTable = GameOptionsTable(gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     var mapOptionsTable = MapOptionsTable(this)
 
