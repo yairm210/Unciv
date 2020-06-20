@@ -26,12 +26,10 @@ import kotlin.concurrent.thread
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): PreviousScreenInterface, PickerScreen() {
 
     override var gameSetupInfo: GameSetupInfo = mapEditorScreen.gameSetupInfo
-    var playerPickerTable: PlayerPickerTable
-    var gameOptionsTable: GameOptionsTable
+    var playerPickerTable = PlayerPickerTable(this, this.gameSetupInfo.gameParameters)
+    var gameOptionsTable = GameOptionsTable(mapEditorScreen.gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
     init {
-        playerPickerTable = PlayerPickerTable(this, this.gameSetupInfo.gameParameters)
-        gameOptionsTable = GameOptionsTable(mapEditorScreen.gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
         setDefaultCloseAction(mapEditorScreen)
         scrollPane.setScrollingDisabled(true, true)
 
