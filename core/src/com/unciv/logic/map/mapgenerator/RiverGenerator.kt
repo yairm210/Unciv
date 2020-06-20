@@ -10,11 +10,11 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
         val numberOfRivers = map.values.count { it.isLand } / 100
 
         var optionalTiles = map.values
-                .filter { it.baseTerrain== Constants.mountain && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }
+                .filter { it.baseTerrain== Constants.mountain && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
         if(optionalTiles.size < numberOfRivers)
-            optionalTiles += map.values.filter { it.baseTerrain== Constants.hill && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }
+            optionalTiles.addAll(map.values.filter { it.baseTerrain== Constants.hill && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 })
         if(optionalTiles.size < numberOfRivers)
-            optionalTiles = map.values.filter { it.isLand && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }
+            optionalTiles = map.values.filter { it.isLand && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
 
 
         val riverStarts = randomness.chooseSpreadOutLocations(numberOfRivers, optionalTiles, 10)
