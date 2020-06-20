@@ -22,12 +22,12 @@ import java.util.*
 
 /**
  * This [Table] is used to pick or edit players information for new game/scenario creation.
- * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen]
+ * Could be inserted into [NewGameScreen], [GameParametersScreen] or any other [Screen]
  * which provides [GameSetupInfo] for ruleset and updates.
- * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
- * In case it is used in map editor, as a part of [GameParametersScreen], additionally tries to
- * update units/starting locations on the [previousScreen] when player deleted or
- * switched nation.
+ * Upon player change updates property [gameParameters] and uses it to transfer player information.
+ * Also updates available nations when mod changes.In case it is used in map editor,
+ * [PlayerPickerTable]->[GameParametersScreen]->[MapEditorScreen], additionally tries to
+ * update units/starting locations on the [previousScreen] when player deleted or switched nation.
  * @param previousScreen screen where player table is inserted, should provide [GameSetupInfo] as property,
  *          updated when player added/deleted/changed
  * @param gameParameters contains info about number of players and their chosen nation.
@@ -57,7 +57,6 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
         add(ScrollPane(playerListTable).apply { setOverscroll(false, false) }).width(civBlocksWidth)
         update()
     }
-
 
     /**
      * Updates view of main player table. Used when mod picked or player changed.
@@ -115,9 +114,9 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
     /**
      * Creates [Table] for single player containing clickable
      * player type button ("AI" or "Human"), nation [Table]
-     * and "-" remove player button.*
+     * and "-" remove player button.
      * @param player for which [Table] is generated
-     * @return [Table] containing the all the elements
+     * @return [Table] containing all the elements
      */
     fun getPlayerTable(player: Player): Table {
         val playerTable = Table()
@@ -186,7 +185,7 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
     }
 
     /**
-     * Creates clickable icon and nation name for some [Player]
+     * Creates clickable icon and nation name for single [Player]
      * as a [Table]. Clicking creates [popupNationPicker] to choose new nation.
      * @param player [Player] for which generated
      * @return [Table] containing nation icon and name
@@ -208,7 +207,7 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
     }
 
     /**
-     * Opens Nation picking popup with all nations,
+     * Opens [Nation] picking popup with all nations,
      * currently available for [player] to choose, depending on current
      * ruleset and other players nation choice.
      * @param player current player
