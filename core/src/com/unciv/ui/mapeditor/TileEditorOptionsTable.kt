@@ -258,7 +258,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 unit.name = currentUnit.name
                 unit.owner = currentNation!!.name
                 unit.civInfo = CivilizationInfo(currentNation!!.name).apply { nation=currentNation!! } // needed for the unit icon to render correctly
-                unit.currentMovement = unit.getMaxMovement().toFloat()
                 when {
                     unit.type.isAirUnit() -> it.airUnits.add(unit)
                     unit.type.isCivilian() -> it.civilianUnit=unit
