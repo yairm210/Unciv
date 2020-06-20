@@ -163,13 +163,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
     }
 
     private fun QuickstartNewGame() {
-        val newGame = GameStarter.startNewGame(GameSetupInfo().apply {
-            gameParameters.difficulty = "Chieftain"
-            gameParameters.players = ArrayList<Player>().apply {
-                add(Player().apply { playerType = PlayerType.Human })
-                for (i in 1..3) add(Player())
-            }
-        })
+        val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain"})
         game.loadGame(newGame)
     }
 
