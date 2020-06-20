@@ -64,7 +64,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 tile.improvement = null
                 tile.improvementInProgress = null
                 tile.roadStatus = RoadStatus.None
-                tile.setTransients()
+                tile.stripUnits()
 
                 tileGroup.update()
             }

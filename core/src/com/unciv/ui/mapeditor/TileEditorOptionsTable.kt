@@ -258,12 +258,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 unit.name = currentUnit.name
                 unit.owner = currentNation!!.name
                 unit.civInfo = CivilizationInfo(currentNation!!.name).apply { nation=currentNation!! } // needed for the unit icon to render correctly
-                when {
-                    unit.type.isAirUnit() -> it.airUnits.add(unit)
-                    unit.type.isCivilian() -> it.civilianUnit=unit
-                    else -> it.militaryUnit=unit
+                unit.updateUniques()
+                if (unit.movement.canMoveTo(it)) {
+                    when {
+                        unit.type.isAirUnit() -> { it.airUnits.add(unit); unit.currentTile = it
+                            if (!it.isCityCenter()) unit.isTransported = true  // if not city - air unit enters carrier
+                        }
+                        unit.type.isCivilian() -> { it.civilianUnit = unit; unit.currentTile = it }
+                        unit.type.isMilitary() && !unit.type.isAirUnit() -> { it.militaryUnit = unit; unit.currentTile = it }
+                    }
                 }
-                unit.currentTile=it // needed for unit icon - unit needs to know if it's embarked or not...
             }
         }
 

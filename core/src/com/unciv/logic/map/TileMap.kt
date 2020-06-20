@@ -220,14 +220,9 @@ class TileMap {
     /** Strips all units from [TileMap]
      * @return stripped clone of [TileMap]
      */
-    fun stripAllUnits(): TileMap {
-        val toReturn = TileMap()
-        toReturn.tileList.addAll(tileList.map { it.apply {
-            it.airUnits.clear()
-            it.civilianUnit=null
-            it.militaryUnit=null
-        } })
-        toReturn.mapParameters = mapParameters
+    fun getStrippedMap(): TileMap {
+        val toReturn = this.clone()
+        toReturn.tileList.forEach { it.stripUnits() }
         return toReturn
     }
 
@@ -255,17 +250,17 @@ class TileMap {
                 improvement = "StartingLocation " + newNation.name
             }
 
-            if (militaryUnit !=null && militaryUnit!!.owner == player.chosenCiv) {
-                militaryUnit!!.owner = newNation.name
-                militaryUnit!!.civInfo = CivilizationInfo(newNation!!.name).apply { nation=newNation }
+            if (militaryUnit !=null && militaryUnit?.owner == player.chosenCiv) {
+                militaryUnit?.owner = newNation.name
+                militaryUnit?.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
             }
-            if (civilianUnit!=null && civilianUnit!!.owner == player.chosenCiv) {
-                civilianUnit!!.owner = newNation.name
-                civilianUnit!!.civInfo = CivilizationInfo(newNation!!.name).apply { nation=newNation }
+            if (civilianUnit!=null && civilianUnit?.owner == player.chosenCiv) {
+                civilianUnit?.owner = newNation.name
+                civilianUnit?.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
             }
             for (airUnit in airUnits) { if (airUnit.owner == player.chosenCiv) {
                 airUnit.owner = newNation.name
-                airUnit.civInfo = CivilizationInfo(newNation!!.name).apply { nation=newNation }
+                airUnit.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
             } }
         } }
     }
