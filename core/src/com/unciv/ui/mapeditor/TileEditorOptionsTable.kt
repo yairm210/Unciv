@@ -94,7 +94,13 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
             onClick {
-                tileAction = { it.terrainFeature=null; it.naturalWonder = null }
+                tileAction = {
+                    it.terrainFeature=null
+                    it.naturalWonder = null
+                    it.hasBottomRiver=false
+                    it.hasBottomLeftRiver=false
+                    it.hasBottomRightRiver=false
+                }
                 setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
             }
         }).row()
@@ -334,7 +340,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     private fun getPlayerIndexString(player: Player): String {
         val index = gameParameters.players.indexOf(player) + 1
-        return "Player $index"
+        if (index != 0) {
+            return "Player $index"
+        } else {
+            return "Player not found"
+        }
     }
 
     private fun getRandomPlayerIcon(): Actor {
