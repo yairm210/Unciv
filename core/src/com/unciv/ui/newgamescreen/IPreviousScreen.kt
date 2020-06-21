@@ -11,15 +11,10 @@ import com.unciv.ui.utils.CameraStageBaseScreen
  * or CameraBackStageScreen class for map editing
  */
 
-interface PreviousScreenInterface {
+interface IPreviousScreen {
     val gameSetupInfo: GameSetupInfo
     var stage: Stage
 
     // added for compatibility with NewGameScreen: PickerScreen
     fun setRightSideButtonEnabled(boolean: Boolean)
 }
-
-//abstract class GameParametersPreviousScreen: PickerScreen() {
-//    abstract var gameSetupInfo: GameSetupInfo
-//    abstract val ruleset: Ruleset
-//}

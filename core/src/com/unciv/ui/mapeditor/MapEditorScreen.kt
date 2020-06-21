@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -15,10 +14,10 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import com.unciv.ui.newgamescreen.PreviousScreenInterface
+import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
+class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
     // need for compatibility with NewGameScreen: PickerScreen
     override fun setRightSideButtonEnabled(boolean: Boolean) {}
 
