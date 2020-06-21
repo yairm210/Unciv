@@ -1,3 +1,23 @@
+## 3.9.5
+
+Fixed coast tiles around natural wonders spawning land-type layers
+
+By lyrjie:
+
+- Map generation speedup
+- Fixed strategic resources generation 
+
+By alkorolyov:
+
+- Now clearCurrentMapButton and TerrainsAndResources clears rivers.
+
+By ninjatao:
+
+- Fix oil generation in sea.
+- Fix forest display in Default tileset
+
+Translation updates
+
 ## 3.9.4
 
 Opening the New Game screen from within a game saves the previous game parameters, map generation parameters work again
