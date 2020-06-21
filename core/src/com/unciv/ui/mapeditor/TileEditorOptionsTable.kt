@@ -241,7 +241,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.add(AutoScrollPane(nationTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
     }
 
-    fun setUnits(){
+    private fun setUnits(){
         editorPickTable.clear()
 
         val nationsTable = Table()
@@ -296,7 +296,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val nationImage = ImageGetter.getNationIndicator(nation, 40f)
                 nationsTable.add(nationImage).row()
                 nationImage.onClick {
-                    currentNation = nation;
+                    currentNation = nation
                     currentPlayer = getPlayerIndexString(player)
                     setUnitTileAction() }
             }
@@ -309,7 +309,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val nationImage = ImageGetter.getNationIndicator(nation, 40f)
                 nationsTable.add(nationImage).row()
                 nationImage.onClick {
-                    currentNation = nation;
+                    currentNation = nation
                     currentPlayer = ""
                     setUnitTileAction()
                 }
@@ -330,9 +330,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun nationsFromMap(tileMap: TileMap): ArrayList<Nation> {
         val tilesWithStartingLocations = tileMap.values
                 .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-        var nations = ArrayList<Nation>()
+        val nations = ArrayList<Nation>()
         for (tile in tilesWithStartingLocations) {
-            var civName =  tile.improvement!!.removePrefix("StartingLocation ")
+            val civName =  tile.improvement!!.removePrefix("StartingLocation ")
             nations.add(ruleset.nations[civName]!!)
         }
         return nations

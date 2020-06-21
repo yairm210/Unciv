@@ -125,11 +125,6 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         Gdx.graphics.requestRendering()
     }
 
-//    fun setNewGameButtonEnabled(bool: Boolean) {
-//        if (bool) rightSideButton.enable()
-//        else rightSideButton.disable()
-//    }
-
     fun lockTables() {
         playerPickerTable.locked = true
         newGameOptionsTable.locked = true

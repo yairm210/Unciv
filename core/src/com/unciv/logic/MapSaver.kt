@@ -20,7 +20,7 @@ object MapSaver {
     }
 
     fun saveScenario(scenarioName:String, scenario: Scenario) {
-        getScenario(scenarioName).writeString(json().toJson(scenario), false)
+        getScenario(scenarioName).writeString(Gzip.zip(json().toJson(scenario)), false)
     }
 
     fun loadMap(mapName: String): TileMap {
@@ -30,7 +30,8 @@ object MapSaver {
     }
 
     fun loadScenario(scenarioName: String): Scenario {
-        val scenarioJson = getScenario(scenarioName).readString()
+        val gzippedString = getScenario(scenarioName).readString()
+        val scenarioJson = Gzip.unzip(gzippedString)
         return json().fromJson(Scenario::class.java, scenarioJson)
     }
 
