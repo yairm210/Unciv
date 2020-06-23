@@ -169,13 +169,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
              * */
             for (player in gameParameters.players) {
                 val playerIndex = gameParameters.players.indexOf(player) + 1
-                    if (player.chosenCiv == "Random") {
-                    } else {
+                    if (player.chosenCiv != "Random") {
                         val nation = ruleset.nations[player.chosenCiv]!!
                         val nationImage = ImageGetter.getNationIndicator(nation, 40f)
                         nationImage.onClick {
                             val improvementName = "StartingLocation " + nation.name
-
                             tileAction = {
                                 it.improvement = improvementName
                                 for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
@@ -191,9 +189,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                             setCurrentHex(nationIcon,"Player $playerIndex starting location")
                         }
                         nationTable.add(nationImage).row()
+
                     }
                 }
-
         } else {
             /** old way improvements for all civs
              * */
@@ -201,7 +199,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
                 nationImage.onClick {
                     val improvementName = "StartingLocation "+nation.name
-
                     tileAction = {
                         it.improvement = improvementName
                         for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {

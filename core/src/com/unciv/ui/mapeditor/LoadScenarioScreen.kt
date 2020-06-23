@@ -20,8 +20,7 @@ class LoadScenarioScreen(previousMap: TileMap?): PickerScreen(){
     init {
         rightSideButton.setText("Load scenario".tr())
         rightSideButton.onClick {
-            val mapEditorScreen = MapEditorScreen(MapSaver.loadScenario(chosenScenario))
-            mapEditorScreen.apply { mapName = chosenScenario }
+            val mapEditorScreen = MapEditorScreen(MapSaver.loadScenario(chosenScenario), chosenScenario)
             UncivGame.Current.setScreen(mapEditorScreen)
             dispose()
         }

@@ -52,7 +52,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick {
                         var player = Player()
-                        if (noRandom) { player.apply { chosenCiv = getAvailablePlayerCivs().first().name } }
+                        if (noRandom) { player = Player(getAvailablePlayerCivs().first().name) }
                         gameParameters.players.add(player)
                         update()
                     }).pad(10f)
@@ -96,9 +96,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                     .surroundWithCircle(40f)
                     .onClick {
                         gameParameters.players.remove(player)
-                        if (previousScreen is GameParametersScreen) previousScreen.apply{
-                            mapEditorScreen.tileMap.stripPlayer(player)
-                        }
+                        if (previousScreen is GameParametersScreen) previousScreen.mapEditorScreen.tileMap.stripPlayer(player)
                         update()
                     }).pad(5f).right().row()
         }
@@ -211,7 +209,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     private fun getAvailablePlayerCivs(): ArrayList<Nation> {
         var nations = ArrayList<Nation>()
         for (nation in previousScreen.gameSetupInfo.ruleset.nations.values
-                .filter { !it.isCityState() && it.name != Constants.barbarians }) {
+                .filter { it.isMajorCiv() }) {
             if (gameParameters.players.any { it.chosenCiv == nation.name })
                 continue
             nations.add(nation)

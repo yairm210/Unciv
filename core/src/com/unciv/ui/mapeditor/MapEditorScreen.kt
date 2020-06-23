@@ -56,9 +56,10 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
         initialize()
     }
 
-    constructor(scenario: Scenario) : this() {
+    constructor(scenario: Scenario, scenarioName: String = "") : this() {
         tileMap = scenario.tileMap
         this.scenario = scenario
+        this.scenarioName = scenarioName
         gameSetupInfo.gameParameters = scenario.gameParameters
         initialize()
     }

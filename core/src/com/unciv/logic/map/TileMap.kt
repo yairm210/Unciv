@@ -245,7 +245,7 @@ class TileMap {
      */
     fun switchPlayersNation(player: Player, newNation: Nation) {
         tileList.forEach {
-            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = newNation.name }
+            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = "StartingLocation "+newNation.name }
             for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
                 unit.owner = newNation.name
                 unit.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
