@@ -222,7 +222,7 @@ class TileMap {
      */
     fun stripAllUnits(): TileMap {
         val toReturn = TileMap()
-        toReturn.tileList.forEach { it.stripUnits() }
+        toReturn.tileList = this.tileList.apply { forEach {it.stripUnits()} }
         toReturn.mapParameters = mapParameters
         return toReturn
     }
