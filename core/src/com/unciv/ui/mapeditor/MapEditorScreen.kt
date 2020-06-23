@@ -29,7 +29,7 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
     override var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
-    val tileEditorOptions = TileEditorOptionsTable(this)
+    lateinit var tileEditorOptions: TileEditorOptionsTable
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
@@ -58,6 +58,7 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
 
     constructor(scenario: Scenario, scenarioName: String = "") : this() {
         tileMap = scenario.tileMap
+        mapName = scenarioName
         this.scenario = scenario
         this.scenarioName = scenarioName
         gameSetupInfo.gameParameters = scenario.gameParameters
@@ -72,6 +73,7 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
+        tileEditorOptions = TileEditorOptionsTable(this)
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
 
