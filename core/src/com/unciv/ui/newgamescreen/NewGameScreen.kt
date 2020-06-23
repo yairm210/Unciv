@@ -35,6 +35,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     var newGameOptionsTable = GameOptionsTable(gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     var mapOptionsTable = MapOptionsTable(this)
 
+
     init {
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)

@@ -16,6 +16,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
 
+
 /**
  * This [Screen] is used for editing game parameters when scenario is edited/created in map editor.
  * Implements [PreviousScreenInterface] for compatibility with [PlayerPickerTable], [GameOptionsTable]

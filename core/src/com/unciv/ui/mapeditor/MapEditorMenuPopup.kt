@@ -60,11 +60,15 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 tile.baseTerrain = Constants.ocean
                 tile.terrainFeature = null
                 tile.naturalWonder = null
+                tile.hasBottomRiver=false
+                tile.hasBottomLeftRiver=false
+                tile.hasBottomRightRiver=false
                 tile.resource = null
                 tile.improvement = null
                 tile.improvementInProgress = null
                 tile.roadStatus = RoadStatus.None
-                tile.stripUnits()   // to instead of tile.setTransients() to avoid craches when there are units on maps
+                tile.stripUnits()   // instead of tile.setTransients() to avoid craches when there are units on maps
+
 
                 tileGroup.update()
             }
