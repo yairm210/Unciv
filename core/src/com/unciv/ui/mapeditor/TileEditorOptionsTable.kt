@@ -263,9 +263,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         // player icons
         for (player in gameParameters.players) {
-            if (player.chosenCiv == "Random") {
-                // there shouldn't be random civ in map editor
-            } else {
+            if (player.chosenCiv != "Random") {
                 val nation = ruleset.nations[player.chosenCiv]!!
                 val nationImage = ImageGetter.getNationIndicator(nation, 40f)
                 nationsTable.add(nationImage).row()
