@@ -94,7 +94,13 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         terrainFeaturesTable.add(getHex(Color.WHITE, getRedCross(50f, 0.6f)).apply {
             onClick {
-                tileAction = { it.terrainFeature=null; it.naturalWonder = null }
+                tileAction = {
+                    it.terrainFeature=null
+                    it.naturalWonder = null
+                    it.hasBottomRiver=false
+                    it.hasBottomLeftRiver=false
+                    it.hasBottomRightRiver=false
+                }
                 setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
             }
         }).row()
@@ -261,10 +267,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         // player icons
         for (player in gameParameters.players) {
             if (player.chosenCiv == "Random") {
-                nationsTable.add(getRandomPlayerIcon().onClick {
-                    // TODO: nation for random player
-                }).row()
-
+                // there shouldn't be random civ in map editor
             } else {
                 val nation = ruleset.nations[player.chosenCiv]!!
                 val nationImage = ImageGetter.getNationIndicator(nation, 40f)
@@ -315,13 +318,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun getPlayerIndexString(player: Player): String {
         val index = gameParameters.players.indexOf(player) + 1
         return "Player $index"
-    }
-
-    private fun getRandomPlayerIcon(): Actor {
-        return "?".toLabel(Color.WHITE, 25)
-                .apply { this.setAlignment(Align.center) }
-                .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
-                .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
     }
 
     private fun getCrossedIcon(): Actor {

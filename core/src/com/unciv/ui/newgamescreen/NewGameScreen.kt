@@ -27,7 +27,7 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)
 }
 
-class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): PreviousScreenInterface, PickerScreen() {
+class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var newGameOptionsTable = GameOptionsTable(gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }

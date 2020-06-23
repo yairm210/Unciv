@@ -20,7 +20,7 @@ import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 import java.util.*
 
-class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gameParameters: GameParameters): Table() {
+class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters: GameParameters): Table() {
     val playerListTable = Table()
     val nationsPopupWidth = previousScreen.stage.width / 2f
     val civBlocksWidth = previousScreen.stage.width / 3
