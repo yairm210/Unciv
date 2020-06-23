@@ -9,10 +9,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.mapgenerator.MapGenerator
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.MapType
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
@@ -132,7 +134,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         mapEditorPopup.add(loadMapButton).row()
 
         if (UncivGame.Current.scenarioDebugSwitch) {
-            val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Load") {
+            val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Scenario") {
                 val loadScenarioScreen = LoadScenarioScreen(null)
                 loadScenarioScreen.closeButton.isVisible = true
                 loadScenarioScreen.closeButton.onClick {
@@ -161,7 +163,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
     }
 
     private fun QuickstartNewGame() {
-        val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain" })
+        val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain"})
         game.loadGame(newGame)
     }
 

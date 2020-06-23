@@ -13,6 +13,11 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 
+/**
+ * [PickerScreen] used for simple load/delete scenario. Called from [MapEditorScreen]
+ * and returns to that [Screen] type.
+ * @param previousMap [TileMap] to return when no scenario chosen
+ */
 class LoadScenarioScreen(previousMap: TileMap?): PickerScreen(){
     var chosenScenario = ""
     val deleteScenarioButton = "Delete scenario".toTextButton()
@@ -20,7 +25,9 @@ class LoadScenarioScreen(previousMap: TileMap?): PickerScreen(){
     init {
         rightSideButton.setText("Load scenario".tr())
         rightSideButton.onClick {
-            UncivGame.Current.setScreen(MapEditorScreen(MapSaver.loadScenario(chosenScenario)).apply { scenarioName = chosenScenario })
+            val mapEditorScreen = MapEditorScreen(MapSaver.loadScenario(chosenScenario))
+            mapEditorScreen.apply { mapName = chosenScenario }
+            UncivGame.Current.setScreen(mapEditorScreen)
             dispose()
         }
 

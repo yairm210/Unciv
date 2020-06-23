@@ -120,6 +120,21 @@ object GameStarter {
                 tile.improvement = null
         }
 
+        // set max starting movement for units loaded from map
+        for (tile in gameInfo.tileMap.values) {
+            tile.apply {
+                if (militaryUnit !=null) {
+                    militaryUnit!!.currentMovement = militaryUnit!!.getMaxMovement().toFloat()
+                }
+                if (civilianUnit !=null) {
+                    civilianUnit!!.currentMovement = civilianUnit!!.getMaxMovement().toFloat()
+                }
+                if (airUnits.isNotEmpty()) for (airUnit in airUnits) {
+                    airUnit.currentMovement = airUnit.getMaxMovement().toFloat()
+                }
+            }
+        }
+
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
             val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {

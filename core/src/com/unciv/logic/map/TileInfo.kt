@@ -89,6 +89,11 @@ open class TileInfo {
         if (airUnits.isNotEmpty()) yieldAll(airUnits)
     }
 
+    /** Strips all units from tile */
+    fun stripUnits() {
+        apply{ airUnits.clear(); civilianUnit=null; militaryUnit=null}
+    }
+
     /** This is for performance reasons of canPassThrough() - faster than getUnits().firstOrNull() */
     fun getFirstUnit(): MapUnit? {
         if (militaryUnit != null) return militaryUnit!!

@@ -16,21 +16,22 @@ object MapSaver {
     private fun getScenario(scenarioName:String) = Gdx.files.local("$scenariosFolder/$scenarioName")
     
     fun saveMap(mapName: String,tileMap: TileMap) {
-        getMap(mapName).writeString(Gzip.zip(json().toJson(tileMap)), false)
+        getMap(mapName).writeString(Gzip.zip(json().toJson(tileMap.getStrippedMap())), false)
     }
 
     fun saveScenario(scenarioName:String, scenario: Scenario) {
-        getScenario(scenarioName).writeString(json().toJson(scenario), false)
+        getScenario(scenarioName).writeString(Gzip.zip(json().toJson(scenario)), false)
     }
 
     fun loadMap(mapName: String): TileMap {
         val gzippedString = getMap(mapName).readString()
         val unzippedJson = Gzip.unzip(gzippedString)
-        return json().fromJson(TileMap::class.java, unzippedJson)
+        return json().fromJson(TileMap::class.java, unzippedJson).getStrippedMap()
     }
 
     fun loadScenario(scenarioName: String): Scenario {
-        val scenarioJson = getScenario(scenarioName).readString()
+        val gzippedString = getScenario(scenarioName).readString()
+        val scenarioJson = Gzip.unzip(gzippedString)
         return json().fromJson(Scenario::class.java, scenarioJson)
     }
 

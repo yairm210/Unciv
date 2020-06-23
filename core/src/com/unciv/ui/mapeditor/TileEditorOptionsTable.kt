@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -13,9 +14,11 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -32,10 +35,16 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private var currentHex: Actor = Group()
 
     private val ruleset = mapEditorScreen.gameSetupInfo.ruleset
+    private val gameParameters = mapEditorScreen.gameSetupInfo.gameParameters
 
     private val scrollPanelHeight = mapEditorScreen.stage.height*0.7f - 100f // -100 reserved for currentHex table
 
     init{
+        update()
+    }
+
+    fun update() {
+        clear()
         height = mapEditorScreen.stage.height
         width = mapEditorScreen.stage.width/3
 
@@ -50,7 +59,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .onClick { setImprovements() }
         tabPickerTable.add(improvementsButton)
 
-        if (UncivGame.Current.scenarioDebugSwitch) {
+        // debug Scenario mode
+        if (UncivGame.Current.scenarioDebugSwitch && mapEditorScreen.hasScenario()) {
             val unitsButton = "Units".toTextButton().onClick { setUnits() }
             tabPickerTable.add(unitsButton)
         }
@@ -125,10 +135,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         editorPickTable.clear()
 
         val improvementsTable = Table()
-        improvementsTable.add(getHex(Color.WHITE).apply {
+        improvementsTable.add(getHex(Color.WHITE, getRedCross(40f, 0.6f)).apply {
             onClick {
                 tileAction = {it.improvement=null}
-                setCurrentHex(getHex(Color.WHITE), "Clear improvements")
+                setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear improvements")
             }
         }).row()
 
@@ -149,68 +159,164 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
             improvementsTable.add(improvementImage).row()
         }
-        editorPickTable.add(AutoScrollPane(improvementsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(improvementsTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
 
-        val nationsTable = Table()
-        for(nation in ruleset.nations.values){
-            val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-            nationImage.onClick {
-                val improvementName = "StartingLocation "+nation.name
+        val nationTable = Table()
 
-                tileAction = {
-                    it.improvement = improvementName
-                    for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                        val tile = tileGroup.tileInfo
-                        if (tile.improvement == improvementName && tile != it)
-                            tile.improvement = null
-                        tile.setTerrainTransients()
-                        tileGroup.update()
+        if (UncivGame.Current.scenarioDebugSwitch) {
+            /** new scenario/improvements functionality
+             * Random players get their icons
+             * */
+            for (player in gameParameters.players) {
+                val playerIndex = gameParameters.players.indexOf(player) + 1
+                    if (player.chosenCiv == "Random") {
+                        val randomPlayerImage = getRandomPlayerIcon()
+                        randomPlayerImage.onClick {
+                            // TODO: starting location for Random player
+    //                    val improvementName = "StartingLocation Random"
+    //                    tileAction = {
+    //                        it.improvement = improvementName
+    //                        for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+    //                            val tile = tileGroup.tileInfo
+    //                            if (tile.improvement == improvementName && tile != it)
+    //                                tile.improvement = null
+    //                            tile.setTerrainTransients()
+    //                            tileGroup.update()
+    //                        }
+    //                    }
+                            val randomPlayerHex = getHex(Color.WHITE, getRandomPlayerIcon())
+                            setCurrentHex(randomPlayerHex,"Player $playerIndex starting location")
+                        }
+                        nationTable.add(randomPlayerImage).row()
+                    } else {
+                        val nation = ruleset.nations[player.chosenCiv]!!
+                        val nationImage = ImageGetter.getNationIndicator(nation, 40f)
+                        nationImage.onClick {
+                            val improvementName = "StartingLocation " + nation.name
+
+                            tileAction = {
+                                it.improvement = improvementName
+                                for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+                                    val tile = tileGroup.tileInfo
+                                    if (tile.improvement == improvementName && tile != it)
+                                        tile.improvement = null
+                                    tile.setTerrainTransients()
+                                    tileGroup.update()
+                                }
+                            }
+
+                            val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+                            setCurrentHex(nationIcon,"Player $playerIndex starting location")
+                        }
+                        nationTable.add(nationImage).row()
                     }
                 }
 
-                val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                setCurrentHex(nationIcon, "[${nation.name}] starting location")
+        } else {
+            /** old way improvements for all civs
+             * */
+            for(nation in ruleset.nations.values){
+                val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+                nationImage.onClick {
+                    val improvementName = "StartingLocation "+nation.name
+
+                    tileAction = {
+                        it.improvement = improvementName
+                        for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+                            val tile = tileGroup.tileInfo
+                            if (tile.improvement == improvementName && tile != it)
+                                tile.improvement = null
+                            tile.setTerrainTransients()
+                            tileGroup.update()
+                        }
+                    }
+
+                    val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+                    setCurrentHex(nationIcon, "[${nation.name}] starting location")
+                }
+                nationTable.add(nationImage).row()
             }
-            nationsTable.add(nationImage).row()
         }
 
-        editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(nationTable).apply { setScrollingDisabled(true,false) }).height(scrollPanelHeight)
     }
 
-    fun setUnits(){
+    private fun setUnits(){
         editorPickTable.clear()
-        var currentNation = ruleset.nations.values.first()
+
+        val nationsTable = Table()
+
+        // default player - first non-random player or barbarians
+        var currentPlayer = ""
+        var currentNation: Nation? = ruleset.nations.values.firstOrNull{ it.isBarbarian() }
+
         var currentUnit = ruleset.units.values.first()
+
         fun setUnitTileAction(){
-            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation.getInnerColor())
-                    .surroundWithCircle(40f).apply { color=currentNation.getOuterColor() }
-            setCurrentHex(unitImage, currentUnit.name.tr()+" - "+currentNation.name.tr())
+            if (currentNation == null) return
+            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation!!.getInnerColor())
+                    .surroundWithCircle(40f*0.9f).apply { circle.color=currentNation!!.getOuterColor() }
+                    .surroundWithCircle(40f, false).apply { circle.color=currentNation!!.getInnerColor() }
+            setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation!!.name.tr()+")")
             tileAction = {
                 val unit = MapUnit()
                 unit.baseUnit = currentUnit
                 unit.name = currentUnit.name
-                unit.owner = currentNation.name
-                unit.civInfo = CivilizationInfo(currentNation.name).apply { nation=currentNation } // needed for the unit icon to render correctly
-                when {
-                    unit.type.isAirUnit() -> it.airUnits.add(unit)
-                    unit.type.isCivilian() -> it.civilianUnit=unit
-                    else -> it.militaryUnit=unit
+                unit.owner = currentNation!!.name
+                unit.civInfo = CivilizationInfo(currentNation!!.name).apply { nation=currentNation!! } // needed for the unit icon to render correctly
+                unit.updateUniques()
+                if (unit.movement.canMoveTo(it)) {
+                    when {
+                        unit.type.isCivilian() -> { it.civilianUnit = unit }
+                        unit.type.isMilitary() && !unit.type.isAirUnit() -> { it.militaryUnit = unit }
+                        unit.type.isAirUnit() -> { it.airUnits.add(unit)
+                            if (!it.isCityCenter()) unit.isTransported = true  // if not city - air unit enters carrier
+                        }
+                    }
+                    unit.currentTile = it // needed for unit icon - unit needs to know if it's embarked or not...
                 }
-                unit.currentTile=it // needed for unit icon - unit needs to know if it's embarked or not...
             }
         }
 
-        val nationsTable = Table()
-        val nations = nationsFromMap(mapEditorScreen.tileMap)
-        val barbarians = ruleset.nations.values.filter { it.isBarbarian()}
+        // delete units icon
+        nationsTable.add(getCrossedIcon().onClick {
+                tileAction = { it.stripUnits() }
+                setCurrentHex(getCrossedIcon(), "Remove units")
+        }).row()
 
-        for(nation in nations + barbarians){
-            val nationImage = ImageGetter.getNationIndicator(nation, 40f)
-            nationsTable.add(nationImage).row()
-            nationImage.onClick { currentNation = nation; setUnitTileAction() }
+        // player icons
+        for (player in gameParameters.players) {
+            if (player.chosenCiv == "Random") {
+                nationsTable.add(getRandomPlayerIcon().onClick {
+                    // TODO: nation for random player
+                }).row()
+
+            } else {
+                val nation = ruleset.nations[player.chosenCiv]!!
+                val nationImage = ImageGetter.getNationIndicator(nation, 40f)
+                nationsTable.add(nationImage).row()
+                nationImage.onClick {
+                    currentNation = nation
+                    currentPlayer = getPlayerIndexString(player)
+                    setUnitTileAction() }
+            }
         }
 
-        editorPickTable.add(ScrollPane(nationsTable)).height(stage.height*0.8f)
+        // barbarians icon
+        if (!gameParameters.noBarbarians) {
+            val barbarians = ruleset.nations.values.filter { it.isBarbarian()}
+            for (nation in barbarians) {
+                val nationImage = ImageGetter.getNationIndicator(nation, 40f)
+                nationsTable.add(nationImage).row()
+                nationImage.onClick {
+                    currentNation = nation
+                    currentPlayer = ""
+                    setUnitTileAction()
+                }
+            }
+        }
+
+        editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight)
 
         val unitsTable = Table()
         for(unit in ruleset.units.values){
@@ -218,18 +324,40 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             unitsTable.add(unitImage).row()
             unitImage.onClick { currentUnit = unit; setUnitTileAction() }
         }
-        editorPickTable.add(ScrollPane(unitsTable)).height(stage.height*0.8f)
+        editorPickTable.add(AutoScrollPane(unitsTable)).height(scrollPanelHeight)
     }
 
     private fun nationsFromMap(tileMap: TileMap): ArrayList<Nation> {
         val tilesWithStartingLocations = tileMap.values
                 .filter { it.improvement != null && it.improvement!!.startsWith("StartingLocation ") }
-        var nations = ArrayList<Nation>()
+        val nations = ArrayList<Nation>()
         for (tile in tilesWithStartingLocations) {
-            var civName =  tile.improvement!!.removePrefix("StartingLocation ")
+            val civName =  tile.improvement!!.removePrefix("StartingLocation ")
             nations.add(ruleset.nations[civName]!!)
         }
         return nations
+    }
+
+    private fun getPlayerIndexString(player: Player): String {
+        val index = gameParameters.players.indexOf(player) + 1
+        if (index != 0) {
+            return "Player $index"
+        } else {
+            return "Player not found"
+        }
+    }
+
+    private fun getRandomPlayerIcon(): Actor {
+        return "?".toLabel(Color.WHITE, 25)
+                .apply { this.setAlignment(Align.center) }
+                .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
+                .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
+    }
+
+    private fun getCrossedIcon(): Actor {
+        return getRedCross(20f, 0.6f)
+                .surroundWithCircle(40f, false)
+                .apply { circle.color = Color.WHITE }
     }
 
     private fun getRedCross(size: Float, alpha: Float): Actor {

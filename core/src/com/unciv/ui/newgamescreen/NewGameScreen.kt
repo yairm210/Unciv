@@ -10,12 +10,14 @@ import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.thread
 
 
@@ -123,11 +125,6 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         }
         Gdx.graphics.requestRendering()
     }
-
-//    fun setNewGameButtonEnabled(bool: Boolean) {
-//        if (bool) rightSideButton.enable()
-//        else rightSideButton.disable()
-//    }
 
     fun lockTables() {
         playerPickerTable.locked = true
