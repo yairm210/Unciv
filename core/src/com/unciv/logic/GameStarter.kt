@@ -114,11 +114,14 @@ object GameStarter {
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
 
-        // remove starting locations one we're done
+        // remove starting locations once we're done
         for (tile in gameInfo.tileMap.values) {
             if (tile.improvement != null && tile.improvement!!.startsWith("StartingLocation "))
                 tile.improvement = null
+            // set max starting movement for units loaded from map
+            for(unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
         }
+
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {

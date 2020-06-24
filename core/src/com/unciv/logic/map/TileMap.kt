@@ -5,6 +5,8 @@ import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.metadata.Player
+import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.Ruleset
 import kotlin.math.abs
 
@@ -213,6 +215,39 @@ class TileMap {
         }
 
         return viewableTiles
+    }
+
+    /** Strips all units from [TileMap]
+     * @return stripped clone of [TileMap]
+     */
+    fun stripAllUnits(): TileMap {
+        return clone().apply { tileList.forEach {it.stripUnits()} }
+    }
+
+    /** Strips all units and starting location from [TileMap] for specified [Player]
+     * Operation in place
+     * @param player units of player to be stripped off
+     */
+    fun stripPlayer(player: Player) {
+        tileList.forEach {
+            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = null }
+            for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) unit.removeFromTile()
+        }
+    }
+
+    /** Finds all units and starting location of [Player] and changes their [Nation]
+     * Operation in place
+     * @param player player whose all units will be changed
+     * @param newNation new nation to be set up
+     */
+    fun switchPlayersNation(player: Player, newNation: Nation) {
+        tileList.forEach {
+            if (it.improvement == "StartingLocation " + player.chosenCiv) { it.improvement = "StartingLocation "+newNation.name }
+            for (unit in it.getUnits()) if (unit.owner == player.chosenCiv) {
+                unit.owner = newNation.name
+                unit.civInfo = CivilizationInfo(newNation.name).apply { nation=newNation }
+            }
+        }
     }
 
     fun setTransients(ruleset: Ruleset, setUnitCivTransients:Boolean=true) { // In the map editor, no Civs or Game exist, so we won't set the unit transients

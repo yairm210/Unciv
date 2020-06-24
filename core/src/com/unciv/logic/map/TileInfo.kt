@@ -429,6 +429,10 @@ open class TileInfo {
         }
     }
 
+    fun stripUnits() {
+        for (unit in this.getUnits()) unit.removeFromTile()
+    }
+
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
         improvementInProgress = improvement.name
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
