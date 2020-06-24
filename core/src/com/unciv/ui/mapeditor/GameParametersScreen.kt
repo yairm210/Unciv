@@ -8,7 +8,13 @@ import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-
+/**
+ * This [Screen] is used for editing game parameters when scenario is edited/created in map editor.
+ * Implements [PreviousScreenInterface] for compatibility with [PlayerPickerTable], [GameOptionsTable]
+ * Uses [PlayerPickerTable] and [GameOptionsTable] to change local [gameSetupInfo]. Upon confirmation
+ * updates [mapEditorScreen] and switches to it.
+ * @param [mapEditorScreen] previous screen from map editor.
+ */
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen() {
 
     override var gameSetupInfo: GameSetupInfo = mapEditorScreen.gameSetupInfo
