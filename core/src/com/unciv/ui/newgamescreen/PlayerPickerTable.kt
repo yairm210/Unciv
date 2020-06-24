@@ -166,7 +166,9 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
 
         for (nation in previousScreen.gameSetupInfo.ruleset.nations.values
                 .filter { !it.isCityState() && it.name != Constants.barbarians }) {
-            if (player.chosenCiv != nation.name && gameParameters.players.any { it.chosenCiv == nation.name })
+            // skip already chosen civs except for spectators
+            if (player.chosenCiv != nation.name && gameParameters.players.any {
+                        it.chosenCiv == nation.name && it.chosenCiv != "Spectator" })
                 continue
             // only humans can spectate, sorry robots
             if (player.playerType == PlayerType.AI && nation.isSpectator())
