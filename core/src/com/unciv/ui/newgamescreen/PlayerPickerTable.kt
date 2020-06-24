@@ -19,6 +19,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 import java.util.*
+import kotlin.reflect.typeOf
 
 class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters: GameParameters): Table() {
     val playerListTable = Table()
@@ -52,7 +53,15 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick {
                         var player = Player()
-                        if (noRandom) { player = Player(getAvailablePlayerCivs().first().name) }
+                        // no random mode - add first not spectator civ if still available
+                        if (noRandom) {
+                            try {
+                                player = Player(getAvailablePlayerCivs().first { !it.isSpectator() }.name)
+                            } catch (e: Exception) {
+                                // Spectators only Humans
+                                player = Player("Spectator").apply { playerType = PlayerType.Human }
+                            }
+                        }
                         gameParameters.players.add(player)
                         update()
                     }).pad(10f)
@@ -215,7 +224,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         var nations = ArrayList<Nation>()
         for (nation in previousScreen.gameSetupInfo.ruleset.nations.values
                 .filter { it.isMajorCiv() }) {
-            if (gameParameters.players.any { it.chosenCiv == nation.name })
+            // skip already chosen civs, except for spectator
+            if (gameParameters.players.any { it.chosenCiv == nation.name && it.chosenCiv != "Spectator"})
                 continue
             nations.add(nation)
         }
