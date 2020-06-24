@@ -242,22 +242,24 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 unit.name = currentUnit.name
                 unit.owner = currentNation!!.name
                 unit.civInfo = CivilizationInfo(currentNation!!.name).apply { nation=currentNation!! } // needed for the unit icon to render correctly
-                when {
-                    unit.type.isAirUnit() -> it.airUnits.add(unit)
-                    unit.type.isCivilian() -> it.civilianUnit=unit
-                    else -> it.militaryUnit=unit
+                unit.updateUniques()
+                if (unit.movement.canMoveTo(it)) {
+                    when {
+                        unit.type.isAirUnit() -> {
+                            it.airUnits.add(unit)
+                            if (!it.isCityCenter()) unit.isTransported = true  // if not city - air unit enters carrier
+                        }
+                        unit.type.isCivilian() -> { it.civilianUnit = unit }
+                        else -> { it.militaryUnit = unit }
+                    }
+                    unit.currentTile=it // needed for unit icon - unit needs to know if it's embarked or not...
                 }
-                unit.currentTile=it // needed for unit icon - unit needs to know if it's embarked or not...
             }
         }
 
         // delete units icon
         nationsTable.add(getCrossedIcon().onClick {
-                tileAction = {
-                    it.airUnits.clear()
-                    it.civilianUnit=null
-                    it.militaryUnit=null
-                }
+                tileAction = { it.stripUnits() }
                 setCurrentHex(getCrossedIcon(), "Remove units")
         }).row()
 
