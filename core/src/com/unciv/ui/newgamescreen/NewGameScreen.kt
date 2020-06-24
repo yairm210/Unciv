@@ -51,9 +51,9 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
-            if (gameSetupInfo.gameParameters.players.none { it.playerType == PlayerType.Human }) {
+            if (gameSetupInfo.gameParameters.players.none { it.playerType == PlayerType.Human && it.chosenCiv != "Spectator"}) {
                 val noHumanPlayersPopup = Popup(this)
-                noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
+                noHumanPlayersPopup.addGoodSizedLabel("No active human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
                 return@onClick
