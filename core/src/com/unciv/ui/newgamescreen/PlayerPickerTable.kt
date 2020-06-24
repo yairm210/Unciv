@@ -168,6 +168,9 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
                 .filter { !it.isCityState() && it.name != Constants.barbarians }) {
             if (player.chosenCiv != nation.name && gameParameters.players.any { it.chosenCiv == nation.name })
                 continue
+            // only humans can spectate, sorry robots
+            if (player.playerType == PlayerType.AI && nation.isSpectator())
+                continue
 
             nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.gameSetupInfo.ruleset).onClick {
                 player.chosenCiv = nation.name
