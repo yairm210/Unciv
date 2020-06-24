@@ -1,6 +1,5 @@
 package com.unciv.ui.mapeditor
 
-import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -15,22 +14,22 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import com.unciv.ui.newgamescreen.PreviousScreenInterface
+import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
-    // need for compatibility with NewGameScreen: PickerScreen
+class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
+    // need for compatibility with PickerScreen
     override fun setRightSideButtonEnabled(boolean: Boolean) {}
 
     var mapName = ""
     var tileMap = TileMap()
-    var scenarioName = ""
-    var scenario: Scenario? = null
+    var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
+    var scenario: Scenario? = null // main indicator whether scenario information is present
 
-    override val gameSetupInfo = GameSetupInfo()
+    override var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
-    val tileEditorOptions = TileEditorOptionsTable(this)
+    lateinit var tileEditorOptions: TileEditorOptionsTable
 
     private val showHideEditorOptionsButton = ">".toTextButton()
 
@@ -45,6 +44,7 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
 
         if (mapToLoad != null) {
             mapName = mapToLoad
+            scenarioName = mapToLoad
             tileMap = MapSaver.loadMap(mapName)
         }
 
@@ -56,9 +56,11 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
         initialize()
     }
 
-    constructor(scenario: Scenario) : this() {
+    constructor(scenario: Scenario, scenarioName: String = "") : this() {
         tileMap = scenario.tileMap
+        mapName = scenarioName
         this.scenario = scenario
+        this.scenarioName = scenarioName
         gameSetupInfo.gameParameters = scenario.gameParameters
         initialize()
     }
@@ -71,6 +73,7 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
         stage.addActor(mapHolder)
         stage.scrollFocus = mapHolder
 
+        tileEditorOptions = TileEditorOptionsTable(this)
         stage.addActor(tileEditorOptions)
         tileEditorOptions.setPosition(stage.width - tileEditorOptions.width, 0f)
 
@@ -165,6 +168,10 @@ class MapEditorScreen(): PreviousScreenInterface, CameraStageBaseScreen() {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             game.setScreen(MapEditorScreen(mapHolder.tileMap))
         }
+    }
+
+    fun hasScenario(): Boolean {
+        return this.scenario != null
     }
 }
 

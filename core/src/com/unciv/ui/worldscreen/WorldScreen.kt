@@ -132,8 +132,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             stopMultiPlayerRefresher()
             // isDaemon = true, in order to not block the app closing
             multiPlayerRefresher = Timer("multiPlayerRefresh", true).apply {
-                scheduleAtFixedRate(object : TimerTask() {
-                    override fun run() { Gdx.app.postRunnable{ loadLatestMultiplayerState() } }
+                schedule(object : TimerTask() { //todo maybe not use timer for web request, from timer docs "Timer tasks should complete quickly."
+                    override fun run() { loadLatestMultiplayerState() }
                 }, 0, 10000) // 10 seconds
             }
         }
@@ -226,30 +226,35 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun loadLatestMultiplayerState(){
         val loadingGamePopup = Popup(this)
         loadingGamePopup.add("Loading latest game state...".tr())
-        loadingGamePopup.open()
-        thread(name="MultiplayerLoad") {
-            try {
-                val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
-                if(gameInfo.isUpToDate && gameInfo.currentPlayer==latestGame.currentPlayer) { // we were trying to download this to see when it's our turn...nothing changed
-                    Gdx.app.postRunnable { loadingGamePopup.close() }
-                    return@thread
-                }
-                latestGame.isUpToDate=true
-                // Since we're making a screen this needs to run from the main thread which has a GL context
-                Gdx.app.postRunnable {
-                    stopMultiPlayerRefresher()
-                    game.loadGame(latestGame)
-                }
 
-            } catch (ex: Exception) {
-                Gdx.app.postRunnable { // otherwise the popups of the screen could be concurrently modified, and we'll get an unhappy thread
-                    loadingGamePopup.close()
-                    val couldntDownloadLatestGame = Popup(this)
-                    couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
-                    couldntDownloadLatestGame.addCloseButton()
-                    couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
-                    couldntDownloadLatestGame.open()
-                }
+        // Since we're on a background thread, all the UI calls in this func need to run from the
+        // main thread which has a GL context
+        Gdx.app.postRunnable { loadingGamePopup.open() }
+
+        try {
+            val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
+
+            // if we find it still isn't player's turn...nothing changed
+            if(gameInfo.isUpToDate && gameInfo.currentPlayer==latestGame.currentPlayer) {
+                Gdx.app.postRunnable { loadingGamePopup.close() }
+                return
+            }
+            else{ //else we found it is the player's turn again, turn off polling and load turn
+                stopMultiPlayerRefresher()
+
+                latestGame.isUpToDate=true
+                Gdx.app.postRunnable { game.loadGame(latestGame) }
+            }
+
+        } catch (ex: Exception) {
+            val couldntDownloadLatestGame = Popup(this)
+            couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
+            couldntDownloadLatestGame.addCloseButton()
+            couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
+
+            Gdx.app.postRunnable {
+                loadingGamePopup.close()
+                couldntDownloadLatestGame.open()
             }
         }
     }

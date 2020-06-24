@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
