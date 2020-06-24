@@ -49,6 +49,7 @@ class Nation : INamed {
     fun isCityState()= cityStateType != null
     fun isMajorCiv() = !isBarbarian() && !isCityState()
     fun isBarbarian() = name== Constants.barbarians
+    fun isSpectator() = name == Constants.spectator
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false

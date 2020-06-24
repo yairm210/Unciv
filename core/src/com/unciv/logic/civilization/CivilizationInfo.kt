@@ -132,6 +132,7 @@ class CivilizationInfo {
             gameInfo.gameParameters.oneCityChallenge)
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
+    fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
@@ -269,6 +270,7 @@ class CivilizationInfo {
     fun isDefeated()= cities.isEmpty() // No cities
             && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
             && !isBarbarian() // Barbarians can be never defeated
+            && !isSpectator() // can't loose in Spectator mode
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): String {

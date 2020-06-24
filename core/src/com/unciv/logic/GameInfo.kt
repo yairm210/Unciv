@@ -14,6 +14,7 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.ui.utils.ResponsePopup
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -115,6 +116,7 @@ class GameInfo {
 
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
+        if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(thisPlayer)

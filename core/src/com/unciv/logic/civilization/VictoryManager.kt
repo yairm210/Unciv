@@ -37,7 +37,7 @@ class VictoryManager {
             && civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 4
 
     fun hasWonDominationVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Domination)
-            && civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() || !it.isMajorCiv() }
+            && civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() || !it.isMajorCiv() || it.isSpectator() }
 
     fun hasWonVictoryType(): VictoryType? {
         if(!civInfo.isMajorCiv()) return null

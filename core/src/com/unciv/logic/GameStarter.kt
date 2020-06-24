@@ -129,8 +129,8 @@ object GameStarter {
             }
             return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }!!.name
         }
-
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+        // no starting units for Barbarians and Spectators
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
             for (tile in startingLocation.getTilesInDistance(3))
                 tile.improvement = null // Remove ancient ruins in immediate vicinity

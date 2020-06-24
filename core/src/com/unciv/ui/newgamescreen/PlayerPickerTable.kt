@@ -76,10 +76,11 @@ class PlayerPickerTable(val previousScreen: PreviousScreenInterface, var gamePar
 
         val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
-//            if (locked) return@onClick
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
-            else player.playerType = PlayerType.AI
+            // we cannot change Spectator player to AI type, robots not allowed to spectate :(
+            else if (player.chosenCiv != "Spectator")
+                player.playerType = PlayerType.AI
             update()
         }
         playerTable.add(playerTypeTextbutton).width(100f).pad(5f).right()

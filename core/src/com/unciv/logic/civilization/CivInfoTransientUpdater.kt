@@ -52,6 +52,12 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
     private fun setNewViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
 
+        // while spectating all map is visible
+        if (civInfo.isSpectator()) {
+            civInfo.viewableTiles = civInfo.gameInfo.tileMap.values.toSet()
+            return
+        }
+
         // There are a LOT of tiles usually.
         // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
         // And so, sequences to the rescue!
