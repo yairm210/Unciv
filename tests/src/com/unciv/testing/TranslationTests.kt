@@ -78,7 +78,7 @@ class TranslationTests {
             val placeholders = placeholderPattern.findAll(translationEntry).map { it.value }.toList()
             for (language in languages) {
                 for (placeholder in placeholders) {
-                    val output = translations.get(translationEntry, language)
+                    val output = translations.getText(translationEntry, language)
                     if (!output.contains(placeholder)) {
                         allTranslationsHaveCorrectPlaceholders = false
                         println("Placeholder `$placeholder` not found in `$language` for entry `$translationEntry`")
