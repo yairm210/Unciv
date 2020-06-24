@@ -221,10 +221,7 @@ class TileMap {
      * @return stripped clone of [TileMap]
      */
     fun stripAllUnits(): TileMap {
-        val toReturn = TileMap()
-        toReturn.tileList = this.tileList.apply { forEach {it.stripUnits()} }
-        toReturn.mapParameters = mapParameters
-        return toReturn
+        return clone().apply { tileList.forEach {it.stripUnits()} }
     }
 
     /** Strips all units and starting location from [TileMap] for specified [Player]
