@@ -124,6 +124,8 @@ object TranslationFileWriter {
 
         var uniqueIndexOfNewLine = 0
         for (tutorial in tutorials) {
+            if (!tutorial.key.startsWith('_'))
+                tutorialsStrings.add("${tutorial.key.replace('_', ' ')} = ")
             for (str in tutorial.value)
                 if (str != "") tutorialsStrings.add("$str = ")
             // This is a small hack to insert multiple /n into the set, which can't contain identical lines
