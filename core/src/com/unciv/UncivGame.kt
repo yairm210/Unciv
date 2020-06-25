@@ -46,19 +46,20 @@ class UncivGame(
      */
     val simulateUntilTurnForDebug: Int = 0
 
-    /** Simulate until any player wins or loses,
+    /** Simulate until any player wins,
      *  or turns exceeds indicated number
      *  Does not update World View changes until finished.
-     *  Set to 0 to disable.
+     *  Set false to disable.
      */
-    var simulateUntilWinOrLose: Int = 0
+    val simulateMaxTurns: Int = 2000
+    val simulateUntilWin = false
 
     /** Console log battles
      */
-    val alertBattle = true
+    val alertBattle = false
     /** Debug new Scenario functionality
      */
-    val scenarioDebugSwitch = false
+    val scenarioDebugSwitch = true
 
     lateinit var worldScreen: WorldScreen
 

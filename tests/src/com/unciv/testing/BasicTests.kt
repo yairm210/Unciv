@@ -40,7 +40,7 @@ class BasicTests {
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
                         && game.simulateUntilTurnForDebug <= 0
-                        && game.simulateUntilWinOrLose <= 0
+                        && !game.simulateUntilWin
                         && !game.scenarioDebugSwitch)
     }
 
