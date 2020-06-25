@@ -59,7 +59,7 @@ class UncivGame(
     val alertBattle = false
     /** Debug new Scenario functionality
      */
-    val scenarioDebugSwitch = true
+    val scenarioDebugSwitch = false
 
     lateinit var worldScreen: WorldScreen
 
