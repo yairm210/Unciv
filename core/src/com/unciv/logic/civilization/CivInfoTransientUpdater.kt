@@ -54,7 +54,9 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
         // while spectating all map is visible
         if (civInfo.isSpectator()) {
-            civInfo.viewableTiles = civInfo.gameInfo.tileMap.values.toSet()
+            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
+            civInfo.viewableTiles = allTiles
+            civInfo.viewableInvisibleUnitsTiles = allTiles
             return
         }
 

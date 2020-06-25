@@ -59,6 +59,16 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 return@onClick
             }
 
+            if (gameSetupInfo.gameParameters.players.count { it.chosenCiv == "Spectator" } > 1) {
+                val noMoreSpectatorsPopup = Popup(this)
+                noMoreSpectatorsPopup.addGoodSizedLabel("Sorry! No more than one spectator for the moment".tr()).row()
+                noMoreSpectatorsPopup.addCloseButton()
+                noMoreSpectatorsPopup.open()
+                return@onClick
+            }
+
+
+
             if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
                 for (player in gameSetupInfo.gameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {

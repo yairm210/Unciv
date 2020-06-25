@@ -66,7 +66,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                         update()
                     }).pad(10f)
         }
-        previousScreen.setRightSideButtonEnabled(gameParameters.players.size > 1)
+        // can enable start game when more than 1 active player
+        previousScreen.setRightSideButtonEnabled(gameParameters.players.count{ it.chosenCiv != "Spectator" } > 1)
     }
 
     private fun reassignRemovedModReferences() {
