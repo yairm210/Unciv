@@ -52,6 +52,12 @@ object GameStarter {
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
+            // add all techs to spectators
+            if (civInfo.isSpectator())
+                for (tech in ruleset.technologies.values)
+                    if (!civInfo.tech.isResearched(tech.name))
+                        civInfo.tech.addTechnology(tech.name)
+
             for (tech in ruleset.technologies.values
                     .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(gameSetupInfo.gameParameters.startingEra) })
                 if (!civInfo.tech.isResearched(tech.name))
