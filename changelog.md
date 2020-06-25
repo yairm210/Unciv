@@ -1,3 +1,15 @@
+## 3.9.6
+
+Resolved #2761 - Tutorial titles are auto-added to the translation files
+
+Resolved #2703 - placeholder translations now check active mods for translation values - by dbaelz
+
+Background work and POC for Scenario editor - By alkorolyov
+
+Improve performance of multiplayer load poll - By soggerr
+
+Translation updates
+
 ## 3.9.5
 
 Fixed coast tiles around natural wonders spawning land-type layers
