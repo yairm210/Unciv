@@ -11,7 +11,6 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -37,6 +36,7 @@ class GameInfo {
     var oneMoreTurnMode=false
     var currentPlayer=""
     var gameId = UUID.randomUUID().toString() // random string
+    var simulateUntilWin = UncivGame.Current.simulateUntilWin
 
     //region pure functions
     fun clone(): GameInfo {
@@ -85,8 +85,8 @@ class GameInfo {
         switchTurn()
 
         while (thisPlayer.playerType == PlayerType.AI
-            || UncivGame.Current.simulateUntilTurnForDebug > turns
-                || UncivGame.Current.simulateUntilWinOrLose > turns
+            || turns < UncivGame.Current.simulateUntilTurnForDebug
+                || (turns < UncivGame.Current.simulateMaxTurns && simulateUntilWin)
                 // For multiplayer, if there are 3+ players and one is defeated,
                 // we'll want to skip over their turn
                 || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
@@ -99,17 +99,13 @@ class GameInfo {
                         && !gameParameters.noBarbarians
                         && turns % 10 == 0) placeBarbarians()
 
-                // exit simulation mode when player wins or loses
-                if (thisPlayer.isDefeated() || thisPlayer.victoryManager.hasWon()
-                        && UncivGame.Current.simulateUntilWinOrLose != 0
-                ) {
+                // exit simulation mode when player wins
+                if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
                     // stop simulation
-                    UncivGame.Current.simulateUntilWinOrLose = turns
+                    simulateUntilWin = false
                     println("Simulation stopped on turn $turns")
-                    for (civ in UncivGame.Current.gameInfo.civilizations) {
-                        val victoryType = civ.victoryManager.hasWonVictoryType()
-                        if (civ.victoryManager.hasWon()) println("$civ won $victoryType victory")
-                    }
+                    val victoryType = thisPlayer.victoryManager.hasWonVictoryType()
+                    println("$thisPlayer won $victoryType victory")
                 }
             }
             switchTurn()
@@ -118,6 +114,9 @@ class GameInfo {
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
+
+        if (turns == UncivGame.Current.simulateMaxTurns && UncivGame.Current.simulateUntilWin)
+            println ("Max simulation turns reached $turns: Draw")
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(thisPlayer)
