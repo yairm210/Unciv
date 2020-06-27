@@ -19,6 +19,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 import java.util.*
+import kotlin.reflect.typeOf
 
 /**
  * This [Table] is used to pick or edit players information for new game/scenario creation.
@@ -55,10 +56,10 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
      */
     fun update(desiredCiv: String = "") {
         playerListTable.clear()
-        val ruleset = previousScreen.gameSetupInfo.ruleset // the mod picking changes this ruleset
+        val gameBasics = previousScreen.ruleset // the mod picking changes this ruleset
 
         reassignRemovedModReferences()
-        val newRulesetPlayableCivs = previousScreen.gameSetupInfo.ruleset.nations.count { it.key != Constants.barbarians }
+        val newRulesetPlayableCivs = previousScreen.ruleset.nations.count { it.key != Constants.barbarians }
         if (gameParameters.players.size > newRulesetPlayableCivs)
             gameParameters.players = ArrayList(gameParameters.players.subList(0, newRulesetPlayableCivs))
         if (desiredCiv.isNotEmpty()) assignDesiredCiv(desiredCiv)
@@ -66,7 +67,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         for (player in gameParameters.players) {
             playerListTable.add(getPlayerTable(player)).width(civBlocksWidth).padBottom(20f).row()
         }
-        if (gameParameters.players.count() < ruleset.nations.values.count { it.isMajorCiv() }
+        if (gameParameters.players.count() < gameBasics.nations.values.count { it.isMajorCiv() }
                 && !locked) {
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick {
@@ -85,7 +86,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
      */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
-            if (!previousScreen.gameSetupInfo.ruleset.nations.containsKey(player.chosenCiv))
+            if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv))
                 player.chosenCiv = "Random"
         }
     }
@@ -184,7 +185,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
                 .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
-        else ImageGetter.getNationIndicator(previousScreen.gameSetupInfo.ruleset.nations[player.chosenCiv]!!, 40f)
+        else ImageGetter.getNationIndicator(previousScreen.ruleset.nations[player.chosenCiv]!!, 40f)
         nationTable.add(nationImage).pad(5f)
         nationTable.add(player.chosenCiv.toLabel()).pad(5f)
         nationTable.touchable = Touchable.enabled
@@ -225,10 +226,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             if (player.chosenCiv == nation.name)
                 continue
 
-            nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.gameSetupInfo.ruleset).onClick {
-                if (previousScreen is GameParametersScreen) {
-                    previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
-                }
+            nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.ruleset).onClick {
+                if (previousScreen is GameParametersScreen) { previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation) }
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
@@ -259,7 +258,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
      */
     private fun getAvailablePlayerCivs(): ArrayList<Nation> {
         var nations = ArrayList<Nation>()
-        for (nation in previousScreen.gameSetupInfo.ruleset.nations.values
+        for (nation in previousScreen.ruleset.nations.values
                 .filter { it.isMajorCiv() }) {
             if (gameParameters.players.any { it.chosenCiv == nation.name })
                 continue
@@ -267,5 +266,4 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         }
         return nations
     }
-
 }
