@@ -429,7 +429,7 @@ object NextTurnAutomation{
 
         val landPathBFS = BFS(ourCity.getCenterTile()) {
             val owner = it.getOwner();
-            it.isLand && !it.getBaseTerrain().impassable
+            it.isLand && !it.isImpassible()
                     && (owner == otherCiv || owner == null || civInfo.canEnterTiles(owner))
         }
 
