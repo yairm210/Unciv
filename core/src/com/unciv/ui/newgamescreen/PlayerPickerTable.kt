@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
@@ -119,7 +120,6 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
 
         val playerTypeTextbutton = player.playerType.name.toTextButton()
         playerTypeTextbutton.onClick {
-//            if (locked) return@onClick
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
             else player.playerType = PlayerType.AI
@@ -227,7 +227,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                 continue
 
             nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.ruleset).onClick {
-                if (previousScreen is GameParametersScreen) { previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation) }
+                if (previousScreen is GameParametersScreen)
+                    previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
