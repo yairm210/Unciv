@@ -64,11 +64,14 @@ class AndroidLauncher : AndroidApplication() {
     }
 
     override fun onResume() {
-        WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MultiplayerTurnCheckWorker.WORK_TAG)
-        with(NotificationManagerCompat.from(this)) {
-            cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_INFO)
-            cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
+        try { // Sometimes this fails for no apparent reason - the multiplayer checker failing to cancel should not be enough of a reason for the game to crash!
+            WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MultiplayerTurnCheckWorker.WORK_TAG)
+            with(NotificationManagerCompat.from(this)) {
+                cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_INFO)
+                cancel(MultiplayerTurnCheckWorker.NOTIFICATION_ID_SERVICE)
+            }
         }
+        catch (ex:Exception){}
         super.onResume()
     }
 }

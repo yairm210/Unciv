@@ -111,6 +111,7 @@ open class TileInfo {
 
     fun isCityCenter(): Boolean = getCity()?.location == position
     fun isNaturalWonder(): Boolean = naturalWonder != null
+    fun isImpassible() = getLastTerrain().impassable
 
     fun getTileImprovement(): TileImprovement? = if (improvement == null) null else ruleset.tileImprovements[improvement!!]
 
@@ -400,7 +401,7 @@ open class TileInfo {
             if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
             lineList += "[$defencePercentString] to unit defence".tr()
         }
-        if (getBaseTerrain().impassable) lineList += Constants.impassable.tr()
+        if (isImpassible()) lineList += Constants.impassable.tr()
 
         return lineList.joinToString("\n")
     }

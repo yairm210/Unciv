@@ -139,7 +139,7 @@ class WorkerAutomation(val unit: MapUnit) {
     }
 
     private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        if (!tile.isLand || tile.getBaseTerrain().impassable || tile.isCityCenter())
+        if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
         val city=tile.getCity()
         if (city == null || city.civInfo != civInfo)
