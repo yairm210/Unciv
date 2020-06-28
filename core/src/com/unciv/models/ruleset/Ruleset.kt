@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.badlogic.gdx.Files
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
@@ -181,9 +182,20 @@ class Ruleset {
 object RulesetCache :HashMap<String,Ruleset>() {
     val vanillaRuleset = "Civ V - Vanilla"
     fun loadRulesets() {
-        this[""] = Ruleset().apply { load(Gdx.files.internal("jsons/$vanillaRuleset")) }
+        try {
+            this[""] = Ruleset().apply { load(Gdx.files.internal("jsons/$vanillaRuleset")) }
+        } catch (e: NullPointerException) {
+            this[""] = Ruleset().apply { load(FileHandle("jsons/$vanillaRuleset")) }
+        }
 
-        for (modFolder in Gdx.files.local("mods").list()) {
+        var modsHandles: Array<FileHandle>
+        try {
+            modsHandles = Gdx.files.local("mods").list()
+        } catch (ex: NullPointerException) {
+            modsHandles = FileHandle("mods").list()
+        }
+
+        for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
             try {
                 val modRuleset = Ruleset()

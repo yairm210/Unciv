@@ -57,7 +57,11 @@ object GameSaver {
     }
 
     fun getGeneralSettingsFile(): FileHandle {
-        return Gdx.files.local(settingsFileName)
+        try {
+            return Gdx.files.local(settingsFileName)
+        } catch (ex: NullPointerException) {
+            return FileHandle(settingsFileName)
+        }
     }
 
     fun getGeneralSettings(): GameSettings {
