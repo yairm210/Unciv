@@ -8,12 +8,14 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.simulation.Simulation
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -102,9 +104,7 @@ class GameInfo {
                 if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
                     // stop simulation
                     simulateUntilWin = false
-                    println("Simulation stopped on turn $turns")
-                    val victoryType = thisPlayer.victoryManager.hasWonVictoryType()
-                    println("$thisPlayer won $victoryType victory")
+                    break
                 }
             }
             switchTurn()
@@ -113,8 +113,6 @@ class GameInfo {
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
 
-        if (turns == UncivGame.Current.simulateMaxTurns && UncivGame.Current.simulateUntilWin)
-            println ("Max simulation turns reached $turns: Draw")
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(thisPlayer)
@@ -380,6 +378,4 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
-
-
 }
