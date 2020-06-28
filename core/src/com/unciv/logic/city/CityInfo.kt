@@ -372,7 +372,8 @@ class CityInfo {
         isPuppet = false
         cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         cityStats.update()
-        UncivGame.Current.worldScreen.shouldUpdate = true
+        if (!UncivGame.Current.consoleMode)
+            UncivGame.Current.worldScreen.shouldUpdate = true
     }
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
