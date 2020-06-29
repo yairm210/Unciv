@@ -7,6 +7,7 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.translations.tr
 import com.unciv.ui.trade.DiplomacyScreen
@@ -34,10 +35,19 @@ class TradePopup(worldScreen: WorldScreen): Popup(worldScreen){
         tradeOffersTable.add("[${nation.name}]'s trade offer".toLabel())
         tradeOffersTable.add("Our trade offer".toLabel())
         tradeOffersTable.row()
+        val ourResources = viewingCiv.getCivResourcesByName()
+
+        fun getOfferText(offer:TradeOffer): String {
+            var tradeText = offer.getOfferText()
+            if (offer.type == TradeType.Luxury_Resource || offer.type == TradeType.Strategic_Resource)
+                tradeText += "\n" + "Owned: [${ourResources[offer.name]}]"
+            return tradeText
+        }
+
         for(i in 0..max(trade.theirOffers.lastIndex, trade.ourOffers.lastIndex)){
-            if(trade.theirOffers.lastIndex>=i) tradeOffersTable.add(trade.theirOffers[i].getOfferText().toLabel())
+            if(trade.theirOffers.lastIndex>=i) tradeOffersTable.add(getOfferText(trade.theirOffers[i]).toLabel())
             else tradeOffersTable.add()
-            if(trade.ourOffers.lastIndex>=i) tradeOffersTable.add(trade.ourOffers[i].getOfferText().toLabel())
+            if(trade.ourOffers.lastIndex>=i) tradeOffersTable.add(getOfferText(trade.ourOffers[i]).toLabel())
             else tradeOffersTable.add()
             tradeOffersTable.row()
         }

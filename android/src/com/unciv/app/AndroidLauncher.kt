@@ -7,6 +7,7 @@ import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.UncivGame
+import com.unciv.UncivGameParameters
 import com.unciv.logic.GameSaver
 import java.io.File
 
@@ -23,12 +24,13 @@ class AndroidLauncher : AndroidApplication() {
 		}
 
         val config = AndroidApplicationConfiguration().apply { useImmersiveMode = true }
-        val game = UncivGame (
+        val androidParameters = UncivGameParameters(
                 version = BuildConfig.VERSION_NAME,
                 crashReportSender = CrashReportSenderAndroid(this),
                 exitEvent = this::finish,
                 fontImplementation = NativeFontAndroid(45)
-            )
+        )
+        val game = UncivGame ( androidParameters )
         initialize(game, config)
     }
 

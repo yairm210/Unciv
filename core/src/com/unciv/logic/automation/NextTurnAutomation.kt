@@ -31,7 +31,6 @@ object NextTurnAutomation{
 //            offerDeclarationOfFriendship(civInfo)
             offerPeaceTreaty(civInfo)
             offerResearchAgreement(civInfo)
-            exchangeTechs(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
             adoptPolicy(civInfo)
@@ -129,44 +128,6 @@ object NextTurnAutomation{
             if (construction.canBePurchased()
                     && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo)) {
                 city.cityConstructions.purchaseConstruction(construction.name, 0, true)
-            }
-        }
-    }
-
-    private fun exchangeTechs(civInfo: CivilizationInfo) {
-        if (!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
-        val otherCivList = civInfo.getKnownCivs()
-                .filter { it.playerType == PlayerType.AI && it.isMajorCiv() && !civInfo.isAtWarWith(it) }
-                .sortedBy { it.tech.techsResearched.size }
-
-        for (otherCiv in otherCivList) {
-            val tradeLogic = TradeLogic(civInfo, otherCiv)
-            var ourGold = tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }.amount
-            val ourTradableTechs = tradeLogic.ourAvailableOffers
-                    .filter { it.type == TradeType.Technology }
-            val theirTradableTechs = tradeLogic.theirAvailableOffers
-                    .filter { it.type == TradeType.Technology }
-
-            for (theirOffer in theirTradableTechs) {
-                val theirValue = TradeEvaluation().evaluateBuyCost(theirOffer, civInfo, otherCiv)
-                val ourOfferList = ourTradableTechs.filter {
-                    TradeEvaluation().evaluateBuyCost(it, otherCiv, civInfo) == theirValue
-                            && !tradeLogic.currentTrade.ourOffers.contains(it) }
-
-                if (ourOfferList.isNotEmpty()) {
-                    tradeLogic.currentTrade.ourOffers.add(ourOfferList.random())
-                    tradeLogic.currentTrade.theirOffers.add(theirOffer)
-                } else if (ourGold / 2 >= theirValue) {
-                    //try to buy tech with money, not spending more than 1/3 of treasury
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, theirValue))
-                    tradeLogic.currentTrade.theirOffers.add(theirOffer)
-                    ourGold -= theirValue
-                }
-            }
-
-            if (tradeLogic.currentTrade.theirOffers.isNotEmpty()) {
-                val tradeRequest = TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse())
-                otherCiv.tradeRequests.add(tradeRequest)
             }
         }
     }

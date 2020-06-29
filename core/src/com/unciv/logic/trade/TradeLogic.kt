@@ -35,13 +35,6 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.resource.name, resourceTradeType, entry.amount))
         }
-        if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
-            for (entry in civInfo.tech.techsResearched
-                    .filterNot { otherCivilization.tech.isResearched(it) }
-                    .filter { otherCivilization.tech.canBeResearched(it) }) {
-                offers.add(TradeOffer(entry, TradeType.Technology))
-            }
-        }
 
         offers.add(TradeOffer("Gold".tr(), TradeType.Gold, civInfo.gold))
         offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, civInfo.statsForNextTurn.gold.toInt()))

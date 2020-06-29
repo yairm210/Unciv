@@ -116,7 +116,7 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun canNOTEnterNaturalWonder() {
         tile.baseTerrain = Constants.plains
-        tile.naturalWonder = "Wonder Thunder"
+        tile.naturalWonder = "Mount Fuji"
         tile.setTransients()
 
         for (type in UnitType.values()) {

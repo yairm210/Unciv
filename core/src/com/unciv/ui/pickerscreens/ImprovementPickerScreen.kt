@@ -42,6 +42,11 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             accept(selectedImprovement)
         }
 
+        if(tileInfo.improvementInProgress!=null){
+            val currentImprovementText = "{${tileInfo.improvementInProgress}} {in} ${tileInfo.turnsToImprovement} {turns}"
+            topTable.add(currentImprovementText.toLabel()).padBottom(10f).row()
+        }
+
         val regularImprovements = Table()
         regularImprovements.defaults().pad(5f)
 
