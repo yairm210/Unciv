@@ -135,9 +135,9 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
             return
         }
 
+        addGameButton.setText("Working...".tr())
+        addGameButton.disable()
         thread(name="MultiplayerDownload") {
-            addGameButton.setText("Working...".tr())
-            addGameButton.disable()
             try {
                 // The tryDownload can take more than 500ms. Therefore, to avoid ANRs,
                 // we need to run it in a different thread.
@@ -157,8 +157,10 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     errorPopup.open()
                 }
             }
-            addGameButton.setText(addGameText)
-            addGameButton.enable()
+            Gdx.app.postRunnable {
+                addGameButton.setText(addGameText)
+                addGameButton.enable()
+            }
         }
     }
 
@@ -181,14 +183,14 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     }
 
     //reloads all gameFiles to refresh UI
-    fun reloadGameListUI(){
+    fun reloadGameListUI() {
         val leftSubTable = Table()
         val gameSaver = GameSaver
-        val savedGames : List<String>?
+        val savedGames: List<String>?
 
         try {
             savedGames = gameSaver.getSaves(true)
-        }catch (ex: Exception) {
+        } catch (ex: Exception) {
             val errorPopup = Popup(this)
             errorPopup.addGoodSizedLabel("Could not refresh!".tr())
             errorPopup.row()
@@ -208,7 +210,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                 if (isUsersTurn(game)) {
                     gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 45f))
-                }else{
+                } else {
                     gameTable.add()
                 }
 
@@ -230,7 +232,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
 
                 gameTable.add(gameButton).pad(5f).row()
                 leftSubTable.add(gameTable).row()
-            }catch (ex: Exception) {
+            } catch (ex: Exception) {
                 //skipping one save is not fatal
                 ResponsePopup("Could not refresh!".tr(), this)
                 continue
@@ -256,17 +258,21 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                 } catch (ex: Exception) {
                     //skipping one is not fatal
                     //Trying to use as many prev. used strings as possible
-                    ResponsePopup("Could not download game!".tr() + " ${multiplayerGameList.getValue(gameId)}", this)
+                    Gdx.app.postRunnable {
+                        ResponsePopup("Could not download game!".tr() + " ${multiplayerGameList.getValue(gameId)}", this)
+                    }
                     continue
                 }
             }
 
             //Reset UI
-            addGameButton.enable()
-            refreshButton.setText(refreshText)
-            refreshButton.enable()
-            unselectGame()
-            reloadGameListUI()
+            Gdx.app.postRunnable {
+                addGameButton.enable()
+                refreshButton.setText(refreshText)
+                refreshButton.enable()
+                unselectGame()
+                reloadGameListUI()
+            }
         }
     }
 

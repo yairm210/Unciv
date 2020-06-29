@@ -18,16 +18,16 @@ import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 import kotlin.concurrent.thread
 
-class UncivGame(
-        val version: String,
-        private val crashReportSender: CrashReportSender? = null,
-        val exitEvent: (()->Unit)? = null,
-        val cancelDiscordEvent: (()->Unit)? = null,
-        val fontImplementation: NativeFontImplementation? = null,
-        val consoleMode: Boolean = false
-) : Game() {
+class UncivGame(parameters: UncivGameParameters) : Game() {
     // we need this secondary constructor because Java code for iOS can't handle Kotlin lambda parameters
-    constructor(version: String) : this(version, null)
+    constructor(version: String) : this(UncivGameParameters(version, null))
+
+    val version = parameters.version
+    private val crashReportSender = parameters.crashReportSender
+    val exitEvent = parameters.exitEvent
+    val cancelDiscordEvent = parameters.cancelDiscordEvent
+    val fontImplementation = parameters.fontImplementation
+    val consoleMode = parameters.consoleMode
 
     lateinit var gameInfo: GameInfo
     fun isGameInfoInitialized() = this::gameInfo.isInitialized

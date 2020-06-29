@@ -503,18 +503,18 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         if (tileInfo.improvement!=null) {
             normalizeTileImprovement(tileInfo)
         }
-        if (tileInfo.getBaseTerrain().impassable || tileInfo.isWater)
+        if (tileInfo.isWater || tileInfo.isImpassible())
             tileInfo.roadStatus= RoadStatus.None
     }
 
     private fun normalizeTileImprovement(tileInfo: TileInfo) {
+        val topTerrain = tileInfo.getLastTerrain()
         if (tileInfo.improvement!!.startsWith("StartingLocation")) {
-            if (!tileInfo.isLand || tileInfo.getBaseTerrain().impassable)
+            if (!tileInfo.isLand || topTerrain.impassable)
                 tileInfo.improvement = null
             return
         }
         val improvement = tileInfo.getTileImprovement()!!
-        val topTerrain = tileInfo.getLastTerrain()
         val resource = if (tileInfo.resource!=null) tileInfo.getTileResource() else null
         when {
             // Precedence, simplified: terrainsCanBeBuiltOn, then improves-resource, then 'everywhere', default to false

@@ -155,7 +155,11 @@ class MainMenuScreen: CameraStageBaseScreen() {
     private fun autoLoadGame() {
         try {
             game.loadGame(autosave)
-        } catch (ex: Exception) { // silent fail if we can't read the autosave
+        }
+        catch (outOfMemory:OutOfMemoryError){
+            ResponsePopup("Not enough memory on phone to load game!", this)
+        }
+        catch (ex: Exception) { // silent fail if we can't read the autosave
             ResponsePopup("Cannot resume game!", this)
         }
     }

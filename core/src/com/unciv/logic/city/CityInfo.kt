@@ -184,9 +184,9 @@ class CityInfo {
         if (resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) return 0
 
         // Even if the improvement exists (we conquered an enemy city or somesuch) or we have a city on it, we won't get the resource until the correct tech is researched
-        if (resource.improvement!=null){
+        if (resource.improvement!=null) {
             val improvement = getRuleset().tileImprovements[resource.improvement!!]!!
-            if(improvement.techRequired!=null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
+            if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return 0
         }
 
         if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()

@@ -376,7 +376,7 @@ object UnitActions {
                         addGoldPerGreatPersonUsage(unit.civInfo)
                         unit.destroy()
                     }.takeIf { unit.currentMovement > 0f && !tile.isWater &&
-                            !tile.isCityCenter() && !tile.getLastTerrain().impassable &&
+                            !tile.isCityCenter() && !tile.isImpassible() &&
                             tile.improvement != improvementName &&
                             // citadel can be built only next to or within own borders
                             (improvementName != Constants.citadel ||

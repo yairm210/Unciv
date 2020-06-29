@@ -327,15 +327,17 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     // so multiple callees of this function have been optimized,
     // because optimization on this function results in massive benefits!
     fun canPassThrough(tile: TileInfo): Boolean {
-        if (tile.getBaseTerrain().impassable) return false
+        if (tile.isImpassible()){
+            // special exception - ice tiles are technically impassible, but somme units can move through them anyway
+            if (!(tile.terrainFeature == Constants.ice && unit.canEnterIceTiles))
+                return false
+        }
         if (tile.isLand
                 && unit.type.isWaterUnit()
                 // Check that the tile is not a coastal city's center
                 && !(tile.isCityCenter() && tile.isCoastalTile()))
             return false
 
-        if (tile.terrainFeature == Constants.ice && !unit.canEnterIceTiles)
-            return false
 
         if (tile.isWater && unit.type.isLandUnit()) {
             if (!unit.civInfo.tech.unitsCanEmbark) return false

@@ -25,7 +25,6 @@ class Difficulty: INamed {
     var aiFreeTechs = ArrayList<String>()
     var aiFreeUnits = ArrayList<String>()
     var aiUnhappinessModifier = 1f
-    var aisExchangeTechs = false
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
 
@@ -52,7 +51,6 @@ class Difficulty: INamed {
 //        lines += " - {AI free techs}: $aiFreeTechs"
 //        lines += " - {AI free units}: $aiFreeUnits"
         lines += " - {AI unhappiness modifier}: $aiUnhappinessModifier"
-        lines += " - {AIs exchange techs}: $aisExchangeTechs"
         lines += ""
         lines += "{Turns until barbarians enter player tiles}: $turnBarbariansCanEnterPlayerTiles"
         lines += "{Gold reward for clearing barbarian camps}: $clearBarbarianCampReward"

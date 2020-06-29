@@ -156,11 +156,11 @@ object GameStarter {
     private fun getStartingLocations(civs: List<CivilizationInfo>, tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
                 // Games starting on snow might as well start over...
-                .filter { it.isLand && !it.getBaseTerrain().impassable && it.baseTerrain!=Constants.snow }
+                .filter { it.isLand && !it.isImpassible() && it.baseTerrain!=Constants.snow }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
         while (landTiles.any()) {
-            val bfs = BFS(landTiles.random()) { it.isLand && !it.getBaseTerrain().impassable }
+            val bfs = BFS(landTiles.random()) { it.isLand && !it.isImpassible() }
             bfs.stepToEnd()
             val tilesInGroup = bfs.tilesReached.keys
             landTiles = landTiles.filter { it !in tilesInGroup }

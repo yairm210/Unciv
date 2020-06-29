@@ -104,7 +104,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spreadAncientRuins(map: TileMap) {
         if(map.mapParameters.noRuins)
             return
-        val suitableTiles = map.values.filter { it.isLand && !it.getBaseTerrain().impassable }
+        val suitableTiles = map.values.filter { it.isLand && !it.isImpassible() }
         val locations = randomness.chooseSpreadOutLocations(suitableTiles.size/100,
                 suitableTiles, 10)
         for(tile in locations)
@@ -126,7 +126,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spreadStrategicResources(tileMap: TileMap, distance: Int) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         // passable land tiles (no mountains, no wonders) without resources yet
-        val candidateTiles = tileMap.values.filter { it.resource == null && !it.getLastTerrain().impassable }
+        val candidateTiles = tileMap.values.filter { it.resource == null && !it.isImpassible() }
         val totalNumberOfResources = candidateTiles.size * tileMap.mapParameters.resourceRichness
         val resourcesPerType = (totalNumberOfResources/strategicResources.size).toInt()
         for (resource in strategicResources) {
@@ -150,7 +150,7 @@ class MapGenerator(val ruleset: Ruleset) {
 
         val suitableTiles = tileMap.values
                 .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
-        val numberOfResources = tileMap.values.count { it.isLand && !it.getBaseTerrain().impassable } *
+        val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
         val locations = randomness.chooseSpreadOutLocations(numberOfResources.toInt(), suitableTiles, distance)
 

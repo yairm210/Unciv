@@ -1,6 +1,7 @@
 package com.unciv.app.desktop
 
 import com.unciv.UncivGame
+import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
@@ -23,7 +24,15 @@ internal object ConsoleLauncher {
     fun main(arg: Array<String>) {
 
         val version = "0.1"
-        val game = UncivGame(version, null, { exitProcess(0) }, null, NativeFontDesktop(45), true)
+        val consoleParameters = UncivGameParameters(
+                version,
+                null,
+                { exitProcess(0) },
+                null,
+                null,
+                true
+        )
+        val game = UncivGame(consoleParameters)
 
         UncivGame.Current = game
         UncivGame.Current.settings = GameSettings().apply { showTutorials = false }
