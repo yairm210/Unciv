@@ -1,3 +1,15 @@
+## 3.9.7
+
+Resolved #2749 - show current improvement and remaining time to build in improvement picker screen
+
+Resolved #2112 - Show current resource amounts on incoming trade requests
+
+Hopefully mitigated some very odd multiplayer-checker-related crashes
+
+Fixed natural wonders not being considered 'impassible' for certain things (e.g. ancient ruins spawn)
+
+Translation updates
+
 ## 3.9.6
 
 Resolved #2761 - Tutorial titles are auto-added to the translation files
