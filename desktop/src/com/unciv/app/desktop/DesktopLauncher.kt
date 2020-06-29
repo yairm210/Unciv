@@ -9,6 +9,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.unciv.UncivGame
+import com.unciv.UncivGameParameters
 import com.unciv.models.translations.tr
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
@@ -41,7 +42,14 @@ internal object DesktopLauncher {
 
         val versionFromJar = DesktopLauncher.javaClass.`package`.specificationVersion ?: "Desktop"
 
-        val game = UncivGame ( versionFromJar, null, { exitProcess(0) }, { discordTimer?.cancel() }, NativeFontDesktop(45) )
+        val desktopParameters = UncivGameParameters(
+                versionFromJar,
+                exitEvent = { exitProcess(0) },
+                cancelDiscordEvent = { discordTimer?.cancel() },
+                fontImplementation = NativeFontDesktop(45)
+        )
+
+        val game = UncivGame ( desktopParameters )
 
         if(!RaspberryPiDetector.isRaspberryPi()) // No discord RPC for Raspberry Pi, see https://github.com/yairm210/Unciv/issues/1624
             tryActivateDiscord(game)
