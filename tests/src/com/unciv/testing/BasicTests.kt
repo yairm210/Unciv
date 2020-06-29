@@ -3,6 +3,7 @@ package com.unciv.testing
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.UncivGameParameters
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -35,13 +36,16 @@ class BasicTests {
 
     @Test
     fun gameIsNotRunWithDebugModes() {
-        val game = UncivGame("", null, null)
+        val params = UncivGameParameters("", null, null)
+        val game = UncivGame(params)
         Assert.assertTrue("This test will only pass if the game is not run with debug modes",
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
                         && game.simulateUntilTurnForDebug <= 0
                         && !game.simulateUntilWin
-                        && !game.scenarioDebugSwitch)
+                        && !game.scenarioDebugSwitch
+                        && !game.consoleMode
+        )
     }
 
     // If there's a unit that obsoletes with no upgrade then when it obsoletes
