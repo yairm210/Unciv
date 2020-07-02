@@ -8,14 +8,12 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.simulation.Simulation
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 
