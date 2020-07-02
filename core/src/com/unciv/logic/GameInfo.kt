@@ -14,7 +14,6 @@ import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.Difficulty
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
-import com.unciv.ui.utils.ResponsePopup
 import java.util.*
 import kotlin.collections.ArrayList
 

@@ -242,8 +242,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                 continue
 
             nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.gameSetupInfo.ruleset).onClick {
-                if (previousScreen is GameParametersScreen) {previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
-                }
+                if (previousScreen is GameParametersScreen)
+                    previousScreen.mapEditorScreen.tileMap.switchPlayersNation(player, nation)
                 player.chosenCiv = nation.name
                 nationsPopup.close()
                 update()
