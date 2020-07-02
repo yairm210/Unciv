@@ -255,7 +255,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val isAirUnit = unit.type.isAirUnit()
         val tilesInMoveRange =
                 if (isAirUnit)
-                    unit.getTile().getTilesInDistance(unit.getRange()*2)
+                    unit.getTile().getTilesInDistanceRange(IntRange(unit.getRange(), unit.getRange() * 2))
                 else
                     unit.movement.getDistanceToTiles().keys.asSequence()
 
@@ -266,6 +266,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             if (unit.movement.canMoveTo(tile))
                 tileToColor.showCircle(Color.WHITE,
                         if (UncivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
+        }
+
+        // Mark tiles in air units attack range as RED
+        if (isAirUnit) {
+            val tilesInAirAttackRange = unit.getTile().getTilesInDistance(unit.getRange())
+            for (tile in tilesInAirAttackRange) {
+                val tileToColor = tileGroups.getValue(tile)
+                tileToColor.showCircle(Color.RED, 0.3f)
+            }
         }
 
         val attackableTiles: List<AttackableTile> = if (unit.type.isCivilian()) listOf()
