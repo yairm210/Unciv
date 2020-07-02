@@ -275,7 +275,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     private fun getAvailablePlayerCivs(): ArrayList<Nation> {
         var nations = ArrayList<Nation>()
         for (nation in previousScreen.gameSetupInfo.ruleset.nations.values
-                .filter { it.isMajorCiv() }) {
+                .filter { it.isMajorCiv() || it.isSpectator() }) {
             // skip already chosen civs, except for spectator
             if (gameParameters.players.any { it.chosenCiv == nation.name && it.chosenCiv != "Spectator"})
                 continue

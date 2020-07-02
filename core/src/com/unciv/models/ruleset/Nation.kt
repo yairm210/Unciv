@@ -47,7 +47,7 @@ class Nation : INamed {
     fun getInnerColor(): Color = innerColorObject
 
     fun isCityState()= cityStateType != null
-    fun isMajorCiv() = !isBarbarian() && !isCityState()
+    fun isMajorCiv() = !isBarbarian() && !isCityState() &&!isSpectator()
     fun isBarbarian() = name== Constants.barbarians
     fun isSpectator() = name == Constants.spectator
 
