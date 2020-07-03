@@ -25,7 +25,7 @@ object UnitAutomation {
     }
 
     internal fun tryExplore(unit: MapUnit): Boolean {
-        if (tryGoToRuin(unit) && unit.currentMovement == 0f) return true
+        if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return true
 
         val explorableTilesThisTurn =
                 unit.movement.getDistanceToTiles().keys.filter { isGoodTileToExplore(unit, it) }
@@ -46,16 +46,17 @@ object UnitAutomation {
         return false
     }
 
-    private fun tryGoToRuin(unit: MapUnit): Boolean {
+    private fun tryGoToRuinAndEncampment(unit: MapUnit): Boolean {
         if (!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
         val unitDistanceToTiles = unit.movement.getDistanceToTiles()
-        val tileWithRuin = unitDistanceToTiles.keys
+        val tileWithRuinOrEncampment = unitDistanceToTiles.keys
                 .firstOrNull {
-                    it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it)
+                    (it.improvement == Constants.ancientRuins || it.improvement == Constants.barbarianEncampment)
+                            && unit.movement.canMoveTo(it)
                 }
-        if (tileWithRuin == null)
+        if (tileWithRuinOrEncampment == null)
             return false
-        unit.movement.moveToTile(tileWithRuin)
+        unit.movement.moveToTile(tileWithRuinOrEncampment)
         return true
     }
 
@@ -115,7 +116,7 @@ object UnitAutomation {
             && unit.name in GreatPersonManager().statToGreatPersonMapping.values)// So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation.automateGreatPerson(unit)
 
-        if (tryGoToRuin(unit)) {
+        if (tryGoToRuinAndEncampment(unit)) {
             if (unit.currentMovement == 0f) return
         }
 
@@ -399,7 +400,7 @@ object UnitAutomation {
     /** This is what a unit with the 'explore' action does.
      It also explores, but also has other functions, like healing if necessary. */
     fun automatedExplore(unit: MapUnit) {
-        if (tryGoToRuin(unit) && unit.currentMovement == 0f) return
+        if (tryGoToRuinAndEncampment(unit) && unit.currentMovement == 0f) return
         if (unit.health < 80 && tryHealUnit(unit)) return
         if (tryExplore(unit)) return
         unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
