@@ -23,7 +23,8 @@ import kotlin.concurrent.thread
 class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorScreen){
     private val mapNameEditor: TextField = TextField(mapEditorScreen.mapName, skin)
 
-    init{
+    init {
+        mapNameEditor.textFieldFilter = TextField.TextFieldFilter { _, char -> char != '\\' && char != '/' }
         add(mapNameEditor).fillX().row()
         mapNameEditor.selectAll()
         mapNameEditor.maxLength = 240       // A few under max for most filesystems
