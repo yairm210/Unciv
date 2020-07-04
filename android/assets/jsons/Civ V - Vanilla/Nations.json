@@ -1,4 +1,11 @@
 [
+	//Spectator
+	{
+		"name": "Spectator",
+		"outerColor": [255,255,255]
+//		"innerColor": [255,255,255]
+	},
+
 	{
 		//nations
 		"name": "Babylon",
@@ -1015,5 +1022,5 @@
 		"outerColor": [0,0,0],
 		"innerColor": [182,0,0]
 	}
-	        	
+
 ]
