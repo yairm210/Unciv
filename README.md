@@ -6,8 +6,8 @@
 [![Google Play](https://img.shields.io/badge/Google-Play-black.svg)](https://play.google.com/store/apps/details?id=com.unciv.app)
 [![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
 
-[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)  
-[![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)  
+[![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)
+[![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
 
 [![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
 [![Kotlin](https://img.shields.io/badge/kotlin-1.3.710-orange.svg)](http://kotlinlang.org/)
@@ -92,6 +92,16 @@ Running: `./gradlew desktop:run`
 Building: `./gradlew desktop:dist`
 
 If the terminal returns `Permission denied` or `Command not found` on Mac/Linux, run `chmod +x ./gradlew` first. *This is a one-time procedure.*
+
+If you get an error that Android SDK folder wasn't found, firstly install it by doing in terminal:
+
+`sudo apt update && sudo apt install android-sdk` (Debian, Ubuntu, Mint etc.)
+
+After that you should put its folder to the file `local.properties` by adding this line:
+
+`sdk.dir = /path/to/android/sdk` which can be `/usr/lib/android-sdk` or something other.
+
+If during the first launch it throws an error that the JDK version is wrong try [this JDK installation](https://www.azul.com/downloads/zulu-community/?package=jdk).
 
 Gradle may take up to several minutes to download files. Be patient.
 After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
