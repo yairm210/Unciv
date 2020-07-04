@@ -183,11 +183,11 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
-    fun loadRulesets() {
-        for(ruleset in BaseRuleset.values()){
+    fun loadRulesets(consoleMode:Boolean=false) {
+        for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
-            val fileHandle = if(UncivGame.Current.consoleMode) FileHandle(fileName)
-                                            else Gdx.files.internal(fileName)
+            val fileHandle = if (consoleMode) FileHandle(fileName)
+            else Gdx.files.internal(fileName)
             this[ruleset.fullName] = Ruleset().apply { load(fileHandle) }
         }
 

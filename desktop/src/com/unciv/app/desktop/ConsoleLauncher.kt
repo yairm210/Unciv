@@ -39,7 +39,7 @@ internal object ConsoleLauncher {
         UncivGame.Current.simulateMaxTurns = 1000
         UncivGame.Current.simulateUntilWin = true
 
-        RulesetCache.loadRulesets()
+        RulesetCache.loadRulesets(true)
 
         val gameParameters = getGameParameters("China", "Greece")
         val mapParameters = getMapParameters()
