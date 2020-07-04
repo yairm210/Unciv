@@ -20,7 +20,7 @@ import kotlin.concurrent.thread
 
 
 class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
-    var ruleset = RulesetCache.getComplexRuleset(gameParameters.mods)
+//    var ruleset = RulesetCache.getComplexRuleset(gameParameters.mods)
 
     constructor() : this("", GameParameters(), MapParameters())
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
@@ -29,8 +29,9 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
+    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var newGameOptionsTable = GameOptionsTable(gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     var mapOptionsTable = MapOptionsTable(this)
 
 

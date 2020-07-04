@@ -51,9 +51,9 @@ class MapGenerator(val ruleset: Ruleset) {
         return map
     }
 
-    private fun seedRNG(seed: Long) {
+    private fun seedRNG(seed: Long, verbose: Boolean = false) {
         randomness.RNG = Random(seed)
-        println("RNG seeded with $seed")
+        if (verbose) println("RNG seeded with $seed")
     }
 
     private fun spawnLakesAndCoasts(map: TileMap) {
