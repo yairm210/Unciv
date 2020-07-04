@@ -10,10 +10,10 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 
-class GameOptionsTable(gameSetupInfo: GameSetupInfo, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
+class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
-    var gameParameters = gameSetupInfo.gameParameters
-    val ruleset = gameSetupInfo.ruleset
+    var gameParameters = previousScreen.gameSetupInfo.gameParameters
+    val ruleset = previousScreen.ruleset
     var locked = false
 
     init {

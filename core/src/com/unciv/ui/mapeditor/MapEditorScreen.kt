@@ -12,6 +12,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.IPreviousScreen
@@ -25,6 +26,7 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
     var tileMap = TileMap()
     var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
     var scenario: Scenario? = null // main indicator whether scenario information is present
+    override var ruleset = RulesetCache.getBaseRuleset()
 
     override var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
@@ -66,7 +68,7 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
     }
 
     fun initialize() {
-        tileMap.setTransients(gameSetupInfo.ruleset,false)
+        tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles(stage.width)

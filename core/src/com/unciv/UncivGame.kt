@@ -52,8 +52,8 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      *  Does not update World View changes until finished.
      *  Set false to disable.
      */
-    val simulateMaxTurns: Int = 2000
-    val simulateUntilWin = false
+    var simulateMaxTurns: Int = 1500
+    var simulateUntilWin = false
 
     /** Console log battles
      */

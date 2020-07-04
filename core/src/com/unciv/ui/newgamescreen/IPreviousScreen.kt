@@ -12,6 +12,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 interface IPreviousScreen {
     val gameSetupInfo: GameSetupInfo
     var stage: Stage
+    val ruleset: Ruleset
 
     /**
      * Method added for compatibility with [PlayerPickerTable] which addresses

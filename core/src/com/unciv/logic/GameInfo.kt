@@ -102,9 +102,7 @@ class GameInfo {
                 if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
                     // stop simulation
                     simulateUntilWin = false
-                    println("Simulation stopped on turn $turns")
-                    val victoryType = thisPlayer.victoryManager.hasWonVictoryType()
-                    println("$thisPlayer won $victoryType victory")
+                    break
                 }
             }
             switchTurn()
@@ -114,8 +112,6 @@ class GameInfo {
         currentPlayerCiv = getCivilization(currentPlayer)
         if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
-        if (turns == UncivGame.Current.simulateMaxTurns && UncivGame.Current.simulateUntilWin)
-            println ("Max simulation turns reached $turns: Draw")
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
         notifyOfCloseEnemyUnits(thisPlayer)
@@ -380,6 +376,4 @@ class GameInfo {
             cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
-
-
 }
