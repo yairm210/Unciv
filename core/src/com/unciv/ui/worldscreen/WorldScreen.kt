@@ -394,7 +394,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
-        if(!civInfo.isDefeated() && civInfo.getKnownCivs()
+        if(!civInfo.isDefeated() && !civInfo.isSpectator() && civInfo.getKnownCivs()
                         .filterNot {  it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)
