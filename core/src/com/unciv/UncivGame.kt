@@ -61,6 +61,9 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /** Debug new Scenario functionality
      */
     val scenarioDebugSwitch = false
+    /** Debug new Replay functionality
+     */
+    val replayDebugSwitch = false
 
     lateinit var worldScreen: WorldScreen
 
