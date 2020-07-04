@@ -237,19 +237,24 @@ class DiplomacyManager() {
     //endregion
 
     //region state-changing functions
-    fun removeUntenebleTrades(){
-        val negativeCivResources = civInfo.getCivResources()
-                .filter { it.amount<0 }.map { it.resource.name }
+    fun removeUntenebleTrades() {
 
-        for(trade in trades.toList()) {
+        for (trade in trades.toList()) {
+
+            // Every cancelled trade can change this - if 1 resource is missing,
+            // don't cancel all trades of that resource, only cancel one (the first one, as it happens, since they're added chronologically)
+            val negativeCivResources = civInfo.getCivResources()
+                    .filter { it.amount < 0 }.map { it.resource.name }
+
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
-                    && offer.name in negativeCivResources){
+                        && offer.name in negativeCivResources) {
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
-                    otherCivTrades.removeAll{ it.equals(trade.reverse()) }
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short",null, Color.GOLD)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short",null, Color.GOLD)
+                    otherCivTrades.removeAll { it.equals(trade.reverse()) }
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short", null, Color.GOLD)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short", null, Color.GOLD)
+                    civInfo.updateDetailedCivResources()
                 }
             }
         }

@@ -98,6 +98,14 @@ After building, the output .JAR file should be in /desktop/build/libs/Unciv.jar
 
 For actual development, you'll probably need to download Android Studio and build it yourself - see Contributing :)
 
+
+## How about IOS?
+
+I'm not planning on it.
+
+It means paying money to Apple, yet another release party,
+ and since I don't have an IOS device it means I can't test it properly.
+
 ## How can I learn to play? Where's the wiki?
 
 All the tutorial information is available in-game at menu > civilopedia > tutorials

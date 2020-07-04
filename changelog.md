@@ -1,3 +1,15 @@
+## 3.9.8
+
+Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a scientific victory
+
+Resolved #2789 - losing a resource no longer cancells all trades with that resource, only as many as is necessary to reach equilibrium
+
+Removed tech exchange, as per Civ V
+
+Resolved #2759 - Mark tiles for air unit attack range - By ninjatao
+
+Translation updates
+
 ## 3.9.7
 
 Resolved #2749 - show current improvement and remaining time to build in improvement picker screen
