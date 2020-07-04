@@ -77,4 +77,5 @@ object Constants {
     const val informationEra = "Information era"
     const val futureEra = "Future era"
     const val barbarians = "Barbarians"
+    const val spectator = "Spectator"
 }

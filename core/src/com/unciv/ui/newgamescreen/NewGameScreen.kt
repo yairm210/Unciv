@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
@@ -57,6 +58,14 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!".tr()).row()
                 noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
+                return@onClick
+            }
+
+            if (gameSetupInfo.gameParameters.players.count { it.chosenCiv == Constants.spectator } > 1) {
+                val noMoreSpectatorsPopup = Popup(this)
+                noMoreSpectatorsPopup.addGoodSizedLabel("Sorry! No more than one spectator for the moment".tr()).row()
+                noMoreSpectatorsPopup.addCloseButton()
+                noMoreSpectatorsPopup.open()
                 return@onClick
             }
 

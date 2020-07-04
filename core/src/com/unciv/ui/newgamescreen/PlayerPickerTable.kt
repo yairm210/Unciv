@@ -73,12 +73,19 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             playerListTable.add("+".toLabel(Color.BLACK, 30).apply { this.setAlignment(Align.center) }
                     .surroundWithCircle(50f).onClick {
                         var player = Player()
-                        if (noRandom) { player = Player(getAvailablePlayerCivs().first().name) }
+                        // no random mode - add first not spectator civ if still available
+                        if (noRandom) {
+                            val availableCiv = getAvailablePlayerCivs().firstOrNull { !it.isSpectator() }
+                            if (availableCiv != null) player = Player(availableCiv.name)
+                            // Spectators only Humans
+                            else player = Player("Spectator").apply { playerType = PlayerType.Human }
+                        }
                         gameParameters.players.add(player)
                         update()
                     }).pad(10f)
         }
-        previousScreen.setRightSideButtonEnabled(gameParameters.players.size > 1)
+        // can enable start game when more than 1 active player
+        previousScreen.setRightSideButtonEnabled(gameParameters.players.count{ it.chosenCiv != Constants.spectator } > 1)
     }
 
     /**
@@ -122,7 +129,9 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         playerTypeTextbutton.onClick {
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
-            else player.playerType = PlayerType.AI
+            // we cannot change Spectator player to AI type, robots not allowed to spectate :(
+            else if (player.chosenCiv != Constants.spectator)
+                player.playerType = PlayerType.AI
             update()
         }
         playerTable.add(playerTypeTextbutton).width(100f).pad(5f).right()
@@ -223,7 +232,11 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         if (!noRandom) { nationListTable.add(randomPlayerTable).pad(10f).width(nationsPopupWidth).row() }
 
         for (nation in getAvailablePlayerCivs()) {
+            // don't show current player civ
             if (player.chosenCiv == nation.name)
+                continue
+            // only humans can spectate, sorry robots
+            if (player.playerType == PlayerType.AI && nation.isSpectator())
                 continue
 
             nationListTable.add(NationTable(nation, nationsPopupWidth, previousScreen.ruleset).onClick {
@@ -261,7 +274,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         var nations = ArrayList<Nation>()
         for (nation in previousScreen.ruleset.nations.values
                 .filter { it.isMajorCiv() }) {
-            if (gameParameters.players.any { it.chosenCiv == nation.name })
+            if (gameParameters.players.any { it.chosenCiv == nation.name && it.chosenCiv != Constants.spectator})
                 continue
             nations.add(nation)
         }

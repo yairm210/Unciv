@@ -112,6 +112,7 @@ class GameInfo {
 
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)
+        if (currentPlayerCiv.isSpectator()) currentPlayerCiv.popupAlerts.clear() // no popups for spectators
 
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
