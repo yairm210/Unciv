@@ -35,7 +35,9 @@ class GameInfo {
     var oneMoreTurnMode=false
     var currentPlayer=""
     var gameId = UUID.randomUUID().toString() // random string
-    var simulateUntilWin = UncivGame.Current.simulateUntilWin
+    // can't be taken directly from Unciv.Current.SimulateUntilWin because this causes problems with downloading multiplayer games.,
+    //   should probably be either 'manually set' upon creation
+    var simulateUntilWin = false
 
     //region pure functions
     fun clone(): GameInfo {
