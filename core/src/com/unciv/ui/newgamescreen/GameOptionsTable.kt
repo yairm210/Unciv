@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
@@ -32,6 +33,7 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
         add("Game Options".toLabel(fontSize = 24)).padTop(0f).padBottom(20f).colspan(2).row()
         add(Table().apply {
             defaults().pad(5f)
+            //addBaseRulesetSelectBox()
             addDifficultySelectBox()
             addGameSpeedSelectBox()
             addEraSelectBox()
@@ -107,6 +109,14 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
         { gameParameters.difficulty = it }
     }
 
+    private fun Table.addBaseRulesetSelectBox() {
+        addSelectBox("{Base Ruleset}:", BaseRuleset.values().map { it.fullName }, gameParameters.baseRuleset.fullName)
+        {
+            gameParameters.baseRuleset = BaseRuleset.values().first { br -> br.fullName == it }
+            reloadRuleset()
+        }
+    }
+
     private fun Table.addGameSpeedSelectBox() {
         addSelectBox("{Game Speed}:", GameSpeed.values().map { it.name }, gameParameters.gameSpeed.name)
         { gameParameters.gameSpeed = GameSpeed.valueOf(it) }
@@ -145,21 +155,21 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
         add(victoryConditionsTable).colspan(2).row()
     }
 
+    fun reloadRuleset() {
+        ruleset.clear()
+        val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
+        ruleset.add(newRuleset)
+        ruleset.mods += gameParameters.mods
+        ruleset.modOptions = newRuleset.modOptions
+
+        ImageGetter.ruleset = ruleset
+        ImageGetter.setTextureRegionDrawables()
+    }
 
     fun Table.addModCheckboxes() {
         val modRulesets = RulesetCache.filter { it.key != "" }.values
         if (modRulesets.isEmpty()) return
 
-        fun reloadMods() {
-            ruleset.clear()
-            val newRuleset = RulesetCache.getComplexRuleset(gameParameters)
-            ruleset.add(newRuleset)
-            ruleset.mods += gameParameters.mods
-            ruleset.modOptions = newRuleset.modOptions
-
-            ImageGetter.ruleset = ruleset
-            ImageGetter.setTextureRegionDrawables()
-        }
 
         add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
         val modCheckboxTable = Table().apply { defaults().pad(5f) }
@@ -170,7 +180,7 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
             checkBox.onChange {
                 if (checkBox.isChecked) gameParameters.mods.add(mod.name)
                 else gameParameters.mods.remove(mod.name)
-                reloadMods()
+                reloadRuleset()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {
                     val modNations = RulesetCache[mod.name]?.nations

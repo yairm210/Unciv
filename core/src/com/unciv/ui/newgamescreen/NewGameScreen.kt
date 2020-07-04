@@ -31,8 +31,9 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
     override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
-    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
+    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var mapOptionsTable = MapOptionsTable(this)
 
 
@@ -40,13 +41,14 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)
 
+        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.addSeparatorVertical()
         topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
-        topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+
         topTable.pack()
         topTable.setFillParent(true)
 

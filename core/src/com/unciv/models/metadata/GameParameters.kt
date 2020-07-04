@@ -40,6 +40,7 @@ class GameParameters { // Default values are the default new game
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         return parameters
     }
