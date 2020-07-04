@@ -5,7 +5,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.Constants
 import com.unciv.JsonParser
+import com.unciv.UncivGame
 import com.unciv.logic.UncivShowableException
+import com.unciv.models.metadata.BaseRuleset
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.ruleset.tile.Terrain
@@ -180,12 +183,12 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
-    val vanillaRuleset = "Civ V - Vanilla"
     fun loadRulesets() {
-        try {
-            this[""] = Ruleset().apply { load(Gdx.files.internal("jsons/$vanillaRuleset")) }
-        } catch (e: NullPointerException) {
-            this[""] = Ruleset().apply { load(FileHandle("jsons/$vanillaRuleset")) }
+        for(ruleset in BaseRuleset.values()){
+            val fileName = "jsons/${ruleset.fullName}"
+            val fileHandle = if(UncivGame.Current.consoleMode) FileHandle(fileName)
+                                            else Gdx.files.internal(fileName)
+            this[ruleset.fullName] = Ruleset().apply { load(fileHandle) }
         }
 
         var modsHandles: Array<FileHandle>
@@ -211,13 +214,13 @@ object RulesetCache :HashMap<String,Ruleset>() {
         }
     }
 
-    fun getBaseRuleset() = this[""]!!
+    fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!
 
-    fun getComplexRuleset(mods: LinkedHashSet<String>): Ruleset {
+    fun getComplexRuleset(gameParameters: GameParameters): Ruleset {
         val newRuleset = Ruleset()
-        val loadedMods = mods.filter { containsKey(it) }.map { this[it]!! }
+        val loadedMods = gameParameters.mods.filter { containsKey(it) }.map { this[it]!! }
         if (loadedMods.none { it.modOptions.isBaseRuleset })
-            newRuleset.add(getBaseRuleset())
+            newRuleset.add(this[gameParameters.baseRuleset.fullName]!!)
         for (mod in loadedMods.sortedByDescending { it.modOptions.isBaseRuleset }) {
             newRuleset.add(mod)
             newRuleset.mods += mod.name

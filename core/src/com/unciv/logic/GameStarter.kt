@@ -19,7 +19,7 @@ object GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
 
         if (gameSetupInfo.mapParameters.type == MapType.scenario)
             gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap

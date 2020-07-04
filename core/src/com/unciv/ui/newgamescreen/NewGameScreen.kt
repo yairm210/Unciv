@@ -29,7 +29,7 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
-    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters.mods)
+    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     var mapOptionsTable = MapOptionsTable(this)
