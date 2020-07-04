@@ -75,7 +75,7 @@ object GameStarter {
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
         val availableCivNames = Stack<String>()
         // CityState or Spectator civs are not available for Random pick
-        availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() && !it.value.isSpectator() }.keys.shuffled())
+        availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
 

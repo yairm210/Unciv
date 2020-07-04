@@ -19,7 +19,6 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 import java.util.*
-import kotlin.reflect.typeOf
 
 /**
  * This [Table] is used to pick or edit players information for new game/scenario creation.
@@ -74,19 +73,17 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                         var player = Player()
                         // no random mode - add first not spectator civ if still available
                         if (noRandom) {
-                            try {
-                                player = Player(getAvailablePlayerCivs().first { !it.isSpectator() }.name)
-                            } catch (e: Exception) {
-                                // Spectators only Humans
-                                player = Player("Spectator").apply { playerType = PlayerType.Human }
-                            }
+                            val availableCiv = getAvailablePlayerCivs().firstOrNull { !it.isSpectator() }
+                            if (availableCiv != null) player = Player(availableCiv.name)
+                            // Spectators only Humans
+                            else player = Player("Spectator").apply { playerType = PlayerType.Human }
                         }
                         gameParameters.players.add(player)
                         update()
                     }).pad(10f)
         }
         // can enable start game when more than 1 active player
-        previousScreen.setRightSideButtonEnabled(gameParameters.players.count{ it.chosenCiv != "Spectator" } > 1)
+        previousScreen.setRightSideButtonEnabled(gameParameters.players.count{ it.chosenCiv != Constants.spectator } > 1)
     }
 
     /**
@@ -132,7 +129,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             if (player.playerType == PlayerType.AI)
                 player.playerType = PlayerType.Human
             // we cannot change Spectator player to AI type, robots not allowed to spectate :(
-            else if (player.chosenCiv != "Spectator")
+            else if (player.chosenCiv != Constants.spectator)
                 player.playerType = PlayerType.AI
             update()
         }
