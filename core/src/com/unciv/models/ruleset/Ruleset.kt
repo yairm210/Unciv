@@ -191,12 +191,8 @@ object RulesetCache :HashMap<String,Ruleset>() {
             this[ruleset.fullName] = Ruleset().apply { load(fileHandle) }
         }
 
-        var modsHandles: Array<FileHandle>
-        try {
-            modsHandles = Gdx.files.local("mods").list()
-        } catch (ex: NullPointerException) {
-            modsHandles = FileHandle("mods").list()
-        }
+        var modsHandles = if(consoleMode) FileHandle("mods").list()
+                                else Gdx.files.local("mods").list()
 
         for (modFolder in modsHandles) {
             if (modFolder.name().startsWith('.')) continue
