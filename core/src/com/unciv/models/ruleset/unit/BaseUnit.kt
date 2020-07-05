@@ -72,8 +72,7 @@ class BaseUnit : INamed, IConstruction {
 
         if (promotions.isNotEmpty()) {
             sb.append((if (promotions.size==1) "Free promotion:" else "Free promotions:").tr())
-            for (promotion in promotions)
-                sb.appendln(" " + promotion.tr())
+            sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
         }
 
         sb.appendln("{Movement}: $movement".tr())

@@ -49,7 +49,7 @@ class Terrain : NamedStats() {
         val sb = StringBuilder()
         sb.appendln(this.clone().toString())
         if (occursOn != null)
-            sb.appendln("Occurs on [${occursOn.joinToString(", ")}]".tr())
+            sb.appendln("Occurs on [${occursOn.joinToString(", ") { it.tr() }}]".tr())
 
         if (turnsInto != null)
             sb.appendln("Placed on [$turnsInto]".tr())
