@@ -224,12 +224,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun loadLatestMultiplayerState(){
-        val loadingGamePopup = Popup(this)
-        loadingGamePopup.add("Loading latest game state...".tr())
 
         // Since we're on a background thread, all the UI calls in this func need to run from the
         // main thread which has a GL context
-        Gdx.app.postRunnable { loadingGamePopup.open() }
+        val loadingGamePopup = Popup(this)
+        Gdx.app.postRunnable {
+            loadingGamePopup.add("Loading latest game state...".tr())
+            loadingGamePopup.open()
+        }
 
         try {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
