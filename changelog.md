@@ -8,6 +8,8 @@ Fixed main menu crash when returning from certain modded games
 
 Resolved #2794 - Save games and maps cannot have slashes/backslashes, to avoid foldername/filename confusion
 
+Civ is properly destroyed when liberating the last city of the civ
+
 By alkorolyov:
 - Basic spectator functionality - POC
 - Console mode for multiple game automation - POC

@@ -46,9 +46,9 @@ class MainMenuScreen: CameraStageBaseScreen() {
         ImageGetter.ruleset = RulesetCache.getBaseRuleset()
         ImageGetter.refreshAtlas()
 
-        thread(name="ShowMapBackground") {
+        thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
-                    .generateMap(MapParameters().apply { size = MapSize.Small; type=MapType.default })
+                    .generateMap(MapParameters().apply { size = MapSize.Small; type = MapType.default })
             Gdx.app.postRunnable { // for GL context
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(
@@ -72,35 +72,40 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val table = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
+            val resumeTable = getTableBlock("Resume", "OtherIcons/Resume") { autoLoadGame() }
             table.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart","OtherIcons/Quickstart") { QuickstartNewGame() }
+        val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { QuickstartNewGame() }
         table.add(quickstartTable).row()
 
-        val newGameButton = getTableBlock("Start new game","OtherIcons/New") {
+        val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
             game.setScreen(NewGameScreen(this))
+            dispose()
         }
         table.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
-            val loadGameTable = getTableBlock("Load game","OtherIcons/Load") { game.setScreen(LoadGameScreen(this)) }
+            val loadGameTable = getTableBlock("Load game", "OtherIcons/Load")
+                { game.setScreen(LoadGameScreen(this)) }
             table.add(loadGameTable).row()
         }
 
-        val multiplayerTable = getTableBlock("Multiplayer","OtherIcons/Multiplayer") { game.setScreen(MultiplayerScreen(this)) }
+        val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
+            { game.setScreen(MultiplayerScreen(this)) }
         table.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getTableBlock("Map editor","OtherIcons/MapEditor") { openMapEditorPopup() }
+        val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
+            { openMapEditorPopup() }
         table.add(mapEditorScreenTable)
 
         // set the same width for all buttons
         table.pack()
         table.children.filterIsInstance<Table>().forEach {
             it.align(Align.left)
-            it.moveBy( (it.width - table.width) / 2, 0f)
-            it.width = table.width }
+            it.moveBy((it.width - table.width) / 2, 0f)
+            it.width = table.width
+        }
 
         table.pack()
         val scroll = ScrollPane(table)
@@ -119,7 +124,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-        val newMapButton = getTableBlock("New map", "OtherIcons/New") { game.setScreen(NewMapScreen()) }
+        val newMapButton = getTableBlock("New map", "OtherIcons/New") {
+            game.setScreen(NewMapScreen())
+            dispose()
+        }
         newMapButton.background = tableBackground
         mapEditorPopup.add(newMapButton).row()
 
@@ -131,6 +139,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                 loadMapScreen.dispose()
             }
             game.setScreen(loadMapScreen)
+            dispose()
         }
 
         loadMapButton.background = tableBackground
@@ -145,6 +154,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
                     loadScenarioScreen.dispose()
                 }
                 game.setScreen(loadScenarioScreen)
+                dispose()
             }
 
             loadScenarioButton.background = tableBackground
@@ -160,6 +170,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
     private fun autoLoadGame() {
         try {
             game.loadGame(autosave)
+            dispose()
         }
         catch (outOfMemory:OutOfMemoryError){
             ResponsePopup("Not enough memory on phone to load game!", this)

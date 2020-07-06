@@ -437,7 +437,6 @@ class CityInfo {
             return
         }
 
-
         val oldCiv = civInfo
         diplomaticRepercussionsForLiberatingCity(conqueringCiv)
 
