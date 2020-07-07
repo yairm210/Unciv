@@ -69,13 +69,12 @@ open class TileInfo {
     }
 
     fun containsGreatImprovement(): Boolean {
-        if (improvement in Constants.greatImprovements) return true
-        return false
+        return getTileImprovement()?.isGreatImprovement() == true
     }
 
     fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress in Constants.greatImprovements) return true
-        return false
+        if(improvementInProgress==null) return false
+        return ruleset.tileImprovements[improvementInProgress!!]!!.isGreatImprovement()
     }
 
     fun containsUnique(unique: String): Boolean =

@@ -535,7 +535,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0
                     // Allow Great Improvement but clear unbuildable terrain feature
                     // Allow barbarian camps, ruins and similar without clear
-                -> if (topTerrain.unbuildable && improvement.name in Constants.greatImprovements)
+                -> if (topTerrain.unbuildable && improvement.isGreatImprovement())
                     tileInfo.terrainFeature = null
             topTerrain.unbuildable
                 -> tileInfo.improvement = null      // forbid on unbuildable feature
