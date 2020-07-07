@@ -537,8 +537,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     // Allow barbarian camps, ruins and similar without clear
                 -> if (topTerrain.unbuildable && improvement.isGreatImprovement())
                     tileInfo.terrainFeature = null
-            topTerrain.unbuildable
-                -> tileInfo.improvement = null      // forbid on unbuildable feature
+            topTerrain.unbuildable -> tileInfo.improvement = null      // forbid on unbuildable feature
             "Can only be built on Coastal tiles" in improvement.uniques && tileInfo.isCoastalTile()
                 -> Unit                             // allow Moai where appropriate
             else -> tileInfo.improvement = null
