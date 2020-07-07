@@ -18,7 +18,6 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.surroundWithCircle
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.sqrt
 
 class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
     val allTiles = Group()
@@ -155,7 +154,9 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         }
         toggleIconTable.add(populationImage).row()
 
-        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle").surroundWithCircle(40f)
+        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
+                .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
+                .surroundWithCircle(40f,false).apply { circle.color = Color.BLACK }
         resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements

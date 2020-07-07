@@ -301,7 +301,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         updateTechButton()
         techPolicyAndVictoryHolder.pack()
-        techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
+        techPolicyAndVictoryHolder.y= topBar.y - techPolicyAndVictoryHolder.height
         updateDiplomacyButton(viewingCiv)
 
         if (!hasOpenPopups() && isPlayersTurn) {
@@ -430,7 +430,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             val currentTech = viewingCiv.tech.currentTechnologyName()!!
             val innerButton = TechButton(currentTech,viewingCiv.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
-            techButtonHolder.add(innerButton)
+            techButtonHolder.add(innerButton.addBorder(2f, Color.WHITE))
             val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
             innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
                     + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()))

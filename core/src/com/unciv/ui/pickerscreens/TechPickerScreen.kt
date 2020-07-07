@@ -110,7 +110,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, false) }
-                    topTable.add(techButton)
+                    topTable.add(techButton.addBorder(2f, Color.WHITE))
                 }
             }
         }
@@ -134,12 +134,12 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 techButton.color = techButton.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
             }
 
+            if (!civTech.isResearched(techName) || techName== Constants.futureTech)
+                text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+
             if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
                 text += " (" + tempTechsToResearch.indexOf(techName) + ")"
             }
-
-            if (!civTech.isResearched(techName) || techName== Constants.futureTech)
-                text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
 
             techButton.text.setText(text)
         }
@@ -167,8 +167,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 prerequisiteButton.localToStageCoordinates(prerequisiteCoords)
                 topTable.stageToLocalCoordinates(prerequisiteCoords)
 
-                val line = ImageGetter.getLine(techButtonCoords.x, techButtonCoords.y,
-                        prerequisiteCoords.x, prerequisiteCoords.y, 2f)
+                val line = ImageGetter.getLine(techButtonCoords.x - 2, techButtonCoords.y,
+                        prerequisiteCoords.x + 2, prerequisiteCoords.y, 2f)
 
                 val lineColor = when {
                     civTech.isResearched(tech.name) && tech.name != Constants.futureTech -> researchedTechColor

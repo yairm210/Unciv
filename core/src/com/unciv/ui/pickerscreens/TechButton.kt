@@ -16,7 +16,7 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
     init {
         touchable = Touchable.enabled
         defaults().pad(10f)
-        background = ImageGetter.getRoundedEdgeTableBackground()
+        background = ImageGetter.getBackground(Color.WHITE)
         if (ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName, 60f))
 
@@ -69,8 +69,6 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
                     .apply { color = Color.BLACK }.surroundWithCircle(techIconSize))
 
         if (isWorldScreen) rightSide.add(techEnabledIcons)
-        else rightSide.add(techEnabledIcons)
-                .width(techEnabledIcons.children.size * (techIconSize+6f))
-                .minWidth(150f)
+        else rightSide.add(techEnabledIcons).width(225f)
     }
 }
