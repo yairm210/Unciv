@@ -158,7 +158,7 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
                 .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
                 .surroundWithCircle(40f,false).apply { circle.color = Color.BLACK }
-        
+
         resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements

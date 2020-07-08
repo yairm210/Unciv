@@ -1,3 +1,19 @@
+## 3.9.10
+
+Resource toggle button is consistent with population toggle - by @lishaoxia1985
+
+Unremovable terrain features e.g. Flood plains are no longer removed by great improvements
+
+Resolved #2640 - Difficulty level shown in victory status screen
+
+Great improvements are no longer hardcoded, so new great improvements can be modded in =)
+
+Resolved #2811 - Offering the same resource to 2 civs when you only have 2 left no longer causes 'trade no longer valid' for the second one
+
+Dispose main menu screen when exiting to save space
+
+Translation updates
+
 ## 3.9.9
 
 Civ is properly destroyed when liberating the last city of the civ
