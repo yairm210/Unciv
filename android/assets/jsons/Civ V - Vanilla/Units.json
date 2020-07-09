@@ -25,6 +25,7 @@
 		"movement": 2,
 		"strength": 5,
 		"cost": 25,
+		"obsoleteTech": "Scientific Theory",
 		"uniques": ["Ignores terrain cost"],
 		"attackSound": "nonmetalhit"
 	},
@@ -913,6 +914,7 @@
 		"strength": 34,
 		"cost": 225,
 		"requiredTech": "Military Science",
+		"obsoleteTech": "Combustion",
 		"requiredResource": "Horses",
 		"upgradesTo": "Landship",
 		"uniques": ["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
