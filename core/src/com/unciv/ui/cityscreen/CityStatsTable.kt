@@ -33,7 +33,7 @@ class CityStatsTable(val cityScreen: CityScreen): Table() {
         val ministatsTable = Table().pad(5f)
         ministatsTable.defaults()
         for(stat in cityInfo.cityStats.currentCityStats.toHashMap()) {
-            if(stat.key == Stat.Happiness) continue
+            if(stat.key == Stat.Happiness || stat.key == Stat.Faith) continue
             ministatsTable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
             ministatsTable.add(round(stat.value).toInt().toString().toLabel()).padRight(13f)
         }
