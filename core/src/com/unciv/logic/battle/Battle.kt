@@ -29,6 +29,10 @@ object Battle {
                 attacker.unit.useMovementPoints(1f)
             }
         }
+
+        if (attacker.getUnitType() == UnitType.Missile) {
+            return nuke(attacker, attackableTile.tileToAttack)
+        }
         attack(attacker, getMapCombatantOfTile(attackableTile.tileToAttack)!!)
     }
 
