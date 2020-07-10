@@ -9,6 +9,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -438,10 +439,14 @@ class CityInfo {
         }
 
         val oldCiv = civInfo
-        diplomaticRepercussionsForLiberatingCity(conqueringCiv)
 
         val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+        if (foundingCiv.isDefeated()) // resurrected civ
+            for (diploManager in foundingCiv.diplomacy.values)
+                if (diploManager.diplomaticStatus == DiplomaticStatus.War)
+                    diploManager.makePeace()
 
+        diplomaticRepercussionsForLiberatingCity(conqueringCiv)
         moveToCiv(foundingCiv)
         Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
