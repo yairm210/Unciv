@@ -43,27 +43,63 @@ object Battle {
         }
         val attackedTile = defender.getTile()
 
-        if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()){
-            tryInterceptAirAttack(attacker,defender)
-            if(attacker.isDefeated()) return
+        if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()) {
+            tryInterceptAirAttack(attacker, defender)
+            if (attacker.isDefeated()) return
         }
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant ) {
             val withdraw = defender.unit.getUniques().firstOrNull { it.startsWith("May withdraw before melee")}
-            if (withdraw != null) {
-                if (doWithdrawFromMeleeAbility(attacker, defender, withdraw))
-                    return
-            }
+            if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
 
+        val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
+
+        takeDamage(attacker, defender)
+
+        postBattleNotifications(attacker, defender, attackedTile)
+
+        tryHealAfterAttacking(attacker, defender)
+
+        postBattleNationUniques(defender, attackedTile, attacker)
+
+        // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
+        if (defender.isDefeated() && defender is CityCombatant && attacker.isMelee())
+            conquerCity(defender.city, attacker)
+
+        // we're a melee unit and we destroyed\captured an enemy unit
+        postBattleMoveToAttackedTile(attacker, defender, attackedTile)
+
+        reduceAttackerMovementPointsAndAttacks(attacker, defender)
+
+        if(!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
+
+        // Add culture when defeating a barbarian when Honor policy is adopted (can be either attacker or defender!)
+        tryGetCultureFromHonor(attacker, defender)
+        tryGetCultureFromHonor(defender, attacker)
+
+        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
+                && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
+            attacker.getCivInfo().gold += defender.unit.baseUnit.getProductionCost(attacker.getCivInfo()) / 10
+
+        if (attacker is MapUnitCombatant) {
+            if (attacker.getUnitType()==UnitType.Missile) {
+                attacker.unit.destroy()
+            } else if (attacker.unit.action != null
+                    && attacker.unit.action!!.startsWith("moveTo")) {
+                attacker.unit.action = null
+            }
+        }
+    }
+
+    private fun takeDamage(attacker: ICombatant, defender: ICombatant) {
         var damageToDefender = BattleDamage.calculateDamageToDefender(attacker, attacker.getTile(), defender)
         var damageToAttacker = BattleDamage.calculateDamageToAttacker(attacker, attacker.getTile(), defender)
 
-        if(defender.getUnitType().isCivilian() && attacker.isMelee()){
-            captureCivilianUnit(attacker,defender)
-        }
-        else if (attacker.isRanged()) {
+        if (defender.getUnitType().isCivilian() && attacker.isMelee()) {
+            captureCivilianUnit(attacker, defender)
+        } else if (attacker.isRanged()) {
             defender.takeDamage(damageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
@@ -81,50 +117,8 @@ object Battle {
                 }
             }
         }
-
-        postBattleAction(attacker,defender,attackedTile)
     }
 
-    private fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo) {
-
-        postBattleNotifications(attacker, defender, attackedTile)
-
-        tryHealAfterAttacking(attacker, defender)
-
-        postBattleNationUniques(defender, attackedTile, attacker)
-
-        // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
-        if (defender.isDefeated() && defender is CityCombatant && attacker.isMelee())
-            conquerCity(defender.city, attacker)
-
-        // we're a melee unit and we destroyed\captured an enemy unit
-        postBattleMoveToAttackedTile(attacker, defender, attackedTile)
-
-        reduceAttackerMovementPointsAndAttacks(attacker, defender)
-
-        postBattleAddXp(attacker, defender)
-
-        // Add culture when defeating a barbarian when Honor policy is adopted (can be either attacker or defender!)
-        tryGetCultureFromHonor(attacker, defender)
-        tryGetCultureFromHonor(defender, attacker)
-
-        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
-                && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
-            attacker.getCivInfo().gold += defender.unit.baseUnit.getProductionCost(attacker.getCivInfo()) / 10
-
-        if (attacker is MapUnitCombatant && attacker.unit.action != null
-                && attacker.unit.action!!.startsWith("moveTo"))
-            attacker.unit.action = null
-
-        if (attacker is MapUnitCombatant) {
-            if (attacker.getUnitType()==UnitType.Missile) {
-                attacker.unit.destroy()
-            } else if (attacker.unit.action != null
-                    && attacker.unit.action!!.startsWith("moveTo")) {
-                attacker.unit.action = null
-            }
-        }
-    }
 
     private fun postBattleNotifications(attacker: ICombatant, defender: ICombatant, attackedTile: TileInfo) {
         if (attacker.getCivInfo() != defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
