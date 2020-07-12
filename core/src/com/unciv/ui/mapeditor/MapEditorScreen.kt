@@ -18,17 +18,17 @@ import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
+class MapEditorScreen(): CameraStageBaseScreen() {
     // need for compatibility with PickerScreen
-    override fun setRightSideButtonEnabled(boolean: Boolean) {}
+    fun setRightSideButtonEnabled(boolean: Boolean) {}
 
     var mapName = ""
     var tileMap = TileMap()
     var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
     var scenario: Scenario? = null // main indicator whether scenario information is present
-    override var ruleset = RulesetCache.getBaseRuleset()
+    var ruleset = RulesetCache.getBaseRuleset()
 
-    override var gameSetupInfo = GameSetupInfo()
+    var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
     lateinit var tileEditorOptions: TileEditorOptionsTable

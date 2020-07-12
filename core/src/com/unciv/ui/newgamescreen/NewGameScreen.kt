@@ -24,6 +24,14 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
     constructor() : this("", GameParameters(), MapParameters())
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
     constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)
+
+    fun clone(): GameSetupInfo {
+        val toReturn = GameSetupInfo()
+        toReturn.gameId = this.gameId
+        toReturn.gameParameters = this.gameParameters
+        toReturn.mapParameters = this.mapParameters
+        return toReturn
+    }
 }
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
