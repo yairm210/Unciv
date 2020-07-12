@@ -29,7 +29,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         add("{Map Type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
-        if (MapSaver.getScenarios().isNotEmpty() && UncivGame.Current.scenarioDebugSwitch) mapTypes.add(MapType.scenario)
+        if (MapSaver.getScenarios().isNotEmpty() && UncivGame.Current.settings.extendedMapEditor) mapTypes.add(MapType.scenario)
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
         val mapFileSelectBox = getMapFileSelectBox()

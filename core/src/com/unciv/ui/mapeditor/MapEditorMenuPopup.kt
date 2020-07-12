@@ -36,7 +36,7 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         addCopyMapAsTextButton()
         addLoadMapButton()
         addUploadMapButton()
-        if (UncivGame.Current.scenarioDebugSwitch) {
+        if (UncivGame.Current.settings.extendedMapEditor) {
             addScenarioButton()
             addSaveScenarioButton()
             addLoadScenarioButton()

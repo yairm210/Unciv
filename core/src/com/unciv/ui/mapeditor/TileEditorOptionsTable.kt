@@ -60,7 +60,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         tabPickerTable.add(improvementsButton)
 
         // debug Scenario mode
-        if (UncivGame.Current.scenarioDebugSwitch && mapEditorScreen.hasScenario()) {
+        if (UncivGame.Current.settings.extendedMapEditor && mapEditorScreen.hasScenario()) {
             val unitsButton = "Units".toTextButton().onClick { setUnits() }
             tabPickerTable.add(unitsButton)
         }
@@ -163,7 +163,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val nationTable = Table()
 
-        if (UncivGame.Current.scenarioDebugSwitch) {
+        if (UncivGame.Current.settings.extendedMapEditor) {
             /** new scenario/improvements functionality
              * There shoudn't be random players in scenario
              * */

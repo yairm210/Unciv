@@ -433,49 +433,49 @@ BuildingIcons/Opera House
   index: -1
 BuildingIcons/Oxford University
   rotate: false
-  xy: 1430, 186
+  xy: 716, 173
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Palace
   rotate: false
-  xy: 716, 173
+  xy: 818, 172
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Paper Maker
   rotate: false
-  xy: 206, 116
+  xy: 308, 116
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Pentagon
   rotate: false
-  xy: 614, 116
+  xy: 1532, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Porcelain Tower
   rotate: false
-  xy: 1226, 84
+  xy: 1430, 84
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Public School
   rotate: false
-  xy: 818, 70
+  xy: 206, 14
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Research Lab
   rotate: false
-  xy: 1940, 4
+  xy: 2, 2
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -748,35 +748,35 @@ ImprovementIcons/Oil well
   index: -1
 ImprovementIcons/Pasture
   rotate: false
-  xy: 410, 116
+  xy: 512, 116
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Plantation
   rotate: false
-  xy: 920, 84
+  xy: 1022, 84
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Quarry
   rotate: false
-  xy: 308, 14
+  xy: 410, 14
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ImprovementIcons/Railroad
   rotate: false
-  xy: 1532, 4
+  xy: 1634, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TileSets/Default/Railroad
   rotate: false
-  xy: 1532, 4
+  xy: 1634, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -902,14 +902,14 @@ NationIcons/Mongolia
   index: -1
 NationIcons/Persia
   rotate: false
-  xy: 1634, 106
+  xy: 1736, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Polynesia
   rotate: false
-  xy: 1124, 84
+  xy: 1226, 84
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1005,30 +1005,37 @@ OtherIcons/New
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/Options
+  rotate: false
+  xy: 1430, 186
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 OtherIcons/Pentagon
   rotate: false
-  xy: 1532, 106
+  xy: 1634, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Pillage
   rotate: false
-  xy: 104, 88
+  xy: 920, 84
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Puppet
   rotate: false
-  xy: 206, 14
+  xy: 308, 14
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Quickstart
   rotate: false
-  xy: 410, 14
+  xy: 512, 14
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1168,7 +1175,7 @@ ResourceIcons/Oil
   index: -1
 ResourceIcons/Pearls
   rotate: false
-  xy: 512, 116
+  xy: 614, 116
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1234,13 +1241,6 @@ StatIcons/Production
   xy: 1339, 1642
   size: 200, 200
   orig: 200, 200
-  offset: 0, 0
-  index: -1
-StatIcons/Resistance
-  rotate: false
-  xy: 2, 2
-  size: 100, 100
-  orig: 100, 100
   offset: 0, 0
   index: -1
 StatIcons/Science
@@ -1609,84 +1609,84 @@ TechIcons/Optics
   index: -1
 TechIcons/Particle Physics
   rotate: false
-  xy: 308, 116
+  xy: 410, 116
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Pharmaceuticals
   rotate: false
-  xy: 1838, 106
+  xy: 1940, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Philosophy
   rotate: false
-  xy: 1940, 106
+  xy: 2, 104
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Physics
   rotate: false
-  xy: 2, 104
+  xy: 1328, 90
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Plastics
   rotate: false
-  xy: 1022, 84
+  xy: 1124, 84
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Pottery
   rotate: false
-  xy: 1430, 84
+  xy: 716, 71
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Printing Press
   rotate: false
-  xy: 716, 71
+  xy: 818, 70
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Radar
   rotate: false
-  xy: 512, 14
+  xy: 614, 14
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Radio
   rotate: false
-  xy: 614, 14
+  xy: 1532, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Railroad
   rotate: false
-  xy: 1634, 4
+  xy: 1736, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Refrigeration
   rotate: false
-  xy: 1736, 4
+  xy: 1838, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Replaceable Parts
   rotate: false
-  xy: 1838, 4
+  xy: 1940, 4
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2274,21 +2274,21 @@ UnitIcons/Nuclear Missile
   index: -1
 UnitIcons/Panzer
   rotate: false
-  xy: 818, 172
+  xy: 206, 116
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Persian Immortal
   rotate: false
-  xy: 1736, 106
+  xy: 1838, 106
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Pikeman
   rotate: false
-  xy: 1328, 90
+  xy: 104, 88
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2301,35 +2301,35 @@ filter: MipMapLinearLinear,MipMapLinearLinear
 repeat: none
 BuildingIcons/SS Booster
   rotate: false
-  xy: 308, 922
+  xy: 2, 514
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/SS Cockpit
   rotate: false
-  xy: 2, 514
+  xy: 104, 616
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/SS Engine
   rotate: false
-  xy: 104, 616
+  xy: 206, 718
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/SS Stasis Chamber
   rotate: false
-  xy: 206, 718
+  xy: 308, 820
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Satrap's Court
   rotate: false
-  xy: 104, 514
+  xy: 206, 616
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2525,7 +2525,7 @@ BuildingIcons/Workshop
   index: -1
 ImprovementIcons/Road
   rotate: false
-  xy: 2, 718
+  xy: 104, 820
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2546,14 +2546,14 @@ ImprovementIcons/Trading post
   index: -1
 NationIcons/Rome
   rotate: false
-  xy: 104, 718
+  xy: 206, 820
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 NationIcons/Russia
   rotate: false
-  xy: 206, 820
+  xy: 308, 922
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2609,19 +2609,12 @@ OtherIcons/Down
   index: -1
 OtherIcons/Resume
   rotate: false
-  xy: 2, 922
+  xy: 2, 820
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 OtherIcons/Scenario
-  rotate: false
-  xy: 206, 616
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Scenario_old
   rotate: false
   xy: 308, 718
   size: 100, 100
@@ -3041,6 +3034,13 @@ StatIcons/RangedStrength
   orig: 50, 50
   offset: 0, 0
   index: -1
+StatIcons/Resistance
+  rotate: false
+  xy: 2, 922
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 StatIcons/Specialist
   rotate: false
   xy: 206, 310
@@ -3050,35 +3050,35 @@ StatIcons/Specialist
   index: -1
 TechIcons/Rifling
   rotate: false
-  xy: 104, 922
+  xy: 2, 718
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Robotics
   rotate: false
-  xy: 104, 820
+  xy: 206, 922
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Rocketry
   rotate: false
-  xy: 2, 616
+  xy: 104, 718
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Sailing
   rotate: false
-  xy: 308, 820
+  xy: 410, 922
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Satellites
   rotate: false
-  xy: 2, 412
+  xy: 104, 514
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -4821,21 +4821,21 @@ TileSets/FantasyHex/Units/Work Boats
   index: -1
 UnitIcons/Rifleman
   rotate: false
-  xy: 2, 820
+  xy: 104, 922
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Rocket Artillery
   rotate: false
-  xy: 206, 922
+  xy: 2, 616
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Samurai
   rotate: false
-  xy: 410, 922
+  xy: 2, 412
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

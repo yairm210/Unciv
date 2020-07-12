@@ -58,9 +58,6 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
     /** Console log battles
      */
     val alertBattle = false
-    /** Debug new Scenario functionality
-     */
-    val scenarioDebugSwitch = false
 
     lateinit var worldScreen: WorldScreen
 
