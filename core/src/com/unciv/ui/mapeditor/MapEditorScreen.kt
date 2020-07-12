@@ -19,9 +19,6 @@ import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
 class MapEditorScreen(): CameraStageBaseScreen() {
-    // need for compatibility with PickerScreen
-    fun setRightSideButtonEnabled(boolean: Boolean) {}
-
     var mapName = ""
     var tileMap = TileMap()
     var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
@@ -64,6 +61,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         this.scenario = scenario
         this.scenarioName = scenarioName
         gameSetupInfo.gameParameters = scenario.gameParameters
+        this.ruleset = RulesetCache.getComplexRuleset(scenario.gameParameters)
         initialize()
     }
 
