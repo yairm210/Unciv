@@ -25,7 +25,7 @@ import kotlin.reflect.typeOf
 /**
  * This [Table] is used to pick or edit players information for new game/scenario creation.
  * Could be inserted to [NewGameScreen], [GameParametersScreen] or any other [Screen]
- * which provides [GameSetupInfo] for ruleset and updates.
+ * which provides [GameSetupInfo] and [Ruleset].
  * Upon player changes updates property [gameParameters]. Also updates available nations when mod changes.
  * In case it is used in map editor, as a part of [GameParametersScreen], additionally tries to
  * update units/starting location on the [previousScreen] when player deleted or
@@ -273,8 +273,10 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     private fun getAvailablePlayerCivs(): ArrayList<Nation> {
         var nations = ArrayList<Nation>()
         for (nation in previousScreen.ruleset.nations.values
-                .filter { it.isMajorCiv() }) {
-            if (gameParameters.players.any { it.chosenCiv == nation.name && it.chosenCiv != Constants.spectator})
+                .filter { it.isMajorCiv() || it.isSpectator() }) {
+            if (gameParameters.players.any { it.chosenCiv == nation.name })
+                continue
+            if (!UncivGame.Current.settings.spectatorMode && nation.isSpectator())
                 continue
             nations.add(nation)
         }

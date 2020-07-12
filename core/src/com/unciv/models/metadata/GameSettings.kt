@@ -36,6 +36,8 @@ class GameSettings {
     var isFreshlyCreated = false
     var minimapSize = 20
     var minimapSquare = false
+    var extendedMapEditor = false
+    var spectatorMode = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.

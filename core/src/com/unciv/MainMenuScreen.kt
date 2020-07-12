@@ -145,7 +145,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         loadMapButton.background = tableBackground
         mapEditorPopup.add(loadMapButton).row()
 
-        if (UncivGame.Current.scenarioDebugSwitch) {
+        if (UncivGame.Current.settings.extendedMapEditor) {
             val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Scenario") {
                 val loadScenarioScreen = LoadScenarioScreen(null)
                 loadScenarioScreen.closeButton.isVisible = true
