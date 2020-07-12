@@ -167,7 +167,7 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
     }
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.filter { it.key != "" }.values
+        val modRulesets = RulesetCache.values.filter { it.name != "" }
         if (modRulesets.isEmpty()) return
 
 
