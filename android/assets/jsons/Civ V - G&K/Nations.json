@@ -657,6 +657,30 @@
 		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
 		"Copenhagen","Jonkoping",Boras",]
 	},
+	{        
+	    "name": "Celts",
+		"leaderName": "Boudicca",
+		"adjective": ["Celtic"],
+		"startBias": ["Forest"],
+		"preferredVictoryType": "Cultural",
+		
+		"startIntroPart1": "All hail the transcendent King Gustavus Adolphus, founder of the Swedish Empire and her most distinguished military tactician. It was during your reign that Sweden emerged as one of the greatest powers in Europe, due in no small part to your wisdom, both on and off the battlefield. As king, you initiated a number of domestic reforms that ensured the economic stability and prosperity of your people. As the general who came to be known as the "Lion of the North," your visionary designs in warfare gained the admiration of military commanders the world over. Thanks to your triumphs in the Thirty Years' War, you were assured a legacy as one of history's greatest generals.",
+		"startIntroPart2": "Oh noble King, the people long for your prudent leadership, hopeful that once again they will see your kingdom rise to glory. Will you devise daring new strategies, leading your armies to victory on the theater of war? Will you build a civilization that stands the test of time?",
+		
+		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
+		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your head!",
+		"defeated": "Vile ruler, know that you 'won' this war in name only!",
+		"introduction": "I am Boudicca, Queen of the Celts. Let no-one underestimate me!",
+		
+		"neutralHello": "Welcome.",
+		"hateHello": "Well?",
+		"tradeRequest": "Let us unite our armies, and profit from the challenges.",
+		"innerColor": [194,97,255]
+		"unique": "DRUIDIC_LORE",
+		"cities": ["Edinburgh","Dublin","Cardiff","Truro","Nantes","Douglas","Glasgow","Cork","Aberystwyth","Penzance","Rennes","Ramsey","Inverness",
+		"Limerick","Swansea","St. Ives","Brest","Peel","Aberdeen","Belfast","Caemarfon","Newquay","Saint-Nazaire","Castletown","Stirling","Gatway",
+		"Conwy","St. Austell","Saint-Malo","Onchan","Dundee","Londonderry","Llanfairpwllgwyngyll","Falmouth","Lorient",]
+	},
 	*/
 	
 	    
@@ -713,16 +737,16 @@
 		"cities": ["Antwerp"]
 	},
 	{
-		"name": "Dublin",
-		"adjective": ["Dubliner"],
-		"cityStateType": "Militaristic",
+		"name": "Jerusalem",
+		"adjective": ["Jewish"],
+		"cityStateType": "Religious",
 
-		"declaringWar": "War lingers in our hearts. Why carry on with a false peace?",
-		"attacked": "You gormless radger! You'll dine on your own teeth before you set foot in Ireland!",
-		"defeated": "A lonely wind blows through the highlands today. A dirge for Ireland. Can you hear it?",
+		"declaringWar": "Yawhe... please lead us in victory!",
+		"attacked": "It seems you have chosen to be an enemy of Yawhe... So be it.",
+		"defeated": "May our God punish you for your madness... forever!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [211,180,113],
-		"cities": ["Dublin"]
+		"cities": ["Jerusalem"]
 	},
 	{
 		"name": "Tyre",
@@ -825,16 +849,16 @@
 		"cities": ["Almaty"]
 	},
 	{
-		"name": "Edinburgh",
-		"adjective": ["Edinburghensian"],
-		"cityStateType": "Militaristic",
+		"name": "Vatican City",
+		"adjective": ["Vatican"],
+		"cityStateType": "Religious",
 
-		"declaringWar": "You shall stain this land no longer with your vileness! To arms, my countrymen - we ride to war!",
-		"attacked": "Traitorous man! The Celtic peoples will not stand for such wanton abuse and slander - I shall have your head!",
-		"defeated": "Vile ruler, know that you 'won' this war in name only!",
+		"declaringWar": "You have betrayed the teachings of God... and thus, you will pay!",
+		"attacked": "Excommunication is what you asked, excommunication is what you shall get.",
+		"defeated": "Oh, God! What is the reason you have abandoned us?!",
 		"outerColor": [0, 0, 0],
 		"innerColor": [0,102,102],
-		"cities": ["Edinburgh"]
+		"cities": ["Vatican City"]
 	},
 	{
 		"name": "Singapore",
@@ -959,8 +983,8 @@
 	{
 		"name": "Lhasa",
 		"translatedName": "Lhasa",
-		"adjective": ["tibetano"],
-		"cityStateType": "Cultured",
+		"adjective": ["Tibetan"],
+		"cityStateType": "Religious",
 
 		"declaringWar": "You leave us no choice. War it must be.",
 		"attacked": "Very well, this shall not be forgotten.",
