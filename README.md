@@ -67,7 +67,7 @@ In the meantime, you can [mod it yourself!](https://github.com/yairm210/Unciv/wi
 
 ## Will you implement Civ VI?
 
-Maybe, once we've finished with all of Civ V. But considering how long it took to get this far, Civ VII may be out by then.
+Considering how long it took to get this far, no.
 
 ## Is there a desktop version?
 
@@ -113,7 +113,7 @@ For actual development, you'll probably need to download Android Studio and buil
 
 I'm not planning on it.
 
-It means paying money to Apple, yet another release party,
+It means paying money to Apple, yet another release path,
  and since I don't have an IOS device it means I can't test it properly.
 
 ## How can I learn to play? Where's the wiki?
