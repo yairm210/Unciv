@@ -60,7 +60,9 @@ class MapEditorScreen(): CameraStageBaseScreen() {
         mapName = scenarioName
         this.scenario = scenario
         this.scenarioName = scenarioName
+
         gameSetupInfo.gameParameters = scenario.gameParameters
+
         ruleset = RulesetCache.getComplexRuleset(scenario.gameParameters)
         ImageGetter.ruleset = ruleset
         ImageGetter.setTextureRegionDrawables()

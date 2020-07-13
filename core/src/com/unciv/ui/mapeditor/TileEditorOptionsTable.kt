@@ -3,10 +3,8 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -18,7 +16,6 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -226,23 +223,26 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val nationsTable = Table()
 
-        // default player - barbarians
-        var currentPlayer = ""
-        var currentNation: Nation? = ruleset.nations.values.firstOrNull{ it.isBarbarian() }
-
+        // default player - first MajorCiv player
+        val defaultPlayer = gameParameters.players.first{
+            it.chosenCiv != Constants.spectator && it.chosenCiv != Constants.random
+        }
+        var currentPlayer = getPlayerIndexString(defaultPlayer)
+        var currentNation: Nation = ruleset.nations[defaultPlayer.chosenCiv]!!
         var currentUnit = ruleset.units.values.first()
 
         fun setUnitTileAction(){
-            if (currentNation == null) return
-            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation!!.getInnerColor())
-                    .surroundWithCircle(40f).apply { color=currentNation!!.getOuterColor() }
-            setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation!!.name.tr()+")")
+            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation.getInnerColor())
+                    .surroundWithCircle(40f*0.9f).apply { circle.color=currentNation.getOuterColor() }
+                    .surroundWithCircle(40f, false).apply { circle.color=currentNation.getInnerColor() }
+
+            setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation.name.tr()+")")
             tileAction = {
                 val unit = MapUnit()
                 unit.baseUnit = currentUnit
                 unit.name = currentUnit.name
-                unit.owner = currentNation!!.name
-                unit.civInfo = CivilizationInfo(currentNation!!.name).apply { nation=currentNation!! } // needed for the unit icon to render correctly
+                unit.owner = currentNation.name
+                unit.civInfo = CivilizationInfo(currentNation.name).apply { nation=currentNation } // needed for the unit icon to render correctly
                 unit.updateUniques()
                 if (unit.movement.canMoveTo(it)) {
                     when {
