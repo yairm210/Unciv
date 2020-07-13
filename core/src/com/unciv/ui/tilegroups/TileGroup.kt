@@ -297,7 +297,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val tileIsViewable = viewingCiv == null || isViewable(viewingCiv)
         val showMilitaryUnit = viewingCiv == null || showMilitaryUnit(viewingCiv)
 
-        reassignRemovedModReferences()
+        removeMissingModReferences()
 
         updateTileImage(viewingCiv)
         updateRivers(tileInfo.hasBottomRightRiver, tileInfo.hasBottomRiver, tileInfo.hasBottomLeftRiver)
@@ -320,7 +320,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         fogImage.isVisible = !(tileIsViewable || showEntireMap)
     }
 
-    private fun reassignRemovedModReferences() {
+    private fun removeMissingModReferences() {
         val improvementName = tileInfo.improvement
         if(improvementName != null && improvementName.startsWith("StartingLocation ")){
             val nationName = improvementName.removePrefix("StartingLocation ")
