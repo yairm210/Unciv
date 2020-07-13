@@ -1,3 +1,25 @@
+## 3.9.11
+
+Better Civilopedia icons for buildings and units
+
+Resolved #2822 - normalized the amount of strategic resources
+
+Resolved #2819 - units no longer gain XP from attacking already defeated cities
+
+Resolved #2820 - resurrected civs are at peace with everyone
+
+ By alkorolyov:
+
+- Fixed two empty mods checkbox in game options 
+- Two experimental switches: Spectator mode & Extended Map Editor
+
+ By ninjatao:
+
+- Do not generate fallout on impasssible terran. 
+- Fix AI nuke radius
+
+Translation updates
+
 ## 3.9.10
 
 Resource toggle button is consistent with population toggle - by @lishaoxia1985

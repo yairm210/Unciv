@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
-import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
@@ -151,9 +150,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null) {
-            game.loadGame(newGame!!)
-        }
+        if (newGame != null) game.loadGame(newGame!!)
         super.render(delta)
     }
 }
@@ -168,7 +165,6 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val array = Array<TranslatedString>()
         values.forEach { array.add(TranslatedString(it)) }
         items = array
-        val defaultItem = array.firstOrNull { it.value == default }
-        selected = if (defaultItem != null) defaultItem else array.first()
+        selected = array.firstOrNull { it.value == default } ?: array.first()
     }
 }
