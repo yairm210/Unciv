@@ -94,11 +94,11 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                     OnlineMultiplayer().tryUploadGame(newGame!!)
                     GameSaver.autoSave(newGame!!) {}
 
-                    //Saved as Multiplayer game to show up in the session browser
+                    // Saved as Multiplayer game to show up in the session browser
                     GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
-                    //Save gameId to clipboard because you have to do it anyway.
+                    // Save gameId to clipboard because you have to do it anyway.
                     Gdx.app.clipboard.contents = newGame!!.gameId
-                    //Popup to notify the User that the gameID got copied to the clipboard
+                    // Popup to notify the User that the gameID got copied to the clipboard
                     Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {

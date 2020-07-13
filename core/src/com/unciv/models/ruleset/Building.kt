@@ -248,6 +248,9 @@ class Building : NamedStats(), IConstruction{
                 && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
             return "Must be next to mountain"
 
+        if("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
+            return "Must be next to river"
+
         if("Must have an owned mountain within 2 tiles" in uniques
                 && !cityCenter.getTilesInDistance(2)
                         .any { it.baseTerrain==Constants.mountain && it.getOwner()==construction.cityInfo.civInfo })

@@ -78,6 +78,15 @@
 		"hurryCostModifier": 25,
 		"requiredTech": "Trapping"
 	},
+	{
+		"name": "Water Mill",
+		"maintenance": 2,
+		"food": 2,
+		"production": 1,
+		"hurryCostModifier": 25,
+		"uniques": ["Must be next to river"],
+		"requiredTech": "The Wheel"
+	},
 	
 	/*
 	{
