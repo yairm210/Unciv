@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.unciv.UncivGame
 import com.unciv.logic.map.Scenario
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.ui.newgamescreen.GameOptionsTable
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.PlayerPickerTable
@@ -17,10 +18,10 @@ import com.unciv.ui.utils.*
  * @param [mapEditorScreen] previous screen from map editor.
  */
 class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScreen, PickerScreen() {
-    override var gameSetupInfo: GameSetupInfo = mapEditorScreen.gameSetupInfo
-    override var ruleset: Ruleset = mapEditorScreen.ruleset
-    var playerPickerTable = PlayerPickerTable(this, this.gameSetupInfo.gameParameters)
-    var gameOptionsTable = GameOptionsTable(mapEditorScreen) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    override var gameSetupInfo = mapEditorScreen.gameSetupInfo.clone()
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
+    var gameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
 
 
     init {
@@ -34,7 +35,8 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
             mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
-            mapEditorScreen.ruleset = ruleset //TODO: figure out whether it is necessary
+            mapEditorScreen.ruleset.clear()
+            mapEditorScreen.ruleset.add(ruleset)
             mapEditorScreen.tileEditorOptions.update()
             mapEditorScreen.mapHolder.updateTileGroups()
             UncivGame.Current.setScreen(mapEditorScreen)
