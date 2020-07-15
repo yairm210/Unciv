@@ -27,11 +27,11 @@ class MainMenuScreen: CameraStageBaseScreen() {
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
-        val table = Table().pad(30f)
+        val table = Table().pad(15f, 30f, 15f, 30f)
         table.background = ImageGetter.getRoundedEdgeTableBackground(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
-        table.touchable= Touchable.enabled
+        table.touchable = Touchable.enabled
         table.onClick(function)
         table.pack()
         return table
@@ -109,7 +109,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         table.pack()
         val scroll = ScrollPane(table)
-        scroll.setSize(table.width, stage.height * 0.8f)
+        scroll.setSize(table.width, stage.height * 0.9f)
         scroll.center(stage)
         scroll.setOverscroll(false, false)
         stage.addActor(scroll)
