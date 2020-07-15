@@ -10,7 +10,8 @@ import kotlin.concurrent.thread
 
 class Simulation(val newGameInfo: GameInfo,
                  val simulationsPerThread: Int = 5,
-                 val threadsNumber: Int = 1
+                 val threadsNumber: Int = 1,
+                 val maxTurns: Int = 1000
 ) {
     val maxSimulations = threadsNumber * simulationsPerThread
     val civilizations = newGameInfo.civilizations.filter { it.civName != "Spectator" }.map { it.civName }
@@ -43,6 +44,8 @@ class Simulation(val newGameInfo: GameInfo,
             threads.add(thread {
                 for (i in 1..simulationsPerThread) {
                     val gameInfo = GameStarter.startNewGame(GameSetupInfo(newGameInfo))
+                    gameInfo.simulateMaxTurns = maxTurns
+                    gameInfo.simulateUntilWin = true
                     gameInfo.nextTurn()
 
                     var step = SimulationStep(gameInfo)
