@@ -362,7 +362,9 @@ object UnitActions {
                     uncivSound = UncivSound.Chimes,
                     action = {
                         val unitTile = unit.getTile()
-                        unitTile.terrainFeature = null // remove forest/jungle/marsh
+                        if (unitTile.terrainFeature != null &&
+                                unitTile.ruleset.tileImprovements.containsKey("Remove " + unitTile.terrainFeature))
+                            unitTile.terrainFeature = null // remove forest/jungle/marsh
                         unitTile.improvement = improvementName
                         unitTile.improvementInProgress = null
                         unitTile.turnsToImprovement = 0

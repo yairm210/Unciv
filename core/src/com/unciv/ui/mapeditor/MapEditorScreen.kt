@@ -12,21 +12,20 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.utils.*
 
-class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
-    // need for compatibility with PickerScreen
-    override fun setRightSideButtonEnabled(boolean: Boolean) {}
-
+class MapEditorScreen(): CameraStageBaseScreen() {
     var mapName = ""
     var tileMap = TileMap()
     var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
     var scenario: Scenario? = null // main indicator whether scenario information is present
+    var ruleset = RulesetCache.getBaseRuleset()
 
-    override var gameSetupInfo = GameSetupInfo()
+    var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
 
     lateinit var tileEditorOptions: TileEditorOptionsTable
@@ -61,12 +60,17 @@ class MapEditorScreen(): IPreviousScreen, CameraStageBaseScreen() {
         mapName = scenarioName
         this.scenario = scenario
         this.scenarioName = scenarioName
+
         gameSetupInfo.gameParameters = scenario.gameParameters
+
+        ruleset = RulesetCache.getComplexRuleset(scenario.gameParameters)
+        ImageGetter.ruleset = ruleset
+        ImageGetter.setTextureRegionDrawables()
         initialize()
     }
 
     fun initialize() {
-        tileMap.setTransients(gameSetupInfo.ruleset,false)
+        tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)
         mapHolder.addTiles(stage.width)

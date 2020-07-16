@@ -462,26 +462,27 @@ class DiplomacyManager() {
         }
     }
 
-    fun makePeace(){
-        diplomaticStatus= DiplomaticStatus.Peace
+    fun makePeace() {
+        diplomaticStatus = DiplomaticStatus.Peace
+        otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
 
         if (otherCiv().isAtWarWith(civInfo)) {
             for (civ in getCommonKnownCivs()) {
                 civ.addNotification(
-                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
-                    null,
-                    Color.WHITE
+                        "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
+                        null,
+                        Color.WHITE
                 )
             }
         }
 
         val otherCiv = otherCiv()
         // We get out of their territory
-        for(unit in civInfo.getCivUnits().filter { it.getTile().getOwner()== otherCiv})
+        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
             unit.movement.teleportToClosestMoveableTile()
 
         // And we get out of theirs
-        for(unit in otherCiv.getCivUnits().filter { it.getTile().getOwner()== civInfo})
+        for (unit in otherCiv.getCivUnits().filter { it.getTile().getOwner() == civInfo })
             unit.movement.teleportToClosestMoveableTile()
     }
 

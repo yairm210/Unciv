@@ -205,11 +205,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     internal fun updateTiles(viewingCiv: CivilizationInfo) {
 
         if (isMapRevealEnabled(viewingCiv)) {
-            viewingCiv.viewableTiles = tileMap.values.toSet()
-
-            // Only needs to be done once
+            // Only needs to be done once - this is so the minimap will also be revealed
             if (viewingCiv.exploredTiles.size != tileMap.values.size)
                 viewingCiv.exploredTiles = tileMap.values.map { it.position }.toHashSet()
+            tileGroups.values.forEach { it.showEntireMap = true } // So we can see all resources, regardless of tech
         }
 
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()

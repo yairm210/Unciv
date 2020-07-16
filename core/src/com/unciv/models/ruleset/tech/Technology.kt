@@ -86,7 +86,8 @@ class Technology {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
-        val replacedUnits = enabledUnits.mapNotNull { it.replaces }
+        val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo==civInfo.civName }
+                .mapNotNull { it.replaces }
         enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
 
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled)

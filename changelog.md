@@ -1,3 +1,59 @@
+## 3.9.11
+
+Better Civilopedia icons for buildings and units
+
+Resolved #2822 - normalized the amount of strategic resources
+
+Resolved #2819 - units no longer gain XP from attacking already defeated cities
+
+Resolved #2820 - resurrected civs are at peace with everyone
+
+ By alkorolyov:
+
+- Fixed two empty mods checkbox in game options 
+- Two experimental switches: Spectator mode & Extended Map Editor
+
+ By ninjatao:
+
+- Do not generate fallout on impasssible terran. 
+- Fix AI nuke radius
+
+Translation updates
+
+## 3.9.10
+
+Resource toggle button is consistent with population toggle - by @lishaoxia1985
+
+Unremovable terrain features e.g. Flood plains are no longer removed by great improvements
+
+Resolved #2640 - Difficulty level shown in victory status screen
+
+Great improvements are no longer hardcoded, so new great improvements can be modded in =)
+
+Resolved #2811 - Offering the same resource to 2 civs when you only have 2 left no longer causes 'trade no longer valid' for the second one
+
+Dispose main menu screen when exiting to save space
+
+Translation updates
+
+## 3.9.9
+
+Civ is properly destroyed when liberating the last city of the civ
+
+Replaced units are not shown in tech button even when replacing unique unit is in a different tech
+
+Fixed main menu crash when returning from certain modded games
+
+Resolved #2794 - Save games and maps cannot have slashes/backslashes, to avoid foldername/filename confusion
+
+Civ is properly destroyed when liberating the last city of the civ
+
+By alkorolyov:
+- Basic spectator functionality - POC
+- Console mode for multiple game automation - POC
+
+Added an installation problem solution on Ubuntu - By illantalex
+
 ## 3.9.8
 
 Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a scientific victory
@@ -8,7 +64,7 @@ Removed tech exchange, as per Civ V
 
 Resolved #2759 - Mark tiles for air unit attack range - By ninjatao
 
-Translation updates
+Translation updates🍎
 
 ## 3.9.7
 

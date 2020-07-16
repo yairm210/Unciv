@@ -36,16 +36,18 @@ class GameSettings {
     var isFreshlyCreated = false
     var minimapSize = 20
     var minimapSquare = false
+    var extendedMapEditor = false
+    var spectatorMode = false
 
     init {
         // 26 = Android Oreo. Versions below may display permanent icon in notification bar.
-        if (Gdx.app.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
+        if (Gdx.app?.type == Application.ApplicationType.Android && Gdx.app.version < 26) {
             multiplayerTurnCheckerPersistentNotificationEnabled = false
         }
     }
 
     fun save(){
-        if (!isFreshlyCreated && Gdx.app.type == Application.ApplicationType.Desktop) {
+        if (!isFreshlyCreated && Gdx.app?.type == Application.ApplicationType.Desktop) {
             windowState = WindowState( Gdx.graphics.width, Gdx.graphics.height)
         }
         GameSaver.setGeneralSettings(this)

@@ -42,8 +42,6 @@ class BasicTests {
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
                         && game.simulateUntilTurnForDebug <= 0
-                        && !game.simulateUntilWin
-                        && !game.scenarioDebugSwitch
                         && !game.consoleMode
         )
     }

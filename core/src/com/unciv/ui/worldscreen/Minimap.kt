@@ -30,18 +30,18 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
         scrollPercentY = mapHolder.scrollPercentY
     }
 
-    init{
-        setScrollingDisabled(true,true)
+    init {
+        setScrollingDisabled(true, true)
 
         var topX = 0f
         var topY = 0f
         var bottomX = 0f
         var bottomY = 0f
 
-        fun hexRow(vector2: Vector2) = vector2.x+vector2.y
+        fun hexRow(vector2: Vector2) = vector2.x + vector2.y
         val maxHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.max()!!
         val minHexRow = mapHolder.tileMap.values.asSequence().map { hexRow(it.position) }.min()!!
-        val totalHexRows = maxHexRow-minHexRow
+        val totalHexRows = maxHexRow - minHexRow
 
         for (tileInfo in mapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("OtherIcons/Hexagon")
@@ -49,8 +49,8 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
             val positionalVector = HexMath.hex2WorldCoords(tileInfo.position)
 
 
-            val groupSize = 400f/totalHexRows
-            hex.setSize(groupSize,groupSize)
+            val groupSize = 400f / totalHexRows
+            hex.setSize(groupSize, groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
             hex.onClick {
@@ -77,7 +77,7 @@ class Minimap(val mapHolder: WorldMapHolder) : ScrollPane(null){
         actor = allTiles
         layout()
         updateVisualScroll()
-        mapHolder.addListener(object : InputListener(){
+        mapHolder.addListener(object : InputListener() {
             override fun handle(e: Event?): Boolean {
                 setScrollTomapHolder()
                 return true
@@ -155,7 +155,10 @@ class MinimapHolder(mapHolder: WorldMapHolder): Table(){
         }
         toggleIconTable.add(populationImage).row()
 
-        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle").surroundWithCircle(40f)
+        val resourceImage = ImageGetter.getImage("ResourceIcons/Cattle")
+                .surroundWithCircle(30f).apply { circle.color = Color.GREEN }
+                .surroundWithCircle(40f,false).apply { circle.color = Color.BLACK }
+
         resourceImage.actor.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements

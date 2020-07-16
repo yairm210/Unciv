@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.JsonParser
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tech.TechColumn
 import com.unciv.models.ruleset.tile.Terrain
@@ -39,37 +40,57 @@ object TranslationFileWriter {
             else Gdx.files.local(fileLocation)
 
     private fun generateTranslationFiles(translations: Translations, modFolder: FileHandle? = null): HashMap<String, Int> {
-        // read the template
-        val templateFile = getFileHandle(modFolder, templateFileLocation)
+
+        val fileNameToGeneratedStrings = LinkedHashMap<String, MutableSet<String>>()
         val linesFromTemplates = mutableListOf<String>()
-        if (templateFile.exists())
-            linesFromTemplates.addAll(templateFile.reader().readLines())
-        // read the JSON files
-        val generatedStrings = generateStringsFromJSONs(modFolder)
+
+        if(modFolder==null) { // base game
+            val templateFile = getFileHandle(modFolder, templateFileLocation) // read the template
+            if (templateFile.exists())
+                linesFromTemplates.addAll(templateFile.reader().readLines())
+
+            for (baseRuleset in BaseRuleset.values()) {
+                val generatedStringsFromBaseRuleset =
+                        generateStringsFromJSONs(Gdx.files.local("jsons/${baseRuleset.fullName}"))
+                for (entry in generatedStringsFromBaseRuleset)
+                    fileNameToGeneratedStrings[entry.key + " from " + baseRuleset.fullName] = entry.value
+            }
+
+            fileNameToGeneratedStrings["Tutorials"] = generateTutorialsStrings()
+        }
+        else fileNameToGeneratedStrings.putAll(generateStringsFromJSONs(modFolder))
+
         // Tutorials are a bit special
         if (modFolder == null)          // this is for base only, not mods
-            generatedStrings["Tutorials"] = generateTutorialsStrings()
 
-        for (key in generatedStrings.keys) {
-            linesFromTemplates.add("\n#################### Lines from $key.json ####################\n")
-            linesFromTemplates.addAll(generatedStrings.getValue(key))
+        for (key in fileNameToGeneratedStrings.keys) {
+            linesFromTemplates.add("\n#################### Lines from $key ####################\n")
+            linesFromTemplates.addAll(fileNameToGeneratedStrings.getValue(key))
         }
 
         var countOfTranslatableLines = 0
         val countOfTranslatedLines = HashMap<String, Int>()
+
         // iterate through all available languages
         for (language in translations.getLanguages()) {
             var translationsOfThisLanguage = 0
             val stringBuilder = StringBuilder()
 
+            // This is so we don't add the same keys twice if we have the same value in both Vanilla and G&K
+            val existingTranslationKeys = HashSet<String>()
+
             for (line in linesFromTemplates) {
-                if (line.contains(" = ")) {
-                    // count translatable lines only once (e.g. for English)
-                    if (language == "English") countOfTranslatableLines++
-                } else {
+                if(line.contains("G&K")) {
+                    val x = line.length
+                }
+
+                if (!line.contains(" = ")) {
                     // small hack to insert empty lines
-                    if (line.startsWith(specialNewLineCode))
-                        stringBuilder.appendln()
+                    if (line.startsWith(specialNewLineCode)) {
+                        if(!stringBuilder.endsWith("\r\n\r\n")) // don't double-add line breaks -
+                            // this stops lots of line breaks between removed translations in G&K
+                            stringBuilder.appendln()
+                    }
                     else // copy as-is
                         stringBuilder.appendln(line)
                     continue
@@ -79,6 +100,13 @@ object TranslationFileWriter {
                 val hashMapKey = if (translationKey.contains('['))
                             translationKey.replace(squareBraceRegex,"[]")
                         else translationKey
+
+                if(existingTranslationKeys.contains(hashMapKey)) continue // don't add it twice
+                existingTranslationKeys.add(hashMapKey)
+
+                // count translatable lines only once (e.g. for English)
+                if (language == "English") countOfTranslatableLines++
+
                 var translationValue = ""
 
                 val translationEntry = translations[hashMapKey]
@@ -136,25 +164,22 @@ object TranslationFileWriter {
 
     // used for unit test only
     fun getGeneratedStringsSize(): Int {
-        return generateStringsFromJSONs().values.sumBy { // exclude empty lines
+        return generateStringsFromJSONs(Gdx.files.local("jsons/Civ V - Vanilla")).values.sumBy { // exclude empty lines
             it.count{ line: String -> !line.startsWith(specialNewLineCode) } }
     }
 
-    private fun generateStringsFromJSONs(modFolder: FileHandle? = null): LinkedHashMap<String, MutableSet<String>> {
+    private fun generateStringsFromJSONs(jsonsFolder: FileHandle): LinkedHashMap<String, MutableSet<String>> {
 
         // Using LinkedHashMap (instead of HashMap) is important to maintain the order of sections in the translation file
         val generatedStrings = LinkedHashMap<String, MutableSet<String>>()
 
         var uniqueIndexOfNewLine = 0
         val jsonParser = JsonParser()
-        val folderHandler = if(modFolder!=null) getFileHandle(modFolder,"jsons")
-        else getFileHandle(modFolder, "jsons/Civ V - Vanilla")
-        val listOfJSONFiles = folderHandler
-                .list{file -> file.name.endsWith(".json", true)}
+        val listOfJSONFiles = jsonsFolder
+                .list { file -> file.name.endsWith(".json", true) }
                 .sortedBy { it.name() }       // generatedStrings maintains order, so let's feed it a predictable one
 
-        for (jsonFile in listOfJSONFiles)
-        {
+        for (jsonFile in listOfJSONFiles) {
             val filename = jsonFile.nameWithoutExtension()
 
             val javaClass = getJavaClassByName(filename)
@@ -179,9 +204,8 @@ object TranslationFileWriter {
                             || string.startsWith(UnitActions.CAN_UNDERTAKE)
                             || string.endsWith(MapUnit.CHANCE_TO_INTERCEPT_AIR_ATTACKS)
                             || Regex(BattleDamage.BONUS_AS_ATTACKER).matchEntire(string) != null
-                            || Regex(BattleDamage.HEAL_WHEN_KILL).matchEntire(string) != null ->
-                    {
-                        val updatedString = string.replace("\\[\\d+(?=])]".toRegex(),"[amount]")
+                            || Regex(BattleDamage.HEAL_WHEN_KILL).matchEntire(string) != null -> {
+                        val updatedString = string.replace("\\[\\d+(?=])]".toRegex(), "[amount]")
                         resultStrings!!.add("$updatedString = ")
                     }
                     else ->
@@ -190,10 +214,11 @@ object TranslationFileWriter {
             }
 
             fun serializeElement(element: Any) {
-                val allFields = (element.javaClass.declaredFields + element.javaClass.fields).
-                                    filter { it.type == String::class.java ||
-                                             it.type == java.util.ArrayList::class.java ||
-                                             it.type == java.util.HashSet::class.java }
+                val allFields = (element.javaClass.declaredFields + element.javaClass.fields).filter {
+                    it.type == String::class.java ||
+                            it.type == java.util.ArrayList::class.java ||
+                            it.type == java.util.HashSet::class.java
+                }
                 for (field in allFields) {
                     field.isAccessible = true
                     val fieldValue = field.get(element)

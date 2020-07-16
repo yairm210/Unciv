@@ -248,6 +248,9 @@ class Building : NamedStats(), IConstruction{
                 && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
             return "Must be next to mountain"
 
+        if("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
+            return "Must be next to river"
+
         if("Must have an owned mountain within 2 tiles" in uniques
                 && !cityCenter.getTilesInDistance(2)
                         .any { it.baseTerrain==Constants.mountain && it.getOwner()==construction.cityInfo.civInfo })
@@ -316,7 +319,7 @@ class Building : NamedStats(), IConstruction{
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
                                 && it.getOwner() == civInfo
-                                && (it.getTileResource().improvement == it.improvement || it.improvement in Constants.greatImprovements || it.isCityCenter())
+                                && (it.getTileResource().improvement == it.improvement || it.getTileImprovement()?.isGreatImprovement()==true || it.isCityCenter())
                     }
             if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
         }

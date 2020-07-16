@@ -10,6 +10,7 @@ open class Stats() {
     var science: Float=0f
     var culture: Float=0f
     var happiness: Float=0f
+    var faith: Float=0f
 
     constructor(hashMap: HashMap<Stat, Float>) : this() {
         setStats(hashMap)
@@ -22,6 +23,7 @@ open class Stats() {
         science = 0f
         culture = 0f
         happiness = 0f
+        faith = 0f
     }
 
     fun add(other: Stats) {
@@ -32,6 +34,7 @@ open class Stats() {
         science += other.science
         culture += other.culture
         happiness += other.happiness
+        faith += other.faith
     }
 
 
@@ -71,29 +74,33 @@ open class Stats() {
                 Stat.Gold to gold,
                 Stat.Food to food,
                 Stat.Happiness to happiness,
-                Stat.Science to science)
+                Stat.Science to science,
+                Stat.Faith to faith
+        )
     }
 
     fun get(stat:Stat):Float{
         return this.toHashMap()[stat]!!
     }
 
-    private fun setStats(hashMap:HashMap<Stat, Float>){
-        culture=hashMap[Stat.Culture]!!
-        gold=hashMap[Stat.Gold]!!
-        production=hashMap[Stat.Production]!!
-        food=hashMap[Stat.Food]!!
-        happiness=hashMap[Stat.Happiness]!!
-        science=hashMap[Stat.Science]!!
+    private fun setStats(hashMap:HashMap<Stat, Float>) {
+        culture = hashMap[Stat.Culture]!!
+        gold = hashMap[Stat.Gold]!!
+        production = hashMap[Stat.Production]!!
+        food = hashMap[Stat.Food]!!
+        happiness = hashMap[Stat.Happiness]!!
+        science = hashMap[Stat.Science]!!
+        faith = hashMap[Stat.Faith]!!
     }
 
-    fun equals(otherStats: Stats):Boolean{
-        return culture==otherStats.culture
-                && gold==otherStats.gold
-                && production==otherStats.production
-                && food==otherStats.food
-                && happiness==otherStats.happiness
-                && science==otherStats.science
+    fun equals(otherStats: Stats):Boolean {
+        return culture == otherStats.culture
+                && gold == otherStats.gold
+                && production == otherStats.production
+                && food == otherStats.food
+                && happiness == otherStats.happiness
+                && science == otherStats.science
+                && faith == otherStats.faith
     }
 }
 

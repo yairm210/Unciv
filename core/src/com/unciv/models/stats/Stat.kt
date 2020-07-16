@@ -6,5 +6,6 @@ enum class Stat{
     Gold,
     Science,
     Culture,
-    Happiness
+    Happiness,
+    Faith
 }

@@ -3,6 +3,7 @@ package com.unciv.ui.victoryscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
@@ -25,6 +26,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private val contentsTable = Table()
 
     init {
+        val difficultyLabel = ("{Difficulty}: {${worldScreen.gameInfo.difficulty}}").toLabel()
+        difficultyLabel.setPosition(10f, stage.height-10, Align.topLeft)
+        stage.addActor(difficultyLabel)
+
         val tabsTable = Table().apply { defaults().pad(10f) }
         val setMyVictoryButton = "Our status".toTextButton().onClick { setMyVictoryTable() }
         tabsTable.add(setMyVictoryButton)

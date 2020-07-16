@@ -46,7 +46,6 @@ object Constants {
     const val researchAgreement = "Research Agreement"
     const val openBorders = "Open Borders"
     const val random = "Random"
-    val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house", "Citadel")
 
     const val fort = "Fort"
     const val citadel = "Citadel"
@@ -63,8 +62,8 @@ object Constants {
     const val tutorialPopupNamePrefix = "Tutorial: "
 
     const val close = "Close"
-    const val disabled="disabled"
-    const val enabled="enabled"
+    const val disabled = "disabled"
+    const val enabled = "enabled"
 
     const val scienceConversionEffect = "Production to science conversion in cities increased by 33%"
 
@@ -77,4 +76,5 @@ object Constants {
     const val informationEra = "Information era"
     const val futureEra = "Future era"
     const val barbarians = "Barbarians"
+    const val spectator = "Spectator"
 }

@@ -49,10 +49,16 @@ object NextTurnAutomation{
     }
 
     private fun respondToTradeRequests(civInfo: CivilizationInfo) {
-        for(tradeRequest in civInfo.tradeRequests){
+        for(tradeRequest in civInfo.tradeRequests.toList()){
             val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
             val tradeLogic = TradeLogic(civInfo, otherCiv)
             tradeLogic.currentTrade.set(tradeRequest.trade)
+            /** We need to remove this here, so that if the trade is accepted, the updateDetailedCivResources()
+             * in tradeLogic.acceptTrade() will not consider *both* the trade *and the trade offer as decreasing the
+             * amount of available resources, since that will lead to "Our proposed trade is no longer valid" if we try to offer
+             * the same resource to ANOTHER civ in this turn. Complicated!
+             */
+            civInfo.tradeRequests.remove(tradeRequest)
             if(TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade,civInfo,otherCiv)){
                 tradeLogic.acceptTrade()
                 otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)

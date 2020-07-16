@@ -224,12 +224,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun loadLatestMultiplayerState(){
-        val loadingGamePopup = Popup(this)
-        loadingGamePopup.add("Loading latest game state...".tr())
 
         // Since we're on a background thread, all the UI calls in this func need to run from the
         // main thread which has a GL context
-        Gdx.app.postRunnable { loadingGamePopup.open() }
+        val loadingGamePopup = Popup(this)
+        Gdx.app.postRunnable {
+            loadingGamePopup.add("Loading latest game state...".tr())
+            loadingGamePopup.open()
+        }
 
         try {
             val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
@@ -394,7 +396,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
-        if(!civInfo.isDefeated() && civInfo.getKnownCivs()
+        if(!civInfo.isDefeated() && !civInfo.isSpectator() && civInfo.getKnownCivs()
                         .filterNot {  it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorial(Tutorial.OtherCivEncountered)

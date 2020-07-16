@@ -9,6 +9,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -372,7 +373,8 @@ class CityInfo {
         isPuppet = false
         cityConstructions.inProgressConstructions.clear() // undo all progress of the previous civ on units etc.
         cityStats.update()
-        UncivGame.Current.worldScreen.shouldUpdate = true
+        if (!UncivGame.Current.consoleMode)
+            UncivGame.Current.worldScreen.shouldUpdate = true
     }
 
     /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
@@ -390,7 +392,6 @@ class CityInfo {
 
         moveToCiv(conqueringCiv)
         Battle.destroyIfDefeated(oldCiv, conqueringCiv)
-
 
         if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
         reassignPopulation()
@@ -437,26 +438,31 @@ class CityInfo {
             return
         }
 
-
-        diplomaticRepercussionsForLiberatingCity(conqueringCiv)
+        val oldCiv = civInfo
 
         val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+        if (foundingCiv.isDefeated()) // resurrected civ
+            for (diploManager in foundingCiv.diplomacy.values)
+                if (diploManager.diplomaticStatus == DiplomaticStatus.War)
+                    diploManager.makePeace()
 
+        diplomaticRepercussionsForLiberatingCity(conqueringCiv)
         moveToCiv(foundingCiv)
-        health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+        Battle.destroyIfDefeated(oldCiv, conqueringCiv)
 
+        health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         reassignPopulation()
 
-        if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
+        if (foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
         isPuppet = false
         cityStats.update()
 
         // Move units out of the city when liberated
-        for(unit in getTiles().flatMap { it.getUnits() }.toList())
-            if(!unit.movement.canPassThrough(unit.currentTile))
+        for (unit in getTiles().flatMap { it.getUnits() }.toList())
+            if (!unit.movement.canPassThrough(unit.currentTile))
                 unit.movement.teleportToClosestMoveableTile()
 
-        UncivGame.Current.worldScreen.shouldUpdate=true
+        UncivGame.Current.worldScreen.shouldUpdate = true
     }
 
     private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: CivilizationInfo) {

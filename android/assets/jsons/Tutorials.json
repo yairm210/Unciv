@@ -57,7 +57,7 @@
   ],
   Strategic_Resource: [
       "Strategic resources within your domain and with their specific improvement are connected to your trade network.\nStrategic resources allow you to train units and construct buildings that require those specific resources, for example the Horseman requires Horses.",
-	  "Unlike Luxury Resources, each Strategic Resource on the map provides more than oneof that resource.\nThe top bar keeps count of how many unused strategic resources you own.\nA full drilldown of resources is available in the Resources tab in the Overview screen."
+	  "Unlike Luxury Resources, each Strategic Resource on the map provides more than one of that resource.\nThe top bar keeps count of how many unused strategic resources you own.\nA full drilldown of resources is available in the Resources tab in the Overview screen."
   ],
   _EnemyCityNeedsConqueringWithMeleeUnit: [
       "The city can no longer put up any resistance!\nHowever, to conquer it, you must enter the city with a melee unit"
