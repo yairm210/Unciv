@@ -36,12 +36,10 @@ class GameInfo {
     var currentPlayer=""
     var gameId = UUID.randomUUID().toString() // random string
 
-    // can't be taken directly from Unciv.Current.SimulateUntilWin because this causes problems with downloading multiplayer games.,
-    //   should probably be either 'manually set' upon creation
     /** Simulate until any player wins,
      *  or turns exceeds indicated number
-     *  Does not update World View changes until finished.
-     *  Set false to disable.
+     *  Does not update World View until finished.
+     *  Should be set manually on each new game start.
      */
     var simulateMaxTurns: Int = 1000
     var simulateUntilWin = false
