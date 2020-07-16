@@ -35,8 +35,13 @@ class GameInfo {
     var oneMoreTurnMode=false
     var currentPlayer=""
     var gameId = UUID.randomUUID().toString() // random string
-    // can't be taken directly from Unciv.Current.SimulateUntilWin because this causes problems with downloading multiplayer games.,
-    //   should probably be either 'manually set' upon creation
+
+    /** Simulate until any player wins,
+     *  or turns exceeds indicated number
+     *  Does not update World View until finished.
+     *  Should be set manually on each new game start.
+     */
+    var simulateMaxTurns: Int = 1000
     var simulateUntilWin = false
 
     //region pure functions
@@ -87,7 +92,7 @@ class GameInfo {
 
         while (thisPlayer.playerType == PlayerType.AI
             || turns < UncivGame.Current.simulateUntilTurnForDebug
-                || (turns < UncivGame.Current.simulateMaxTurns && simulateUntilWin)
+                || (turns < simulateMaxTurns && simulateUntilWin)
                 // For multiplayer, if there are 3+ players and one is defeated,
                 // we'll want to skip over their turn
                 || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
