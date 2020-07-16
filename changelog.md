@@ -1,3 +1,17 @@
+## 3.9.12
+
+Added Water Mill building
+
+Add mod compatibility for extended map editor - By alkorolyov
+
+Main menu buttons no longer require scrolling
+
+By lishaoxia1985:
+- Close button on map management screen no longer disappears when deleting all maps
+- Scout obsoletes per Civ V
+
+Translation updates
+
 ## 3.9.11
 
 Better Civilopedia icons for buildings and units
