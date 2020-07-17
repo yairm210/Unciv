@@ -76,7 +76,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
             table.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { QuickstartNewGame() }
+        val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
         table.add(quickstartTable).row()
 
         val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
@@ -180,7 +180,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
     }
 
-    private fun QuickstartNewGame() {
+    private fun quickstartNewGame() {
         val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain" })
         game.loadGame(newGame)
     }

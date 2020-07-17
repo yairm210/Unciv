@@ -25,7 +25,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     val civUnits = civInfo.getCivUnits()
     val militaryUnits = civUnits.filter { !it.type.isCivilian()}.count()
-    val workers = civUnits.filter { it.name == Constants.worker }.count().toFloat()
+    val workers = civUnits.filter { it.hasUnique(Constants.workerUnique) }.count().toFloat()
     val cities = civInfo.cities.size
     val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
             && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
@@ -119,15 +119,17 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addWorkerChoice() {
-        if(!civInfo.gameInfo.ruleSet.units.containsKey(Constants.worker)) return // for mods
-        if(civInfo.getIdleUnits().any { it.name==Constants.worker && it.action== Constants.unitActionAutomation})
+        val workerEquivalents = civInfo.gameInfo.ruleSet.units.values
+                .filter { it.uniques.contains(Constants.workerUnique) && it.isBuildable(cityConstructions) }
+        if (workerEquivalents.isEmpty()) return // for mods with no worker units
+        if (civInfo.getIdleUnits().any { it.action == Constants.unitActionAutomation && it.hasUnique(Constants.workerUnique) })
             return // If we have automated workers who have no work to do then it's silly to construct new workers.
 
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
-        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.name==Constants.worker && it.isIdle() }) {
+        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.hasUnique(Constants.workerUnique) && it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
-            addChoice(relativeCostEffectiveness, Constants.worker, modifier)
+            addChoice(relativeCostEffectiveness, workerEquivalents.minBy { it.cost }!!.name, modifier)
         }
     }
 
