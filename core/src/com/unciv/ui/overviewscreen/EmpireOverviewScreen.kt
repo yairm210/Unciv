@@ -308,7 +308,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, defaultPa
             viewingPlayer.diplomacy.containsKey(civ.civName)
 
     private fun getDiplomacyGroup(): Group {
-        val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() && !it.isSpectator()}
+        val relevantCivs = viewingPlayer.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val freeWidth = stage.width
         val freeHeight = stage.height - topTable.height
         val group = Group()
@@ -332,10 +332,10 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, defaultPa
             group.addActor(civGroup)
         }
 
-        for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() && !it.isSpectator()})
+        for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
             for(diplomacy in civ.diplomacy.values.
-                    filter { !it.otherCiv().isBarbarian() && !it.otherCiv().isCityState() && !it.otherCiv().isSpectator()
-                            && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated() && !it.otherCiv().isSpectator()}){
+                    filter { !it.otherCiv().isBarbarian() && !it.otherCiv().isCityState()
+                            && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
                 val civGroup = civGroups[civ.civName]!!
                 val otherCivGroup = civGroups[diplomacy.otherCivName]!!
 

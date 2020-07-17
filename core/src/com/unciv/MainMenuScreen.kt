@@ -97,9 +97,10 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
             { openMapEditorPopup() }
-        table.add(mapEditorScreenTable)
+        table.add(mapEditorScreenTable).padBottom(0f)
 
         // set the same width for all buttons
+        table.cells.first().padTop(0f)
         table.pack()
         table.children.filterIsInstance<Table>().forEach {
             it.align(Align.left)
@@ -109,7 +110,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         table.pack()
         val scroll = ScrollPane(table)
-        scroll.setSize(table.width, stage.height * 0.9f)
+        scroll.setSize(table.width, stage.height * 0.98f)
         scroll.center(stage)
         scroll.setOverscroll(false, false)
         stage.addActor(scroll)

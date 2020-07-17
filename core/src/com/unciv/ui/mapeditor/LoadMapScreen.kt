@@ -76,8 +76,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
         rightSideTable.add(deleteMapButton).row()
 
         topTable.add(rightSideTable)
-        if(previousMap==null) closeButton.isVisible=false
-        else closeButton.onClick { UncivGame.Current.setScreen(MapEditorScreen(previousMap)) }
+        if(previousMap!=null) closeButton.onClick { UncivGame.Current.setScreen(MapEditorScreen(previousMap)) }
     }
 }
 
