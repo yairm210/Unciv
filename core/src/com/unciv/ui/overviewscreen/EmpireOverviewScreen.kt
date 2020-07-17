@@ -332,7 +332,7 @@ class EmpireOverviewScreen(private val viewingPlayer:CivilizationInfo, defaultPa
             group.addActor(civGroup)
         }
 
-        for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() && !it.isSpectator()})
+        for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
             for(diplomacy in civ.diplomacy.values.
                     filter { !it.otherCiv().isBarbarian() && !it.otherCiv().isCityState() && !it.otherCiv().isSpectator()
                             && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated() && !it.otherCiv().isSpectator()}){

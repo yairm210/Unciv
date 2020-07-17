@@ -203,8 +203,9 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
         }
 
-        if (uncivGame.viewEntireMapForDebug || belongsToViewingCiv() || worldScreen.viewingCiv.isSpectator())
-            iconTable.add(getPopulationGroup(true)).padLeft(10f)
+        iconTable.add(getPopulationGroup(uncivGame.viewEntireMapForDebug
+                || belongsToViewingCiv()
+                || worldScreen.viewingCiv.isSpectator())).padLeft(10f)
 
         val cityButtonText = city.name
         val label = cityButtonText.toLabel(secondaryColor)
