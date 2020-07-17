@@ -170,7 +170,6 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
         val modRulesets = RulesetCache.values.filter { it.name != "" }
         if (modRulesets.isEmpty()) return
 
-
         add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
         val modCheckboxTable = Table().apply { defaults().pad(5f) }
         for (mod in modRulesets) {

@@ -42,7 +42,6 @@ class BasicTests {
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
                         && game.simulateUntilTurnForDebug <= 0
-                        && !game.simulateUntilWin
                         && !game.consoleMode
         )
     }
@@ -54,7 +53,7 @@ class BasicTests {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.obsoleteTech != null && unit.upgradesTo == null) {
+            if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
                 println(unit.name + " obsoletes but has no upgrade")
                 allObsoletingUnitsHaveUpgrades = false
             }

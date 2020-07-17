@@ -267,10 +267,10 @@ class TechManager {
             for (constructionName in oldQueue) {
                 var newConstructionName = constructionName
                 if (constructionName in obsoleteUnits) {
-                    val constructionUnit = city.cityConstructions.getConstruction(constructionName) as BaseUnit
-                    newConstructionName = civInfo.getEquivalentUnit(constructionUnit.upgradesTo!!).name
+                    val text = "[$constructionName] has been obsolete and will remove from construction queue in [${city.name}]!"
+                    civInfo.addNotification(text, city.location, Color.BROWN)
                 }
-                city.cityConstructions.constructionQueue.add(newConstructionName)
+                else city.cityConstructions.constructionQueue.add(newConstructionName)
             }
         }
 

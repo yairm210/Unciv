@@ -36,8 +36,6 @@ internal object ConsoleLauncher {
 
         UncivGame.Current = game
         UncivGame.Current.settings = GameSettings().apply { showTutorials = false }
-        UncivGame.Current.simulateMaxTurns = 1000
-        UncivGame.Current.simulateUntilWin = true
 
         RulesetCache.loadRulesets(true)
 
@@ -47,7 +45,7 @@ internal object ConsoleLauncher {
         val newGame = GameStarter.startNewGame(gameSetupInfo)
         UncivGame.Current.gameInfo = newGame
 
-        var simulation = Simulation(newGame,25,4)
+        var simulation = Simulation(newGame,10,4)
 
         simulation.start()
 

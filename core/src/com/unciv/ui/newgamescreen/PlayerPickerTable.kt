@@ -78,7 +78,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                             val availableCiv = getAvailablePlayerCivs().firstOrNull { !it.isSpectator() }
                             if (availableCiv != null) player = Player(availableCiv.name)
                             // Spectators only Humans
-                            else player = Player("Spectator").apply { playerType = PlayerType.Human }
+                            else player = Player(Constants.spectator).apply { playerType = PlayerType.Human }
                         }
                         gameParameters.players.add(player)
                         update()
@@ -89,13 +89,12 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
     }
 
     /**
-     * If new mod removes nations already chosen by some player
-     * sets first civilization available in the ruleset
+     * Reassigns removed mod references to random civilization
      */
     private fun reassignRemovedModReferences() {
         for (player in gameParameters.players) {
             if (!previousScreen.ruleset.nations.containsKey(player.chosenCiv))
-                player.chosenCiv = "Random"
+                player.chosenCiv = Constants.random
         }
     }
 
@@ -107,7 +106,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
         // No auto-select if desiredCiv already used
         if (gameParameters.players.any { it.chosenCiv == desiredCiv }) return
         // Do auto-select, silently no-op if no suitable slot (human with 'random' choice)
-        gameParameters.players.firstOrNull { it.chosenCiv == "Random" && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
+        gameParameters.players.firstOrNull { it.chosenCiv == Constants.random && it.playerType == PlayerType.Human }?.chosenCiv = desiredCiv
     }
 
     /**
@@ -190,7 +189,7 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
      */
     private fun getNationTable(player: Player): Table {
         val nationTable = Table()
-        val nationImage = if (player.chosenCiv == "Random") "?".toLabel(Color.WHITE, 25)
+        val nationImage = if (player.chosenCiv == Constants.random) "?".toLabel(Color.WHITE, 25)
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(36f).apply { circle.color = Color.BLACK }
                 .surroundWithCircle(40f, false).apply { circle.color = Color.WHITE }
@@ -221,10 +220,10 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                 .apply { this.setAlignment(Align.center) }
                 .surroundWithCircle(45f).apply { circle.color = Color.BLACK }
                 .surroundWithCircle(50f, false).apply { circle.color = Color.WHITE }).pad(10f)
-        randomPlayerTable.add("Random".toLabel())
+        randomPlayerTable.add(Constants.random.toLabel())
         randomPlayerTable.touchable = Touchable.enabled
         randomPlayerTable.onClick {
-            player.chosenCiv = "Random"
+            player.chosenCiv = Constants.random
             nationsPopup.close()
             update()
         }
