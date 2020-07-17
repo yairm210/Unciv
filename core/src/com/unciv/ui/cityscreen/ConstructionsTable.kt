@@ -266,11 +266,13 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private fun getQueueButton(construction: IConstruction?): TextButton {
         val city = cityScreen.city
         val cityConstructions = city.cityConstructions
+        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
         val button: TextButton
 
         if (isSelectedQueueEntry()) {
             button = "Remove from queue".toTextButton()
-            if (!UncivGame.Current.worldScreen.isPlayersTurn || city.isPuppet) button.disable()
+            if (!UncivGame.Current.worldScreen.isPlayersTurn || city.isPuppet || viewingCiv.isSpectator())
+                button.disable()
             else {
                 button.onClick {
                     cityConstructions.removeFromQueue(selectedQueueEntry,false)
@@ -285,6 +287,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     || cityConstructions.isQueueFull()
                     || !cityConstructions.getConstruction(construction.name).isBuildable(cityConstructions)
                     || !UncivGame.Current.worldScreen.isPlayersTurn
+                    || viewingCiv.isSpectator()
                     || construction is PerpetualConstruction && cityConstructions.isBeingConstructedOrEnqueued(construction.name)
                     || city.isPuppet) {
                 button.disable()
@@ -348,6 +351,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
             if ( !construction.isBuildable(cityConstructions)
                     || !UncivGame.Current.worldScreen.isPlayersTurn
+                    || UncivGame.Current.worldScreen.viewingCiv.isSpectator()
                     || city.isPuppet || city.isInResistance()
                     || !city.canPurchase(construction)
                     || constructionGoldCost > city.civInfo.gold )
@@ -362,7 +366,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private fun getRaisePriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Up").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        if (UncivGame.Current.worldScreen.isPlayersTurn
+                && !UncivGame.Current.worldScreen.viewingCiv.isSpectator()
+                && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -379,7 +385,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private fun getLowerPriorityButton(constructionQueueIndex: Int, name: String, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Down").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        if (UncivGame.Current.worldScreen.isPlayersTurn
+                && !UncivGame.Current.worldScreen.viewingCiv.isSpectator()
+                && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
@@ -396,7 +404,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     private fun getRemoveFromQueueButton(constructionQueueIndex: Int, city: CityInfo): Table {
         val tab = Table()
         tab.add(ImageGetter.getImage("OtherIcons/Stop").surroundWithCircle(40f))
-        if (UncivGame.Current.worldScreen.isPlayersTurn && !city.isPuppet) {
+        if (UncivGame.Current.worldScreen.isPlayersTurn
+                && !UncivGame.Current.worldScreen.viewingCiv.isSpectator()
+                && !city.isPuppet) {
             tab.touchable = Touchable.enabled
             tab.onClick {
                 tab.touchable = Touchable.disabled
