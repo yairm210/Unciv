@@ -391,7 +391,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         displayTutorial(Tutorial.InjuredUnits) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 } }
 
-        displayTutorial(Tutorial.Workers) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker } }
+        displayTutorial(Tutorial.Workers) { gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.hasUnique(Constants.workerUnique) } }
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {

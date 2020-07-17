@@ -306,7 +306,7 @@ object Battle {
                 defender.getTile().position, Color.RED)
 
         // Apparently in Civ V, captured settlers are converted to workers.
-        if(capturedUnit.name==Constants.settler){
+        if(capturedUnit.name==Constants.settler) {
             val tile = capturedUnit.getTile()
             capturedUnit.destroy()
             attacker.getCivInfo().placeUnitNearTile(tile.position, Constants.worker)
