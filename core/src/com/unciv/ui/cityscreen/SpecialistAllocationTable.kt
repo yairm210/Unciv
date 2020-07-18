@@ -22,9 +22,11 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
             val assignedSpecialists = cityInfo.population.specialists.get(stat).toInt()
             val maxSpecialists = cityInfo.population.getMaxSpecialists().get(stat).toInt()
 
-            add(getUnassignButton(assignedSpecialists,stat))
+            val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
+
+            if (!viewingCiv.isSpectator()) add(getUnassignButton(assignedSpecialists,stat))
             add(getAllocationTable(assignedSpecialists, maxSpecialists, stat)).pad(10f)
-            add(getAssignButton(assignedSpecialists,maxSpecialists,stat))
+            if (!viewingCiv.isSpectator()) add(getAssignButton(assignedSpecialists,maxSpecialists,stat))
             addSeparatorVertical().pad(10f)
             add(getSpecialistStatsTable(stat)).row()
         }
