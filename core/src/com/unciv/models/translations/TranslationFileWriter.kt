@@ -193,24 +193,18 @@ object TranslationFileWriter {
 
             fun submitString(item: Any) {
                 val string = item.toString()
-                // substitute the regex for "Bonus/Penalty vs ..."
-                val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
-                when {
-                    match != null ->
-                        resultStrings!!.add("${match.groupValues[1]} vs [unitType] = ")
 
-                    // substitute the regex for the bonuses, etc.
-                    string.startsWith(MapUnit.BONUS_WHEN_INTERCEPTING)
-                            || string.startsWith(UnitActions.CAN_UNDERTAKE)
-                            || string.endsWith(MapUnit.CHANCE_TO_INTERCEPT_AIR_ATTACKS)
-                            || Regex(BattleDamage.BONUS_AS_ATTACKER).matchEntire(string) != null
-                            || Regex(BattleDamage.HEAL_WHEN_KILL).matchEntire(string) != null -> {
-                        val updatedString = string.replace("\\[\\d+(?=])]".toRegex(), "[amount]")
-                        resultStrings!!.add("$updatedString = ")
-                    }
-                    else ->
-                        resultStrings!!.add("$string = ")
+                val parameters = string.getPlaceholderParameters()
+                var stringToTranslate = string
+                if (parameters.size == 1 && parameters[0].toIntOrNull() != null)
+                    stringToTranslate = string.replace(parameters[0], "amount")
+                else {
+                    // substitute the regex for "Bonus/Penalty vs ..."
+                    val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)
+                    if (match != null) stringToTranslate = "${match.groupValues[1]} vs [unitType]"
                 }
+                resultStrings!!.add("$stringToTranslate = ")
+                return
             }
 
             fun serializeElement(element: Any) {
@@ -243,23 +237,24 @@ object TranslationFileWriter {
         return generatedStrings
     }
 
+    val untranslatableFieldSet = setOf (
+            "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
+            "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
+            "obsoleteTech", "occursOn", "prerequisites", "promotions",
+            "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities",
+            "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires",
+            "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
+            "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo"
+    )
+
     private fun isFieldTranslatable(field: Field, fieldValue: Any?): Boolean {
         // Exclude fields by name that contain references to items defined elsewhere
         // - the definition should cause the inclusion in our translatables list, not the reference.
         // This prevents duplication within the base game (e.g. Mines were duplicated by being output
         // by both TerrainResources and TerrainImprovements) and duplication of base game items into
-        // mods. Note "uniques" is not in this list and might still generate dupes - TODO
         return  fieldValue != null &&
                 fieldValue != "" &&
-                field.name !in setOf (
-                        "aiFreeTechs", "aiFreeUnits", "attackSound", "building",
-                        "cannotBeBuiltWith", "cultureBuildings", "improvement", "improvingTech",
-                        "obsoleteTech", "occursOn", "prerequisites", "promotions",
-                        "providesFreeBuilding", "replaces", "requiredBuilding", "requiredBuildingInAllCities",
-                        "requiredNearbyImprovedResources", "requiredResource", "requiredTech", "requires",
-                        "resourceTerrainAllow", "revealedBy", "startBias", "techRequired",
-                        "terrainsCanBeBuiltOn", "terrainsCanBeFoundOn", "turnsInto", "uniqueTo", "upgradesTo"
-                    )
+                field.name !in untranslatableFieldSet
     }
 
     private fun getJavaClassByName(name: String): Class<Any> {
