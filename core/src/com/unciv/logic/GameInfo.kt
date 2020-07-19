@@ -90,29 +90,41 @@ class GameInfo {
 
         switchTurn()
 
-        while (thisPlayer.playerType == PlayerType.AI
-            || turns < UncivGame.Current.simulateUntilTurnForDebug
-                || (turns < simulateMaxTurns && simulateUntilWin)
-                // For multiplayer, if there are 3+ players and one is defeated,
-                // we'll want to skip over their turn
-                || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
-        ) {
-            if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
-                NextTurnAutomation.automateCivMoves(thisPlayer)
+        fun automateTurn(){
+            while (thisPlayer.playerType == PlayerType.AI
+                    || turns < UncivGame.Current.simulateUntilTurnForDebug
+                    || (turns < simulateMaxTurns && simulateUntilWin)
+                    // For multiplayer, if there are 3+ players and one is defeated,
+                    // we'll want to skip over their turn
+                    || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
+            ) {
+                if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
+                    NextTurnAutomation.automateCivMoves(thisPlayer)
 
-                // Placing barbarians after their turn
-                if (thisPlayer.isBarbarian()
-                        && !gameParameters.noBarbarians
-                        && turns % 10 == 0) placeBarbarians()
+                    // Placing barbarians after their turn
+                    if (thisPlayer.isBarbarian()
+                            && !gameParameters.noBarbarians
+                            && turns % 10 == 0) placeBarbarians()
 
-                // exit simulation mode when player wins
-                if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
-                    // stop simulation
-                    simulateUntilWin = false
-                    break
+                    // exit simulation mode when player wins
+                    if (thisPlayer.victoryManager.hasWon() && simulateUntilWin) {
+                        // stop simulation
+                        simulateUntilWin = false
+                        break
+                    }
                 }
+                switchTurn()
             }
-            switchTurn()
+        }
+
+        fun replayTurn(){
+
+        }
+
+        if (UncivGame.Current.replayDebugSwitch) {
+            replayTurn()
+        } else {
+            automateTurn()
         }
 
         currentPlayer = thisPlayer.civName
