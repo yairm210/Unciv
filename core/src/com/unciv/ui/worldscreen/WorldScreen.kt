@@ -41,6 +41,7 @@ import kotlin.concurrent.thread
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
+    val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
