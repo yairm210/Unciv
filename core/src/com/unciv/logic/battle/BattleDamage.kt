@@ -21,8 +21,6 @@ class BattleDamageModifier(val vs:String,val modificationAmount:Float){
 object BattleDamage {
 
     const val BONUS_VS_UNIT_TYPE = """(Bonus|Penalty) vs (.*) (\d*)%"""
-    const val BONUS_AS_ATTACKER = """Bonus as Attacker \[(\d*)]%"""
-    const val HEAL_WHEN_KILL = """Heals \[(\d*)] damage if it kills a unit"""
 
     private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
         val modifiers = mutableListOf<BattleDamageModifier>()
