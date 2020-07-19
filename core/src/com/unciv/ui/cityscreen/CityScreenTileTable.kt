@@ -34,8 +34,6 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
         innerTable.row()
         innerTable.add(getTileStatsTable(stats)).row()
 
-        val viewingCiv = UncivGame.Current.worldScreen.viewingCiv
-
         if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}
             && selectedTile in city.tilesInRange){
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
@@ -47,8 +45,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
             }
             if(goldCostOfTile>city.civInfo.gold
                     || city.isPuppet
-                    || viewingCiv.isSpectator()
-                    || !UncivGame.Current.worldScreen.isPlayersTurn)
+                    || !cityScreen.canChangeState)
                 buyTileButton.disable()
 
             innerTable.add(buyTileButton).row()
@@ -68,7 +65,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
                     update(selectedTile)
                     cityScreen.update()
                 }
-                if (viewingCiv.isSpectator()) unlockButton.disable()
+                if (!cityScreen.canChangeState) unlockButton.disable()
                 innerTable.add(unlockButton).row()
             }
             else {
@@ -78,7 +75,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
                     update(selectedTile)
                     cityScreen.update()
                 }
-                if (viewingCiv.isSpectator()) lockButton.disable()
+                if (!cityScreen.canChangeState) lockButton.disable()
                 innerTable.add(lockButton).row()
             }
         }
