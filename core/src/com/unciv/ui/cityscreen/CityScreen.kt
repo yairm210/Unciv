@@ -22,6 +22,9 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
     var selectedConstruction: IConstruction? = null
     var keyListener: InputListener? = null
 
+    /** Toggles or adds/removes all state changing buttons */
+    val canChangeState = UncivGame.Current.worldScreen.canChangeState
+
     /** Toggle between Constructions and cityInfo (buildings, specialists etc. */
     var showConstructionsTable = true
 
@@ -134,12 +137,13 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
                 city.annexCity()
                 update()
             }
+            if (!canChangeState) annexCityButton.disable()
             razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
         } else if(!city.isBeingRazed) {
             val razeCityButton = "Raze city".toTextButton()
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
-            if(!UncivGame.Current.worldScreen.isPlayersTurn || city.isOriginalCapital)
+            if(!canChangeState || city.isOriginalCapital)
                 razeCityButton.disable()
 
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
@@ -147,7 +151,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
             val stopRazingCityButton = "Stop razing city".toTextButton()
             stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
-            if(!UncivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
+            if(!canChangeState) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
         }
         razeCityButtonHolder.pack()
@@ -173,7 +177,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
 
                 selectedTile = tileInfo
                 selectedConstruction = null
-                if (tileGroup.isWorkable && UncivGame.Current.worldScreen.isPlayersTurn) {
+                if (tileGroup.isWorkable && canChangeState) {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0) {
                         city.workedTiles.add(tileInfo.position)
                         game.settings.addCompletedTutorialTask("Reassign worked tiles")

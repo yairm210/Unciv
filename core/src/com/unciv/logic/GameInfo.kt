@@ -182,7 +182,7 @@ class GameInfo {
 
     fun placeBarbarianEncampment(existingEncampments: List<TileInfo>): TileInfo? {
         // Barbarians will only spawn in places that no one can see
-        val allViewableTiles = civilizations.filterNot { it.isBarbarian() }
+        val allViewableTiles = civilizations.filterNot { it.isBarbarian() || it.isSpectator() }
                 .flatMap { it.viewableTiles }.toHashSet()
         val tilesWithin3ofExistingEncampment = existingEncampments.asSequence()
                 .flatMap { it.getTilesInDistance(3) }.toSet()
