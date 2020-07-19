@@ -196,7 +196,7 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (name == Constants.worker && getTile().improvementInProgress != null) return false
+        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
         if (action==Constants.unitActionExplore || isSleeping()
@@ -356,7 +356,7 @@ class MapUnit {
     }
 
     private fun doPostTurnAction() {
-        if (name == Constants.worker && getTile().improvementInProgress != null) workOnImprovement()
+        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
         if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
         if(currentMovement == getMaxMovement().toFloat()
                 && isFortified()){
@@ -579,7 +579,7 @@ class MapUnit {
             }
 
         actions.add {
-            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior")
+            val chosenUnit = listOf(Constants.settler, Constants.worker, "Warrior")
                     .filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }.random(tileBasedRandom)
             if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)

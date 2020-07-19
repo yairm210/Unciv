@@ -28,9 +28,10 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
         setDefaultCloseAction(mapEditorScreen)
         scrollPane.setScrollingDisabled(true, true)
 
-        topTable.add(playerPickerTable)
+        topTable.add(AutoScrollPane(gameOptionsTable).apply { setScrollingDisabled(true, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
         topTable.addSeparatorVertical()
-        topTable.add(gameOptionsTable).row()
+        topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
         rightSideButton.setText("OK")
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
