@@ -5,6 +5,8 @@ import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -118,12 +120,12 @@ object BattleDamage {
             modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
-                val regexResult = Regex(BONUS_AS_ATTACKER).matchEntire(ability) //to do: extend to defender, and penalyy
-                if (regexResult == null) continue
-                val bonus = regexResult.groups[1]!!.value.toFloat() / 100
-                if (modifiers.containsKey("Attacker Bonus"))
-                    modifiers["Attacker Bonus"] = modifiers["Attacker Bonus"]!! + bonus
-                else modifiers["Attacker Bonus"] = bonus
+                if(ability.equalsPlaceholderText("Bonus as Attacker []%")) {
+                    val bonus = ability.getPlaceholderParameters()[0].toFloat() / 100
+                    if (modifiers.containsKey("Attacker Bonus"))
+                        modifiers["Attacker Bonus"] = modifiers["Attacker Bonus"]!! + bonus
+                    else modifiers["Attacker Bonus"] = bonus
+                }
             }
 
             if (attacker.unit.isEmbarked() && !attacker.unit.hasUnique("Amphibious"))
