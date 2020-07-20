@@ -19,8 +19,8 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
     internal fun addTiles(padding:Float) {
 
         val tileSetStrings = TileSetStrings()
-        for (tileGroup in tileMap.values.map { TileGroup(it, tileSetStrings) })
-            tileGroups[tileGroup.tileInfo] = tileGroup
+        for (tileInfo in tileMap.values)
+            tileGroups[tileInfo] = TileGroup(tileInfo, tileSetStrings)
 
         tileGroupMap = TileGroupMap(tileGroups.values, padding)
         actor = tileGroupMap

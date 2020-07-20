@@ -1,3 +1,17 @@
+## 3.9.13
+
+Simplified translation file generation
+
+Background work for "generic-ifying" unit and building uniques for modding purposes
+
+Worker unique is now moddable to other units
+
+By alkorolyov:
+- Spectators can enter and view other player cities
+- Fix map editor gameparameters layout
+
+Translation updates
+
 ## 3.9.12
 
 Added Water Mill building
