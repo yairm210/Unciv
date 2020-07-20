@@ -25,7 +25,6 @@ class BaseUnit : INamed, IConstruction {
     var range:Int = 2
     var interceptRange = 0
     lateinit var unitType: UnitType
-    internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null
     var requiredResource:String? = null
     var uniques =HashSet<String>()
@@ -54,7 +53,6 @@ class BaseUnit : INamed, IConstruction {
         if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
         if(!forPickerScreen) {
             if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-            if (unbuildable) sb.appendln("Unbuildable".tr())
             else sb.appendln("{Cost}: $cost".tr())
             if(requiredTech!=null) sb.appendln("Required tech: [$requiredTech]".tr())
             if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
@@ -122,15 +120,15 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
-        if(unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
+        if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
             return "Can only build water units in coastal cities"
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
-        if(civRejectionReason!="") return civRejectionReason
+        if (civRejectionReason != "") return civRejectionReason
         return ""
     }
 
     fun getRejectionReason(civInfo: CivilizationInfo): String {
-        if (unbuildable) return "Unbuildable"
+        if (uniques.contains("Unbuildable")) return "Unbuildable"
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
