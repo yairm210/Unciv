@@ -47,10 +47,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      */
     val simulateUntilTurnForDebug: Int = 0
 
-    /** Console log battles
+    /** Toggles console battle log
      */
     val alertBattle = false
-    /** Debug new Replay functionality
+    /** Debug new replay functionality
      */
     val replayDebugSwitch = false
 

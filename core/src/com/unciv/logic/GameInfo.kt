@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.replay.NextTurnReplay
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
@@ -33,6 +34,7 @@ class GameInfo {
     var gameParameters= GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
+    var replayMode=false
     var currentPlayer=""
     var gameId = UUID.randomUUID().toString() // random string
 
@@ -77,13 +79,11 @@ class GameInfo {
         var thisPlayer = previousHumanPlayer // not calling is currentPlayer because that's alreay taken and I can't think of a better name
         var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
-
         fun switchTurn(){
             thisPlayer.endTurn()
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
-            if(currentPlayerIndex==0){
-                turns++
-            }
+            if(currentPlayerIndex==0) turns++
+
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
         }
@@ -118,14 +118,12 @@ class GameInfo {
         }
 
         fun replayTurn(){
-
+            NextTurnReplay.replayCivMoves(thisPlayer, turns)
+            switchTurn()
         }
 
-        if (UncivGame.Current.replayDebugSwitch) {
-            replayTurn()
-        } else {
-            automateTurn()
-        }
+        if (replayMode) replayTurn()
+        else automateTurn()
 
         currentPlayer = thisPlayer.civName
         currentPlayerCiv = getCivilization(currentPlayer)

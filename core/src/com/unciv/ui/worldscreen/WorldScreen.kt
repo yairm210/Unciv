@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
+import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -41,7 +43,7 @@ import kotlin.concurrent.thread
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
-    val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
+    var canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)
@@ -69,6 +71,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
 
     init {
+        if (UncivGame.Current.replayDebugSwitch)
+            canChangeState = gameInfo.replayMode
+
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 
