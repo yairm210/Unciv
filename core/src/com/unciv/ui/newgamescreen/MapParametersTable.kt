@@ -21,9 +21,10 @@ import com.unciv.ui.utils.*
 class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false):
     Table() {
     lateinit var mapTypeSelectBox: TranslatedSelectBox
-    lateinit var worldSizeTable: Table
-    lateinit var hexWorldSizeTable: Table
-    lateinit var rectWorldSizeTable: Table
+    lateinit var worldSizeSelectBox: TranslatedSelectBox
+    private var customWorldSizeTable = Table ()
+    private var hexagonalSizeTable = Table()
+    private var rectangularSizeTable = Table()
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
 
@@ -48,6 +49,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
                 TranslatedSelectBox(mapShapes, mapParameters.shape, skin)
         mapShapeSelectBox.onChange {
                 mapParameters.shape = mapShapeSelectBox.selected.value
+                updateWorldSizeTable()
             }
 
         add ("{Map Shape}:".toLabel()).left()
@@ -89,53 +91,72 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             Constants.custom
         )
 
-        val worldSizeSelectBox = TranslatedSelectBox(
+        worldSizeSelectBox = TranslatedSelectBox(
                 mapSizes,
                 mapParameters.size.name,
                 skin
         )
 
-        hexWorldSizeTable = Table()
-        val customMapSizeRadius = TextField("10", skin).apply {
-            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
-        }
-        customMapSizeRadius.onChange { mapParameters.size = MapSize(customMapSizeRadius.text.toInt()) }
-        hexWorldSizeTable.add("{Radius}:".toLabel()).left()
-        hexWorldSizeTable.add(customMapSizeRadius).fillX().row()
+        addHexagonalSizeTable()
+        addRectangularSizeTable()
 
-        rectWorldSizeTable = Table()
-        val customMapWidth = TextField("10", skin).apply {
-            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
-        }
-        val customMapHeight = TextField("10", skin).apply {
-            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
-        }
-        customMapWidth.onChange { mapParameters.size = MapSize(customMapWidth.text.toInt(), customMapHeight.text.toInt()) }
-        customMapHeight.onChange { mapParameters.size = MapSize(customMapWidth.text.toInt(), customMapHeight.text.toInt()) }
-        rectWorldSizeTable.add("{Width}:".toLabel()).left()
-        rectWorldSizeTable.add(customMapWidth).fillX().row()
-        rectWorldSizeTable.add("{Height}:".toLabel()).left()
-        rectWorldSizeTable.add(customMapHeight).fillX().row()
-
-        fun updateOnWorldSizeChange() {
-            worldSizeTable.clear()
-            if (worldSizeSelectBox.selected.value == Constants.custom && mapParameters.shape == MapShape.hexagonal)
-                worldSizeTable.add(hexWorldSizeTable).row()
-            else if (worldSizeSelectBox.selected.value == Constants.custom && mapParameters.shape == MapShape.rectangular)
-                worldSizeTable.add(rectWorldSizeTable).row()
-            else
-                mapParameters.size = MapSize(worldSizeSelectBox.selected.value)
-        }
-
-        worldSizeSelectBox.onChange { updateOnWorldSizeChange() }
+        worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
         add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
-        worldSizeTable = Table()
-        add(worldSizeTable).row()
+        add(customWorldSizeTable).colspan(2).grow().row()
+
+        updateWorldSizeTable()
     }
 
+    private fun addHexagonalSizeTable() {
+        val defaultRadius = mapParameters.size.radius.toString()
+        val customMapSizeRadius = TextField(defaultRadius, skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+        customMapSizeRadius.onChange {
+            if (customMapSizeRadius.text == "") customMapSizeRadius.text = "0"
+            mapParameters.size = MapSize(customMapSizeRadius.text.toInt() )
+        }
+        hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
+        hexagonalSizeTable.add(customMapSizeRadius).right()
+    }
 
+    private fun addRectangularSizeTable() {
+        val defaultWidth = mapParameters.size.width.toString()
+        val customMapWidth = TextField(defaultWidth, skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+
+        val defaultHeight = mapParameters.size.height.toString()
+        val customMapHeight = TextField(defaultHeight, skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+
+        customMapWidth.onChange {
+            mapParameters.size = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+        customMapHeight.onChange {
+            mapParameters.size = MapSize(customMapWidth.text.toIntOrNull() ?: 0, customMapHeight.text.toIntOrNull() ?: 0)
+        }
+
+        rectangularSizeTable.defaults().pad(5f)
+        rectangularSizeTable.add("{Width}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapWidth).right().row()
+        rectangularSizeTable.add("{Height}:".toLabel()).grow().left()
+        rectangularSizeTable.add(customMapHeight).right().row()
+    }
+
+    private fun updateWorldSizeTable() {
+        customWorldSizeTable.clear()
+
+        if (mapParameters.shape == MapShape.hexagonal && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(hexagonalSizeTable).grow().row()
+        else if (mapParameters.shape == MapShape.rectangular && worldSizeSelectBox.selected.value == Constants.custom)
+            customWorldSizeTable.add(rectangularSizeTable).grow().row()
+        else
+            mapParameters.size = MapSize(worldSizeSelectBox.selected.value)
+    }
 
     private fun addNoRuinsCheckbox() {
         noRuinsCheckbox = CheckBox("No Ancient Ruins".tr(), skin)
