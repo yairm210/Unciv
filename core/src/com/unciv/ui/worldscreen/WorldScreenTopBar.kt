@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
+    private var selectedCivTable = Table()
     private val turnsLabel = "Turns: 0/400".toLabel()
     private val goldLabel = "Gold:".toLabel(colorFromRGB(225, 217, 71))
     private val scienceLabel = "Science:".toLabel(colorFromRGB(78, 140, 151))
@@ -47,6 +48,8 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         pad(5f)
         pack()
         addActor(getMenuButton()) // needs to be after pack
+
+        addSelectedCivilizationTable()
 
         val overviewButton = "Overview".toTextButton()
         overviewButton.labelCell.pad(10f)
@@ -157,6 +160,13 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         return menuButton
     }
 
+    private fun addSelectedCivilizationTable() {
+        selectedCivTable.centerY(this)
+        selectedCivTable.left()
+        selectedCivTable.x = getMenuButton().width + 20f
+        updateSelectedCiv()
+        addActor(selectedCivTable)
+    }
 
     internal fun update(civInfo: CivilizationInfo) {
         val revealedStrategicResources = civInfo.gameInfo.ruleSet.tileResources.values
@@ -195,6 +205,17 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
+
+        updateSelectedCiv()
+    }
+
+    private fun updateSelectedCiv() {
+        selectedCivTable.clear()
+        val selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
+        selectedCivLabel.setFontSize(30)
+        selectedCivTable.add(selectedCivLabel).padRight(10f)
+        val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
+        selectedCivTable.add(ImageGetter.getNationIndicator(nation, 40f))
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
