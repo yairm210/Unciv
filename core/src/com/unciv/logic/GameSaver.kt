@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.ImageGetter
@@ -57,11 +58,8 @@ object GameSaver {
     }
 
     fun getGeneralSettingsFile(): FileHandle {
-        try {
-            return Gdx.files.local(settingsFileName)
-        } catch (ex: NullPointerException) {
-            return FileHandle(settingsFileName)
-        }
+        return if (UncivGame.Current.consoleMode) FileHandle(settingsFileName)
+        else Gdx.files.local(settingsFileName)
     }
 
     fun getGeneralSettings(): GameSettings {
