@@ -220,10 +220,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit != previouslySelectedUnit)
             selectedUnitHasChanged = true
-
-        println("unit: "+selectedUnit?.name+" ("+selectedUnit?.owner+")")
-        println("city: "+selectedCity?.name+" ("+selectedCity?.civInfo?.civName+")")
-        println("selectedUnitHasChanged: "+selectedUnitHasChanged)
     }
 
 }

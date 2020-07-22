@@ -42,7 +42,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         isVisible = true
 
         val attacker = tryGetAttacker()
-        if(attacker==null || worldScreen.viewingCiv.isSpectator()){ hide(); return }
+        if(attacker==null || !worldScreen.canChangeState){ hide(); return }
 
         if (attacker.getUnitType()==UnitType.Missile) {
             val selectedTile = worldScreen.mapHolder.selectedTile
