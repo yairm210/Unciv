@@ -49,6 +49,9 @@ tasks.register<JavaExec>("debug") {
 tasks.register<Jar>("dist") { // Compiles the jar file
     dependsOn(tasks.getByName("classes"))
 
+    // META-INF/INDEX.LIST and META-INF/io.netty.versions.properties are duplicated, but I don't know why
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
     from(files(sourceSets.main.get().output.resourcesDir))
     from(files(sourceSets.main.get().output.classesDirs))
     // see Laurent1967's comment on https://github.com/libgdx/libgdx/issues/5491
@@ -56,7 +59,7 @@ tasks.register<Jar>("dist") { // Compiles the jar file
     from(files(assetsDir))
     // This is for the .dll and .so files to make the Discord RPC work on all desktops
     from(files(discordDir))
-    archiveName = "${BuildConfig.appName}.jar"
+    archiveFileName.set("${BuildConfig.appName}.jar")
  
     manifest {
         attributes(mapOf("Main-Class" to mainClassName, "Specification-Version" to BuildConfig.appVersion))
@@ -105,9 +108,9 @@ for(platform in PackrConfig.Platform.values()) {
         }
 
         tasks.register<Zip>("zip${platformName}") {
-            archiveName = "${BuildConfig.appName}-${platformName}.zip"
+            archiveFileName.set("${BuildConfig.appName}-${platformName}.zip")
             from(config.outDir)
-            destinationDir = deployFolder
+            destinationDirectory.set(deployFolder)
         }
 
         finalizedBy("zip${platformName}")
@@ -115,9 +118,9 @@ for(platform in PackrConfig.Platform.values()) {
 }
 
 tasks.register<Zip>("zipLinuxFilesForJar") {
-    archiveName = "linuxFilesForJar.zip"
+    archiveFileName.set("linuxFilesForJar.zip")
     from(file("linuxFilesForJar"))
-    destinationDir = deployFolder
+    destinationDirectory.set(deployFolder)
 }
 
 tasks.register("packr") {
