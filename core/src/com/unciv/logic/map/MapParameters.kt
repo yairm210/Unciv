@@ -1,11 +1,36 @@
 package com.unciv.logic.map
 
-enum class MapSize(val radius: Int) {
-    Tiny(10),
-    Small(15),
-    Medium(20),
-    Large(30),
-    Huge(40)
+import com.unciv.Constants
+
+
+
+class MapSize {
+    var radius = 0
+    var width = 0
+    var height = 0
+    var name = ""
+
+    constructor(name: String) {
+        when (name) {
+            Constants.tiny -> { radius = 10; width = 10; height = 10 }
+            Constants.small -> { radius = 15; width = 10; height = 10 }
+            Constants.medium -> { radius = 20; width = 10; height = 10 }
+            Constants.large -> { radius = 30; width = 10; height = 10 }
+            Constants.huge -> { radius = 40; width = 10; height = 10 }
+        }
+    }
+    constructor(radius: Int) {
+        name = Constants.custom
+        this.radius = radius
+    }
+
+    constructor(height: Int, width: Int) {
+        name = Constants.custom
+        this.height = height
+        this.width = width
+    }
+
+
 }
 
 object MapShape {
@@ -36,7 +61,7 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    var size: MapSize = MapSize.Medium
+    var size = MapSize(Constants.medium)
     var noRuins = false
     var noNaturalWonders = false
 

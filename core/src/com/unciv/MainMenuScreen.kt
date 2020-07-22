@@ -48,7 +48,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
-                    .generateMap(MapParameters().apply { size = MapSize.Small; type = MapType.default })
+                    .generateMap(MapParameters().apply { size = MapSize(Constants.small); type = MapType.default })
             Gdx.app.postRunnable { // for GL context
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(

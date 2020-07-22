@@ -78,4 +78,11 @@ object Constants {
     const val futureEra = "Future era"
     const val barbarians = "Barbarians"
     const val spectator = "Spectator"
+
+    const val tiny = "Tiny"
+    const val small = "Small"
+    const val medium = "Medium"
+    const val large = "Large"
+    const val huge = "Huge"
+    const val custom = "Custom"
 }

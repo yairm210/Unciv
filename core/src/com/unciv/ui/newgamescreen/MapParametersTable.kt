@@ -3,6 +3,8 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.unciv.Constants
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -19,15 +21,19 @@ import com.unciv.ui.utils.*
 class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed: Boolean = false):
     Table() {
     lateinit var mapTypeSelectBox: TranslatedSelectBox
+    lateinit var worldSizeTable: Table
+    lateinit var hexWorldSizeTable: Table
+    lateinit var rectWorldSizeTable: Table
     lateinit var noRuinsCheckbox: CheckBox
     lateinit var noNaturalWondersCheckbox: CheckBox
+
 
     init {
         skin = CameraStageBaseScreen.skin
         defaults().pad(5f)
         addMapShapeSelectBox()
         addMapTypeSelectBox()
-        addWorldSizeSelectBox()
+        addWorldSizeTable()
         addNoRuinsCheckbox()
         addNoNaturalWondersCheckbox()
         addAdvancedSettings()
@@ -73,21 +79,63 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
         add(mapTypeSelectBox).fillX().row()
     }
 
-
-    private fun addWorldSizeSelectBox() {
-        val worldSizeSelectBox = TranslatedSelectBox(
-            MapSize.values().map { it.name },
-            mapParameters.size.name,
-            skin
+    private fun addWorldSizeTable() {
+        val mapSizes = listOfNotNull(
+            Constants.tiny,
+            Constants.small,
+            Constants.medium,
+            Constants.large,
+            Constants.huge,
+            Constants.custom
         )
 
-        worldSizeSelectBox.onChange {
-                mapParameters.size = MapSize.valueOf(worldSizeSelectBox.selected.value)
-            }
+        val worldSizeSelectBox = TranslatedSelectBox(
+                mapSizes,
+                mapParameters.size.name,
+                skin
+        )
+
+        hexWorldSizeTable = Table()
+        val customMapSizeRadius = TextField("10", skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+        customMapSizeRadius.onChange { mapParameters.size = MapSize(customMapSizeRadius.text.toInt()) }
+        hexWorldSizeTable.add("{Radius}:".toLabel()).left()
+        hexWorldSizeTable.add(customMapSizeRadius).fillX().row()
+
+        rectWorldSizeTable = Table()
+        val customMapWidth = TextField("10", skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+        val customMapHeight = TextField("10", skin).apply {
+            textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        }
+        customMapWidth.onChange { mapParameters.size = MapSize(customMapWidth.text.toInt(), customMapHeight.text.toInt()) }
+        customMapHeight.onChange { mapParameters.size = MapSize(customMapWidth.text.toInt(), customMapHeight.text.toInt()) }
+        rectWorldSizeTable.add("{Width}:".toLabel()).left()
+        rectWorldSizeTable.add(customMapWidth).fillX().row()
+        rectWorldSizeTable.add("{Height}:".toLabel()).left()
+        rectWorldSizeTable.add(customMapHeight).fillX().row()
+
+        fun updateOnWorldSizeChange() {
+            worldSizeTable.clear()
+            if (worldSizeSelectBox.selected.value == Constants.custom && mapParameters.shape == MapShape.hexagonal)
+                worldSizeTable.add(hexWorldSizeTable).row()
+            else if (worldSizeSelectBox.selected.value == Constants.custom && mapParameters.shape == MapShape.rectangular)
+                worldSizeTable.add(rectWorldSizeTable).row()
+            else
+                mapParameters.size = MapSize(worldSizeSelectBox.selected.value)
+        }
+
+        worldSizeSelectBox.onChange { updateOnWorldSizeChange() }
 
         add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
+        worldSizeTable = Table()
+        add(worldSizeTable).row()
     }
+
+
 
     private fun addNoRuinsCheckbox() {
         noRuinsCheckbox = CheckBox("No Ancient Ruins".tr(), skin)

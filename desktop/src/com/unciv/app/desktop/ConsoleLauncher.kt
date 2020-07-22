@@ -1,5 +1,6 @@
 package com.unciv.app.desktop
 
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
@@ -58,7 +59,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            size = MapSize.Tiny
+            size = MapSize(Constants.tiny)
             noRuins = true
             noNaturalWonders = true
         }
