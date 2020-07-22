@@ -32,7 +32,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         val tabsTable = Table().apply { defaults().pad(10f) }
         val setMyVictoryButton = "Our status".toTextButton().onClick { setMyVictoryTable() }
-        tabsTable.add(setMyVictoryButton)
+        if (!playerCivInfo.isSpectator()) tabsTable.add(setMyVictoryButton)
         val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
         val setCivRankingsButton = "Rankings".toTextButton().onClick { setCivRankingsTable() }

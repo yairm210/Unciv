@@ -63,6 +63,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
+    /** Selected civilization, used only in spectator mode */
+    var selectedCiv =  if (bottomUnitTable.selectedUnit != null) bottomUnitTable.selectedUnit!!.civInfo
+    else if (bottomUnitTable.selectedCity != null) bottomUnitTable.selectedCity!!.civInfo
+    else viewingCiv
+
     private var backButtonListener : InputListener
 
     // An initialized val always turned out to illegally be null...
