@@ -1,7 +1,8 @@
 package com.unciv.logic.map
 
 import com.unciv.Constants
-
+import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
+import com.unciv.logic.HexMath.getEquivalentRectangularSize
 
 
 class MapSize {
@@ -11,23 +12,29 @@ class MapSize {
     var name = ""
 
     constructor(name: String) {
+        /** Hard coded values from getEquivalentRectangularSize() */
         when (name) {
-            Constants.tiny -> { radius = 10; width = 10; height = 10 }
-            Constants.small -> { radius = 15; width = 10; height = 10 }
-            Constants.medium -> { radius = 20; width = 10; height = 10 }
-            Constants.large -> { radius = 30; width = 10; height = 10 }
-            Constants.huge -> { radius = 40; width = 10; height = 10 }
+            Constants.tiny -> { radius = 10; width = 23; height = 15 }
+            Constants.small -> { radius = 15; width = 33; height = 21 }
+            Constants.medium -> { radius = 20; width = 44; height = 29 }
+            Constants.large -> { radius = 30; width = 66; height = 43 }
+            Constants.huge -> { radius = 40; width = 87; height = 57 }
         }
     }
     constructor(radius: Int) {
         name = Constants.custom
         this.radius = radius
+        val size = getEquivalentRectangularSize(radius)
+        this.width = size.x.toInt()
+        this.height = size.y.toInt()
     }
 
-    constructor(height: Int, width: Int) {
+    constructor(width: Int, height: Int) {
         name = Constants.custom
-        this.height = height
         this.width = width
+        this.height = height
+        this.radius = getEquivalentHexagonalRadius(width, height)
+
     }
 
 

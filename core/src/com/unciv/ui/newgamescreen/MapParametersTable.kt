@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
+import com.unciv.logic.HexMath.getEquivalentRectangularSize
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapShape
 import com.unciv.logic.map.MapSize
@@ -91,16 +92,11 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             Constants.custom
         )
 
-        worldSizeSelectBox = TranslatedSelectBox(
-                mapSizes,
-                mapParameters.size.name,
-                skin
-        )
+        worldSizeSelectBox = TranslatedSelectBox(mapSizes, mapParameters.size.name, skin)
+        worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
         addHexagonalSizeTable()
         addRectangularSizeTable()
-
-        worldSizeSelectBox.onChange { updateWorldSizeTable() }
 
         add("{World Size}:".toLabel()).left()
         add(worldSizeSelectBox).fillX().row()
@@ -115,8 +111,7 @@ class MapParametersTable(val mapParameters: MapParameters, val isEmptyMapAllowed
             textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
         }
         customMapSizeRadius.onChange {
-            if (customMapSizeRadius.text == "") customMapSizeRadius.text = "0"
-            mapParameters.size = MapSize(customMapSizeRadius.text.toInt() )
+            mapParameters.size = MapSize(customMapSizeRadius.text.toIntOrNull() ?: 0 )
         }
         hexagonalSizeTable.add("{Radius}:".toLabel()).grow().left()
         hexagonalSizeTable.add(customMapSizeRadius).right()

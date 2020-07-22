@@ -40,6 +40,16 @@ object HexMath {
         return Vector2(width, height)
     }
 
+    /** Returns a radius of a hexagonal map that have approximately the same number of
+     * tiles as a rectangular map of a given width/height
+     */
+    fun getEquivalentHexagonalRadius(width: Int, height: Int): Int {
+        val nTiles = width * height.toFloat()
+        if (nTiles < 1) return 0
+        val radius = ((sqrt(12*nTiles - 3) - 3) / 6).roundToInt()
+        return radius
+    }
+
     fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
         val vectors = arrayListOf(
                 Vector2(1f, 0f),
