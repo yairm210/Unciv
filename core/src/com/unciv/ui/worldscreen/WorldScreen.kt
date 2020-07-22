@@ -448,8 +448,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateSelectedCiv() {
-        selectedCiv =  if (bottomUnitTable.selectedUnit != null) bottomUnitTable.selectedUnit!!.civInfo
-        else if (bottomUnitTable.selectedCity != null) bottomUnitTable.selectedCity!!.civInfo
+        if (bottomUnitTable.selectedUnit != null)
+            selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
+        else if (bottomUnitTable.selectedCity != null)
+            selectedCiv = bottomUnitTable.selectedCity!!.civInfo
         else viewingCiv
     }
 
@@ -513,6 +515,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
                     newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
                     newWorldScreen.mapHolder.updateVisualScroll()
+                    newWorldScreen.selectedCiv = gameInfoClone.getCivilization(selectedCiv.civName)
                     game.worldScreen = newWorldScreen
                     game.setWorldScreen()
                 }
