@@ -65,7 +65,7 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
-    var allyCivName = ""
+    private var allyCivName = ""
     var naturalWonders = ArrayList<String>()
 
     //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
@@ -549,9 +549,7 @@ class CivilizationInfo {
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }
 
-    fun getAllyCiv(): String {
-        return allyCivName
-    }
+    fun getAllyCiv() = allyCivName
 
     fun updateAllyCivForCityState() {
         var newAllyName = ""
