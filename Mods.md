@@ -10,6 +10,11 @@ Mods are located in a `/mods` directory, on Desktop that should be next to your 
 
 In Android, they should go into the `Android/data/com.unciv.app/files/mods` directory.
 
+In Chromebook, go to "Play files", should be on the sidebar on the left side of the window under "My files".
+Click the 3 vertical dots on the top right-hand corner of the window below the "X".
+If the option "Show all Play folders" does not have a check next to it click it. You should see some new files that appear on your screen.
+*Now* navigate to `Android/data/com.unciv.app/files/mods`
+
 When loading a mod, they can be in 1 of 2 formats:
 - A folder in `/mods` - this is how you will work when you're editing your mod
 - A zip file in `/mods` - this is an easier way of handling prebuilt mods
