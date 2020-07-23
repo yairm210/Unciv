@@ -201,6 +201,7 @@ object TranslationFileWriter {
                         val parameterName = when{
                             parameter.toIntOrNull() != null -> "amount"
                             RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
+                            RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
                             else -> "param"
                         }
                         stringToTranslate = string.replace(parameters[0], parameterName)
