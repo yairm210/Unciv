@@ -124,7 +124,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
-        mapHolder.setCenterPosition(tileToCenterOn,true)
+
+        // Don't select unit and change selectedCiv when centering as spectator
+        if (viewingCiv.isSpectator())
+            mapHolder.setCenterPosition(tileToCenterOn,true, false)
+        else
+            mapHolder.setCenterPosition(tileToCenterOn,true, true)
 
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)

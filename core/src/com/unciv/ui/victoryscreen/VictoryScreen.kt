@@ -41,7 +41,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         topTable.addSeparator()
         topTable.add(contentsTable)
 
-        setMyVictoryTable()
+        if (playerCivInfo.isSpectator())
+            setGlobalVictoryTable()
+        else
+            setMyVictoryTable()
 
         rightSideButton.isVisible=false
 
