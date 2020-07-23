@@ -101,11 +101,7 @@ class PopulationManager {
         if (valueBestTile > valueBestSpecialist) {
             if (bestTile != null)
                 cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
-        } else {
-            if (bestJob != null) {
-                specialists.add(bestJob, 1f)
-            }
-        }
+        } else if (bestJob != null) specialists.add(bestJob, 1f)
     }
 
     fun unassignExtraPopulation() {

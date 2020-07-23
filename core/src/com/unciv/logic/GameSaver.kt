@@ -25,16 +25,16 @@ object GameSaver {
 
     fun getSave(GameName: String, multiplayer: Boolean = false): FileHandle {
         val localfile = Gdx.files.local("${getSubfolder(multiplayer)}/$GameName")
-        if(externalFilesDirForAndroid=="" || !Gdx.files.isExternalStorageAvailable) return localfile
-        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid+"/${getSubfolder(multiplayer)}/$GameName")
-        if(localfile.exists() && !externalFile.exists()) return localfile
+        if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localfile
+        val externalFile = Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}/$GameName")
+        if (localfile.exists() && !externalFile.exists()) return localfile
         return externalFile
     }
 
     fun getSaves(multiplayer: Boolean = false): List<String> {
         val localSaves = Gdx.files.local(getSubfolder(multiplayer)).list().map { it.name() }
-        if(externalFilesDirForAndroid=="" || !Gdx.files.isExternalStorageAvailable) return localSaves
-        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid+"/${getSubfolder(multiplayer)}").list().map { it.name() }
+        if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localSaves
+        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().map { it.name() }
     }
 
     fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
