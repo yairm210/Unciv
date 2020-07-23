@@ -536,7 +536,7 @@
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"science": 50},
 		"requiredBuilding": "Library",
-		"uniques": ["Must be next to mountain"],
+		"uniques": ["Must be next to [Mountain]"],
 		"requiredTech": "Astronomy"
 	},
 	{
@@ -864,7 +864,7 @@
 		"maintenance": 3,
 		"cannotBeBuiltWith": "Nuclear Plant",
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to desert"]
+		"uniques": ["Must be next to [Desert]"]
 	},
 	{
 		"name": "Sydney Opera House",

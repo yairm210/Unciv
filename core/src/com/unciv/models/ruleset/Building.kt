@@ -7,6 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import kotlin.math.pow
 
@@ -243,13 +245,11 @@ class Building : NamedStats(), IConstruction{
         if (uniques.contains("Unbuildable")) return "Unbuildable"
 
         val cityCenter = construction.cityInfo.getCenterTile()
-        if ("Must be next to desert" in uniques
-                && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
-            return "Must be next to desert"
 
-        if ("Must be next to mountain" in uniques
-                && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
-            return "Must be next to mountain"
+        for(unique in uniques)
+            if(unique.equalsPlaceholderText("Must be next to []")
+                    && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == unique.getPlaceholderParameters()[0] })
+                return unique
 
         if ("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
             return "Must be next to river"
