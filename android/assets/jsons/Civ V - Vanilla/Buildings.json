@@ -29,7 +29,7 @@
 		"name": "Stone Works", 
 		"happiness": 1,
 		"production": 1,
-		"requiredNearbyImprovedResources": ["Marble","Stone"],
+		"requiredNearbyImprovedResources": ["Marble", "Stone"],
 		"resourceBonusStats": {"production": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 25,

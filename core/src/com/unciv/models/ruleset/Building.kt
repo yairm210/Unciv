@@ -233,6 +233,7 @@ class Building : NamedStats(), IConstruction{
         val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
+                || rejectionReason.startsWith("Consumes")
                 || rejectionReason == "Wonder is being built elsewhere"
     }
 
