@@ -35,7 +35,10 @@ internal object ConsoleLauncher {
         val game = UncivGame(consoleParameters)
 
         UncivGame.Current = game
-        UncivGame.Current.settings = GameSettings().apply { showTutorials = false }
+        UncivGame.Current.settings = GameSettings().apply {
+            showTutorials = false
+            turnsBetweenAutosaves = 10000
+        }
 
         RulesetCache.loadRulesets(true)
 

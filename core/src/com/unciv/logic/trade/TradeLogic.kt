@@ -41,7 +41,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         if (!civInfo.isOneCityChallenger() && !otherCivilization.isOneCityChallenger()
                 && !civInfo.isCityState() && !otherCivilization.isCityState()) {
-            for (city in civInfo.cities.filterNot { it.isCapital() })
+            for (city in civInfo.cities.filterNot { it.isCapital() || it.isInResistance() })
                 offers.add(TradeOffer(city.id, TradeType.City))
         }
 

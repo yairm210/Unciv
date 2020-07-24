@@ -1,6 +1,6 @@
 [
 
-// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/
+	// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/
 
 	/* Ancient Era */
 	{
@@ -1067,7 +1067,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines","[40]% chance to intercept air attacks","May withdraw before melee"], // todo: add bonus vs submarines
+		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee"], // todo: add bonus vs submarines
 		"hurryCostModifier": 20
 	},
 	{
@@ -1289,46 +1289,42 @@
 	
 	{
 		"name": "Great Artist",
-		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age","Can build improvement: Landmark"],
+		"uniques": ["Can start an 8-turn golden age","Can build improvement: Landmark", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Scientist",
-		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can hurry technology research","Can build improvement: Academy"],
+		"uniques": ["Can hurry technology research","Can build improvement: Academy", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Merchant",
-		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence","Can build improvement: Customs house"],
+		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
+			"Can build improvement: Customs house", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Engineer",
-		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can speed up construction of a wonder","Can build improvement: Manufactory"],
+		"uniques": ["Can speed up construction of a wonder","Can build improvement: Manufactory", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great General",
-		"unbuildable": true,
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Can build improvement: Citadel"],
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Can build improvement: Citadel", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Khan",
-		"unbuildable": true,
 		"unitType": "Civilian",
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Heal adjacent units for an additional 15 HP per turn", "Can build improvement: Citadel"],
+		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Unbuildable",
+			"Heal adjacent units for an additional 15 HP per turn", "Can build improvement: Citadel"],
 		"movement": 5
 	}
 ]

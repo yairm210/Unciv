@@ -70,7 +70,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     }
 
 
-    private fun tryReadTranslationForLanguage(language: String){
+    private fun tryReadTranslationForLanguage(language: String) {
         val translationStart = System.currentTimeMillis()
 
         val translationFileName = "jsons/translations/$language.properties"
@@ -79,13 +79,13 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         val languageTranslations: HashMap<String, String>
         try { // On some devices we get a weird UnsupportedEncodingException
             // which is super odd because everyone should support UTF-8
-             languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
-        }catch (ex:Exception){
+            languageTranslations = TranslationFileReader.read(Gdx.files.internal(translationFileName))
+        } catch (ex: Exception) {
             return
         }
 
         // try to load the translations from the mods
-        for(modFolder in Gdx.files.local("mods").list()) {
+        for (modFolder in Gdx.files.local("mods").list()) {
             val modTranslationFile = modFolder.child(translationFileName)
             if (modTranslationFile.exists()) {
                 val translationsForMod = Translations()
@@ -98,7 +98,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         createTranslations(language, languageTranslations)
 
         val translationFilesTime = System.currentTimeMillis() - translationStart
-        println("Loading translation file for $language - "+translationFilesTime+"ms")
+        println("Loading translation file for $language - " + translationFilesTime + "ms")
     }
 
     private fun createTranslations(language: String,
@@ -106,7 +106,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                                   targetTranslations: Translations = this) {
         for (translation in languageTranslations) {
             val hashKey = if (translation.key.contains('['))
-                translation.key.replace(squareBraceRegex,"[]")
+                translation.key.replace(squareBraceRegex, "[]")
             else translation.key
             if (!containsKey(hashKey))
                 targetTranslations[hashKey] = TranslationEntry(translation.key)
@@ -114,7 +114,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
             // why not in one line, Because there were actual crashes.
             // I'm pretty sure I solved this already, but hey double-checking doesn't cost anything.
             val entry = targetTranslations[hashKey]
-            if (entry!=null) entry[language] = translation.value
+            if (entry != null) entry[language] = translation.value
         }
     }
 
@@ -221,11 +221,8 @@ val curlyBraceRegex = Regex("""\{([^}]*)\}""")
  *                  but with placeholder or sentence brackets removed.
  */
 fun String.tr(): String {
-    val activeMods = if (UncivGame.Current.isGameInfoInitialized()) {
-        UncivGame.Current.gameInfo.gameParameters.mods
-    } else {
-        null
-    }
+    val activeMods = if (UncivGame.Current.isGameInfoInitialized())
+        UncivGame.Current.gameInfo.gameParameters.mods else null
 
     // There might still be optimization potential here!
     if (contains("[")) { // Placeholders!
@@ -243,19 +240,22 @@ fun String.tr(): String {
          */
 
         // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
-        val translationStringWithSquareBracketsOnly = this.replace(squareBraceRegex,"[]")
+        val translationStringWithSquareBracketsOnly = this.replace(squareBraceRegex, "[]")
         // That is now the key into the translation HashMap!
-        val translationEntry = UncivGame.Current.translations.get(translationStringWithSquareBracketsOnly, UncivGame.Current.settings.language, activeMods)
+        val translationEntry = UncivGame.Current.translations
+                .get(translationStringWithSquareBracketsOnly, UncivGame.Current.settings.language, activeMods)
 
-        if (translationEntry==null ||
-                !translationEntry.containsKey(UncivGame.Current.settings.language)){
+        if (translationEntry == null ||
+                !translationEntry.containsKey(UncivGame.Current.settings.language)) {
             // Translation placeholder doesn't exist for this language, default to English
-            return this.replace(eitherSquareBraceRegex,"")
+            return this.replace(eitherSquareBraceRegex, "")
         }
 
-        val termsInMessage = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()
+        // Take the terms in the message, WITHOUT square brackets
+        val termsInMessage = this.getPlaceholderParameters()
+        // Take the term from the placeholder, INCLUDING the square brackets
         val termsInTranslationPlaceholder = squareBraceRegex.findAll(translationEntry.entry).map { it.value }.toList()
-        if (termsInMessage.size!=termsInTranslationPlaceholder.size)
+        if (termsInMessage.size != termsInTranslationPlaceholder.size)
             throw Exception("Message $this has a different number of terms than the placeholder $translationEntry!")
 
         var languageSpecificPlaceholder = translationEntry[UncivGame.Current.settings.language]!!
@@ -271,3 +271,10 @@ fun String.tr(): String {
 
     return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
 }
+
+fun String.equalsPlaceholderText(str:String): Boolean {
+    if (first() != str.first()) return false // for quick negative return 95% of the time
+    return this.replace(squareBraceRegex, "[]") == str
+}
+
+fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()

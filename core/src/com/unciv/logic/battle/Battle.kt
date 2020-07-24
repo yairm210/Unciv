@@ -13,6 +13,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.math.max
 
@@ -147,12 +149,11 @@ object Battle {
         if (defender.isDefeated()
                 && defender is MapUnitCombatant
                 && attacker is MapUnitCombatant) {
-            val regex = Regex(BattleDamage.HEAL_WHEN_KILL)
             for (unique in attacker.unit.getUniques()) {
-                val match = regex.matchEntire(unique)
-                if (match == null) continue
-                val amountToHeal = match.groups[1]!!.value.toInt()
-                attacker.unit.healBy(amountToHeal)
+                if(unique.equalsPlaceholderText("Heals [] damage if it kills a unit")){
+                    val amountToHeal = unique.getPlaceholderParameters()[0].toInt()
+                    attacker.unit.healBy(amountToHeal)
+                }
             }
         }
     }

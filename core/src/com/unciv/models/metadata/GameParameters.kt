@@ -6,7 +6,6 @@ import com.unciv.models.ruleset.VictoryType
 
 enum class BaseRuleset(val fullName:String){
     Civ_V_Vanilla("Civ V - Vanilla"),
-    Civ_V_GaK("Civ V - G&K"),
 }
 
 class GameParameters { // Default values are the default new game

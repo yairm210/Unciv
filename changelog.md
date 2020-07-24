@@ -1,3 +1,40 @@
+## 3.9.14
+
+Added Pinglish translations
+
+Genericified "free [unit] appears", "must be next to []" unique for buildings
+
+Greatly improved performance of worker's automated city connecting
+
+Resolved #2853 - Sped up loading of saved game list
+
+Resolved #2852 - cannot make peace with a city state while at war with its ally
+
+Resolved #2864 - Locks on tiles are removed when the tile is no longer under your control
+
+Buildings that are missing resources are still displayed in city constructions
+
+Unit 'unbuildable' parameter converted to unique
+
+By alkorolyov:
+
+- Spectator can view other civ stats: Tech, Trades, Cities, Units, Gold
+- Skip spectator turn in multiplayer games
+
+## 3.9.13
+
+Simplified translation file generation
+
+Background work for "generic-ifying" unit and building uniques for modding purposes
+
+Worker unique is now moddable to other units
+
+By alkorolyov:
+- Spectators can enter and view other player cities
+- Fix map editor gameparameters layout
+
+Translation updates
+
 ## 3.9.12
 
 Added Water Mill building
