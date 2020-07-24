@@ -16,10 +16,6 @@ Buildings that are missing resources are still displayed in city constructions
 
 Unit 'unbuildable' parameter converted to unique
 
-By vainiovano:
-
-Fix Gradle deprecation warnings
-
 By alkorolyov:
 
 - Spectator can view other civ stats: Tech, Trades, Cities, Units, Gold
