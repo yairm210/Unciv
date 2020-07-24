@@ -104,7 +104,7 @@ class BaseUnit : INamed, IConstruction {
         var cost = getBaseGoldCost()
         if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
         if (civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
-        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
+        if (civInfo.hasUnique("-15% to purchasing items in cities")) cost *= 0.85
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
@@ -133,7 +133,7 @@ class BaseUnit : INamed, IConstruction {
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
                 && uniques.contains("Requires Manhattan Project")) return "Disabled by setting"
-        if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
+        if (uniques.contains("Requires Manhattan Project") && !civInfo.hasUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"

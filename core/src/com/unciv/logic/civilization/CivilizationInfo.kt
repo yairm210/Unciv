@@ -177,7 +177,8 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    fun containsBuildingUnique(unique:String) = cities.any { it.containsBuildingUnique(unique) }
+    fun hasUnique(unique:String) = policies.hasEffect(unique)
+            || cities.any { it.containsBuildingUnique(unique) }
 
 
     //region Units

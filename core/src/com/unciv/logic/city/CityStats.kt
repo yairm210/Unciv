@@ -51,7 +51,7 @@ class CityStats {
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if (civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS) goldFromTradeRoute += 1
             if (civInfo.policies.hasEffect("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes")) goldFromTradeRoute += 2
-            if (civInfo.containsBuildingUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
+            if (civInfo.hasUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }
         return stats
@@ -195,7 +195,7 @@ class CityStats {
             unhappinessFromCitizens *= 1.5f
         else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
-        if (civInfo.containsBuildingUnique("Unhappiness from population decreased by 10%"))
+        if (civInfo.hasUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.hasEffect("+1 happiness for every city connected to capital, -5% unhappiness from citizens"))
             unhappinessFromCitizens *= 0.95f
@@ -224,7 +224,7 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList["Buildings"] = happinessFromBuildings
 
-        if (civInfo.containsBuildingUnique("+1 happiness in each city"))
+        if (civInfo.hasUnique("+1 happiness in each city"))
             newHappinessList["Wonders"] = 1f
 
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
@@ -246,7 +246,7 @@ class CityStats {
         else stats.add(stat, 2f) // science and gold specialists
 
         if (policies.contains("Secularism")) stats.science += 2
-        if (cityInfo.civInfo.containsBuildingUnique("+1 Production from specialists"))
+        if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
             stats.production += 1
         if(cityInfo.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science+=2
@@ -297,13 +297,13 @@ class CityStats {
         val stats               = cityInfo.cityConstructions.getStatPercentBonuses()
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
 
-        if (cityInfo.civInfo.containsBuildingUnique("Culture in all cities increased by 25%"))
+        if (cityInfo.civInfo.hasUnique("Culture in all cities increased by 25%"))
             stats.culture += 25f
 
         if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 15%"))
                 stats.production += 15
-            if (cityInfo.civInfo.containsBuildingUnique("Increases production of spaceship parts by 25%"))
+            if (cityInfo.civInfo.hasUnique("Increases production of spaceship parts by 25%"))
                 stats.production += 25
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 50%"))
                 stats.production += 50

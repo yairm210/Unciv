@@ -27,7 +27,7 @@ class GoldenAgeManager{
 
     fun enterGoldenAge() {
         var turnsToGoldenAge = 10.0
-        if (civInfo.containsBuildingUnique("Golden Age length increases +50%")) turnsToGoldenAge *= 1.5
+        if (civInfo.hasUnique("Golden Age length increases +50%")) turnsToGoldenAge *= 1.5
         if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY )
             turnsToGoldenAge*=1.5
         if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5

@@ -67,7 +67,7 @@ class PolicyManager {
         if (hasEffect("Each city founded increases culture cost of policies 33% less than normal. Starts a golden age."))
             cityModifier *= (2 / 3f)
         if (isAdopted("Piety Complete")) policyCultureCost *= 0.9
-        if (civInfo.containsBuildingUnique("Culture cost of adopting new Policies reduced by 10%"))
+        if (civInfo.hasUnique("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier

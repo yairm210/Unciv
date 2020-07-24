@@ -156,7 +156,7 @@ class Building : NamedStats(), IConstruction{
                 stats.culture += 2f
 
             if (baseBuildingName == "Castle"
-                    && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
+                    && civInfo.hasUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
                 stats.gold+=3
@@ -220,7 +220,7 @@ class Building : NamedStats(), IConstruction{
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
         if (civInfo.policies.hasEffect("-25% to purchasing items in cities")) cost *= 0.75
-        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
+        if (civInfo.hasUnique("-15% to purchasing items in cities")) cost *= 0.85
         if (civInfo.policies.hasEffect( "Cost of purchasing culture buildings reduced by 50%")
                 && culture !=0f && !isWonder)
             cost *= 0.5
@@ -331,7 +331,7 @@ class Building : NamedStats(), IConstruction{
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.containsBuildingUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
+            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
 

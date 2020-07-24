@@ -176,7 +176,7 @@ open class TileInfo {
             if (unique.equalsPlaceholderText("[] from [] tiles")) {
                 val placeholderParams = unique.getPlaceholderParameters()
                 val tileType = placeholderParams[1]
-                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType)
+                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
                     stats.add(Stats.parse(placeholderParams[0]))
             }
         }
