@@ -176,7 +176,7 @@ open class TileInfo {
             if (unique.equalsPlaceholderText("[] from [] tiles")) {
                 val placeholderParams = unique.getPlaceholderParameters()
                 val tileType = placeholderParams[1]
-                if (baseTerrain == tileType || terrainFeature == tileType)
+                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType)
                     stats.add(Stats.parse(placeholderParams[0]))
             }
         }
@@ -187,16 +187,6 @@ open class TileInfo {
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
-
-            if (terrainFeature == Constants.jungle && city != null
-                    && city.containsBuildingUnique("+2 Science from each worked Jungle tile"))
-                stats.science += 2f
-            if (terrainFeature == "Oasis" && city != null
-                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
-                stats.gold += 2
-            if (terrainFeature == Constants.forest && city != null
-                    && city.containsBuildingUnique("+1 Production from each worked Forest tile"))
-                stats.production += 1
         }
 
         if (naturalWonder != null) {
@@ -220,12 +210,6 @@ open class TileInfo {
                     && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
                 stats.production += 1
             if (city != null) {
-                if (resource.name == "Oil"
-                        && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
-                    stats.gold += 2
-                if ((resource.name == "Marble" || resource.name == "Stone")
-                        && city.containsBuildingUnique("+2 Gold for each source of Marble and Stone"))
-                    stats.gold += 2
                 if (isWater) {
                     if (city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
                         stats.production += 1
