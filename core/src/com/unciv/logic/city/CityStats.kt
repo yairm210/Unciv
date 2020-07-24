@@ -205,7 +205,7 @@ class CityStats {
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
-        if (civInfo.policies.hasEffect("+15% production when constructing wonders, +1 happiness for every 10 citizens in a city"))
+        if (civInfo.hasUnique("+1 happiness for every 10 citizens in a city"))
             happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
         if (civInfo.policies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital")
                 && cityInfo.isCapital())
@@ -262,7 +262,7 @@ class CityStats {
 
     private fun getStatsFromPolicies(adoptedPolicies: PolicyManager): Stats {
         val stats = Stats()
-        if (adoptedPolicies.hasEffect("+3 culture in capital and increased rate of border expansion") && cityInfo.isCapital())
+        if (adoptedPolicies.hasEffect("+3 culture in capital") && cityInfo.isCapital())
             stats.culture += 3f
         if (adoptedPolicies.hasEffect("+10% food growth and +2 food in capital") && cityInfo.isCapital())
             stats.food += 2f
@@ -346,7 +346,7 @@ class CityStats {
             stats.science += 15f
         if (policies.contains("Total War") && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
             stats.production += 15f
-        if (policies.contains("Aristocracy")
+        if (cityInfo.civInfo.hasUnique("+15% production when constructing wonders")
                 && currentConstruction is Building
                 && currentConstruction.isWonder)
             stats.production += 15f

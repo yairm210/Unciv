@@ -36,10 +36,12 @@ class PolicyManager {
         return toReturn
     }
 
+    fun getPolicyByName(name:String): Policy = getAllPolicies().first { it.name==name }
+            
     fun setTransients(){
-        val allPolicies = getAllPolicies()
-        val effectsOfCurrentPolicies = adoptedPolicies.map { adoptedPolicy -> allPolicies.first { it.name==adoptedPolicy }.effect }
+        val effectsOfCurrentPolicies = adoptedPolicies.map { getPolicyByName(it).effect }
         policyEffects.addAll(effectsOfCurrentPolicies)
+        adoptedPolicies.map { getPolicyByName(it).uniques }.forEach { policyEffects.addAll(it) }
     }
 
     private fun getAllPolicies() = civInfo.gameInfo.ruleSet.policyBranches.values.asSequence()
@@ -114,6 +116,7 @@ class PolicyManager {
 
         adoptedPolicies.add(policy.name)
         policyEffects.add(policy.effect)
+        policyEffects.addAll(policy.uniques)
 
         if (!branchCompletion) {
             val branch = policy.branch

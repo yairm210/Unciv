@@ -2,11 +2,11 @@
 	{
 		"name": "Tradition",
 		"era": "Ancient era",
-		"effect": "+3 culture in capital and increased rate of border expansion",
+		"uniques": ["+3 culture in capital", "Increased rate of border expansion"],
 		"policies": [
 			{
 				"name": "Aristocracy",
-				"effect": "+15% production when constructing wonders, +1 happiness for every 10 citizens in a city",
+				"uniques": ["+15% production when constructing wonders", "+1 happiness for every 10 citizens in a city"],
 				"row": 1,
 				"column": 1
 			},

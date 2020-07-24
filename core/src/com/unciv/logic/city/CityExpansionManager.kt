@@ -38,7 +38,7 @@ class CityExpansionManager {
             cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cultureToNextTile *= 0.75 // Specialty of Krepost
-        if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
+        if (cityInfo.civInfo.hasUnique("Increased rate of border expansion")) cultureToNextTile *= 0.75
         return cultureToNextTile.roundToInt()
     }
 
