@@ -126,13 +126,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     private fun addTileOverlays(tileInfo: TileInfo, moveHereDto:MoveHereButtonDto?=null){
         val table = Table().apply { defaults().pad(10f) }
-        if(moveHereDto!=null)
+        if(moveHereDto!=null && worldScreen.canChangeState)
             table.add(getMoveHereButton(moveHereDto))
 
         val unitList = ArrayList<MapUnit>()
-        if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
+        if (tileInfo.isCityCenter()
+                && (tileInfo.getOwner()==worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             unitList.addAll(tileInfo.getCity()!!.getCenterTile().getUnits())
-        } else if (tileInfo.airUnits.isNotEmpty() && tileInfo.airUnits.first().civInfo==worldScreen.viewingCiv) {
+        } else if (tileInfo.airUnits.isNotEmpty()
+                && (tileInfo.airUnits.first().civInfo==worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             unitList.addAll(tileInfo.getUnits())
         }
 

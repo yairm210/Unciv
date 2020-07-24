@@ -196,8 +196,18 @@ object TranslationFileWriter {
 
                 val parameters = string.getPlaceholderParameters()
                 var stringToTranslate = string
-                if (parameters.size == 1 && parameters[0].toIntOrNull() != null)
-                    stringToTranslate = string.replace(parameters[0], "amount")
+                if (parameters.any()){
+                    for(parameter in parameters) {
+                        val parameterName = when{
+                            parameter.toIntOrNull() != null -> "amount"
+                            RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
+                            RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
+                            else -> "param"
+                        }
+                        stringToTranslate = string.replace(parameters[0], parameterName)
+                    }
+                }
+
                 else {
                     // substitute the regex for "Bonus/Penalty vs ..."
                     val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)

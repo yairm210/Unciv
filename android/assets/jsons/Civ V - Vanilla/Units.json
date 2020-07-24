@@ -1067,7 +1067,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines","[40]% chance to intercept air attacks","May withdraw before melee"], // todo: add bonus vs submarines
+		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee"], // todo: add bonus vs submarines
 		"hurryCostModifier": 20
 	},
 	{

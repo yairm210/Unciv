@@ -61,7 +61,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             dispose()
         }
 
-
         // per default show current/recent technology,
         // and possibly select it to show description,
         // which is very helpful when just discovered and clicking the notification
@@ -211,6 +210,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             setButtonsInfo()
             return
         }
+
+        if (!UncivGame.Current.worldScreen.canChangeState) {
+            rightSideButton.disable()
+            return
+        }
+
+
 
         tempTechsToResearch.clear()
         tempTechsToResearch.addAll(civTech.getRequiredTechsToDestination(tech))

@@ -68,9 +68,9 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
 
-        rightSideTable.defaults().uniformX();
-        rightSideTable.defaults().fillX();
-        rightSideTable.defaults().pad(10.0f);
+        rightSideTable.defaults().uniformX()
+        rightSideTable.defaults().fillX()
+        rightSideTable.defaults().pad(10.0f)
 
         // leftTable Setup
         reloadGameListUI()
@@ -186,7 +186,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     fun reloadGameListUI() {
         val leftSubTable = Table()
         val gameSaver = GameSaver
-        val savedGames: List<String>?
+        val savedGames: Sequence<String>
 
         try {
             savedGames = gameSaver.getSaves(true)

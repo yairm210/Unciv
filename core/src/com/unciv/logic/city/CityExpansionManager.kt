@@ -108,8 +108,15 @@ class CityExpansionManager {
 
     fun relinquishOwnership(tileInfo: TileInfo) {
         cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
-        if (cityInfo.workedTiles.contains(tileInfo.position))
-            cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tileInfo.position)
+        for (city in cityInfo.civInfo.cities) {
+            if (city.workedTiles.contains(tileInfo.position)) {
+                city.workedTiles = city.workedTiles.withoutItem(tileInfo.position)
+                city.population.autoAssignPopulation()
+            }
+            if (city.lockedTiles.contains(tileInfo.position))
+                city.lockedTiles.remove(tileInfo.position)
+        }
+
         tileInfo.owningCity = null
 
         cityInfo.civInfo.updateDetailedCivResources()

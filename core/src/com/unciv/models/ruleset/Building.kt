@@ -7,6 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import kotlin.math.pow
 
@@ -233,6 +235,7 @@ class Building : NamedStats(), IConstruction{
         val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
+                || rejectionReason.startsWith("Consumes")
                 || rejectionReason == "Wonder is being built elsewhere"
     }
 
@@ -242,13 +245,11 @@ class Building : NamedStats(), IConstruction{
         if (uniques.contains("Unbuildable")) return "Unbuildable"
 
         val cityCenter = construction.cityInfo.getCenterTile()
-        if ("Must be next to desert" in uniques
-                && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
-            return "Must be next to desert"
 
-        if ("Must be next to mountain" in uniques
-                && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
-            return "Must be next to mountain"
+        for(unique in uniques)
+            if(unique.equalsPlaceholderText("Must be next to []")
+                    && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == unique.getPlaceholderParameters()[0] })
+                return unique
 
         if ("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
             return "Must be next to river"
@@ -365,13 +366,14 @@ class Building : NamedStats(), IConstruction{
         }
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
-        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+        for(unique in uniques) if(unique.equalsPlaceholderText("Free [] appears")){
+            val unitName = unique.getPlaceholderParameters()[0]
+            civInfo.addGreatPerson(unitName, cityConstructions.cityInfo)
+        }
         if ("2 free Great Artists appear" in uniques) {
             civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
             civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
         }
-        if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
-        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
         if ("2 free great scientists appear" in uniques) {
             civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
             civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)

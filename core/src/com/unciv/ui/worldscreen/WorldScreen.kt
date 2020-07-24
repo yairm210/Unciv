@@ -41,6 +41,7 @@ import kotlin.concurrent.thread
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
+    var selectedCiv = viewingCiv // Selected civilization, used only in spectator mode
     val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
@@ -62,6 +63,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
+
 
     private var backButtonListener : InputListener
 
@@ -122,7 +124,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
-        mapHolder.setCenterPosition(tileToCenterOn,true)
+
+        // Don't select unit and change selectedCiv when centering as spectator
+        if (viewingCiv.isSpectator())
+            mapHolder.setCenterPosition(tileToCenterOn,true, false)
+        else
+            mapHolder.setCenterPosition(tileToCenterOn,true, true)
 
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
@@ -275,6 +282,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
 
+        updateSelectedCiv()
+
         tutorialTaskTable.clear()
         val tutorialTask = getCurrentTutorialTask()
         if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
@@ -298,7 +307,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
         mapHolder.updateTiles(viewingCiv)
 
-        topBar.update(viewingCiv)
+        if (viewingCiv.isSpectator())
+            topBar.update(selectedCiv)
+        else
+            topBar.update(viewingCiv)
 
         updateTechButton()
         techPolicyAndVictoryHolder.pack()
@@ -440,6 +452,14 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
     }
 
+    private fun updateSelectedCiv() {
+        if (bottomUnitTable.selectedUnit != null)
+            selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
+        else if (bottomUnitTable.selectedCity != null)
+            selectedCiv = bottomUnitTable.selectedCity!!.civInfo
+        else viewingCiv
+    }
+
     private fun createNextTurnButton(): TextButton {
 
         val nextTurnButton = TextButton("", skin) // text is set in update()
@@ -500,6 +520,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
                     newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
                     newWorldScreen.mapHolder.updateVisualScroll()
+                    newWorldScreen.selectedCiv = gameInfoClone.getCivilization(selectedCiv.civName)
                     game.worldScreen = newWorldScreen
                     game.setWorldScreen()
                 }
