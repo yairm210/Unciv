@@ -10,6 +10,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import kotlin.math.abs
 
@@ -170,9 +172,14 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if ((baseTerrain == Constants.ocean || baseTerrain == Constants.coast) && city != null
-                && city.containsBuildingUnique("+1 food from Ocean and Coast tiles"))
-            stats.food += 1
+        if(city!=null) for(unique in city.getBuildingUniques()) {
+            if (unique.equalsPlaceholderText("[] from [] tiles")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                val tileType = placeholderParams[1]
+                if (baseTerrain == tileType || terrainFeature == tileType)
+                    stats.add(Stats.parse(placeholderParams[0]))
+            }
+        }
 
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()

@@ -2,6 +2,7 @@ package com.unciv.models.translations
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
+import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -178,14 +179,14 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     companion object {
         // Regex compilation is expensive, best to save it
         val bonusOrPenaltyRegex = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""")
-        fun translateBonusOrPenalty(unique:String): String {
+        fun translateBonusOrPenalty(unique: String): String {
             val regexResult = bonusOrPenaltyRegex.matchEntire(unique)
-            if(regexResult==null) return unique.tr()
-            else{
+            if (regexResult == null) return unique.tr()
+            else {
                 var separatorCharacter = " "
-                if (UncivGame.Current.settings.language=="Simplified_Chinese") separatorCharacter = ""
-                val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
-                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
+                if (UncivGame.Current.settings.language == "Simplified_Chinese") separatorCharacter = ""
+                val start = regexResult.groups[1]!!.value + " vs [" + regexResult.groups[2]!!.value + "]"
+                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value + "%"
                 return translatedUnique
             }
         }
@@ -268,6 +269,8 @@ fun String.tr(): String {
     if (contains("{")) { // sentence
         return curlyBraceRegex.replace(this) { it.groups[1]!!.value.tr() }
     }
+
+    if (Stats.isStats(this)) return Stats.parse(this).toString()
 
     return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
 }

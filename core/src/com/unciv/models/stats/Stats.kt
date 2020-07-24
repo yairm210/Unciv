@@ -4,13 +4,13 @@ import com.unciv.models.translations.tr
 
 
 open class Stats() {
-    var production: Float=0f
-    var food: Float=0f
-    var gold: Float=0f
-    var science: Float=0f
-    var culture: Float=0f
-    var happiness: Float=0f
-    var faith: Float=0f
+    var production: Float = 0f
+    var food: Float = 0f
+    var gold: Float = 0f
+    var science: Float = 0f
+    var culture: Float = 0f
+    var happiness: Float = 0f
+    var faith: Float = 0f
 
     constructor(hashMap: HashMap<Stat, Float>) : this() {
         setStats(hashMap)
@@ -38,9 +38,9 @@ open class Stats() {
     }
 
 
-    fun add(stat:Stat, value:Float): Stats {
+    fun add(stat: Stat, value: Float): Stats {
         val hashMap = toHashMap()
-        hashMap[stat] = hashMap[stat]!!+value
+        hashMap[stat] = hashMap[stat]!! + value
         setStats(hashMap)
         return this
     }
@@ -59,13 +59,13 @@ open class Stats() {
 
     operator fun times(number: Float): Stats {
         val hashMap = toHashMap()
-        for(stat in Stat.values()) hashMap[stat]= number * hashMap[stat]!!
+        for (stat in Stat.values()) hashMap[stat] = number * hashMap[stat]!!
         return Stats(hashMap)
     }
 
     override fun toString(): String {
         return toHashMap().filter { it.value != 0f }
-                .map {  (if(it.value>0)"+" else "") + it.value.toInt()+" "+it.key.toString().tr() }.joinToString()
+                .map { (if (it.value > 0) "+" else "") + it.value.toInt() + " " + it.key.toString().tr() }.joinToString()
     }
 
     fun toHashMap(): HashMap<Stat, Float> {
@@ -79,11 +79,11 @@ open class Stats() {
         )
     }
 
-    fun get(stat:Stat):Float{
+    fun get(stat: Stat): Float {
         return this.toHashMap()[stat]!!
     }
 
-    private fun setStats(hashMap:HashMap<Stat, Float>) {
+    private fun setStats(hashMap: HashMap<Stat, Float>) {
         culture = hashMap[Stat.Culture]!!
         gold = hashMap[Stat.Gold]!!
         production = hashMap[Stat.Production]!!
@@ -93,7 +93,7 @@ open class Stats() {
         faith = hashMap[Stat.Faith]!!
     }
 
-    fun equals(otherStats: Stats):Boolean {
+    fun equals(otherStats: Stats): Boolean {
         return culture == otherStats.culture
                 && gold == otherStats.gold
                 && production == otherStats.production
@@ -101,6 +101,25 @@ open class Stats() {
                 && happiness == otherStats.happiness
                 && science == otherStats.science
                 && faith == otherStats.faith
+    }
+
+    companion object {
+        private val allStatNames = Stat.values().joinToString("|") { it.name }
+        private val statRegexPattern = "([+-])(\\d+) ($allStatNames)"
+        private val statRegex = Regex(statRegexPattern)
+        private val entireStringRegexPattern = Regex("$statRegexPattern(, $statRegexPattern)*")
+        fun isStats(string:String): Boolean = entireStringRegexPattern.matches(string)
+        fun parse(string:String):Stats{
+            val toReturn = Stats()
+            val statsWithBonuses = string.split(", ")
+            for(statWithBonuses in statsWithBonuses){
+                val match = statRegex.matchEntire(statWithBonuses)!!
+                val statName = match.groupValues[3]
+                val statAmount = match.groupValues[2].toFloat() * (if(match.groupValues[1]=="-") -1 else 1)
+                toReturn.add(Stat.valueOf(statName), statAmount)
+            }
+            return toReturn
+        }
     }
 }
 
