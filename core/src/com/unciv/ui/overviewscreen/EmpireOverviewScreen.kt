@@ -347,27 +347,27 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
 
                 // draw a parallel line for additional relationships
-                if (diplomacy.hasOpenBorders ||
-                        diplomacy.diplomaticStatus == DiplomaticStatus.War ||
-                        diplomacy.totalOfScienceDuringRA > 0) {
-                    val lineAngle = (statusLine.rotation-90) * Math.PI / 180
-                    val shiftX = 4f*cos(lineAngle).toFloat()
-                    val shiftY = 4f*sin(lineAngle).toFloat()
-                    val secondaryLine = ImageGetter.getLine(civGroup.x+civGroup.width/2+shiftX,civGroup.y+civGroup.height/2+shiftY,
-                                otherCivGroup.x+otherCivGroup.width/2+shiftX,otherCivGroup.y+otherCivGroup.height/2+shiftY,2f)
-
-                    secondaryLine.color = when {
-                        diplomacy.diplomaticStatus == DiplomaticStatus.War -> Color.RED
-                        diplomacy.hasOpenBorders -> Color.CYAN
-                        diplomacy.totalOfScienceDuringRA > 0 -> Color.BLUE
-                        else -> Color.WHITE
-                    }
-
-                    civLines[civ.civName]!!.add(secondaryLine)
-
-                    group.addActor(secondaryLine)
-                    secondaryLine.toBack()
-                }
+//                if (diplomacy.hasOpenBorders ||
+//                        diplomacy.diplomaticStatus == DiplomaticStatus.War ||
+//                        diplomacy.totalOfScienceDuringRA > 0) {
+//                    val lineAngle = (statusLine.rotation-90) * Math.PI / 180
+//                    val shiftX = 4f*cos(lineAngle).toFloat()
+//                    val shiftY = 4f*sin(lineAngle).toFloat()
+//                    val secondaryLine = ImageGetter.getLine(civGroup.x+civGroup.width/2+shiftX,civGroup.y+civGroup.height/2+shiftY,
+//                                otherCivGroup.x+otherCivGroup.width/2+shiftX,otherCivGroup.y+otherCivGroup.height/2+shiftY,2f)
+//
+//                    secondaryLine.color = when {
+//                        diplomacy.diplomaticStatus == DiplomaticStatus.War -> Color.RED
+//                        diplomacy.hasOpenBorders -> Color.CYAN
+//                        diplomacy.totalOfScienceDuringRA > 0 -> Color.BLUE
+//                        else -> Color.WHITE
+//                    }
+//
+//                    civLines[civ.civName]!!.add(secondaryLine)
+//
+//                    group.addActor(secondaryLine)
+//                    secondaryLine.toBack()
+//                }
 
                 val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
                 statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
