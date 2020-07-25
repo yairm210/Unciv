@@ -47,6 +47,10 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
      */
     val simulateUntilTurnForDebug: Int = 0
 
+    /** Show debug info in worldscreen
+     */
+    val showDebugInfo = false
+
     /** Console log battles
      */
     val alertBattle = false

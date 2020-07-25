@@ -57,4 +57,8 @@ class UnitPromotions{
         return sum
     }
 
+    override fun toString(): String {
+        return if (promotions.isEmpty()) ""
+        else promotions.joinToString { it }
+    }
 }

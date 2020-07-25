@@ -352,4 +352,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         return group
     }
 
+    override fun toString(): String {
+        return city.name
+    }
 }

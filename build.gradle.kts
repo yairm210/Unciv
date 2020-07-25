@@ -107,6 +107,7 @@ project(":core") {
     dependencies {
         "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
         "implementation"("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+        "implementation" ("org.jetbrains.kotlin:kotlin-reflect")
     }
 
 
