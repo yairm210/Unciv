@@ -32,6 +32,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.victoryscreen.VictoryScreen
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.TileInfoTable
+import com.unciv.ui.worldscreen.debug.DebugInfoTable
 import com.unciv.ui.worldscreen.mainmenu.OnlineMultiplayer
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import com.unciv.ui.worldscreen.unit.UnitTable
@@ -57,6 +58,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val techPolicyAndVictoryHolder = Table()
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
+    private val debugInfoTable = DebugInfoTable(this)
     private val nextTurnButton = createNextTurnButton()
     private var nextTurnAction:()->Unit= {}
     private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
@@ -110,6 +112,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         diplomacyButtonWrapper.defaults().pad(5f)
         stage.addActor(diplomacyButtonWrapper)
+        stage.addActor(debugInfoTable)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width/3
