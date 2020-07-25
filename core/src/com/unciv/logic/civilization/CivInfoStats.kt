@@ -20,11 +20,10 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         val baseUnitCost = 0.5f
         val freeUnits = 3
         var unitsToPayFor = civInfo.getCivUnits()
-        if(civInfo.policies.hasEffect("Units in cities cost no Maintenance, garrisoned city +50% attacking strength"))
+        if(civInfo.hasUnique("Units in cities cost no Maintenance"))
             // Only land military units can truly "garrison"
             unitsToPayFor = unitsToPayFor.filterNot {
-                it.getTile().isCityCenter()
-                        && it.canGarrison()
+                it.getTile().isCityCenter() && it.canGarrison()
             }
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)

@@ -275,9 +275,11 @@ fun String.tr(): String {
     return UncivGame.Current.translations.getText(this, UncivGame.Current.settings.language, activeMods)
 }
 
+fun String.getPlaceholderText() = this.replace(squareBraceRegex, "[]")
+
 fun String.equalsPlaceholderText(str:String): Boolean {
     if (first() != str.first()) return false // for quick negative return 95% of the time
-    return this.replace(squareBraceRegex, "[]") == str
+    return  this.getPlaceholderText() == str
 }
 
 fun String.getPlaceholderParameters() = squareBraceRegex.findAll(this).map { it.groups[1]!!.value }.toList()

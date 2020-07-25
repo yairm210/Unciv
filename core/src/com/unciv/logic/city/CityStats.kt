@@ -12,6 +12,8 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 
 
 class CityStats {
@@ -164,9 +166,9 @@ class CityStats {
 
     fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
-        if (cityInfo.civInfo.policies.hasEffect("+10% food growth and +2 food in capital") && cityInfo.isCapital())
+        if (cityInfo.civInfo.hasUnique("+10% food growth in capital") && cityInfo.isCapital())
             bonus += 0.1f
-        if (cityInfo.civInfo.policies.hasEffect("+15% growth and +2 food in all cities"))
+        if (cityInfo.civInfo.hasUnique("+15% growth in all cities"))
             bonus += 0.15f
         return bonus
     }
@@ -264,10 +266,12 @@ class CityStats {
         val stats = Stats()
         if (adoptedPolicies.hasEffect("+3 culture in capital") && cityInfo.isCapital())
             stats.culture += 3f
-        if (adoptedPolicies.hasEffect("+10% food growth and +2 food in capital") && cityInfo.isCapital())
-            stats.food += 2f
-        if (adoptedPolicies.hasEffect("+15% growth and +2 food in all cities"))
-            stats.food += 2f
+        for(effect in adoptedPolicies.policyEffects) {
+            if (effect.equalsPlaceholderText("[] in capital") && cityInfo.isCapital())
+                stats.add(Stats.parse(effect.getPlaceholderParameters()[0]))
+            else if(effect.equalsPlaceholderText("[] in all cities"))
+                stats.add(Stats.parse(effect.getPlaceholderParameters()[0]))
+        }
         if (adoptedPolicies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital") && cityInfo.isCapital())
             stats.gold += (cityInfo.population.population / 2).toFloat()
         if (adoptedPolicies.hasEffect("+1 culture in every city"))
