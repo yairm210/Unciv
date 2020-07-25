@@ -275,7 +275,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Unit maintenance changed
         if (unit.canGarrison()
                 && (origin.isCityCenter() || destination.isCityCenter())
-                && unit.civInfo.policies.isAdopted("Oligarchy")
+                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
         ) unit.civInfo.updateStatsForNextTurn()
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments

@@ -65,12 +65,14 @@
 			{
 				"name": "Citizenship",
 				"effect": "Tile improvement speed +25%, receive a free worker near the capital",
+				"uniques": ["Tile improvement speed +25%", "Free [Worker] appears"],
 				"row": 1,
 				"column": 4
 			},
 			{
 				"name": "Republic",
 				"effect": "+1 production in every city, +5% production when constructing buildings",
+				"uniques": ["[+1 Production] in all cities", "+5% production when constructing buildings"],
 				"requires": ["Collective Rule"],
 				"row": 2,
 				"column": 1
@@ -78,6 +80,7 @@
 			{
 				"name": "Representation",
 				"effect": "Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
+				"uniques": ["Each city founded increases culture cost of policies 33% less than normal", "Empire enters golden age"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 3
@@ -85,13 +88,15 @@
 			{
 				"name": "Meritocracy",
 				"effect": "+1 happiness for every city connected to capital, -5% unhappiness from citizens",
+				"uniques": ["+1 happiness for every city connected to capital", "-5% unhappiness from citizens"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Liberty Complete",
-				"effect": "Free Great Person of choice near capital"
+				"effect": "Free Great Person of choice near capital",
+				"uniques": ["Free Great Person"]
 			}
 		]
 	},
@@ -99,6 +104,7 @@
 		"name": "Honor",
 		"era": "Ancient era",
 		"effect": "+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
+		"uniques": ["+25% bonus vs Barbarians", "Gain Culture when you kill a barbarian unit", "Notified of new Barbarian encampments"]
 		"policies": [
 			{
 				"name": "Warrior Code",

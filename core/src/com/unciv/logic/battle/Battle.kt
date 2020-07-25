@@ -224,7 +224,7 @@ object Battle {
     private fun tryGetCultureFromHonor(civUnit:ICombatant, barbarianUnit:ICombatant){
         if(barbarianUnit.isDefeated() && barbarianUnit is MapUnitCombatant
                 && barbarianUnit.getCivInfo().isBarbarian()
-                && civUnit.getCivInfo().policies.isAdopted("Honor"))
+                && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit"))
             civUnit.getCivInfo().policies.storedCulture +=
                     max(barbarianUnit.unit.baseUnit.strength,barbarianUnit.unit.baseUnit.rangedStrength)
     }

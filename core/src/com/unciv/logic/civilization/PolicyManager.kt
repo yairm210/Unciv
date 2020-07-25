@@ -70,7 +70,7 @@ class PolicyManager {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         var cityModifier = 0.3f * (civInfo.cities.count { !it.isPuppet } - 1)
 
-        if (hasEffect("Each city founded increases culture cost of policies 33% less than normal. Starts a golden age."))
+        if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
         if (isAdopted("Piety Complete")) policyCultureCost *= 0.9
         if (civInfo.hasUnique("Culture cost of adopting new Policies reduced by 10%"))
@@ -138,13 +138,11 @@ class PolicyManager {
                     if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                         civInfo.placeUnitNearTile(civInfo.getCapital().location, unitName)
                 }
-                "Tile improvement speed +25%, receive a free worker near the capital" ->
-                    if (hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
                 "+1 culture for each monument, temple and monastery. Gain a free policy." -> freePolicies++
-                "Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
+                "Empire enters golden age",
                 "+33% culture in all cities with a world wonder, immediately enter a golden age" ->
                     civInfo.goldenAges.enterGoldenAge()
-                "Free Great Person of choice near capital" -> {
+                "Free Great Person" -> {
                     if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                     else {
                         val preferredVictoryType = civInfo.victoryType()

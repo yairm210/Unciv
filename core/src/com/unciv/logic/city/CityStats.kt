@@ -199,7 +199,7 @@ class CityStats {
             unhappinessFromCitizens *= 2f
         if (civInfo.hasUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
-        if (civInfo.policies.hasEffect("+1 happiness for every city connected to capital, -5% unhappiness from citizens"))
+        if (civInfo.hasUnique("-5% unhappiness from citizens"))
             unhappinessFromCitizens *= 0.95f
         if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
             unhappinessFromCitizens *= 0.5f //halved for the Indian
@@ -212,7 +212,7 @@ class CityStats {
         if (civInfo.policies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital")
                 && cityInfo.isCapital())
             happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
-        if (civInfo.policies.hasEffect("+1 happiness for every city connected to capital, -5% unhappiness from citizens")
+        if (civInfo.hasUnique("+1 happiness for every city connected to capital")
                 && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
         if (civInfo.policies.hasEffect("Each city with a garrison increases happiness by 1 and culture by 2"

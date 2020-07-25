@@ -103,7 +103,7 @@ object BattleDamage {
 
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] = civInfo.gameInfo.getDifficulty().barbarianBonus
-            if (civInfo.policies.hasEffect("+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit"))
+            if (civInfo.policies.hasEffect("+25% bonus vs Barbarians"))
                 modifiers["vs Barbarians"] = 0.25f
         }
         
