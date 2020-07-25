@@ -290,7 +290,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             for(promotion in promotionsForUnit)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
             if (unit.promotions.canBePromoted()) promotionsTable.add(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLDENROD }).size(24f).padLeft(8f)
-            if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(baseUnit.upgradesTo!!, Color.GREEN)).size(28f).padLeft(8f)
+            if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name, Color.GREEN)).size(28f).padLeft(8f)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
                     game.setScreen(PromotionPickerScreen(unit))
