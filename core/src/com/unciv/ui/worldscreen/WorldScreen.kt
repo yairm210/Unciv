@@ -42,7 +42,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
     var selectedCiv = viewingCiv // Selected civilization, used only in spectator mode
-    val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
+    val canChangeState = isPlayersTurn && !gameInfo.currentPlayerCiv.isSpectator() && !gameInfo.replayMode
     private var waitingForAutosave = false
 
     val mapHolder = WorldMapHolder(this, gameInfo.tileMap)

@@ -8,10 +8,11 @@ import com.unciv.logic.civilization.CivilizationInfo
  */
 object NextTurnReplay {
     lateinit var replay: Replay
+
     fun replayCivMoves(civInfo: CivilizationInfo, turn: Int) {
         val actions = replay.getCivActionsPerTurn(civInfo, turn)
         for (action in actions) {
-            ActionMapper.apply(civInfo, action)
+            ActionMapper.applyAction(civInfo, action)
         }
     }
 }

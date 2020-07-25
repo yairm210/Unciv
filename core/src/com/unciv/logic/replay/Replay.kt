@@ -1,14 +1,16 @@
 package com.unciv.logic.replay
 
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.Scenario
 
 /**
- * Stores an [List] of state-changing actions for each civ per turn
+ * Stores initial game state and a [List] of state-changing actions for each civ
  */
 class Replay {
 
-    var initialState = Scenario()
+    var initialState = GameInfo()
+    var finalState = GameInfo()
 
     var actions = HashMap<String, ArrayList<ArrayList<Action>>>()
 

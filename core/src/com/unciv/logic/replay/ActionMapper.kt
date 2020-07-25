@@ -1,5 +1,6 @@
 package com.unciv.logic.replay
 
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
 
@@ -8,11 +9,13 @@ import com.unciv.logic.map.TileMap
  */
 object ActionMapper {
 
-    lateinit var tileMap: TileMap
+    lateinit var gameInfo: GameInfo
+    var tileMap = gameInfo.tileMap
+
     /**
      * applies recorded [action] to civilization
      */
-    fun apply(civInfo: CivilizationInfo, action: Action) {
+    fun applyAction(civInfo: CivilizationInfo, action: Action) {
         when (action.type) {
             ActionType.move -> { moveUnit(action.data as MovementData) }
             ActionType.build -> { addToConstructionQue(action.data as ConstructionData) }
@@ -20,10 +23,12 @@ object ActionMapper {
         }
     }
 
-    private fun moveUnit(movement: MovementData) {
-        val tile = tileMap[movement.origin]
-        val unit = tile.getUnits().first { it.type == movement.unitType }
-        unit.movement.moveToTile(tileMap[movement.destination])
+    private fun moveUnit(data: MovementData) {
+        val tile = tileMap[data.origin]
+        val unit = if (data.unitType.isAirUnit()) tile.airUnits[data.airUnitIndex]
+        else tile.getUnits().first { it.type == data.unitType }
+
+        unit.movement.moveToTile(tileMap[data.destination])
     }
 
     private fun addToConstructionQue(construction: ConstructionData) {
