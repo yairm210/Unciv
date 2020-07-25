@@ -47,6 +47,7 @@ class BasicTests {
                         && !game.viewEntireMapForDebug
                         && game.simulateUntilTurnForDebug <= 0
                         && !game.consoleMode
+                        && !game.showDebugInfo
         )
     }
 
