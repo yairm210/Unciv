@@ -140,7 +140,7 @@ object NextTurnAutomation{
 
     private fun getFreeTechForCityStates(civInfo: CivilizationInfo) {
         //City-States automatically get all invented techs
-        for (otherCiv in civInfo.getKnownCivs().filterNot { it.isCityState() }) {
+        for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
             for (entry in otherCiv.tech.techsResearched
                     .filterNot { civInfo.tech.isResearched(it) }
                     .filter { civInfo.tech.canBeResearched(it) }) {
