@@ -50,6 +50,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
+    private val debugInfoTable = DebugInfoTable(this)
     val bottomUnitTable = UnitTable(this)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     private val battleTable = BattleTable(this)
@@ -58,7 +59,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val techPolicyAndVictoryHolder = Table()
     private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
-    private val debugInfoTable = DebugInfoTable(this)
+
     private val nextTurnButton = createNextTurnButton()
     private var nextTurnAction:()->Unit= {}
     private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }

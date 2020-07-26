@@ -15,40 +15,74 @@ import kotlin.reflect.jvm.isAccessible
 
 class DebugInfoTable(val worldScreen: WorldScreen): Table() {
     private val gameInfo = worldScreen.gameInfo
-    private val viewingCivLabel = getDefaultLabel()
-    private val selectedCivLabel = getDefaultLabel()
+    private val worldScreenLabel = getDefaultLabel()
     private val unitLabel = getDefaultLabel()
     private val cityLabel = getDefaultLabel()
 
     private val tileInfoLabel = getDefaultLabel()
     private val tileGroupLabel = getDefaultLabel()
 
-    private val tileInfoPropsList = listOf("position", "latitude", "longitude", "baseTerrain", "terrainFeature",
-            "naturalWonder", "resource","roadStatus", "improvement", "turnsToImprovement", "owningCity.name")
+
+    private val worldScreenPropsList = listOf("viewingCiv.civName", "selectedCiv.civName", "isPlayersTurn",
+            "canChangeState", "shouldUpdate")
+
     private val unitPropsList = listOf("name", "owner", "health", "action", "promotions",
             "currentMovement", "isTransported", "attacksThisTurn", "due", "type")
-    private val cityInfoPropsList = listOf("")
+    private val cityPropsList = listOf("civInfo.civName", "centerTileInfo.position", "hasJustBeenConquered",
+            "location", "id", "name", "foundingCiv", "turnAcquired", "health", "resistanceCounter",
+
+            "population.population", "population.foodStored", "population.getNumberOfSpecialists",
+            "population.getNumberOfSpecialists","population.getFreePopulation", "population.getFoodToNextPopulation",
+
+            "cityConstructions.builtBuildings", "cityConstructions.currentConstruction",
+            "cityConstructions.currentConstructionFromQueue", "cityConstructions.currentConstructionIsUserSet",
+            "cityConstructions.constructionQueue",
+
+            "expansion.cultureStored",
+
+            "cityStats.baseStatList", "cityStats.finalStatList", "cityStats.statPercentBonusList", "cityStats.happinessList",
+            "cityStats.foodEaten",
+
+            "isBeingRazed", "attackedThisTurn", "hasSoldBuildingThisTurn", "isPuppet", "isOriginalCapital"
+    )
+
+    private val tileInfoPropsList = listOf("position", "latitude", "longitude", "baseTerrain", "terrainFeature",
+            "naturalWonder", "resource","roadStatus", "improvement", "turnsToImprovement", "owningCity.name")
+    private val tileGroupPropsList = listOf("baseLayerGroup.children.size", "terrainFeatureLayerGroup.children.size",
+            "miscLayerGroup.children.size", "unitLayerGroup.children.size", "cityButtonLayerGroup.children.size",
+            "circleCrosshairFogLayerGroup.children.size", "circleImage.isVisible", "crosshairImage.isVisible",
+            "tileBaseImages.size", "roadImages.size", "borderImages.size", "fogImage.isVisible")
+
 
     init {
-        left()
-        top()
+        left().top()
 
-        add(viewingCivLabel).left().row()
-        add(selectedCivLabel).left().row()
-        add(unitLabel).left().row()
-        add(tileInfoLabel).left().row()
-        add(tileGroupLabel).left().row()
+        var firstColumn = Table().apply {
+            add(worldScreenLabel).left().row()
+            add(unitLabel).left().row()
+            add(tileInfoLabel).left().row()
+            debug()
+
+        }
+        var secondColumn = Table().apply {
+            add(cityLabel).left().row()
+            add(tileGroupLabel).left().row()
+            debug()
+        }
+
+        add(firstColumn).top()
+        add(secondColumn).top()
 
         pack()
-//        debug()
+        debug()
 
         zIndex = 10000
     }
 
     fun update() {
-        viewingCivLabel.setText("viewingCiv: "+worldScreen.viewingCiv.civName)
-        selectedCivLabel.setText("selectedCiv: "+worldScreen.selectedCiv.civName)
+        updateWorldScreeTable()
         updateUnitTable()
+        updateCityTable()
         updateTileInfoTable()
         updateTileGroupTable()
     }
@@ -57,53 +91,68 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
         return "".toLabel().setFontSize(12).apply { color = Color.RED }
     }
 
+    private fun updateWorldScreeTable() {
+        var infoString = getPropsAsString(worldScreen, worldScreenPropsList)
+        worldScreenLabel.setText(infoString)
+    }
+
     private fun updateUnitTable() {
         val unit = worldScreen.bottomUnitTable.selectedUnit
+        var infoString = getPropsAsString(unit, unitPropsList)
+        infoString += "\nhasChanged: "+worldScreen.bottomUnitTable.selectedUnitHasChanged
+        unitLabel.setText("$infoString")
+    }
 
-        var unitInfoString = getPropsAsString(unit, unitPropsList)
-
-        unitInfoString += "\nhasChanged: "+worldScreen.bottomUnitTable.selectedUnitHasChanged
-        unitLabel.setText("$unitInfoString")
+    private fun updateCityTable() {
+        val city = worldScreen.bottomUnitTable.selectedCity
+        cityLabel.setText(getPropsAsString(city, cityPropsList, PropFormat.Last))
     }
 
     private fun updateTileInfoTable() {
         val tile = worldScreen.mapHolder.selectedTile
-        val tileInfoString = getPropsAsString(tile, tileInfoPropsList)
-        tileInfoLabel.setText(tileInfoString)
+        val infoString = getPropsAsString(tile, tileInfoPropsList)
+        tileInfoLabel.setText(infoString)
     }
 
     private fun updateTileGroupTable() {
-        var tile = worldScreen.mapHolder.tileGroups[worldScreen.mapHolder.selectedTile]
-        var tileInfoString = tile!!::class.simpleName+"\n"
-        tileInfoString += "isViewable: "+tile?.isViewable(worldScreen.selectedCiv)+"\n"
-//        tileInfoString += "isExplored: "+tile?.isExplored(worldScreen.selectedCiv)+"\n"
-        tileInfoString += "tileBaseImages: "+ getPropByPath(tile, "tileBaseImages.size")+"\n"
-        tileInfoString += "road: "+ getPropByPath(tile, "roadImages.size")+"\n"
-        tileInfoString += "borderImages: "+ getPropByPath(tile, "borderImages.size")+"\n"
-        tileInfoString += "fogImage.isVisible: "+getPropByPath(tile, "fogImage.isVisible")+"\n"
+        var tile = worldScreen.mapHolder.tileGroups[worldScreen.mapHolder.selectedTile]!!
+        var infoString = getPropsAsString(tile, tileGroupPropsList)
 
-        tileGroupLabel.setText(tileInfoString)
+        infoString += "\nisViewable: "+tile.isViewable(worldScreen.selectedCiv)
+//        tileInfoString += "isExplored: "+tile?.isExplored(worldScreen.selectedCiv)+"\n"
+
+        tileGroupLabel.setText(infoString)
     }
 }
 
 /** Generates a string representation of [obj] using list of selected properties
  * @param [obj]         any object
  * @param [propList]    List of property names to be used in representation.
- *                      can use nested call: ex "fogImage.isVisible"
- * @return              Text string with property name/value pairs for [obj]
+ *                      can use nested path: ex "fogImage.isVisible"
+ * @return              Text string with tab delimited property name/value pairs for [obj]
  * */
-fun getPropsAsString(obj: Any?, propList: List<String>): String {
+fun getPropsAsString(obj: Any?, propList: List<String>, propNameFormat: PropFormat = PropFormat.First): String {
+    // short or full path name for nested properties
+    fun formatName(name: String, propNameFormat: PropFormat): String {
+        if (!name.contains(".")) return name
+        return when (propNameFormat) {
+            PropFormat.First -> "$name".split(".").first()
+            PropFormat.Last -> "$name".split(".").last()
+            PropFormat.Full -> name
+        }
+    }
+
     var infoString = ""
 
     if (obj == null) {
+        // empty list for null object
         infoString += "null"
-        for (name in propList) infoString += "\n$name: "
+        for (name in propList) infoString += "\n"+formatName(name, propNameFormat) +": "
     } else {
         infoString += obj::class.simpleName
-        for (name in propList) {
-            infoString += if (name.contains(".")) "\n$name: " + getPropByPath(obj, name)
+        for (name in propList)
+            infoString += if (name.contains(".")) "\n"+formatName(name, propNameFormat) +": "+ getPropByPath(obj, name)
             else "\n$name: " + getPropByName(obj, name)
-        }
     }
     return infoString
 }
@@ -118,7 +167,7 @@ fun getPropByName(obj: Any?, name: String): Any? {
 
     member.isAccessible = true
 
-    return try { getValue(obj, member) } catch (ex: Exception) { "!error"; printErrorMsg(ex) }
+    return try { getValue(obj, member) } catch (ex: Exception) { printErrorMsg(ex); "!error" }
 }
 
 fun getPropByPath(obj: Any?, propPath: String): Any? {
@@ -129,7 +178,6 @@ fun getPropByPath(obj: Any?, propPath: String): Any? {
 
     for (name in propNames) {
         var member = getMember(tempObj, name)
-
         member?.isAccessible = true
 
         if (member != null)
@@ -146,7 +194,7 @@ fun getPropByPath(obj: Any?, propPath: String): Any? {
 }
 
 fun getMember(obj: Any, name: String): KCallable<*>? {
-    var member = obj!!::class.members.find { it.name == name }
+    var member = obj::class.members.find { it.name == name }
     // search in superclasses
     if (member == null)
         for (kClass in obj::class.superclasses)
@@ -165,6 +213,11 @@ fun getValue(obj: Any, member: KCallable<*>): Any? {
     return "!error"
 }
 
+enum class PropFormat {
+    Full,
+    First,
+    Last
+}
 
 private fun printErrorMsg(ex: Exception) {
     println(ex.toString())
