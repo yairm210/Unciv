@@ -199,8 +199,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
     }
 
-    /** Returns true when the civ is a human player defeated in singleplayer game
-     * or when revealing map in spectator mode */
+    /** Returns true when the civ is a human player defeated in singleplayer game */
     private fun isMapRevealEnabled(viewingCiv: CivilizationInfo) = !viewingCiv.gameInfo.gameParameters.isOnlineMultiplayer
             && viewingCiv.isCurrentPlayer()
             && viewingCiv.isDefeated()

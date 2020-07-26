@@ -310,12 +310,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
         hideCircle()
         if (viewingCiv != null && !isExplored(viewingCiv)) {
-            // additionaly clear unexplored tiles when toggling fog of war in spectator mode
             clearUnexploredTiles()
-
-            for(image in tileBaseImages) {
-                image.color = Color.DARK_GRAY
-            }
+            for(image in tileBaseImages) image.color = Color.DARK_GRAY
             return
         }
 
