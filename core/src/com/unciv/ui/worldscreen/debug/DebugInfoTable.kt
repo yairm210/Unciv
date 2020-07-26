@@ -24,6 +24,7 @@ import kotlin.reflect.jvm.isAccessible
 class DebugInfoTable(val worldScreen: WorldScreen): Table() {
     private val gameInfo = worldScreen.gameInfo
     private val worldScreenLabel = getDefaultLabel()
+    private val gameInfoLabel = getDefaultLabel()
     private val unitLabel = getDefaultLabel()
     private val cityLabel = getDefaultLabel()
 
@@ -33,6 +34,8 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
 
     private val worldScreenPropsList = listOf("viewingCiv.civName", "selectedCiv.civName", "isPlayersTurn",
             "canChangeState", "shouldUpdate")
+    private val gameInfoPropsList = listOf("currentPlayer", "currentPlayerCiv.civName", "isUpToDate", "ruleSet.mods",
+            "difficulty", "turns", "oneMoreTurnMode", "gameId", "getPlayerToViewAs", "gameParameters.isOnlineMultiplayer")
 
     private val unitPropsList = listOf("name", "owner", "health", "action", "promotions",
             "currentMovement", "isTransported", "attacksThisTurn", "due", "type")
@@ -67,6 +70,7 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
 
         var firstColumn = Table().apply {
             add(worldScreenLabel).left().row()
+            add(gameInfoLabel).left().row()
             add(unitLabel).left().row()
             add(tileInfoLabel).left().row()
             debug()
@@ -89,6 +93,7 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
 
     fun update() {
         updateWorldScreeTable()
+        updateGameInfoTable()
         updateUnitTable()
         updateCityTable()
         updateTileInfoTable()
@@ -102,6 +107,11 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
     private fun updateWorldScreeTable() {
         var infoString = getPropsAsString(worldScreen, worldScreenPropsList)
         worldScreenLabel.setText(infoString)
+    }
+
+    private fun updateGameInfoTable() {
+        var infoString = getPropsAsString(gameInfo, gameInfoPropsList, PropFormat.Full)
+        gameInfoLabel.setText(infoString)
     }
 
     private fun updateUnitTable() {

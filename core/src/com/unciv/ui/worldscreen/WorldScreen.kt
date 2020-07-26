@@ -50,7 +50,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val minimapWrapper = MinimapHolder(mapHolder)
 
     private val topBar = WorldScreenTopBar(this)
-    private val debugInfoTable = DebugInfoTable(this).apply { isVisible = false }
+    private val debugInfoTable = DebugInfoTable(this).apply { isVisible = game.showDebugInfo }
     val bottomUnitTable = UnitTable(this)
     private val bottomTileInfoTable = TileInfoTable(viewingCiv)
     private val battleTable = BattleTable(this)
