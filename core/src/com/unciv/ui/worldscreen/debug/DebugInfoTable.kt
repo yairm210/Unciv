@@ -12,7 +12,15 @@ import kotlin.reflect.KProperty1
 import kotlin.reflect.full.superclasses
 import kotlin.reflect.jvm.isAccessible
 
-
+/** Basic table with customizable debug information
+ * May take a while to update so disabled by default
+ * Toggles on by [UncivGame.Current.showDebugInfo]
+ *
+ * Steps to add new object to monitor:
+ * 1) add a label in the main class
+ * 2) add a list wih property names or functions without arguments to display
+ * 3) add an update method where [getPropsAsString] is used
+ */
 class DebugInfoTable(val worldScreen: WorldScreen): Table() {
     private val gameInfo = worldScreen.gameInfo
     private val worldScreenLabel = getDefaultLabel()
@@ -40,7 +48,7 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
 
             "expansion.cultureStored",
 
-            "cityStats.baseStatList", "cityStats.finalStatList", "cityStats.statPercentBonusList", "cityStats.happinessList",
+//            "cityStats.baseStatList", "cityStats.finalStatList", "cityStats.statPercentBonusList", "cityStats.happinessList",
             "cityStats.foodEaten",
 
             "isBeingRazed", "attackedThisTurn", "hasSoldBuildingThisTurn", "isPuppet", "isOriginalCapital"
@@ -125,11 +133,18 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
     }
 }
 
-/** Generates a string representation of [obj] using list of selected properties
- * @param [obj]         any object
- * @param [propList]    List of property names to be used in representation.
- *                      can use nested path: ex "fogImage.isVisible"
- * @return              Text string with tab delimited property name/value pairs for [obj]
+
+/** Generates a string representation of [obj] by a list of selected properties
+ * @param [obj]             any object
+ * @param [propList]        List of property names to be used in representation.
+ *                          Can be simple propertues, e.g. "name"
+ *                          - nested paths, e.g. "fogImage.isVisible"
+ *                          - functions with no args, without "()" e.g. "getFreePopulation",
+ * @param [propNameFormat]  How to display nested properties
+ *                          [PropFormat.First] only first name shown, e.g. "fogImage"
+ *                          [PropFormat.Last] only last name shown, e.g. "isVisible"
+ *                          [PropFormat.Full] full name show, e.g. "fogImage.isVisible"
+ * @return                  Text string with tab delimited property name/value pairs for [obj]
  * */
 fun getPropsAsString(obj: Any?, propList: List<String>, propNameFormat: PropFormat = PropFormat.First): String {
     // short or full path name for nested properties
@@ -213,14 +228,14 @@ fun getValue(obj: Any, member: KCallable<*>): Any? {
     return "!error"
 }
 
+fun printErrorMsg(ex: Exception) {
+    println(ex.toString())
+    for (line in ex.stackTrace)
+        println(line)
+}
+
 enum class PropFormat {
     Full,
     First,
     Last
-}
-
-private fun printErrorMsg(ex: Exception) {
-    println(ex.toString())
-    for (line in ex.stackTrace)
-        println(line)
 }
