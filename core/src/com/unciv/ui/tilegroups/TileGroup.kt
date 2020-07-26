@@ -283,32 +283,36 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableInvisibleUnitsTiles.contains(tileInfo)
             || !tileInfo.hasEnemyInvisibleUnit(viewingCiv)
+            || !UncivGame.Current.worldScreen.fogOfWar
 
     fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableTiles.contains(tileInfo)
+            || !UncivGame.Current.worldScreen.fogOfWar
+
 
     fun isExplored(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.exploredTiles.contains(tileInfo.position)
+            || !UncivGame.Current.worldScreen.fogOfWar
 
     open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true) {
 
-        fun updateUnexploredTiles() {
+        fun clearUnexploredTiles() {
             updateTileImage(null)
             updateRivers(false,false, false)
 
             updatePixelMilitaryUnit(false)
             updatePixelCivilianUnit(false)
 
-            updateBorderImages(viewingCiv)
+            if (borderImages.isNotEmpty()) clearBorders()
+
             icons.update(false, false, false, null)
 
             fogImage.isVisible = true
         }
 
         hideCircle()
-        if (viewingCiv != null && !showEntireMap && !viewingCiv.exploredTiles.contains(tileInfo.position)) {
-            // update unexplored tiles when toggling fog of war in spectator mode
-            if (UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator()) updateUnexploredTiles()
+        if (viewingCiv != null && !isExplored(viewingCiv)) {
+            clearUnexploredTiles()
 
             for(image in tileBaseImages) {
                 image.color = Color.DARK_GRAY
@@ -336,7 +340,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updateTileColor(tileIsViewable)
 
         updateRoadImages()
-        updateBorderImages(viewingCiv)
+        updateBorderImages()
 
         crosshairImage.isVisible = false
         fogImage.isVisible = !(tileIsViewable || showEntireMap)
@@ -415,31 +419,26 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
     }
 
+    fun clearBorders() {
+        for (images in borderImages.values)
+            for (image in images)
+                image.remove()
+
+        borderImages.clear()
+    }
+
     var previousTileOwner: CivilizationInfo? = null
-    private fun updateBorderImages(viewingCiv: CivilizationInfo?) {
+    private fun updateBorderImages() {
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on
         // removing all the border images and putting them back again!
         val tileOwner = tileInfo.getOwner()
 
-        fun clearBorders() {
-            for (images in borderImages.values)
-                for (image in images)
-                    image.remove()
-
-            borderImages.clear()
-        }
 
         if (previousTileOwner != tileOwner) clearBorders()
 
         previousTileOwner = tileOwner
         if (tileOwner == null) return
-
-        // clear borders for unexplored tiles
-        if (viewingCiv!=null && !isExplored(viewingCiv) && borderImages.isNotEmpty()) {
-            clearBorders()
-            return
-        }
 
         val civColor = tileInfo.getOwner()!!.nation.getOuterColor()
         for (neighbor in tileInfo.neighbors) {
