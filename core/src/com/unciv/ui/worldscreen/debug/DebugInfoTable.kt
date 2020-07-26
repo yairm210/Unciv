@@ -35,7 +35,7 @@ class DebugInfoTable(val worldScreen: WorldScreen): Table() {
     private val worldScreenPropsList = listOf("viewingCiv.civName", "selectedCiv.civName", "isPlayersTurn",
             "canChangeState", "shouldUpdate")
     private val gameInfoPropsList = listOf("currentPlayer", "currentPlayerCiv.civName", "isUpToDate", "ruleSet.mods",
-            "difficulty", "turns", "oneMoreTurnMode", "gameId", "getPlayerToViewAs", "gameParameters.isOnlineMultiplayer")
+            "difficulty", "turns", "oneMoreTurnMode", "getPlayerToViewAs")
 
     private val unitPropsList = listOf("name", "owner", "health", "action", "promotions",
             "currentMovement", "isTransported", "attacksThisTurn", "due", "type")
