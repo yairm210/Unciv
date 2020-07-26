@@ -313,7 +313,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
         }
 
-        minimapWrapper.update(selectedCiv)
+        if (fogOfWar) minimapWrapper.update(selectedCiv)
+        else minimapWrapper.update(getSpectatorCiv()!!)
+
         cleanupKeyDispatcher()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
