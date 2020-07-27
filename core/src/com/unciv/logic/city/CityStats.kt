@@ -14,6 +14,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 
 
 class CityStats {
@@ -215,9 +216,11 @@ class CityStats {
         if (civInfo.hasUnique("+1 happiness for every city connected to capital")
                 && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
-        if (civInfo.policies.hasEffect("Each city with a garrison increases happiness by 1 and culture by 2"
-                ) && cityInfo.getCenterTile().militaryUnit != null)
-            happinessFromPolicies += 1
+
+        if (cityInfo.getCenterTile().militaryUnit != null)
+            for (unique in civInfo.policies.policyEffects)
+                if (unique.equalsPlaceholderText("[] in all cities with a garrison"))
+                    happinessFromPolicies += Stats.parse(unique.getPlaceholderParameters()[0]).happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 
@@ -230,7 +233,7 @@ class CityStats {
             newHappinessList["Wonders"] = 1f
 
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
-        
+
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList = newHappinessList
@@ -267,9 +270,10 @@ class CityStats {
         if (adoptedPolicies.hasEffect("+3 culture in capital") && cityInfo.isCapital())
             stats.culture += 3f
         for(effect in adoptedPolicies.policyEffects) {
-            if (effect.equalsPlaceholderText("[] in capital") && cityInfo.isCapital())
-                stats.add(Stats.parse(effect.getPlaceholderParameters()[0]))
-            else if(effect.equalsPlaceholderText("[] in all cities"))
+            val placeholderText = effect.getPlaceholderText()
+            if ((placeholderText == "[] in capital" && cityInfo.isCapital())
+                    || placeholderText == "[] in all cities"
+                    || (placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
                 stats.add(Stats.parse(effect.getPlaceholderParameters()[0]))
         }
         if (adoptedPolicies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital") && cityInfo.isCapital())
@@ -278,8 +282,6 @@ class CityStats {
             stats.culture += 1f
         if (adoptedPolicies.hasEffect("+1 production in every city, +5% production when constructing buildings"))
             stats.production += 1f
-        if (adoptedPolicies.hasEffect("Each city with a garrison increases happiness by 1 and culture by 2") && cityInfo.getCenterTile().militaryUnit != null)
-            stats.culture += 2
         if (adoptedPolicies.hasEffect("+1 production per 5 population"))
             stats.production += (cityInfo.population.population / 5).toFloat()
         if (adoptedPolicies.hasEffect("+1 culture for every 2 citizens"))
@@ -337,7 +339,8 @@ class CityStats {
             stats.production += 50f
         if (policies.contains("Republic") && currentConstruction is Building)
             stats.production += 5f
-        if (policies.contains("Warrior Code") && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
+        if (cityInfo.civInfo.hasUnique("+20% production when training melee units")
+                && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
             stats.production += 20
         if (policies.contains("Piety")
                 && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower").contains(currentConstruction.name))

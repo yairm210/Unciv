@@ -109,18 +109,21 @@
 			{
 				"name": "Warrior Code",
 				"effect": "+20% production when training melee units",
+				"uniques":["+20% production when training melee units"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Discipline",
 				"effect": "+15% combat strength for melee units which have another military unit in an adjacent tile",
+				"uniques":["+15% combat strength for melee units which have another military unit in an adjacent tile"],
 				"row": 1,
 				"column": 4
 			},
 			{
 				"name": "Military Tradition",
 				"effect": "Military units gain 50% more Experience from combat",
+				"uniques":["Military units gain 50% more Experience from combat"],
 				"requires": ["Warrior Code"],
 				"row": 2,
 				"column": 2
@@ -128,6 +131,7 @@
 			{
 				"name": "Military Caste",
 				"effect": "Each city with a garrison increases happiness by 1 and culture by 2",
+				"uniques": ["[+1 Happiness, +2 Culture] in all cities with a garrison"]
 				"requires": ["Discipline"],
 				"row": 2,
 				"column": 4

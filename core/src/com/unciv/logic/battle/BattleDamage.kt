@@ -71,7 +71,7 @@ object BattleDamage {
                 modifiers["Populism"] = 0.25f
             }
 
-            if (civInfo.policies.hasEffect("+15% combat strength for melee units which have another military unit in an adjacent tile")
+            if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
                     && combatant.isMelee()
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
                             .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })

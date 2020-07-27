@@ -236,7 +236,7 @@ object Battle {
             return
 
         var XPModifier = 1f
-        if (thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) XPModifier += 0.5f
+        if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
         if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f
 
         val XPGained = (amount * XPModifier).toInt()
