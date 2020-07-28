@@ -100,25 +100,28 @@ class Nation : INamed {
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values
                 .filter { it.uniqueTo == name }) {
-            val originalBuilding = ruleset.buildings[building.replaces!!]!!
+            if (building.replaces == null) textList += building.getShortDescription(ruleset)
+            else {
+                val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
-            textList += building.name.tr() + " - "+"Replaces [${originalBuilding.name}]".tr()
-            val originalBuildingStatMap = originalBuilding.toHashMap()
-            for (stat in building.toHashMap())
-                if (stat.value != originalBuildingStatMap[stat.key])
-                    textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
+                textList += building.name.tr() + " - " + "Replaces [${originalBuilding.name}]".tr()
+                val originalBuildingStatMap = originalBuilding.toHashMap()
+                for (stat in building.toHashMap())
+                    if (stat.value != originalBuildingStatMap[stat.key])
+                        textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
 
-            for (unique in building.uniques.filter { it !in originalBuilding.uniques })
-                textList += "  " + unique.tr()
-            if (building.maintenance != originalBuilding.maintenance)
-                textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
-            if (building.cost != originalBuilding.cost)
-                textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
-            if (building.cityStrength != originalBuilding.cityStrength)
-                textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
-            if (building.cityHealth != originalBuilding.cityHealth)
-                textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
-            textList += ""
+                for (unique in building.uniques.filter { it !in originalBuilding.uniques })
+                    textList += "  " + unique.tr()
+                if (building.maintenance != originalBuilding.maintenance)
+                    textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
+                if (building.cost != originalBuilding.cost)
+                    textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
+                if (building.cityStrength != originalBuilding.cityStrength)
+                    textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
+                if (building.cityHealth != originalBuilding.cityHealth)
+                    textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
+                textList += ""
+            }
         }
     }
 
