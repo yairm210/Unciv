@@ -362,9 +362,11 @@ class CityStats {
     }
 
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if (cityInfo.civInfo.cities.count() < 2) return false// first city!
+        if (cityInfo.civInfo.cities .count() < 2) return false// first city!
 
-        return cityInfo.isConnectedToCapital { it.contains(roadType.name) || it.contains("Harbor") }
+        // Railroad, or harbor from railroad
+        if (roadType == RoadStatus.Railroad) return cityInfo.isConnectedToCapital { it.any { it.contains("Railroad") } }
+        else return cityInfo.isConnectedToCapital()
     }
     //endregion
 
