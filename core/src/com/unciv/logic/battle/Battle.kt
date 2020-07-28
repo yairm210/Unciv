@@ -82,7 +82,7 @@ object Battle {
         tryGetCultureFromHonor(defender, attacker)
 
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
-                && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
+                && attacker.getCivInfo().hasUnique("Gain gold for each unit killed"))
             attacker.getCivInfo().gold += defender.unit.baseUnit.getProductionCost(attacker.getCivInfo()) / 10
 
         if (attacker is MapUnitCombatant) {

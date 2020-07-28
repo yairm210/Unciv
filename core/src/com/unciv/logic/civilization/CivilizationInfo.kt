@@ -22,6 +22,7 @@ import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -177,9 +178,15 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    fun hasUnique(unique:String) = policies.hasEffect(unique)
-            || cities.any { it.containsBuildingUnique(unique) }
+    private fun getCivUniques() = policies.policyEffects.asSequence() + cities.asSequence().flatMap { it.getBuildingUniques() }
 
+    // This is
+    fun hasUnique(unique:String) = getCivUniques().contains(unique)
+
+    fun getMatchingUniques(uniqueTemplate: String) =
+            if (uniqueTemplate.contains('['))
+                getCivUniques().filter { it.equalsPlaceholderText(uniqueTemplate) }
+            else getCivUniques().filter { it==uniqueTemplate }
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()

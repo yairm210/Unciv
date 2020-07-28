@@ -139,6 +139,7 @@
 			{
 				"name": "Professional Army",
 				"effect": "Gold cost of upgrading military units reduced by 33%",
+				"uniques": ["Gold cost of upgrading military units reduced by 33%"],
 				"requires": ["Military Caste"],
 				"row": 3,
 				"column": 4
@@ -146,6 +147,7 @@
 			{
 				"name": "Honor Complete",
 				"effect": "Gain gold for each unit killed" 
+				"uniques": ["Gain gold for each unit killed"],
 			}
 		]
 	},{
