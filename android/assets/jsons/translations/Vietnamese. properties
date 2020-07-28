@@ -1,0 +1,907 @@
+
+# Tutorial tasks
+
+Move a unit!\nClick on a unit > Click on a destination > Click the arrow popup = 
+Found a city!\nSelect the Settler (flag unit) > Click on 'Found city' (bottom-left corner) = 
+Enter the city screen!\nClick the city button twice = 
+Pick a technology to research!\nClick on the tech button (greenish, top left) > \n select technology > click 'Research' (bottom right) = 
+Pick a construction!\nEnter city screen > Click on a unit or building (bottom left side) > \n click 'add to queue' = 
+Pass a turn!\nCycle through units with 'Next unit' > Click 'Next turn' = 
+Reassign worked tiles!\nEnter city screen > click the assigned (green) tile to unassign > \n click an unassigned tile to assign population = 
+Meet another civilization!\nExplore the map until you encounter another civilization! = 
+Open the options table!\nClick the menu button (top left) > click 'Options' = 
+Construct an improvement!\nConstruct a Worker unit > Move to a Plains or Grassland tile > \n Click 'Create improvement' (above the unit table, bottom left)\n > Choose the farm > \n Leave the worker there until it's finished = 
+Create a trade route!\nConstruct roads between your capital and another city\nOr, automate your worker and let him get to that eventually = 
+Conquer a city!\nBring an enemy city down to low health > \nEnter the city with a melee unit = 
+Move an air unit!\nSelect an air unit > select another city within range > \nMove the unit to the other city = 
+See your stats breakdown!\nEnter the Overview screen (top right corner) >\nClick on 'Stats' = 
+
+Oh no! It looks like something went DISASTROUSLY wrong! This is ABSOLUTELY not supposed to happen! Please send me (yairm210@hotmail.com) an email with the game information (menu -> save game -> copy game info -> paste into email) and I'll try to fix it as fast as I can! = 
+Oh no! It looks like something went DISASTROUSLY wrong! This is ABSOLUTELY not supposed to happen! Please send us an report and we'll try to fix it as fast as we can! = 
+
+# Buildings
+
+Choose a free great person = 
+Get  = 
+
+Hydro Plant = 
++1 population in each city = 
++1 happiness in each city = 
+
+# Diplomacy,Trade,Nations
+
+Requires [buildingName] to be built in the city = 
+Requires [buildingName] to be built in all cities = 
+Provides a free [buildingName] in the city = 
+Requires worked [resource] near city = 
+Wonder is being built elsewhere = 
+Requires a [buildingName] in all cities = 
+Requires a [buildingName] in this city = 
+Consumes 1 [resource] = 
+Required tech: [requiredTech] = 
+
+Current construction = 
+Construction queue = 
+Pick a construction = 
+Queue empty = 
+Add to queue = 
+Remove from queue = 
+Show stats drilldown = 
+Show construction queue = 
+
+Diplomacy = 
+War = 
+Peace = 
+Research Agreement = 
+Declare war = 
+Declare war on [civName]? = 
+[civName] has declared war on us! = 
+[leaderName] of [nation] = 
+You'll pay for this! = 
+Negotiate Peace = 
+Peace with [civName]? = 
+Very well. = 
+Farewell. = 
+Sounds good! = 
+Not this time. = 
+Excellent! = 
+How about something else... = 
+A pleasure to meet you. = 
+Our relationship:  = 
+We have encountered the City-State of [name]! = 
+Declare Friendship ([numberOfTurns] turns) = 
+May our nations forever remain united! = 
+Indeed! = 
+Denounce ([numberOfTurns] turns) = 
+We will remember this. = 
+
+[civName] has declared war on [targetCivName]! = 
+[civName] and [targetCivName] have signed the Peace Treaty! = 
+[civName] and [targetCivName] have signed the Declaration of Friendship! = 
+[civName] has denounced [targetCivName]! = 
+
+Unforgivable = 
+Enemy = 
+Competitor = 
+Neutral = 
+Favorable = 
+Friend = 
+Ally = 
+
+## Diplomatic modifiers
+
+You declared war on us! = 
+Your warmongering ways are unacceptable to us. = 
+You have captured our cities! = 
+We applaud your liberation of our conquered cities! = 
+We applaud your liberation of conquered cities! = 
+Years of peace have strengthened our relations. = 
+Our mutual military struggle brings us closer together. = 
+We have signed a public declaration of friendship = 
+You have declared friendship with our enemies! = 
+You have declared friendship with our allies = 
+Our open borders have brought us closer together. = 
+Your so-called 'friendship' is worth nothing. = 
+You have publicly denounced us! = 
+You have denounced our allies = 
+You have denounced our enemies = 
+You betrayed your promise to not settle cities near us = 
+You fulfilled your promise to stop settling cities near us! = 
+You refused to stop settling cities near us = 
+Your arrogant demands are in bad taste = 
+Your use of nuclear weapons is disgusting! = 
+You have stolen our lands! = 
+
+Demands = 
+Please don't settle new cities near us. = 
+Very well, we shall look for new lands to settle. = 
+We shall do as we please. = 
+We noticed your new city near our borders, despite your promise. This will have....implications. = 
+
+# City-States
+
+Provides [amountOfCulture] culture at 30 Influence = 
+Provides 3 food in capital and 1 food in other cities at 30 Influence = 
+Provides 3 happiness at 30 Influence = 
+Provides land units every 20 turns at 30 Influence = 
+Gift [giftAmount] gold (+[influenceAmount] influence) = 
+Relationship changes in another [turnsToRelationshipChange] turns = 
+
+Cultured = 
+Maritime = 
+Mercantile = 
+Militaristic = 
+Type:  = 
+Influence:  = 
+Reach 30 for friendship. = 
+Reach highest influence above 60 for alliance. = 
+Ally:  = 
+
+# Trades 
+
+Trade = 
+Offer trade = 
+Retract offer = 
+What do you have in mind? = 
+Our items = 
+Our trade offer = 
+[otherCiv]'s trade offer = 
+[otherCiv]'s items = 
+Pleasure doing business with you! = 
+I think not. = 
+That is acceptable. = 
+Accept = 
+Keep going = 
+There's nothing on the table = 
+Peace Treaty = 
+Agreements = 
+Open Borders = 
+Gold per turn = 
+Cities = 
+Technologies = 
+Declarations of war = 
+Introduction to [nation] = 
+Declare war on [nation] = 
+Luxury resources = 
+Strategic resources = 
+Owned: [amountOwned] = 
+
+# Nation picker 
+
+[resourceName] not required = 
+Lost ability = 
+National ability = 
+[firstValue] vs [secondValue] = 
+
+# Nations
+
+Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster = 
+Ingenuity = 
+
+City-State Influence degrades at half and recovers at twice the normal rate = 
+Hellenic League = 
+
+Great general provides double combat bonus, and spawns 50% faster = 
+Art of War = 
+
++20% production towards Wonder construction = 
+Monument Builders = 
+
++2 movement for all naval units = 
+Sun Never Sets = 
+
++2 Culture per turn from cities before discovering Steam Power = 
+Ancien Régime = 
+
+Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity = 
+Siberian Riches = 
+
++25% Production towards any buildings that already exist in the Capital = 
+The Glory of Rome = 
+
++1 Gold from each Trade Route, Oil resources provide double quantity = 
+Trade Caravans = 
+
+All land military units have +1 sight, 50% discount when purchasing tiles = 
+Manifest Destiny = 
+
+Units fight as though they were at full strength even when damaged = 
+Bushido = 
+
+67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance. = 
+Furor Teutonicus = 
+
+Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved. = 
+Population Growth = 
+
+Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units. = 
+Barbary Corsairs = 
+
++2 Science for all specialists and Great Person tile improvements = 
+Scholars of the Jade Hall = 
+
+All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel. = 
+The Great Warpath = 
+
+Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength = 
+Achaemenid Legacy = 
+
+Can embark and move over Coasts and Oceans immediately. +1 Sight when embarked. +10% Combat Strength bonus if within 2 tiles of a Moai. = 
+Wayfinding = 
+
+Food and Culture from Friendly City-States are increased by 50% = 
+Father Governs Children = 
+
+Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves. = 
+River Warlord = 
+
+100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it). Culture, Happiness and tile yields from Natural Wonders doubled. = 
+Seven Cities of Gold = 
+
+Combat Strength +30% when fighting City-State units or attacking a City-State itself. All mounted units have +1 Movement. = 
+Mongol Terror = 
+
+Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere. = 
+Great Andean Road = 
+
++1 Movement to all embarked units, units pay only 1 movement point to embark and disembark. Melee units pay no movement cost to pillage. = 
+Viking Fury = 
+
+Gain Culture for the empire from each enemy unit killed = 
+Sacrificial Captives = 
+
+# New game screen
+
+Uniques = 
+Promotions = 
+Load copied data = 
+Could not load game from clipboard! = 
+Start game! = 
+Map Options = 
+Game Options = 
+Civilizations = 
+Map Type = 
+Generated = 
+Existing = 
+Custom = 
+Map Generation Type = 
+Default = 
+Pangaea = 
+Perlin = 
+Continents = 
+Archipelago = 
+Number of City-States = 
+One City Challenge = 
+No Barbarians = 
+No Ancient Ruins = 
+No Natural Wonders = 
+Victory Conditions = 
+Scientific = 
+Domination = 
+Cultural = 
+
+Map Shape = 
+Hexagonal = 
+Rectangular = 
+
+Show advanced settings = 
+Hide advanced settings = 
+Map Height = 
+Temperature extremeness = 
+Resource richness = 
+Vegetation richness = 
+Rare features richness = 
+Max Coast extension = 
+Biome areas extension = 
+Water level = 
+Reset to default = 
+
+HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED! = 
+Online Multiplayer = 
+
+World Size = 
+Tiny = 
+Small = 
+Medium = 
+Large = 
+Huge = 
+
+Difficulty = 
+
+AI = 
+Remove = 
+Random = 
+Human = 
+Hotseat = 
+User ID = 
+Click to copy = 
+
+
+Game Speed = 
+Quick = 
+Standard = 
+Epic = 
+Marathon = 
+
+Starting Era = 
+It looks like we can't make a map with the parameters you requested! = 
+Maybe you put too many players into too small a map? = 
+No human players selected! = 
+Mods: = 
+
+# Multiplayer
+
+Username = 
+Multiplayer = 
+Could not download game! = 
+Could not upload game! = 
+Join Game = 
+Invalid game ID! = 
+Copy User ID = 
+Copy Game ID = 
+UserID copied to clipboard = 
+GameID copied to clipboard = 
+Set current user = 
+Player ID from clipboard = 
+To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID. = 
+You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game. = 
+Once you've created your game, the Game ID gets automatically copied to your clipboard so you can send it to the other players. = 
+Players can enter your game by copying the game ID to the clipboard, and clicking on the 'Add Multiplayer Game' button = 
+The symbol of your nation will appear next to the game when it's your turn = 
+Back = 
+Rename = 
+Edit Game Info = 
+Add Multiplayer Game = 
+Refresh List = 
+Could not save game! = 
+Could not delete game! = 
+Could not refresh! = 
+Last refresh: [time] minutes ago = 
+Current Turn: = 
+Add Currently Running Game = 
+Game name = 
+Loading latest game state... = 
+Couldn't download the latest game state! = 
+
+# Save game menu
+
+Current saves = 
+Show autosaves = 
+Saved game name = 
+Copy to clipboard = 
+Copy saved game to clipboard = 
+Could not load game = 
+Load [saveFileName] = 
+Delete save = 
+Saved at = 
+Load map = 
+Delete map = 
+Are you sure you want to delete this map? = 
+Upload map = 
+Could not upload map! = 
+Map uploaded successfully! = 
+Saving... = 
+It looks like your saved game can't be loaded! = 
+If you could copy your game data ("Copy saved game to clipboard" -  = 
+  paste into an email to yairm210@hotmail.com) = 
+I could maybe help you figure out what went wrong, since this isn't supposed to happen! = 
+Missing mods: [mods] = 
+
+# Options
+
+Options = 
+Display options = 
+Gameplay options = 
+Other options = 
+Turns between autosaves = 
+Sound effects volume = 
+Music volume = 
+Download music = 
+Downloading... = 
+Could not download music! = 
+Show = 
+Hide = 
+Show worked tiles = 
+Show resources and improvements = 
+Check for idle units = 
+Move units with a single tap = 
+Show tutorials = 
+Auto-assign city production = 
+Auto-build roads = 
+Show minimap = 
+Show pixel units = 
+Show pixel improvements = 
+Enable nuclear weapons = 
+Fontset = 
+Continuous rendering = 
+When disabled, saves battery life but certain animations will be suspended = 
+Order trade offers by amount = 
+Generate translation files = 
+Translation files are generated successfully. = 
+
+# Notifications
+
+Research of [technologyName] has completed! = 
+You have entered a golden age! = 
+[resourceName] revealed near [cityName] = 
+A [greatPerson] has been born in [cityName]! = 
+We have encountered [civName]! = 
+Cannot provide unit upkeep for [unitName] - unit has been disbanded! = 
+[cityName] has grown! = 
+[cityName] has been founded! = 
+[cityName] is starving! = 
+[construction] has been built in [cityName] = 
+[wonder] has been built in a faraway land = 
+Work has started on [construction] = 
+[cityName] cannot continue work on [construction] = 
+[cityname] has expanded its borders! = 
+Your Golden Age has ended. = 
+[cityName] has been razed to the ground! = 
+We have conquered the city of [cityname]! = 
+An enemy [unit] has attacked [cityname] = 
+An enemy [unit] has attacked our [ourUnit] = 
+Enemy city [cityName] has attacked our [ourUnit] = 
+An enemy [unit] has captured [cityname] = 
+An enemy [unit] has captured our [ourUnit] = 
+An enemy [unit] has destroyed our [ourUnit] = 
+An enemy [RangedUnit] has destroyed the defence of [cityname] = 
+Enemy city [cityName] has destroyed our [ourUnit] = 
+An enemy [unit] was destroyed while attacking [cityname] = 
+An enemy [unit] was destroyed while attacking our [ourUnit] = 
+Our [attackerName] was destroyed by an intercepting [interceptorName] = 
+Our [interceptorName] intercepted and destroyed an enemy [attackerName] = 
+Our [$attackerName] was attacked by an intercepting [$interceptorName] = 
+Our [$interceptorName] intercepted and attacked an enemy [$attackerName] = 
+An enemy [unit] was spotted near our territory = 
+An enemy [unit] was spotted in our territory = 
+[amount] enemy units were spotted near our territory = 
+[amount] enemy units were spotted in our territory = 
+The civilization of [civName] has been destroyed! = 
+The City-State of [name] has been destroyed! = 
+We have captured a barbarian encampment and recovered [goldAmount] gold! = 
+A barbarian [unitType] has joined us! = 
+We have found survivors in the ruins - population added to [cityName] = 
+We have discovered the lost technology of [techName] in the ruins! = 
+A [unitName] has joined us! = 
+An ancient tribe trains our [unitName] in their ways of combat! = 
+We have found a stash of [amount] gold in the ruins! = 
+We have found a crudely-drawn map in the ruins! = 
+[unit] finished exploring. = 
+[unit] has no work to do. = 
+You're losing control of [name]. = 
+You and [name] are no longer friends! = 
+Your alliance with [name] is faltering. = 
+You and [name] are no longer allies! = 
+[civName] gave us a [unitName] as gift near [cityName]! = 
+[civName] has denounced us! = 
+[cityName] has been connected to your capital! = 
+[cityName] has been disconnected from your capital! = 
+[civName] has accepted your trade request = 
+[civName] has denied your trade request = 
+[tradeOffer] from [otherCivName] has ended = 
+[tradeOffer] to [otherCivName] has ended = 
+One of our trades with [nation] has ended = 
+One of our trades with [nation] has been cut short = 
+[nation] agreed to stop settling cities near us! = 
+[nation] refused to stop settling cities near us! = 
+We have allied with [nation]. = 
+We have lost alliance with [nation]. = 
+We have discovered [naturalWonder]! = 
+We have received [goldAmount] Gold for discovering [naturalWonder] = 
+Your relationship with [cityStateName] is about to degrade = 
+Your relationship with [cityStateName] degraded = 
+A new barbarian encampment has spawned! = 
+Received [goldAmount] Gold for capturing [cityName] = 
+Our proposed trade request is no longer relevant! = 
+[defender] could not withdraw from a [attacker] - blocked. = 
+[defender] withdrew from a [attacker] = 
+[building] has provided [amount] Gold! = 
+[civName] has stolen your territory! = 
+
+
+# World Screen UI
+
+Working... = 
+Waiting for other players... = 
+in = 
+Next turn = 
+Turn = 
+turns = 
+turn = 
+Next unit = 
+Pick a policy = 
+Movement = 
+Strength = 
+Ranged strength = 
+Bombard strength = 
+Range = 
+Move unit = 
+Stop movement = 
+Construct improvement = 
+Automate = 
+Stop automation = 
+Construct road = 
+Fortify = 
+Fortify until healed = 
+Fortification = 
+Sleep = 
+Sleep until healed = 
+Moving = 
+Set up = 
+Upgrade to [unitType] ([goldCost] gold) = 
+Found city = 
+Promote = 
+Health = 
+Disband unit = 
+Explore = 
+Stop exploration = 
+Pillage = 
+Do you really want to disband this unit? = 
+Disband this unit for [goldAmount] gold? = 
+Create [improvement] = 
+Start Golden Age = 
+Yes = 
+No = 
+Acquire = 
+Science = 
+Happiness = 
+Production = 
+Culture = 
+Food = 
+Crop Yield = 
+Land = 
+Force = 
+GOLDEN AGE = 
+Golden Age = 
+[year] BC = 
+[year] AD = 
+Civilopedia = 
+Start new game = 
+Save game = 
+Load game = 
+Main menu = 
+Resume = 
+Cannot resume game! = 
+Not enough memory on phone to load game! = 
+Quickstart = 
+Victory status = 
+Social policies = 
+Community = 
+Close = 
+Do you want to exit the game? = 
+Start bias: = 
+Avoid [terrain] = 
+
+# City screen
+
+Exit city = 
+Raze city = 
+Stop razing city = 
+Buy for [amount] gold = 
+Buy = 
+You have [amount] gold = 
+Currently you have [amount] gold. = 
+Would you like to purchase [constructionName] for [buildingGoldCost] gold? = 
+No space available to place [unit] near [city] = 
+Maintenance cost = 
+Pick construction = 
+Pick improvement = 
+Provides [resource] = 
+Replaces [improvement] = 
+Pick now! = 
+Build [building] = 
+Train [unit] = 
+Produce [thingToProduce] = 
+Nothing = 
+Annex city = 
+Specialist Buildings = 
+Specialist Allocation = 
+Specialists = 
+[specialist] slots = 
+Engineer specialist = 
+Merchant specialist = 
+Scientist specialist = 
+Artist specialist = 
+Food eaten = 
+Growth bonus = 
+Unassigned population = 
+[turnsToExpansion] turns to expansion = 
+Stopped expansion = 
+[turnsToPopulation] turns to new population = 
+Food converts to production = 
+[turnsToStarvation] turns to lose population = 
+Stopped population growth = 
+In resistance for another [numberOfTurns] turns = 
+Sell for [sellAmount] gold = 
+Are you sure you want to sell this [building]? = 
+[greatPerson] points = 
+Great person points = 
+Current points = 
+Points per turn = 
+Convert production to gold at a rate of 4 to 1 = 
+Convert production to science at a rate of [rate] to 1 = 
+The city will not produce anything. = 
+Worked by [cityName] = 
+Lock = 
+Unlock = 
+
+# Technology UI
+
+Pick a tech = 
+Pick a free tech = 
+Research [technology] = 
+Pick [technology] as free tech = 
+Units enabled = 
+Buildings enabled = 
+Wonder = 
+National Wonder = 
+National Wonders = 
+Wonders enabled = 
+Tile improvements enabled = 
+Reveals [resource] on the map = 
+XP for new units = 
+provide = 
+provides = 
+City strength = 
+City health = 
+Occupied! = 
+Attack = 
+Bombard = 
+NUKE = 
+Captured! = 
+defence vs ranged = 
+[percentage] to unit defence = 
+Attacker Bonus = 
+Landing = 
+Flanking = 
+vs [unitType] = 
+Terrain = 
+Missing resource = 
+
+
+Hurry Research = 
+Conduct Trade Mission = 
+Your trade mission to [civName] has earned you [goldAmount] gold and [influenceAmount] influence! = 
+Hurry Wonder = 
+Your citizens have been happy with your rule for so long that the empire enters a Golden Age! = 
+You have entered the [newEra]! = 
+[civName] has entered the [eraName]! = 
+[policyBranch] policy branch unlocked! = 
+Overview = 
+Total = 
+Stats = 
+Policies = 
+Base happiness = 
+Occupied City = 
+Buildings = 
+Wonders = 
+Base values = 
+Bonuses = 
+Final = 
+Other = 
+Population = 
+City-States = 
+Tile yields = 
+Trade routes = 
+Maintenance = 
+Transportation upkeep = 
+Unit upkeep = 
+Trades = 
+Units = 
+Name = 
+Closest city = 
+Action = 
+Defeated = 
+Tiles = 
+Natural Wonders = 
+Treasury deficit = 
+
+# Victory
+
+Science victory = 
+Cultural victory = 
+Conquest victory = 
+Complete all the spaceship parts\n to win! = 
+Complete 5 policy branches\n to win! = 
+Destroy all enemies\n to win! = 
+You have won a scientific victory! = 
+You have won a cultural victory! = 
+You have won a domination victory! = 
+You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart. = 
+The world has been convulsed by war. Many great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph! = 
+You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky! = 
+You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory! = 
+One more turn...! = 
+Built Apollo Program = 
+Destroy [civName] = 
+Our status = 
+Global status = 
+Rankings = 
+Spaceship parts remaining = 
+Branches completed = 
+Undefeated civs = 
+
+# Capturing a city
+
+What would you like to do with the city? = 
+Annex = 
+Annexed cities become part of your regular empire. = 
+Their citizens generate 2x the unhappiness, unless you build a courthouse. = 
+Puppet = 
+Puppeted cities do not increase your tech or policy cost, but their citizens generate 1.5x the regular unhappiness. = 
+You have no control over the the production of puppeted cities. = 
+Puppeted cities also generate 25% less Gold and Science. = 
+A puppeted city can be annexed at any time. = 
+Liberate = 
+Liberating a city returns it to its original owner, giving you a massive relationship boost with them! = 
+Raze = 
+Razing the city annexes it, and starts razing the city to the ground. = 
+The population will gradually dwindle until the city is destroyed. = 
+Remove your troops in our border immediately! = 
+Sorry. = 
+Never! = 
+
+Offer Declaration of Friendship ([30] turns) = 
+My friend, shall we declare our friendship to the world? = 
+Sign Declaration of Friendship ([30] turns) = 
+We are not interested. = 
+We have signed a Declaration of Friendship with [otherCiv]! = 
+[otherCiv] has denied our Declaration of Friendship! = 
+
+Basics = 
+Resources = 
+Terrains = 
+Tile Improvements = 
+Unique to [civName], replaces [unitName] = 
+Unique to [civName] = 
+Tutorials = 
+Cost = 
+May contain [listOfResources] = 
+Upgrades to [upgradedUnit] = 
+Obsolete with [obsoleteTech] = 
+Occurs on [listOfTerrains] = 
+Placed on [terrainType] = 
+Can be found on  = 
+Improved by [improvement] = 
+Bonus stats for improvement:  = 
+Buildings that consume this resource:  = 
+Units that consume this resource:  = 
+Can be built on  = 
+Defence bonus = 
+Movement cost = 
+Rough Terrain = 
+ for  = 
+Missing translations: = 
+Version = 
+Resolution = 
+Tileset = 
+Map editor = 
+Create = 
+New map = 
+Empty = 
+Language = 
+Terrains & Resources = 
+Improvements = 
+Clear current map = 
+Save map = 
+Download map = 
+Loading... = 
+Filter: = 
+Exit map editor = 
+[nation] starting location = 
+Clear terrain features = 
+Clear improvements = 
+Clear resource = 
+Requires = 
+Menu = 
+Brush Size = 
+Map saved = 
+
+# Civilopedia difficulty levels
+Player settings = 
+Base Happiness = 
+Happiness per luxury = 
+Research cost modifier = 
+Unit cost modifier = 
+Building cost modifier = 
+Policy cost modifier = 
+Unhappiness modifier = 
+Bonus vs. Barbarians = 
+
+AI settings = 
+AI city growth modifier = 
+AI unit cost modifier = 
+AI building cost modifier = 
+AI wonder cost modifier = 
+AI building maintenance modifier = 
+AI unit maintenance modifier = 
+AI unhappiness modifier = 
+
+Turns until barbarians enter player tiles = 
+Gold reward for clearing barbarian camps = 
+
+# Other civilopedia things
+Nations = 
+Available for [unitTypes] = 
+Free promotion: = 
+Free promotions: = 
+Free for [units] = 
+[bonus] with [tech] = 
+Difficulty levels = 
+
+# Policies
+
+Adopt policy = 
+Adopt free policy = 
+Unlocked at = 
+Gain 2 free technologies = 
+
+# Technologies
+
+Mass Media = 
+
+# Terrains
+
+Impassable = 
+
+# Resources
+
+Bison = 
+Copper = 
+Cocoa = 
+Crab = 
+Citrus = 
+Truffles = 
+
+# Unit types 
+
+Civilian = 
+land units = 
+water units = 
+air units = 
+WaterCivilian = 
+Melee = 
+WaterMelee = 
+Ranged = 
+WaterRanged = 
+WaterSubmarine = 
+Mounted = 
+Armor = 
+City = 
+Missile = 
+WaterAircraftCarrier = 
+
+# Units
+
+Composite Bowman = 
+Foreign Land = 
+Marine = 
+Mobile SAM = 
+Paratrooper = 
+Helicopter Gunship = 
+Atomic Bomb = 
+Unbuildable = 
+
+# Promotions
+
+Pick promotion = 
+ OR  = 
+units in open terrain = 
+units in rough terrain = 
+wounded units = 
+Targeting II (air) = 
+Targeting III (air) = 
+Bonus when performing air sweep [bonusAmount]% = 
+Dogfighting I = 
+Dogfighting II = 
+Dogfighting III = 
+# Multiplayer Turn Checker Service
+
+Multiplayer options = 
+Enable out-of-game turn notifications = 
+Time between turn checks out-of-game (in minutes) = 
+Show persistent notification for turn notifier service = 
+Take user ID from clipboard = 
+Doing this will reset your current user ID to the clipboard contents - are you sure? = 
+ID successfully set! = 
+Invalid ID! = 
