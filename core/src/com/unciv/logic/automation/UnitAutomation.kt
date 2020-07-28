@@ -4,12 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
+import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object UnitAutomation {
@@ -90,17 +90,24 @@ object UnitAutomation {
         if (unit.civInfo.isBarbarian())
             throw IllegalStateException("Barbarians is not allowed here.")
 
-        if (unit.name == Constants.settler)
-            return SpecificUnitAutomation.automateSettlerActions(unit)
+        if(unit.type==UnitType.Civilian) {
+            if (unit.name == Constants.settler)
+                return SpecificUnitAutomation.automateSettlerActions(unit)
 
-        if (unit.hasUnique(Constants.workerUnique))
-            return WorkerAutomation(unit).automateWorkerAction()
+            if (unit.hasUnique(Constants.workerUnique))
+                return WorkerAutomation(unit).automateWorkerAction()
 
-        if (unit.name == "Work Boats")
-            return SpecificUnitAutomation.automateWorkBoats(unit)
+            if (unit.name == "Work Boats")
+                return SpecificUnitAutomation.automateWorkBoats(unit)
 
-        if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
-            return SpecificUnitAutomation.automateGreatGeneral(unit)
+            if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
+                return SpecificUnitAutomation.automateGreatGeneral(unit)
+
+            if (unit.getUniques().any { it.equalsPlaceholderText("Can construct []") })
+                return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
+
+            return // The AI doesn't know how to handle unknown civilian units
+        }
 
         if (unit.type == UnitType.Fighter)
             return SpecificUnitAutomation.automateFighter(unit)
@@ -111,10 +118,6 @@ object UnitAutomation {
         if (unit.type == UnitType.Missile)
             return SpecificUnitAutomation.automateMissile(unit)
 
-
-        if (unit.name.startsWith("Great")
-            && unit.name in GreatPersonManager().statToGreatPersonMapping.values)// So "Great War Infantry" isn't caught here
-            return SpecificUnitAutomation.automateGreatPerson(unit)
 
         if (tryGoToRuinAndEncampment(unit)) {
             if (unit.currentMovement == 0f) return
