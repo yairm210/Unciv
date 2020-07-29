@@ -146,7 +146,7 @@
 			},
 			{
 				"name": "Honor Complete",
-				"effect": "Gain gold for each unit killed" 
+				"effect": "Gain gold for each unit killed",
 				"uniques": ["Gain gold for each unit killed"],
 			}
 		]

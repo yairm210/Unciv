@@ -36,6 +36,7 @@ class GameParameters { // Default values are the default new game
         parameters.numberOfCityStates = numberOfCityStates
         parameters.noBarbarians = noBarbarians
         parameters.oneCityChallenge = oneCityChallenge
+        parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
