@@ -152,9 +152,9 @@ class Building : NamedStats(), IConstruction{
                     if(isStatRelated(Stat.valueOf(placeholderParams[1])))
                         stats.add(Stats.parse(placeholderParams[0]))
                 }
-
-            if (adoptedPolicies.contains("Constitution") && isWonder)
-                stats.culture += 2f
+            else
+                for(unique in civInfo.getMatchingUniques("[] from every Wonder"))
+                    stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
 
             if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
                 stats.happiness += 3

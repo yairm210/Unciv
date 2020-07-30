@@ -354,7 +354,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"culture": 1},
 		"isWonder": true,
-		"uniques": ["+33% great person generation in all cities"],
+		"uniques": ["+[33]% great person generation in all cities"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},

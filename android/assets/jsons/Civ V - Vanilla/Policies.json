@@ -397,16 +397,19 @@
 		"name": "Freedom",
 		"era": "Renaissance era",
 		"effect": "+25% great people rate",
+		"unique": "+[25]% great person generation in all cities",
 		"policies": [
 			{
 				"name": "Constitution",
 				"effect": "+2 culture from each wonder",
+				"uniques": ["[+2 Culture] from every Wonder"]
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Universal Suffrage",
 				"effect": "+1 production per 5 population",
+				"uniques": ["[+1 Production] per [5] population in all cities"]
 				"row": 1,
 				"column": 3
 			},
@@ -419,6 +422,7 @@
 			{
 				"name": "Free Speech",
 				"effect": "+1 culture for every 2 citizens",
+				"uniques": ["[+1 Culture] per [2] population in all cities"]
 				"requires": ["Constitution"],
 				"row": 2,
 				"column": 1

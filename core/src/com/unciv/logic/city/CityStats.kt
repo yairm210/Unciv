@@ -270,25 +270,32 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromPolicies(adoptedPolicies: PolicyManager): Stats {
+    private fun getStatsFromUniques(uniques: Sequence<String>):Stats{
         val stats = Stats()
-        if (adoptedPolicies.hasEffect("+3 culture in capital") && cityInfo.isCapital())
-            stats.culture += 3f
-        for(effect in adoptedPolicies.policyEffects) {
-            val placeholderText = effect.getPlaceholderText()
+
+        for(unique in uniques) {
+            val placeholderText = unique.getPlaceholderText()
             if ((placeholderText == "[] in capital" && cityInfo.isCapital())
                     || placeholderText == "[] in all cities"
                     || (placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
-                stats.add(Stats.parse(effect.getPlaceholderParameters()[0]))
+                stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
+            if (placeholderText == "[] per [] population in all cities") {
+                val placeholderParams = unique.getPlaceholderParameters()
+                val amountOfEffects = (cityInfo.population.population / placeholderParams[1].toInt()).toFloat()
+                stats.add(Stats.parse(placeholderParams[0]).times(amountOfEffects))
+            }
         }
+        return stats
+    }
+
+    private fun getStatsFromPolicies(adoptedPolicies: PolicyManager): Stats {
+        val stats = Stats()
+        stats.add(getStatsFromUniques(adoptedPolicies.policyEffects.asSequence()))
+
         if (adoptedPolicies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital") && cityInfo.isCapital())
             stats.gold += (cityInfo.population.population / 2).toFloat()
-        if (adoptedPolicies.hasEffect("+1 culture in every city"))
-            stats.culture += 1f
         if (adoptedPolicies.hasEffect("+1 production in every city, +5% production when constructing buildings"))
             stats.production += 1f
-        if (adoptedPolicies.hasEffect("+1 production per 5 population"))
-            stats.production += (cityInfo.population.population / 5).toFloat()
         if (adoptedPolicies.hasEffect("+1 culture for every 2 citizens"))
             stats.culture += (cityInfo.population.population / 2).toFloat()
 
@@ -351,9 +358,9 @@ class CityStats {
         if(currentConstruction is Building && !currentConstruction.isWonder)
             for(unique in cityInfo.civInfo.getMatchingUniques("+[]% Production when constructing [] buildings")){
                 val placeholderParams = unique.getPlaceholderParameters()
-                val stat = Stat.valueOf(placeholderParams[0])
+                val stat = Stat.valueOf(placeholderParams[1])
                 if(currentConstruction.isStatRelated(stat))
-                    stats.production += placeholderParams[1].toInt()
+                    stats.production += placeholderParams[0].toInt()
             }
 
         if (currentConstruction is Building && currentConstruction.name == "Courthouse"
@@ -400,6 +407,7 @@ class CityStats {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
+        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.cities.asSequence().flatMap { it.getBuildingUniques() })
         newBaseStatList["City-States"] = getStatsFromCityStates()
 
         baseStatList = newBaseStatList
