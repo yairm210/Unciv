@@ -90,7 +90,7 @@ object UnitAutomation {
         if (unit.civInfo.isBarbarian())
             throw IllegalStateException("Barbarians is not allowed here.")
 
-        if(unit.type==UnitType.Civilian) {
+        if(unit.type.isCivilian()) {
             if (unit.name == Constants.settler)
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
