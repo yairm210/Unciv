@@ -340,7 +340,7 @@ object UnitActions {
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                         var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
-                        if (unit.civInfo.policies.isAdopted("Commerce Complete"))
+                        if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
                         val relevantUnique = unit.getUniques().first { it.startsWith(CAN_UNDERTAKE) }

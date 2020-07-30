@@ -53,7 +53,7 @@ class CityStats {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if (civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS) goldFromTradeRoute += 1
-            if (civInfo.policies.hasEffect("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes")) goldFromTradeRoute += 2
+            if (civInfo.hasUnique("+2 Gold from all trade routes")) goldFromTradeRoute += 2
             if (civInfo.hasUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }
@@ -358,7 +358,7 @@ class CityStats {
         if (cityConstructions.getBuiltBuildings().any { it.isWonder }
                 && cityInfo.civInfo.hasUnique("+33% culture in all cities with a world wonder"))
             stats.culture += 33f
-        if (policies.contains("Commerce") && cityInfo.isCapital())
+        if (cityInfo.civInfo.hasUnique("+25% gold in capital") && cityInfo.isCapital())
             stats.gold += 25f
         if (policies.contains("Sovereignty") && cityInfo.civInfo.getHappiness() >= 0)
             stats.science += 15f

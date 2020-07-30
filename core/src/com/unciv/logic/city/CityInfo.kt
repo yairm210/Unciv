@@ -260,7 +260,7 @@ class CityInfo {
         for(entry in stats){
             if(civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
-            if (civInfo.policies.hasEffect("Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange."))
+            if (civInfo.hasUnique("Great Merchants are earned 25% faster"))
                 entry.value.gold *= 1.25f
 
             if (civInfo.hasUnique("+33% great person generation in all cities"))

@@ -756,7 +756,7 @@
 		"gold": 4,
 		"greatPersonPoints": {"gold": 2},
 		"isWonder": true,
-		"uniques": ["-15% to purchasing items in cities"],
+		"uniques": ["Cost of purchasing items in cities reduced by [15]%"],
 		"requiredTech": "Industrialization",
 		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},

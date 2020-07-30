@@ -3,7 +3,7 @@
 		"name": "Tradition",
 		"era": "Ancient era",
 		"effect": "+3 culture in capital and increased rate of border expansion",
-		"uniques": ["+3 culture in capital", "Increased rate of border expansion"],
+		"uniques": ["[+3 Culture] in capital", "Increased rate of border expansion"],
 		"policies": [
 			{
 				"name": "Aristocracy",
@@ -198,7 +198,8 @@
 			},
 			{
 				"name": "Piety Complete",
-				"effect": "Reduce culture cost of future policies by 10%"
+				"effect": "Reduce culture cost of future policies by 10%",
+				"uniques": ["Culture cost of adopting new Policies reduced by 10%"]
 			}
 		]
 	},/*{
@@ -248,23 +249,28 @@
 	{
 		"name": "Commerce",
 		"effect": "+25% gold in capital",
+		"uniques": ["+25% gold in capital"],
 		"era": "Medieval era",
 		"policies": [
 			{
 				"name": "Trade Unions",
 				"effect": "Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes",
+				"uniques": ["Maintenance on roads & railroads reduced by 33%", "+2 Gold from all trade routes"]
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Mercantilism",
 				"effect": "-25% to purchasing items in cities",
+				"uniques": ["Cost of purchasing items in cities reduced by [25]%"]
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Entrepreneurship",
 				"effect": "Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.",
+				"uniques": ["Great Merchants are earned 25% faster", "[+1 Science] from every [Mint]", "[+1 Science] from every [Market]",
+					"[+1 Science] from every [Bank]", "[+1 Science] from every [Stock Exchange]" ],
 				"requires": ["Trade Unions"],
 				"row": 2,
 				"column": 2
@@ -272,6 +278,7 @@
 			{
 				"name": "Patronage",
 				"effect": "Cost of purchasing culture buildings reduced by 50%",
+				"uniques": ["Cost of purchasing [Culture] buildings reduced by [50]%"]
 				"requires": ["Mercantilism"],
 				"row": 2,
 				"column": 5
@@ -279,13 +286,16 @@
 			{
 				"name": "Protectionism",
 				"effect": "+1 happiness from each luxury resource",
+				"uniques": ["+1 happiness from each luxury resource"],
 				"requires": ["Entrepreneurship","Patronage"],
 				"row": 3,
 				"column": 3
 			},
 			{
 				"name": "Commerce Complete",
-				"effect": "+1 gold from every trading post, double gold from Great Merchant trade missions"
+				"effect": "+1 gold from every trading post, double gold from Great Merchant trade missions",
+				"uniques": ["[+1 Gold] from every [Trading post]", "Double gold from Great Merchant trade missions"]
+				"uniques": "+1 
 			}
 		]
 	},

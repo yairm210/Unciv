@@ -143,9 +143,6 @@ class Building : NamedStats(), IConstruction{
                 stats.add(Stats.parse(placeholderParams[0]))
             }
 
-            if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(baseBuildingName ))
-                stats.science += 1f
-
             if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
                 stats.happiness += 1f
 
@@ -207,11 +204,15 @@ class Building : NamedStats(), IConstruction{
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
-        if (civInfo.policies.hasEffect("-25% to purchasing items in cities")) cost *= 0.75
-        if (civInfo.hasUnique("-15% to purchasing items in cities")) cost *= 0.85
-        if (civInfo.policies.hasEffect( "Cost of purchasing culture buildings reduced by 50%")
-                && culture !=0f && !isWonder)
-            cost *= 0.5
+
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1 - (unique.getPlaceholderParameters()[0].toFloat())
+
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
+            val placeholderParams = unique.getPlaceholderParameters()
+            if (isStatRelated(Stat.valueOf(placeholderParams[0])))
+                cost *= 1 - (placeholderParams[1].toFloat() / 100)
+        }
 
         return (cost / 10).toInt() * 10
     }
