@@ -277,12 +277,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    private fun getSpectatorCiv(): CivilizationInfo? {
-        return  if (viewingCiv.isSpectator()) viewingCiv
-        else null
-    }
-
-
     // This is private so that we will set the shouldUpdate to true instead.
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
@@ -314,7 +308,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 
         if (fogOfWar) minimapWrapper.update(selectedCiv)
-        else minimapWrapper.update(getSpectatorCiv()!!)
+        else minimapWrapper.update(viewingCiv)
 
         cleanupKeyDispatcher()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
@@ -324,7 +318,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
         if (fogOfWar) mapHolder.updateTiles(selectedCiv)
-        else mapHolder.updateTiles(getSpectatorCiv()!!)
+        else mapHolder.updateTiles(viewingCiv)
 
         topBar.update(selectedCiv)
 
