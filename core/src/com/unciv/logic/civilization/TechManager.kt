@@ -264,7 +264,7 @@ class TechManager {
             for (constructionName in oldQueue) {
                 var newConstructionName = constructionName
                 if (constructionName in obsoleteUnits) {
-                    val text = "[$constructionName] has been obsolete and will remove from construction queue in [${city.name}]!"
+                    val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
                     civInfo.addNotification(text, city.location, Color.BROWN)
                 }
                 else city.cityConstructions.constructionQueue.add(newConstructionName)
