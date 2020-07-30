@@ -203,6 +203,7 @@ object TranslationFileWriter {
                             parameter.toIntOrNull() != null -> "amount"
                             RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
+                            RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"
                             Stats.isStats(parameter) -> "stats"
                             else -> "param"
                         }

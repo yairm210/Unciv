@@ -1,3 +1,17 @@
+## 3.9.16
+
+Resolved #3901 - nuclear weapon setting remains between games
+
+Game can now handle modded unique buildings that don't replace anything existing
+
+All improvement placing units are automated in the same way - this allows for the AI to control modded units that place other improvements!
+
+Railroad connection propagates correctly over harbor connections
+
+Resolved #2894 - Map editor button only opens popup once
+
+Translation updates
+
 ## 3.9.15
 
 Removed confusing extra lines in the diplomacy overview
