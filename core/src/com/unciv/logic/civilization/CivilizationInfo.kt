@@ -132,7 +132,7 @@ class CivilizationInfo {
             gameInfo.gameParameters.oneCityChallenge)
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
-    fun isSpectator() = nation.isSpectator()
+    fun isSpectator() = civName == Constants.spectator
     fun isCityState(): Boolean = nation.isCityState()
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
@@ -392,6 +392,9 @@ class CivilizationInfo {
     fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
     fun startTurn() {
+        if (UncivGame.Current.replayDebugSwitch && !gameInfo.replayMode)
+            gameInfo.replay!!.updateNextTurn(this)
+
         policies.startTurn()
         updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
 

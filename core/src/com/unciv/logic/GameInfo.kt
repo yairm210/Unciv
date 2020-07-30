@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.replay.NextTurnReplay
+import com.unciv.logic.replay.Replay
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.metadata.GameParameters
@@ -27,6 +28,7 @@ class GameInfo {
      * that is inconsistent with the saved game on the cloud */
     @Transient var isUpToDate=false
     @Transient lateinit var ruleSet:Ruleset
+    @Transient var replay: Replay? = null
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -50,6 +52,7 @@ class GameInfo {
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
+        toReturn.replay = replay
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.currentPlayer=currentPlayer
         toReturn.turns = turns
@@ -57,6 +60,7 @@ class GameInfo {
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
         toReturn.oneMoreTurnMode = oneMoreTurnMode
+        toReturn.replayMode = replayMode
         return toReturn
     }
 
@@ -81,6 +85,7 @@ class GameInfo {
 
         fun switchTurn(){
             thisPlayer.endTurn()
+
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0) turns++
 
@@ -89,6 +94,14 @@ class GameInfo {
         }
 
         switchTurn()
+
+        fun replayTurn(){
+            thisPlayer.popupAlerts.clear()
+            while (!thisPlayer.isSpectator()) {
+                NextTurnReplay.replayCivMoves(thisPlayer, turns)
+                switchTurn()
+            }
+        }
 
         fun automateTurn(){
             while (thisPlayer.playerType == PlayerType.AI
@@ -115,11 +128,6 @@ class GameInfo {
                 }
                 switchTurn()
             }
-        }
-
-        fun replayTurn(){
-            NextTurnReplay.replayCivMoves(thisPlayer, turns)
-            switchTurn()
         }
 
         if (replayMode) replayTurn()
@@ -247,6 +255,7 @@ class GameInfo {
     // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
+        replay?.gameInfo = this
         ruleSet = RulesetCache.getComplexRuleset(gameParameters)
         // any mod the saved game lists that is currently not installed causes null pointer
         // exceptions in this routine unless it contained no new objects or was very simple.

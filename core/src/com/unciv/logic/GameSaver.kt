@@ -14,7 +14,7 @@ import java.io.File
 import kotlin.concurrent.thread
 
 object GameSaver {
-    private const val replaysFolder = "Replays"
+    private const val replaysFolder = "replays"
     private const val saveFilesFolder = "SaveFiles"
     private const val multiplayerFilesFolder = "MultiplayerGames"
     private const val settingsFileName = "GameSettings.json"
@@ -49,7 +49,9 @@ object GameSaver {
     fun loadReplayByName(replayName: String, consoleMode: Boolean = false): Replay {
         val gzippedString = getReplay(replayName, consoleMode).readString()
         val unzippedJson = Gzip.unzip(gzippedString)
-        return json().fromJson(Replay::class.java, unzippedJson)
+        val replay = json().fromJson(Replay::class.java, unzippedJson)
+        replay.initialState.setTransients()
+        return replay
     }
 
     fun getSubfolder(multiplayer: Boolean=false) = if(multiplayer) multiplayerFilesFolder else saveFilesFolder

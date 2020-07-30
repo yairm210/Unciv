@@ -115,7 +115,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addAutosaveTurnsSelectBox()
 
         if (UncivGame.Current.replayDebugSwitch)
-            addYesNoRow ("Save replays", settings.saveReplay) { settings.saveReplay = it }
+            addYesNoRow ("Autosave replays", settings.autoSaveReplay) { settings.autoSaveReplay = it }
 
         // at the moment the notification service only exists on Android
         addNotificationOptions()
