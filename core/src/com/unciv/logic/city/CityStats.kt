@@ -365,7 +365,7 @@ class CityStats {
             stats.culture += 33f
         if (cityInfo.civInfo.hasUnique("+25% gold in capital") && cityInfo.isCapital())
             stats.gold += 25f
-        if (policies.contains("Sovereignty") && cityInfo.civInfo.getHappiness() >= 0)
+        if (cityInfo.civInfo.getHappiness() >= 0 && cityInfo.civInfo.hasUnique("+15% science while empire is happy"))
             stats.science += 15f
         if (policies.contains("Total War") && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
             stats.production += 15f

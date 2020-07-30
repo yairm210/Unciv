@@ -169,9 +169,7 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        if (civInfo.policies.isAdopted("Scientific Revolution"))
-            researchAgreementModifier += 0.25f
-        if (civInfo.hasUnique("Science gained from research agreements +50%"))
+        for(unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
             researchAgreementModifier += 0.25f
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }

@@ -295,7 +295,6 @@
 				"name": "Commerce Complete",
 				"effect": "+1 gold from every trading post, double gold from Great Merchant trade missions",
 				"uniques": ["[+1 Gold] from every [Trading post]", "Double gold from Great Merchant trade missions"]
-				"uniques": "+1 
 			}
 		]
 	},
@@ -331,6 +330,7 @@
 			{
 				"name": "Sovereignty",
 				"effect": "+15% science while empire is happy",
+				"uniques": ["+15% science while empire is happy"],
 				"requires": ["Humanism"],
 				"row": 2,
 				"column": 5
@@ -338,13 +338,15 @@
 			{
 				"name": "Scientific Revolution",
 				"effect": "Science gained from research agreements +50%",
+				"uniques": ["Science gained from research agreements +50%"],
 				"requires": ["Free Thought"],
 				"row": 3,
 				"column": 1
 			},
 			{
 				"name": "Rationalism Complete",
-				"effect": "+1 gold from all science buildings"
+				"effect": "+1 gold from all science buildings",
+				"unique": ["[+1 Gold] from all [Science] buildings"]
 			}
 		]
 	},

@@ -146,8 +146,12 @@ class Building : NamedStats(), IConstruction{
             if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
                 stats.happiness += 1f
 
-            if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
-                stats.gold += 1f
+            if(!isWonder)
+                for(unique in civInfo.getMatchingUniques("[] from all [] buildings")){
+                    val placeholderParams = unique.getPlaceholderParameters()
+                    if(isStatRelated(Stat.valueOf(placeholderParams[1])))
+                        stats.add(Stats.parse(placeholderParams[0]))
+                }
 
             if (adoptedPolicies.contains("Constitution") && isWonder)
                 stats.culture += 2f
