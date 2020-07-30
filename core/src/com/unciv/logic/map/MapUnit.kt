@@ -10,8 +10,10 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.logic.map.action.StringAction
+import com.unciv.logic.replay.Action
+import com.unciv.logic.replay.ActionType
+import com.unciv.logic.replay.UnitId
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
@@ -119,6 +121,11 @@ class MapUnit {
             movement += 1
 
         return movement
+    }
+    fun getUnitId(): UnitId {
+        return if (!type.isAirUnit()) UnitId(type, getTile().position)
+        else UnitId(type, getTile().position, airUnitIndex = getTile().airUnits.indexOf(this))
+
     }
 
     // This SHOULD NOT be a hashset, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
@@ -548,6 +555,14 @@ class MapUnit {
             else
                 unit.disband()
         }
+
+        // save action data to replay
+        val gameInfo = currentTile.tileMap.gameInfo
+        if (UncivGame.Current.replayDebugSwitch && !gameInfo.replayMode) {
+            val action = Action(ActionType.Disband, getUnitId())
+            gameInfo.replay?.saveAction(civInfo, action)
+        }
+
 
         destroy()
         if (currentTile.getOwner() == civInfo)
