@@ -33,7 +33,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         // update city buttons in explored tiles or entire map
         if (showEntireMap || viewingCiv.exploredTiles.contains(tileInfo.position))
             updateCityButton(city, tileIsViewable || showEntireMap) // needs to be before the update so the units will be above the city button
-        else if (UncivGame.Current.gameInfo.currentPlayerCiv.isSpectator())
+        else if (worldScreen.viewingCiv.isSpectator())
             // remove city buttons in unexplored tiles during spectating/fog of war
             updateCityButton(null, showEntireMap)
 

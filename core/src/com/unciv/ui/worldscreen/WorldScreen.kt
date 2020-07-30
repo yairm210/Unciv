@@ -478,13 +478,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun createFogOfWarButton(): TextButton {
-        val fogOfWarButton = TextButton("Fog of War", skin)
+        val fogOfWarButton = "Fog of War".toTextButton()
         fogOfWarButton.label.setFontSize(30)
         fogOfWarButton.labelCell.pad(10f)
         fogOfWarButton.pack()
         fogOfWarButton.onClick {
-            if (fogOfWar) fogOfWar = false
-            else fogOfWar = true
+            fogOfWar = !fogOfWar
             shouldUpdate = true
         }
         return fogOfWarButton

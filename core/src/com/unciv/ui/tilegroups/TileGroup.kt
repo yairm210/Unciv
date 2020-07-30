@@ -286,11 +286,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableTiles.contains(tileInfo)
-            || !UncivGame.Current.worldScreen.fogOfWar
+            || viewingCiv.isSpectator()
 
     fun isExplored(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.exploredTiles.contains(tileInfo.position)
-            || !UncivGame.Current.worldScreen.fogOfWar
+            || viewingCiv.isSpectator()
 
     open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true) {
 
