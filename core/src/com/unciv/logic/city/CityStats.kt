@@ -4,6 +4,7 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PolicyManager
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
@@ -65,13 +66,16 @@ class CityStats {
 
         when (cityInfo.cityConstructions.currentConstructionFromQueue) {
             "Gold" -> stats.gold += production / 4
-            "Science" -> {
-                var scienceProduced = production / 4
-                if (cityInfo.civInfo.policies.hasEffect(Constants.scienceConversionEffect)) scienceProduced *= 1.33f
-                stats.science += scienceProduced
-            }
+            "Science" -> stats.science += production * getScienceConversionRate()
         }
         return stats
+    }
+
+    fun getScienceConversionRate(): Float {
+        var conversionRate = 1/4f
+        if (cityInfo.civInfo.hasUnique("Production to science conversion in cities increased by 33%"))
+            conversionRate *= 1.33f
+        return conversionRate
     }
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
@@ -250,7 +254,8 @@ class CityStats {
         if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
         else stats.add(stat, 2f) // science and gold specialists
 
-        if (policies.contains("Secularism")) stats.science += 2
+        for(unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
+            stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
         if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
             stats.production += 1
         if(cityInfo.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)

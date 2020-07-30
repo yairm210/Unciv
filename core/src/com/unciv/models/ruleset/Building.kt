@@ -160,20 +160,19 @@ class Building : NamedStats(), IConstruction{
     }
 
     fun getStatPercentageBonuses(civInfo: CivilizationInfo?): Stats {
-        val stats = if(percentStatBonus==null) Stats() else percentStatBonus!!.clone()
-        if(civInfo==null) return stats // initial stats
+        val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
+        if (civInfo == null) return stats // initial stats
 
-        val adoptedPolicies = civInfo.policies.adoptedPolicies
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-        if (baseBuildingName == "Temple" && civInfo.hasUnique("Temples give +10% gold"))
-            stats.gold = 10f
+        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
+            val placeholderParams = unique.getPlaceholderParameters()
+            if (placeholderParams[2] == baseBuildingName)
+                stats.add(Stat.valueOf(placeholderParams[1]), placeholderParams[0].toFloat())
+        }
 
-        if (baseBuildingName == "University" && adoptedPolicies.contains("Free Thought"))
-            stats.science = 50f
-
-        if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5*civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
+        if (uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
+            stats.production += 5 * civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
 
         return stats
     }

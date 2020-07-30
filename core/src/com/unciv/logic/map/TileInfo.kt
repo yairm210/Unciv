@@ -260,8 +260,6 @@ open class TileInfo {
             }
 
 
-        if (improvement.name == Constants.tradingPost && city != null
-                && city.civInfo.policies.hasEffect("+1 science from every trading post, +17% science from universities"))
             stats.science += 1f
         if (containsGreatImprovement()
                 && observingCiv.policies.hasEffect("Tile yield from great improvement +100%, golden ages increase by 50%"))

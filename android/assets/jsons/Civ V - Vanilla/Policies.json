@@ -174,7 +174,7 @@
 			{
 				"name": "Theocracy",
 				"effect": "Temples give +10% gold",
-				"uniques": ["Temples give +10% gold"],
+				"uniques": ["+[10]% [Gold] from every [Temple]"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 1
@@ -303,22 +303,27 @@
 		"name": "Rationalism",
 		"era": "Renaissance era",
 		"effect": "Production to science conversion in cities increased by 33%",
+		"uniques": ["Production to science conversion in cities increased by 33%"]
 		"policies": [
 			{
 				"name": "Secularism",
 				"effect": "+2 science from every specialist",
+				"uniques": ["[+2 Science] from every specialist"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Humanism",
 				"effect": "+1 happiness from every university, observatory and public school",
+				"uniques": ["[+1 Happiness] from every [University]","[+1 Happiness] from every [Observatory]",
+					"[+1 Happiness] from every [Public School]"]
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Free Thought",
 				"effect": "+1 science from every trading post, +17% science from universities",
+				"uniques": ["[+1 Gold] from every [Trading post]", "+[17]% [Science] from every [University]"]
 				"requires": ["Secularism"],
 				"row": 2,
 				"column": 1
