@@ -172,14 +172,6 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if(city!=null) for(unique in city.getBuildingUniques()) {
-            if (unique.equalsPlaceholderText("[] from [] tiles")) {
-                val placeholderParams = unique.getPlaceholderParameters()
-                val tileType = placeholderParams[1]
-                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
-                    stats.add(Stats.parse(placeholderParams[0]))
-            }
-        }
 
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()
@@ -187,6 +179,15 @@ open class TileInfo {
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
+        }
+
+        if(city!=null) for(unique in city.getBuildingUniques()) {
+            if (unique.equalsPlaceholderText("[] from [] tiles")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                val tileType = placeholderParams[1]
+                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
+                    stats.add(Stats.parse(placeholderParams[0]))
+            }
         }
 
         if (naturalWonder != null) {
