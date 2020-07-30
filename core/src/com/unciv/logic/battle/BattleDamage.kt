@@ -71,7 +71,7 @@ object BattleDamage {
                 modifiers["Populism"] = 0.25f
             }
 
-            if (civInfo.policies.hasEffect("+15% combat strength for melee units which have another military unit in an adjacent tile")
+            if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
                     && combatant.isMelee()
                     && combatant.getTile().neighbors.flatMap { it.getUnits() }
                             .any { it.civInfo == civInfo && !it.type.isCivilian() && !it.type.isAirUnit() })
@@ -103,7 +103,7 @@ object BattleDamage {
 
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] = civInfo.gameInfo.getDifficulty().barbarianBonus
-            if (civInfo.policies.hasEffect("+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit"))
+            if (civInfo.policies.hasEffect("+25% bonus vs Barbarians"))
                 modifiers["vs Barbarians"] = 0.25f
         }
         
@@ -151,7 +151,7 @@ object BattleDamage {
                 modifiers["Autocracy Complete"] = 0.2f
 
             if (defender is CityCombatant &&
-                    attacker.getCivInfo().containsBuildingUnique("+15% Combat Strength for all units when attacking Cities"))
+                    attacker.getCivInfo().hasUnique("+15% Combat Strength for all units when attacking Cities"))
                 modifiers["Statue of Zeus"] = 0.15f
         } else if (attacker is CityCombatant) {
             if (policies.hasEffect("Units in cities cost no Maintenance, garrisoned city +50% attacking strength")
@@ -207,7 +207,7 @@ object BattleDamage {
 
     private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
         val modifiers = HashMap<String,Float>()
-        if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().containsBuildingUnique("+15% combat strength for units fighting in friendly territory"))
+        if(tile.isFriendlyTerritory(unit.getCivInfo()) && unit.getCivInfo().hasUnique("+15% combat strength for units fighting in friendly territory"))
             modifiers["Himeji Castle"] = 0.15f
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f

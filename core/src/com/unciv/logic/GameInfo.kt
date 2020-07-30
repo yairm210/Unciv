@@ -246,7 +246,7 @@ class GameInfo {
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampent has spawned.
      */
     fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
-        civilizations.filter { it.policies.isAdopted("Honor")
+        civilizations.filter { it.hasUnique("Notified of new Barbarian encampments")
                 && it.exploredTiles.contains(tile.position) }
                 .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
     }

@@ -8,7 +8,6 @@ import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -172,7 +171,7 @@ class TechManager {
         var researchAgreementModifier = 0.5f
         if (civInfo.policies.isAdopted("Scientific Revolution"))
             researchAgreementModifier += 0.25f
-        if (civInfo.containsBuildingUnique("Science gained from research agreements +50%"))
+        if (civInfo.hasUnique("Science gained from research agreements +50%"))
             researchAgreementModifier += 0.25f
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }

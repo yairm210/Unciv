@@ -3,28 +3,33 @@
 		"name": "Tradition",
 		"era": "Ancient era",
 		"effect": "+3 culture in capital and increased rate of border expansion",
+		"uniques": ["+3 culture in capital", "Increased rate of border expansion"],
 		"policies": [
 			{
 				"name": "Aristocracy",
 				"effect": "+15% production when constructing wonders, +1 happiness for every 10 citizens in a city",
+				"uniques": ["+15% production when constructing wonders", "+1 happiness for every 10 citizens in a city"],
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Legalism",
 				"effect": "Immediately creates a cheapest available cultural building in each of your first 4 cities for free",
+				"uniques":["Immediately creates a cheapest available cultural building in each of your first 4 cities for free"],
 				"row": 1,
 				"column": 3
 			},
 			{
 				"name": "Oligarchy",
 				"effect": "Units in cities cost no Maintenance, garrisoned city +50% attacking strength",
+				"uniques": ["Units in cities cost no Maintenance"]
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Landed Elite",
 				"effect": "+10% food growth and +2 food in capital",
+				"uniques": ["+10% food growth in capital", "[+2 Food] in capital"],
 				"requires": ["Legalism"],
 				"row": 2,
 				"column": 2
@@ -32,13 +37,15 @@
 			{
 				"name": "Monarchy",
 				"effect": "+1 gold and -1 unhappiness for every 2 citizens in capital",
+				"uniques": ["+1 gold and -1 unhappiness for every 2 citizens in capital"],
 				"requires": ["Legalism"],
 				"row": 2,
 				"column": 4
 			},
 			{
 				"name": "Tradition Complete",
-				"effect": "+15% growth and +2 food in all cities"
+				"effect": "+15% growth and +2 food in all cities",
+				"uniques": ["+15% growth in all cities","[+2 Food] in all cities"]
 			}
 		]
 	},
@@ -46,22 +53,26 @@
 		"name": "Liberty",
 		"era": "Ancient era",
 		"effect": "+1 culture in every city",
+		"uniques": ["[+1 Culture] in all cities"],
 		"policies": [
 			{
 				"name": "Collective Rule",
 				"effect": "Training of settlers increased +50% in capital, receive a new settler near the capital",
+				"uniques": ["Training of settlers increased +50% in capital", "Free [Settler] appears"]
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Citizenship",
 				"effect": "Tile improvement speed +25%, receive a free worker near the capital",
+				"uniques": ["Tile improvement speed +25%", "Free [Worker] appears"],
 				"row": 1,
 				"column": 4
 			},
 			{
 				"name": "Republic",
 				"effect": "+1 production in every city, +5% production when constructing buildings",
+				"uniques": ["[+1 Production] in all cities", "+5% production when constructing buildings"],
 				"requires": ["Collective Rule"],
 				"row": 2,
 				"column": 1
@@ -69,6 +80,7 @@
 			{
 				"name": "Representation",
 				"effect": "Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
+				"uniques": ["Each city founded increases culture cost of policies 33% less than normal", "Empire enters golden age"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 3
@@ -76,13 +88,15 @@
 			{
 				"name": "Meritocracy",
 				"effect": "+1 happiness for every city connected to capital, -5% unhappiness from citizens",
+				"uniques": ["+1 happiness for every city connected to capital", "-5% unhappiness from citizens"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Liberty Complete",
-				"effect": "Free Great Person of choice near capital"
+				"effect": "Free Great Person of choice near capital",
+				"uniques": ["Free Great Person"]
 			}
 		]
 	},
@@ -90,22 +104,26 @@
 		"name": "Honor",
 		"era": "Ancient era",
 		"effect": "+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
+		"uniques": ["+25% bonus vs Barbarians", "Gain Culture when you kill a barbarian unit", "Notified of new Barbarian encampments"]
 		"policies": [
 			{
 				"name": "Warrior Code",
 				"effect": "+20% production when training melee units",
+				"uniques":["+20% production when training melee units"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Discipline",
 				"effect": "+15% combat strength for melee units which have another military unit in an adjacent tile",
+				"uniques":["+15% combat strength for melee units which have another military unit in an adjacent tile"],
 				"row": 1,
 				"column": 4
 			},
 			{
 				"name": "Military Tradition",
 				"effect": "Military units gain 50% more Experience from combat",
+				"uniques":["Military units gain 50% more Experience from combat"],
 				"requires": ["Warrior Code"],
 				"row": 2,
 				"column": 2
@@ -113,6 +131,7 @@
 			{
 				"name": "Military Caste",
 				"effect": "Each city with a garrison increases happiness by 1 and culture by 2",
+				"uniques": ["[+1 Happiness, +2 Culture] in all cities with a garrison"]
 				"requires": ["Discipline"],
 				"row": 2,
 				"column": 4
@@ -120,13 +139,15 @@
 			{
 				"name": "Professional Army",
 				"effect": "Gold cost of upgrading military units reduced by 33%",
+				"uniques": ["Gold cost of upgrading military units reduced by 33%"],
 				"requires": ["Military Caste"],
 				"row": 3,
 				"column": 4
 			},
 			{
 				"name": "Honor Complete",
-				"effect": "Gain gold for each unit killed" 
+				"effect": "Gain gold for each unit killed",
+				"uniques": ["Gain gold for each unit killed"],
 			}
 		]
 	},{

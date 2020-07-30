@@ -290,7 +290,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             for(promotion in promotionsForUnit)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion.name))
             if (unit.promotions.canBePromoted()) promotionsTable.add(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLDENROD }).size(24f).padLeft(8f)
-            if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(baseUnit.upgradesTo!!, Color.GREEN)).size(28f).padLeft(8f)
+            if (unit.canUpgrade()) promotionsTable.add(ImageGetter.getUnitIcon(unit.getUnitToUpgradeTo().name, Color.GREEN)).size(28f).padLeft(8f)
             promotionsTable.onClick {
                 if (unit.promotions.canBePromoted() || unit.promotions.promotions.isNotEmpty()) {
                     game.setScreen(PromotionPickerScreen(unit))
@@ -313,61 +313,39 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         val freeWidth = stage.width
         val freeHeight = stage.height - topTable.height
         val group = Group()
-        group.setSize(freeWidth,freeHeight)
+        group.setSize(freeWidth, freeHeight)
         val civGroups = HashMap<String, Actor>()
         val civLines = HashMap<String, MutableSet<Actor>>()
-        for(i in 0..relevantCivs.lastIndex){
+        for (i in 0..relevantCivs.lastIndex) {
             val civ = relevantCivs[i]
 
             val civGroup = getCivGroup(civ, "", viewingPlayer)
 
-            val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
+            val vector = HexMath.getVectorForAngle(2 * Math.PI.toFloat() * i / relevantCivs.size)
             civGroup.center(group)
-            civGroup.moveBy(vector.x*freeWidth/2.5f, vector.y*freeHeight/2.5f)
+            civGroup.moveBy(vector.x * freeWidth / 2.5f, vector.y * freeHeight / 2.5f)
             civGroup.touchable = Touchable.enabled
             civGroup.onClick {
                 onCivClicked(civLines, civ.civName)
             }
 
-            civGroups[civ.civName]=civGroup
+            civGroups[civ.civName] = civGroup
             group.addActor(civGroup)
         }
 
-        for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
-            for(diplomacy in civ.diplomacy.values.
-                    filter { it.otherCiv().isMajorCiv()
-                            && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated() }){
+        for (civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
+            for (diplomacy in civ.diplomacy.values.filter {
+                it.otherCiv().isMajorCiv()
+                        && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()
+            }) {
                 val civGroup = civGroups[civ.civName]!!
                 val otherCivGroup = civGroups[diplomacy.otherCivName]!!
 
                 if (!civLines.containsKey(civ.civName))
                     civLines[civ.civName] = mutableSetOf()
 
-                val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
-                        otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
-
-                // draw a parallel line for additional relationships
-                if (diplomacy.hasOpenBorders ||
-                        diplomacy.diplomaticStatus == DiplomaticStatus.War ||
-                        diplomacy.totalOfScienceDuringRA > 0) {
-                    val lineAngle = (statusLine.rotation-90) * Math.PI / 180
-                    val shiftX = 4f*cos(lineAngle).toFloat()
-                    val shiftY = 4f*sin(lineAngle).toFloat()
-                    val secondaryLine = ImageGetter.getLine(civGroup.x+civGroup.width/2+shiftX,civGroup.y+civGroup.height/2+shiftY,
-                                otherCivGroup.x+otherCivGroup.width/2+shiftX,otherCivGroup.y+otherCivGroup.height/2+shiftY,2f)
-
-                    secondaryLine.color = when {
-                        diplomacy.diplomaticStatus == DiplomaticStatus.War -> Color.RED
-                        diplomacy.hasOpenBorders -> Color.CYAN
-                        diplomacy.totalOfScienceDuringRA > 0 -> Color.BLUE
-                        else -> Color.WHITE
-                    }
-
-                    civLines[civ.civName]!!.add(secondaryLine)
-
-                    group.addActor(secondaryLine)
-                    secondaryLine.toBack()
-                }
+                val statusLine = ImageGetter.getLine(civGroup.x + civGroup.width / 2, civGroup.y + civGroup.height / 2,
+                        otherCivGroup.x + otherCivGroup.width / 2, otherCivGroup.y + otherCivGroup.height / 2, 3f)
 
                 val diplomacyLevel = diplomacy.diplomaticModifiers.values.sum()
                 statusLine.color = getColorForDiplomacyLevel(diplomacyLevel)
@@ -399,18 +377,18 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             // check whether both visible and invisible lines are present
             if (atLeastOneLineVisible && !allAreLinesInvisible) {
                 // invert visibility of the selected civ's lines
-                selectedLines.forEach{ it.isVisible = !it.isVisible }
+                selectedLines.forEach { it.isVisible = !it.isVisible }
                 return
             }
         }
-        
+
         if (selectedLines.first().isVisible)
-            // invert visibility of all lines except selected one
-            civLines.filter{ it.key != name }.forEach{ it.value.forEach{line -> line.isVisible = !line.isVisible} }
+        // invert visibility of all lines except selected one
+            civLines.filter { it.key != name }.forEach { it.value.forEach { line -> line.isVisible = !line.isVisible } }
         else
-            // it happens only when all are visible except selected one
-            // invert visibility of the selected civ's lines
-            selectedLines.forEach{ it.isVisible = !it.isVisible }
+        // it happens only when all are visible except selected one
+        // invert visibility of the selected civ's lines
+            selectedLines.forEach { it.isVisible = !it.isVisible }
     }
 
     private fun getColorForDiplomacyLevel(value: Float): Color {
@@ -426,7 +404,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
 
 
     private fun getResourcesTable(): Table {
-        val resourcesTable=Table().apply { defaults().pad(10f) }
+        val resourcesTable = Table().apply { defaults().pad(10f) }
         val resourceDrilldown = viewingPlayer.detailedCivResources
 
         // First row of table has all the icons
@@ -434,13 +412,13 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         // Order of source ResourceSupplyList: by tiles, enumerating the map in that spiral pattern
         // UI should not surprise player, thus we need a deterministic and guessable order
         val resources = resourceDrilldown.map { it.resource }
-                .filter { it.resourceType!=ResourceType.Bonus }.distinct()
-                .sortedWith(compareBy( { it.resourceType }, { it.name.tr() } ))
+                .filter { it.resourceType != ResourceType.Bonus }.distinct()
+                .sortedWith(compareBy({ it.resourceType }, { it.name.tr() }))
 
         var visibleLabel: Label? = null
-        for(resource in resources) {
+        for (resource in resources) {
             // Create a group of label and icon for each resource.
-            val resourceImage = ImageGetter.getResourceImage(resource.name,50f)
+            val resourceImage = ImageGetter.getResourceImage(resource.name, 50f)
             val resourceLabel = resource.name.toLabel()
             val labelPadding = 10f
             // Using a table here leads to spacing issues
@@ -472,19 +450,19 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
         resourcesTable.addSeparator()
 
         val origins = resourceDrilldown.map { it.origin }.distinct()
-        for(origin in origins){
+        for (origin in origins) {
             resourcesTable.add(origin.toLabel())
-            for(resource in resources){
-                val resourceSupply = resourceDrilldown.firstOrNull { it.resource==resource && it.origin==origin }
-                if(resourceSupply==null) resourcesTable.add()
+            for (resource in resources) {
+                val resourceSupply = resourceDrilldown.firstOrNull { it.resource == resource && it.origin == origin }
+                if (resourceSupply == null) resourcesTable.add()
                 else resourcesTable.add(resourceSupply.amount.toString().toLabel())
             }
             resourcesTable.row()
         }
 
         resourcesTable.add("Total".toLabel())
-        for(resource in resources){
-            val sum = resourceDrilldown.filter { it.resource==resource }.sumBy { it.amount }
+        for (resource in resources) {
+            val sum = resourceDrilldown.filter { it.resource == resource }.sumBy { it.amount }
             resourcesTable.add(sum.toLabel())
         }
 

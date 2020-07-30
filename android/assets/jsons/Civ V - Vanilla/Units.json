@@ -1290,32 +1290,32 @@
 	{
 		"name": "Great Artist",
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age","Can build improvement: Landmark", "Unbuildable"],
+		"uniques": ["Can start an 8-turn golden age", "Can construct [Landmark]", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Scientist",
 		"unitType": "Civilian",
-		"uniques": ["Can hurry technology research","Can build improvement: Academy", "Unbuildable"],
+		"uniques": ["Can hurry technology research", "Can construct [Academy]", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Merchant",
 		"unitType": "Civilian",
 		"uniques": ["Can undertake a trade mission with City-State, giving a large sum of gold and [30] Influence",
-			"Can build improvement: Customs house", "Unbuildable"],
+			"Can construct [Customs house]", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great Engineer",
 		"unitType": "Civilian",
-		"uniques": ["Can speed up construction of a wonder","Can build improvement: Manufactory", "Unbuildable"],
+		"uniques": ["Can speed up construction of a wonder", "Can construct [Manufactory]", "Unbuildable"],
 		"movement": 2
 	},
 	{
 		"name": "Great General",
 		"unitType": "Civilian",
-		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Can build improvement: Citadel", "Unbuildable"],
+		"uniques": ["Can start an 8-turn golden age", "Bonus for units in 2 tile radius 15%", "Can construct [Citadel]", "Unbuildable"],
 		"movement": 2
 	},
 	{
@@ -1324,7 +1324,7 @@
 		"uniqueTo": "Mongolia",
 		"replaces": "Great General",
 		"uniques": ["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%", "Unbuildable",
-			"Heal adjacent units for an additional 15 HP per turn", "Can build improvement: Citadel"],
+			"Heal adjacent units for an additional 15 HP per turn", "Can construct [Citadel]"],
 		"movement": 5
 	}
 ]

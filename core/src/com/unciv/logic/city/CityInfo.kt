@@ -263,7 +263,7 @@ class CityInfo {
             if (civInfo.policies.hasEffect("Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange."))
                 entry.value.gold *= 1.25f
 
-            if (civInfo.containsBuildingUnique("+33% great person generation in all cities"))
+            if (civInfo.hasUnique("+33% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1.33f)
             if (civInfo.policies.hasEffect("+25% great people rate"))
                 stats[entry.key] = stats[entry.key]!!.times(1.25f)

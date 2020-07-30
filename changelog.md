@@ -1,3 +1,19 @@
+## 3.9.15
+
+Removed confusing extra lines in the diplomacy overview
+
+Started splitting up Policy uniques - they're usable as Building uniques now!
+
+Upgradable units show the final unit they're upgrading to in the Overview screen
+
+Created stat parameter parsing and translation - uniques are much more moddable!
+
+Resolved #2838 - cities in resistance can no longer be traded
+
+Fix bug when city states gets all techs from spectators - By alkorolyov
+
+Translation updates
+
 ## 3.9.14
 
 Added Pinglish translations

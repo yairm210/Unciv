@@ -128,7 +128,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val t = Table()
         t.defaults().pad(5f)
         t.add(getMilestone("Built Apollo Program",
-                playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
+                playerCivInfo.hasUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 

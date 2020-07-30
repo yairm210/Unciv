@@ -15,6 +15,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -67,10 +69,12 @@ object UnitActions {
         addConstructRoadsAction(unit, tile, actionList)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
+        actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
 
         return actionList
     }
+
 
     private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit, worldScreen: WorldScreen) {
         actionList += UnitAction(
@@ -347,16 +351,14 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf { canConductTradeMission })
         }
-
-        val buildImprovementAction = getBuildImprovementAction(unit)
-        if (buildImprovementAction != null) actionList += buildImprovementAction
     }
 
-    fun getBuildImprovementAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
-        for (unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }) {
-            val improvementName = unique.replace("Can build improvement: ", "")
-            return UnitAction(
+
+    fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
+        val finalActions = ArrayList<UnitAction>()
+        for (unique in unit.getUniques().filter { it.equalsPlaceholderText("Can construct []") }) {
+            val improvementName = unique.getPlaceholderParameters()[0]
+            finalActions +=  UnitAction(
                     type = UnitActionType.Create,
                     title = "Create [$improvementName]",
                     uncivSound = UncivSound.Chimes,
@@ -384,7 +386,7 @@ object UnitActions {
                             (improvementName != Constants.citadel ||
                                     tile.neighbors.any { it.getOwner() == unit.civInfo })})
         }
-        return null
+        return finalActions
     }
 
     private fun takeOverTilesAround(unit: MapUnit) {
