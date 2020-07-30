@@ -143,9 +143,6 @@ class Building : NamedStats(), IConstruction{
                 stats.add(Stats.parse(placeholderParams[0]))
             }
 
-            if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(baseBuildingName ))
-                stats.culture += 1f
-
             if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(baseBuildingName ))
                 stats.science += 1f
 
@@ -172,10 +169,10 @@ class Building : NamedStats(), IConstruction{
         val adoptedPolicies = civInfo.policies.adoptedPolicies
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-        if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
+        if (baseBuildingName == "Temple" && civInfo.hasUnique("Temples give +10% gold"))
             stats.gold = 10f
 
-        if (adoptedPolicies.contains("Free Thought") && baseBuildingName == "University")
+        if (baseBuildingName == "University" && adoptedPolicies.contains("Free Thought"))
             stats.science = 50f
 
         if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
@@ -192,16 +189,6 @@ class Building : NamedStats(), IConstruction{
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        if(!isWonder)
-            for(unique in civInfo.getMatchingUniques("Production cost of [] buildings reduced by []%")){
-                val placeholderParams = unique.getPlaceholderParameters()
-                val stat = Stat.valueOf(placeholderParams[0])
-                if(this.isStatRelated(stat))
-                    productionCost *= (1f - placeholderParams[1].toFloat()/100)
-            }
-
-        if (name == "Courthouse" && civInfo.policies.hasEffect("+3 Happiness from every Courthouse. Build Courthouses in half the usual time."))
-            productionCost *= 0.5f
 
         if (civInfo.isPlayerCivilization()) {
             if (!isWonder)

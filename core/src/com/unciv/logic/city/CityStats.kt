@@ -342,10 +342,21 @@ class CityStats {
         if (cityInfo.civInfo.hasUnique("+20% production when training melee units")
                 && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
             stats.production += 20
-        if (policies.contains("Piety")
-                && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower").contains(currentConstruction.name))
-            stats.production += 15f
-        if (policies.contains("Reformation") && cityConstructions.getBuiltBuildings().any { it.isWonder })
+
+        if(currentConstruction is Building && !currentConstruction.isWonder)
+            for(unique in cityInfo.civInfo.getMatchingUniques("+[]% Production when constructing [] buildings")){
+                val placeholderParams = unique.getPlaceholderParameters()
+                val stat = Stat.valueOf(placeholderParams[0])
+                if(currentConstruction.isStatRelated(stat))
+                    stats.production += placeholderParams[1].toInt()
+            }
+
+        if (currentConstruction is Building && currentConstruction.name == "Courthouse"
+                && cityInfo.civInfo.policies.hasEffect("+3 Happiness from every Courthouse. Build Courthouses in half the usual time."))
+            stats.production += 100
+
+        if (cityConstructions.getBuiltBuildings().any { it.isWonder }
+                && cityInfo.civInfo.hasUnique("+33% culture in all cities with a world wonder"))
             stats.culture += 33f
         if (policies.contains("Commerce") && cityInfo.isCapital())
             stats.gold += 25f

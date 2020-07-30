@@ -138,9 +138,8 @@ class PolicyManager {
                     if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                         civInfo.placeUnitNearTile(civInfo.getCapital().location, unitName)
                 }
-                "+1 culture for each monument, temple and monastery. Gain a free policy." -> freePolicies++
-                "Empire enters golden age",
-                "+33% culture in all cities with a world wonder, immediately enter a golden age" ->
+                "Gain a free policy" -> freePolicies++
+                "Empire enters golden age" ->
                     civInfo.goldenAges.enterGoldenAge()
                 "Free Great Person" -> {
                     if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++

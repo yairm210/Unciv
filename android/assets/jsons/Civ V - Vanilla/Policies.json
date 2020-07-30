@@ -154,7 +154,7 @@
 		"name": "Piety",
 		"era": "Classical era",
 		"effect": "Building time of culture buildings reduced by 15%",
-		"uniques": ["Production cost of [Culture] buildings reduced by [15]%"],
+		"uniques": ["+[15]% Production when constructing [Culture] buildings"],
 		"policies": [
 			{
 				"name": "Organized Religion",
@@ -167,12 +167,14 @@
 			{
 				"name": "Mandate Of Heaven",
 				"effect": "50% of excess happiness added to culture towards policies",
+				"uniques": ["50% of excess happiness added to culture towards policies"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Theocracy",
 				"effect": "Temples give +10% gold",
+				"uniques": ["Temples give +10% gold"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 1
@@ -180,6 +182,7 @@
 			{
 				"name": "Reformation",
 				"effect": "+33% culture in all cities with a world wonder, immediately enter a golden age",
+				"uniques": ["+33% culture in all cities with a world wonder", "Empire enters golden age"]
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 3
@@ -187,6 +190,8 @@
 			{
 				"name": "Free Religion",
 				"effect": "+1 culture for each monument, temple and monastery. Gain a free policy.",
+				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Temple]", "[+1 Culture] from every [Monastery]",
+					"Free Social Policy"]
 				"requires": ["Mandate Of Heaven","Reformation"],
 				"row": 3,
 				"column": 4
