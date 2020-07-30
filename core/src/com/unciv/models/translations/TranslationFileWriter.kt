@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 import java.lang.reflect.Field
@@ -201,6 +202,7 @@ object TranslationFileWriter {
                     for(parameter in parameters) {
                         val parameterName = when {
                             parameter.toIntOrNull() != null -> "amount"
+                            Stat.values().any { it.name == parameter } -> "stat"
                             RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
                             RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
                             RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"

@@ -137,8 +137,11 @@ class Building : NamedStats(), IConstruction{
             val adoptedPolicies = civInfo.policies.adoptedPolicies
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-            if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(baseBuildingName ))
-                stats.happiness += 1
+            for(unique in civInfo.getMatchingUniques("[] from every []")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                if (placeholderParams[1] != baseBuildingName) continue
+                stats.add(Stats.parse(placeholderParams[0]))
+            }
 
             if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(baseBuildingName ))
                 stats.culture += 1f
@@ -154,13 +157,6 @@ class Building : NamedStats(), IConstruction{
 
             if (adoptedPolicies.contains("Constitution") && isWonder)
                 stats.culture += 2f
-
-            if (baseBuildingName == "Castle"
-                    && civInfo.hasUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
-                stats.happiness+=1
-                stats.culture+=2
-                stats.gold+=3
-            }
 
             if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
                 stats.happiness += 3
@@ -196,8 +192,13 @@ class Building : NamedStats(), IConstruction{
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        if (!isWonder && culture != 0f && civInfo.policies.hasEffect("Building time of culture buildings reduced by 15%"))
-            productionCost *= 0.85f
+        if(!isWonder)
+            for(unique in civInfo.getMatchingUniques("Production cost of [] buildings reduced by []%")){
+                val placeholderParams = unique.getPlaceholderParameters()
+                val stat = Stat.valueOf(placeholderParams[0])
+                if(this.isStatRelated(stat))
+                    productionCost *= (1f - placeholderParams[1].toFloat()/100)
+            }
 
         if (name == "Courthouse" && civInfo.policies.hasEffect("+3 Happiness from every Courthouse. Build Courthouses in half the usual time."))
             productionCost *= 0.5f

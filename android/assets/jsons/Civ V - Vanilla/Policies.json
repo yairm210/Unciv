@@ -154,10 +154,13 @@
 		"name": "Piety",
 		"era": "Classical era",
 		"effect": "Building time of culture buildings reduced by 15%",
+		"uniques": ["Production cost of [Culture] buildings reduced by [15]%"],
 		"policies": [
 			{
 				"name": "Organized Religion",
 				"effect": "+1 happiness for each monument, temple and monastery",
+				"uniques": ["[+1 happiness] from every [Monument]","[+1 happiness] from every [Temple]",
+					"[+1 happiness] from every [Monastery]"]
 				"row": 1,
 				"column": 2
 			},

@@ -831,7 +831,7 @@
 		"gold": 6,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["+1 happiness, +2 culture and +3 gold from every Castle",
+		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
 			"Must have an owned mountain within 2 tiles"],
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
