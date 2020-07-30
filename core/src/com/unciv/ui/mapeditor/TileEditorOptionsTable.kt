@@ -258,10 +258,29 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }
 
+
+
+        // edit units icon
+        nationsTable.add(getEditIcon().onClick {
+            tileAction = {
+                if (!it.getUnits().none()) {
+                    val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
+                    if (it.militaryUnit != null && selectedUnit != it.militaryUnit
+                            && (it.civilianUnit==null || selectedUnit!=it.civilianUnit))
+                        mapEditorScreen.mapHolder.selectedUnit = it.militaryUnit
+                    else if (it.civilianUnit != null && selectedUnit != it.civilianUnit)
+                        mapEditorScreen.mapHolder.selectedUnit = it.civilianUnit
+                    else if (it == selectedUnit?.currentTile)
+                        mapEditorScreen.mapHolder.selectedUnit = null
+                }
+            }
+            setCurrentHex(getEditIcon(), "Edit units")
+        }).row()
+
         // delete units icon
         nationsTable.add(getCrossedIcon().onClick {
-                tileAction = { it.stripUnits() }
-                setCurrentHex(getCrossedIcon(), "Remove units")
+            tileAction = { it.stripUnits() }
+            setCurrentHex(getCrossedIcon(), "Remove units")
         }).row()
 
         // player icons
@@ -316,6 +335,13 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private fun getPlayerIndexString(player: Player): String {
         val index = gameParameters.players.indexOf(player) + 1
         return "Player $index"
+    }
+
+    private fun getEditIcon(): Actor {
+        var editIcon = ImageGetter.getImage("OtherIcons/MapEditor")
+        return editIcon.apply { setSize(40f, 40f) }
+                .surroundWithCircle(40f, false)
+                .apply { circle.color = Color.BLACK }
     }
 
     private fun getCrossedIcon(): Actor {

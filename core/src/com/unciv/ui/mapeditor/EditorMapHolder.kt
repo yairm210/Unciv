@@ -2,7 +2,9 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.HexMath
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.map.TileGroupMap
@@ -14,6 +16,8 @@ import com.unciv.ui.utils.onClick
 
 class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     val tileGroups = HashMap<TileInfo, TileGroup>()
+    var selectedUnit : MapUnit? = null
+    var selectedCity : CityInfo? = null
     lateinit var tileGroupMap: TileGroupMap<TileGroup>
 
     internal fun addTiles(padding:Float) {
@@ -44,6 +48,8 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
 
                     tileInfo.setTerrainTransients()
                     tileGroups[tileInfo]!!.update()
+                    if (selectedUnit != null)
+                        tileGroups[tileInfo]!!.selectUnit(selectedUnit!!)
                 }
             }
         }

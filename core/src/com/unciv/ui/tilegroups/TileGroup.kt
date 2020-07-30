@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
@@ -128,6 +129,13 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         circleCrosshairFogLayerGroup.addActor(crosshairImage)
     }
     //endregion
+
+    fun selectUnit(unit: MapUnit) {
+        if(unit.type.isAirUnit()) return // doesn't appear on map so nothing to select
+        val unitImage = if (unit.type.isCivilian()) icons.civilianUnitIcon
+        else icons.militaryUnitIcon
+        unitImage?.selectUnit()
+    }
 
     fun showCrosshair(color: Color) {
         crosshairImage.color = color.cpy().apply { a = 0.5f }
