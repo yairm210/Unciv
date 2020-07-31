@@ -16,6 +16,7 @@ import com.unciv.ui.utils.onClick
 
 class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     val tileGroups = HashMap<TileInfo, TileGroup>()
+    var previouslySelectedUnit: MapUnit? = null
     var selectedUnit : MapUnit? = null
     var selectedCity : CityInfo? = null
     lateinit var tileGroupMap: TileGroupMap<TileGroup>
@@ -40,17 +41,21 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
             tileGroup.showEntireMap = true
             tileGroup.update()
             tileGroup.onClick {
-
                 val distance = mapEditorScreen.tileEditorOptions.brushSize - 1
+
+
 
                 for (tileInfo in mapEditorScreen.tileMap.getTilesInDistance(tileGroup.tileInfo.position, distance)) {
                     mapEditorScreen.tileEditorOptions.updateTileWhenClicked(tileInfo)
 
                     tileInfo.setTerrainTransients()
                     tileGroups[tileInfo]!!.update()
-                    if (selectedUnit != null)
-                        tileGroups[tileInfo]!!.selectUnit(selectedUnit!!)
+
                 }
+
+                if (selectedUnit != null && selectedUnit?.currentTile == tileGroup.tileInfo)
+                    tileGroup.selectUnit(selectedUnit!!)
+
             }
         }
 

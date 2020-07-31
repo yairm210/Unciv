@@ -31,6 +31,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     var brushSize = 1
     private var currentHex: Actor = Group()
 
+    private val tileGroups = mapEditorScreen.mapHolder.tileGroups
     private val ruleset = mapEditorScreen.ruleset
     private val gameParameters = mapEditorScreen.gameSetupInfo.gameParameters
 
@@ -258,24 +259,29 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
         }
 
-
-
-        // edit units icon
-        nationsTable.add(getEditIcon().onClick {
+        fun setEditUnitAction(){
             tileAction = {
                 if (!it.getUnits().none()) {
-                    val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
-                    if (it.militaryUnit != null && selectedUnit != it.militaryUnit
-                            && (it.civilianUnit==null || selectedUnit!=it.civilianUnit))
+
+                    val previouslySelectedUnit = mapEditorScreen.mapHolder.selectedUnit
+
+                    if (it.militaryUnit != null && previouslySelectedUnit != it.militaryUnit
+                            && (it.civilianUnit==null || previouslySelectedUnit!=it.civilianUnit))
                         mapEditorScreen.mapHolder.selectedUnit = it.militaryUnit
-                    else if (it.civilianUnit != null && selectedUnit != it.civilianUnit)
+                    else if (it.civilianUnit != null && previouslySelectedUnit != it.civilianUnit)
                         mapEditorScreen.mapHolder.selectedUnit = it.civilianUnit
-                    else if (it == selectedUnit?.currentTile)
+                    else if (it == previouslySelectedUnit?.currentTile)
                         mapEditorScreen.mapHolder.selectedUnit = null
+
+                    // clear selection of previous tile if new tile clicked
+                    if (previouslySelectedUnit != null && it != previouslySelectedUnit.currentTile)
+                        tileGroups[previouslySelectedUnit.currentTile]?.update()
                 }
             }
-            setCurrentHex(getEditIcon(), "Edit units")
-        }).row()
+    }
+
+        // edit units icon
+        nationsTable.add(getEditIcon().onClick { setEditUnitAction() })
 
         // delete units icon
         nationsTable.add(getCrossedIcon().onClick {
