@@ -251,6 +251,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     private fun updateTileImage(viewingCiv: CivilizationInfo?) {
         val tileBaseImageLocations = getTileBaseImageLocations(viewingCiv)
+
         val identifier = tileBaseImageLocations.joinToString(";")
         if (identifier == tileImagesIdentifier) return
 
@@ -285,11 +286,31 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
             || viewingCiv.viewableTiles.contains(tileInfo)
+            || viewingCiv.isSpectator()
+
+    fun isExplored(viewingCiv: CivilizationInfo) = showEntireMap
+            || viewingCiv.exploredTiles.contains(tileInfo.position)
+            || viewingCiv.isSpectator()
 
     open fun update(viewingCiv: CivilizationInfo? = null, showResourcesAndImprovements: Boolean = true) {
+
+        fun clearUnexploredTiles() {
+            updateTileImage(null)
+            updateRivers(false,false, false)
+
+            updatePixelMilitaryUnit(false)
+            updatePixelCivilianUnit(false)
+
+            if (borderImages.isNotEmpty()) clearBorders()
+
+            icons.update(false, false, false, null)
+
+            fogImage.isVisible = true
+        }
+
         hideCircle()
-        if (viewingCiv != null && !showEntireMap
-                && !viewingCiv.exploredTiles.contains(tileInfo.position)) {
+        if (viewingCiv != null && !isExplored(viewingCiv)) {
+            clearUnexploredTiles()
             for(image in tileBaseImages) image.color = Color.DARK_GRAY
             return
         }
@@ -393,19 +414,24 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
     }
 
+    private fun clearBorders() {
+        for (images in borderImages.values)
+            for (image in images)
+                image.remove()
+
+        borderImages.clear()
+    }
+
     var previousTileOwner: CivilizationInfo? = null
     private fun updateBorderImages() {
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on
         // removing all the border images and putting them back again!
         val tileOwner = tileInfo.getOwner()
-        if (previousTileOwner != tileOwner) {
-            for (images in borderImages.values)
-                for (image in images)
-                    image.remove()
 
-            borderImages.clear()
-        }
+
+        if (previousTileOwner != tileOwner) clearBorders()
+
         previousTileOwner = tileOwner
         if (tileOwner == null) return
 
