@@ -354,7 +354,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"culture": 1},
 		"isWonder": true,
-		"uniques": ["+33% great person generation in all cities"],
+		"uniques": ["+[33]% great person generation in all cities"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -756,7 +756,7 @@
 		"gold": 4,
 		"greatPersonPoints": {"gold": 2},
 		"isWonder": true,
-		"uniques": ["-15% to purchasing items in cities"],
+		"uniques": ["Cost of purchasing items in cities reduced by [15]%"],
 		"requiredTech": "Industrialization",
 		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},
@@ -831,7 +831,7 @@
 		"gold": 6,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["+1 happiness, +2 culture and +3 gold from every Castle",
+		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
 			"Must have an owned mountain within 2 tiles"],
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"

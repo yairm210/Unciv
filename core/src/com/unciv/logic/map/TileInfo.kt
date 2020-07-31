@@ -172,14 +172,6 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if(city!=null) for(unique in city.getBuildingUniques()) {
-            if (unique.equalsPlaceholderText("[] from [] tiles")) {
-                val placeholderParams = unique.getPlaceholderParameters()
-                val tileType = placeholderParams[1]
-                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
-                    stats.add(Stats.parse(placeholderParams[0]))
-            }
-        }
 
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()
@@ -187,6 +179,15 @@ open class TileInfo {
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
+        }
+
+        if(city!=null) for(unique in city.getBuildingUniques()) {
+            if (unique.equalsPlaceholderText("[] from [] tiles")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                val tileType = placeholderParams[1]
+                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
+                    stats.add(Stats.parse(placeholderParams[0]))
+            }
         }
 
         if (naturalWonder != null) {
@@ -248,13 +249,18 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
-        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-        if (improvement.name == Constants.tradingPost && city != null
-                && city.civInfo.policies.hasEffect("+1 science from every trading post, +17% science from universities"))
+        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!))
+            stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
+
+        if(city!=null)
+            for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                if (unique == placeholderParams[1])
+                    stats.add(Stats.parse(placeholderParams[0]))
+            }
+
+
             stats.science += 1f
-        if (improvement.name == Constants.tradingPost && city != null
-                && city.civInfo.policies.hasEffect("+1 gold from every trading post, double gold from Great Merchant trade missions"))
-            stats.gold += 1f
         if (containsGreatImprovement()
                 && observingCiv.policies.hasEffect("Tile yield from great improvement +100%, golden ages increase by 50%"))
             stats.add(improvement) // again, for the double effect

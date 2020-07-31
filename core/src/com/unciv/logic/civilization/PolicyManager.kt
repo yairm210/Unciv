@@ -72,8 +72,7 @@ class PolicyManager {
 
         if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
-        if (isAdopted("Piety Complete")) policyCultureCost *= 0.9
-        if (civInfo.hasUnique("Culture cost of adopting new Policies reduced by 10%"))
+        for(unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
@@ -138,9 +137,8 @@ class PolicyManager {
                     if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                         civInfo.placeUnitNearTile(civInfo.getCapital().location, unitName)
                 }
-                "+1 culture for each monument, temple and monastery. Gain a free policy." -> freePolicies++
-                "Empire enters golden age",
-                "+33% culture in all cities with a world wonder, immediately enter a golden age" ->
+                "Gain a free policy" -> freePolicies++
+                "Empire enters golden age" ->
                     civInfo.goldenAges.enterGoldenAge()
                 "Free Great Person" -> {
                     if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++

@@ -91,7 +91,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
         statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
 
-        if (civInfo.policies.hasEffect("50% of excess happiness added to culture towards policies")) {
+        if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()
             if(happiness>0) statMap.add("Policies", Stats().apply { culture=happiness/2f })
         }
@@ -118,7 +118,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        if (civInfo.policies.hasEffect("+1 happiness from each luxury resource")) happinessPerUniqueLuxury += 1
+        for(unique in civInfo.getMatchingUniques("+1 happiness from each luxury resource"))
+            happinessPerUniqueLuxury += 1
         statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 

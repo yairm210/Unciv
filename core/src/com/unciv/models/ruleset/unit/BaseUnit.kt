@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.models.translations.getPlaceholderParameters
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -102,9 +103,9 @@ class BaseUnit : INamed, IConstruction {
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost()
-        if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
         if (civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
-        if (civInfo.hasUnique("-15% to purchasing items in cities")) cost *= 0.85
+        for(unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1-(unique.getPlaceholderParameters()[0].toFloat())
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
