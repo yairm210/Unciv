@@ -3,10 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.tile.ResourceType
@@ -24,7 +21,8 @@ import kotlin.math.roundToInt
 
 class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
 
-    private var selectedCivTable = Table()
+    private var selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
+    private var  selectedCivIconHolder = Container<Actor>()
 
     private val turnsLabel = "Turns: 0/400".toLabel()
     private val goldLabel = "Gold:".toLabel(colorFromRGB(225, 217, 71))
@@ -51,7 +49,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         pack()
         addActor(getMenuButton()) // needs to be after pack
 
-        addSelectedCivilizationTable()
+        addActor(getSelectedCivilizationTable())
 
         addActor(getOverviewButton())
     }
@@ -144,17 +142,29 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         overviewButton.labelCell.pad(10f)
         overviewButton.pack()
         overviewButton.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
-        overviewButton.center(this)
+        overviewButton.centerY(this)
         overviewButton.x = worldScreen.stage.width - overviewButton.width - 10
         return overviewButton
     }
 
-    private fun addSelectedCivilizationTable() {
+    private fun getSelectedCivilizationTable(): Table {
+        val selectedCivTable = Table()
         selectedCivTable.centerY(this)
         selectedCivTable.left()
         selectedCivTable.x = getMenuButton().width + 20f
-        updateSelectedCivTabel()
-        addActor(selectedCivTable)
+
+        selectedCivLabel.setFontSize(25)
+        selectedCivLabel.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+
+        val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
+        val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
+        selectedCivIconHolder.actor = selectedCivIcon
+        selectedCivIconHolder.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
+
+        selectedCivTable.add(selectedCivLabel).padRight(10f)
+        selectedCivTable.add(selectedCivIconHolder)
+        return selectedCivTable
+
     }
 
     internal fun update(civInfo: CivilizationInfo) {
@@ -199,17 +209,13 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun updateSelectedCivTabel() {
-        selectedCivTable.clear()
+        if (selectedCivLabel.text.toString() == worldScreen.selectedCiv.civName) return
 
-        val selectedCivLabel = worldScreen.selectedCiv.civName.toLabel()
-        selectedCivLabel.setFontSize(25)
-        selectedCivLabel.onClick { worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv)) }
-        selectedCivTable.add(selectedCivLabel).padRight(10f)
+        selectedCivLabel.setText(worldScreen.selectedCiv.civName)
 
         val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
-        selectedCivTable.add(ImageGetter.getNationIndicator(nation, 35f).onClick {
-            worldScreen.game.setScreen(EmpireOverviewScreen(worldScreen.selectedCiv))
-        })
+        val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)
+        selectedCivIconHolder.actor = selectedCivIcon
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
