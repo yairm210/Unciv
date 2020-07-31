@@ -24,17 +24,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return 1 / 10f + extraCost
 
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
-        if(from.isConnectedByRiver(to) &&
-                (!areConnectedByRoad || !civInfo.tech.roadsConnectAcrossRivers)){
-            return 100f // Rivers take the entire turn to cross
-        }
+        val areConnectedByRiver = from.isConnectedByRiver(to)
 
-        if (areConnectedByRoad)
+        if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
         {
             return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
             else 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
+        if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
+
         if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
         if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
