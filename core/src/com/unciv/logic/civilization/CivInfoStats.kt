@@ -38,7 +38,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if(civInfo.policies.hasEffect("-33% unit upkeep costs")) cost *= 0.66f
+        if(civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.66f
         return cost.toInt()
     }
 

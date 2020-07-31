@@ -27,10 +27,10 @@ class GoldenAgeManager{
 
     fun enterGoldenAge() {
         var turnsToGoldenAge = 10.0
-        if (civInfo.hasUnique("Golden Age length increases +50%")) turnsToGoldenAge *= 1.5
+        for(unique in civInfo.getMatchingUniques("Golden Age length increases +50%"))
+            turnsToGoldenAge *= 1.5
         if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY )
             turnsToGoldenAge*=1.5
-        if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
         civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)

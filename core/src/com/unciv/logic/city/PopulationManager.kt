@@ -7,7 +7,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
-import kotlin.math.roundToInt
 
 class PopulationManager {
     @Transient
@@ -86,14 +85,13 @@ class PopulationManager {
 
         //evaluate specialists
         val maxSpecialistsMap = getMaxSpecialists().toHashMap()
-        val policies = cityInfo.civInfo.policies.adoptedPolicies
         val bestJob: Stat? = specialists.toHashMap()
                 .filter { maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!! }
                 .map { it.key }
-                .maxBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo) }
+                .maxBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it), cityInfo) }
         var valueBestSpecialist = 0f
         if (bestJob != null) {
-            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(bestJob, policies)
+            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(bestJob)
             valueBestSpecialist = Automation.rankSpecialist(specialistStats, cityInfo)
         }
 
@@ -137,10 +135,10 @@ class PopulationManager {
             val worstJob: Stat? = specialists.toHashMap()
                     .filter { it.value > 0 }
                     .map {it.key}
-                    .minBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo) }
+                    .minBy { Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it), cityInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
-                valueWorstSpecialist = Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob, policies), cityInfo)
+                valueWorstSpecialist = Automation.rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob), cityInfo)
 
             //un-assign population
             if ((worstWorkedTile != null && valueWorstTile < valueWorstSpecialist)

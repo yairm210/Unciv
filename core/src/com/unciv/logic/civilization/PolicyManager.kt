@@ -43,9 +43,8 @@ class PolicyManager {
     fun getPolicyByName(name:String): Policy = getAllPolicies().first { it.name==name }
             
     fun setTransients(){
-        val effectsOfCurrentPolicies = adoptedPolicies.map { getPolicyByName(it).effect }
-        policyEffects.addAll(effectsOfCurrentPolicies)
-        adoptedPolicies.map { getPolicyByName(it).uniques }.forEach { policyEffects.addAll(it) }
+        for(policy in adoptedPolicies)
+            policyEffects.addAll(getPolicyByName(policy).uniques)
     }
 
     private fun getAllPolicies() = civInfo.gameInfo.ruleSet.policyBranches.values.asSequence()
@@ -118,7 +117,6 @@ class PolicyManager {
         }
 
         adoptedPolicies.add(policy.name)
-        policyEffects.add(policy.effect)
         policyEffects.addAll(policy.uniques)
 
         if (!branchCompletion) {
@@ -130,7 +128,7 @@ class PolicyManager {
 
         val hasCapital = civInfo.cities.any { it.isCapital() }
 
-        for(effect in policy.uniques.withItem(policy.effect))
+        for(effect in policy.uniques)
             when (effect.getPlaceholderText()) {
                 "Free [] appears" -> {
                     val unitName = effect.getPlaceholderParameters()[0]

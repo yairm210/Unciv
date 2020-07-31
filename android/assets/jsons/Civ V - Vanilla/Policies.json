@@ -346,7 +346,7 @@
 			{
 				"name": "Rationalism Complete",
 				"effect": "+1 gold from all science buildings",
-				"unique": ["[+1 Gold] from all [Science] buildings"]
+				"uniques": ["[+1 Gold] from all [Science] buildings"]
 			}
 		]
 	},
@@ -397,7 +397,7 @@
 		"name": "Freedom",
 		"era": "Renaissance era",
 		"effect": "+25% great people rate",
-		"unique": "+[25]% great person generation in all cities",
+		"uniques": ["+[25]% great person generation in all cities"],
 		"policies": [
 			{
 				"name": "Constitution",
@@ -416,6 +416,7 @@
 			{
 				"name": "Civil Society",
 				"effect": "-50% food consumption by specialists",
+				"uniques": ["-50% food consumption by specialists"],
 				"row": 1,
 				"column": 5
 			},
@@ -430,13 +431,15 @@
 			{
 				"name": "Democracy",
 				"effect": "Specialists produce half normal unhappiness",
+				"uniques": ["Specialists produce half normal unhappiness"],
 				"requires": ["Civil Society"],
 				"row": 2,
 				"column": 5
 			},
 			{
 				"name": "Freedom Complete",
-				"effect": "Tile yield from great improvement +100%, golden ages increase by 50%"
+				"effect": "Tile yield from great improvement +100%, golden ages increase by 50%",
+				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increases +50%"]
 			}
 		]
 	},
@@ -444,22 +447,26 @@
 		"name": "Autocracy",
 		"era": "Industrial era",
 		"effect": "-33% unit upkeep costs",
+		"uniques": ["-33% unit upkeep costs"],
 		"policies": [
 			{
 				"name": "Populism",
 				"effect": "Wounded military units deal +25% damage",
+				"uniques": ["Wounded military units deal +25% damage"],
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Militarism",
 				"effect": "Gold cost of purchasing units -33%",
+				"uniques": ["Gold cost of purchasing units -33%"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Fascism",
 				"effect": "Quantity of strategic resources produced by the empire increased by 100%",
+				"uniques": ["Quantity of strategic resources produced by the empire increased by 100%"],
 				"requires": ["Populism","Militarism"],
 				"row": 2,
 				"column": 3
@@ -467,6 +474,7 @@
 			{
 				"name": "Police State",
 				"effect": "+3 Happiness from every Courthouse. Build Courthouses in half the usual time.",
+				"uniques": ["[+3 Happiness] from every [Courthouse]", "+[100]% Production when constructing [Courthouse]"],
 				"requires": ["Militarism"],
 				"row": 2,
 				"column": 5
@@ -474,6 +482,7 @@
 			{
 				"name": "Total War",
 				"effect": "+15% production when building military units and new military units start with 15 Experience",
+				"uniques": ["+[15]% Production when constructing [military units]", "New military units start with [15] Experience"],
 				"requires": ["Police State","Fascism"],
 				"row": 3,
 				"column": 4
@@ -481,6 +490,7 @@
 			{
 				"name": "Autocracy Complete",
 				"effect": "+20% attack bonus to all Military Units for 30 turns"
+				"uniques": ["+20% attack bonus to all Military Units for 30 turns"]
 			}
 		]
 	}

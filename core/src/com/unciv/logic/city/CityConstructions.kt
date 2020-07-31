@@ -76,7 +76,7 @@ class CityConstructions {
     fun getMaintenanceCosts(): Int {
         var maintenanceCost = getBuiltBuildings().sumBy { it.maintenance }
         val policyManager = cityInfo.civInfo.policies
-        if (policyManager.isAdopted("Legalism") && cityInfo.id in policyManager.legalismState) {
+        if (cityInfo.id in policyManager.legalismState) {
             val buildingName = policyManager.legalismState[cityInfo.id]
             maintenanceCost -= cityInfo.getRuleset().buildings[buildingName]!!.maintenance
         }

@@ -67,8 +67,8 @@ object BattleDamage {
             if (civHappiness < 0)
                 modifiers["Unhappiness"] = max(0.02f * civHappiness, -0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if (civInfo.policies.hasEffect("Wounded military units deal +25% damage") && combatant.getHealth() < 100) {
-                modifiers["Populism"] = 0.25f
+            if (civInfo.hasUnique("Wounded military units deal +25% damage") && combatant.getHealth() < 100) {
+                modifiers["Wounded unit"] = 0.25f
             }
 
             if (civInfo.hasUnique("+15% combat strength for melee units which have another military unit in an adjacent tile")
@@ -103,7 +103,7 @@ object BattleDamage {
 
         if (enemy.getCivInfo().isBarbarian()) {
             modifiers["Difficulty"] = civInfo.gameInfo.getDifficulty().barbarianBonus
-            if (civInfo.policies.hasEffect("+25% bonus vs Barbarians"))
+            if (civInfo.hasUnique("+25% bonus vs Barbarians"))
                 modifiers["vs Barbarians"] = 0.25f
         }
         

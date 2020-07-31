@@ -76,7 +76,7 @@ class SpecialistAllocationTable(val cityScreen: CityScreen): Table(CameraStageBa
 
     private fun getSpecialistStatsTable(stat: Stat): Table {
         val specialistStatTable = Table().apply { defaults().pad(5f) }
-        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(stat, cityInfo.civInfo.policies.adoptedPolicies).toHashMap()
+        val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(stat).toHashMap()
         for (entry in specialistStats) {
             if (entry.value == 0f) continue
             specialistStatTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)

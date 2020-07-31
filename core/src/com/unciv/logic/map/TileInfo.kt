@@ -262,7 +262,7 @@ open class TileInfo {
 
             stats.science += 1f
         if (containsGreatImprovement()
-                && observingCiv.policies.hasEffect("Tile yield from great improvement +100%, golden ages increase by 50%"))
+                && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
             stats.add(improvement) // again, for the double effect
         if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science += 2

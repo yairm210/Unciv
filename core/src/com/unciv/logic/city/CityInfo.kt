@@ -197,7 +197,7 @@ class CityInfo {
             var amountToAdd = 1
             if(resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
-                if (civInfo.policies.hasEffect("Quantity of strategic resources produced by the empire increased by 100%"))
+                if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
                 if (civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses", "Iron", "Uranium"))
                     amountToAdd *= 2
