@@ -303,6 +303,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!canPassThrough(tile))
             return false
 
+        if(tile.isCityCenter() && tile.getOwner()!=unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
+
         if (unit.type.isCivilian())
             return tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
         else return tile.militaryUnit == null && (tile.civilianUnit == null || tile.civilianUnit!!.owner == unit.owner)
@@ -353,8 +355,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.naturalWonder != null) return false
 
         val tileOwner = tile.getOwner()
-        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings?
-            if (tile.isCityCenter() && !tile.getCity()!!.hasJustBeenConquered) return false
+        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings
+            if (tile.isCityCenter() && unit.civInfo.isAtWarWith(tileOwner)
+                    && !tile.getCity()!!.hasJustBeenConquered) return false
             if (!unit.civInfo.canEnterTiles(tileOwner)
                     && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
             // AIs won't enter city-state's border.
