@@ -303,6 +303,11 @@ class Building : NamedStats(), IConstruction{
                 return "No national wonders for city-states"
         }
 
+        if ("Spaceship part" in uniques) {
+            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
+            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
+        }
+
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
             return "Requires a [$requiredBuilding] in this city"
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
@@ -322,10 +327,6 @@ class Building : NamedStats(), IConstruction{
             if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
         }
 
-        if ("Spaceship part" in uniques) {
-            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
-            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
-        }
 
         if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
