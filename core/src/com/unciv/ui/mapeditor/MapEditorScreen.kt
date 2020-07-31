@@ -170,7 +170,9 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
-            game.setScreen(MapEditorScreen(mapHolder.tileMap))
+            val newScreen = if (this.hasScenario()) MapEditorScreen(scenario!!)
+            else MapEditorScreen(mapHolder.tileMap)
+            game.setScreen(newScreen)
         }
     }
 
