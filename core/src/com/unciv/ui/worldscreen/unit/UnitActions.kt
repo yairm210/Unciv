@@ -62,7 +62,7 @@ object UnitActions {
         addExplorationActions(unit, actionList)
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
-        addPillageAction(unit, actionList)
+        addPillageAction(unit, actionList, worldScreen)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
@@ -171,14 +171,22 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
     }
 
-    private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+    private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         val pillageAction = getPillageAction(unit)
-        if(pillageAction!=null) actionList += pillageAction
+        if (pillageAction == null) return
+        val pillageWithConfirmationAction = UnitAction(type = UnitActionType.Pillage, action = {
+            if (!worldScreen.hasOpenPopups()) {
+                val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
+                YesNoPopup(pillageText, { pillageAction.action!!(); worldScreen.shouldUpdate = true }).open()
+            }
+        })
+        actionList += pillageWithConfirmationAction
     }
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
         if (unit.type.isCivilian() || tile.improvement == null) return null
+
         return UnitAction(
                 type = UnitActionType.Pillage,
                 action = {
