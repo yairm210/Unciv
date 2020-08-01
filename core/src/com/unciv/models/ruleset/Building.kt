@@ -361,24 +361,24 @@ class Building : NamedStats(), IConstruction{
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
         for(unique in uniques) if(unique.equalsPlaceholderText("Free [] appears")){
             val unitName = unique.getPlaceholderParameters()[0]
-            civInfo.addGreatPerson(unitName, cityConstructions.cityInfo)
+            civInfo.addUnit(unitName, cityConstructions.cityInfo)
         }
         if ("2 free Great Artists appear" in uniques) {
-            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
-            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
         }
         if ("2 free great scientists appear" in uniques) {
-            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
-            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Scientist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Scientist", cityConstructions.cityInfo)
         }
         if ("Provides 2 free workers" in uniques) {
-            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
-            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
+            civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
+            civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
         }
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
             if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-            else civInfo.addGreatPerson(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
+            else civInfo.addUnit(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
         }
         if ("+1 population in each city" in uniques) {
             for(city in civInfo.cities){

@@ -178,9 +178,9 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    private fun getCivUniques() = policies.policyEffects.asSequence() + cities.asSequence().flatMap { it.getBuildingUniques() }
+    private fun getCivUniques() = nation.uniques.asSequence() + policies.policyEffects.asSequence() +
+            cities.asSequence().flatMap { it.getBuildingUniques() }
 
-    // This is
     fun hasUnique(unique:String) = getCivUniques().contains(unique)
 
     fun getMatchingUniques(uniqueTemplate: String) =
@@ -407,7 +407,7 @@ class CivilizationInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = greatPeople.getNewGreatPerson()
-            if (greatPerson != null) addGreatPerson(greatPerson)
+            if (greatPerson != null) addUnit(greatPerson)
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
@@ -492,15 +492,13 @@ class CivilizationInfo {
         notifications.add(Notification(text, color, action))
     }
 
-    fun addGreatPerson(greatPerson: String){
-        if(cities.isEmpty()) return
-        addGreatPerson(greatPerson, cities.random())
-    }
-
-    fun addGreatPerson(greatPerson: String, city:CityInfo) {
-        val greatPersonName = getEquivalentUnit(greatPerson).name
-        placeUnitNearTile(city.location, greatPersonName)
-        addNotification("A [$greatPersonName] has been born in [${city.name}]!", city.location, Color.GOLD)
+    fun addUnit(unitName:String, city: CityInfo?=null) {
+        if (cities.isEmpty()) return
+        val cityToAddTo = city ?: cities.random()
+        val unit = getEquivalentUnit(unitName)
+        placeUnitNearTile(cityToAddTo.location, unit.name)
+        if ("Great Person" in unit.uniques)
+            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {

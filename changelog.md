@@ -16,13 +16,10 @@ Resolved #2907 - University unique registers properly
 
 Added civ-wide per-building stat bonus
 
-By lishaoxia1985:
+New Diplomacy Overview UI - By lishaoxia1985
 
-- New Diplomacy Overview UI 
+Fog of war implementation  - By alkorolyov
 
-By alkorolyov:
-
-- Fog of war implementation 
 
 ## 3.9.16
 

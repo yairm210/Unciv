@@ -330,15 +330,13 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromPolicies(policies: HashSet<String>, cityConstructions: CityConstructions): Stats {
+    private fun getStatPercentBonusesFromPolicies(cityConstructions: CityConstructions): Stats {
         val stats = Stats()
 
         val currentConstruction = cityConstructions.getCurrentConstruction()
-        if (policies.contains("Collective Rule") && cityInfo.isCapital()
-                && currentConstruction.name == Constants.settler)
+        if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
+                && cityInfo.civInfo.hasUnique("Training of settlers increased +50% in capital"))
             stats.production += 50f
-        if (policies.contains("Republic") && currentConstruction is Building)
-            stats.production += 5f
         if (cityInfo.civInfo.hasUnique("+20% production when training melee units")
                 && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
             stats.production += 20
@@ -355,7 +353,8 @@ class CityStats {
             val placeholderParams = unique.getPlaceholderParameters()
             val filter = placeholderParams[1]
             if (currentConstruction.name == filter
-                    || (filter=="military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian()))
+                    || (filter=="military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
+                    || (filter=="Buildings" && currentConstruction is Building && !currentConstruction.isWonder))
                 stats.production += placeholderParams[0].toInt()
         }
 
@@ -407,7 +406,7 @@ class CityStats {
     fun updateStatPercentBonusList() {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromPolicies(cityInfo.civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
+        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromPolicies(cityInfo.cityConstructions)
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings()
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble()

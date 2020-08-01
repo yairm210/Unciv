@@ -148,7 +148,7 @@ class PolicyManager {
                             VictoryType.Domination, VictoryType.Neutral ->
                                 civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
                         }
-                        civInfo.addGreatPerson(greatPerson)
+                        civInfo.addUnit(greatPerson)
                     }
                 }
                 "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()

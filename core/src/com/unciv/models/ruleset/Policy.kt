@@ -12,8 +12,6 @@ open class Policy : INamed {
     var column: Int = 0
     var requires: ArrayList<String>? = null
 
-    override fun toString(): String {
-        return name
-    }
+    override fun toString() = name
 }
 

@@ -36,6 +36,7 @@ class Nation : INamed {
 
     lateinit var outerColor: List<Int>
     var unique: UniqueAbility? = null
+    val uniques = ArrayList<String>()
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 

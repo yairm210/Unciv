@@ -8,6 +8,7 @@ import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -271,9 +272,11 @@ class TechManager {
             }
         }
 
-        if (techName == "Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY
-                && civInfo.cities.any())
-            civInfo.addGreatPerson("Great Scientist")
+        for(unique in civInfo.getMatchingUniques("Receive free [] when you discover []")){
+            val params = unique.getPlaceholderParameters()
+            if(params[1]!=techName) continue
+            civInfo.addUnit(params[0])
+        }
     }
 
     fun setTransients() {
