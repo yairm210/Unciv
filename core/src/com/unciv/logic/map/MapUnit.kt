@@ -306,12 +306,12 @@ class MapUnit {
     //endregion
 
     //region state-changing functions
-    fun setTransients(ruleset: Ruleset) {
+    fun setTransients(ruleset: Ruleset, unitCivTransients:Boolean = true) {
         promotions.unit=this
         mapUnitAction?.unit = this
         baseUnit=ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
-        updateUniques()
+        if (unitCivTransients) updateUniques()
     }
 
     fun useMovementPoints(amount:Float){

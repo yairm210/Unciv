@@ -422,7 +422,7 @@ open class TileInfo {
             unit.currentTile = this
             if (unitCivTransients)
                 unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner), false)
-            unit.setTransients(ruleset)
+            unit.setTransients(ruleset, unitCivTransients)
         }
     }
 

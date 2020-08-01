@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -16,6 +17,7 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -35,7 +37,12 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     private val ruleset = mapEditorScreen.ruleset
     private val gameParameters = mapEditorScreen.gameSetupInfo.gameParameters
 
+    private var unitHealth = TextField("", skin)
+    private var unitXP = TextField("", skin)
+    private var promotionsTable = Table()
+
     private val scrollPanelHeight = mapEditorScreen.stage.height*0.7f - 100f // -100 reserved for currentHex table
+
 
     init{
         update()
@@ -221,23 +228,20 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     fun setUnits(){
         editorPickTable.clear()
+        editorPickTable
+
 
         val nationsTable = Table()
 
         // default player - first MajorCiv player
-        val defaultPlayer = gameParameters.players.first{
+        var currentPlayer: Player? = gameParameters.players.first{
             it.chosenCiv != Constants.spectator && it.chosenCiv != Constants.random
         }
-        var currentPlayer = getPlayerIndexString(defaultPlayer)
-        var currentNation: Nation = ruleset.nations[defaultPlayer.chosenCiv]!!
+        var currentNation: Nation = ruleset.nations[currentPlayer?.chosenCiv]!!
         var currentUnit = ruleset.units.values.first()
 
         fun setUnitTileAction(){
-            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation.getInnerColor())
-                    .surroundWithCircle(40f*0.9f).apply { circle.color=currentNation.getOuterColor() }
-                    .surroundWithCircle(40f, false).apply { circle.color=currentNation.getInnerColor() }
-
-            setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation.name.tr()+")")
+            setCurrentUnitHex(currentUnit, currentPlayer, currentNation)
             tileAction = {
                 val unit = MapUnit()
                 unit.baseUnit = currentUnit
@@ -261,32 +265,34 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         fun setEditUnitAction(){
             tileAction = {
-                if (!it.getUnits().none()) {
+                val previouslySelectedUnit = mapEditorScreen.mapHolder.selectedUnit
 
-                    val previouslySelectedUnit = mapEditorScreen.mapHolder.selectedUnit
+                // select unit
+                if (it.militaryUnit != null && previouslySelectedUnit != it.militaryUnit
+                        && (it.civilianUnit==null || previouslySelectedUnit!=it.civilianUnit))
+                    mapEditorScreen.mapHolder.selectedUnit = it.militaryUnit
+                else if (it.civilianUnit != null && previouslySelectedUnit != it.civilianUnit)
+                    mapEditorScreen.mapHolder.selectedUnit = it.civilianUnit
+                else
+                    mapEditorScreen.mapHolder.selectedUnit = null
 
-                    if (it.militaryUnit != null && previouslySelectedUnit != it.militaryUnit
-                            && (it.civilianUnit==null || previouslySelectedUnit!=it.civilianUnit))
-                        mapEditorScreen.mapHolder.selectedUnit = it.militaryUnit
-                    else if (it.civilianUnit != null && previouslySelectedUnit != it.civilianUnit)
-                        mapEditorScreen.mapHolder.selectedUnit = it.civilianUnit
-                    else if (it == previouslySelectedUnit?.currentTile)
-                        mapEditorScreen.mapHolder.selectedUnit = null
+                // clear selection of previous tile if new tile clicked
+                if (previouslySelectedUnit != null && it != previouslySelectedUnit.currentTile)
+                    tileGroups[previouslySelectedUnit.currentTile]?.update()
 
-                    // clear selection of previous tile if new tile clicked
-                    if (previouslySelectedUnit != null && it != previouslySelectedUnit.currentTile)
-                        tileGroups[previouslySelectedUnit.currentTile]?.update()
-                }
+                val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
+
+                updateUnitEditTable(selectedUnit)
             }
-    }
+        }
 
         // edit units icon
-        nationsTable.add(getEditIcon().onClick { setEditUnitAction() })
+        nationsTable.add(getEditIcon().onClick { setEditUnitAction() }).row()
 
         // delete units icon
         nationsTable.add(getCrossedIcon().onClick {
             tileAction = { it.stripUnits() }
-            setCurrentHex(getCrossedIcon(), "Remove units")
+            setCurrentHex(getCrossedIcon(), "Remove unit")
         }).row()
 
         // player icons
@@ -298,7 +304,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             nationsTable.add(nationImage).row()
             nationImage.onClick {
                 currentNation = nation;
-                currentPlayer = getPlayerIndexString(player)
+                currentPlayer = player
                 setUnitTileAction() }
         }
 
@@ -310,21 +316,66 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 nationsTable.add(nationImage).row()
                 nationImage.onClick {
                     currentNation = nation;
-                    currentPlayer = ""
+                    currentPlayer = null
                     setUnitTileAction()
                 }
             }
         }
 
-        editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(nationsTable)).height(scrollPanelHeight).padRight(5f)
 
+        // units icons
         val unitsTable = Table()
         for(unit in ruleset.units.values){
             val unitImage = ImageGetter.getUnitIcon(unit.name).surroundWithCircle(40f)
             unitsTable.add(unitImage).row()
             unitImage.onClick { currentUnit = unit; setUnitTileAction() }
         }
-        editorPickTable.add(AutoScrollPane(unitsTable)).height(scrollPanelHeight)
+        editorPickTable.add(AutoScrollPane(unitsTable)).height(scrollPanelHeight).padRight(5f)
+
+        // region unit edit table
+        val unitEditTable = Table()
+
+        val unitHealthLabel = "Health".toLabel()
+        unitHealth.textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        unitHealth.onChange {
+            val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
+            if (unitHealth.text == "") unitHealth.text = "1"
+            selectedUnit?.health = unitHealth.text.toInt()
+            tileGroups[selectedUnit?.currentTile]?.update()
+        }
+
+        val unitXPLabel = "XP".toLabel()
+        unitXP.textFieldFilter = TextField.TextFieldFilter.DigitsOnlyFilter()
+        unitXP.onChange {
+            val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
+            if (selectedUnit != null && selectedUnit.type.isMilitary()) {
+                if (unitXP.text == "") unitXP.text = "0"
+                selectedUnit.promotions.XP = unitXP.text.toInt()
+            } else unitXP.text = ""
+        }
+
+        val promotionsLabel = "Promotions".toTextButton()
+        promotionsLabel.onClick {
+            val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
+            if (selectedUnit != null)
+                PromotionsEditorPopup(selectedUnit, this).open()
+        }
+
+        unitEditTable.pad(5f)
+        unitEditTable.add(unitHealthLabel).left().padRight(5f)
+        unitEditTable.add(unitHealth).width(90f).row()
+
+        unitEditTable.add(unitXPLabel).left().padTop(5f)
+        unitEditTable.add(unitXP).width(90f).padTop(5f).row()
+
+        unitEditTable.add(promotionsLabel).padTop(5f).colspan(2).row()
+        unitEditTable.add(promotionsTable).padTop(5f).colspan(2)
+        unitEditTable
+
+        // endregion
+
+        editorPickTable.add(unitEditTable)
     }
 
     private fun nationsFromMap(tileMap: TileMap): ArrayList<Nation> {
@@ -338,7 +389,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         return nations
     }
 
-    private fun getPlayerIndexString(player: Player): String {
+    private fun getPlayerIndexString(player: Player?): String {
+        if(player == null) return ""
+
         val index = gameParameters.players.indexOf(player) + 1
         return "Player $index"
     }
@@ -513,6 +566,37 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         normalizeTile(tileInfo)
     }
 
+    fun updateUnitEditTable(selectedUnit: MapUnit?) {
+        promotionsTable.clear()
+
+        if (selectedUnit != null) {
+            unitHealth.text = selectedUnit.health.toString()
+            unitXP.text = selectedUnit.promotions?.XP.toString()
+
+            // add promotions icons in 4 rows
+            for((i, promotion) in selectedUnit!!.promotions.promotions.sorted().withIndex()) {
+                if (i % 4 == 0) promotionsTable.row()
+                promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
+            }
+
+            // Since Clear also clears the listeners, we need to re-add it every time
+            promotionsTable.onClick {
+                PromotionsEditorPopup(selectedUnit, this).open()
+            }
+
+            val currentUnit = mapEditorScreen.mapHolder.selectedUnit!!.baseUnit
+            val currentPlayer = gameParameters.players.find{ it.chosenCiv == selectedUnit.owner }
+            val currentNation = ruleset.nations[selectedUnit.owner]!!
+            setCurrentUnitHex(currentUnit, currentPlayer, currentNation)
+        } else {
+            unitHealth.text = ""
+            unitXP.text = ""
+            promotionsTable.clear()
+            setCurrentHex(getEditIcon(), "Edit unit")
+        }
+
+    }
+
     fun normalizeTile(tileInfo: TileInfo){
         /*Natural Wonder superpowers! */
         if (tileInfo.naturalWonder != null) {
@@ -599,4 +683,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         stage.addActor(currentHex)
     }
 
+    private fun setCurrentUnitHex(currentUnit: BaseUnit, currentPlayer: Player?, currentNation: Nation) {
+        val currentPlayerStr = getPlayerIndexString(currentPlayer)
+        val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation.getInnerColor())
+                .surroundWithCircle(40f*0.9f).apply { circle.color=currentNation.getOuterColor() }
+                .surroundWithCircle(40f, false).apply { circle.color=currentNation.getInnerColor() }
+        setCurrentHex(unitImage, currentUnit.name.tr()+ "\n$currentPlayerStr "+ "(${currentNation.name.tr()})")
+    }
 }
