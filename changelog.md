@@ -1,3 +1,29 @@
+## 3.9.17
+
+All policies converted!
+
+Map editor should no longer crash in scenarios
+
+Scouts ignore river movement penalties
+
+Pillage action now has a confirmation popup
+
+Spaceship parts not shown to user until Apollo Program is built
+
+Units can pass through cities of other friendly civs
+
+Resolved #2907 - University unique registers properly
+
+Added civ-wide per-building stat bonus
+
+By lishaoxia1985:
+
+- New Diplomacy Overview UI 
+
+By alkorolyov:
+
+- Fog of war implementation 
+
 ## 3.9.16
 
 Resolved #3901 - nuclear weapon setting remains between games
