@@ -132,7 +132,7 @@ class MapUnit {
         val uniques = ArrayList<String>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniques)
-        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.unitPromotions[it]!!.effect })
+        uniques.addAll(promotions.promotions.map { currentTile.ruleset.unitPromotions[it]!!.effect })
         tempUniques = uniques
 
         ignoresTerrainCost = ("Ignores terrain cost" in uniques)

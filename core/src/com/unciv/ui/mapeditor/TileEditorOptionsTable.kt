@@ -264,6 +264,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         }
 
         fun setEditUnitAction(){
+            updateUnitEditTable(mapEditorScreen.mapHolder.selectedUnit)
+
             tileAction = {
                 val previouslySelectedUnit = mapEditorScreen.mapHolder.selectedUnit
 
@@ -284,6 +286,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
                 updateUnitEditTable(selectedUnit)
             }
+
         }
 
         // edit units icon
@@ -371,8 +374,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         unitEditTable.add(promotionsLabel).padTop(5f).colspan(2).row()
         unitEditTable.add(promotionsTable).padTop(5f).colspan(2)
-        unitEditTable
-
         // endregion
 
         editorPickTable.add(unitEditTable)
