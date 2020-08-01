@@ -39,21 +39,18 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
             tileGroup.showEntireMap = true
             tileGroup.update()
             tileGroup.onClick {
+
                 val distance = mapEditorScreen.tileEditorOptions.brushSize - 1
-
-
 
                 for (tileInfo in mapEditorScreen.tileMap.getTilesInDistance(tileGroup.tileInfo.position, distance)) {
                     mapEditorScreen.tileEditorOptions.updateTileWhenClicked(tileInfo)
 
                     tileInfo.setTerrainTransients()
                     tileGroups[tileInfo]!!.update()
-
                 }
 
                 if (selectedUnit != null && selectedUnit?.currentTile == tileGroup.tileInfo)
                     tileGroup.selectUnit(selectedUnit!!)
-
             }
         }
 

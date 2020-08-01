@@ -228,8 +228,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     fun setUnits(){
         editorPickTable.clear()
-        editorPickTable
-
 
         val nationsTable = Table()
 
@@ -568,9 +566,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     fun updateUnitEditTable(selectedUnit: MapUnit?) {
-        promotionsTable.clear()
+
 
         if (selectedUnit != null) {
+            promotionsTable.clear()
             unitHealth.text = selectedUnit.health.toString()
             unitXP.text = selectedUnit.promotions?.XP.toString()
 
