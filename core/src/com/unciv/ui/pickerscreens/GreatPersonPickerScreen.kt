@@ -39,7 +39,7 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
         }
 
         rightSideButton.onClick(UncivSound.Choir) {
-            civInfo.placeUnitNearTile(civInfo.cities[0].location, theChosenOne!!.name)
+            civInfo.addUnit(theChosenOne!!.name, civInfo.getCapital())
             civInfo.greatPeople.freeGreatPeople--
             UncivGame.Current.setWorldScreen()
         }

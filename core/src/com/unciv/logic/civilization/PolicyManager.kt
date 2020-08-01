@@ -133,7 +133,7 @@ class PolicyManager {
                 "Free [] appears" -> {
                     val unitName = effect.getPlaceholderParameters()[0]
                     if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
-                        civInfo.placeUnitNearTile(civInfo.getCapital().location, unitName)
+                        civInfo.addUnit(unitName, civInfo.getCapital())
                 }
                 "Gain a free policy" -> freePolicies++
                 "Empire enters golden age" ->
