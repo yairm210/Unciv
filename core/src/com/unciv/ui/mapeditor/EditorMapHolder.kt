@@ -16,9 +16,7 @@ import com.unciv.ui.utils.onClick
 
 class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal val tileMap: TileMap): ZoomableScrollPane() {
     val tileGroups = HashMap<TileInfo, TileGroup>()
-    var previouslySelectedUnit: MapUnit? = null
     var selectedUnit : MapUnit? = null
-    var selectedCity : CityInfo? = null
     lateinit var tileGroupMap: TileGroupMap<TileGroup>
 
     internal fun addTiles(padding:Float) {
