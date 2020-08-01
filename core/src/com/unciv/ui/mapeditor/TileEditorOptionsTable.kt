@@ -292,7 +292,14 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         // delete units icon
         nationsTable.add(getCrossedIcon().onClick {
-            tileAction = { it.stripUnits() }
+            tileAction = { it.stripUnits()
+                val selectedUnit = mapEditorScreen.mapHolder.selectedUnit
+                if (it == selectedUnit?.currentTile) {
+                    mapEditorScreen.mapHolder.selectedUnit = null
+                    updateUnitEditTable(null)
+                }
+
+            }
             setCurrentHex(getCrossedIcon(), "Remove unit")
         }).row()
 
@@ -566,12 +573,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     fun updateUnitEditTable(selectedUnit: MapUnit?) {
-
-
         if (selectedUnit != null) {
-            promotionsTable.clear()
             unitHealth.text = selectedUnit.health.toString()
             unitXP.text = selectedUnit.promotions?.XP.toString()
+            promotionsTable.clear()
 
             // add promotions icons in 4 rows
             for((i, promotion) in selectedUnit!!.promotions.promotions.sorted().withIndex()) {
@@ -584,10 +589,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 PromotionsEditorPopup(selectedUnit, this).open()
             }
 
-            val currentUnit = mapEditorScreen.mapHolder.selectedUnit!!.baseUnit
-            val currentPlayer = gameParameters.players.find{ it.chosenCiv == selectedUnit.owner }
-            val currentNation = ruleset.nations[selectedUnit.owner]!!
-            setCurrentUnitHex(currentUnit, currentPlayer, currentNation)
+            val selectedBaseUnit = selectedUnit!!.baseUnit
+            val selectedPlayer = gameParameters.players.find{ it.chosenCiv == selectedUnit.owner }
+            val selectedNation = ruleset.nations[selectedUnit.owner]!!
+            setCurrentUnitHex(selectedBaseUnit, selectedPlayer, selectedNation)
         } else {
             unitHealth.text = ""
             unitXP.text = ""
