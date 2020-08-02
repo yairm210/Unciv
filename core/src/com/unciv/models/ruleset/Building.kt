@@ -209,7 +209,7 @@ class Building : NamedStats(), IConstruction{
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
 
         for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1 - (unique.getPlaceholderParameters()[0].toFloat())
+            cost *= 1 - (unique.getPlaceholderParameters()[0].toFloat() / 100)
 
         for (unique in civInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
             val placeholderParams = unique.getPlaceholderParameters()
