@@ -45,10 +45,22 @@ object DropBox {
         }
     }
 
-    fun getFolderList(folder:String):FolderList{
+    fun getFolderList(folder:String): ArrayList<FolderListEntry> {
+        val folderList = ArrayList<FolderListEntry>()
+        // The DropBox API returns only partial file listings from one request. list_folder and
+        // list_folder/continue return similar responses, but list_folder/continue requires a cursor
+        // instead of the path.
         val response = dropboxApi("https://api.dropboxapi.com/2/files/list_folder",
                 "{\"path\":\"$folder\"}","application/json")
-        return GameSaver.json().fromJson(FolderList::class.java,response)
+        var currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, response)
+        folderList.addAll(currentFolderListChunk.entries)
+        while (currentFolderListChunk.has_more) {
+            val continuationResponse = dropboxApi("https://api.dropboxapi.com/2/files/list_folder/continue",
+                    "{\"cursor\":\"${currentFolderListChunk.cursor}\"}","application/json")
+            currentFolderListChunk = GameSaver.json().fromJson(FolderList::class.java, continuationResponse)
+            folderList.addAll(currentFolderListChunk.entries)
+        }
+        return folderList
     }
 
     fun downloadFile(fileName:String): InputStream {
@@ -84,6 +96,8 @@ object DropBox {
 
     class FolderList{
         var entries = ArrayList<FolderListEntry>()
+        var cursor = ""
+        var has_more = false
     }
 
     class FolderListEntry{
