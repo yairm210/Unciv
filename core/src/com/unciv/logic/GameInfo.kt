@@ -6,6 +6,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.*
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeOffer
@@ -263,6 +264,12 @@ class GameInfo {
 
         if (currentPlayer == "") currentPlayer = civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv = getCivilization(currentPlayer)
+
+        // as of version 3.9.18, added new custom map size
+        // empty mapSize name and non-custom map type means - it is old style map size,
+        // therefore we need to create new mapSize property
+        if (tileMap.mapParameters.mapSize.name == "" && tileMap.mapParameters.type != Constants.custom)
+            tileMap.mapParameters.mapSize = MapSizeNew(tileMap.mapParameters.size.name)
 
         // this is separated into 2 loops because when we activate updateVisibleTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.

@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.UniqueAbility
-import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.getPlaceholderParameters
@@ -67,7 +66,7 @@ class TechManager {
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
-        val worldSizeModifier = when (civInfo.gameInfo.tileMap.mapParameters.size.name) {
+        val worldSizeModifier = when (civInfo.gameInfo.tileMap.mapParameters.mapSize.name) {
             Constants.medium -> floatArrayOf(1.1f, 0.05f)
             Constants.large -> floatArrayOf(1.2f, 0.03f)
             Constants.huge -> floatArrayOf(1.3f, 0.02f)

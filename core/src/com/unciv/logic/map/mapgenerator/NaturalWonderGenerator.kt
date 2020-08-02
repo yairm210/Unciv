@@ -18,7 +18,7 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
     fun spawnNaturalWonders(tileMap: TileMap, randomness: MapGenerationRandomness) {
         if (tileMap.mapParameters.noNaturalWonders)
             return
-        val mapRadius = tileMap.mapParameters.size.radius
+        val mapRadius = tileMap.mapParameters.mapSize.radius
         // number of Natural Wonders scales linearly with mapRadius as #wonders = mapRadius * 0.13133208 - 0.56128831
         val numberToSpawn = round(mapRadius * 0.13133208f - 0.56128831f).toInt()
 

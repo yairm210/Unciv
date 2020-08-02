@@ -19,7 +19,7 @@ class MapGenerator(val ruleset: Ruleset) {
     var randomness = MapGenerationRandomness()
 
     fun generateMap(mapParameters: MapParameters, seed: Long = System.currentTimeMillis()): TileMap {
-        val mapSize = mapParameters.size
+        val mapSize = mapParameters.mapSize
         val mapType = mapParameters.type
         val map: TileMap
 
@@ -110,7 +110,7 @@ class MapGenerator(val ruleset: Ruleset) {
     }
 
     private fun spreadResources(tileMap: TileMap) {
-        val distance = tileMap.mapParameters.size.radius
+        val distance = tileMap.mapParameters.mapSize.radius
         for (tile in tileMap.values)
             tile.resource = null
 

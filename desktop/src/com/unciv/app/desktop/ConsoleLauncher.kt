@@ -6,18 +6,14 @@ import com.unciv.UncivGameParameters
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
-import com.unciv.logic.map.MapSize
+import com.unciv.logic.map.MapSizeNew
 import com.unciv.models.metadata.GameParameters
 import com.unciv.models.metadata.GameSettings
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.simulation.Simulation
-import com.unciv.models.simulation.SimulationStep
-import com.unciv.models.simulation.formatDuration
 import com.unciv.ui.newgamescreen.GameSetupInfo
-import java.time.Duration
-import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
 internal object ConsoleLauncher {
@@ -59,7 +55,7 @@ internal object ConsoleLauncher {
 
     private fun getMapParameters(): MapParameters {
         return MapParameters().apply {
-            size = MapSize(Constants.tiny)
+            mapSize = MapSizeNew(Constants.tiny)
             noRuins = true
             noNaturalWonders = true
         }

@@ -5,11 +5,22 @@ import com.unciv.logic.HexMath.getEquivalentHexagonalRadius
 import com.unciv.logic.HexMath.getEquivalentRectangularSize
 
 
-class MapSize {
+enum class MapSize(val radius: Int) {
+    Tiny(10),
+    Small(15),
+    Medium(20),
+    Large(30),
+    Huge(40)
+}
+
+class MapSizeNew {
     var radius = 0
     var width = 0
     var height = 0
     var name = ""
+
+    /** Needed for Json parsing */
+    constructor()
 
     constructor(name: String) {
         /** Hard coded values from getEquivalentRectangularSize() */
@@ -68,7 +79,9 @@ class MapParameters {
     var name = ""
     var type = MapType.pangaea
     var shape = MapShape.hexagonal
-    var size = MapSize(Constants.medium)
+    @Deprecated("replaced by mapSize since 3.19.18")
+    var size = MapSize.Medium
+    var mapSize = MapSizeNew(Constants.medium)
     var noRuins = false
     var noNaturalWonders = false
 
