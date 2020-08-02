@@ -306,12 +306,12 @@ class MapUnit {
     //endregion
 
     //region state-changing functions
-    fun setTransients(ruleset: Ruleset, unitCivTransients:Boolean = true) {
+    fun setTransients(ruleset: Ruleset) {
         promotions.unit=this
         mapUnitAction?.unit = this
         baseUnit=ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
-        if (unitCivTransients) updateUniques()
+        updateUniques()
     }
 
     fun useMovementPoints(amount:Float){
@@ -480,7 +480,7 @@ class MapUnit {
 
     fun removeFromTile(){
         when {
-            type.isAirUnit() -> currentTile.airUnits.remove(this)
+            type.isAirUnit() -> getTile().airUnits.remove(this)
             type.isCivilian() -> getTile().civilianUnit=null
             else -> getTile().militaryUnit=null
         }

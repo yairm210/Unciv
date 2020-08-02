@@ -422,12 +422,13 @@ open class TileInfo {
             unit.currentTile = this
             if (unitCivTransients)
                 unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner), false)
-            unit.setTransients(ruleset, unitCivTransients)
+            unit.setTransients(ruleset)
         }
     }
 
     fun stripUnits() {
-        for (unit in this.getUnits()) unit.removeFromTile()
+        for (unit in getUnits().toList())
+            unit.removeFromTile()
     }
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
