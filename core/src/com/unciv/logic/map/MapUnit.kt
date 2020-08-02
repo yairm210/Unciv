@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.logic.map.action.StringAction
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
@@ -104,7 +103,7 @@ class MapUnit {
         movement += getUniques().count { it == "+1 Movement" }
 
         if (type.isWaterUnit() && !type.isCivilian()
-                && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
+                && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
         if (type.isWaterUnit() && civInfo.nation.unique == UniqueAbility.SUN_NEVER_SETS)
@@ -164,7 +163,7 @@ class MapUnit {
             if (civInfo.nation.unique == UniqueAbility.MANIFEST_DESTINY)
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
-                    && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
+                    && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
                 visibilityRange += 1
             if (isEmbarked() && civInfo.nation.unique == UniqueAbility.WAYFINDING)
                 visibilityRange += 1
@@ -264,9 +263,7 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
-        if (civInfo.policies.isAdopted("Professional Army"))
-            goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
-        if(civInfo.containsBuildingUnique("Gold cost of upgrading military units reduced by 33%"))
+        for(unique in civInfo.getMatchingUniques("Gold cost of upgrading military units reduced by 33%"))
             goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
         if(goldCostOfUpgrade<0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade

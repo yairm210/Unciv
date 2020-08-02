@@ -20,11 +20,10 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         val baseUnitCost = 0.5f
         val freeUnits = 3
         var unitsToPayFor = civInfo.getCivUnits()
-        if(civInfo.policies.hasEffect("Units in cities cost no Maintenance, garrisoned city +50% attacking strength"))
+        if(civInfo.hasUnique("Units in cities cost no Maintenance"))
             // Only land military units can truly "garrison"
             unitsToPayFor = unitsToPayFor.filterNot {
-                it.getTile().isCityCenter()
-                        && it.canGarrison()
+                it.getTile().isCityCenter() && it.canGarrison()
             }
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
@@ -39,7 +38,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!civInfo.isPlayerCivilization())
             cost *= civInfo.gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if(civInfo.policies.hasEffect("-33% unit upkeep costs")) cost *= 0.66f
+        if(civInfo.hasUnique("-33% unit upkeep costs")) cost *= 0.66f
         return cost.toInt()
     }
 
@@ -92,7 +91,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
         statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
 
-        if (civInfo.policies.hasEffect("50% of excess happiness added to culture towards policies")) {
+        if (civInfo.hasUnique("50% of excess happiness added to culture towards policies")) {
             val happiness = civInfo.getHappiness()
             if(happiness>0) statMap.add("Policies", Stats().apply { culture=happiness/2f })
         }
@@ -119,7 +118,8 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
         // TODO - happinessPerUnique should be difficulty-dependent, 5 on Settler and Chieftian and 4 on other difficulties (should be parameter, not in code)
         var happinessPerUniqueLuxury = 4f + civInfo.getDifficulty().extraHappinessPerLuxury
-        if (civInfo.policies.hasEffect("+1 happiness from each luxury resource")) happinessPerUniqueLuxury += 1
+        for(unique in civInfo.getMatchingUniques("+1 happiness from each luxury resource"))
+            happinessPerUniqueLuxury += 1
         statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
@@ -131,7 +131,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             }
         }
 
-        if (civInfo.containsBuildingUnique("Provides 1 happiness per 2 additional social policies adopted")) {
+        if (civInfo.hasUnique("Provides 1 happiness per 2 additional social policies adopted")) {
             if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") } / 2

@@ -66,7 +66,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
 
     fun setTransients() {
         for (tileInfo in tileGroups.keys)
-            tileInfo.setTransients()
+            tileInfo.setTerrainTransients()
     }
 
     fun getClosestTileTo(stageCoords: Vector2): TileInfo? {

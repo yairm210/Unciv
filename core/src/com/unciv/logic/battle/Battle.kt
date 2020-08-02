@@ -82,7 +82,7 @@ object Battle {
         tryGetCultureFromHonor(defender, attacker)
 
         if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
-                && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
+                && attacker.getCivInfo().hasUnique("Gain gold for each unit killed"))
             attacker.getCivInfo().gold += defender.unit.baseUnit.getProductionCost(attacker.getCivInfo()) / 10
 
         if (attacker is MapUnitCombatant) {
@@ -224,7 +224,7 @@ object Battle {
     private fun tryGetCultureFromHonor(civUnit:ICombatant, barbarianUnit:ICombatant){
         if(barbarianUnit.isDefeated() && barbarianUnit is MapUnitCombatant
                 && barbarianUnit.getCivInfo().isBarbarian()
-                && civUnit.getCivInfo().policies.isAdopted("Honor"))
+                && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit"))
             civUnit.getCivInfo().policies.storedCulture +=
                     max(barbarianUnit.unit.baseUnit.strength,barbarianUnit.unit.baseUnit.rangedStrength)
     }
@@ -236,7 +236,7 @@ object Battle {
             return
 
         var XPModifier = 1f
-        if (thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) XPModifier += 0.5f
+        if (thisCombatant.getCivInfo().hasUnique("Military units gain 50% more Experience from combat")) XPModifier += 0.5f
         if (thisCombatant.unit.hasUnique("50% Bonus XP gain")) XPModifier += 0.5f
 
         val XPGained = (amount * XPModifier).toInt()

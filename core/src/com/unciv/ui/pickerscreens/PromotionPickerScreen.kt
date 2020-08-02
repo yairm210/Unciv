@@ -36,7 +36,8 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
           acceptPromotion(selectedPromotion)
         }
         val canBePromoted = unit.promotions.canBePromoted()
-        if(!canBePromoted)
+        val canChangeState = game.worldScreen.canChangeState
+        if(!canBePromoted || !canChangeState)
             rightSideButton.disable()
 
         val availablePromotionsGroup = Table()
@@ -58,19 +59,18 @@ class PromotionPickerScreen(val unit: MapUnit) : PickerScreen() {
             selectPromotionButton.add(promotion.name.toLabel()).pad(10f).padRight(20f)
             selectPromotionButton.touchable = Touchable.enabled
             selectPromotionButton.onClick {
-                selectedPromotion = promotion
-                rightSideButton.setText(promotion.name.tr())
-                if(canBePromoted && isPromotionAvailable && !unitHasPromotion)
+                if(canBePromoted && isPromotionAvailable && !unitHasPromotion && canChangeState)
                     rightSideButton.enable()
                 else rightSideButton.disable()
-
+                selectedPromotion = promotion
+                rightSideButton.setText(promotion.name.tr())
 
                 descriptionLabel.setText(promotion.getDescription(promotionsForUnitType))
             }
 
             availablePromotionsGroup.add(selectPromotionButton)
 
-            if(canBePromoted && isPromotionAvailable) {
+            if(canBePromoted && isPromotionAvailable && canChangeState) {
                 val pickNow = "Pick now!".toLabel()
                 pickNow.setAlignment(Align.center)
                 pickNow.onClick {

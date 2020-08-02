@@ -74,7 +74,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun update() {
         if(selectedUnit!=null) {
             isVisible=true
-            if (selectedUnit!!.civInfo != worldScreen.viewingCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
+            if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 selectedCity = null
                 selectedUnitHasChanged = true
@@ -194,17 +194,21 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun tileSelected(selectedTile: TileInfo) {
 
         val previouslySelectedUnit = selectedUnit
-        if(selectedTile.isCityCenter() && selectedTile.getOwner()==worldScreen.viewingCiv){
+
+        if(selectedTile.isCityCenter()
+                && (selectedTile.getOwner()==worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())){
             citySelected(selectedTile.getCity()!!)
         }
-        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv
+        else if(selectedTile.militaryUnit!=null
+                && (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
                 && selectedUnit!=selectedTile.militaryUnit
                 && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit
             selectedCity = null
         }
-        else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv
-                        && selectedUnit!=selectedTile.civilianUnit){
+        else if (selectedTile.civilianUnit!=null
+                && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
+                && selectedUnit!=selectedTile.civilianUnit){
             selectedUnit = selectedTile.civilianUnit
             selectedCity = null
         } else if(selectedTile == previouslySelectedUnit?.currentTile) {

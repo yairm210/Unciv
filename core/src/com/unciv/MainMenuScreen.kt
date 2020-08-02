@@ -96,7 +96,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         table.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
-            { openMapEditorPopup() }
+            { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
         table.add(mapEditorScreenTable).padBottom(0f)
 
         // set the same width for all buttons
@@ -118,55 +118,56 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     /** Shows the [Popup] with the map editor initialization options */
-    private fun openMapEditorPopup() {
+    class MapEditorMainScreenPopup(screen: MainMenuScreen):Popup(screen){
+        init{
+            defaults().pad(10f)
 
-        val mapEditorPopup = Popup(this)
-        mapEditorPopup.defaults().pad(10f)
+            val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-        val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
-
-        val newMapButton = getTableBlock("New map", "OtherIcons/New") {
-            game.setScreen(NewMapScreen())
-            dispose()
-        }
-        newMapButton.background = tableBackground
-        mapEditorPopup.add(newMapButton).row()
-
-        val loadMapButton = getTableBlock("Load map", "OtherIcons/Load") {
-            val loadMapScreen = LoadMapScreen(null)
-            loadMapScreen.closeButton.isVisible = true
-            loadMapScreen.closeButton.onClick {
-                game.setScreen(MainMenuScreen())
-                loadMapScreen.dispose()
+            val newMapButton = screen.getTableBlock("New map", "OtherIcons/New") {
+                screen.game.setScreen(NewMapScreen())
+                screen.dispose()
             }
-            game.setScreen(loadMapScreen)
-            dispose()
-        }
+            newMapButton.background = tableBackground
+            add(newMapButton).row()
 
-        loadMapButton.background = tableBackground
-        mapEditorPopup.add(loadMapButton).row()
-
-        if (UncivGame.Current.settings.extendedMapEditor) {
-            val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Scenario") {
-                val loadScenarioScreen = LoadScenarioScreen(null)
-                loadScenarioScreen.closeButton.isVisible = true
-                loadScenarioScreen.closeButton.onClick {
-                    game.setScreen(MainMenuScreen())
-                    loadScenarioScreen.dispose()
+            val loadMapButton = screen.getTableBlock("Load map", "OtherIcons/Load") {
+                val loadMapScreen = LoadMapScreen(null)
+                loadMapScreen.closeButton.isVisible = true
+                loadMapScreen.closeButton.onClick {
+                    screen.game.setScreen(MainMenuScreen())
+                    loadMapScreen.dispose()
                 }
-                game.setScreen(loadScenarioScreen)
-                dispose()
+                screen.game.setScreen(loadMapScreen)
+                screen.dispose()
             }
 
-            loadScenarioButton.background = tableBackground
-            mapEditorPopup.add(loadScenarioButton).row()
+            loadMapButton.background = tableBackground
+            add(loadMapButton).row()
+
+            if (UncivGame.Current.settings.extendedMapEditor) {
+                val loadScenarioButton = screen.getTableBlock("Load scenario", "OtherIcons/Scenario") {
+                    val loadScenarioScreen = LoadScenarioScreen(null)
+                    loadScenarioScreen.closeButton.isVisible = true
+                    loadScenarioScreen.closeButton.onClick {
+                        screen.game.setScreen(MainMenuScreen())
+                        loadScenarioScreen.dispose()
+                    }
+                    screen.game.setScreen(loadScenarioScreen)
+                    screen.dispose()
+                }
+
+                loadScenarioButton.background = tableBackground
+                add(loadScenarioButton).row()
+            }
+
+            add(screen.getTableBlock("Close", "OtherIcons/Close") { close() }
+                    .apply { background=tableBackground })
+
+            open(force = true)
         }
-
-        mapEditorPopup.add(getTableBlock("Close", "OtherIcons/Close") { mapEditorPopup.close() }
-                .apply { background=tableBackground })
-
-        mapEditorPopup.open(force = true)
     }
+
 
     private fun autoLoadGame() {
         try {

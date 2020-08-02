@@ -1,3 +1,79 @@
+## 3.9.17
+
+All policies converted!
+
+Map editor should no longer crash in scenarios
+
+Scouts ignore river movement penalties
+
+Pillage action now has a confirmation popup
+
+Spaceship parts not shown to user until Apollo Program is built
+
+Units can pass through cities of other friendly civs
+
+Resolved #2907 - University unique registers properly
+
+Added civ-wide per-building stat bonus
+
+New Diplomacy Overview UI - By lishaoxia1985
+
+Fog of war implementation  - By alkorolyov
+
+
+## 3.9.16
+
+Resolved #3901 - nuclear weapon setting remains between games
+
+Game can now handle modded unique buildings that don't replace anything existing
+
+All improvement placing units are automated in the same way - this allows for the AI to control modded units that place other improvements!
+
+Railroad connection propagates correctly over harbor connections
+
+Resolved #2894 - Map editor button only opens popup once
+
+Translation updates
+
+## 3.9.15
+
+Removed confusing extra lines in the diplomacy overview
+
+Started splitting up Policy uniques - they're usable as Building uniques now!
+
+Upgradable units show the final unit they're upgrading to in the Overview screen
+
+Created stat parameter parsing and translation - uniques are much more moddable!
+
+Resolved #2838 - cities in resistance can no longer be traded
+
+Fix bug when city states gets all techs from spectators - By alkorolyov
+
+Translation updates
+
+## 3.9.14
+
+Added Pinglish translations
+
+Genericified "free [unit] appears", "must be next to []" unique for buildings
+
+Greatly improved performance of worker's automated city connecting
+
+Resolved #2853 - Sped up loading of saved game list
+
+Resolved #2852 - cannot make peace with a city state while at war with its ally
+
+Resolved #2864 - Locks on tiles are removed when the tile is no longer under your control
+
+Buildings that are missing resources are still displayed in city constructions
+
+Unit 'unbuildable' parameter converted to unique
+
+By alkorolyov:
+
+- Spectator can view other civ stats: Tech, Trades, Cities, Units, Gold
+- Skip spectator turn in multiplayer games
+
 ## 3.9.13
 
 Simplified translation file generation

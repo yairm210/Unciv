@@ -10,6 +10,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import kotlin.math.abs
 
@@ -170,9 +172,6 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if ((baseTerrain == Constants.ocean || baseTerrain == Constants.coast) && city != null
-                && city.containsBuildingUnique("+1 food from Ocean and Coast tiles"))
-            stats.food += 1
 
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()
@@ -180,16 +179,15 @@ open class TileInfo {
                 stats = terrainFeatureBase.clone()
             else
                 stats.add(terrainFeatureBase)
+        }
 
-            if (terrainFeature == Constants.jungle && city != null
-                    && city.containsBuildingUnique("+2 Science from each worked Jungle tile"))
-                stats.science += 2f
-            if (terrainFeature == "Oasis" && city != null
-                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
-                stats.gold += 2
-            if (terrainFeature == Constants.forest && city != null
-                    && city.containsBuildingUnique("+1 Production from each worked Forest tile"))
-                stats.production += 1
+        if(city!=null) for(unique in city.getBuildingUniques()) {
+            if (unique.equalsPlaceholderText("[] from [] tiles")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                val tileType = placeholderParams[1]
+                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
+                    stats.add(Stats.parse(placeholderParams[0]))
+            }
         }
 
         if (naturalWonder != null) {
@@ -213,12 +211,6 @@ open class TileInfo {
                     && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
                 stats.production += 1
             if (city != null) {
-                if (resource.name == "Oil"
-                        && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
-                    stats.gold += 2
-                if ((resource.name == "Marble" || resource.name == "Stone")
-                        && city.containsBuildingUnique("+2 Gold for each source of Marble and Stone"))
-                    stats.gold += 2
                 if (isWater) {
                     if (city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
                         stats.production += 1
@@ -257,15 +249,18 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
-        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
-        if (improvement.name == Constants.tradingPost && city != null
-                && city.civInfo.policies.hasEffect("+1 science from every trading post, +17% science from universities"))
-            stats.science += 1f
-        if (improvement.name == Constants.tradingPost && city != null
-                && city.civInfo.policies.hasEffect("+1 gold from every trading post, double gold from Great Merchant trade missions"))
-            stats.gold += 1f
+        if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!))
+            stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
+
+        if(city!=null)
+            for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                if (unique == placeholderParams[1])
+                    stats.add(Stats.parse(placeholderParams[0]))
+            }
+        
         if (containsGreatImprovement()
-                && observingCiv.policies.hasEffect("Tile yield from great improvement +100%, golden ages increase by 50%"))
+                && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
             stats.add(improvement) // again, for the double effect
         if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
             stats.science += 2
@@ -456,8 +451,6 @@ open class TileInfo {
     fun hasConnection(civInfo: CivilizationInfo) =
             roadStatus != RoadStatus.None || forestOrJungleAreRoads(civInfo)
 
-    fun hasRailroad() =
-            roadStatus == RoadStatus.Railroad
 
     private fun forestOrJungleAreRoads(civInfo: CivilizationInfo) =
             civInfo.nation.forestsAndJunglesAreRoads

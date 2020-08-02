@@ -67,40 +67,42 @@ class WorkerAutomation(val unit: MapUnit) {
 
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
-        val citiesThatNeedConnecting = unit.civInfo.cities
+        val citiesThatNeedConnecting = unit.civInfo.cities.asSequence()
                 .filter { it.population.population>3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
-                    && !it.cityStats.isConnectedToCapital(targetRoad) }
-        if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
+                    && !it.cityStats.isConnectedToCapital(targetRoad)
+                        // Cities that are too far away make the caReach() calculations devastatingly long
+                        && it.getCenterTile().aerialDistanceTo(unit.getTile()) < 20 }
+        if(citiesThatNeedConnecting.none()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
+                .sortedBy { it.getCenterTile().aerialDistanceTo(unit.getTile()) }
                 .map { city -> BFS(city.getCenterTile()){it.isLand && unit.movement.canPassThrough(it)} }
-                .toMutableList()
 
         val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
                 .map { it.getCenterTile() }
 
-        while(citiesThatNeedConnectingBfs.any()){
-            for(bfs in citiesThatNeedConnectingBfs.toList()){
+        // Since further away cities take longer to get to and - most importantly - the canReach() to them is very long,
+        // we order cities by their closeness to the worker first, and then check for each one whether there's a viable path
+        // it can take to an existing connected city.
+        for(bfs in citiesThatNeedConnectingBfs) {
+            while (bfs.tilesToCheck.isNotEmpty()) {
                 bfs.nextStep()
-                if(bfs.tilesToCheck.isEmpty()){ // can't get to any connected city from here
-                    citiesThatNeedConnectingBfs.remove(bfs)
-                    continue
-                }
-                for(city in connectedCities)
-                    if(bfs.tilesToCheck.contains(city)) { // we have a winner!
-                        val pathToCity = bfs.getPathTo(city)
+                for (city in connectedCities)
+                    if (bfs.tilesToCheck.contains(city)) { // we have a winner!
+                        val pathToCity = bfs.getPathTo(city).asSequence()
                         val roadableTiles = pathToCity.filter { it.roadStatus < targetRoad }
-                        val tileToConstructRoadOn :TileInfo
-                        if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
-                        else{
-                            val reachableTiles = roadableTiles
-                                    .filter {  unit.movement.canMoveTo(it)&& unit.movement.canReach(it)}
-                            if(reachableTiles.isEmpty()) continue
-                            tileToConstructRoadOn = reachableTiles.minBy { unit.movement.getShortestPath(it).size }!!
+                        val tileToConstructRoadOn: TileInfo
+                        if (unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
+                        else {
+                            val reachableTile = roadableTiles
+                                    .sortedBy { it.aerialDistanceTo(unit.getTile()) }
+                                    .firstOrNull { unit.movement.canMoveTo(it) && unit.movement.canReach(it) }
+                            if (reachableTile == null) continue
+                            tileToConstructRoadOn = reachableTile
                             unit.movement.headTowards(tileToConstructRoadOn)
                         }
-                        if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
-                                && unit.currentTile.improvementInProgress!=targetRoad.name) {
+                        if (unit.currentMovement > 0 && unit.currentTile == tileToConstructRoadOn
+                                && unit.currentTile.improvementInProgress != targetRoad.name) {
                             val improvement = targetRoad.improvement(unit.civInfo.gameInfo.ruleSet)!!
                             tileToConstructRoadOn.startWorkingOnImprovement(improvement, unit.civInfo)
                         }
@@ -108,6 +110,7 @@ class WorkerAutomation(val unit: MapUnit) {
                     }
             }
         }
+
         return false
     }
 

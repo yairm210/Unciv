@@ -1,0 +1,28 @@
+ -> General Notes for Pinglish:
+ 
+#PLEASE READ THE SPECIFIC CRITERA AS WELL!
+
+# If you want to add new translations, please follow these guidelines (for unification purposes):
+# Please note that the letter ع(ein) does not have a direct translation, Simply because there is no need to, like in “edaalat”(=justice) or “abas”(=vain) however, In words like “Sa’adi”(a famous poet) where the /∅/ is tangible, I opted to use apostrophe (‘) and put the two vowels that are heard before and after ‘ein’ around it, Like in Sa’adi (sa + a + di) you hear ‘a’ before and after ‘ein’, In a word like “sa’aadat” (=happiness, felicity, well-being) since its pronounced as (sa + aa + dat), I put “a’aa” instead of ‘ein’.
+# If you encountered a word which had ‘tashdid’ (it was intensified in pronunciation), Like “Mohabbat” (=kindness) just write the vowel that was intensified twice.
+# Don’t use ‘u’ instead of ‘oo’ (like “rood” (= river) instead of “rud”).
+# Avoid using ‘ee’ as much as possible, use ‘i’instead (like “ḵātere i ḵoob” (= a good memory), instead of “ḵātere ee ḵoob”)
+# And also just like English, use capital letters for special names and at the beginning of sentences.
+# To make the translations more in line with the contemporaneous Persian language I have changed some nouns to a more common one, or something that makes sense, like there is no direct translation for ‘warpath’ so considering the phrase (The Great Warpath) I opted to translate it as ‘warrior’ instead.
+# In order to make the text more apprehensible I decided to start all the resources with a capital letter. There are currently some problems here and there but I'll fix them, if you want to contribute to this please do the same. (e.g. "Gold" -> "Talā", "gold" -> "Talā")
+
+ -> Notes for Pinglish-DIN:
+
+# In order to make the words short and clean, please use these special characters instead: (if you don’t want to copy paste these letters every time, you can simply use Microsoft Word and make a shortcut for each one of them in “Insert >> Symbol”)
+# aa = ā (as in “āb” = water) (Ā, ā)
+# ch = č (as in “čera” = why) (Č, č)
+# kh = ḵ (as in “ḵām” = raw) (Ḵ, ḵ)
+# zh = ž (as in “pižāme” = pajamas) (Ž, ž)
+# sh = š (as in “šab” = night) (Š, š)
+# gh = ğ (as in “ğāšoğ” = spoon) (Ğ, ğ)
+
+ -> Notes for Pinglish-UN:
+
+# There are NO special notes for Pinglish-UN right now.
+
+ -> Also as I said earlier some translations are a bit vague, I tried my best but suggestions are welcomed.

@@ -93,9 +93,9 @@ class GameInfo {
         while (thisPlayer.playerType == PlayerType.AI
             || turns < UncivGame.Current.simulateUntilTurnForDebug
                 || (turns < simulateMaxTurns && simulateUntilWin)
-                // For multiplayer, if there are 3+ players and one is defeated,
+                // For multiplayer, if there are 3+ players and one is defeated or spectator,
                 // we'll want to skip over their turn
-                || (thisPlayer.isDefeated() && gameParameters.isOnlineMultiplayer)
+                || ((thisPlayer.isDefeated() || thisPlayer.isSpectator()) && gameParameters.isOnlineMultiplayer)
         ) {
             if (!thisPlayer.isDefeated() || thisPlayer.isBarbarian()) {
                 NextTurnAutomation.automateCivMoves(thisPlayer)
@@ -228,7 +228,7 @@ class GameInfo {
      * adopted Honor policy and have explored the [tile] where the Barbarian Encampent has spawned.
      */
     fun notifyCivsOfBarbarianEncampment(tile: TileInfo) {
-        civilizations.filter { it.policies.isAdopted("Honor")
+        civilizations.filter { it.hasUnique("Notified of new Barbarian encampments")
                 && it.exploredTiles.contains(tile.position) }
                 .forEach { it.addNotification("A new barbarian encampment has spawned!", tile.position, Color.RED) }
     }

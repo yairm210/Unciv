@@ -7,6 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import kotlin.math.pow
 
@@ -135,30 +137,24 @@ class Building : NamedStats(), IConstruction{
             val adoptedPolicies = civInfo.policies.adoptedPolicies
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-            if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(baseBuildingName ))
-                stats.happiness += 1
-
-            if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(baseBuildingName ))
-                stats.culture += 1f
-
-            if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(baseBuildingName ))
-                stats.science += 1f
+            for(unique in civInfo.getMatchingUniques("[] from every []")) {
+                val placeholderParams = unique.getPlaceholderParameters()
+                if (placeholderParams[1] != baseBuildingName) continue
+                stats.add(Stats.parse(placeholderParams[0]))
+            }
 
             if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
                 stats.happiness += 1f
 
-            if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
-                stats.gold += 1f
-
-            if (adoptedPolicies.contains("Constitution") && isWonder)
-                stats.culture += 2f
-
-            if (baseBuildingName == "Castle"
-                    && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
-                stats.happiness+=1
-                stats.culture+=2
-                stats.gold+=3
-            }
+            if(!isWonder)
+                for(unique in civInfo.getMatchingUniques("[] from all [] buildings")){
+                    val placeholderParams = unique.getPlaceholderParameters()
+                    if(isStatRelated(Stat.valueOf(placeholderParams[1])))
+                        stats.add(Stats.parse(placeholderParams[0]))
+                }
+            else
+                for(unique in civInfo.getMatchingUniques("[] from every Wonder"))
+                    stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
 
             if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
                 stats.happiness += 3
@@ -168,20 +164,19 @@ class Building : NamedStats(), IConstruction{
     }
 
     fun getStatPercentageBonuses(civInfo: CivilizationInfo?): Stats {
-        val stats = if(percentStatBonus==null) Stats() else percentStatBonus!!.clone()
-        if(civInfo==null) return stats // initial stats
+        val stats = if (percentStatBonus == null) Stats() else percentStatBonus!!.clone()
+        if (civInfo == null) return stats // initial stats
 
-        val adoptedPolicies = civInfo.policies.adoptedPolicies
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-        if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
-            stats.gold = 10f
+        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
+            val placeholderParams = unique.getPlaceholderParameters()
+            if (placeholderParams[2] == baseBuildingName)
+                stats.add(Stat.valueOf(placeholderParams[1]), placeholderParams[0].toFloat())
+        }
 
-        if (adoptedPolicies.contains("Free Thought") && baseBuildingName == "University")
-            stats.science = 50f
-
-        if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
-            stats.production += 5*civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
+        if (uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
+            stats.production += 5 * civInfo.citiesConnectedToCapitalToMediums.count { it.key.civInfo.isCityState() }
 
         return stats
     }
@@ -194,11 +189,6 @@ class Building : NamedStats(), IConstruction{
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
 
-        if (!isWonder && culture != 0f && civInfo.policies.hasEffect("Building time of culture buildings reduced by 15%"))
-            productionCost *= 0.85f
-
-        if (name == "Courthouse" && civInfo.policies.hasEffect("+3 Happiness from every Courthouse. Build Courthouses in half the usual time."))
-            productionCost *= 0.5f
 
         if (civInfo.isPlayerCivilization()) {
             if (!isWonder)
@@ -217,11 +207,15 @@ class Building : NamedStats(), IConstruction{
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
-        if (civInfo.policies.hasEffect("-25% to purchasing items in cities")) cost *= 0.75
-        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
-        if (civInfo.policies.hasEffect( "Cost of purchasing culture buildings reduced by 50%")
-                && culture !=0f && !isWonder)
-            cost *= 0.5
+
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1 - (unique.getPlaceholderParameters()[0].toFloat() / 100)
+
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
+            val placeholderParams = unique.getPlaceholderParameters()
+            if (isStatRelated(Stat.valueOf(placeholderParams[0])))
+                cost *= 1 - (placeholderParams[1].toFloat() / 100)
+        }
 
         return (cost / 10).toInt() * 10
     }
@@ -233,6 +227,7 @@ class Building : NamedStats(), IConstruction{
         val rejectionReason = getRejectionReason(cityConstructions)
         return rejectionReason==""
                 || rejectionReason.startsWith("Requires")
+                || rejectionReason.startsWith("Consumes")
                 || rejectionReason == "Wonder is being built elsewhere"
     }
 
@@ -242,13 +237,11 @@ class Building : NamedStats(), IConstruction{
         if (uniques.contains("Unbuildable")) return "Unbuildable"
 
         val cityCenter = construction.cityInfo.getCenterTile()
-        if ("Must be next to desert" in uniques
-                && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == Constants.desert })
-            return "Must be next to desert"
 
-        if ("Must be next to mountain" in uniques
-                && !cityCenter.neighbors.any { it.baseTerrain == Constants.mountain })
-            return "Must be next to mountain"
+        for(unique in uniques)
+            if(unique.equalsPlaceholderText("Must be next to []")
+                    && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == unique.getPlaceholderParameters()[0] })
+                return unique
 
         if ("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
             return "Must be next to river"
@@ -310,6 +303,11 @@ class Building : NamedStats(), IConstruction{
                 return "No national wonders for city-states"
         }
 
+        if ("Spaceship part" in uniques) {
+            if (!civInfo.hasUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
+            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
+        }
+
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
             return "Requires a [$requiredBuilding] in this city"
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
@@ -329,10 +327,6 @@ class Building : NamedStats(), IConstruction{
             if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
         }
 
-        if ("Spaceship part" in uniques) {
-            if (!civInfo.containsBuildingUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
-            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
-        }
 
         if (!civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
                 && "Enables construction of Spaceship parts" in uniques)
@@ -365,25 +359,26 @@ class Building : NamedStats(), IConstruction{
         }
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
-        if ("Free Great Artist Appears" in uniques) civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
-        if ("2 free Great Artists appear" in uniques) {
-            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
-            civInfo.addGreatPerson("Great Artist", cityConstructions.cityInfo)
+        for(unique in uniques) if(unique.equalsPlaceholderText("Free [] appears")){
+            val unitName = unique.getPlaceholderParameters()[0]
+            civInfo.addUnit(unitName, cityConstructions.cityInfo)
         }
-        if ("Free Great General appears near the Capital" in uniques) civInfo.addGreatPerson("Great General", civInfo.getCapital())
-        if ("Free great scientist appears" in uniques) civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
+        if ("2 free Great Artists appear" in uniques) {
+            civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
+        }
         if ("2 free great scientists appear" in uniques) {
-            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
-            civInfo.addGreatPerson("Great Scientist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Scientist", cityConstructions.cityInfo)
+            civInfo.addUnit("Great Scientist", cityConstructions.cityInfo)
         }
         if ("Provides 2 free workers" in uniques) {
-            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
-            civInfo.placeUnitNearTile(cityConstructions.cityInfo.location, Constants.worker)
+            civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
+            civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
         }
         if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
         if ("Free Great Person" in uniques) {
             if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-            else civInfo.addGreatPerson(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
+            else civInfo.addUnit(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
         }
         if ("+1 population in each city" in uniques) {
             for(city in civInfo.cities){

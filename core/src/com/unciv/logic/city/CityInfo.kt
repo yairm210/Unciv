@@ -20,6 +20,7 @@ import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.collections.HashMap
@@ -196,7 +197,7 @@ class CityInfo {
             var amountToAdd = 1
             if(resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
-                if (civInfo.policies.hasEffect("Quantity of strategic resources produced by the empire increased by 100%"))
+                if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
                 if (civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses", "Iron", "Uranium"))
                     amountToAdd *= 2
@@ -245,28 +246,26 @@ class CityInfo {
     fun getBuildingUniques(): Sequence<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques.asSequence() }
     fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
-    fun getGreatPersonMap():HashMap<String,Stats>{
-        val stats = HashMap<String,Stats>()
-        if(population.specialists.toString()!="")
+    fun getGreatPersonMap():HashMap<String,Stats> {
+        val stats = HashMap<String, Stats>()
+        if (population.specialists.toString() != "")
             stats["Specialists"] = population.specialists.times(3f)
 
         val buildingStats = Stats()
         for (building in cityConstructions.getBuiltBuildings())
             if (building.greatPersonPoints != null)
                 buildingStats.add(building.greatPersonPoints!!)
-        if(buildingStats.toString()!="")
+        if (buildingStats.toString() != "")
             stats["Buildings"] = buildingStats
 
-        for(entry in stats){
-            if(civInfo.nation.unique == UniqueAbility.INGENUITY)
+        for (entry in stats) {
+            if (civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
-            if (civInfo.policies.hasEffect("Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange."))
+            if (civInfo.hasUnique("Great Merchants are earned 25% faster"))
                 entry.value.gold *= 1.25f
 
-            if (civInfo.containsBuildingUnique("+33% great person generation in all cities"))
-                stats[entry.key] = stats[entry.key]!!.times(1.33f)
-            if (civInfo.policies.hasEffect("+25% great people rate"))
-                stats[entry.key] = stats[entry.key]!!.times(1.25f)
+            for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities"))
+                stats[entry.key] = stats[entry.key]!!.times(1 + (unique.getPlaceholderParameters()[0].toFloat() / 100))
         }
 
         return stats

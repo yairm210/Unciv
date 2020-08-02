@@ -40,7 +40,10 @@ import kotlin.concurrent.thread
 
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
+
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
+    var selectedCiv = viewingCiv // Selected civilization, used in spectator and replay mode, equals viewingCiv in ordinary games
+    var fogOfWar = true
     val canChangeState = isPlayersTurn && !viewingCiv.isSpectator()
     private var waitingForAutosave = false
 
@@ -55,7 +58,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
     private val techPolicyAndVictoryHolder = Table()
     private val techButtonHolder = Table()
-    private val diplomacyButtonWrapper = Table()
+    private val diplomacyButtonHolder = Table()
+    private val fogOfWarButton = createFogOfWarButton()
     private val nextTurnButton = createNextTurnButton()
     private var nextTurnAction:()->Unit= {}
     private val tutorialTaskTable = Table().apply { background=ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
@@ -63,10 +67,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val notificationsScroll: NotificationsScroll
     var shouldUpdate = false
 
+
     private var backButtonListener : InputListener
 
     // An initialized val always turned out to illegally be null...
     lateinit var keyPressDispatcher: HashMap<Char,(() -> Unit)>
+
 
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
@@ -86,6 +92,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
         techPolicyAndVictoryHolder.add(techButtonHolder)
 
+        fogOfWarButton.isVisible = viewingCiv.isSpectator()
+        fogOfWarButton.setPosition(10f, topBar.y - fogOfWarButton.height - 10f)
+
         // Don't show policies until they become relevant
         if(viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
             val policyScreenButton = Button(skin)
@@ -104,8 +113,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         stage.addActor(tutorialTaskTable)
 
 
-        diplomacyButtonWrapper.defaults().pad(5f)
-        stage.addActor(diplomacyButtonWrapper)
+        diplomacyButtonHolder.defaults().pad(5f)
+        stage.addActor(fogOfWarButton)
+        stage.addActor(diplomacyButtonHolder)
         stage.addActor(bottomUnitTable)
         stage.addActor(bottomTileInfoTable)
         battleTable.width = stage.width/3
@@ -122,7 +132,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     viewingCiv.getCivUnits().any() -> viewingCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
-        mapHolder.setCenterPosition(tileToCenterOn,true)
+
+        // Don't select unit and change selectedCiv when centering as spectator
+        if (viewingCiv.isSpectator())
+            mapHolder.setCenterPosition(tileToCenterOn,true, false)
+        else
+            mapHolder.setCenterPosition(tileToCenterOn,true, true)
 
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
@@ -275,6 +290,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         bottomTileInfoTable.y = if (game.settings.showMinimap) minimapWrapper.height else 0f
         battleTable.update()
 
+        updateSelectedCiv()
+
+        fogOfWarButton.isEnabled = !selectedCiv.isSpectator()
+
         tutorialTaskTable.clear()
         val tutorialTask = getCurrentTutorialTask()
         if (tutorialTask == "" || !game.settings.showTutorials || viewingCiv.isDefeated()) {
@@ -288,7 +307,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             tutorialTaskTable.y = topBar.y - tutorialTaskTable.height
         }
 
-        minimapWrapper.update(viewingCiv)
+        if (fogOfWar) minimapWrapper.update(selectedCiv)
+        else minimapWrapper.update(viewingCiv)
+
         cleanupKeyDispatcher()
         unitActionsTable.update(bottomUnitTable.selectedUnit)
         unitActionsTable.y = bottomUnitTable.height
@@ -296,14 +317,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
-        mapHolder.updateTiles(viewingCiv)
+        if (fogOfWar) mapHolder.updateTiles(selectedCiv)
+        else mapHolder.updateTiles(viewingCiv)
 
-        topBar.update(viewingCiv)
+        topBar.update(selectedCiv)
 
         updateTechButton()
         techPolicyAndVictoryHolder.pack()
         techPolicyAndVictoryHolder.setPosition(10f, topBar.y - techPolicyAndVictoryHolder.height - 5f)
         updateDiplomacyButton(viewingCiv)
+
 
         if (!hasOpenPopups() && isPlayersTurn) {
             when {
@@ -396,7 +419,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
-        diplomacyButtonWrapper.clear()
+        diplomacyButtonHolder.clear()
         if(!civInfo.isDefeated() && !civInfo.isSpectator() && civInfo.getKnownCivs()
                         .filterNot {  it==viewingCiv || it.isBarbarian() }
                         .any()) {
@@ -405,10 +428,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             btn.onClick { game.setScreen(DiplomacyScreen(viewingCiv)) }
             btn.label.setFontSize(30)
             btn.labelCell.pad(10f)
-            diplomacyButtonWrapper.add(btn)
+            diplomacyButtonHolder.add(btn)
         }
-        diplomacyButtonWrapper.pack()
-        diplomacyButtonWrapper.y = techPolicyAndVictoryHolder.y - 20 - diplomacyButtonWrapper.height
+        diplomacyButtonHolder.pack()
+        diplomacyButtonHolder.y = techPolicyAndVictoryHolder.y - 20 - diplomacyButtonHolder.height
     }
 
     private fun updateTechButton() {
@@ -438,6 +461,27 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
 
         techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
+    }
+
+    private fun updateSelectedCiv() {
+        if (bottomUnitTable.selectedUnit != null)
+            selectedCiv = bottomUnitTable.selectedUnit!!.civInfo
+        else if (bottomUnitTable.selectedCity != null)
+            selectedCiv = bottomUnitTable.selectedCity!!.civInfo
+        else viewingCiv
+    }
+
+    private fun createFogOfWarButton(): TextButton {
+        val fogOfWarButton = "Fog of War".toTextButton()
+        fogOfWarButton.label.setFontSize(30)
+        fogOfWarButton.labelCell.pad(10f)
+        fogOfWarButton.pack()
+        fogOfWarButton.onClick {
+            fogOfWar = !fogOfWar
+            shouldUpdate = true
+        }
+        return fogOfWarButton
+
     }
 
     private fun createNextTurnButton(): TextButton {
@@ -500,6 +544,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     newWorldScreen.mapHolder.scaleX = mapHolder.scaleX
                     newWorldScreen.mapHolder.scaleY = mapHolder.scaleY
                     newWorldScreen.mapHolder.updateVisualScroll()
+
+                    newWorldScreen.selectedCiv = gameInfoClone.getCivilization(selectedCiv.civName)
+                    newWorldScreen.fogOfWar = fogOfWar
+
                     game.worldScreen = newWorldScreen
                     game.setWorldScreen()
                 }
@@ -621,7 +669,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             viewingCiv.getKnownCivs().asSequence().filter { viewingCiv.isAtWarWith(it) }
                 .flatMap { it.cities.asSequence() }.any { viewingCiv.exploredTiles.contains(it.location) }
         }
-        displayTutorial(Tutorial.ApolloProgram) { viewingCiv.containsBuildingUnique("Enables construction of Spaceship parts") }
+        displayTutorial(Tutorial.ApolloProgram) { viewingCiv.hasUnique("Enables construction of Spaceship parts") }
         displayTutorial(Tutorial.SiegeUnits) { viewingCiv.getCivUnits().any { it.type == UnitType.Siege } }
         displayTutorial(Tutorial.Embarking) { viewingCiv.tech.getTechUniques().contains("Enables embarkation for land units") }
         displayTutorial(Tutorial.NaturalWonders) { viewingCiv.naturalWonders.size > 0 }

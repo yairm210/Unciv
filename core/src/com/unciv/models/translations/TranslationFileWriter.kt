@@ -14,6 +14,8 @@ import com.unciv.models.ruleset.tile.TileImprovement
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 import java.lang.reflect.Field
 
@@ -196,8 +198,22 @@ object TranslationFileWriter {
 
                 val parameters = string.getPlaceholderParameters()
                 var stringToTranslate = string
-                if (parameters.size == 1 && parameters[0].toIntOrNull() != null)
-                    stringToTranslate = string.replace(parameters[0], "amount")
+                if (parameters.any()){
+                    for(parameter in parameters) {
+                        val parameterName = when {
+                            parameter.toIntOrNull() != null -> "amount"
+                            Stat.values().any { it.name == parameter } -> "stat"
+                            RulesetCache.getBaseRuleset().terrains.containsKey(parameter) -> "terrain"
+                            RulesetCache.getBaseRuleset().units.containsKey(parameter) -> "unit"
+                            RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"
+                            RulesetCache.getBaseRuleset().buildings.containsKey(parameter) -> "building"
+                            Stats.isStats(parameter) -> "stats"
+                            else -> "param"
+                        }
+                        stringToTranslate = stringToTranslate.replace(parameter, parameterName)
+                    }
+                }
+
                 else {
                     // substitute the regex for "Bonus/Penalty vs ..."
                     val match = Regex(BattleDamage.BONUS_VS_UNIT_TYPE).matchEntire(string)

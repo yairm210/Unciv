@@ -8,7 +8,7 @@ import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -170,9 +170,7 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        if (civInfo.policies.isAdopted("Scientific Revolution"))
-            researchAgreementModifier += 0.25f
-        if (civInfo.containsBuildingUnique("Science gained from research agreements +50%"))
+        for(unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
             researchAgreementModifier += 0.25f
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
@@ -267,16 +265,18 @@ class TechManager {
             for (constructionName in oldQueue) {
                 var newConstructionName = constructionName
                 if (constructionName in obsoleteUnits) {
-                    val text = "[$constructionName] has been obsolete and will remove from construction queue in [${city.name}]!"
+                    val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
                     civInfo.addNotification(text, city.location, Color.BROWN)
                 }
                 else city.cityConstructions.constructionQueue.add(newConstructionName)
             }
         }
 
-        if (techName == "Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY
-                && civInfo.cities.any())
-            civInfo.addGreatPerson("Great Scientist")
+        for(unique in civInfo.getMatchingUniques("Receive free [] when you discover []")){
+            val params = unique.getPlaceholderParameters()
+            if(params[1]!=techName) continue
+            civInfo.addUnit(params[0])
+        }
     }
 
     fun setTransients() {

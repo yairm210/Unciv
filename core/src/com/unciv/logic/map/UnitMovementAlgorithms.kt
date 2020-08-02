@@ -24,17 +24,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return 1 / 10f + extraCost
 
         val areConnectedByRoad = from.hasConnection(civInfo) && to.hasConnection(civInfo)
-        if(from.isConnectedByRiver(to) &&
-                (!areConnectedByRoad || !civInfo.tech.roadsConnectAcrossRivers)){
-            return 100f // Rivers take the entire turn to cross
-        }
+        val areConnectedByRiver = from.isConnectedByRiver(to)
 
-        if (areConnectedByRoad)
+        if (areConnectedByRoad && (!areConnectedByRiver || civInfo.tech.roadsConnectAcrossRivers))
         {
             return if (unit.civInfo.tech.movementSpeedOnRoadsImproved) 1 / 3f + extraCost
             else 1 / 2f + extraCost
         }
         if (unit.ignoresTerrainCost) return 1f + extraCost
+        if (areConnectedByRiver) return 100f  // Rivers take the entire turn to cross
+
         if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
         if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
@@ -275,7 +274,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Unit maintenance changed
         if (unit.canGarrison()
                 && (origin.isCityCenter() || destination.isCityCenter())
-                && unit.civInfo.policies.isAdopted("Oligarchy")
+                && unit.civInfo.hasUnique("Units in cities cost no Maintenance")
         ) unit.civInfo.updateStatsForNextTurn()
 
         // Move through all intermediate tiles to get ancient ruins, barb encampments
@@ -302,6 +301,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (!canPassThrough(tile))
             return false
+
+        if(tile.isCityCenter() && tile.getOwner()!=unit.civInfo) return false // even if they'll let us pass through, we can't enter their city
 
         if (unit.type.isCivilian())
             return tile.civilianUnit == null && (tile.militaryUnit == null || tile.militaryUnit!!.owner == unit.owner)
@@ -353,8 +354,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (tile.naturalWonder != null) return false
 
         val tileOwner = tile.getOwner()
-        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings?
-            if (tile.isCityCenter() && !tile.getCity()!!.hasJustBeenConquered) return false
+        if (tileOwner != null && tileOwner != unit.civInfo) { // comparing the CivInfo objects is cheaper than comparing strings
+            if (tile.isCityCenter() && unit.civInfo.isAtWarWith(tileOwner)
+                    && !tile.getCity()!!.hasJustBeenConquered) return false
             if (!unit.civInfo.canEnterTiles(tileOwner)
                     && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
             // AIs won't enter city-state's border.
