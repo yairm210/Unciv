@@ -32,7 +32,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         val viewedCivs = HashMap<CivilizationInfo,TileInfo>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
-            if (tileOwner != null) viewedCivs[civInfo] = tile
+            if (tileOwner != null) viewedCivs[tileOwner] = tile
             for (unit in tile.getUnits()) viewedCivs[unit.civInfo] = tile
         }
 
