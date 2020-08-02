@@ -135,7 +135,7 @@ class PolicyManager {
                     if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                         civInfo.addUnit(unitName, civInfo.getCapital())
                 }
-                "Gain a free policy" -> freePolicies++
+                "Free Social Policy" -> freePolicies++
                 "Empire enters golden age" ->
                     civInfo.goldenAges.enterGoldenAge()
                 "Free Great Person" -> {
