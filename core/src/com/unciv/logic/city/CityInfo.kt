@@ -201,11 +201,10 @@ class CityInfo {
                 amountToAdd = 2
                 if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
-                if (civInfo.nation.unique == UniqueAbility.SIBERIAN_RICHES && resource.name in listOf("Horses", "Iron", "Uranium"))
-                    amountToAdd *= 2
-                if (resource.name == "Oil" && civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS)
-                    amountToAdd *= 2
             }
+            for(unique in civInfo.getMatchingUniques("Double quantity of [] produced"))
+                if(unique.getPlaceholderParameters()[0]==resource.name)
+                    amountToAdd*=2
             if(resource.resourceType == ResourceType.Luxury
                     && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
                 amountToAdd*=2

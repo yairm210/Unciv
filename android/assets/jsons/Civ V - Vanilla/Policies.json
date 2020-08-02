@@ -255,7 +255,7 @@
 			{
 				"name": "Trade Unions",
 				"effect": "Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes",
-				"uniques": ["Maintenance on roads & railroads reduced by 33%", "+2 Gold from all trade routes"]
+				"uniques": ["Maintenance on roads & railroads reduced by 33%", "[+2 Gold] from each Trade Route"]
 				"row": 1,
 				"column": 2
 			},

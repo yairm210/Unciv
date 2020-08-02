@@ -139,7 +139,7 @@
 		"outerColor": [ 114, 0, 0],
 		"innerColor": [255,255,255],
 		"unique": "SUN_NEVER_SETS",
-		"uniques": []
+		"uniques": ["+2 movement for all naval units"]
 		"cities": ["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
@@ -163,6 +163,7 @@
 		"outerColor": [ 38, 98, 255],
 		"innerColor": [239,236,148],
 		"unique": "ANCIEN_REGIME",
+		"uniques": ["+2 Culture per turn from cities before discovering Steam Power"]
 		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen","Toulon",
@@ -187,6 +188,8 @@
 		"outerColor": [ 236, 178, 0],
 		"innerColor": [0,0,0],
 		"unique": "SIBERIAN_RICHES",
+		"uniques": ["[+1 Production] from [Strategic resource] tiles","Double quantity of [Horses] produced",
+			"Double quantity of [Iron] produced","Double quantity of [Uranium] produced"]
 		"cities": ["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
 			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir","Perm",
@@ -211,6 +214,7 @@
 		"outerColor": [ 53,0,87],
 		"innerColor": [238,201,9],
 		"unique": "GLORY_OF_ROME",
+		"uniques": ["+25% Production towards any buildings that already exist in the Capital"]
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
@@ -235,6 +239,7 @@
 		"outerColor": [ 41,83,42],
 		"innerColor": [146,221,9],
 		"unique": "TRADE_CARAVANS",
+		"uniques": ["[+1 Gold] from each Trade Route", "Double quantity of [Oil] produced"],
 		"cities": ["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis","Kairouan","Algiers","Oran"]

@@ -185,7 +185,8 @@ open class TileInfo {
             if (unique.equalsPlaceholderText("[] from [] tiles")) {
                 val placeholderParams = unique.getPlaceholderParameters()
                 val tileType = placeholderParams[1]
-                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType)
+                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType
+                        || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic))
                     stats.add(Stats.parse(placeholderParams[0]))
             }
         }
@@ -207,17 +208,12 @@ open class TileInfo {
                 val resourceBuilding = tileMap.gameInfo.ruleSet.buildings[resource.building!!]!!
                 stats.add(resourceBuilding.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
-            if (resource.resourceType == ResourceType.Strategic
-                    && observingCiv.nation.unique == UniqueAbility.SIBERIAN_RICHES)
-                stats.production += 1
-            if (city != null) {
-                if (isWater) {
-                    if (city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
-                        stats.production += 1
-                    if (city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")) {
-                        stats.production += 1
-                        stats.gold += 1
-                    }
+            if (city != null && isWater) {
+                if (city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
+                    stats.production += 1
+                if (city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")) {
+                    stats.production += 1
+                    stats.gold += 1
                 }
             }
         }

@@ -106,7 +106,7 @@ class MapUnit {
                 && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
-        if (type.isWaterUnit() && civInfo.nation.unique == UniqueAbility.SUN_NEVER_SETS)
+        if (type.isWaterUnit() && civInfo.hasUnique("+2 movement for all naval units"))
             movement += 2
 
         if (type == UnitType.Mounted &&

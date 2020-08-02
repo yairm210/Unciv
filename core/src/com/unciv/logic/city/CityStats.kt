@@ -50,11 +50,10 @@ class CityStats {
         val stats = Stats()
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
-            var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            if (civInfo.nation.unique == UniqueAbility.TRADE_CARAVANS) goldFromTradeRoute += 1
-            if (civInfo.hasUnique("+2 Gold from all trade routes")) goldFromTradeRoute += 2
-            if (civInfo.hasUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
-            stats.gold += goldFromTradeRoute.toFloat()
+            stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+            for(unique in civInfo.getMatchingUniques("[] from each Trade Route"))
+                stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
+            if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Pichu speciality
         }
         return stats
     }
@@ -116,8 +115,8 @@ class CityStats {
     private fun getStatsFromNationUnique(): Stats {
         val stats = Stats()
 
-        val civUnique = cityInfo.civInfo.nation.unique
-        if (civUnique == UniqueAbility.ANCIEN_REGIME && !cityInfo.civInfo.tech.isResearched("Steam Power"))
+        if (cityInfo.civInfo.hasUnique("+2 Culture per turn from cities before discovering Steam Power")
+                && !cityInfo.civInfo.tech.isResearched("Steam Power"))
             stats.culture += 2
 
         return stats
@@ -145,12 +144,10 @@ class CityStats {
 
         stats.add(getStatPercentBonusesFromUniques(cityInfo.civInfo.nation.uniques))
 
-        val civUnique = cityInfo.civInfo.nation.unique
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
-        if (civUnique == UniqueAbility.GLORY_OF_ROME
-                && currentConstruction is Building
-                && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings
-                        .contains(currentConstruction.name))
+        if (currentConstruction is Building
+                && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings.contains(currentConstruction.name)
+                && cityInfo.civInfo.hasUnique("+25% Production towards any buildings that already exist in the Capital"))
             stats.production += 25f
 
         return stats
@@ -301,11 +298,6 @@ class CityStats {
         val stats               = cityInfo.cityConstructions.getStatPercentBonuses()
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
 
-        stats.add(getStatPercentBonusesFromUniques(cityInfo.civInfo.getBuildingUniques().toHashSet()))
-
-        if (cityInfo.civInfo.hasUnique("Culture in all cities increased by 25%"))
-            stats.culture += 25f
-
         if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 15%"))
                 stats.production += 15
@@ -365,6 +357,9 @@ class CityStats {
         if (cityInfo.civInfo.getHappiness() >= 0 && uniques.contains("+15% science while empire is happy"))
             stats.science += 15f
 
+        if (uniques.contains("Culture in all cities increased by 25%"))
+            stats.culture += 25f
+
         return stats
     }
 
@@ -403,6 +398,7 @@ class CityStats {
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.policies.policyEffects)
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings()
+        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.getBuildingUniques().toHashSet())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"] = getStatPercentBonusesFromComputers()
