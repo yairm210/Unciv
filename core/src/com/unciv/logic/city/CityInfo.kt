@@ -273,11 +273,6 @@ class CityInfo {
                 if (stat != null) entry.value.add(stat, entry.value.get(stat) * params[1].toInt())
             }
 
-            if (civInfo.nation.unique == UniqueAbility.INGENUITY)
-                entry.value.science *= 1.5f
-            if (civInfo.hasUnique("Great Merchants are earned 25% faster"))
-                entry.value.gold *= 1.25f
-
             for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1 + (unique.getPlaceholderParameters()[0].toFloat() / 100))
         }

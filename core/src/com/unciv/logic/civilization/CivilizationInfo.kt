@@ -178,8 +178,9 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    private fun getCivUniques() = nation.uniques.asSequence() + policies.policyEffects.asSequence() +
-            cities.asSequence().flatMap { it.getBuildingUniques() }
+    fun getBuildingUniques() = cities.asSequence().flatMap { it.getBuildingUniques() }
+
+    private fun getCivUniques() = nation.uniques.asSequence() + policies.policyEffects.asSequence() + getBuildingUniques()
 
     fun hasUnique(unique:String) = getCivUniques().contains(unique)
 

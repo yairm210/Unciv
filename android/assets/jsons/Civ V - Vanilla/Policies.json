@@ -8,7 +8,7 @@
 			{
 				"name": "Aristocracy",
 				"effect": "+15% production when constructing wonders, +1 happiness for every 10 citizens in a city",
-				"uniques": ["+15% production when constructing wonders", "+1 happiness for every 10 citizens in a city"],
+				"uniques": ["+[15]% Production when constructing [Wonders]", "+1 happiness for every 10 citizens in a city"],
 				"row": 1,
 				"column": 1
 			},
@@ -109,7 +109,7 @@
 			{
 				"name": "Warrior Code",
 				"effect": "+20% production when training melee units",
-				"uniques":["+20% production when training melee units"],
+				"uniques":["+[20]% Production when constructing [melee units]"],
 				"row": 1,
 				"column": 2
 			},

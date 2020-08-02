@@ -87,7 +87,7 @@ object BattleDamage {
                     .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
                     .map { it.civilianUnit }
             if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                val greatGeneralModifier = if (combatant.unit.civInfo.nation.unique == UniqueAbility.ART_OF_WAR) 0.3f else 0.15f
+                val greatGeneralModifier = if (combatant.unit.civInfo.hasUnique("Great General provides double combat bonus")) 0.3f else 0.15f
                 modifiers["Great General"] = greatGeneralModifier
             }
 
