@@ -19,7 +19,9 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -259,6 +261,18 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for (entry in stats) {
+            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
+                val params = unique.getPlaceholderParameters()
+                val unit = civInfo.gameInfo.ruleSet.units[params[0]]
+                if (unit == null) continue
+                val greatUnitUnique = unit.uniques.firstOrNull { it.equalsPlaceholderText("Great Person - []") }
+                if (greatUnitUnique == null) continue
+                val statName = greatUnitUnique.getPlaceholderParameters()[0]
+                val stat = Stat.values().firstOrNull { it.name == statName }
+                // this is not very efficient, and if it causes problems we can try and think of a way of improving it
+                if (stat != null) entry.value.add(stat, entry.value.get(stat) * params[1].toInt())
+            }
+
             if (civInfo.nation.unique == UniqueAbility.INGENUITY)
                 entry.value.science *= 1.5f
             if (civInfo.hasUnique("Great Merchants are earned 25% faster"))

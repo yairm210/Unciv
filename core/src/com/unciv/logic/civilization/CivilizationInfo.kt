@@ -497,7 +497,7 @@ class CivilizationInfo {
         val cityToAddTo = city ?: cities.random()
         val unit = getEquivalentUnit(unitName)
         placeUnitNearTile(cityToAddTo.location, unit.name)
-        if ("Great Person" in unit.uniques)
+        if (unit.uniques.any { it.equalsPlaceholderText("Great Person - []") })
             addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, Color.GOLD)
     }
 

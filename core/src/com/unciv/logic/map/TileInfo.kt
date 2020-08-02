@@ -258,7 +258,7 @@ open class TileInfo {
                 if (unique == placeholderParams[1])
                     stats.add(Stats.parse(placeholderParams[0]))
             }
-        
+
         if (containsGreatImprovement()
                 && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
             stats.add(improvement) // again, for the double effect
