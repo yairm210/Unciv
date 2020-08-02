@@ -59,6 +59,7 @@
 		"outerColor": [181, 232, 232],
 		"innerColor": [68,142,249],
 		"unique": "HELLENIC_LEAGUE",
+		"uniques": ["City-State Influence degrades at half rate", "City-State Influence recovers at twice the normal rate"]
 		"cities": ["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
@@ -83,6 +84,7 @@
 		"outerColor": [9, 112, 84],
 		"innerColor": [255,255,255],
 		"unique": "ART_OF_WAR",
+		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"]
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
@@ -111,6 +113,7 @@
 		"outerColor": [ 231, 213, 0],
 		"innerColor": [98,10,210],
 		"unique": "MONUMENT_BUILDERS",
+		"uniques": ["+[20]% Production when constructing [Wonders]"]
 		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten",
 			   "Hieraconpolis","Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			   "Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",

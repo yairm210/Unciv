@@ -330,10 +330,10 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromPolicies(cityConstructions: CityConstructions): Stats {
+    private fun getStatPercentBonusesFromPolicies(): Stats {
         val stats = Stats()
 
-        val currentConstruction = cityConstructions.getCurrentConstruction()
+        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
                 && cityInfo.civInfo.hasUnique("Training of settlers increased +50% in capital"))
             stats.production += 50f
@@ -353,12 +353,13 @@ class CityStats {
             val placeholderParams = unique.getPlaceholderParameters()
             val filter = placeholderParams[1]
             if (currentConstruction.name == filter
-                    || (filter=="military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
-                    || (filter=="Buildings" && currentConstruction is Building && !currentConstruction.isWonder))
+                    || (filter == "military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
+                    || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
+                    || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder))
                 stats.production += placeholderParams[0].toInt()
         }
 
-        if (cityConstructions.getBuiltBuildings().any { it.isWonder }
+        if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
                 && cityInfo.civInfo.hasUnique("+33% culture in all cities with a world wonder"))
             stats.culture += 33f
         if (cityInfo.civInfo.hasUnique("+25% gold in capital") && cityInfo.isCapital())
@@ -406,7 +407,7 @@ class CityStats {
     fun updateStatPercentBonusList() {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromPolicies(cityInfo.cityConstructions)
+        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromPolicies()
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings()
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble()

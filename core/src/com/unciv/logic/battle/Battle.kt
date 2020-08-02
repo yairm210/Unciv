@@ -245,7 +245,8 @@ object Battle {
 
         if(thisCombatant.getCivInfo().isMajorCiv()) {
             var greatGeneralPointsModifier = 1f
-            if (thisCombatant.getCivInfo().nation.unique == UniqueAbility.ART_OF_WAR)
+            // Yeah sue me I didn't parse these params
+            if (thisCombatant.getCivInfo().hasUnique("[Great General] is earned [50]% faster"))
                 greatGeneralPointsModifier += 0.5f
             if (thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
                 greatGeneralPointsModifier += 1f
@@ -336,10 +337,10 @@ object Battle {
             val city = tile.getCity()
             if (city != null && city.location == tile.position) {
                 city.health = 1
-                if (city.population.population <= 5) {
+                if (city.population.population <= 5 && city.isOriginalCapital) {
                     city.destroyCity()
                 } else {
-                    city.population.population -= 5
+                    city.population.population = max(city.population.population-5, 1)
                     city.population.unassignExtraPopulation()
                     continue
                 }
