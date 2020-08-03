@@ -174,13 +174,14 @@ object UnitActions {
     private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         val pillageAction = getPillageAction(unit)
         if (pillageAction == null) return
-        val pillageWithConfirmationAction = UnitAction(type = UnitActionType.Pillage, action = {
+        if(pillageAction.action==null)
+            actionList += UnitAction(UnitActionType.Pillage, action = null)
+        else actionList += UnitAction(type = UnitActionType.Pillage) {
             if (!worldScreen.hasOpenPopups()) {
                 val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
-                YesNoPopup(pillageText, { pillageAction.action!!(); worldScreen.shouldUpdate = true }).open()
+                YesNoPopup(pillageText, { (pillageAction.action)(); worldScreen.shouldUpdate = true }).open()
             }
-        })
-        actionList += pillageWithConfirmationAction
+        }
     }
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
