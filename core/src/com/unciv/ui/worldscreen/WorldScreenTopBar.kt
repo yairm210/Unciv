@@ -209,9 +209,9 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
     }
 
     private fun updateSelectedCivTabel() {
-        if (selectedCivLabel.text.toString() == worldScreen.selectedCiv.civName) return
+        if (selectedCivLabel.text.toString() == worldScreen.selectedCiv.civName.tr()) return
 
-        selectedCivLabel.setText(worldScreen.selectedCiv.civName)
+        selectedCivLabel.setText(worldScreen.selectedCiv.civName.tr())
 
         val nation = worldScreen.gameInfo.ruleSet.nations[worldScreen.selectedCiv.civName]!!
         val selectedCivIcon = ImageGetter.getNationIndicator(nation, 35f)

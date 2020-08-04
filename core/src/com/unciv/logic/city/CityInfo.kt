@@ -269,7 +269,7 @@ class CityInfo {
                 val statName = greatUnitUnique.getPlaceholderParameters()[0]
                 val stat = Stat.values().firstOrNull { it.name == statName }
                 // this is not very efficient, and if it causes problems we can try and think of a way of improving it
-                if (stat != null) entry.value.add(stat, entry.value.get(stat) * params[1].toInt())
+                if (stat != null) entry.value.add(stat, entry.value.get(stat) * params[1].toFloat()/100)
             }
 
             for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities"))
