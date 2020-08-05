@@ -170,7 +170,7 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        for(unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
+        for(unique in civInfo.getMatchingUniques2("Science gained from research agreements +50%"))
             researchAgreementModifier += 0.25f
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
@@ -272,10 +272,9 @@ class TechManager {
             }
         }
 
-        for(unique in civInfo.getMatchingUniques("Receive free [] when you discover []")){
-            val params = unique.getPlaceholderParameters()
-            if(params[1]!=techName) continue
-            civInfo.addUnit(params[0])
+        for(unique in civInfo.getMatchingUniques2("Receive free [] when you discover []")) {
+            if (unique.params[1] != techName) continue
+            civInfo.addUnit(unique.params[0])
         }
     }
 

@@ -1,7 +1,10 @@
 package com.unciv.logic.civilization
 
+import com.sun.xml.internal.ws.policy.PolicyMap
 import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.Unique
+import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
@@ -18,6 +21,7 @@ class PolicyManager {
     // Needs to be separate from the actual adopted policies, so that
     //  in different game versions, policies can have different effects
     @Transient internal val policyEffects = HashSet<String>()
+    @Transient internal val policyUniques = UniqueMap()
 
     var freePolicies = 0
     var storedCulture = 0
@@ -42,9 +46,15 @@ class PolicyManager {
 
     fun getPolicyByName(name:String): Policy = getAllPolicies().first { it.name==name }
             
-    fun setTransients(){
-        for(policy in adoptedPolicies)
-            policyEffects.addAll(getPolicyByName(policy).uniques)
+    fun setTransients() {
+        for (policyName in adoptedPolicies)
+            addPolicyToTransients(getPolicyByName(policyName))
+    }
+
+    fun addPolicyToTransients(policy: Policy){
+        policyEffects.addAll(policy.uniques)
+        for(unique in policy.uniqueObjects)
+            policyUniques.addUnique(unique)
     }
 
     private fun getAllPolicies() = civInfo.gameInfo.ruleSet.policyBranches.values.asSequence()
@@ -71,7 +81,7 @@ class PolicyManager {
 
         if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
-        for(unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
+        for(unique in civInfo.getMatchingUniques2("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
@@ -117,7 +127,7 @@ class PolicyManager {
         }
 
         adoptedPolicies.add(policy.name)
-        policyEffects.addAll(policy.uniques)
+        addPolicyToTransients(policy)
 
         if (!branchCompletion) {
             val branch = policy.branch

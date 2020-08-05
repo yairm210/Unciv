@@ -8,6 +8,7 @@ open class Policy : INamed {
     override lateinit var name: String
     lateinit var effect: String
     var uniques: ArrayList<String> = ArrayList()
+    val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
     var row: Int = 0
     var column: Int = 0
     var requires: ArrayList<String>? = null

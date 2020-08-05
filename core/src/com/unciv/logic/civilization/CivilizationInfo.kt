@@ -15,10 +15,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
@@ -180,14 +177,13 @@ class CivilizationInfo {
 
     fun getBuildingUniques() = cities.asSequence().flatMap { it.getBuildingUniques() }
 
-    private fun getCivUniques() = nation.uniques.asSequence() + policies.policyEffects.asSequence() + getBuildingUniques()
+    fun hasUnique(unique:String) = getMatchingUniques2(unique).any()
 
-    fun hasUnique(unique:String) = getCivUniques().contains(unique)
-
-    fun getMatchingUniques(uniqueTemplate: String) =
-            if (uniqueTemplate.contains('['))
-                getCivUniques().filter { it.equalsPlaceholderText(uniqueTemplate) }
-            else getCivUniques().filter { it==uniqueTemplate }
+    fun getMatchingUniques2(uniqueTemplate: String): Sequence<Unique> {
+        return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
+                cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
+                policies.policyUniques.getUniques(uniqueTemplate)
+    }
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()

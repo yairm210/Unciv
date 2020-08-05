@@ -6,6 +6,7 @@ import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
@@ -13,6 +14,7 @@ import com.unciv.ui.cityscreen.ConstructionInfoTable
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 /**
@@ -26,6 +28,7 @@ import kotlin.math.roundToInt
 class CityConstructions {
     @Transient lateinit var cityInfo: CityInfo
     @Transient private var builtBuildingObjects = ArrayList<Building>()
+    @Transient val builtBuildingUniqueMap = UniqueMap()
 
     var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
@@ -214,6 +217,7 @@ class CityConstructions {
     fun setTransients(){
         builtBuildingObjects = ArrayList(builtBuildings.map { cityInfo.getRuleset().buildings[it]
                     ?: throw java.lang.Exception("Building $it is not found!")})
+        updateUniques()
     }
 
     fun addProductionPoints(productionToAdd: Int) {
@@ -301,12 +305,21 @@ class CityConstructions {
         val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
         builtBuildings.add(buildingName)
+        updateUniques()
     }
 
     fun removeBuilding(buildingName:String){
         val buildingObject = cityInfo.getRuleset().buildings[buildingName]!!
         builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
         builtBuildings.remove(buildingName)
+        updateUniques()
+    }
+
+    fun updateUniques(){
+        builtBuildingUniqueMap.clear()
+        for(building in getBuiltBuildings())
+            for(unique in building.uniqueObjects)
+                builtBuildingUniqueMap.addUnique(unique)
     }
 
     /**

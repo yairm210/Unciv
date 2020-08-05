@@ -27,7 +27,7 @@ class GoldenAgeManager{
 
     fun enterGoldenAge() {
         var turnsToGoldenAge = 10.0
-        for(unique in civInfo.getMatchingUniques("Golden Age length increases +50%"))
+        for(unique in civInfo.getMatchingUniques2("Golden Age length increases +50%"))
             turnsToGoldenAge *= 1.5
         if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY )
             turnsToGoldenAge*=1.5

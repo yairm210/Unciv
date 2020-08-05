@@ -9,10 +9,29 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
+import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import kotlin.math.pow
 
-class Building : NamedStats(), IConstruction{
+class Unique(val text:String){
+    val placeholderText = text.getPlaceholderText()
+    val params = text.getPlaceholderParameters()
+}
+
+class UniqueMap:HashMap<String, ArrayList<Unique>>() {
+    fun addUnique(unique: Unique) {
+        if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
+        this[unique.placeholderText]!!.add(unique)
+    }
+
+    fun getUniques(placeholderText: String): List<Unique> {
+        val result = this.get(placeholderText)
+        if (result == null) return listOf()
+        else return result
+    }
+}
+
+class Building : NamedStats(), IConstruction {
 
     var requiredTech: String? = null
 
@@ -40,7 +59,7 @@ class Building : NamedStats(), IConstruction{
     var quote:String=""
     private var providesFreeBuilding: String? = null
     var uniques = ArrayList<String>()
-
+    val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
 
     /**
      * The bonus stats that a resource gets when this building is built
@@ -129,32 +148,29 @@ class Building : NamedStats(), IConstruction{
         return stringBuilder.toString().trim()
     }
 
-    private val cultureBuildings = hashSetOf("Monument", "Temple", "Monastery")
-
     fun getStats(civInfo: CivilizationInfo?): Stats {
         val stats = this.clone()
         if(civInfo != null) {
             val adoptedPolicies = civInfo.policies.adoptedPolicies
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-            for(unique in civInfo.getMatchingUniques("[] from every []")) {
-                val placeholderParams = unique.getPlaceholderParameters()
-                if (placeholderParams[1] != baseBuildingName) continue
-                stats.add(Stats.parse(placeholderParams[0]))
+            for(unique in civInfo.getMatchingUniques2("[] from every []")) {
+                if (unique.params[1] != baseBuildingName) continue
+                stats.add(Stats.parse(unique.params[0]))
             }
 
+            // todo policy
             if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
                 stats.happiness += 1f
 
             if(!isWonder)
-                for(unique in civInfo.getMatchingUniques("[] from all [] buildings")){
-                    val placeholderParams = unique.getPlaceholderParameters()
-                    if(isStatRelated(Stat.valueOf(placeholderParams[1])))
-                        stats.add(Stats.parse(placeholderParams[0]))
+                for(unique in civInfo.getMatchingUniques2("[] from all [] buildings")){
+                    if(isStatRelated(Stat.valueOf(unique.params[1])))
+                        stats.add(Stats.parse(unique.params[0]))
                 }
             else
-                for(unique in civInfo.getMatchingUniques("[] from every Wonder"))
-                    stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
+                for(unique in civInfo.getMatchingUniques2("[] from every Wonder"))
+                    stats.add(Stats.parse(unique.params[0]))
 
             if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
                 stats.happiness += 3
@@ -169,10 +185,9 @@ class Building : NamedStats(), IConstruction{
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
-            val placeholderParams = unique.getPlaceholderParameters()
-            if (placeholderParams[2] == baseBuildingName)
-                stats.add(Stat.valueOf(placeholderParams[1]), placeholderParams[0].toFloat())
+        for (unique in civInfo.getMatchingUniques2("+[]% [] from every []")) {
+            if (unique.params[2] == baseBuildingName)
+                stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
 
         if (uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
@@ -208,13 +223,12 @@ class Building : NamedStats(), IConstruction{
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
 
-        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1 - (unique.getPlaceholderParameters()[0].toFloat() / 100)
+        for (unique in civInfo.getMatchingUniques2("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1 - (unique.params[0].toFloat() / 100)
 
-        for (unique in civInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
-            val placeholderParams = unique.getPlaceholderParameters()
-            if (isStatRelated(Stat.valueOf(placeholderParams[0])))
-                cost *= 1 - (placeholderParams[1].toFloat() / 100)
+        for (unique in civInfo.getMatchingUniques2("Cost of purchasing [] buildings reduced by []%")) {
+            if (isStatRelated(Stat.valueOf(unique.params[0])))
+                cost *= 1 - (unique.params[1].toFloat() / 100)
         }
 
         return (cost / 10).toInt() * 10

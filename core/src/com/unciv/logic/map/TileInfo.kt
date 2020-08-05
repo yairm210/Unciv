@@ -172,7 +172,6 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()
             if (terrainFeatureBase!!.overrideStats)
@@ -181,14 +180,11 @@ open class TileInfo {
                 stats.add(terrainFeatureBase)
         }
 
-        if(city!=null) for(unique in city.getBuildingUniques()) {
-            if (unique.equalsPlaceholderText("[] from [] tiles")) {
-                val placeholderParams = unique.getPlaceholderParameters()
-                val tileType = placeholderParams[1]
-                if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType
-                        || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic))
-                    stats.add(Stats.parse(placeholderParams[0]))
-            }
+        if(city!=null) for(unique in city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles")) {
+            val tileType = unique.params[1]
+            if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType
+                    || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic))
+                stats.add(Stats.parse(unique.params[0]))
         }
 
         if (naturalWonder != null) {
@@ -249,10 +245,9 @@ open class TileInfo {
             stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
 
         if(city!=null)
-            for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
-                val placeholderParams = unique.getPlaceholderParameters()
-                if (unique == placeholderParams[1])
-                    stats.add(Stats.parse(placeholderParams[0]))
+            for(unique in city.civInfo.getMatchingUniques2("[] from every []")) {
+                if (improvement.name == unique.params[1])
+                    stats.add(Stats.parse(unique.params[0]))
             }
 
         if (containsGreatImprovement()

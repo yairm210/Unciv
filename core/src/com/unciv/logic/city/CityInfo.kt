@@ -195,19 +195,19 @@ class CityInfo {
 
         if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()
                 // Per https://gaming.stackexchange.com/questions/53155/do-manufactories-and-customs-houses-sacrifice-the-strategic-or-luxury-resources
-                || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())){
+                || (resource.resourceType==ResourceType.Strategic && tileInfo.containsGreatImprovement())) {
             var amountToAdd = 1
-            if(resource.resourceType == ResourceType.Strategic) {
+            if (resource.resourceType == ResourceType.Strategic) {
                 amountToAdd = 2
                 if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
             }
-            for(unique in civInfo.getMatchingUniques("Double quantity of [] produced"))
-                if(unique.getPlaceholderParameters()[0]==resource.name)
-                    amountToAdd*=2
-            if(resource.resourceType == ResourceType.Luxury
+            for (unique in civInfo.getMatchingUniques2("Double quantity of [] produced"))
+                if (unique.params[0] == resource.name)
+                    amountToAdd *= 2
+            if (resource.resourceType == ResourceType.Luxury
                     && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
-                amountToAdd*=2
+                amountToAdd *= 2
 
             return amountToAdd
         }
@@ -260,20 +260,19 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for (entry in stats) {
-            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
-                val params = unique.getPlaceholderParameters()
-                val unit = civInfo.gameInfo.ruleSet.units[params[0]]
+            for (unique in civInfo.getMatchingUniques2("[] is earned []% faster")) {
+                val unit = civInfo.gameInfo.ruleSet.units[unique.params[0]]
                 if (unit == null) continue
                 val greatUnitUnique = unit.uniques.firstOrNull { it.equalsPlaceholderText("Great Person - []") }
                 if (greatUnitUnique == null) continue
                 val statName = greatUnitUnique.getPlaceholderParameters()[0]
                 val stat = Stat.values().firstOrNull { it.name == statName }
                 // this is not very efficient, and if it causes problems we can try and think of a way of improving it
-                if (stat != null) entry.value.add(stat, entry.value.get(stat) * params[1].toFloat()/100)
+                if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat()/100)
             }
 
-            for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities"))
-                stats[entry.key] = stats[entry.key]!!.times(1 + (unique.getPlaceholderParameters()[0].toFloat() / 100))
+            for (unique in civInfo.getMatchingUniques2("+[]% great person generation in all cities"))
+                stats[entry.key] = stats[entry.key]!!.times(1 + (unique.params[0].toFloat() / 100))
         }
 
         return stats

@@ -51,8 +51,8 @@ class CityStats {
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            for(unique in civInfo.getMatchingUniques("[] from each Trade Route"))
-                stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
+            for (unique in civInfo.getMatchingUniques2("[] from each Trade Route"))
+                stats.add(Stats.parse(unique.params[0]))
             if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Pichu speciality
         }
         return stats
@@ -247,8 +247,8 @@ class CityStats {
         if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
         else stats.add(stat, 2f) // science and gold specialists
 
-        for(unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
-            stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
+        for(unique in cityInfo.civInfo.getMatchingUniques2("[] from every specialist"))
+            stats.add(Stats.parse(unique.params[0]))
         if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
             stats.production += 1
         if(cityInfo.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)

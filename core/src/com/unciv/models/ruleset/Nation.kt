@@ -37,6 +37,7 @@ class Nation : INamed {
     lateinit var outerColor: List<Int>
     var unique: UniqueAbility? = null
     val uniques = HashSet<String>()
+    val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 
