@@ -1,3 +1,25 @@
+## 3.9.18
+
+Resolved #2872 - Diplomacy screen now scrollable when there's too much text
+
+Performance improvements
+
+Fixed civ name translation in the top bar and great person point percentage bonuses
+
+Resolved #2929 - Can no longer destroy original capitals by nuke
+
+Resolved #2928 - contact with other civs is now also when encountering their cities
+
+Changed how great unit recognition works
+
+Resolved #2914 - Can no longer exploit button to 'skip' promotions
+
+Resolved #2893 - all maps are shown when searching - By vainiovano
+
+Top bar selected civ refactor, increase performance for updates - By alkorolyov
+
+Translation updates
+
 ## 3.9.17
 
 All policies converted!
@@ -18,7 +40,7 @@ Added civ-wide per-building stat bonus
 
 New Diplomacy Overview UI - By lishaoxia1985
 
-Fog of war implementation  - By alkorolyov
+Fog of war implementation - By alkorolyov
 
 
 ## 3.9.16
