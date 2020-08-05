@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.Building
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stat
@@ -115,6 +116,8 @@ class CityStats {
     private fun getStatsFromNationUnique(): Stats {
         val stats = Stats()
 
+        stats.add(getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()))
+
         if (cityInfo.civInfo.hasUnique("+2 Culture per turn from cities before discovering Steam Power")
                 && !cityInfo.civInfo.tech.isResearched("Steam Power"))
             stats.culture += 2
@@ -142,7 +145,7 @@ class CityStats {
     private fun getStatPercentBonusesFromNationUnique(): Stats {
         val stats = Stats()
 
-        stats.add(getStatPercentBonusesFromUniques(cityInfo.civInfo.nation.uniques))
+        stats.add(getStatPercentBonusesFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()))
 
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if (currentConstruction is Building
@@ -263,21 +266,19 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromUniques(uniques: Sequence<String>):Stats {
+    private fun getStatsFromUniques(uniques: Sequence<Unique>):Stats {
         val stats = Stats()
 
         for (unique in uniques) {
-            val placeholderText = unique.getPlaceholderText()
-            if ((placeholderText == "[] in capital" && cityInfo.isCapital())
-                    || placeholderText == "[] in all cities"
-                    || (placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
-                stats.add(Stats.parse(unique.getPlaceholderParameters()[0]))
-            if (placeholderText == "[] per [] population in all cities") {
-                val placeholderParams = unique.getPlaceholderParameters()
-                val amountOfEffects = (cityInfo.population.population / placeholderParams[1].toInt()).toFloat()
-                stats.add(Stats.parse(placeholderParams[0]).times(amountOfEffects))
+            if ((unique.placeholderText == "[] in capital" && cityInfo.isCapital())
+                    || unique.placeholderText == "[] in all cities"
+                    || (unique.placeholderText == "[] in all cities with a garrison" && cityInfo.getCenterTile().militaryUnit != null))
+                stats.add(Stats.parse(unique.params[0]))
+            if (unique.placeholderText == "[] per [] population in all cities") {
+                val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
+                stats.add(Stats.parse(unique.params[0]).times(amountOfEffects))
             }
-            if (unique == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital())
+            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital())
                 stats.gold += (cityInfo.population.population / 2).toFloat()
         }
 
@@ -322,42 +323,40 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromUniques(uniques: HashSet<String>): Stats {
+    private fun getStatPercentBonusesFromUniques(uniques: Sequence<Unique>): Stats {
         val stats = Stats()
 
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if (currentConstruction.name == Constants.settler && cityInfo.isCapital()
-                && uniques.contains("Training of settlers increased +50% in capital"))
+                && uniques.any { it.text == "Training of settlers increased +50% in capital" })
             stats.production += 50f
 
-        if(currentConstruction is Building && !currentConstruction.isWonder)
-            for(unique in uniques.filter { it.equalsPlaceholderText("+[]% Production when constructing [] buildings")}) {
-                val placeholderParams = unique.getPlaceholderParameters()
-                val stat = Stat.valueOf(placeholderParams[1])
+        if (currentConstruction is Building && !currentConstruction.isWonder)
+            for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
+                val stat = Stat.valueOf(unique.params[1])
                 if (currentConstruction.isStatRelated(stat))
-                    stats.production += placeholderParams[0].toInt()
+                    stats.production += unique.params[0].toInt()
             }
 
-        for(unique in uniques.filter { it.equalsPlaceholderText("+[]% Production when constructing []")}) {
-            val placeholderParams = unique.getPlaceholderParameters()
-            val filter = placeholderParams[1]
+        for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
+            val filter = unique.params[1]
             if (currentConstruction.name == filter
                     || (filter == "military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
                     || (filter == "melee units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isMelee())
                     || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
                     || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder))
-                stats.production += placeholderParams[0].toInt()
+                stats.production += unique.params[0].toInt()
         }
 
         if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
-                && uniques.contains("+33% culture in all cities with a world wonder"))
+                && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
             stats.culture += 33f
-        if (uniques.contains("+25% gold in capital") && cityInfo.isCapital())
+        if (uniques.any { it.text == "+25% gold in capital" } && cityInfo.isCapital())
             stats.gold += 25f
-        if (cityInfo.civInfo.getHappiness() >= 0 && uniques.contains("+15% science while empire is happy"))
+        if (cityInfo.civInfo.getHappiness() >= 0 && uniques.any { it.text == "+15% science while empire is happy" })
             stats.science += 15f
 
-        if (uniques.contains("Culture in all cities increased by 25%"))
+        if (uniques.any { it.text == "Culture in all cities increased by 25%" })
             stats.culture += 25f
 
         return stats
@@ -384,9 +383,9 @@ class CityStats {
         newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
-        newBaseStatList["Policies"] = getStatsFromUniques(civInfo.policies.policyEffects.asSequence())
+        newBaseStatList["Policies"] = getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques())
         newBaseStatList["National ability"] = getStatsFromNationUnique()
-        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.cities.asSequence().flatMap { it.getBuildingUniques() })
+        newBaseStatList["Wonders"] = getStatsFromUniques(civInfo.cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() })
         newBaseStatList["City-States"] = getStatsFromCityStates()
 
         baseStatList = newBaseStatList
@@ -396,9 +395,9 @@ class CityStats {
     fun updateStatPercentBonusList() {
         val newStatPercentBonusList = LinkedHashMap<String, Stats>()
         newStatPercentBonusList["Golden Age"] = getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.policies.policyEffects)
+        newStatPercentBonusList["Policies"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.policies.policyUniques.getAllUniques())
         newStatPercentBonusList["Buildings"] = getStatPercentBonusesFromBuildings()
-        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.getBuildingUniques().toHashSet())
+        newStatPercentBonusList["Wonders"] = getStatPercentBonusesFromUniques(cityInfo.civInfo.getBuildingUniques())
         newStatPercentBonusList["Railroad"] = getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"] = getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"] = getStatPercentBonusesFromComputers()

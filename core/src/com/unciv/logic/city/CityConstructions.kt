@@ -69,7 +69,7 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo.civInfo))
-        stats.science += (cityInfo.getBuildingUniques().count { it == "+1 Science Per 2 Population" } * cityInfo.population.population / 2).toFloat()
+        stats.science += (builtBuildingUniqueMap.getAllUniques().count { it.text == "+1 Science Per 2 Population" } * cityInfo.population.population / 2).toFloat()
         return stats
     }
 

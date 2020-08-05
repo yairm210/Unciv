@@ -175,7 +175,7 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    fun getBuildingUniques() = cities.asSequence().flatMap { it.getBuildingUniques() }
+    fun getBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
 
     fun hasUnique(unique:String) = getMatchingUniques2(unique).any()
 

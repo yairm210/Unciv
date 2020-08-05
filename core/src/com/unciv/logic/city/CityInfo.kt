@@ -16,6 +16,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -244,7 +245,6 @@ class CityInfo {
         return null
     }
 
-    fun getBuildingUniques(): Sequence<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques.asSequence() }
     fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun getGreatPersonMap():HashMap<String,Stats> {

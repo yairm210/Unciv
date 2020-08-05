@@ -29,6 +29,8 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
         if (result == null) return listOf()
         else return result
     }
+
+    fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
 }
 
 class Building : NamedStats(), IConstruction {
