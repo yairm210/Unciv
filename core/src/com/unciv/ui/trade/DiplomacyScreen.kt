@@ -31,7 +31,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     init {
         onBackButtonClicked { UncivGame.Current.setWorldScreen() }
-        val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
+        val splitPane = SplitPane(ScrollPane(leftSideTable), ScrollPane(rightSideTable), false, skin)
         splitPane.splitAmount = 0.2f
 
         updateLeftSideTable()
