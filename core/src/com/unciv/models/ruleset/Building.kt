@@ -156,7 +156,7 @@ class Building : NamedStats(), IConstruction {
             val adoptedPolicies = civInfo.policies.adoptedPolicies
             val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-            for(unique in civInfo.getMatchingUniques2("[] from every []")) {
+            for(unique in civInfo.getMatchingUniques("[] from every []")) {
                 if (unique.params[1] != baseBuildingName) continue
                 stats.add(Stats.parse(unique.params[0]))
             }
@@ -166,12 +166,12 @@ class Building : NamedStats(), IConstruction {
                 stats.happiness += 1f
 
             if(!isWonder)
-                for(unique in civInfo.getMatchingUniques2("[] from all [] buildings")){
+                for(unique in civInfo.getMatchingUniques("[] from all [] buildings")){
                     if(isStatRelated(Stat.valueOf(unique.params[1])))
                         stats.add(Stats.parse(unique.params[0]))
                 }
             else
-                for(unique in civInfo.getMatchingUniques2("[] from every Wonder"))
+                for(unique in civInfo.getMatchingUniques("[] from every Wonder"))
                     stats.add(Stats.parse(unique.params[0]))
 
             if (adoptedPolicies.contains("Police State") && baseBuildingName == "Courthouse")
@@ -187,7 +187,7 @@ class Building : NamedStats(), IConstruction {
 
         val baseBuildingName = getBaseBuilding(civInfo.gameInfo.ruleSet).name
 
-        for (unique in civInfo.getMatchingUniques2("+[]% [] from every []")) {
+        for (unique in civInfo.getMatchingUniques("+[]% [] from every []")) {
             if (unique.params[2] == baseBuildingName)
                 stats.add(Stat.valueOf(unique.params[1]), unique.params[0].toFloat())
         }
@@ -225,10 +225,10 @@ class Building : NamedStats(), IConstruction {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
 
-        for (unique in civInfo.getMatchingUniques2("Cost of purchasing items in cities reduced by []%"))
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
             cost *= 1 - (unique.params[0].toFloat() / 100)
 
-        for (unique in civInfo.getMatchingUniques2("Cost of purchasing [] buildings reduced by []%")) {
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing [] buildings reduced by []%")) {
             if (isStatRelated(Stat.valueOf(unique.params[0])))
                 cost *= 1 - (unique.params[1].toFloat() / 100)
         }

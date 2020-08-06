@@ -14,7 +14,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 
 
 class CityStats {
@@ -52,7 +51,7 @@ class CityStats {
         if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             stats.gold = civInfo.getCapital().population.population * 0.15f + cityInfo.population.population * 1.1f - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            for (unique in civInfo.getMatchingUniques2("[] from each Trade Route"))
+            for (unique in civInfo.getMatchingUniques("[] from each Trade Route"))
                 stats.add(Stats.parse(unique.params[0]))
             if (civInfo.hasUnique("Gold from all trade routes +25%")) stats.gold *= 1.25f // Machu Pichu speciality
         }
@@ -250,7 +249,7 @@ class CityStats {
         if (stat == Stat.Culture || stat == Stat.Science) stats.add(stat, 3f)
         else stats.add(stat, 2f) // science and gold specialists
 
-        for(unique in cityInfo.civInfo.getMatchingUniques2("[] from every specialist"))
+        for(unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
             stats.add(Stats.parse(unique.params[0]))
         if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
             stats.production += 1
@@ -342,7 +341,7 @@ class CityStats {
             val filter = unique.params[1]
             if (currentConstruction.name == filter
                     || (filter == "military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
-                    || (filter == "melee units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isMelee())
+                    || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
                     || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
                     || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder))
                 stats.production += unique.params[0].toInt()

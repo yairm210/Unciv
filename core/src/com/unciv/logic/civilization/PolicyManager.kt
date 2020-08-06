@@ -1,15 +1,11 @@
 package com.unciv.logic.civilization
 
-import com.sun.xml.internal.ws.policy.PolicyMap
 import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
-import com.unciv.ui.utils.withItem
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -81,7 +77,7 @@ class PolicyManager {
 
         if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
-        for(unique in civInfo.getMatchingUniques2("Culture cost of adopting new Policies reduced by 10%"))
+        for(unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier

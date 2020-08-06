@@ -10,8 +10,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import kotlin.math.abs
 
@@ -245,7 +243,7 @@ open class TileInfo {
             stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
 
         if(city!=null)
-            for(unique in city.civInfo.getMatchingUniques2("[] from every []")) {
+            for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
                 if (improvement.name == unique.params[1])
                     stats.add(Stats.parse(unique.params[0]))
             }

@@ -177,9 +177,9 @@ class CivilizationInfo {
 
     fun getBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
 
-    fun hasUnique(unique:String) = getMatchingUniques2(unique).any()
+    fun hasUnique(unique:String) = getMatchingUniques(unique).any()
 
-    fun getMatchingUniques2(uniqueTemplate: String): Sequence<Unique> {
+    fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
         return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
                 cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
                 policies.policyUniques.getUniques(uniqueTemplate)

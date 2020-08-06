@@ -9,7 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
-import com.unciv.models.translations.getPlaceholderParameters
+import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -99,13 +99,13 @@ class BaseUnit : INamed, IConstruction {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+    fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100)
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost()
         if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
-        for(unique in civInfo.getMatchingUniques2("Cost of purchasing items in cities reduced by []%"))
-            cost *= 1-(unique.params[0].toFloat())
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1 - (unique.params[0].toFloat() / 100)
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
@@ -159,7 +159,7 @@ class BaseUnit : INamed, IConstruction {
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
-        for (unique in construction.cityInfo.civInfo.getMatchingUniques2("New military units start with [] Experience"))
+        for (unique in construction.cityInfo.civInfo.getMatchingUniques("New military units start with [] Experience"))
             XP += unique.params[0].toInt()
         unit.promotions.XP = XP
 

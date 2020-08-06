@@ -16,7 +16,6 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -203,7 +202,7 @@ class CityInfo {
                 if (civInfo.hasUnique("Quantity of strategic resources produced by the empire increased by 100%"))
                     amountToAdd *= 2
             }
-            for (unique in civInfo.getMatchingUniques2("Double quantity of [] produced"))
+            for (unique in civInfo.getMatchingUniques("Double quantity of [] produced"))
                 if (unique.params[0] == resource.name)
                     amountToAdd *= 2
             if (resource.resourceType == ResourceType.Luxury
@@ -260,7 +259,7 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for (entry in stats) {
-            for (unique in civInfo.getMatchingUniques2("[] is earned []% faster")) {
+            for (unique in civInfo.getMatchingUniques("[] is earned []% faster")) {
                 val unit = civInfo.gameInfo.ruleSet.units[unique.params[0]]
                 if (unit == null) continue
                 val greatUnitUnique = unit.uniques.firstOrNull { it.equalsPlaceholderText("Great Person - []") }
@@ -271,7 +270,7 @@ class CityInfo {
                 if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat()/100)
             }
 
-            for (unique in civInfo.getMatchingUniques2("+[]% great person generation in all cities"))
+            for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1 + (unique.params[0].toFloat() / 100))
         }
 
@@ -279,8 +278,8 @@ class CityInfo {
     }
 
     fun getGreatPersonPoints(): Stats {
-        val stats=Stats()
-        for(entry in getGreatPersonMap().values)
+        val stats = Stats()
+        for (entry in getGreatPersonMap().values)
             stats.add(entry)
         return stats
     }
