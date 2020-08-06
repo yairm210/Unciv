@@ -27,7 +27,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             }
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
-        if(civInfo.nation.unique == UniqueAbility.FUROR_TEUTONICUS){
+        if(civInfo.hasUnique("-25% land units maintenance")){
             val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }

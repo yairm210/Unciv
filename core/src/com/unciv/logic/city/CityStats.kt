@@ -196,7 +196,7 @@ class CityStats {
             unhappinessFromCitizens *= 1.5f
         else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
-        
+
         for(unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []%"))
             unhappinessFromCitizens *= (1-unique.params[0].toFloat()/100)
 
@@ -248,8 +248,6 @@ class CityStats {
             stats.add(Stats.parse(unique.params[0]))
         if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
             stats.production += 1
-        if(cityInfo.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
-            stats.science+=2
         return stats
     }
 

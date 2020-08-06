@@ -244,15 +244,13 @@ open class TileInfo {
 
         if(city!=null)
             for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
-                if (improvement.name == unique.params[1])
+                if (improvement.name == unique.params[1] || (unique.params[1]=="Great Improvement"))
                     stats.add(Stats.parse(unique.params[0]))
             }
 
         if (containsGreatImprovement()
                 && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
             stats.add(improvement) // again, for the double effect
-        if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == UniqueAbility.SCHOLARS_OF_THE_JADE_HALL)
-            stats.science += 2
 
         if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
             stats.culture += neighbors.count { it.improvement == "Moai" }

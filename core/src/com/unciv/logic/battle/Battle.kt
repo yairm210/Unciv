@@ -162,7 +162,7 @@ object Battle {
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if (defender.isDefeated() && defender.getCivInfo().isBarbarian()
                 && attackedTile.improvement == Constants.barbarianEncampment
-                && attacker.getCivInfo().nation.unique == UniqueAbility.FUROR_TEUTONICUS
+                && attacker.getCivInfo().hasUnique("67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment")
                 && Random().nextDouble() > 0.67) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
@@ -171,7 +171,7 @@ object Battle {
 
         // Similarly, Ottoman unique
         if (defender.isDefeated() && defender.getUnitType().isWaterUnit() && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                && attacker.getCivInfo().nation.unique == UniqueAbility.BARBARY_CORSAIRS
+                && attacker.getCivInfo().hasUnique("Melee naval units have a 1/3 chance to capture defeated naval units")
                 && Random().nextDouble() > 0.33) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
         }

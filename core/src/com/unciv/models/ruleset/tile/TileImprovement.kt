@@ -71,6 +71,6 @@ class TileImprovement : NamedStats() {
     }
 
     fun hasUnique(unique: String) = uniques.contains(unique)
-    fun isGreatImprovement() = hasUnique("Great improvement")
+    fun isGreatImprovement() = hasUnique("Great Improvement")
 }
 
