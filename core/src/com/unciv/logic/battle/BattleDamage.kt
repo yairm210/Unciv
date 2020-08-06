@@ -91,8 +91,8 @@ object BattleDamage {
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            if(civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY && civInfo.goldenAges.isGoldenAge())
-                modifiers[UniqueAbility.ACHAEMENID_LEGACY.displayName] = 0.1f
+            if(civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
+                modifiers["Golden Age"] = 0.1f
 
             if (civInfo.nation.unique == UniqueAbility.MONGOL_TERROR && enemy.getCivInfo().isCityState())
                 modifiers[UniqueAbility.MONGOL_TERROR.displayName] = 0.3f

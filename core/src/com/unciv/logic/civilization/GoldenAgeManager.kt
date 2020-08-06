@@ -33,7 +33,7 @@ class GoldenAgeManager{
             turnsToGoldenAge*=1.5
         turnsToGoldenAge *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)
+        civInfo.addNotification("You have entered a Golden Age!", null, Color.GOLD)
         civInfo.popupAlerts.add(PopupAlert(AlertType.GoldenAge,""))
     }
 

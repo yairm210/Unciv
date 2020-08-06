@@ -114,7 +114,7 @@ class MapUnit {
             movement += 1
 
         if (civInfo.goldenAges.isGoldenAge() &&
-                civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY)
+                civInfo.hasUnique("+1 Movement for all units during Golden Age"))
             movement += 1
 
         return movement

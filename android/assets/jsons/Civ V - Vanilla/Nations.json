@@ -457,6 +457,8 @@
 		"outerColor": [153,5,3],
 		"innerColor": [244,232,54],
 		"unique": "ACHAEMENID_LEGACY",
+		"uniqueName": "Achaemenid Legacy",
+		"uniques": ["Golden Age length increases +50%", "+1 Movement for all units during Golden Age", "+10% Strength for all units during Golden Age"],
 		"cities": ["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
