@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.UniqueAbility
 
 class GoldenAgeManager{
     @Transient

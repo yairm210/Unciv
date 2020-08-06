@@ -1,7 +1,6 @@
 package com.unciv.logic.battle
 
 import com.unciv.Constants
-import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType

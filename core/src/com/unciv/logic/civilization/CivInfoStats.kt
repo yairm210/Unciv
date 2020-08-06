@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.unciv.Constants
-import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.metadata.BASE_GAME_DURATION_TURNS
