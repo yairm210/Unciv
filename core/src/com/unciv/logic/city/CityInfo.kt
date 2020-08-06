@@ -575,7 +575,7 @@ class CityInfo {
         val baseGold = 20 + 10 * population.population + Random().nextInt(40)
         val turnModifier = max(0, min(50, civInfo.gameInfo.turns - turnAcquired)) / 50f
         val cityModifier = if (containsBuildingUnique("Doubles Gold given to enemy if city is captured")) 2f else 1f
-        val conqueringCivModifier = if (conqueringCiv.nation.unique == UniqueAbility.RIVER_WARLORD) 3f else 1f
+        val conqueringCivModifier = if (conqueringCiv.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities")) 3f else 1f
 
         val goldPlundered = baseGold * turnModifier * cityModifier * conqueringCivModifier
         return goldPlundered.toInt()

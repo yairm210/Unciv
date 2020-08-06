@@ -80,11 +80,11 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
                     && otherCiv.getDiplomacyManager(civInfo.civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
-                var culture = 3f * (civInfo.getEraNumber()+1)
-                if(civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
-                    culture*=1.5f
+                var culture = 3f * (civInfo.getEraNumber() + 1)
+                if (civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
+                    culture *= 1.5f
                 cultureBonus.add(Stat.Culture, culture)
-                statMap.add("City-States",cultureBonus)
+                statMap.add("City-States", cultureBonus)
             }
         }
 
@@ -138,7 +138,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         }
 
         var happinessPerNaturalWonder = 1f
-        if (civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD)
+        if (civInfo.hasUnique("Double Happiness from Natural Wonders"))
             happinessPerNaturalWonder *= 2
 
         statMap["Natural Wonders"] = happinessPerNaturalWonder * civInfo.naturalWonders.size

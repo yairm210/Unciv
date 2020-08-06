@@ -133,7 +133,7 @@ class CityStats {
                 if (cityInfo.isCapital()) stats.food += 3
                 else stats.food += 1
 
-                if (cityInfo.civInfo.nation.unique == UniqueAbility.FATHER_GOVERNS_CHILDREN)
+                if (cityInfo.civInfo.hasUnique("Food and Culture from Friendly City-States are increased by 50%"))
                     stats.food *= 1.5f
             }
         }

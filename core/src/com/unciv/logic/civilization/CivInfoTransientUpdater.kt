@@ -102,7 +102,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 goldGained += 500
             }
 
-            if (civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD) {
+            if (civInfo.hasUnique("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)")) {
                 if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
                     goldGained += 500
                 else goldGained += 100

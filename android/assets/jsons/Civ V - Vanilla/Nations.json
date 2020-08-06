@@ -486,6 +486,8 @@
 		"outerColor": [225,105,0],
 		"innerColor": [255,255,78],
 		"unique": "WAYFINDING",
+		"uniqueName": "Wayfinding",
+		"uniques": ["Can embark and move over Coasts and Oceans immediately", "+1 Sight when embarked", "+[10]% Strength if within 2 tiles of a [Moai]"],
 		"cities": ["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
@@ -510,6 +512,8 @@
 		"outerColor": [228,208,43],
 		"innerColor": [193,21,17],
 		"unique": "FATHER_GOVERNS_CHILDREN",
+		"uniqueName": "Father Governs Children",
+		"uniques": ["Food and Culture from Friendly City-States are increased by 50%"]
 		"cities": ["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
@@ -534,6 +538,9 @@
 		"outerColor": [102,0,0],
 		"innerColor": [255,102,102],
 		"unique": "SEVEN_CITIES_OF_GOLD",
+		"uniqueName": "Seven Cities of Gold",
+		"uniques": ["100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)",
+			"Double Happiness from Natural Wonders", "Tile yields from Natural Wonders doubled"]
 		"cities": ["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
 			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
@@ -558,6 +565,8 @@
 		"outerColor": [214,145,19],
 		"innerColor": [90,0,10],
 		"unique": "RIVER_WARLORD",
+		"uniqueName": "River Warlord",
+		"uniques": ["Receive triple Gold from Barbarian encampments and pillaging Cities", "Embarked units can defend themselves"]
 		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
 			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
 			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
@@ -581,6 +590,7 @@
 		"outerColor": [81,0,9],
 		"innerColor": [255,120,0],
 		"unique": "MONGOL_TERROR",
+		"uniques": ["+30% Strength when fighting City-State units and cities", "+[] Movement for all [] units"]
 		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Altay","Uliastay","Bayanhongor",

@@ -109,9 +109,9 @@ class MapUnit {
         if (type.isWaterUnit() && civInfo.hasUnique("+2 movement for all naval units"))
             movement += 2
 
-        if (type == UnitType.Mounted &&
-                civInfo.nation.unique == UniqueAbility.MONGOL_TERROR)
-            movement += 1
+        for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
+            if (unique.params[1] == type.name)
+                movement += unique.params[0].toInt()
 
         if (civInfo.goldenAges.isGoldenAge() &&
                 civInfo.hasUnique("+1 Movement for all units during Golden Age"))
@@ -165,7 +165,7 @@ class MapUnit {
             if (type.isWaterUnit() && !type.isCivilian()
                     && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
                 visibilityRange += 1
-            if (isEmbarked() && civInfo.nation.unique == UniqueAbility.WAYFINDING)
+            if (isEmbarked() && civInfo.hasUnique("+1 Sight when embarked"))
                 visibilityRange += 1
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
@@ -522,7 +522,7 @@ class MapUnit {
         tile.improvement = null
 
         var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.nation.unique == UniqueAbility.RIVER_WARLORD)
+        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
             goldGained *= 3f
 
         civInfo.gold += goldGained.toInt()

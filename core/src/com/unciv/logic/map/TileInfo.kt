@@ -190,7 +190,7 @@ open class TileInfo {
             stats.add(wonder)
 
             // Spain doubles tile yield
-            if (city != null && city.civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD) {
+            if (city != null && city.civInfo.hasUnique("Tile yields from Natural Wonders doubled")) {
                 stats.add(wonder)
             }
         }

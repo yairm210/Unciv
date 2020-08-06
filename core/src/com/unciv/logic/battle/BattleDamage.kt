@@ -94,8 +94,8 @@ object BattleDamage {
             if(civInfo.goldenAges.isGoldenAge() && civInfo.hasUnique("+10% Strength for all units during Golden Age"))
                 modifiers["Golden Age"] = 0.1f
 
-            if (civInfo.nation.unique == UniqueAbility.MONGOL_TERROR && enemy.getCivInfo().isCityState())
-                modifiers[UniqueAbility.MONGOL_TERROR.displayName] = 0.3f
+            if (enemy.getCivInfo().isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities"))
+                modifiers["vs [City-States]"] = 0.3f
 
             if (civInfo.nation.unique == UniqueAbility.GREAT_EXPANSE && civInfo.cities.map { it.getTiles() }.any { it.contains(combatant.getTile()) })
                 modifiers[UniqueAbility.GREAT_EXPANSE.displayName] = 0.15f
@@ -168,8 +168,8 @@ object BattleDamage {
         if (defender.unit.isEmbarked()) {
             // embarked units get no defensive modifiers apart from this unique
             if (defender.unit.hasUnique("Defense bonus when embarked") ||
-                    defender.getCivInfo().nation.unique == UniqueAbility.RIVER_WARLORD)
-                modifiers[UniqueAbility.RIVER_WARLORD.displayName] = 1f
+                    defender.getCivInfo().hasUnique("Embarked units can defend themselves"))
+                modifiers["Embarked"] = 1f
 
             return modifiers
         }
@@ -220,9 +220,10 @@ object BattleDamage {
                         || tile.terrainFeature != Constants.jungle))
             modifiers[tile.baseTerrain] = 0.25f
 
-        if(unit.getCivInfo().nation.unique == UniqueAbility.WAYFINDING
-                && tile.getTilesInDistance(2).any { it.improvement=="Moai" })
-            modifiers["Moai"] = 0.1f
+        for(unique in unit.getCivInfo().getMatchingUniques("+[]% Strength if within [] tiles of a []")) {
+            if (tile.getTilesInDistance(unique.params[1].toInt()).any { it.improvement == unique.params[2] })
+                modifiers[unique.params[2]] = unique.params[0].toFloat() / 100
+        }
 
         if(tile.neighbors.flatMap { it.getUnits() }
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
