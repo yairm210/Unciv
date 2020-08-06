@@ -11,7 +11,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
 
         if ((from.isLand != to.isLand) && unit.type.isLandUnit() &&
-                (unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
+                (unit.civInfo.nation.embarkDisembarkCosts1))
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
         var extraCost = 0f
@@ -36,7 +36,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
-        if (civInfo.nation.greatAndeanRoad && to.baseTerrain == Constants.hill)
+        if (civInfo.nation.ignoreHillMovementCost && to.baseTerrain == Constants.hill)
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
         if (unit.roughTerrainPenalty && to.isRoughTerrain())
@@ -345,7 +345,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if (tile.isOcean && unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval unit can enter oceans
+        if (tile.isOcean && unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
             if (unit.cannotEnterOceanTiles) return false
             if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))

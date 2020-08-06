@@ -83,6 +83,7 @@ class CityConstructions {
             val buildingName = policyManager.legalismState[cityInfo.id]
             maintenanceCost -= cityInfo.getRuleset().buildings[buildingName]!!.maintenance
         }
+
         return maintenanceCost
     }
 

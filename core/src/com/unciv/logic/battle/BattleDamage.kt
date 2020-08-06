@@ -97,8 +97,6 @@ object BattleDamage {
             if (enemy.getCivInfo().isCityState() && civInfo.hasUnique("+30% Strength when fighting City-State units and cities"))
                 modifiers["vs [City-States]"] = 0.3f
 
-            if (civInfo.nation.unique == UniqueAbility.GREAT_EXPANSE && civInfo.cities.map { it.getTiles() }.any { it.contains(combatant.getTile()) })
-                modifiers[UniqueAbility.GREAT_EXPANSE.displayName] = 0.15f
         }
 
         if (enemy.getCivInfo().isBarbarian()) {

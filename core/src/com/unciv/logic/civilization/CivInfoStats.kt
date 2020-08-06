@@ -44,12 +44,13 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
     private fun getTransportationUpkeep(): Int {
         var transportationUpkeep = 0
-        var hillsUpkeep = 0
         // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
         // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
+        val ignoreHillTiles = civInfo.hasUnique("No Maintenance costs for improvements in Hills")
         for (city  in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
+                if(ignoreHillTiles && tile.baseTerrain==Constants.hill) continue
                 val tileUpkeep =
                     when (tile.roadStatus) {
                         RoadStatus.Road -> 1
@@ -57,12 +58,11 @@ class CivInfoStats(val civInfo: CivilizationInfo){
                         RoadStatus.None -> 0
                     }
                 transportationUpkeep += tileUpkeep
-                if (tile.baseTerrain == Constants.hill) hillsUpkeep += tileUpkeep
             }
         }
         // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
-        if (civInfo.nation.greatAndeanRoad)
-            transportationUpkeep = (transportationUpkeep - hillsUpkeep) / 2
+        if (civInfo.hasUnique("50% Maintenance costs reduction"))
+            transportationUpkeep /= 2
         if (civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
             transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
         return transportationUpkeep

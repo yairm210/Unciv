@@ -200,9 +200,9 @@ object UnitActions {
                     tile.improvement = null
                     if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
-                    if (!unit.hasUnique("No movement cost to pillage") &&
-                            (!unit.type.isMelee() || unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
-                                    unit.useMovementPoints(1f)
+                    val freePillage = unit.hasUnique("No movement cost to pillage") ||
+                            (unit.type.isMelee() && unit.civInfo.hasUnique("Melee units pay no movement cost to pillage"))
+                    if(!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)
 

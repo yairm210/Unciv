@@ -56,7 +56,8 @@ class Nation : INamed {
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
     @Transient var forestsAndJunglesAreRoads = false
     // Same for Inca unique
-    @Transient var greatAndeanRoad = false
+    @Transient var ignoreHillMovementCost = false
+    @Transient var embarkDisembarkCosts1 = false
 
     fun setTransients() {
         outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
@@ -66,8 +67,10 @@ class Nation : INamed {
 
         if (uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."))
             forestsAndJunglesAreRoads = true
-        if (unique == UniqueAbility.GREAT_ANDEAN_ROAD)
-            greatAndeanRoad = true
+        if (uniques.contains("Units ignore terrain costs when moving into any tile with Hills"))
+            ignoreHillMovementCost = true
+        if(uniques.contains("Units pay only 1 movement point to embark and disembark"))
+            embarkDisembarkCosts1 = true
     }
 
     lateinit var cities: ArrayList<String>
