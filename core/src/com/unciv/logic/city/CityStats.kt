@@ -208,7 +208,7 @@ class CityStats {
         var happinessFromPolicies = 0f
         if (civInfo.hasUnique("+1 happiness for every 10 citizens in a city"))
             happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
-        if (civInfo.policies.hasEffect("+1 gold and -1 unhappiness for every 2 citizens in capital")
+        if (civInfo.hasUnique("+1 gold and -1 unhappiness for every 2 citizens in capital")
                 && cityInfo.isCapital())
             happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
         if (civInfo.hasUnique("+1 happiness for every city connected to capital")

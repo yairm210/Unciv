@@ -63,7 +63,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         // Inca unique according to https://civilization.fandom.com/wiki/Incan_%28Civ5%29
         if (civInfo.nation.greatAndeanRoad)
             transportationUpkeep = (transportationUpkeep - hillsUpkeep) / 2
-        if (civInfo.policies.hasEffect("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
+        if (civInfo.hasUnique("Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes"))
             transportationUpkeep = (transportationUpkeep * 2 / 3f).toInt()
         return transportationUpkeep
     }

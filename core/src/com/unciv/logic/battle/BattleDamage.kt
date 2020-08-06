@@ -112,7 +112,6 @@ object BattleDamage {
 
     fun getAttackModifiers(attacker: ICombatant, tileToAttackFrom:TileInfo?, defender: ICombatant): HashMap<String, Float> {
         val modifiers = getGeneralModifiers(attacker, defender)
-        val policies = attacker.getCivInfo().policies
 
         if (attacker is MapUnitCombatant) {
             modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
@@ -147,14 +146,14 @@ object BattleDamage {
                 }
             }
 
-            if (policies.autocracyCompletedTurns > 0 && policies.hasEffect("+20% attack bonus to all Military Units for 30 turns"))
+            if (attacker.getCivInfo().policies.autocracyCompletedTurns > 0)
                 modifiers["Autocracy Complete"] = 0.2f
 
             if (defender is CityCombatant &&
                     attacker.getCivInfo().hasUnique("+15% Combat Strength for all units when attacking Cities"))
                 modifiers["Statue of Zeus"] = 0.15f
         } else if (attacker is CityCombatant) {
-            if (policies.hasEffect("Units in cities cost no Maintenance, garrisoned city +50% attacking strength")
+            if (attacker.getCivInfo().hasUnique("+50% attacking strength for cities with garrisoned units")
                     && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
         }

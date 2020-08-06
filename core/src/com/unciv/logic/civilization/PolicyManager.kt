@@ -4,8 +4,6 @@ import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.VictoryType
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -16,7 +14,6 @@ class PolicyManager {
     @Transient lateinit var civInfo: CivilizationInfo
     // Needs to be separate from the actual adopted policies, so that
     //  in different game versions, policies can have different effects
-    @Transient internal val policyEffects = HashSet<String>()
     @Transient internal val policyUniques = UniqueMap()
 
     var freePolicies = 0
@@ -48,7 +45,6 @@ class PolicyManager {
     }
 
     fun addPolicyToTransients(policy: Policy){
-        policyEffects.addAll(policy.uniques)
         for(unique in policy.uniqueObjects)
             policyUniques.addUnique(unique)
     }
@@ -89,8 +85,6 @@ class PolicyManager {
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
-
-    fun hasEffect(effectName:String) = policyEffects.contains(effectName)
 
     fun isAdoptable(policy: Policy): Boolean {
         if(isAdopted(policy.name)) return false

@@ -6,7 +6,6 @@ open class Policy : INamed {
     lateinit var branch: PolicyBranch // not in json - added in gameBasics
 
     override lateinit var name: String
-    lateinit var effect: String
     var uniques: ArrayList<String> = ArrayList()
     val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
     var row: Int = 0

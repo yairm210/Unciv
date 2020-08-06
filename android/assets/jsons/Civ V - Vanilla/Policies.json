@@ -22,7 +22,7 @@
 			{
 				"name": "Oligarchy",
 				"effect": "Units in cities cost no Maintenance, garrisoned city +50% attacking strength",
-				"uniques": ["Units in cities cost no Maintenance"]
+				"uniques": ["Units in cities cost no Maintenance", "+50% attacking strength for cities with garrisoned units"]
 				"row": 1,
 				"column": 5
 			},
