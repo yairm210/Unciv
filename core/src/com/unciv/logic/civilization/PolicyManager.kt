@@ -134,10 +134,10 @@ class PolicyManager {
 
         val hasCapital = civInfo.cities.any { it.isCapital() }
 
-        for(effect in policy.uniques)
-            when (effect.getPlaceholderText()) {
+        for (unique in policy.uniqueObjects)
+            when (unique.placeholderText) {
                 "Free [] appears" -> {
-                    val unitName = effect.getPlaceholderParameters()[0]
+                    val unitName = unique.params[0]
                     if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
                         civInfo.addUnit(unitName, civInfo.getCapital())
                 }

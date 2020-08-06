@@ -175,7 +175,6 @@ class CityStats {
 
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
-    // -3 happiness per city
     fun updateCityHappiness() {
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String, Float>()
@@ -183,7 +182,7 @@ class CityStats {
         if (!civInfo.isPlayerCivilization())
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
-        var unhappinessFromCity = -3f
+        var unhappinessFromCity = -3f     // -3 happiness per city
         if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
             unhappinessFromCity *= 2f//doubled for the Indian
 
@@ -217,9 +216,8 @@ class CityStats {
             happinessFromPolicies += 1f
 
         if (cityInfo.getCenterTile().militaryUnit != null)
-            for (unique in civInfo.policies.policyEffects)
-                if (unique.equalsPlaceholderText("[] in all cities with a garrison"))
-                    happinessFromPolicies += Stats.parse(unique.getPlaceholderParameters()[0]).happiness
+            for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
+                happinessFromPolicies += Stats.parse(unique.params[0]).happiness
 
         newHappinessList["Policies"] = happinessFromPolicies
 

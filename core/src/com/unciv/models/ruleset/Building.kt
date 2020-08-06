@@ -7,31 +7,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
-import com.unciv.models.translations.getPlaceholderText
 import com.unciv.models.translations.tr
 import kotlin.math.pow
 
-class Unique(val text:String){
-    val placeholderText = text.getPlaceholderText()
-    val params = text.getPlaceholderParameters()
-}
-
-class UniqueMap:HashMap<String, ArrayList<Unique>>() {
-    fun addUnique(unique: Unique) {
-        if (!containsKey(unique.placeholderText)) this[unique.placeholderText] = ArrayList()
-        this[unique.placeholderText]!!.add(unique)
-    }
-
-    fun getUniques(placeholderText: String): List<Unique> {
-        val result = this.get(placeholderText)
-        if (result == null) return listOf()
-        else return result
-    }
-
-    fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
-}
 
 class Building : NamedStats(), IConstruction {
 
@@ -254,10 +232,10 @@ class Building : NamedStats(), IConstruction {
 
         val cityCenter = construction.cityInfo.getCenterTile()
 
-        for(unique in uniques)
-            if(unique.equalsPlaceholderText("Must be next to []")
-                    && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == unique.getPlaceholderParameters()[0] })
-                return unique
+        for(unique in uniqueObjects)
+            if(unique.placeholderText == "Must be next to []"
+                    && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == unique.params[0] })
+                return unique.text
 
         if ("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
             return "Must be next to river"
@@ -375,8 +353,8 @@ class Building : NamedStats(), IConstruction {
         }
 
         if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
-        for(unique in uniques) if(unique.equalsPlaceholderText("Free [] appears")){
-            val unitName = unique.getPlaceholderParameters()[0]
+        for(unique in uniqueObjects.filter { it.placeholderText == "Free [] appears" }) {
+            val unitName = unique.params[0]
             civInfo.addUnit(unitName, cityConstructions.cityInfo)
         }
         if ("2 free Great Artists appear" in uniques) {

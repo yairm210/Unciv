@@ -107,7 +107,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
                                   targetTranslations: Translations = this) {
         for (translation in languageTranslations) {
             val hashKey = if (translation.key.contains('['))
-                translation.key.replace(squareBraceRegex, "[]")
+                translation.key.getPlaceholderText()
             else translation.key
             if (!containsKey(hashKey))
                 targetTranslations[hashKey] = TranslationEntry(translation.key)
@@ -241,7 +241,7 @@ fun String.tr(): String {
          */
 
         // Convert "work on [building] has completed in [city]" to "work on [] has completed in []"
-        val translationStringWithSquareBracketsOnly = this.replace(squareBraceRegex, "[]")
+        val translationStringWithSquareBracketsOnly = this.getPlaceholderText()
         // That is now the key into the translation HashMap!
         val translationEntry = UncivGame.Current.translations
                 .get(translationStringWithSquareBracketsOnly, UncivGame.Current.settings.language, activeMods)
