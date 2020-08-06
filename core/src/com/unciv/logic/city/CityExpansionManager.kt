@@ -61,7 +61,7 @@ class CityExpansionManager {
         if (cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cost *= 0.75 // Specialty of Krepost
 
-        if (cityInfo.civInfo.nation.unique == UniqueAbility.MANIFEST_DESTINY)
+        if (cityInfo.civInfo.hasUnique("-50% cost when purchasing tiles"))
             cost /= 2
         return cost.toInt()
     }

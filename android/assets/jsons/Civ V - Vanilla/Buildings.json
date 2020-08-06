@@ -596,7 +596,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 1},
-		"uniques": ["Unhappiness from population decreased by 10%"],
+		"uniques": ["Unhappiness from population decreased by [10]%"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},

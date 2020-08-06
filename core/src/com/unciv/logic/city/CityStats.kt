@@ -183,7 +183,7 @@ class CityStats {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f     // -3 happiness per city
-        if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
+        if (civInfo.hasUnique("Unhappiness from number of Cities doubled"))
             unhappinessFromCity *= 2f//doubled for the Indian
 
         newHappinessList["Cities"] = unhappinessFromCity * unhappinessModifier
@@ -196,12 +196,9 @@ class CityStats {
             unhappinessFromCitizens *= 1.5f
         else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
-        if (civInfo.hasUnique("Unhappiness from population decreased by 10%"))
-            unhappinessFromCitizens *= 0.9f
-        if (civInfo.hasUnique("-5% unhappiness from citizens"))
-            unhappinessFromCitizens *= 0.95f
-        if (civInfo.nation.unique == UniqueAbility.POPULATION_GROWTH)
-            unhappinessFromCitizens *= 0.5f //halved for the Indian
+        
+        for(unique in civInfo.getMatchingUniques("Unhappiness from population decreased by []%"))
+            unhappinessFromCitizens *= (1-unique.params[0].toFloat()/100)
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 

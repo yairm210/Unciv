@@ -259,8 +259,9 @@ object BattleDamage {
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        return if(combatant.getUnitType() == UnitType.City
-                || combatant.getCivInfo().nation.unique == UniqueAbility.BUSHIDO && !combatant.getUnitType().isAirUnit())
+        return if (combatant.getUnitType() == UnitType.City
+                || combatant.getCivInfo().hasUnique("Units fight as though they were at full strength even when damaged")
+                && !combatant.getUnitType().isAirUnit())
             1f
         else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
     }

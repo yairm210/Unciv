@@ -88,7 +88,7 @@
 			{
 				"name": "Meritocracy",
 				"effect": "+1 happiness for every city connected to capital, -5% unhappiness from citizens",
-				"uniques": ["+1 happiness for every city connected to capital", "-5% unhappiness from citizens"],
+				"uniques": ["+1 happiness for every city connected to capital", "Unhappiness from population decreased by [5]%"],
 				"requires": ["Citizenship"],
 				"row": 2,
 				"column": 5
