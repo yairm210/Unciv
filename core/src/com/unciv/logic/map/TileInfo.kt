@@ -251,10 +251,13 @@ open class TileInfo {
                 && observingCiv.hasUnique("Tile yield from Great Improvements +100%"))
             stats.add(improvement) // again, for the double effect
 
-        if (improvement.uniques.contains("+1 additional Culture for each adjacent Moai"))
-            stats.culture += neighbors.count { it.improvement == "Moai" }
-        if (improvement.uniques.contains("+1 food for each adjacent Mountain"))
-            stats.food += neighbors.count { it.baseTerrain == Constants.mountain }
+        for(unique in improvement.uniqueObjects)
+            if (unique.placeholderText == "[] for each adjacent []") {
+                val adjacent = unique.params[1]
+                val numberOfBonuses = neighbors.count { it.improvement == adjacent
+                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent }
+                stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
+            }
 
         return stats
     }
@@ -370,11 +373,9 @@ open class TileInfo {
         var defenceBonus = getDefensiveBonus()
         val tileImprovement = getTileImprovement()
         if (tileImprovement != null) {
-            defenceBonus += when {
-                tileImprovement.hasUnique("Gives a defensive bonus of 50%") -> 0.5f
-                tileImprovement.hasUnique("Gives a defensive bonus of 100%") -> 1.0f
-                else -> 0.0f
-            }
+            for (unique in tileImprovement.uniqueObjects)
+                if (unique.placeholderText == "Gives a defensive bonus of []%")
+                    defenceBonus += unique.params[0].toFloat() / 100
         }
         if (defenceBonus != 0.0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"

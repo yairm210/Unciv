@@ -84,11 +84,11 @@
 
 	// Military improvement
 	{
-		name: "Fort",
-		terrainsCanBeBuiltOn: ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
-		turnsToBuild: 6,
-		techRequired: "Engineering",
-		uniques: ["Gives a defensive bonus of 50%"]
+		"name": "Fort",
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
+		"turnsToBuild": 6,
+		"techRequired": "Engineering",
+		"uniques": ["Gives a defensive bonus of [50]%"]
 	},
 
 	// Transportation
@@ -171,7 +171,7 @@
 	},
 	{
 		"name": "Citadel",
-		"uniques": ["Gives a defensive bonus of 100%", "Deal 30 damage to adjacent enemy units", "Great Improvement"]
+		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement"]
 		// TODO (G&K): adds every tile around it to your territory
 	},
 
@@ -181,7 +181,7 @@
 		"uniqueTo": "Polynesia",
 		"culture": 1,
 		"turnsToBuild": 4,
-		"uniques": ["+1 additional Culture for each adjacent Moai","Can only be built on Coastal tiles"],
+		"uniques": ["[+1 Culture] for each adjacent [Moai]", "Can only be built on Coastal tiles"],
 		"techRequired": "Construction",
 		"improvingTech": "Flight",
 		"improvingTechStats": {"gold": 1}
@@ -192,7 +192,7 @@
 		"terrainsCanBeBuiltOn": ["Hill"],
 		"food": 1,
 		"turnsToBuild": 7,
-		"uniques": ["+1 food for each adjacent Mountain", "Cannot be built on bonus resource"],
+		"uniques": ["[+1 Food] for each adjacent [Mountain]", "Cannot be built on bonus resource"],
 		"techRequired": "Construction",
 		"improvingTech": "Fertilizer",
 		"improvingTechStats": {"food":1}
