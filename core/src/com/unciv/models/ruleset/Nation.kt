@@ -96,11 +96,11 @@ class Nation : INamed {
 
             textList += ""
         }
-//        if (uniqueName!="") {
-//            textList += uniqueName.tr() + ":"
-//            textList += "  " + uniques.joinToString(", ").tr()
-//            textList += ""
-//        }
+        else {
+            if (uniqueName != "") textList += uniqueName.tr() + ":"
+            textList += "  " + uniques.joinToString(", ").tr()
+            textList += ""
+        }
         if (startBias.isNotEmpty()) {
             textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
             textList += ""

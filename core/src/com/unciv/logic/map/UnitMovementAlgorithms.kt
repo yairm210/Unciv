@@ -344,7 +344,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             if (tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if (tile.isOcean && unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
+        if (tile.isOcean && !unit.civInfo.tech.wayfinding) { // Apparently all Polynesian naval units can enter oceans
             if (unit.cannotEnterOceanTiles) return false
             if (unit.cannotEnterOceanTilesUntilAstronomy
                     && !unit.civInfo.tech.isResearched("Astronomy"))
