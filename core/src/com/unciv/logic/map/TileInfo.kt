@@ -272,6 +272,9 @@ open class TileInfo {
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
+            !improvement.hasUnique("Can be built outside your borders")
+                    && getOwner() != civInfo -> false
+
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
             improvement.name == "Railroad" && this.roadStatus != RoadStatus.Railroad -> true
@@ -308,6 +311,12 @@ open class TileInfo {
     fun getDefensiveBonus(): Float {
         var bonus = getBaseTerrain().defenceBonus
         if (terrainFeature != null) bonus += getTerrainFeature()!!.defenceBonus
+        val tileImprovement = getTileImprovement()
+        if (tileImprovement != null) {
+            for (unique in tileImprovement.uniqueObjects)
+                if (unique.placeholderText == "Gives a defensive bonus of []%")
+                    bonus += unique.params[0].toFloat() / 100
+        }
         return bonus
     }
 
@@ -361,7 +370,7 @@ open class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)
-            lineList += "{$improvementInProgress}\r\n{in} $turnsToImprovement {turns}".tr() // todo change to [] translation notation
+            lineList += "{$improvementInProgress}\r\n  $turnsToImprovement {turns}".tr() // todo change to [] translation notation
         if (civilianUnit != null && isViewableToPlayer)
             lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
         if (militaryUnit != null && isViewableToPlayer) {
@@ -371,12 +380,6 @@ open class TileInfo {
             lineList += milUnitString
         }
         var defenceBonus = getDefensiveBonus()
-        val tileImprovement = getTileImprovement()
-        if (tileImprovement != null) {
-            for (unique in tileImprovement.uniqueObjects)
-                if (unique.placeholderText == "Gives a defensive bonus of []%")
-                    defenceBonus += unique.params[0].toFloat() / 100
-        }
         if (defenceBonus != 0.0f) {
             var defencePercentString = (defenceBonus * 100).toInt().toString() + "%"
             if (!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"

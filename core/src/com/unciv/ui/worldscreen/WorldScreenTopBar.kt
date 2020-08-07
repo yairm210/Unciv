@@ -63,7 +63,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         for (resource in revealedStrategicResources) {
             val resourceImage = ImageGetter.getResourceImage(resource.name, 20f)
             resourceImages[resource.name] = resourceImage
-            resourceTable.add(resourceImage)
+            resourceTable.add(resourceImage).padRight(0f)
             val resourceLabel = "0".toLabel()
             resourceLabels[resource.name] = resourceLabel
             resourceTable.add(resourceLabel)

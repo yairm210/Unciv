@@ -247,7 +247,8 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
             }).pad(10f).width(nationsPopupWidth).row()
         }
 
-        nationsPopup.add(ScrollPane(nationListTable)).height(previousScreen.stage.height * 0.8f)
+        nationsPopup.add(ScrollPane(nationListTable).apply { setOverscroll(false,false) })
+                .height(previousScreen.stage.height * 0.8f)
         nationsPopup.pack()
 
         val closeImage = ImageGetter.getImage("OtherIcons/Close")

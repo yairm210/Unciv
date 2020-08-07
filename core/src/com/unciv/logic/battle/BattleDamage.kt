@@ -178,12 +178,7 @@ object BattleDamage {
         if (!defender.unit.hasUnique("No defensive terrain bonus")) {
             val tileDefenceBonus = tile.getDefensiveBonus()
             if (tileDefenceBonus > 0)
-                modifiers["Terrain"] = tileDefenceBonus
-
-            val improvement = tile.getTileImprovement()
-            if (improvement != null && tile.isFriendlyTerritory(defender.getCivInfo()))
-                if (improvement.hasUnique("Gives a defensive bonus of 50%")) modifiers[improvement.name] = 0.50f
-                else if (improvement.hasUnique("Gives a defensive bonus of 100%")) modifiers[improvement.name] = 1.0f
+                modifiers["Tile"] = tileDefenceBonus
         }
 
         if(attacker.isRanged()) {
