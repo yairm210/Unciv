@@ -63,22 +63,25 @@ object Automation {
         if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstructionFromQueue))
             return city.cityConstructions.currentConstructionFromQueue
 
-        val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()){it.isWater || it.isCityCenter()}
+        // This is so that the AI doesn't use all its aluminum on units and have none left for spaceship parts
+        if (city.civInfo.getCivResourcesByName()["Aluminum"]!! < 2)
+            militaryUnits.filter { it.requiredResource != "Aluminum" }
+
+        val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
         findWaterConnectedCitiesAndEnemies.stepToEnd()
-        if(findWaterConnectedCitiesAndEnemies.tilesReached.keys.none {
+        if (findWaterConnectedCitiesAndEnemies.tilesReached.keys.none {
                     (it.isCityCenter() && it.getOwner() != city.civInfo)
                             || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
                 }) // there is absolutely no reason for you to make water units on this body of water.
             militaryUnits = militaryUnits.filter { it.unitType.isLandUnit() || it.unitType.isAirUnit() }
 
         val chosenUnit: BaseUnit
-        if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
-                && militaryUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
-            chosenUnit = militaryUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
-
-        else{ // randomize type of unit and take the most expensive of its kind
-            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.toList().random()
-            chosenUnit = militaryUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
+        if (!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit == null }
+                && militaryUnits.any { it.unitType == UnitType.Ranged }) // this is for city defence so get an archery unit if we can
+            chosenUnit = militaryUnits.filter { it.unitType == UnitType.Ranged }.maxBy { it.cost }!!
+        else { // randomize type of unit and take the most expensive of its kind
+            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }.toList().random()
+            chosenUnit = militaryUnits.filter { it.unitType == chosenUnitType }.maxBy { it.cost }!!
         }
         return chosenUnit.name
     }
