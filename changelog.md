@@ -1,3 +1,15 @@
+## 3.9.19
+
+Resolved #2818 - Can no longer build improvements outside your borders
+
+Resolved #2944 - Air units intercept range fixed
+
+All nations converted to uniques!
+
+Solved unit purchase discount being 100x what it was supposed to be
+
+Translation updates
+
 ## 3.9.18
 
 Resolved #2872 - Diplomacy screen now scrollable when there's too much text
