@@ -197,11 +197,12 @@ object ImageGetter {
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
         val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
-        val resource = ruleset.tileResources[resourceName]!!
+        val resource = ruleset.tileResources[resourceName]
+        if(resource==null) throw Exception("No resource $resourceName found in ruleset!")
         when {
-            resource.food>0 -> iconGroup.circle.color= foodCircleColor
-            resource.production>0 -> iconGroup.circle.color= productionCircleColor
-            resource.gold>0 -> iconGroup.circle.color= goldCircleColor
+            resource.food > 0 -> iconGroup.circle.color = foodCircleColor
+            resource.production > 0 -> iconGroup.circle.color = productionCircleColor
+            resource.gold > 0 -> iconGroup.circle.color = goldCircleColor
         }
 
         if(resource.resourceType==ResourceType.Luxury){
