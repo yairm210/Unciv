@@ -39,6 +39,12 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
             mapEditorScreen.ruleset.clear()
             mapEditorScreen.ruleset.add(ruleset)
             mapEditorScreen.tileEditorOptions.update()
+            // Remove resources that are not applicable to this scenario
+            for(tile in mapEditorScreen.tileMap.values){
+                if(tile.resource!=null && !ruleset.tileResources.containsKey(tile.resource!!))
+                    tile.resource=null
+            }
+
             mapEditorScreen.mapHolder.updateTileGroups()
             UncivGame.Current.setScreen(mapEditorScreen)
             dispose()
