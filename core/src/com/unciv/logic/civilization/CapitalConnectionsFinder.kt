@@ -19,7 +19,8 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
 
     private val road = RoadStatus.Road.name
     private val railroad = RoadStatus.Railroad.name
-    private val harbor = "Harbor"
+    private val harborFromRoad = "Harbor-Road"
+    private val harborFromRailroad = "Harbor-Railroad"
 
     init {
         citiesReachedToMediums[civInfo.getCapital()] = hashSetOf("Start")
@@ -36,8 +37,10 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
                 if (cityToConnectFrom.containsHarbor()) {
                     checkHarbor(cityToConnectFrom)
                 }
-                if (railroadIsResearched) {
-                    checkRailroad(cityToConnectFrom)
+                if (railroadIsResearched){
+                    val mediumsReached= citiesReachedToMediums[cityToConnectFrom]!!
+                    if(mediumsReached.contains("Start") || mediumsReached.contains(railroad) || mediumsReached.contains(harborFromRailroad))
+                        checkRailroad(cityToConnectFrom) // This is only relevant for city connection if there is an unbreaking line from the capital
                 }
                 if (theWheelIsResearched) {
                     checkRoad(cityToConnectFrom)
@@ -61,21 +64,22 @@ class CapitalConnectionsFinder(private val civInfo: CivilizationInfo) {
         check(
                 cityToConnectFrom,
                 transportType = railroad,
-                tileFilter = { tile -> tile.hasRailroad() || tile.isCityCenter() }
+                tileFilter = { tile -> tile.roadStatus == RoadStatus.Railroad || tile.isCityCenter() }
         )
     }
 
     private fun checkHarbor(cityToConnectFrom: CityInfo) {
         check(
                 cityToConnectFrom,
-                transportType = harbor,
+                transportType = if(cityToConnectFrom.wasPreviouslyReached("Railroad",null)) harborFromRailroad else harborFromRoad,
+                overridingTransportType = harborFromRailroad,
                 tileFilter = { tile -> tile.isWater || tile.isCityCenter() },
                 cityFilter = { city -> city.containsHarbor() }
         )
     }
 
     private fun CityInfo.containsHarbor() =
-            this.cityConstructions.containsBuildingOrEquivalent(harbor)
+            this.cityConstructions.containsBuildingOrEquivalent("Harbor")
 
     private fun check(cityToConnectFrom: CityInfo,
                       transportType: String,

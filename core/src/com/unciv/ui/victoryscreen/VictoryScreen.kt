@@ -3,6 +3,7 @@ package com.unciv.ui.victoryscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
@@ -25,9 +26,13 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
     private val contentsTable = Table()
 
     init {
+        val difficultyLabel = ("{Difficulty}: {${worldScreen.gameInfo.difficulty}}").toLabel()
+        difficultyLabel.setPosition(10f, stage.height-10, Align.topLeft)
+        stage.addActor(difficultyLabel)
+
         val tabsTable = Table().apply { defaults().pad(10f) }
         val setMyVictoryButton = "Our status".toTextButton().onClick { setMyVictoryTable() }
-        tabsTable.add(setMyVictoryButton)
+        if (!playerCivInfo.isSpectator()) tabsTable.add(setMyVictoryButton)
         val setGlobalVictoryButton = "Global status".toTextButton().onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
         val setCivRankingsButton = "Rankings".toTextButton().onClick { setCivRankingsTable() }
@@ -36,7 +41,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         topTable.addSeparator()
         topTable.add(contentsTable)
 
-        setMyVictoryTable()
+        if (playerCivInfo.isSpectator())
+            setGlobalVictoryTable()
+        else
+            setMyVictoryTable()
 
         rightSideButton.isVisible=false
 
@@ -120,7 +128,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         val t = Table()
         t.defaults().pad(5f)
         t.add(getMilestone("Built Apollo Program",
-                playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
+                playerCivInfo.hasUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 

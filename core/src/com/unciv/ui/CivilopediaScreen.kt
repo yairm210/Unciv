@@ -50,7 +50,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
 
         categoryToEntries["Buildings"] = ruleset.buildings.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false, null,ruleset),
-                        ImageGetter.getConstructionImage(it.name)) }
+                        ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Resources"] = ruleset.tileResources.values
                 .map { CivilopediaEntry(it.name,it.getDescription(ruleset),
                         ImageGetter.getResourceImage(it.name,50f)) }
@@ -62,7 +62,7 @@ class CivilopediaScreen(ruleset: Ruleset) : CameraStageBaseScreen() {
                         ImageGetter.getImprovementIcon(it.name,50f)) }
         categoryToEntries["Units"] = ruleset.units.values
                 .map { CivilopediaEntry(it.name,it.getDescription(false),
-                        ImageGetter.getConstructionImage(it.name)) }
+                        ImageGetter.getConstructionImage(it.name).surroundWithCircle(50f)) }
         categoryToEntries["Nations"] = ruleset.nations.values
                 .filter { it.isMajorCiv() }
                 .map { CivilopediaEntry(it.name,it.getUniqueString(ruleset,false),

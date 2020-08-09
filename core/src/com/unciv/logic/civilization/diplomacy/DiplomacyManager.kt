@@ -2,7 +2,6 @@ package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.*
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffer
@@ -167,17 +166,20 @@ class DiplomacyManager() {
             return otherCivDiplomacy().getTurnsToRelationshipChange()
 
         if (civInfo.isCityState() && !otherCiv().isCityState()) {
-            val hasCityStateInfluenceBonus = otherCiv().nation.unique == UniqueAbility.HELLENIC_LEAGUE
-            val dropPerTurn = if(hasCityStateInfluenceBonus) .5f else 1f
-
-            if (relationshipLevel() >= RelationshipLevel.Ally)
-                return ceil((influence - 60f) / dropPerTurn).toInt() + 1
-            else if (relationshipLevel() >= RelationshipLevel.Friend)
-                return ceil((influence - 30f) / dropPerTurn).toInt() + 1
-            else
-                return 0
+            val dropPerTurn = getCityStateInfluenceDegradeRate()
+            when {
+                relationshipLevel() >= RelationshipLevel.Ally -> return ceil((influence - 60f) / dropPerTurn).toInt() + 1
+                relationshipLevel() >= RelationshipLevel.Friend -> return ceil((influence - 30f) / dropPerTurn).toInt() + 1
+                else -> return 0
+            }
         }
         return 0
+    }
+
+    fun getCityStateInfluenceDegradeRate(): Float {
+        if(otherCiv().hasUnique("City-State Influence degrades at half rate"))
+            return .5f
+        else return 1f
     }
 
     fun canDeclareWar() = turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War
@@ -288,9 +290,8 @@ class DiplomacyManager() {
     private fun nextTurnCityStateInfluence() {
         val initialRelationshipLevel = relationshipLevel()
 
-        val hasCityStateInfluenceBonus = otherCiv().nation.unique == UniqueAbility.HELLENIC_LEAGUE
-        val increment = if (hasCityStateInfluenceBonus) 2f else 1f
-        val decrement = if (hasCityStateInfluenceBonus) .5f else 1f
+        val increment = if (otherCiv().hasUnique("City-State Influence recovers at twice the normal rate")) 2f else 1f
+        val decrement = getCityStateInfluenceDegradeRate()
 
         if (influence > restingPoint)
             influence = max(restingPoint, influence - decrement)
@@ -462,26 +463,27 @@ class DiplomacyManager() {
         }
     }
 
-    fun makePeace(){
-        diplomaticStatus= DiplomaticStatus.Peace
+    fun makePeace() {
+        diplomaticStatus = DiplomaticStatus.Peace
+        otherCivDiplomacy().diplomaticStatus = DiplomaticStatus.Peace
 
         if (otherCiv().isAtWarWith(civInfo)) {
             for (civ in getCommonKnownCivs()) {
                 civ.addNotification(
-                    "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
-                    null,
-                    Color.WHITE
+                        "[${civInfo.civName}] and [${otherCiv().civName}] have signed the Peace Treaty!",
+                        null,
+                        Color.WHITE
                 )
             }
         }
 
         val otherCiv = otherCiv()
         // We get out of their territory
-        for(unit in civInfo.getCivUnits().filter { it.getTile().getOwner()== otherCiv})
+        for (unit in civInfo.getCivUnits().filter { it.getTile().getOwner() == otherCiv })
             unit.movement.teleportToClosestMoveableTile()
 
         // And we get out of theirs
-        for(unit in otherCiv.getCivUnits().filter { it.getTile().getOwner()== civInfo})
+        for (unit in otherCiv.getCivUnits().filter { it.getTile().getOwner() == civInfo })
             unit.movement.teleportToClosestMoveableTile()
     }
 

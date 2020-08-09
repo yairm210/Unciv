@@ -526,6 +526,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [New](https://thenounproject.com/search/?q=new&i=1886943) by Alice Design for New Game
 * [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
+* [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
 
 # Sound credits
 

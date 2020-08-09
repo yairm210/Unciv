@@ -10,6 +10,8 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 object SpecificUnitAutomation {
@@ -79,18 +81,18 @@ object SpecificUnitAutomation {
                     if (owner != null)
                         distance - WorkerAutomation(unit).getPriority(it, owner)
                     else distance }
-                .firstOrNull{ unit.movement.canReach(it) } // canReach is perfrmance-heavy and always a last resort
+                .firstOrNull{ unit.movement.canReach(it) } // canReach is performance-heavy and always a last resort
         // if there is a good tile to steal - go there
         if (tileToSteal != null) {
             unit.movement.headTowards(tileToSteal)
             if (unit.currentMovement > 0 && unit.currentTile == tileToSteal)
-                UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
 
-        // try to build a citadel
+        // try to build a citadel for defensive purposes
         if (WorkerAutomation(unit).evaluateFortPlacement(unit.currentTile, unit.civInfo, true)) {
-            UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+            UnitActions.getImprovementConstructionActions(unit,unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
 
@@ -110,7 +112,7 @@ object SpecificUnitAutomation {
             if (tileForCitadel != null) {
                 unit.movement.headTowards(tileForCitadel)
                 if (unit.currentMovement > 0 && unit.currentTile == tileForCitadel)
-                    UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+                    UnitActions.getImprovementConstructionActions(unit,unit.currentTile).firstOrNull()?.action?.invoke()
             } else
                 unit.movement.headTowards(cityToGarrison)
             return
@@ -190,10 +192,13 @@ object SpecificUnitAutomation {
             foundCityAction.action.invoke()
     }
 
-    fun automateGreatPerson(unit: MapUnit) {
+    fun automateImprovementPlacer(unit: MapUnit) {
         if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
 
-        val relatedStat = GreatPersonManager().statToGreatPersonMapping.entries.first { it.value == unit.name }.key
+        val improvementName = unit.getUniques().first { it.equalsPlaceholderText("Can construct []") }
+                .getPlaceholderParameters()[0]
+        val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
+        val relatedStat = improvement.toHashMap().maxBy { it.value }!!.key
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending {
             val stats = Stats()
@@ -221,7 +226,7 @@ object SpecificUnitAutomation {
 
             unit.movement.headTowards(chosenTile)
             if (unit.currentTile == chosenTile)
-                UnitActions.getBuildImprovementAction(unit)?.action?.invoke()
+                UnitActions.getImprovementConstructionActions(unit, unit.currentTile).firstOrNull()?.action?.invoke()
             return
         }
     }

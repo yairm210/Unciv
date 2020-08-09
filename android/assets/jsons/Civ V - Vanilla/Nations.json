@@ -1,4 +1,11 @@
 [
+	//Spectator
+	{
+		"name": "Spectator",
+		"outerColor": [255,255,255]
+//		"innerColor": [255,255,255]
+	},
+
 	{
 		//nations
 		"name": "Babylon",
@@ -23,6 +30,8 @@
 		"outerColor": [27,53,63],
 		"innerColor": [213,249,255],
 		"unique": "INGENUITY",
+		"uniqueName": "Ingenuity",
+		"uniques": ["Receive free [Great Scientist] when you discover [Writing]", "[Great Scientist] is earned [50]% faster"]
 		"cities": ["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
 			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
@@ -51,6 +60,8 @@
 		"outerColor": [181, 232, 232],
 		"innerColor": [68,142,249],
 		"unique": "HELLENIC_LEAGUE",
+		"uniqueName": "Hellenic League",
+		"uniques": ["City-State Influence degrades at half rate", "City-State Influence recovers at twice the normal rate"]
 		"cities": ["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
@@ -75,6 +86,8 @@
 		"outerColor": [9, 112, 84],
 		"innerColor": [255,255,255],
 		"unique": "ART_OF_WAR",
+		"uniqueName": "Art of War",
+		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"]
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
@@ -103,6 +116,8 @@
 		"outerColor": [ 231, 213, 0],
 		"innerColor": [98,10,210],
 		"unique": "MONUMENT_BUILDERS",
+		"uniqueName": "Monument Builders",
+		"uniques": ["+[20]% Production when constructing [Wonders]"]
 		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten",
 			   "Hieraconpolis","Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			   "Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
@@ -128,6 +143,8 @@
 		"outerColor": [ 114, 0, 0],
 		"innerColor": [255,255,255],
 		"unique": "SUN_NEVER_SETS",
+		"uniqueName": "Sun Never Sets",
+		"uniques": ["+2 movement for all naval units"]
 		"cities": ["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
@@ -151,6 +168,8 @@
 		"outerColor": [ 38, 98, 255],
 		"innerColor": [239,236,148],
 		"unique": "ANCIEN_REGIME",
+		"uniqueName": "Ancien Régime",
+		"uniques": ["+2 Culture per turn from cities before discovering Steam Power"]
 		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen","Toulon",
@@ -175,6 +194,9 @@
 		"outerColor": [ 236, 178, 0],
 		"innerColor": [0,0,0],
 		"unique": "SIBERIAN_RICHES",
+		"uniqueName": "Siberian Riches",
+		"uniques": ["[+1 Production] from [Strategic resource] tiles","Double quantity of [Horses] produced",
+			"Double quantity of [Iron] produced","Double quantity of [Uranium] produced"]
 		"cities": ["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
 			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir","Perm",
@@ -199,6 +221,8 @@
 		"outerColor": [ 53,0,87],
 		"innerColor": [238,201,9],
 		"unique": "GLORY_OF_ROME",
+		"uniqueName": "The Glory of Rome",
+		"uniques": ["+25% Production towards any buildings that already exist in the Capital"]
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
@@ -223,6 +247,8 @@
 		"outerColor": [ 41,83,42],
 		"innerColor": [146,221,9],
 		"unique": "TRADE_CARAVANS",
+		"uniqueName": "Trade Caravans",
+		"uniques": ["[+1 Gold] from each Trade Route", "Double quantity of [Oil] produced"],
 		"cities": ["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis","Kairouan","Algiers","Oran"]
@@ -245,6 +271,8 @@
 		"outerColor": [ 28,51,119],
 		"innerColor": [255,255,255],
 		"unique": "MANIFEST_DESTINY",
+		"uniqueName": "Manifest Destiny",
+		"uniques": ["+1 Sight for all land military units", "-50% cost when purchasing tiles"]
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
 			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh",
@@ -271,6 +299,8 @@
 		"outerColor": [215,225,225],
 		"innerColor": [185,0,0],
 		"unique": "BUSHIDO",
+		"uniqueName": "Bushido",
+		"uniques": ["Units fight as though they were at full strength even when damaged"]
 		"cities": ["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
 			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
@@ -295,6 +325,8 @@
 		"outerColor": [16,126,5],
 		"innerColor": [255,153,51],
 		"unique": "POPULATION_GROWTH",
+		"uniqueName": "Population Growth",
+		"uniques": ["Unhappiness from number of Cities doubled", "Unhappiness from population decreased by [50]%"]
 		"cities": ["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
@@ -317,6 +349,8 @@
 		"outerColor": [150,150,150],
 		"innerColor": [60,60,60],
 		"unique": "FUROR_TEUTONICUS",
+		"uniqueName": "Furor Teutonicus",
+		"uniques": ["67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment", "-25% land units maintenance"],
 		"cities": ["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
 			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
 			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
@@ -345,6 +379,8 @@
 		"outerColor": [245,248,185],
 		"innerColor": [18,84,30],
 		"unique": "BARBARY_CORSAIRS",
+		"uniqueName": "Barbary Corsairs",
+		"uniques": ["Pay only one third the usual cost for naval unit maintenance", "Melee naval units have a 1/3 chance to capture defeated naval units"],
 		"cities": ["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
 			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
@@ -370,6 +406,8 @@
 		"outerColor": [20,25,173],
 		"innerColor": [187,33,51],
 		"unique": "SCHOLARS_OF_THE_JADE_HALL",
+		"uniqueName": "Scholars of the Jade Hall",
+		"uniques": ["[+2 Science] from every specialist", "[+2 Science] from every [Great Improvement]"],
 		"cities": ["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
@@ -394,6 +432,8 @@
 		"outerColor": [54,72,72],
 		"innerColor": [246,205,137],
 		"unique": "GREAT_WARPATH",
+		"uniqueName": "The Great Warpath",
+		"uniques": ["All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."]
 		"cities": ["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
@@ -417,6 +457,8 @@
 		"outerColor": [153,5,3],
 		"innerColor": [244,232,54],
 		"unique": "ACHAEMENID_LEGACY",
+		"uniqueName": "Achaemenid Legacy",
+		"uniques": ["Golden Age length increases +50%", "+1 Movement for all units during Golden Age", "+10% Strength for all units during Golden Age"],
 		"cities": ["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
 			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
 			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
@@ -444,6 +486,8 @@
 		"outerColor": [225,105,0],
 		"innerColor": [255,255,78],
 		"unique": "WAYFINDING",
+		"uniqueName": "Wayfinding",
+		"uniques": ["Can embark and move over Coasts and Oceans immediately", "+1 Sight when embarked", "+[10]% Strength if within 2 tiles of a [Moai]"],
 		"cities": ["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
@@ -468,6 +512,8 @@
 		"outerColor": [228,208,43],
 		"innerColor": [193,21,17],
 		"unique": "FATHER_GOVERNS_CHILDREN",
+		"uniqueName": "Father Governs Children",
+		"uniques": ["Food and Culture from Friendly City-States are increased by 50%"]
 		"cities": ["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
@@ -492,6 +538,9 @@
 		"outerColor": [102,0,0],
 		"innerColor": [255,102,102],
 		"unique": "SEVEN_CITIES_OF_GOLD",
+		"uniqueName": "Seven Cities of Gold",
+		"uniques": ["100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)",
+			"Double Happiness from Natural Wonders", "Tile yields from Natural Wonders doubled"]
 		"cities": ["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
 			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
@@ -516,6 +565,8 @@
 		"outerColor": [214,145,19],
 		"innerColor": [90,0,10],
 		"unique": "RIVER_WARLORD",
+		"uniqueName": "River Warlord",
+		"uniques": ["Receive triple Gold from Barbarian encampments and pillaging Cities", "Embarked units can defend themselves"]
 		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
 			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
 			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
@@ -539,6 +590,8 @@
 		"outerColor": [81,0,9],
 		"innerColor": [255,120,0],
 		"unique": "MONGOL_TERROR",
+		"uniqueName": "Mongol Terror",
+		"uniques": ["+30% Strength when fighting City-State units and cities", "+[1] Movement for all [Mounted] units"]
 		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Altay","Uliastay","Bayanhongor",
@@ -603,6 +656,9 @@
 		"outerColor": [253,245,155],
 		"innerColor": [4,144,95],
 		"unique": "GREAT_ANDEAN_ROAD",
+		"uniqueName": "Great Andean Road",
+		"uniques": ["Units ignore terrain costs when moving into any tile with Hills", "50% Maintenance costs reduction",
+			"No Maintenance costs for improvements in Hills"],
 		"cities": ["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Rumicucho","Vilcabamba","Vitcos",
 			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
@@ -627,6 +683,9 @@
 		"outerColor": [51,25,0],
 		"innerColor": [255,255,102],
 		"unique": "VIKING_FURY",
+		"uniqueName": "Viking Fury",
+		"uniques": ["+1 Movement for all embarked units", "Units pay only 1 movement point to embark and disembark",
+			"Melee units pay no movement cost to pillage"], 
 		"cities": ["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
@@ -744,7 +803,7 @@
 		"startBias": ["Coast"],
 
 		"declaringWar": "I will enjoy hearing your last breath as you witness the destruction of your realm!",
-		"attacked": "Why do we fight' Because Inanna demands it. Now, witness the power of the Sumerians!",
+		"attacked": "Why do we fight? Because Inanna demands it. Now, witness the power of the Sumerians!",
 		"defeated": "What treachery has struck us? No, what evil?",
 		"outerColor": [0, 0, 0],
 		"innerColor": [255,69,0],
@@ -1015,5 +1074,5 @@
 		"outerColor": [0,0,0],
 		"innerColor": [182,0,0]
 	}
-	        	
+
 ]

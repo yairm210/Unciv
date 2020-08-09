@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
+import com.unciv.models.ruleset.UniqueMap
 import com.unciv.models.ruleset.VictoryType
 import kotlin.math.min
 import kotlin.math.pow
@@ -13,7 +14,7 @@ class PolicyManager {
     @Transient lateinit var civInfo: CivilizationInfo
     // Needs to be separate from the actual adopted policies, so that
     //  in different game versions, policies can have different effects
-    @Transient internal val policyEffects = HashSet<String>()
+    @Transient internal val policyUniques = UniqueMap()
 
     var freePolicies = 0
     var storedCulture = 0
@@ -36,10 +37,16 @@ class PolicyManager {
         return toReturn
     }
 
-    fun setTransients(){
-        val allPolicies = getAllPolicies()
-        val effectsOfCurrentPolicies = adoptedPolicies.map { adoptedPolicy -> allPolicies.first { it.name==adoptedPolicy }.effect }
-        policyEffects.addAll(effectsOfCurrentPolicies)
+    fun getPolicyByName(name:String): Policy = getAllPolicies().first { it.name==name }
+            
+    fun setTransients() {
+        for (policyName in adoptedPolicies)
+            addPolicyToTransients(getPolicyByName(policyName))
+    }
+
+    fun addPolicyToTransients(policy: Policy){
+        for(unique in policy.uniqueObjects)
+            policyUniques.addUnique(unique)
     }
 
     private fun getAllPolicies() = civInfo.gameInfo.ruleSet.policyBranches.values.asSequence()
@@ -64,10 +71,9 @@ class PolicyManager {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
         var cityModifier = 0.3f * (civInfo.cities.count { !it.isPuppet } - 1)
 
-        if (hasEffect("Each city founded increases culture cost of policies 33% less than normal. Starts a golden age."))
+        if (civInfo.hasUnique("Each city founded increases culture cost of policies 33% less than normal"))
             cityModifier *= (2 / 3f)
-        if (isAdopted("Piety Complete")) policyCultureCost *= 0.9
-        if (civInfo.containsBuildingUnique("Culture cost of adopting new Policies reduced by 10%"))
+        for(unique in civInfo.getMatchingUniques("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
             policyCultureCost *= civInfo.getDifficulty().policyCostModifier
@@ -79,8 +85,6 @@ class PolicyManager {
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
-
-    fun hasEffect(effectName:String) = policyEffects.contains(effectName)
 
     fun isAdoptable(policy: Policy): Boolean {
         if(isAdopted(policy.name)) return false
@@ -113,7 +117,7 @@ class PolicyManager {
         }
 
         adoptedPolicies.add(policy.name)
-        policyEffects.add(policy.effect)
+        addPolicyToTransients(policy)
 
         if (!branchCompletion) {
             val branch = policy.branch
@@ -123,32 +127,33 @@ class PolicyManager {
         }
 
         val hasCapital = civInfo.cities.any { it.isCapital() }
-        when (policy.effect) {
-            "Training of settlers increased +50% in capital, receive a new settler near the capital" ->
-                if (hasCapital && !civInfo.isOneCityChallenger())
-                    civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.settler)
-            "Tile improvement speed +25%, receive a free worker near the capital" ->
-                if (hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
-            "+1 culture for each monument, temple and monastery. Gain a free policy." -> freePolicies++
-            "Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
-            "+33% culture in all cities with a world wonder, immediately enter a golden age" ->
-                civInfo.goldenAges.enterGoldenAge()
-            "Free Great Person of choice near capital" -> {
-                if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                else {
-                    val preferredVictoryType = civInfo.victoryType()
-                    val greatPerson = when (preferredVictoryType) {
-                        VictoryType.Cultural -> "Great Artist"
-                        VictoryType.Scientific -> "Great Scientist"
-                        VictoryType.Domination, VictoryType.Neutral ->
-                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
-                    }
-                    civInfo.addGreatPerson(greatPerson)
+
+        for (unique in policy.uniqueObjects)
+            when (unique.placeholderText) {
+                "Free [] appears" -> {
+                    val unitName = unique.params[0]
+                    if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                        civInfo.addUnit(unitName, civInfo.getCapital())
                 }
+                "Free Social Policy" -> freePolicies++
+                "Empire enters golden age" ->
+                    civInfo.goldenAges.enterGoldenAge()
+                "Free Great Person" -> {
+                    if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
+                    else {
+                        val preferredVictoryType = civInfo.victoryType()
+                        val greatPerson = when (preferredVictoryType) {
+                            VictoryType.Cultural -> "Great Artist"
+                            VictoryType.Scientific -> "Great Scientist"
+                            VictoryType.Domination, VictoryType.Neutral ->
+                                civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
+                        }
+                        civInfo.addUnit(greatPerson)
+                    }
+                }
+                "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
+                "+20% attack bonus to all Military Units for 30 turns" -> autocracyCompletedTurns = 30
             }
-            "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
-            "+20% attack bonus to all Military Units for 30 turns" -> autocracyCompletedTurns = 30
-        }
         tryAddLegalismBuildings()
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
@@ -159,7 +164,7 @@ class PolicyManager {
     }
 
     fun tryAddLegalismBuildings() {
-        if(!civInfo.policies.hasEffect("Immediately creates a cheapest available cultural building in each of your first 4 cities for free"))
+        if(!civInfo.hasUnique("Immediately creates a cheapest available cultural building in each of your first 4 cities for free"))
             return
         if(legalismState.size >= 4) return
 

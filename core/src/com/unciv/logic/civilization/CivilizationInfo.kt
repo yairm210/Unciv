@@ -15,13 +15,11 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
-import com.unciv.models.ruleset.Building
-import com.unciv.models.ruleset.Difficulty
-import com.unciv.models.ruleset.Nation
-import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.*
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
+import com.unciv.models.translations.equalsPlaceholderText
 import com.unciv.models.translations.tr
 import com.unciv.ui.victoryscreen.RankingType
 import java.util.*
@@ -65,7 +63,7 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
-    var allyCivName = ""
+    private var allyCivName = ""
     var naturalWonders = ArrayList<String>()
 
     //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
@@ -132,6 +130,7 @@ class CivilizationInfo {
             gameInfo.gameParameters.oneCityChallenge)
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarian() =  nation.isBarbarian()
+    fun isSpectator() = nation.isSpectator()
     fun isCityState(): Boolean = nation.isCityState()
     fun getCityStateType(): CityStateType = nation.cityStateType!!
     fun isMajorCiv() = nation.isMajorCiv()
@@ -176,8 +175,15 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    fun containsBuildingUnique(unique:String) = cities.any { it.containsBuildingUnique(unique) }
+    fun getBuildingUniques(): Sequence<Unique> = cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getAllUniques() }
 
+    fun hasUnique(unique:String) = getMatchingUniques(unique).any()
+
+    fun getMatchingUniques(uniqueTemplate: String): Sequence<Unique> {
+        return nation.uniqueObjects.asSequence().filter { it.placeholderText == uniqueTemplate } +
+                cities.asSequence().flatMap { it.cityConstructions.builtBuildingUniqueMap.getUniques(uniqueTemplate).asSequence() } +
+                policies.policyUniques.getUniques(uniqueTemplate)
+    }
 
     //region Units
     fun getCivUnits(): Sequence<MapUnit> = units.asSequence()
@@ -269,6 +275,7 @@ class CivilizationInfo {
     fun isDefeated()= cities.isEmpty() // No cities
             && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
             && !isBarbarian() // Barbarians can be never defeated
+            && !isSpectator() // can't loose in Spectator mode
             && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
 
     fun getEra(): String {
@@ -397,7 +404,7 @@ class CivilizationInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = greatPeople.getNewGreatPerson()
-            if (greatPerson != null) addGreatPerson(greatPerson)
+            if (greatPerson != null) addUnit(greatPerson)
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
@@ -482,15 +489,13 @@ class CivilizationInfo {
         notifications.add(Notification(text, color, action))
     }
 
-    fun addGreatPerson(greatPerson: String){
-        if(cities.isEmpty()) return
-        addGreatPerson(greatPerson, cities.random())
-    }
-
-    fun addGreatPerson(greatPerson: String, city:CityInfo) {
-        val greatPersonName = getEquivalentUnit(greatPerson).name
-        placeUnitNearTile(city.location, greatPersonName)
-        addNotification("A [$greatPersonName] has been born in [${city.name}]!", city.location, Color.GOLD)
+    fun addUnit(unitName:String, city: CityInfo?=null) {
+        if (cities.isEmpty()) return
+        val cityToAddTo = city ?: cities.random()
+        val unit = getEquivalentUnit(unitName)
+        placeUnitNearTile(cityToAddTo.location, unit.name)
+        if (unit.uniques.any { it.equalsPlaceholderText("Great Person - []") })
+            addNotification("A [${unit.name}] has been born in [${cityToAddTo.name}]!", cityToAddTo.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
@@ -547,9 +552,7 @@ class CivilizationInfo {
         addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!", null, Color.GREEN)
     }
 
-    fun getAllyCiv(): String {
-        return allyCivName
-    }
+    fun getAllyCiv() = allyCivName
 
     fun updateAllyCivForCityState() {
         var newAllyName = ""

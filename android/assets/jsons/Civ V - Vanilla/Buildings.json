@@ -29,7 +29,7 @@
 		"name": "Stone Works", 
 		"happiness": 1,
 		"production": 1,
-		"requiredNearbyImprovedResources": ["Marble","Stone"],
+		"requiredNearbyImprovedResources": ["Marble", "Stone"],
 		"resourceBonusStats": {"production": 1},
 		"maintenance": 1,
 		"hurryCostModifier": 25,
@@ -77,6 +77,15 @@
 		"happiness": 2,
 		"hurryCostModifier": 25,
 		"requiredTech": "Trapping"
+	},
+	{
+		"name": "Water Mill",
+		"maintenance": 2,
+		"food": 2,
+		"production": 1,
+		"hurryCostModifier": 25,
+		"uniques": ["Must be next to river"],
+		"requiredTech": "The Wheel"
 	},
 	
 	/*
@@ -157,7 +166,8 @@
 		"culture": 1,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Provides a sum of gold each time you spend a Great Person", "+2 Gold for each source of Marble and Stone"],
+		"uniques": ["Provides a sum of gold each time you spend a Great Person",
+			"[+2 Gold] from [Marble] tiles", "[+2 Gold] from [Stone] tiles"]
 		"requiredTech": "Masonry"
 		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
 	},
@@ -169,7 +179,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"resourceBonusStats": {"food": 1},
-		"uniques": ["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"],
+		"uniques": ["Can only be built in coastal cities", "[+1 Food] from [Ocean] tiles", "[+1 Food] from [Coast] tiles"]
 		"requiredTech": "Optics"
 	},
 	{
@@ -288,7 +298,7 @@
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"gold": 25},
 		"uniques": ["Provides 1 extra copy of each improved luxury resource near this City",
-			"+2 Gold for each source of Oil and oasis"],
+			"[+2 Gold] from [Oil] tiles", "[+2 Gold] from [Oasis] tiles"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -344,7 +354,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"culture": 1},
 		"isWonder": true,
-		"uniques": ["+33% great person generation in all cities"],
+		"uniques": ["+[33]% great person generation in all cities"],
 		"requiredTech": "Theology",
 		"quote": "'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
@@ -401,7 +411,7 @@
 		"production": 2,
 		"specialistSlots": {"production": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["+1 Production from each worked Forest tile"],
+		"uniques": ["[+1 Production] from [Forest] tiles"],
 		"requiredTech": "Metal Casting"
 	},
 	{
@@ -428,7 +438,7 @@
 		"percentStatBonus": {"science": 33},
 		"specialistSlots": {"science": 2},
 		"requiredBuilding": "Library",
-		"uniques": ["+2 Science from each worked Jungle tile"],
+		"uniques": ["[+2 Science] from [Jungle] tiles"],
 		"requiredTech": "Education"
 	},
 	{
@@ -441,7 +451,7 @@
 		"specialistSlots": {"science": 2},
 		"culture": 3,
 		"requiredBuilding": "Library",
-		"uniques": ["+2 Science from each worked Jungle tile"],
+		"uniques": ["[+2 Science] from [Jungle] tiles"],
 		"requiredTech": "Education"
 	},
 	{
@@ -527,7 +537,7 @@
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"science": 50},
 		"requiredBuilding": "Library",
-		"uniques": ["Must be next to mountain"],
+		"uniques": ["Must be next to [Mountain]"],
 		"requiredTech": "Astronomy"
 	},
 	{
@@ -586,7 +596,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 1},
-		"uniques": ["Unhappiness from population decreased by 10%"],
+		"uniques": ["Unhappiness from population decreased by [10]%"],
 		"requiredTech": "Banking",
 		"quote": "'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
@@ -667,7 +677,7 @@
 		"culture": 1,
 		"greatPersonPoints": {"science": 2},
 		"isWonder": true,
-		"uniques": ["Free great scientist appears","Science gained from research agreements +50%"],
+		"uniques": ["Free [Great Scientist] appears","Science gained from research agreements +50%"],
 		"requiredTech": "Architecture",
 		"quote": "'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell"
 	}, 
@@ -719,7 +729,7 @@
 		"xpForNewUnits": 15,
 		"greatPersonPoints": {"science": 2},
 		"isWonder": true,
-		"uniques": ["Free Great General appears near the Capital"],
+		"uniques": ["Free [Great General] appears"],
 		"requiredTech": "Military Science",
 		"quote": "'Pale Death beats equally at the poor man's gate and at the palaces of kings.'  - Horace"
 	},
@@ -746,7 +756,7 @@
 		"gold": 4,
 		"greatPersonPoints": {"gold": 2},
 		"isWonder": true,
-		"uniques": ["-15% to purchasing items in cities"],
+		"uniques": ["Cost of purchasing items in cities reduced by [15]%"],
 		"requiredTech": "Industrialization",
 		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},
@@ -821,7 +831,7 @@
 		"gold": 6,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["+1 happiness, +2 culture and +3 gold from every Castle",
+		"uniques": ["[+1 Happiness, +2 Culture, +3 Gold] from every [Castle]",
 			"Must have an owned mountain within 2 tiles"],
 		"requiredTech": "Railroad",
 		"quote": "'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
@@ -855,7 +865,7 @@
 		"maintenance": 3,
 		"cannotBeBuiltWith": "Nuclear Plant",
 		"requiredTech": "Ecology",
-		"uniques": ["Must be next to desert"]
+		"uniques": ["Must be next to [Desert]"]
 	},
 	{
 		"name": "Sydney Opera House",

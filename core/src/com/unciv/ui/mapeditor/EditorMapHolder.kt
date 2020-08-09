@@ -19,8 +19,8 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
     internal fun addTiles(padding:Float) {
 
         val tileSetStrings = TileSetStrings()
-        for (tileGroup in tileMap.values.map { TileGroup(it, tileSetStrings) })
-            tileGroups[tileGroup.tileInfo] = tileGroup
+        for (tileInfo in tileMap.values)
+            tileGroups[tileInfo] = TileGroup(tileInfo, tileSetStrings)
 
         tileGroupMap = TileGroupMap(tileGroups.values, padding)
         actor = tileGroupMap
@@ -31,7 +31,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
             // This is a hack to make the unit icons render correctly on the game, even though the map isn't part of a game
             // and the units aren't assigned to any "real" CivInfo
             tileGroup.tileInfo.getUnits().forEach { it.civInfo= CivilizationInfo()
-                    .apply { nation=mapEditorScreen.gameSetupInfo.ruleset.nations[it.owner]!! } }
+                    .apply { nation=mapEditorScreen.ruleset.nations[it.owner]!! } }
 
             tileGroup.showEntireMap = true
             tileGroup.update()
@@ -66,7 +66,7 @@ class EditorMapHolder(internal val mapEditorScreen: MapEditorScreen, internal va
 
     fun setTransients() {
         for (tileInfo in tileGroups.keys)
-            tileInfo.setTransients()
+            tileInfo.setTerrainTransients()
     }
 
     fun getClosestTileTo(stageCoords: Vector2): TileInfo? {

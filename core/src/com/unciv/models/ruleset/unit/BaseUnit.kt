@@ -9,6 +9,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 
@@ -25,7 +26,6 @@ class BaseUnit : INamed, IConstruction {
     var range:Int = 2
     var interceptRange = 0
     lateinit var unitType: UnitType
-    internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null
     var requiredResource:String? = null
     var uniques =HashSet<String>()
@@ -54,7 +54,6 @@ class BaseUnit : INamed, IConstruction {
         if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
         if(!forPickerScreen) {
             if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
-            if (unbuildable) sb.appendln("Unbuildable".tr())
             else sb.appendln("{Cost}: $cost".tr())
             if(requiredTech!=null) sb.appendln("Required tech: [$requiredTech]".tr())
             if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
@@ -72,8 +71,7 @@ class BaseUnit : INamed, IConstruction {
 
         if (promotions.isNotEmpty()) {
             sb.append((if (promotions.size==1) "Free promotion:" else "Free promotions:").tr())
-            for (promotion in promotions)
-                sb.appendln(" " + promotion.tr())
+            sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
         }
 
         sb.appendln("{Movement}: $movement".tr())
@@ -89,9 +87,7 @@ class BaseUnit : INamed, IConstruction {
         return unit
     }
 
-    override fun canBePurchased(): Boolean {
-        return true
-    }
+    override fun canBePurchased() = true
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
@@ -103,13 +99,13 @@ class BaseUnit : INamed, IConstruction {
         return productionCost.toInt()
     }
 
-    fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+    fun getBaseGoldCost() = (30.0 * cost).pow(0.75) * (1 + hurryCostModifier / 100)
 
     override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost()
-        if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-        if (civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
-        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
+        if (civInfo.hasUnique("Gold cost of purchasing units -33%")) cost *= 0.66f
+        for (unique in civInfo.getMatchingUniques("Cost of purchasing items in cities reduced by []%"))
+            cost *= 1 - (unique.params[0].toFloat() / 100)
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
@@ -123,22 +119,22 @@ class BaseUnit : INamed, IConstruction {
     }
 
     fun getRejectionReason(construction: CityConstructions): String {
-        if(unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
-            return "Can't build water units by the coast"
+        if (unitType.isWaterUnit() && !construction.cityInfo.getCenterTile().isCoastalTile())
+            return "Can only build water units in coastal cities"
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
-        if(civRejectionReason!="") return civRejectionReason
+        if (civRejectionReason != "") return civRejectionReason
         return ""
     }
 
     fun getRejectionReason(civInfo: CivilizationInfo): String {
-        if (unbuildable) return "Unbuildable"
+        if (uniques.contains("Unbuildable")) return "Unbuildable"
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (civInfo.gameInfo.ruleSet.units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (!civInfo.gameInfo.gameParameters.nuclearWeaponsEnabled
                 && uniques.contains("Requires Manhattan Project")) return "Disabled by setting"
-        if (uniques.contains("Requires Manhattan Project") && !civInfo.containsBuildingUnique("Enables nuclear weapon"))
+        if (uniques.contains("Requires Manhattan Project") && !civInfo.hasUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
@@ -163,7 +159,8 @@ class BaseUnit : INamed, IConstruction {
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
-        if (construction.cityInfo.civInfo.policies.isAdopted("Total War")) XP += 15
+        for (unique in construction.cityInfo.civInfo.getMatchingUniques("New military units start with [] Experience"))
+            XP += unique.params[0].toInt()
         unit.promotions.XP = XP
 
         if (unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)

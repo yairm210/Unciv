@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.UniqueAbility
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 
@@ -32,7 +31,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
         val viewedCivs = HashMap<CivilizationInfo,TileInfo>()
         for (tile in civInfo.viewableTiles) {
             val tileOwner = tile.getOwner()
-            if (tileOwner != null) viewedCivs[civInfo] = tile
+            if (tileOwner != null) viewedCivs[tileOwner] = tile
             for (unit in tile.getUnits()) viewedCivs[unit.civInfo] = tile
         }
 
@@ -51,6 +50,14 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
     private fun setNewViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
+
+        // while spectating all map is visible
+        if (civInfo.isSpectator()) {
+            val allTiles = civInfo.gameInfo.tileMap.values.toSet()
+            civInfo.viewableTiles = allTiles
+            civInfo.viewableInvisibleUnitsTiles = allTiles
+            return
+        }
 
         // There are a LOT of tiles usually.
         // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
@@ -94,7 +101,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
                 goldGained += 500
             }
 
-            if (civInfo.nation.unique == UniqueAbility.SEVEN_CITIES_OF_GOLD) {
+            if (civInfo.hasUnique("100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)")) {
                 if (!discoveredNaturalWonders.contains(tile.naturalWonder!!))
                     goldGained += 500
                 else goldGained += 100
@@ -110,7 +117,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
 
     fun updateHasActiveGreatWall() {
         civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.containsBuildingUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
+                civInfo.hasUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
     }
 
 

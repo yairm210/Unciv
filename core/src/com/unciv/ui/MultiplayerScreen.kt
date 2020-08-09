@@ -68,9 +68,9 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
         topTable.add(mainTable).row()
         scrollPane.setScrollingDisabled(false, true)
 
-        rightSideTable.defaults().uniformX();
-        rightSideTable.defaults().fillX();
-        rightSideTable.defaults().pad(10.0f);
+        rightSideTable.defaults().uniformX()
+        rightSideTable.defaults().fillX()
+        rightSideTable.defaults().pad(10.0f)
 
         // leftTable Setup
         reloadGameListUI()
@@ -186,7 +186,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
     fun reloadGameListUI() {
         val leftSubTable = Table()
         val gameSaver = GameSaver
-        val savedGames: List<String>?
+        val savedGames: Sequence<String>
 
         try {
             savedGames = gameSaver.getSaves(true)
@@ -326,7 +326,7 @@ class EditMultiplayerGameInfoScreen(game: GameInfo, gameName: String, backScreen
     init {
         val textField = TextField(gameName, skin)
 
-        topTable.add(Label("Rename".tr(), skin)).row()
+        topTable.add("Rename".toLabel()).row()
         topTable.add(textField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         //TODO Change delete to "give up"
@@ -392,13 +392,13 @@ class AddMultiplayerGameScreen(backScreen: MultiplayerScreen) : PickerScreen(){
             gameIDTextField.text = Gdx.app.clipboard.contents
         }
 
-        topTable.add(Label("GameID".tr(), skin)).row()
+        topTable.add("GameID".toLabel()).row()
         val gameIDTable = Table()
         gameIDTable.add(gameIDTextField).pad(10f).width(2*stage.width/3 - pasteGameIDButton.width)
         gameIDTable.add(pasteGameIDButton)
         topTable.add(gameIDTable).padBottom(30f).row()
 
-        topTable.add(Label("Game name".tr(), skin)).row()
+        topTable.add("Game name".toLabel()).row()
         topTable.add(gameNameTextField).pad(10f).padBottom(30f).width(stage.width/2).row()
 
         //CloseButton Setup

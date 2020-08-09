@@ -20,17 +20,25 @@ import kotlin.concurrent.thread
 
 
 class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var mapParameters: MapParameters) {
-    var ruleset = RulesetCache.getComplexRuleset(gameParameters.mods)
-
     constructor() : this("", GameParameters(), MapParameters())
     constructor(gameInfo: GameInfo) : this("", gameInfo.gameParameters.clone(), gameInfo.tileMap.mapParameters)
     constructor(gameParameters: GameParameters, mapParameters: MapParameters) : this("", gameParameters, mapParameters)
+
+    fun clone(): GameSetupInfo {
+        val toReturn = GameSetupInfo()
+        toReturn.gameId = this.gameId
+        toReturn.gameParameters = this.gameParameters
+        toReturn.mapParameters = this.mapParameters
+        return toReturn
+    }
 }
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
+    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
+    // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
-    var newGameOptionsTable = GameOptionsTable(gameSetupInfo) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     var mapOptionsTable = MapOptionsTable(this)
 
 
@@ -38,13 +46,14 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         setDefaultCloseAction(previousScreen)
         scrollPane.setScrollingDisabled(true, true)
 
+        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
+                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+        topTable.addSeparatorVertical()
         topTable.add(ScrollPane(mapOptionsTable).apply { setOverscroll(false, false) })
                 .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
-        topTable.addSeparatorVertical()
-        topTable.add(ScrollPane(newGameOptionsTable).apply { setOverscroll(false, false) })
-                .maxHeight(topTable.parent.height).width(stage.width / 3).padTop(20f).top()
+
         topTable.pack()
         topTable.setFillParent(true)
 
@@ -93,11 +102,11 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                     OnlineMultiplayer().tryUploadGame(newGame!!)
                     GameSaver.autoSave(newGame!!) {}
 
-                    //Saved as Multiplayer game to show up in the session browser
+                    // Saved as Multiplayer game to show up in the session browser
                     GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
-                    //Save gameId to clipboard because you have to do it anyway.
+                    // Save gameId to clipboard because you have to do it anyway.
                     Gdx.app.clipboard.contents = newGame!!.gameId
-                    //Popup to notify the User that the gameID got copied to the clipboard
+                    // Popup to notify the User that the gameID got copied to the clipboard
                     Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
                 } catch (ex: Exception) {
                     Gdx.app.postRunnable {
@@ -149,9 +158,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null) {
-            game.loadGame(newGame!!)
-        }
+        if (newGame != null) game.loadGame(newGame!!)
         super.render(delta)
     }
 }
@@ -166,7 +173,6 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val array = Array<TranslatedString>()
         values.forEach { array.add(TranslatedString(it)) }
         items = array
-        val defaultItem = array.firstOrNull { it.value == default }
-        selected = if (defaultItem != null) defaultItem else array.first()
+        selected = array.firstOrNull { it.value == default } ?: array.first()
     }
 }

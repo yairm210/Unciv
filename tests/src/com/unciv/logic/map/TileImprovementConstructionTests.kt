@@ -1,6 +1,8 @@
 //  Taken from https://github.com/TomGrill/gdx-testing
 package com.unciv.logic.map
 
+import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
@@ -11,10 +13,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(GdxTestRunner::class)
-class TileInfoTests {
+class TileImprovementConstructionTests {
 
     private var tile = TileInfo()
     private var civInfo = CivilizationInfo()
+    private var city = CityInfo()
     private var ruleSet = Ruleset()
 
     @Before
@@ -24,6 +27,11 @@ class TileInfoTests {
         tile.ruleset = ruleSet
         civInfo.tech.researchedTechnologies.addAll(ruleSet.technologies.values)
         civInfo.tech.techsResearched.addAll(ruleSet.technologies.keys)
+
+        // This is so all improvements can be built
+        tile.owningCity = city
+        tile.position = Vector2(1f, 1f) // so that it's not on the same position as the city
+        city.civInfo = civInfo
     }
 
 
@@ -42,7 +50,8 @@ class TileInfoTests {
     @Test
     fun allResourceImprovementsCanBeBuilt() {
         for (improvement in ruleSet.tileImprovements.values) {
-            tile.resource = ruleSet.tileResources.values.firstOrNull { it.improvement == improvement.name}?.name
+            tile.resource = ruleSet.tileResources.values
+                    .firstOrNull { it.improvement == improvement.name}?.name
             if (tile.resource == null) continue
             tile.baseTerrain = "Plains"
             tile.setTransients()

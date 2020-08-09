@@ -2,6 +2,7 @@ package com.unciv.models.ruleset.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
@@ -22,14 +23,16 @@ class TileImprovement : NamedStats() {
     var improvingTechStats: Stats? = null
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()
+    val uniqueObjects:List<Unique> by lazy { uniques.map { Unique(it) } }
 
     val turnsToBuild: Int = 0 // This is the base cost.
 
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat() * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.containsBuildingUnique("Worker construction increased 25%"))
+        // todo UNIFY THESE
+        if (civInfo.hasUnique("Worker construction increased 25%"))
             realTurnsToBuild *= 0.75f
-        if (civInfo.policies.isAdopted("Citizenship"))
+        if (civInfo.hasUnique("Tile improvement speed +25%"))
             realTurnsToBuild *= 0.75f
         return realTurnsToBuild.roundToInt()
     }
@@ -70,5 +73,6 @@ class TileImprovement : NamedStats() {
     }
 
     fun hasUnique(unique: String) = uniques.contains(unique)
+    fun isGreatImprovement() = hasUnique("Great Improvement")
 }
 

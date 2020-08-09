@@ -19,7 +19,7 @@ object GameStarter {
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = gameSetupInfo.gameParameters
-        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters.mods)
+        val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
 
         if (gameSetupInfo.mapParameters.type == MapType.scenario)
             gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap
@@ -52,6 +52,12 @@ object GameStarter {
                 for (tech in gameInfo.getDifficulty().aiFreeTechs)
                     civInfo.tech.addTechnology(tech)
 
+            // add all techs to spectators
+            if (civInfo.isSpectator())
+                for (tech in ruleset.technologies.values)
+                    if (!civInfo.tech.isResearched(tech.name))
+                        civInfo.tech.addTechnology(tech.name)
+
             for (tech in ruleset.technologies.values
                     .filter { ruleset.getEraNumber(it.era()) < ruleset.getEraNumber(gameSetupInfo.gameParameters.startingEra) })
                 if (!civInfo.tech.isResearched(tech.name))
@@ -68,7 +74,8 @@ object GameStarter {
 
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
         val availableCivNames = Stack<String>()
-        availableCivNames.addAll(ruleset.nations.filter { !it.value.isCityState() }.keys.shuffled())
+        // CityState or Spectator civs are not available for Random pick
+        availableCivNames.addAll(ruleset.nations.filter { it.value.isMajorCiv() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove(Constants.barbarians)
 
@@ -132,8 +139,8 @@ object GameStarter {
             }
             return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }!!.name
         }
-
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
+        // no starting units for Barbarians and Spectators
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
             for (tile in startingLocation.getTilesInDistance(3))
                 tile.improvement = null // Remove ancient ruins in immediate vicinity

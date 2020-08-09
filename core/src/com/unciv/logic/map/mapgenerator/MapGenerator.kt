@@ -51,9 +51,9 @@ class MapGenerator(val ruleset: Ruleset) {
         return map
     }
 
-    private fun seedRNG(seed: Long) {
+    private fun seedRNG(seed: Long, verbose: Boolean = false) {
         randomness.RNG = Random(seed)
-        println("RNG seeded with $seed")
+        if (verbose) println("RNG seeded with $seed")
     }
 
     private fun spawnLakesAndCoasts(map: TileMap) {
@@ -114,8 +114,7 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spreadResources(tileMap: TileMap) {
         val distance = tileMap.mapParameters.size.radius
         for (tile in tileMap.values)
-            if (tile.resource != null)
-                tile.resource = null
+            tile.resource = null
 
         spreadStrategicResources(tileMap, distance)
         spreadResources(tileMap, distance, ResourceType.Luxury)
@@ -127,7 +126,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val strategicResources = ruleset.tileResources.values.filter { it.resourceType == ResourceType.Strategic }
         // passable land tiles (no mountains, no wonders) without resources yet
         val candidateTiles = tileMap.values.filter { it.resource == null && !it.isImpassible() }
-        val totalNumberOfResources = candidateTiles.size * tileMap.mapParameters.resourceRichness
+        val totalNumberOfResources = candidateTiles.count { it.isLand } * tileMap.mapParameters.resourceRichness
         val resourcesPerType = (totalNumberOfResources/strategicResources.size).toInt()
         for (resource in strategicResources) {
             // remove the tiles where previous resources have been placed

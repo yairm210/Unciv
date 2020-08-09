@@ -3,10 +3,8 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -18,7 +16,6 @@ import com.unciv.models.metadata.Player
 import com.unciv.models.ruleset.Nation
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.tile.TerrainType
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
@@ -34,7 +31,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     var brushSize = 1
     private var currentHex: Actor = Group()
 
-    private val ruleset = mapEditorScreen.gameSetupInfo.ruleset
+    private val ruleset = mapEditorScreen.ruleset
     private val gameParameters = mapEditorScreen.gameSetupInfo.gameParameters
 
     private val scrollPanelHeight = mapEditorScreen.stage.height*0.7f - 100f // -100 reserved for currentHex table
@@ -60,7 +57,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         tabPickerTable.add(improvementsButton)
 
         // debug Scenario mode
-        if (UncivGame.Current.scenarioDebugSwitch && mapEditorScreen.hasScenario()) {
+        if (UncivGame.Current.settings.extendedMapEditor && mapEditorScreen.hasScenario()) {
             val unitsButton = "Units".toTextButton().onClick { setUnits() }
             tabPickerTable.add(unitsButton)
         }
@@ -163,39 +160,40 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val nationTable = Table()
 
-        if (UncivGame.Current.scenarioDebugSwitch) {
+        if (UncivGame.Current.settings.extendedMapEditor) {
             /** new scenario/improvements functionality
-             * There shoudn't be random players in scenario
+             * We shouldn't be able to edit random players or spectators
              * */
             for (player in gameParameters.players) {
                 val playerIndex = gameParameters.players.indexOf(player) + 1
-                    if (player.chosenCiv != "Random") {
-                        val nation = ruleset.nations[player.chosenCiv]!!
-                        val nationImage = ImageGetter.getNationIndicator(nation, 40f)
-                        nationImage.onClick {
-                            val improvementName = "StartingLocation " + nation.name
-                            tileAction = {
-                                it.improvement = improvementName
-                                for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
-                                    val tile = tileGroup.tileInfo
-                                    if (tile.improvement == improvementName && tile != it)
-                                        tile.improvement = null
-                                    tile.setTerrainTransients()
-                                    tileGroup.update()
-                                }
-                            }
-
-                            val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                            setCurrentHex(nationIcon,"Player $playerIndex starting location")
+                if (player.chosenCiv == Constants.random || player.chosenCiv == Constants.spectator)
+                    continue
+                val nation = ruleset.nations[player.chosenCiv]!!
+                val nationImage = ImageGetter.getNationIndicator(nation, 40f)
+                nationImage.onClick {
+                    val improvementName = "StartingLocation " + nation.name
+                    tileAction = {
+                        it.improvement = improvementName
+                        for (tileGroup in mapEditorScreen.mapHolder.tileGroups.values) {
+                            val tile = tileGroup.tileInfo
+                            if (tile.improvement == improvementName && tile != it)
+                                tile.improvement = null
+                            tile.setTerrainTransients()
+                            tileGroup.update()
                         }
-                        nationTable.add(nationImage).row()
-
                     }
+
+                    val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
+                    setCurrentHex(nationIcon,"Player $playerIndex starting location")
                 }
+                nationTable.add(nationImage).row()
+            }
         } else {
             /** old way improvements for all civs
              * */
             for(nation in ruleset.nations.values){
+                if (nation.isSpectator()) continue  // no improvements for spectator
+
                 val nationImage = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
                 nationImage.onClick {
                     val improvementName = "StartingLocation "+nation.name
@@ -225,23 +223,26 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         val nationsTable = Table()
 
-        // default player - first non-random player or barbarians
-        var currentPlayer = ""
-        var currentNation: Nation? = ruleset.nations.values.firstOrNull{ it.isBarbarian() }
-
+        // default player - first MajorCiv player
+        val defaultPlayer = gameParameters.players.first{
+            it.chosenCiv != Constants.spectator && it.chosenCiv != Constants.random
+        }
+        var currentPlayer = getPlayerIndexString(defaultPlayer)
+        var currentNation: Nation = ruleset.nations[defaultPlayer.chosenCiv]!!
         var currentUnit = ruleset.units.values.first()
 
         fun setUnitTileAction(){
-            if (currentNation == null) return
-            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation!!.getInnerColor())
-                    .surroundWithCircle(40f).apply { color=currentNation!!.getOuterColor() }
-            setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation!!.name.tr()+")")
+            val unitImage = ImageGetter.getUnitIcon(currentUnit.name, currentNation.getInnerColor())
+                    .surroundWithCircle(40f*0.9f).apply { circle.color=currentNation.getOuterColor() }
+                    .surroundWithCircle(40f, false).apply { circle.color=currentNation.getInnerColor() }
+
+            setCurrentHex(unitImage, currentUnit.name.tr()+ " - $currentPlayer ("+currentNation.name.tr()+")")
             tileAction = {
                 val unit = MapUnit()
                 unit.baseUnit = currentUnit
                 unit.name = currentUnit.name
-                unit.owner = currentNation!!.name
-                unit.civInfo = CivilizationInfo(currentNation!!.name).apply { nation=currentNation!! } // needed for the unit icon to render correctly
+                unit.owner = currentNation.name
+                unit.civInfo = CivilizationInfo(currentNation.name).apply { nation=currentNation } // needed for the unit icon to render correctly
                 unit.updateUniques()
                 if (unit.movement.canMoveTo(it)) {
                     when {
@@ -265,15 +266,15 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
         // player icons
         for (player in gameParameters.players) {
-            if (player.chosenCiv != "Random") {
-                val nation = ruleset.nations[player.chosenCiv]!!
-                val nationImage = ImageGetter.getNationIndicator(nation, 40f)
-                nationsTable.add(nationImage).row()
-                nationImage.onClick {
-                    currentNation = nation;
-                    currentPlayer = getPlayerIndexString(player)
-                    setUnitTileAction() }
-            }
+            if (player.chosenCiv == Constants.random || player.chosenCiv == Constants.spectator)
+                continue
+            val nation = ruleset.nations[player.chosenCiv]!!
+            val nationImage = ImageGetter.getNationIndicator(nation, 40f)
+            nationsTable.add(nationImage).row()
+            nationImage.onClick {
+                currentNation = nation;
+                currentPlayer = getPlayerIndexString(player)
+                setUnitTileAction() }
         }
 
         // barbarians icon
@@ -353,7 +354,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
                 // for the tile image
                 val tileInfo = TileInfo()
-                tileInfo.ruleset = mapEditorScreen.gameSetupInfo.ruleset
+                tileInfo.ruleset = mapEditorScreen.ruleset
                 val terrain = resource.terrainsCanBeFoundOn.first()
                 val terrainObject = ruleset.terrains[terrain]!!
                 if (terrainObject.type == TerrainType.TerrainFeature) {
@@ -446,7 +447,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun makeTileGroup(tileInfo: TileInfo): TileGroup {
-        tileInfo.ruleset = mapEditorScreen.gameSetupInfo.ruleset
+        tileInfo.ruleset = mapEditorScreen.ruleset
         tileInfo.setTerrainTransients()
         val group = TileGroup(tileInfo, TileSetStrings())
         group.showEntireMap = true
@@ -535,10 +536,9 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             improvement.terrainsCanBeBuiltOn.isEmpty() && improvement.turnsToBuild == 0
                     // Allow Great Improvement but clear unbuildable terrain feature
                     // Allow barbarian camps, ruins and similar without clear
-                -> if (topTerrain.unbuildable && improvement.name in Constants.greatImprovements)
+                -> if (topTerrain.unbuildable && improvement.isGreatImprovement())
                     tileInfo.terrainFeature = null
-            topTerrain.unbuildable
-                -> tileInfo.improvement = null      // forbid on unbuildable feature
+            topTerrain.unbuildable -> tileInfo.improvement = null      // forbid on unbuildable feature
             "Can only be built on Coastal tiles" in improvement.uniques && tileInfo.isCoastalTile()
                 -> Unit                             // allow Moai where appropriate
             else -> tileInfo.improvement = null

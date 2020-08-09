@@ -27,11 +27,11 @@ class MainMenuScreen: CameraStageBaseScreen() {
     private val backgroundTable = Table().apply { background=ImageGetter.getBackground(Color.WHITE) }
 
     private fun getTableBlock(text: String, icon: String, function: () -> Unit): Table {
-        val table = Table().pad(30f)
+        val table = Table().pad(15f, 30f, 15f, 30f)
         table.background = ImageGetter.getRoundedEdgeTableBackground(ImageGetter.getBlue())
         table.add(ImageGetter.getImage(icon)).size(50f).padRight(30f)
         table.add(text.toLabel().setFontSize(30)).minWidth(200f)
-        table.touchable= Touchable.enabled
+        table.touchable = Touchable.enabled
         table.onClick(function)
         table.pack()
         return table
@@ -41,9 +41,14 @@ class MainMenuScreen: CameraStageBaseScreen() {
         stage.addActor(backgroundTable)
         backgroundTable.center(stage)
 
-        thread(name="ShowMapBackground") {
+        // If we were in a mod, some of the resource images for the background map we're creating
+        // will not exist unless we reset the ruleset and images
+        ImageGetter.ruleset = RulesetCache.getBaseRuleset()
+        ImageGetter.refreshAtlas()
+
+        thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
-                    .generateMap(MapParameters().apply { size = MapSize.Small; type=MapType.default })
+                    .generateMap(MapParameters().apply { size = MapSize.Small; type = MapType.default })
             Gdx.app.postRunnable { // for GL context
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(
@@ -67,39 +72,45 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val table = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
+            val resumeTable = getTableBlock("Resume", "OtherIcons/Resume") { autoLoadGame() }
             table.add(resumeTable).row()
         }
 
-        val quickstartTable = getTableBlock("Quickstart","OtherIcons/Quickstart") { QuickstartNewGame() }
+        val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
         table.add(quickstartTable).row()
 
-        val newGameButton = getTableBlock("Start new game","OtherIcons/New") {
+        val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
             game.setScreen(NewGameScreen(this))
+            dispose()
         }
         table.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
-            val loadGameTable = getTableBlock("Load game","OtherIcons/Load") { game.setScreen(LoadGameScreen(this)) }
+            val loadGameTable = getTableBlock("Load game", "OtherIcons/Load")
+                { game.setScreen(LoadGameScreen(this)) }
             table.add(loadGameTable).row()
         }
 
-        val multiplayerTable = getTableBlock("Multiplayer","OtherIcons/Multiplayer") { game.setScreen(MultiplayerScreen(this)) }
+        val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
+            { game.setScreen(MultiplayerScreen(this)) }
         table.add(multiplayerTable).row()
 
-        val mapEditorScreenTable = getTableBlock("Map editor","OtherIcons/MapEditor") { openMapEditorPopup() }
-        table.add(mapEditorScreenTable)
+        val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
+            { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
+        table.add(mapEditorScreenTable).padBottom(0f)
 
         // set the same width for all buttons
+        table.cells.first().padTop(0f)
         table.pack()
         table.children.filterIsInstance<Table>().forEach {
             it.align(Align.left)
-            it.moveBy( (it.width - table.width) / 2, 0f)
-            it.width = table.width }
+            it.moveBy((it.width - table.width) / 2, 0f)
+            it.width = table.width
+        }
 
         table.pack()
         val scroll = ScrollPane(table)
-        scroll.setSize(table.width, stage.height * 0.8f)
+        scroll.setSize(table.width, stage.height * 0.98f)
         scroll.center(stage)
         scroll.setOverscroll(false, false)
         stage.addActor(scroll)
@@ -107,54 +118,61 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
 
     /** Shows the [Popup] with the map editor initialization options */
-    private fun openMapEditorPopup() {
+    class MapEditorMainScreenPopup(screen: MainMenuScreen):Popup(screen){
+        init{
+            defaults().pad(10f)
 
-        val mapEditorPopup = Popup(this)
-        mapEditorPopup.defaults().pad(10f)
+            val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
 
-        val tableBackground = ImageGetter.getBackground(colorFromRGB(29, 102, 107))
-
-        val newMapButton = getTableBlock("New map", "OtherIcons/New") { game.setScreen(NewMapScreen()) }
-        newMapButton.background = tableBackground
-        mapEditorPopup.add(newMapButton).row()
-
-        val loadMapButton = getTableBlock("Load map", "OtherIcons/Load") {
-            val loadMapScreen = LoadMapScreen(null)
-            loadMapScreen.closeButton.isVisible = true
-            loadMapScreen.closeButton.onClick {
-                game.setScreen(MainMenuScreen())
-                loadMapScreen.dispose()
+            val newMapButton = screen.getTableBlock("New map", "OtherIcons/New") {
+                screen.game.setScreen(NewMapScreen())
+                screen.dispose()
             }
-            game.setScreen(loadMapScreen)
-        }
+            newMapButton.background = tableBackground
+            add(newMapButton).row()
 
-        loadMapButton.background = tableBackground
-        mapEditorPopup.add(loadMapButton).row()
-
-        if (UncivGame.Current.scenarioDebugSwitch) {
-            val loadScenarioButton = getTableBlock("Load scenario", "OtherIcons/Scenario") {
-                val loadScenarioScreen = LoadScenarioScreen(null)
-                loadScenarioScreen.closeButton.isVisible = true
-                loadScenarioScreen.closeButton.onClick {
-                    game.setScreen(MainMenuScreen())
-                    loadScenarioScreen.dispose()
+            val loadMapButton = screen.getTableBlock("Load map", "OtherIcons/Load") {
+                val loadMapScreen = LoadMapScreen(null)
+                loadMapScreen.closeButton.isVisible = true
+                loadMapScreen.closeButton.onClick {
+                    screen.game.setScreen(MainMenuScreen())
+                    loadMapScreen.dispose()
                 }
-                game.setScreen(loadScenarioScreen)
+                screen.game.setScreen(loadMapScreen)
+                screen.dispose()
             }
 
-            loadScenarioButton.background = tableBackground
-            mapEditorPopup.add(loadScenarioButton).row()
+            loadMapButton.background = tableBackground
+            add(loadMapButton).row()
+
+            if (UncivGame.Current.settings.extendedMapEditor) {
+                val loadScenarioButton = screen.getTableBlock("Load scenario", "OtherIcons/Scenario") {
+                    val loadScenarioScreen = LoadScenarioScreen(null)
+                    loadScenarioScreen.closeButton.isVisible = true
+                    loadScenarioScreen.closeButton.onClick {
+                        screen.game.setScreen(MainMenuScreen())
+                        loadScenarioScreen.dispose()
+                    }
+                    screen.game.setScreen(loadScenarioScreen)
+                    screen.dispose()
+                }
+
+                loadScenarioButton.background = tableBackground
+                add(loadScenarioButton).row()
+            }
+
+            add(screen.getTableBlock("Close", "OtherIcons/Close") { close() }
+                    .apply { background=tableBackground })
+
+            open(force = true)
         }
-
-        mapEditorPopup.add(getTableBlock("Close", "OtherIcons/Close") { mapEditorPopup.close() }
-                .apply { background=tableBackground })
-
-        mapEditorPopup.open(force = true)
     }
+
 
     private fun autoLoadGame() {
         try {
             game.loadGame(autosave)
+            dispose()
         }
         catch (outOfMemory:OutOfMemoryError){
             ResponsePopup("Not enough memory on phone to load game!", this)
@@ -164,7 +182,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         }
     }
 
-    private fun QuickstartNewGame() {
+    private fun quickstartNewGame() {
         val newGame = GameStarter.startNewGame(GameSetupInfo().apply { gameParameters.difficulty = "Chieftain" })
         game.loadGame(newGame)
     }

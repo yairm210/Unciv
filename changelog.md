@@ -1,3 +1,197 @@
+## 3.9.19
+
+Resolved #2818 - Can no longer build improvements outside your borders
+
+Resolved #2944 - Air units intercept range fixed
+
+All nations converted to uniques!
+
+Solved unit purchase discount being 100x what it was supposed to be
+
+Translation updates
+
+## 3.9.18
+
+Resolved #2872 - Diplomacy screen now scrollable when there's too much text
+
+Performance improvements
+
+Fixed civ name translation in the top bar and great person point percentage bonuses
+
+Resolved #2929 - Can no longer destroy original capitals by nuke
+
+Resolved #2928 - contact with other civs is now also when encountering their cities
+
+Changed how great unit recognition works
+
+Resolved #2914 - Can no longer exploit button to 'skip' promotions
+
+Resolved #2893 - all maps are shown when searching - By vainiovano
+
+Top bar selected civ refactor, increase performance for updates - By alkorolyov
+
+Translation updates
+
+## 3.9.17
+
+All policies converted!
+
+Map editor should no longer crash in scenarios
+
+Scouts ignore river movement penalties
+
+Pillage action now has a confirmation popup
+
+Spaceship parts not shown to user until Apollo Program is built
+
+Units can pass through cities of other friendly civs
+
+Resolved #2907 - University unique registers properly
+
+Added civ-wide per-building stat bonus
+
+New Diplomacy Overview UI - By lishaoxia1985
+
+Fog of war implementation - By alkorolyov
+
+
+## 3.9.16
+
+Resolved #3901 - nuclear weapon setting remains between games
+
+Game can now handle modded unique buildings that don't replace anything existing
+
+All improvement placing units are automated in the same way - this allows for the AI to control modded units that place other improvements!
+
+Railroad connection propagates correctly over harbor connections
+
+Resolved #2894 - Map editor button only opens popup once
+
+Translation updates
+
+## 3.9.15
+
+Removed confusing extra lines in the diplomacy overview
+
+Started splitting up Policy uniques - they're usable as Building uniques now!
+
+Upgradable units show the final unit they're upgrading to in the Overview screen
+
+Created stat parameter parsing and translation - uniques are much more moddable!
+
+Resolved #2838 - cities in resistance can no longer be traded
+
+Fix bug when city states gets all techs from spectators - By alkorolyov
+
+Translation updates
+
+## 3.9.14
+
+Added Pinglish translations
+
+Genericified "free [unit] appears", "must be next to []" unique for buildings
+
+Greatly improved performance of worker's automated city connecting
+
+Resolved #2853 - Sped up loading of saved game list
+
+Resolved #2852 - cannot make peace with a city state while at war with its ally
+
+Resolved #2864 - Locks on tiles are removed when the tile is no longer under your control
+
+Buildings that are missing resources are still displayed in city constructions
+
+Unit 'unbuildable' parameter converted to unique
+
+By alkorolyov:
+
+- Spectator can view other civ stats: Tech, Trades, Cities, Units, Gold
+- Skip spectator turn in multiplayer games
+
+## 3.9.13
+
+Simplified translation file generation
+
+Background work for "generic-ifying" unit and building uniques for modding purposes
+
+Worker unique is now moddable to other units
+
+By alkorolyov:
+- Spectators can enter and view other player cities
+- Fix map editor gameparameters layout
+
+Translation updates
+
+## 3.9.12
+
+Added Water Mill building
+
+Add mod compatibility for extended map editor - By alkorolyov
+
+Main menu buttons no longer require scrolling
+
+By lishaoxia1985:
+- Close button on map management screen no longer disappears when deleting all maps
+- Scout obsoletes per Civ V
+
+Translation updates
+
+## 3.9.11
+
+Better Civilopedia icons for buildings and units
+
+Resolved #2822 - normalized the amount of strategic resources
+
+Resolved #2819 - units no longer gain XP from attacking already defeated cities
+
+Resolved #2820 - resurrected civs are at peace with everyone
+
+ By alkorolyov:
+
+- Fixed two empty mods checkbox in game options 
+- Two experimental switches: Spectator mode & Extended Map Editor
+
+ By ninjatao:
+
+- Do not generate fallout on impasssible terran. 
+- Fix AI nuke radius
+
+Translation updates
+
+## 3.9.10
+
+Resource toggle button is consistent with population toggle - by @lishaoxia1985
+
+Unremovable terrain features e.g. Flood plains are no longer removed by great improvements
+
+Resolved #2640 - Difficulty level shown in victory status screen
+
+Great improvements are no longer hardcoded, so new great improvements can be modded in =)
+
+Resolved #2811 - Offering the same resource to 2 civs when you only have 2 left no longer causes 'trade no longer valid' for the second one
+
+Dispose main menu screen when exiting to save space
+
+Translation updates
+
+## 3.9.9
+
+Civ is properly destroyed when liberating the last city of the civ
+
+Replaced units are not shown in tech button even when replacing unique unit is in a different tech
+
+Fixed main menu crash when returning from certain modded games
+
+Resolved #2794 - Save games and maps cannot have slashes/backslashes, to avoid foldername/filename confusion
+
+Civ is properly destroyed when liberating the last city of the civ
+
+By alkorolyov:
+- Basic spectator functionality - POC
+- Console mode for multiple game automation - POC
+
+Added an installation problem solution on Ubuntu - By illantalex
+
 ## 3.9.8
 
 Resolved #2787 - AIs MUCH more likely to build the Apollo Program and win a scientific victory
@@ -8,7 +202,7 @@ Removed tech exchange, as per Civ V
 
 Resolved #2759 - Mark tiles for air unit attack range - By ninjatao
 
-Translation updates
+Translation updates🍎
 
 ## 3.9.7
 

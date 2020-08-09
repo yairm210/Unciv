@@ -38,7 +38,7 @@
       "There are 2 main ways to combat unhappiness:\n  by building happiness buildings for your population\n  or by having improved luxury resources within your borders"  
   ],
   Golden_Age: [
-      "You have entered a golden age!\nGolden age points are accumulated each turn by the total happiness \n  of your civilization\nWhen in a golden age, culture and production generation increases +20%,\n  and every tile already providing at least one gold will provide an extra gold."  
+      "You have entered a Golden Age!\nGolden age points are accumulated each turn by the total happiness \n  of your civilization\nWhen in a golden age, culture and production generation increases +20%,\n  and every tile already providing at least one gold will provide an extra gold."
   ],
   
   Roads_and_Railroads: [
@@ -57,7 +57,7 @@
   ],
   Strategic_Resource: [
       "Strategic resources within your domain and with their specific improvement are connected to your trade network.\nStrategic resources allow you to train units and construct buildings that require those specific resources, for example the Horseman requires Horses.",
-	  "Unlike Luxury Resources, each Strategic Resource on the map provides more than oneof that resource.\nThe top bar keeps count of how many unused strategic resources you own.\nA full drilldown of resources is available in the Resources tab in the Overview screen."
+	  "Unlike Luxury Resources, each Strategic Resource on the map provides more than one of that resource.\nThe top bar keeps count of how many unused strategic resources you own.\nA full drilldown of resources is available in the Resources tab in the Overview screen."
   ],
   _EnemyCityNeedsConqueringWithMeleeUnit: [
       "The city can no longer put up any resistance!\nHowever, to conquer it, you must enter the city with a melee unit"

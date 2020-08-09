@@ -4,6 +4,10 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.ruleset.VictoryType
 
+enum class BaseRuleset(val fullName:String){
+    Civ_V_Vanilla("Civ V - Vanilla"),
+}
+
 class GameParameters { // Default values are the default new game
     var difficulty = "Prince"
     var gameSpeed = GameSpeed.Standard
@@ -21,6 +25,7 @@ class GameParameters { // Default values are the default new game
     var startingEra = Constants.ancientEra
 
     var isOnlineMultiplayer = false
+    var baseRuleset: BaseRuleset = BaseRuleset.Civ_V_Vanilla
     var mods = LinkedHashSet<String>()
 
     fun clone(): GameParameters {
@@ -31,9 +36,11 @@ class GameParameters { // Default values are the default new game
         parameters.numberOfCityStates = numberOfCityStates
         parameters.noBarbarians = noBarbarians
         parameters.oneCityChallenge = oneCityChallenge
+        parameters.nuclearWeaponsEnabled = nuclearWeaponsEnabled
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.isOnlineMultiplayer = isOnlineMultiplayer
+        parameters.baseRuleset = baseRuleset
         parameters.mods = LinkedHashSet(mods)
         return parameters
     }

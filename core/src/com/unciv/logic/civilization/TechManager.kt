@@ -4,11 +4,9 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.UniqueAbility
 import com.unciv.logic.map.MapSize
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.ruleset.tech.Technology
-import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
 import kotlin.collections.ArrayList
@@ -23,6 +21,7 @@ class TechManager {
     @Transient private var researchedTechUniques = ArrayList<String>()
 
     // MapUnit.canPassThrough is the most called function in the game, and having these extremey specific booleans is or way of improving the time cost
+    @Transient var wayfinding = false
     @Transient var unitsCanEmbark = false
     @Transient var embarkedUnitsCanEnterOcean = false
 
@@ -115,7 +114,7 @@ class TechManager {
         checkPrerequisites.add(destinationTech)
 
         while (!checkPrerequisites.isEmpty()) {
-            val techToCheck = checkPrerequisites.pop()!!
+            val techToCheck = checkPrerequisites.pop()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
             if (techToCheck.name != Constants.futureTech &&
@@ -170,9 +169,7 @@ class TechManager {
     private fun scienceFromResearchAgreements(): Int {
         // https://forums.civfanatics.com/resources/research-agreements-bnw.25568/
         var researchAgreementModifier = 0.5f
-        if (civInfo.policies.isAdopted("Scientific Revolution"))
-            researchAgreementModifier += 0.25f
-        if (civInfo.containsBuildingUnique("Science gained from research agreements +50%"))
+        for(unique in civInfo.getMatchingUniques("Science gained from research agreements +50%"))
             researchAgreementModifier += 0.25f
         return (scienceFromResearchAgreements / 3 * researchAgreementModifier).toInt()
     }
@@ -265,18 +262,19 @@ class TechManager {
             val oldQueue = city.cityConstructions.constructionQueue.toList()  // copy, since we're changing the queue
             city.cityConstructions.constructionQueue.clear()
             for (constructionName in oldQueue) {
-                var newConstructionName = constructionName
+                val newConstructionName = constructionName
                 if (constructionName in obsoleteUnits) {
-                    val constructionUnit = city.cityConstructions.getConstruction(constructionName) as BaseUnit
-                    newConstructionName = civInfo.getEquivalentUnit(constructionUnit.upgradesTo!!).name
+                    val text = "[$constructionName] has been obsolete and will be removed from construction queue in [${city.name}]!"
+                    civInfo.addNotification(text, city.location, Color.BROWN)
                 }
-                city.cityConstructions.constructionQueue.add(newConstructionName)
+                else city.cityConstructions.constructionQueue.add(newConstructionName)
             }
         }
 
-        if (techName == "Writing" && civInfo.nation.unique == UniqueAbility.INGENUITY
-                && civInfo.cities.any())
-            civInfo.addGreatPerson("Great Scientist")
+        for(unique in civInfo.getMatchingUniques("Receive free [] when you discover []")) {
+            if (unique.params[1] != techName) continue
+            civInfo.addUnit(unique.params[0])
+        }
     }
 
     fun setTransients() {
@@ -309,7 +307,7 @@ class TechManager {
     }
 
     fun updateTransientBooleans() {
-        val wayfinding = civInfo.nation.unique == UniqueAbility.WAYFINDING
+        wayfinding = civInfo.hasUnique("Can embark and move over Coasts and Oceans immediately")
         if (researchedTechUniques.contains("Enables embarkation for land units") || wayfinding)
             unitsCanEmbark = true
 

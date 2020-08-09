@@ -29,7 +29,7 @@ data class TradeOffer(var name:String, var type: TradeType, var amount:Int=1, va
         var offerText = when(type){
             TradeType.WarDeclaration -> "Declare war on [$name]"
             TradeType.Introduction -> "Introduction to [$name]"
-            TradeType.City -> UncivGame.Current.gameInfo.getCities().first{ it.id == name }.name
+            TradeType.City -> UncivGame.Current.gameInfo.getCities().firstOrNull{ it.id == name }?.name ?: "Non-existent city"
             else -> name
         }.tr()
         if (type !in tradesToNotHaveNumbers || name=="Research Agreement") offerText += " ($amount)"

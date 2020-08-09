@@ -42,7 +42,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             }
             else game.setScreen(PolicyPickerScreen(worldScreen))  // update policies
         }
-        if(!UncivGame.Current.worldScreen.isPlayersTurn)
+        if(!UncivGame.Current.worldScreen.canChangeState)
             rightSideButton.disable()
         
 
@@ -93,14 +93,18 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
             rightSideButton.enable()
         }
         pickedPolicy = policy
-        var policyText = policy.name.tr() + "\r\n" + policy.effect.tr() + "\r\n"
-        if (!policy.name.endsWith("Complete")){
-            if(policy.requires!!.isNotEmpty())
+        val policyText = mutableListOf<String>()
+        policyText += policy.name
+//        policyText += policy.effect
+        policyText += policy.uniques
+
+        if (!policy.name.endsWith("Complete")) {
+            if (policy.requires!!.isNotEmpty())
                 policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
             else
-                policyText += ("{Unlocked at} {"+ policy.branch.era+"}").tr()
+                policyText += ("{Unlocked at} {" + policy.branch.era + "}").tr()
         }
-        descriptionLabel.setText(policyText)
+        descriptionLabel.setText(policyText.joinToString("\r\n") { it.tr() })
     }
 
     private fun getPolicyButton(policy: Policy, image: Boolean): Button {

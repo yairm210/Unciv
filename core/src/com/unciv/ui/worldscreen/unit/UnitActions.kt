@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
@@ -15,6 +14,8 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -60,17 +61,19 @@ object UnitActions {
         addExplorationActions(unit, actionList)
         addPromoteAction(unit, actionList)
         addUnitUpgradeAction(unit, actionList)
-        addPillageAction(unit, actionList)
+        addPillageAction(unit, actionList, worldScreen)
         addSetupAction(unit, actionList)
         addFoundCityAction(unit, actionList, tile)
         addWorkerActions(unit, actionList, tile, worldScreen, unitTable)
         addConstructRoadsAction(unit, tile, actionList)
         addCreateWaterImprovements(unit, actionList)
         addGreatPersonActions(unit, actionList, tile)
+        actionList += getImprovementConstructionActions(unit, tile)
         addDisbandAction(actionList, unit, worldScreen)
 
         return actionList
     }
+
 
     private fun addDisbandAction(actionList: ArrayList<UnitAction>, unit: MapUnit, worldScreen: WorldScreen) {
         actionList += UnitAction(
@@ -167,14 +170,23 @@ object UnitActions {
                 }.takeIf { unit.currentMovement > 0 && !isSetUp })
     }
 
-    private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>) {
+    private fun addPillageAction(unit: MapUnit, actionList: ArrayList<UnitAction>, worldScreen: WorldScreen) {
         val pillageAction = getPillageAction(unit)
-        if(pillageAction!=null) actionList += pillageAction
+        if (pillageAction == null) return
+        if(pillageAction.action==null)
+            actionList += UnitAction(UnitActionType.Pillage, action = null)
+        else actionList += UnitAction(type = UnitActionType.Pillage) {
+            if (!worldScreen.hasOpenPopups()) {
+                val pillageText = "Are you sure you want to pillage this [${unit.currentTile.improvement}]?"
+                YesNoPopup(pillageText, { (pillageAction.action)(); worldScreen.shouldUpdate = true }).open()
+            }
+        }
     }
 
     fun getPillageAction(unit: MapUnit): UnitAction? {
         val tile = unit.currentTile
         if (unit.type.isCivilian() || tile.improvement == null) return null
+
         return UnitAction(
                 type = UnitActionType.Pillage,
                 action = {
@@ -187,9 +199,9 @@ object UnitActions {
                     tile.improvement = null
                     if (tile.resource!=null) tile.getOwner()?.updateDetailedCivResources()    // this might take away a resource
 
-                    if (!unit.hasUnique("No movement cost to pillage") &&
-                            (!unit.type.isMelee() || unit.civInfo.nation.unique != UniqueAbility.VIKING_FURY))
-                                    unit.useMovementPoints(1f)
+                    val freePillage = unit.hasUnique("No movement cost to pillage") ||
+                            (unit.type.isMelee() && unit.civInfo.hasUnique("Melee units pay no movement cost to pillage"))
+                    if(!freePillage) unit.useMovementPoints(1f)
 
                     unit.healBy(25)
 
@@ -336,7 +348,7 @@ object UnitActions {
                     action = {
                         // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                         var goldEarned = (350 + 50 * unit.civInfo.getEraNumber()) * unit.civInfo.gameInfo.gameParameters.gameSpeed.modifier
-                        if (unit.civInfo.policies.isAdopted("Commerce Complete"))
+                        if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
                         val relevantUnique = unit.getUniques().first { it.startsWith(CAN_UNDERTAKE) }
@@ -347,22 +359,22 @@ object UnitActions {
                         unit.destroy()
                     }.takeIf { canConductTradeMission })
         }
-
-        val buildImprovementAction = getBuildImprovementAction(unit)
-        if (buildImprovementAction != null) actionList += buildImprovementAction
     }
 
-    fun getBuildImprovementAction(unit: MapUnit): UnitAction? {
-        val tile = unit.currentTile
-        for (unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }) {
-            val improvementName = unique.replace("Can build improvement: ", "")
-            return UnitAction(
+
+    fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
+        val finalActions = ArrayList<UnitAction>()
+        for (unique in unit.getUniques().filter { it.equalsPlaceholderText("Can construct []") }) {
+            val improvementName = unique.getPlaceholderParameters()[0]
+            finalActions +=  UnitAction(
                     type = UnitActionType.Create,
                     title = "Create [$improvementName]",
                     uncivSound = UncivSound.Chimes,
                     action = {
                         val unitTile = unit.getTile()
-                        unitTile.terrainFeature = null // remove forest/jungle/marsh
+                        if (unitTile.terrainFeature != null &&
+                                unitTile.ruleset.tileImprovements.containsKey("Remove " + unitTile.terrainFeature))
+                            unitTile.terrainFeature = null // remove forest/jungle/marsh
                         unitTile.improvement = improvementName
                         unitTile.improvementInProgress = null
                         unitTile.turnsToImprovement = 0
@@ -382,7 +394,7 @@ object UnitActions {
                             (improvementName != Constants.citadel ||
                                     tile.neighbors.any { it.getOwner() == unit.civInfo })})
         }
-        return null
+        return finalActions
     }
 
     private fun takeOverTilesAround(unit: MapUnit) {

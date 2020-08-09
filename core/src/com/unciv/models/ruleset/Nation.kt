@@ -19,63 +19,74 @@ enum class VictoryType{
 class Nation : INamed {
     override lateinit var name: String
 
-    var leaderName=""
-    fun getLeaderDisplayName() = if(isCityState()) name
-        else "[$leaderName] of [$name]"
+    var leaderName = ""
+    fun getLeaderDisplayName() = if (isCityState()) name
+    else "[$leaderName] of [$name]"
 
     var cityStateType: CityStateType? = null
-    var preferredVictoryType:VictoryType = VictoryType.Neutral
-    var declaringWar=""
-    var attacked=""
-    var defeated=""
-    var introduction=""
-    var tradeRequest=""
+    var preferredVictoryType: VictoryType = VictoryType.Neutral
+    var declaringWar = ""
+    var attacked = ""
+    var defeated = ""
+    var introduction = ""
+    var tradeRequest = ""
 
-    var neutralHello=""
-    var hateHello=""
+    var neutralHello = ""
+    var hateHello = ""
 
     lateinit var outerColor: List<Int>
     var unique: UniqueAbility? = null
+    var uniqueName = ""
+    var uniques = HashSet<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var innerColor: List<Int>? = null
     var startBias = ArrayList<String>()
 
-    @Transient private lateinit var outerColorObject:Color
+    @Transient
+    private lateinit var outerColorObject: Color
     fun getOuterColor(): Color = outerColorObject
 
-    @Transient private lateinit var innerColorObject:Color
+    @Transient
+    private lateinit var innerColorObject: Color
 
     fun getInnerColor(): Color = innerColorObject
 
-    fun isCityState()= cityStateType != null
-    fun isMajorCiv() = !isBarbarian() && !isCityState()
-    fun isBarbarian() = name== Constants.barbarians
+    fun isCityState() = cityStateType != null
+    fun isMajorCiv() = !isBarbarian() && !isCityState() && !isSpectator()
+    fun isBarbarian() = name == Constants.barbarians
+    fun isSpectator() = name == Constants.spectator
 
     // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
-    @Transient var forestsAndJunglesAreRoads = false
-    // Same for Inca unique
-    @Transient var greatAndeanRoad = false
+    @Transient
+    var forestsAndJunglesAreRoads = false
 
-    fun setTransients(){
+    // Same for Inca unique
+    @Transient
+    var ignoreHillMovementCost = false
+    @Transient
+    var embarkDisembarkCosts1 = false
+
+    fun setTransients() {
         outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
 
-        if(innerColor==null) innerColorObject = Color.BLACK
+        if (innerColor == null) innerColorObject = Color.BLACK
         else innerColorObject = colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
 
-        if(unique == UniqueAbility.GREAT_WARPATH)
+        if (uniques.contains("All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."))
             forestsAndJunglesAreRoads = true
-        if(unique == UniqueAbility.GREAT_ANDEAN_ROAD)
-            greatAndeanRoad = true
+        if (uniques.contains("Units ignore terrain costs when moving into any tile with Hills"))
+            ignoreHillMovementCost = true
+        if (uniques.contains("Units pay only 1 movement point to embark and disembark"))
+            embarkDisembarkCosts1 = true
     }
 
     lateinit var cities: ArrayList<String>
 
 
-
-
     fun getUniqueString(ruleset: Ruleset, forPickerScreen: Boolean = true): String {
         val textList = ArrayList<String>()
 
-        if (leaderName.isNotEmpty() && !forPickerScreen){
+        if (leaderName.isNotEmpty() && !forPickerScreen) {
             textList += getLeaderDisplayName().tr()
             textList += ""
         }
@@ -85,13 +96,18 @@ class Nation : INamed {
 
             textList += ""
         }
+        else {
+            if (uniqueName != "") textList += uniqueName.tr() + ":"
+            textList += "  " + uniques.joinToString(", ").tr()
+            textList += ""
+        }
         if (startBias.isNotEmpty()) {
             textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
             textList += ""
         }
-        addUniqueBuildingsText(textList,ruleset)
-        addUniqueUnitsText(textList,ruleset)
-        addUniqueImprovementsText(textList,ruleset)
+        addUniqueBuildingsText(textList, ruleset)
+        addUniqueUnitsText(textList, ruleset)
+        addUniqueImprovementsText(textList, ruleset)
 
         return textList.joinToString("\n").tr().trim()
     }
@@ -99,32 +115,35 @@ class Nation : INamed {
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (building in ruleset.buildings.values
                 .filter { it.uniqueTo == name }) {
-            val originalBuilding = ruleset.buildings[building.replaces!!]!!
+            if (building.replaces == null) textList += building.getShortDescription(ruleset)
+            else {
+                val originalBuilding = ruleset.buildings[building.replaces!!]!!
 
-            textList += building.name.tr() + " - "+"Replaces [${originalBuilding.name}]".tr()
-            val originalBuildingStatMap = originalBuilding.toHashMap()
-            for (stat in building.toHashMap())
-                if (stat.value != originalBuildingStatMap[stat.key])
-                    textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
+                textList += building.name.tr() + " - " + "Replaces [${originalBuilding.name}]".tr()
+                val originalBuildingStatMap = originalBuilding.toHashMap()
+                for (stat in building.toHashMap())
+                    if (stat.value != originalBuildingStatMap[stat.key])
+                        textList += "  " + stat.key.toString().tr() + " " + "[${stat.value.toInt()}] vs [${originalBuildingStatMap[stat.key]!!.toInt()}]".tr()
 
-            for (unique in building.uniques.filter { it !in originalBuilding.uniques })
-                textList += "  " + unique.tr()
-            if (building.maintenance != originalBuilding.maintenance)
-                textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
-            if (building.cost != originalBuilding.cost)
-                textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
-            if (building.cityStrength != originalBuilding.cityStrength)
-                textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
-            if (building.cityHealth != originalBuilding.cityHealth)
-                textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
-            textList += ""
+                for (unique in building.uniques.filter { it !in originalBuilding.uniques })
+                    textList += "  " + unique.tr()
+                if (building.maintenance != originalBuilding.maintenance)
+                    textList += "  {Maintenance} " + "[${building.maintenance}] vs [${originalBuilding.maintenance}]".tr()
+                if (building.cost != originalBuilding.cost)
+                    textList += "  {Cost} " + "[${building.cost}] vs [${originalBuilding.cost}]".tr()
+                if (building.cityStrength != originalBuilding.cityStrength)
+                    textList += "  {City strength} " + "[${building.cityStrength}] vs [${originalBuilding.cityStrength}]".tr()
+                if (building.cityHealth != originalBuilding.cityHealth)
+                    textList += "  {City health} " + "[${building.cityHealth}] vs [${originalBuilding.cityHealth}]".tr()
+                textList += ""
+            }
         }
     }
 
     private fun addUniqueUnitsText(textList: ArrayList<String>, ruleset: Ruleset) {
         for (unit in ruleset.units.values
                 .filter { it.uniqueTo == name }) {
-            if(unit.replaces != null) {
+            if (unit.replaces != null) {
                 val originalUnit = ruleset.units[unit.replaces!!]!!
                 textList += unit.name.tr() + " - " + "Replaces [${originalUnit.name}]".tr()
                 if (unit.cost != originalUnit.cost)
@@ -145,8 +164,7 @@ class Nation : INamed {
                     textList += "  " + "Lost ability".tr() + "(vs " + originalUnit.name.tr() + "): " + Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(ruleset.unitPromotions[promotion]!!.effect) + ")"
-            }
-            else {
+            } else {
                 textList += unit.name.tr()
                 textList += "  " + unit.getDescription(true).split("\n").joinToString("\n  ")
             }
@@ -160,9 +178,9 @@ class Nation : INamed {
                 .filter { it.uniqueTo == name }) {
 
             textList += improvement.name.tr()
-            textList += "  "+improvement.clone().toString()
-            for(unique in improvement.uniques)
-                textList += "  "+unique.tr()
+            textList += "  " + improvement.clone().toString()
+            for (unique in improvement.uniques)
+                textList += "  " + unique.tr()
         }
     }
 }

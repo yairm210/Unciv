@@ -25,14 +25,17 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
 
         icons.removePopulationIcon()
         val tileIsViewable = isViewable(viewingCiv)
+        val showEntireMap = UncivGame.Current.viewEntireMapForDebug
+
         if (tileIsViewable && tileInfo.isWorked() && UncivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo == viewingCiv)
             icons.addPopulationIcon()
-
-        val currentPlayerCiv = worldScreen.viewingCiv
-        if (UncivGame.Current.viewEntireMapForDebug
-                || currentPlayerCiv.exploredTiles.contains(tileInfo.position))
-            updateCityButton(city, tileIsViewable || UncivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
+        // update city buttons in explored tiles or entire map
+        if (showEntireMap || viewingCiv.exploredTiles.contains(tileInfo.position))
+            updateCityButton(city, tileIsViewable || showEntireMap) // needs to be before the update so the units will be above the city button
+        else if (worldScreen.viewingCiv.isSpectator())
+            // remove city buttons in unexplored tiles during spectating/fog of war
+            updateCityButton(null, showEntireMap)
 
         super.update(viewingCiv, UncivGame.Current.settings.showResourcesAndImprovements)
     }

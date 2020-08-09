@@ -9,6 +9,8 @@ import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.UnitAction
+import com.unciv.models.translations.equalsPlaceholderText
+import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
@@ -20,16 +22,16 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
 
     private fun getIconAndKeyForUnitAction(unitAction: String): UnitIconAndKey {
         when {
-            unitAction.startsWith("Upgrade to") -> {
+            unitAction.equalsPlaceholderText("Upgrade to [] ([] gold)") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
                 // What you find between the first [ and the first ] that comes after it, will be group no. 1
-                val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
+                val unitToUpgradeTo = unitAction.getPlaceholderParameters()[0]
                 return UnitIconAndKey(ImageGetter.getUnitIcon(unitToUpgradeTo), 'u')
             }
-            unitAction.startsWith("Create ") -> {
+            unitAction.equalsPlaceholderText("Create []") -> {
                 // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
                 // What you find between the first [ and the first ] that comes after it, will be group no. 1
-                val improvementName = Regex("""Create \[([^]]*)\]""").find(unitAction)!!.groups[1]!!.value
+                val improvementName = unitAction.getPlaceholderParameters()[0]
                 return UnitIconAndKey(ImageGetter.getImprovementIcon(improvementName), 'i')
             }
             unitAction.startsWith("Sleep") -> return UnitIconAndKey(ImageGetter.getImage("OtherIcons/Sleep"), 'f')
@@ -60,7 +62,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table() {
     fun update(unit: MapUnit?) {
         clear()
         if (unit == null) return
-        if (!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
+        if (!worldScreen.canChangeState) return // No actions when it's not your turn or spectator!
         for (button in UnitActions.getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
             add(button).left().padBottom(2f).row()
         pack()

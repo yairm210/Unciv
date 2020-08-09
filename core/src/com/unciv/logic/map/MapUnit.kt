@@ -4,14 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UncivGame
-import com.unciv.UniqueAbility
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.logic.map.action.StringAction
 import com.unciv.models.ruleset.Ruleset
-import com.unciv.models.ruleset.tile.TerrainType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
@@ -104,18 +102,18 @@ class MapUnit {
         movement += getUniques().count { it == "+1 Movement" }
 
         if (type.isWaterUnit() && !type.isCivilian()
-                && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
+                && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
-        if (type.isWaterUnit() && civInfo.nation.unique == UniqueAbility.SUN_NEVER_SETS)
+        if (type.isWaterUnit() && civInfo.hasUnique("+2 movement for all naval units"))
             movement += 2
 
-        if (type == UnitType.Mounted &&
-                civInfo.nation.unique == UniqueAbility.MONGOL_TERROR)
-            movement += 1
+        for (unique in civInfo.getMatchingUniques("+[] Movement for all [] units"))
+            if (unique.params[1] == type.name)
+                movement += unique.params[0].toInt()
 
         if (civInfo.goldenAges.isGoldenAge() &&
-                civInfo.nation.unique == UniqueAbility.ACHAEMENID_LEGACY)
+                civInfo.hasUnique("+1 Movement for all units during Golden Age"))
             movement += 1
 
         return movement
@@ -161,12 +159,12 @@ class MapUnit {
             visibilityRange += getUniques().count { it == "+1 Visibility Range" }
             if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
-            if (civInfo.nation.unique == UniqueAbility.MANIFEST_DESTINY)
+            if (civInfo.hasUnique("+1 Sight for all land military units"))
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
-                    && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
+                    && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
                 visibilityRange += 1
-            if (isEmbarked() && civInfo.nation.unique == UniqueAbility.WAYFINDING)
+            if (isEmbarked() && civInfo.hasUnique("+1 Sight when embarked"))
                 visibilityRange += 1
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
@@ -196,7 +194,7 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (name == Constants.worker && getTile().improvementInProgress != null) return false
+        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
         if (action==Constants.unitActionExplore || isSleeping()
@@ -234,7 +232,7 @@ class MapUnit {
     fun getEmbarkedMovement(): Int {
         var movement=2
         movement += civInfo.tech.getTechUniques().count { it == "Increases embarked movement +1" }
-        if (civInfo.nation.unique == UniqueAbility.VIKING_FURY) movement +=1
+        if (civInfo.hasUnique("+1 Movement for all embarked units")) movement +=1
         return movement
     }
 
@@ -264,9 +262,7 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
-        if (civInfo.policies.isAdopted("Professional Army"))
-            goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
-        if(civInfo.containsBuildingUnique("Gold cost of upgrading military units reduced by 33%"))
+        for(unique in civInfo.getMatchingUniques("Gold cost of upgrading military units reduced by 33%"))
             goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
         if(goldCostOfUpgrade<0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade
@@ -356,7 +352,7 @@ class MapUnit {
     }
 
     private fun doPostTurnAction() {
-        if (name == Constants.worker && getTile().improvementInProgress != null) workOnImprovement()
+        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
         if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
         if(currentMovement == getMaxMovement().toFloat()
                 && isFortified()){
@@ -525,7 +521,7 @@ class MapUnit {
         tile.improvement = null
 
         var goldGained = civInfo.getDifficulty().clearBarbarianCampReward * civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        if (civInfo.nation.unique == UniqueAbility.RIVER_WARLORD)
+        if (civInfo.hasUnique("Receive triple Gold from Barbarian encampments and pillaging Cities"))
             goldGained *= 3f
 
         civInfo.gold += goldGained.toInt()
@@ -579,7 +575,7 @@ class MapUnit {
             }
 
         actions.add {
-            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior")
+            val chosenUnit = listOf(Constants.settler, Constants.worker, "Warrior")
                     .filter { civInfo.gameInfo.ruleSet.units.containsKey(it) }.random(tileBasedRandom)
             if (!(civInfo.isCityState() || civInfo.isOneCityChallenger()) || chosenUnit != Constants.settler) { //City-States and OCC don't get settler from ruins
                 civInfo.placeUnitNearTile(tile.position, chosenUnit)

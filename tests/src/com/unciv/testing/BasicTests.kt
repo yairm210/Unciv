@@ -4,9 +4,13 @@ package com.unciv.testing
 import com.badlogic.gdx.Gdx
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
+import com.unciv.models.metadata.GameSettings
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.unit.BaseUnit
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
+import com.unciv.models.translations.tr
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -42,8 +46,6 @@ class BasicTests {
                 !game.superchargedForDebug
                         && !game.viewEntireMapForDebug
                         && game.simulateUntilTurnForDebug <= 0
-                        && !game.simulateUntilWin
-                        && !game.scenarioDebugSwitch
                         && !game.consoleMode
         )
     }
@@ -55,11 +57,26 @@ class BasicTests {
         val units: Collection<BaseUnit> = ruleset.units.values
         var allObsoletingUnitsHaveUpgrades = true
         for (unit in units) {
-            if (unit.obsoleteTech != null && unit.upgradesTo == null) {
+            if (unit.obsoleteTech != null && unit.upgradesTo == null && unit.name !="Scout" ) {
                 println(unit.name + " obsoletes but has no upgrade")
                 allObsoletingUnitsHaveUpgrades = false
             }
         }
         Assert.assertTrue(allObsoletingUnitsHaveUpgrades)
+    }
+
+    @Test
+    fun statParserWorks(){
+        Assert.assertTrue(Stats.isStats("+1 Production"))
+        Assert.assertTrue(Stats.isStats("+1 Gold, +2 Production"))
+        Assert.assertFalse(Stats.isStats("+1 Gold from tree"))
+
+        val statsThatShouldBe = Stats().add(Stat.Gold,1f).add(Stat.Production, 2f)
+        Assert.assertTrue(Stats.parse("+1 Gold, +2 Production").equals(statsThatShouldBe))
+
+        UncivGame.Current = UncivGame("")
+        UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
+        val x = "+1 Gold, +2 Production".tr()
+        print(x)
     }
 }

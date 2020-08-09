@@ -49,7 +49,7 @@ class MapDownloadPopup(loadMapScreen: LoadMapScreen): Popup(loadMapScreen) {
             val folderList = DropBox.getFolderList("/Maps")
             Gdx.app.postRunnable {
                 scrollableMapTable.apply { defaults().pad(10f) }
-                for (downloadableMap in folderList.entries) {
+                for (downloadableMap in folderList) {
                     val downloadMapButton = downloadableMap.name.toTextButton()
                     listOfMaps.add(downloadMapButton)
                     downloadMapButton.onClick {
