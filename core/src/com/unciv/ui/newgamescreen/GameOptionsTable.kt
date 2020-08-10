@@ -9,9 +9,10 @@ import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.translations.tr
+import com.unciv.ui.mapeditor.GameParametersScreen
 import com.unciv.ui.utils.*
 
-class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
+class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPickerTable:(desiredCiv:String)->Unit)
     : Table(CameraStageBaseScreen.skin) {
     var gameParameters = previousScreen.gameSetupInfo.gameParameters
     val ruleset = previousScreen.ruleset
@@ -137,6 +138,7 @@ class GameOptionsTable(previousScreen: IPreviousScreen, val updatePlayerPickerTa
         val victoryConditionsTable = Table().apply { defaults().pad(5f) }
         for (victoryType in VictoryType.values()) {
             if (victoryType == VictoryType.Neutral) continue
+            if (previousScreen !is GameParametersScreen && victoryType == VictoryType.Scenario) continue // scenario victory is only available for scenarios
             val victoryCheckbox = CheckBox(victoryType.name.tr(), CameraStageBaseScreen.skin)
             victoryCheckbox.name = victoryType.name
             victoryCheckbox.isChecked = gameParameters.victoryTypes.contains(victoryType)

@@ -317,7 +317,7 @@ object Battle {
             capturedUnit.assignOwner(attacker.getCivInfo())
         }
 
-        destroyIfDefeated(defenderCiv,attacker.getCivInfo())
+        destroyIfDefeated(defenderCiv, attacker.getCivInfo())
         capturedUnit.updateVisibleTiles()
     }
 

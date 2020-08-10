@@ -9,11 +9,12 @@ import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.colorFromRGB
 
-enum class VictoryType{
+enum class VictoryType {
     Neutral,
     Cultural,
     Domination,
-    Scientific
+    Scientific,
+    Scenario
 }
 
 class Nation : INamed {

@@ -272,11 +272,15 @@ class CivilizationInfo {
     override fun toString(): String {return civName} // for debug
 
     /** Returns true if the civ was fully initialized and has no cities remaining */
-    fun isDefeated()= cities.isEmpty() // No cities
-            && exploredTiles.isNotEmpty()  // Dirty hack: exploredTiles are empty only before starting units are placed
-            && !isBarbarian() // Barbarians can be never defeated
-            && !isSpectator() // can't loose in Spectator mode
-            && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
+    fun isDefeated(): Boolean {
+        // Dirty hack: exploredTiles are empty only before starting units are placed
+        if (isBarbarian() || isSpectator() || exploredTiles.isEmpty()) return false
+        // Scenarios are 'to the death'... for now
+        if (gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scenario))
+            return cities.isEmpty() && getCivUnits().none()
+        else return cities.isEmpty() // No cities
+                && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
+    }
 
     fun getEra(): String {
         if(tech.researchedTechnologies.isEmpty())

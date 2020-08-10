@@ -145,7 +145,7 @@ class PolicyManager {
                         val greatPerson = when (preferredVictoryType) {
                             VictoryType.Cultural -> "Great Artist"
                             VictoryType.Scientific -> "Great Scientist"
-                            VictoryType.Domination, VictoryType.Neutral ->
+                            else ->
                                 civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
                         }
                         civInfo.addUnit(greatPerson)

@@ -31,10 +31,10 @@ object GameStarter {
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
 
-        for(tile in gameInfo.tileMap.values)
-            for(unit in tile.getUnits())
-                if(gameInfo.civilizations.none { it.civName== unit.owner}){
-                    unit.currentTile=tile
+        for (tile in gameInfo.tileMap.values)
+            for (unit in tile.getUnits())
+                if (gameInfo.civilizations.none { it.civName == unit.owner }) {
+                    unit.currentTile = tile
                     unit.setTransients(ruleset)
                     unit.removeFromTile()
                 }

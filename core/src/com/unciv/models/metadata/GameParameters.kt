@@ -21,7 +21,7 @@ class GameParameters { // Default values are the default new game
     var oneCityChallenge = false
     var nuclearWeaponsEnabled = true
 
-    var victoryTypes: ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
+    var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific) // By default, all victory types
     var startingEra = Constants.ancientEra
 
     var isOnlineMultiplayer = false
