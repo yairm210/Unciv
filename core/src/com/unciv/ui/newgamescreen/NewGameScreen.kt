@@ -96,28 +96,6 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     private fun newGameThread() {
         try {
             newGame = GameStarter.startNewGame(gameSetupInfo)
-            if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
-                newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
-                try {
-                    OnlineMultiplayer().tryUploadGame(newGame!!)
-                    GameSaver.autoSave(newGame!!) {}
-
-                    // Saved as Multiplayer game to show up in the session browser
-                    GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
-                    // Save gameId to clipboard because you have to do it anyway.
-                    Gdx.app.clipboard.contents = newGame!!.gameId
-                    // Popup to notify the User that the gameID got copied to the clipboard
-                    Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
-                } catch (ex: Exception) {
-                    Gdx.app.postRunnable {
-                        val cantUploadNewGamePopup = Popup(this)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
-                    }
-                    newGame = null
-                }
-            }
         } catch (exception: Exception) {
             Gdx.app.postRunnable {
                 val cantMakeThatMapPopup = Popup(this)
@@ -130,13 +108,32 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
                 rightSideButton.setText("Start game!".tr())
             }
         }
+
+        if (gameSetupInfo.gameParameters.isOnlineMultiplayer) {
+            newGame!!.isUpToDate = true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
+            try {
+                OnlineMultiplayer().tryUploadGame(newGame!!)
+                GameSaver.autoSave(newGame!!) {}
+
+                // Saved as Multiplayer game to show up in the session browser
+                GameSaver.saveGame(newGame!!, newGame!!.gameId, true)
+                // Save gameId to clipboard because you have to do it anyway.
+                Gdx.app.clipboard.contents = newGame!!.gameId
+                // Popup to notify the User that the gameID got copied to the clipboard
+                Gdx.app.postRunnable { ResponsePopup("gameID copied to clipboard".tr(), UncivGame.Current.worldScreen, 2500) }
+            } catch (ex: Exception) {
+                Gdx.app.postRunnable {
+                    val cantUploadNewGamePopup = Popup(this)
+                    cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
+                    cantUploadNewGamePopup.addCloseButton()
+                    cantUploadNewGamePopup.open()
+                }
+                newGame = null
+            }
+        }
+
         Gdx.graphics.requestRendering()
     }
-
-//    fun setNewGameButtonEnabled(bool: Boolean) {
-//        if (bool) rightSideButton.enable()
-//        else rightSideButton.disable()
-//    }
 
     fun lockTables() {
         playerPickerTable.locked = true

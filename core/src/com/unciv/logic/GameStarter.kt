@@ -35,6 +35,7 @@ object GameStarter {
             for(unit in tile.getUnits())
                 if(gameInfo.civilizations.none { it.civName== unit.owner}){
                     unit.currentTile=tile
+                    unit.setTransients(ruleset)
                     unit.removeFromTile()
                 }
 
@@ -67,7 +68,8 @@ object GameStarter {
         }
 
         // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-        addCivStartingUnits(gameInfo)
+        if (gameSetupInfo.mapParameters.type != MapType.scenario)
+            addCivStartingUnits(gameInfo)
 
         return gameInfo
     }
