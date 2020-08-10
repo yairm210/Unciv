@@ -126,7 +126,7 @@ object GameStarter {
             if (tile.improvement != null && tile.improvement!!.startsWith("StartingLocation "))
                 tile.improvement = null
             // set max starting movement for units loaded from map
-            for(unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
+            for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
         }
 
 
@@ -143,7 +143,8 @@ object GameStarter {
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
             val startingLocation = startingLocations[civ]!!
             for (tile in startingLocation.getTilesInDistance(3))
-                tile.improvement = null // Remove ancient ruins in immediate vicinity
+                if (tile.improvement == Constants.ancientRuins)
+                    tile.improvement = null // Remove ancient ruins in immediate vicinity
 
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
