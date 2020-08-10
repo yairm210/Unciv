@@ -251,8 +251,10 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)) {
                 val denounceButton = "Denounce ([30] turns)".toTextButton()
                 denounceButton.onClick {
-                    diplomacyManager.denounce()
-                    setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
+                    YesNoPopup("Denounce [${otherCiv.civName}]?", {
+                        diplomacyManager.denounce()
+                        setRightSideFlavorText(otherCiv, "We will remember this.", "Very well.")
+                    }, this).open()
                 }
                 diplomacyTable.add(denounceButton).row()
                 if (isNotPlayersTurn()) denounceButton.disable()
