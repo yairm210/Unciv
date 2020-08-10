@@ -274,7 +274,7 @@ class CivilizationInfo {
     /** Returns true if the civ was fully initialized and has no cities remaining */
     fun isDefeated(): Boolean {
         // Dirty hack: exploredTiles are empty only before starting units are placed
-        if (isBarbarian() || isSpectator() || exploredTiles.isEmpty()) return false
+        if (exploredTiles.isEmpty() || isBarbarian() || isSpectator()) return false
         // Scenarios are 'to the death'... for now
         if (gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scenario))
             return cities.isEmpty() && getCivUnits().none()
