@@ -224,8 +224,8 @@ object Battle {
         if(barbarianUnit.isDefeated() && barbarianUnit is MapUnitCombatant
                 && barbarianUnit.getCivInfo().isBarbarian()
                 && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit"))
-            civUnit.getCivInfo().policies.storedCulture +=
-                    max(barbarianUnit.unit.baseUnit.strength,barbarianUnit.unit.baseUnit.rangedStrength)
+            civUnit.getCivInfo().policies.addCulture(
+                    max(barbarianUnit.unit.baseUnit.strength, barbarianUnit.unit.baseUnit.rangedStrength))
     }
 
     // XP!

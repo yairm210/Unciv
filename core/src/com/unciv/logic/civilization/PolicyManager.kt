@@ -56,11 +56,15 @@ class PolicyManager {
         tryAddLegalismBuildings()
     }
 
-    fun endTurn(culture: Int) {
+    fun addCulture(culture: Int){
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
         if (!couldAdoptPolicyBefore && canAdoptPolicy())
             shouldOpenPolicyPicker = true
+    }
+
+    fun endTurn(culture: Int) {
+        addCulture(culture)
         if (autocracyCompletedTurns > 0)
             autocracyCompletedTurns -= 1
     }

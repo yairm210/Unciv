@@ -595,6 +595,11 @@ class MapUnit {
             civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
         }
 
+        actions.add {
+            civInfo.policies.addCulture(20)
+            civInfo.addNotification("We have discovered cultural artifacts in the ruins! (+20 Culture)",tile.position, Color.GOLD)
+        }
+
         // Map of the surrounding area
         actions.add {
             val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).toList().random(tileBasedRandom)
