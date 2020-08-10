@@ -10,6 +10,7 @@ import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.models.metadata.GameParameters
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -35,7 +36,7 @@ class GameSetupInfo(var gameId:String, var gameParameters: GameParameters, var m
 
 class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSetupInfo?=null): IPreviousScreen, PickerScreen() {
     override val gameSetupInfo =  _gameSetupInfo ?: GameSetupInfo()
-    override val ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters)
+    override var ruleset = RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters) // needs to be set because the gameoptionstable etc. depend on this
     var newGameOptionsTable = GameOptionsTable(this) { desiredCiv: String -> playerPickerTable.update(desiredCiv) }
     // Has to be defined before the mapOptionsTable, since the mapOptionsTable refers to it on init
     var playerPickerTable = PlayerPickerTable(this, gameSetupInfo.gameParameters)
@@ -56,6 +57,8 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
         topTable.pack()
         topTable.setFillParent(true)
+
+        updateRuleset()
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
@@ -133,6 +136,11 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
         }
 
         Gdx.graphics.requestRendering()
+    }
+
+    fun updateRuleset(){
+        ruleset.clear()
+        ruleset.add(RulesetCache.getComplexRuleset(gameSetupInfo.gameParameters))
     }
 
     fun lockTables() {
