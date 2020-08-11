@@ -40,9 +40,11 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
             mapEditorScreen.ruleset.add(ruleset)
             mapEditorScreen.tileEditorOptions.update()
             // Remove resources that are not applicable to this scenario
-            for(tile in mapEditorScreen.tileMap.values){
-                if(tile.resource!=null && !ruleset.tileResources.containsKey(tile.resource!!))
-                    tile.resource=null
+            for(tile in mapEditorScreen.tileMap.values) {
+                if (tile.resource != null && !ruleset.tileResources.containsKey(tile.resource!!))
+                    tile.resource = null
+                if (tile.improvement != null && !ruleset.tileImprovements.containsKey(tile.improvement!!))
+                    tile.improvement = null
             }
 
             mapEditorScreen.mapHolder.updateTileGroups()

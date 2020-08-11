@@ -50,6 +50,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
                     .generateMap(MapParameters().apply { size = MapSize.Small; type = MapType.default })
             Gdx.app.postRunnable { // for GL context
+                ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
