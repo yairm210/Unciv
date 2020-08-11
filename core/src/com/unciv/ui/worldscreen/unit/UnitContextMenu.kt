@@ -27,14 +27,15 @@ class UnitContextMenu(val tileMapHolder: WorldMapHolder, val selectedUnit: MapUn
             onMoveButtonClick()
         }
 
-        addButton(
-                ImageGetter.getImprovementIcon("Road"),
-                "Construct road",
-                BuildLongRoadAction(selectedUnit, targetTile)
-        )
+        // Basic scenarios sommetimes don't have roads
+        if (selectedUnit.civInfo.gameInfo.ruleSet.tileImprovements.containsKey("Road"))
+            addButton(
+                    ImageGetter.getImprovementIcon("Road"),
+                    "Construct road",
+                    BuildLongRoadAction(selectedUnit, targetTile)
+            )
 
         pack()
-
     }
 
     fun addButton(icon: Actor, label: String, action: MapUnitAction) {

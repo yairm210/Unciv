@@ -283,6 +283,8 @@ class CivilizationInfo {
     }
 
     fun getEra(): String {
+        // For scenarios with no techs
+        if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
         if(tech.researchedTechnologies.isEmpty())
             return gameInfo.ruleSet.getEras().first()
         val maxEraOfTech =  tech.researchedTechnologies
