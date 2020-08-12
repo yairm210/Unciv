@@ -126,7 +126,7 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
     // This function is too strange for me, however, let's keep it "as is" for now. - JackRainy
     private fun getLanguagesWithTranslationFile(): List<String> {
 
-        val languages = ArrayList<String>()
+        val languages = HashSet<String>()
         // So apparently the Locales don't work for everyone, which is horrendous
         // So for those players, which seem to be Android-y, we try to see what files exist directly...yeah =/
         try{
@@ -146,10 +146,10 @@ class Translations : LinkedHashMap<String, TranslationEntry>(){
         languages.remove("template")
         languages.remove("completionPercentages")
         languages.remove("Thai") // Until we figure out what to do with it
+        languages.remove("Vietnamese") // Until we figure out what to do with it
 
-        return languages.distinct()
-                .filter { it!="Thai" &&
-                        Gdx.files.internal("jsons/translations/$it.properties").exists() }
+        return languages
+                .filter { Gdx.files.internal("jsons/translations/$it.properties").exists() }
     }
 
     fun readAllLanguagesTranslation() {
