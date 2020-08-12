@@ -196,6 +196,13 @@ class NaturalWonderGenerator(val ruleset: Ruleset){
             for (tile in location.neighbors) {
                 if (tile.baseTerrain == Constants.coast) continue
                 if (tile.baseTerrain == Constants.mountain) continue
+                for (neighbor in tile.neighbors)
+                // This is so we don't have this tile turn into Coast, and then it's touching a Lake tile.
+                // We just turn the lake tiles into this kind of tile.
+                    if (neighbor.baseTerrain == Constants.lakes) {
+                        neighbor.baseTerrain = tile.baseTerrain
+                        neighbor.setTerrainTransients()
+                    }
 
                 tile.baseTerrain = Constants.coast
                 tile.terrainFeature = null

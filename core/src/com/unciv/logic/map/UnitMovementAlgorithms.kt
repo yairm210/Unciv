@@ -252,8 +252,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (destination.isCityCenter() && destination.getOwner() != unit.civInfo && !destination.getCity()!!.hasJustBeenConquered)
             throw Exception("This is an enemy city, you can't go here!")
 
-        unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
-        if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+        if (!unit.civInfo.gameInfo.gameParameters.godMode) {
+            unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
+            if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+        }
         if (unit.isFortified() || unit.action == Constants.unitActionSetUp || unit.isSleeping())
             unit.action = null // unfortify/setup after moving
 

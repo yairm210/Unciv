@@ -184,6 +184,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     private fun selectTechnology(tech: Technology?, center: Boolean = false, switchfromWorldScreen: Boolean = true) {
 
+        val previousSelectedTech = selectedTech
         selectedTech = tech
         descriptionLabel.setText(tech?.getDescription(civInfo.gameInfo.ruleSet))
 
@@ -202,6 +203,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             selectTechnologyForFreeTech(tech)
             setButtonsInfo()
             return
+        }
+
+        if (civInfo.gameInfo.gameParameters.godMode && !civInfo.tech.isResearched(tech.name)
+                && selectedTech == previousSelectedTech){
+            civInfo.tech.addTechnology(tech.name)
         }
 
         if (civTech.isResearched(tech.name) && tech.name != Constants.futureTech) {
