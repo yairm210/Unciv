@@ -99,7 +99,6 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         pickedPolicy = policy
         val policyText = mutableListOf<String>()
         policyText += policy.name
-//        policyText += policy.effect
         policyText += policy.uniques
 
         if (!policy.name.endsWith("Complete")) {
