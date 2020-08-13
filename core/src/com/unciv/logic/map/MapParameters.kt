@@ -28,6 +28,8 @@ object MapType {
     // Loaded scenario
     const val scenario = "Scenario"
 
+    const val scenarioFromSavedGame = "ScenarioFromSavedGame"
+
     // All ocean tiles
     const val empty = "Empty"
 }

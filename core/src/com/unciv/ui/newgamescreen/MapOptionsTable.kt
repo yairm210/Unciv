@@ -4,6 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.UncivGame
+import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -17,6 +19,9 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
     private val generatedMapOptionsTable = MapParametersTable(mapParameters)
     private val savedMapOptionsTable = Table()
     private val savedScenarioOptionsTable = Table()
+    private val scenarioFromSavedGameOptionsTable = Table()
+    var selectedScenarioSaveGame: GameInfo? = null
+    lateinit var mapTypeSelectBox: TranslatedSelectBox
 
     init {
         defaults().pad(5f)
@@ -24,6 +29,15 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         addMapTypeSelection()
     }
 
+    fun selectSavedGameAsScenario(gameName: String){
+        val savedGame = GameSaver.loadGameByName(gameName)
+        mapParameters.type = MapType.scenarioFromSavedGame
+        mapParameters.name = gameName
+        newGameScreen.updateTables()
+        newGameScreen.gameSetupInfo.gameParameters = savedGame.gameParameters
+        newGameScreen.gameSetupInfo.mapParameters = savedGame.tileMap.mapParameters
+        selectedScenarioSaveGame = savedGame
+    }
 
     private fun addMapTypeSelection() {
         add("{Map Type}:".toLabel())
@@ -31,7 +45,9 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
         if (MapSaver.getScenarios().isNotEmpty() && UncivGame.Current.settings.extendedMapEditor)
             mapTypes.add(MapType.scenario)
-        val mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
+        if (UncivGame.Current.settings.extendedMapEditor && GameSaver.getSaves().any { it.endsWith("Scenario") })
+            mapTypes.add(MapType.scenarioFromSavedGame)
+        mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
         val mapFileSelectBox = getMapFileSelectBox()
         savedMapOptionsTable.defaults().pad(5f)
@@ -40,12 +56,24 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         savedMapOptionsTable.add(mapFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
 
+
         val scenarioFileSelectBox = getScenarioFileSelectBox()
         savedScenarioOptionsTable.defaults().pad(5f)
         savedScenarioOptionsTable.add("{Scenario file}:".toLabel()).left()
         // because SOME people gotta give the hugest names to their maps
         savedScenarioOptionsTable.add(scenarioFileSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
+
+
+        val scenarioFromSavedGameSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+        for (savedGame in GameSaver.getSaves()) {
+            if (savedGame.endsWith("Scenario"))
+                scenarioFromSavedGameSelectBox.items.add(savedGame)
+        }
+        scenarioFromSavedGameSelectBox.onChange { selectSavedGameAsScenario(scenarioFromSavedGameSelectBox.selected) }
+        scenarioFromSavedGameSelectBox.selected = scenarioFileSelectBox.items.first()
+        scenarioFromSavedGameOptionsTable.add("{Scenario file}:".toLabel()).left()
+        scenarioFromSavedGameOptionsTable.add(scenarioFromSavedGameSelectBox)
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
@@ -66,7 +94,13 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 // update PlayerTable and GameOptionsTable
                 newGameScreen.lockTables()
                 newGameScreen.updateTables()
-            } else {
+            } else if(mapTypeSelectBox.selected.value == MapType.scenarioFromSavedGame){
+                selectSavedGameAsScenario(scenarioFromSavedGameSelectBox.selected)
+                mapTypeSpecificTable.add(scenarioFromSavedGameOptionsTable)
+                newGameScreen.updateRuleset()
+                newGameScreen.lockTables()
+                newGameScreen.updateTables()
+            } else { // generated map
                 mapParameters.name = ""
                 mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
