@@ -109,7 +109,7 @@ class PolicyManager {
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
 
-        if (!branchCompletion) {
+        if (!branchCompletion && !civInfo.gameInfo.gameParameters.godMode) {
             if (freePolicies > 0) freePolicies--
             else {
                 val cultureNeededForNextPolicy = getCultureNeededForNextPolicy()

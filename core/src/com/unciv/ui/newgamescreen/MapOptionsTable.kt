@@ -71,9 +71,10 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             if (savedGame.toLowerCase().endsWith("scenario"))
                 scenarioSelectBox.items.add(savedGame)
         }
-        scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected) }
         scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
         scenarioSelectBox.selected = scenarioMapSelectBox.items.first()
+        // needs to be after the item change, so it doesn't activate before we choose the Scenario maptype
+        scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected) }
         scenarioOptionsTable.add("{Scenario file}:".toLabel()).left()
         scenarioOptionsTable.add(scenarioSelectBox)
 
@@ -83,6 +84,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 mapParameters.type = MapType.custom
                 mapParameters.name = mapFileSelectBox.selected
                 mapTypeSpecificTable.add(savedMapOptionsTable)
+                newGameScreen.gameSetupInfo.gameParameters.godMode = false
                 newGameScreen.unlockTables()
                 newGameScreen.updateTables()
             } else if (mapTypeSelectBox.selected.value == MapType.scenarioMap) {
@@ -103,6 +105,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             } else { // generated map
                 mapParameters.name = ""
                 mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
+                newGameScreen.gameSetupInfo.gameParameters.godMode = false
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
                 newGameScreen.unlockTables()
                 newGameScreen.updateTables()
