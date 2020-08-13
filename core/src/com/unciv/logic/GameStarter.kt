@@ -21,7 +21,7 @@ object GameStarter {
         gameInfo.gameParameters = gameSetupInfo.gameParameters
         val ruleset = RulesetCache.getComplexRuleset(gameInfo.gameParameters)
 
-        if (gameSetupInfo.mapParameters.type == MapType.scenario)
+        if (gameSetupInfo.mapParameters.type == MapType.scenarioMap)
             gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap
         else if (gameSetupInfo.mapParameters.name != "")
             gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapParameters.name)
@@ -68,7 +68,7 @@ object GameStarter {
         }
 
         // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-        if (gameSetupInfo.mapParameters.type != MapType.scenario)
+        if (gameSetupInfo.mapParameters.type != MapType.scenarioMap)
             addCivStartingUnits(gameInfo)
 
         return gameInfo

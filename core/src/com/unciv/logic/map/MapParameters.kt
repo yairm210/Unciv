@@ -26,9 +26,9 @@ object MapType {
     const val custom = "Custom"
 
     // Loaded scenario
-    const val scenario = "Scenario"
+    const val scenarioMap = "Scenario Map"
 
-    const val scenarioFromSavedGame = "ScenarioFromSavedGame"
+    const val scenario = "Scenario"
 
     // All ocean tiles
     const val empty = "Empty"

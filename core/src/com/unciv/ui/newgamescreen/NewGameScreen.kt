@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
 import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -99,7 +98,7 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
     private fun newGameThread() {
         try {
-            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.scenarioFromSavedGame) {
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.scenario) {
                 newGame = mapOptionsTable.selectedScenarioSaveGame
                 // to take the definition of which players are human and which are AI
                 for (player in gameSetupInfo.gameParameters.players) {
