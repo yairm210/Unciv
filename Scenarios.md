@@ -37,6 +37,7 @@ Once you've started your game, you'll be in 'godmode'. This means:
 - Units can move endlessly
 - You can purchase all buildings in cities and city tiles at 0 cost
 - Double-clicking a tech in the tech screen will make the civ have that tech immediately
+- Same with policies in the policy screen (enterable by clicking on the Culture part of the top bar)
 
 Once you've finished setting up your game, save it as a regular save file with the word 'Scenario' at the end.
 
