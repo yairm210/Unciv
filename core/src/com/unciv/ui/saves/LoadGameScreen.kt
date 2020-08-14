@@ -114,20 +114,20 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
     private fun updateLoadableGames(showAutosaves:Boolean) {
         saveTable.clear()
-        for (save in GameSaver.getSaves().sortedByDescending { GameSaver.getSave(it).lastModified() }) {
-            if (save.startsWith("Autosave") && !showAutosaves) continue
-            val textButton = TextButton(save, skin)
+        for (save in GameSaver.getSaves().sortedByDescending { it.lastModified() }) {
+            if (save.name().startsWith("Autosave") && !showAutosaves) continue
+            val textButton = TextButton(save.name(), skin)
             textButton.onClick {
-                selectedSave = save
+                selectedSave = save.name()
                 copySavedGameToClipboardButton.enable()
-                var textToSet = save
+                var textToSet = save.name()
 
-                val savedAt = Date(GameSaver.getSave(save).lastModified())
+                val savedAt = Date(save.lastModified())
                 descriptionLabel.setText("Loading...".tr())
                 textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("yyyy-MM-dd HH:mm").format(savedAt)
                 thread { // Even loading the game to get its metadata can take a long time on older phones
                     try {
-                        val game = GameSaver.loadGameByName(save)
+                        val game = GameSaver.loadGameFromFile(save)
                         val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                         textToSet += "\n" + playerCivNames +
                                 ", " + game.difficulty.tr() + ", {Turn} ".tr() + game.turns
@@ -137,7 +137,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
 
                     Gdx.app.postRunnable {
                         descriptionLabel.setText(textToSet)
-                        rightSideButton.setText("Load [$save]".tr())
+                        rightSideButton.setText("Load [${save.name()}]".tr())
                         rightSideButton.enable()
                         deleteSaveButton.enable()
                         deleteSaveButton.color = Color.RED

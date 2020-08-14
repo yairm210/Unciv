@@ -1,5 +1,6 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
@@ -29,10 +30,10 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         addMapTypeSelection()
     }
 
-    fun selectSavedGameAsScenario(gameName: String){
-        val savedGame = GameSaver.loadGameByName(gameName)
+    fun selectSavedGameAsScenario(gameFile: FileHandle){
+        val savedGame = GameSaver.loadGameFromFile(gameFile)
         mapParameters.type = MapType.scenario
-        mapParameters.name = gameName
+        mapParameters.name = gameFile.name()
         newGameScreen.gameSetupInfo.gameParameters = savedGame.gameParameters
         newGameScreen.gameSetupInfo.mapParameters = savedGame.tileMap.mapParameters
         newGameScreen.updateRuleset()
@@ -46,7 +47,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
         if (MapSaver.getScenarios().isNotEmpty() && UncivGame.Current.settings.extendedMapEditor)
             mapTypes.add(MapType.scenarioMap)
-        if (GameSaver.getSaves().any { it.toLowerCase().endsWith("scenario") })
+        if (GameSaver.getSaves().any { it.name().toLowerCase().endsWith("scenario") })
             mapTypes.add(MapType.scenario)
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
@@ -66,13 +67,13 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 .right().row()
 
 
-        val scenarioSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+        val scenarioSelectBox = SelectBox<FileHandle>(CameraStageBaseScreen.skin)
         for (savedGame in GameSaver.getSaves()) {
-            if (savedGame.toLowerCase().endsWith("scenario"))
+            if (savedGame.name().toLowerCase().endsWith("scenario"))
                 scenarioSelectBox.items.add(savedGame)
         }
         scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
-        scenarioSelectBox.selected = scenarioMapSelectBox.items.first()
+        scenarioSelectBox.selected = scenarioSelectBox.items.first()
         // needs to be after the item change, so it doesn't activate before we choose the Scenario maptype
         scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected) }
         scenarioOptionsTable.add("{Scenario file}:".toLabel()).left()

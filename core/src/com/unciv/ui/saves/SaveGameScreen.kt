@@ -3,7 +3,6 @@ package com.unciv.ui.saves
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.UncivGame
@@ -67,12 +66,12 @@ class SaveGameScreen : PickerScreen() {
     fun updateShownSaves(showAutosaves: Boolean) {
         currentSaves.clear()
         val saves = GameSaver.getSaves()
-                .sortedByDescending { GameSaver.getSave(it).lastModified() }
-        for (saveGameName in saves) {
-            if (saveGameName.startsWith("Autosave") && !showAutosaves) continue
-            val textButton = TextButton(saveGameName, skin)
+                .sortedByDescending { it.lastModified() }
+        for (saveGameFile in saves) {
+            if (saveGameFile.name().startsWith("Autosave") && !showAutosaves) continue
+            val textButton = saveGameFile.name().toTextButton()
             textButton.onClick {
-                textField.text = saveGameName
+                textField.text = saveGameFile.name()
             }
             currentSaves.add(textButton).pad(5f).row()
         }
