@@ -31,6 +31,7 @@ object GameStarter {
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         addCivilizations(gameSetupInfo.gameParameters, gameInfo, ruleset) // this is before gameInfo.setTransients, so gameInfo doesn't yet have the gameBasics
 
+        // Remove units for civs that aren't in this game
         for (tile in gameInfo.tileMap.values)
             for (unit in tile.getUnits())
                 if (gameInfo.civilizations.none { it.civName == unit.owner }) {
@@ -46,7 +47,24 @@ object GameStarter {
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
-        // Add Civ Technologies
+        addCivTechs(gameInfo, ruleset, gameSetupInfo)
+
+        // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
+        if (gameSetupInfo.mapParameters.type != MapType.scenarioMap)
+            addCivStartingUnits(gameInfo)
+
+        // remove starting locations once we're done
+        for (tile in gameInfo.tileMap.values) {
+            if (tile.improvement != null && tile.improvement!!.startsWith("StartingLocation "))
+                tile.improvement = null
+            // set max starting movement for units loaded from map
+            for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
+        }
+
+        return gameInfo
+    }
+
+    private fun addCivTechs(gameInfo: GameInfo, ruleset: Ruleset, gameSetupInfo: GameSetupInfo) {
         for (civInfo in gameInfo.civilizations.filter { !it.isBarbarian() }) {
 
             if (!civInfo.isPlayerCivilization())
@@ -66,12 +84,6 @@ object GameStarter {
 
             civInfo.popupAlerts.clear() // Since adding technologies generates popups...
         }
-
-        // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
-        if (gameSetupInfo.mapParameters.type != MapType.scenarioMap)
-            addCivStartingUnits(gameInfo)
-
-        return gameInfo
     }
 
     private fun addCivilizations(newGameParameters: GameParameters, gameInfo: GameInfo, ruleset: Ruleset) {
@@ -122,15 +134,6 @@ object GameStarter {
         val startingLocations = getStartingLocations(
                 gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
-
-        // remove starting locations once we're done
-        for (tile in gameInfo.tileMap.values) {
-            if (tile.improvement != null && tile.improvement!!.startsWith("StartingLocation "))
-                tile.improvement = null
-            // set max starting movement for units loaded from map
-            for (unit in tile.getUnits()) unit.currentMovement = unit.getMaxMovement().toFloat()
-        }
-
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
         fun getWarriorEquivalent(civ: CivilizationInfo): String {
