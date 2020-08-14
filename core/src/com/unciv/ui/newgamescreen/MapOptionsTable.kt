@@ -1,5 +1,6 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -41,13 +42,20 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         selectedScenarioSaveGame = savedGame
     }
 
+    fun getScenarioFiles(): Sequence<FileHandle> {
+        val localSaveScenarios = GameSaver.getSaves().filter { it.name().toLowerCase().endsWith("scenario") }
+        val modScenarios = Gdx.files.local("mods").list().asSequence()
+                .filter { it.child("scenarios").exists() }.flatMap { it.child("scenarios").list().asSequence() }
+        return localSaveScenarios + modScenarios
+    }
+
     private fun addMapTypeSelection() {
         add("{Map Type}:".toLabel())
         val mapTypes = arrayListOf("Generated")
         if (MapSaver.getMaps().isNotEmpty()) mapTypes.add(MapType.custom)
         if (MapSaver.getScenarios().isNotEmpty() && UncivGame.Current.settings.extendedMapEditor)
             mapTypes.add(MapType.scenarioMap)
-        if (GameSaver.getSaves().any { it.name().toLowerCase().endsWith("scenario") })
+        if (getScenarioFiles().any())
             mapTypes.add(MapType.scenario)
         mapTypeSelectBox = TranslatedSelectBox(mapTypes, "Generated", CameraStageBaseScreen.skin)
 
@@ -66,16 +74,20 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         scenarioMapOptionsTable.add(scenarioMapSelectBox).maxWidth(newGameScreen.stage.width / 2)
                 .right().row()
 
+        // The SelectBox auto displays the text a object.toString(), which on the FileHandle itself includes the folder path.
+        //  So we wrap it in another object with a custom toString()
+        class FileHandleWrapper(val fileHandle: FileHandle){
+            override fun toString() = fileHandle.name()
+        }
 
-        val scenarioSelectBox = SelectBox<FileHandle>(CameraStageBaseScreen.skin)
-        for (savedGame in GameSaver.getSaves()) {
-            if (savedGame.name().toLowerCase().endsWith("scenario"))
-                scenarioSelectBox.items.add(savedGame)
+        val scenarioSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
+        for (savedGame in getScenarioFiles()) {
+            scenarioSelectBox.items.add(FileHandleWrapper(savedGame))
         }
         scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
         scenarioSelectBox.selected = scenarioSelectBox.items.first()
         // needs to be after the item change, so it doesn't activate before we choose the Scenario maptype
-        scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected) }
+        scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected.fileHandle) }
         scenarioOptionsTable.add("{Scenario file}:".toLabel()).left()
         scenarioOptionsTable.add(scenarioSelectBox)
 
@@ -100,7 +112,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 newGameScreen.lockTables()
                 newGameScreen.updateTables()
             } else if(mapTypeSelectBox.selected.value == MapType.scenario){
-                selectSavedGameAsScenario(scenarioSelectBox.selected)
+                selectSavedGameAsScenario(scenarioSelectBox.selected.fileHandle)
                 mapTypeSpecificTable.add(scenarioOptionsTable)
                 newGameScreen.lockTables()
             } else { // generated map
