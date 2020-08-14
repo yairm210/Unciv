@@ -35,7 +35,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         addUploadMapButton()
         if (UncivGame.Current.settings.extendedMapEditor) {
             addScenarioButton()
-            addSaveScenarioButton()
         }
         addExitMapEditorButton()
         addCloseOptionsButton()
@@ -78,9 +77,18 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         saveMapButton.onClick {
             mapEditorScreen.tileMap.mapParameters.name = mapEditorScreen.mapName
             mapEditorScreen.tileMap.mapParameters.type = MapType.custom
-            thread(name = "SaveMap") {
+            thread(name = "SaveMap") { // this works for both scenarios and non-scenarios
                 try {
-                    MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
+                    if(mapEditorScreen.hasScenario()) {
+                        mapEditorScreen.tileMap.mapParameters.type = MapType.scenarioMap
+                        mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
+                        mapEditorScreen.scenario!!.gameParameters.godMode = true // so we can edit this scenario when loading from the map
+                        mapEditorScreen.scenarioName = mapNameEditor.text
+                        MapSaver.saveScenario(mapNameEditor.text, mapEditorScreen.scenario!!)
+                    }
+                    else {
+                        MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
+                    }
                     close()
                     Gdx.app.postRunnable {
                         ResponsePopup("Map saved", mapEditorScreen) // todo - add this text to translations
@@ -168,41 +176,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
             UncivGame.Current.setScreen(GameParametersScreen(mapEditorScreen).apply {
                 playerPickerTable.noRandom = true
             })
-        }
-    }
-
-    private fun Popup.addSaveScenarioButton() {
-        val saveScenarioButton = "Save scenario map".toTextButton()
-        add(saveScenarioButton).row()
-        saveScenarioButton.onClick {
-            thread(name = "SaveScenarioMap") {
-                try {
-                    mapEditorScreen.tileMap.mapParameters.type = MapType.scenarioMap
-                    mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
-                    mapEditorScreen.scenario!!.gameParameters.godMode = true // so we can edit this scenario when loading from the map
-                    mapEditorScreen.scenarioName = mapNameEditor.text
-                    MapSaver.saveScenario(mapNameEditor.text, mapEditorScreen.scenario!!)
-
-                    close()
-                    Gdx.app.postRunnable {
-                        ResponsePopup("Scenario Map saved", mapEditorScreen) // todo - add this text to translations
-                    }
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    Gdx.app.postRunnable {
-                        val cantLoadGamePopup = Popup(mapEditorScreen)
-                        cantLoadGamePopup.addGoodSizedLabel("It looks like your scenario can't be saved!").row()
-                        cantLoadGamePopup.addCloseButton()
-                        cantLoadGamePopup.open(force = true)
-                    }
-                }
-            }
-        }
-        saveScenarioButton.isEnabled = mapNameEditor.text.isNotEmpty() && mapEditorScreen.hasScenario()
-        mapNameEditor.addListener {
-            mapEditorScreen.scenarioName = mapNameEditor.text
-            saveScenarioButton.isEnabled = mapNameEditor.text.isNotEmpty() && mapEditorScreen.hasScenario()
-            true
         }
     }
 
