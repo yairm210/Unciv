@@ -618,7 +618,6 @@
 		"strength": 20,
 		"cost": 110,
 		"requiredTech": "Chivalry",
-		"obsoleteTech": "Military Science",
 		"requiredResource": "Horses",
 		"upgradesTo": "Cavalry",
 		"obsoleteTech": "Military Science",

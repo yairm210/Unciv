@@ -15,6 +15,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.tile.ResourceSupplyList
 import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
@@ -93,7 +94,7 @@ class CityInfo {
         civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
 
         if (civInfo.cities.size == 1) {
-            cityConstructions.addBuilding("Palace")
+            cityConstructions.addBuilding(capitalCityIndicator())
         }
 
         civInfo.policies.tryAddLegalismBuildings()
@@ -144,7 +145,9 @@ class CityInfo {
     fun getTiles(): Sequence<TileInfo> = tiles.asSequence().map { tileMap[it] }
     fun getWorkableTiles() = tilesInRange.asSequence().filter { it.getOwner() == civInfo }
 
-    fun isCapital() = cityConstructions.isBuilt("Palace")
+    fun isCapital(): Boolean = cityConstructions.builtBuildings.contains(capitalCityIndicator())
+    fun capitalCityIndicator(): String = getRuleset().buildings.values.first { it.uniques.contains("Indicates the capital city") }.name
+
     fun isConnectedToCapital(connectionTypePredicate: (Set<String>) -> Boolean = {true}): Boolean {
         val mediumTypes = civInfo.citiesConnectedToCapitalToMediums[this] ?: return false
         return connectionTypePredicate(mediumTypes)
@@ -357,11 +360,11 @@ class CityInfo {
     }
 
     fun destroyCity() {
-        for(airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
+        for (airUnit in getCenterTile().airUnits.toList()) airUnit.destroy() //Destroy planes stationed in city
 
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
-        for(unit in getCenterTile().getUnits()) {
+        for (unit in getCenterTile().getUnits()) {
             if (!unit.movement.canPassThrough(getCenterTile()))
                 unit.movement.teleportToClosestMoveableTile()
         }
@@ -370,10 +373,12 @@ class CityInfo {
         // because it updates the city stats which assumes there is a capital, so if you remove the capital it crashes
         getTiles().forEach { expansion.relinquishOwnership(it) }
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
-        getCenterTile().improvement="City ruins"
+        getCenterTile().improvement = "City ruins"
 
-        if (isCapital() && civInfo.cities.isNotEmpty()) // Move the capital if destroyed (by a nuke or by razing)
-            civInfo.cities.first().cityConstructions.addBuilding("Palace")
+        if (isCapital() && civInfo.cities.isNotEmpty()) { // Move the capital if destroyed (by a nuke or by razing)
+            val capitalCityBuilding = getRuleset().buildings.values.first { it.uniques.contains("Indicates the capital city") }
+            civInfo.cities.first().cityConstructions.addBuilding(capitalCityBuilding.name)
+        }
     }
 
     fun annexCity() {
@@ -460,7 +465,7 @@ class CityInfo {
         health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         reassignPopulation()
 
-        if (foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
+        if (foundingCiv.cities.size == 1) cityConstructions.addBuilding(capitalCityIndicator()) // Resurrection!
         isPuppet = false
         cityStats.update()
 
@@ -521,16 +526,17 @@ class CityInfo {
             cityConstructions.removeBuilding(building.name)
 
         // Remove/relocate palace for old Civ
-        if(cityConstructions.isBuilt("Palace")){
-            cityConstructions.removeBuilding("Palace")
+        val capitalCityIndicator = capitalCityIndicator()
+        if(cityConstructions.isBuilt(capitalCityIndicator)){
+            cityConstructions.removeBuilding(capitalCityIndicator)
             if(oldCiv.cities.isNotEmpty()){
-                oldCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
+                oldCiv.cities.first().cityConstructions.addBuilding(capitalCityIndicator) // relocate palace
             }
         }
 
         // Locate palace for newCiv if this is the only city they have
         if (newCivInfo.cities.count() == 1) {
-            cityConstructions.addBuilding("Palace")
+            cityConstructions.addBuilding(capitalCityIndicator)
         }
 
         isBeingRazed=false

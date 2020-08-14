@@ -188,8 +188,11 @@ object UnitAutomation {
             return true
         }
 
-        val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
+        var bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate (say 15), we'll prefer one which has the highest defensive bonuses
+        val bestTilesWithoutBombardableTiles = bestTilesForHealing.filterNot { it.getTilesInDistance(2)
+                .any { it.isCityCenter() && it.getOwner()!!.isAtWarWith(unit.civInfo) } }
+        if(bestTilesWithoutBombardableTiles.any()) bestTilesForHealing = bestTilesWithoutBombardableTiles
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
         val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
 
