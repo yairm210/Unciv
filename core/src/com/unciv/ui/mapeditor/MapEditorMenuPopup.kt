@@ -36,7 +36,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         if (UncivGame.Current.settings.extendedMapEditor) {
             addScenarioButton()
             addSaveScenarioButton()
-            addLoadScenarioButton()
         }
         addExitMapEditorButton()
         addCloseOptionsButton()
@@ -207,14 +206,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         }
     }
 
-    private fun Popup.addLoadScenarioButton() {
-        val loadScenarioButton = "Load scenario map".toTextButton()
-        loadScenarioButton.onClick {
-            UncivGame.Current.setScreen(LoadScenarioScreen(mapEditorScreen.tileMap))
-        }
-        add(loadScenarioButton).row()
-
-    }
 
     private fun Popup.addExitMapEditorButton() {
         val exitMapEditorButton = "Exit map editor".toTextButton()
