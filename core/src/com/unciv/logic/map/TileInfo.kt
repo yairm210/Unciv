@@ -243,7 +243,7 @@ open class TileInfo {
 
         if(city!=null)
             for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
-                if (improvement.name == unique.params[1] || (unique.params[1]=="Great Improvement"))
+                if (improvement.name == unique.params[1] || (unique.params[1]=="Great Improvement" && improvement.isGreatImprovement()))
                     stats.add(Stats.parse(unique.params[0]))
             }
 
