@@ -51,7 +51,7 @@ So if your Scenario is based on the base ruleset, you can simply send it off as 
 
 However, the best scenarios will mod-based, and we don't want to have to send both the Mod folder and an external saved game.
 
-So, we can create a folder in the mod base folder called 'scenarios' (`mods/MyCoolMod/scenarios) and copy over the scenario savefile there.
+So, we can create a folder in the mod base folder called 'scenarios' (`mods/MyCoolMod/scenarios`) and copy over the scenario savefile there.
 
 Once someone else loads the mod, they'll immediately be able to start the scenario from the New Game Screen!
 
