@@ -43,6 +43,20 @@ Once you've finished setting up your game, save it as a regular save file with t
 
 If you enter the 'New Game' screen again, you should see that there's a new map type - Scenario, from which you can load your game :)
 
+# Passing it around
+
+As we've seen, the Scenario is basically a save file.
+
+So if your Scenario is based on the base ruleset, you can simply send it off as a save file, or copy to clipboard and send it as text.
+
+However, the best scenarios will mod-based, and we don't want to have to send both the Mod folder and an external saved game.
+
+So, we can create a folder in the mod base folder called 'scenarios' (`mods/MyCoolMod/scenarios) and copy over the scenario savefile there.
+
+Once someone else loads the mod, they'll immediately be able to start the scenario from the New Game Screen!
+
+This has the added bonus of not saving your scenario as a regular save file, so it won't appear for users as a 'load game' option :)
+
 # Other Notes
 
 Scenario Map games start ONLY with the unit that are already on the map, so 'starting positions' and 'starting units' are irrelevant.
