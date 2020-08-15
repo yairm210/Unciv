@@ -109,6 +109,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.isDisabled = locked
         selectBox.onChange { onChange(selectBox.selected.value) }
+        onChange(selectBox.selected.value)
         add(selectBox).fillX().row()
     }
 
