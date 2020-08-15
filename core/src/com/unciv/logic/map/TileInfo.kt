@@ -184,6 +184,12 @@ open class TileInfo {
                 stats.add(Stats.parse(unique.params[0]))
         }
 
+        if(city!=null) for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
+            val tileType = unique.params[1]
+            if (baseTerrain == tileType || terrainFeature == tileType)
+                stats.add(Stats.parse(unique.params[0]))
+        }
+
         if (naturalWonder != null) {
             val wonder = getNaturalWonder()
             stats.add(wonder)
