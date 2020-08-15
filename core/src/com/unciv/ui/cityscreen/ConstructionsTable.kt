@@ -327,7 +327,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val button = "".toTextButton()
 
-        if (construction == null || !construction.canBePurchased()
+        if (construction == null || (!construction.canBePurchased() && !city.civInfo.gameInfo.gameParameters.godMode)
         ) {
             // fully disable a "buy" button only for "priceless" buildings such as wonders
             // for all other cases, the price should be displayed
@@ -347,11 +347,11 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 YesNoPopup(purchasePrompt, { purchaseConstruction(construction) }, cityScreen, { cityScreen.update() }).open()
             }
 
-            if ( !construction.isBuildable(cityConstructions)
+            if (!construction.isBuildable(cityConstructions)
                     || !cityScreen.canChangeState
                     || city.isPuppet || city.isInResistance()
                     || !city.canPurchase(construction)
-                    || constructionGoldCost > city.civInfo.gold )
+                    || (constructionGoldCost > city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode) )
                 button.disable()
         }
 

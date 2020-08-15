@@ -1,3 +1,23 @@
+## 3.9.20
+
+Scenario changes:
+- Can now play an entire scenario with no improvements or techs defined
+- Added Scenario victory condition
+- Scenario now no longer spawns starting units
+
+Denounce now has a confirmation popup
+
+Ancient Ruins can now provide Culture
+
+Resolved #2951 - only ancient ruins improvements are removed around players' starting locations, and not other improvements
+
+AI now has 5 favored policy trees for each preferred victory type, making them more likely to win culturally
+
+AI no longer uses all its aluminum on units and leaves some for spaceship construction
+
+Translation updates
+
+
 ## 3.9.19
 
 Resolved #2818 - Can no longer build improvements outside your borders

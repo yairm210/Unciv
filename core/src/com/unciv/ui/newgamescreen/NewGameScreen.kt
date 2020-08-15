@@ -9,8 +9,8 @@ import com.unciv.UncivGame
 import com.unciv.logic.*
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapParameters
+import com.unciv.logic.map.MapType
 import com.unciv.models.metadata.GameParameters
-import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -98,7 +98,19 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
 
     private fun newGameThread() {
         try {
-            newGame = GameStarter.startNewGame(gameSetupInfo)
+            if (mapOptionsTable.mapTypeSelectBox.selected.value == MapType.scenario) {
+                newGame = mapOptionsTable.selectedScenarioSaveGame
+                // to take the definition of which players are human and which are AI
+                for (player in gameSetupInfo.gameParameters.players) {
+                    newGame!!.getCivilization(player.chosenCiv).playerType = player.playerType
+                }
+                if (newGame!!.getCurrentPlayerCivilization().playerType == PlayerType.AI) {
+                    newGame!!.setTransients()
+                    newGame!!.nextTurn() // can't start the game on an AI turn
+                }
+                newGame!!.gameParameters.godMode = false
+            }
+            else newGame = GameStarter.startNewGame(gameSetupInfo)
         } catch (exception: Exception) {
             Gdx.app.postRunnable {
                 val cantMakeThatMapPopup = Popup(this)
@@ -163,7 +175,8 @@ class NewGameScreen(previousScreen:CameraStageBaseScreen, _gameSetupInfo: GameSe
     var newGame: GameInfo? = null
 
     override fun render(delta: Float) {
-        if (newGame != null) game.loadGame(newGame!!)
+        if (newGame != null)
+            game.loadGame(newGame!!)
         super.render(delta)
     }
 }
