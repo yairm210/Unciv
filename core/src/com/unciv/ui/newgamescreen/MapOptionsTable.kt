@@ -80,16 +80,19 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             override fun toString() = fileHandle.name()
         }
 
+        val scenarioFiles = getScenarioFiles()
         val scenarioSelectBox = SelectBox<FileHandleWrapper>(CameraStageBaseScreen.skin)
-        for (savedGame in getScenarioFiles()) {
-            scenarioSelectBox.items.add(FileHandleWrapper(savedGame))
+        if (scenarioFiles.any()) {
+            for (savedGame in getScenarioFiles()) {
+                scenarioSelectBox.items.add(FileHandleWrapper(savedGame))
+            }
+            scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
+            scenarioSelectBox.selected = scenarioSelectBox.items.first()
+            // needs to be after the item change, so it doesn't activate before we choose the Scenario maptype
+            scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected.fileHandle) }
+            scenarioOptionsTable.add("{Scenario file}:".toLabel()).left()
+            scenarioOptionsTable.add(scenarioSelectBox)
         }
-        scenarioSelectBox.items = scenarioSelectBox.items // it doesn't register them until you do this.
-        scenarioSelectBox.selected = scenarioSelectBox.items.first()
-        // needs to be after the item change, so it doesn't activate before we choose the Scenario maptype
-        scenarioSelectBox.onChange { selectSavedGameAsScenario(scenarioSelectBox.selected.fileHandle) }
-        scenarioOptionsTable.add("{Scenario file}:".toLabel()).left()
-        scenarioOptionsTable.add(scenarioSelectBox)
 
         fun updateOnMapTypeChange() {
             mapTypeSpecificTable.clear()
