@@ -190,6 +190,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                 if (checkBox.isChecked) gameParameters.mods.add(mod.name)
                 else gameParameters.mods.remove(mod.name)
                 reloadRuleset()
+                update()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {
                     val modNations = RulesetCache[mod.name]?.nations
