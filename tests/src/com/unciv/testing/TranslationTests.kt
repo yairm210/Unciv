@@ -79,7 +79,7 @@ class TranslationTests {
             val placeholders = squareBraceRegex.findAll(translationEntry).map { it.value }.toList()
             for (language in languages) {
                 val output = translations.getText(key, language)
-                if(output == key) continue // the language doesn't have the required translation, so we got back the key
+                if (output == key) continue // the language doesn't have the required translation, so we got back the key
                 for (placeholder in placeholders) {
                     if (!output.contains(placeholder)) {
                         // TODO temporarily disabled
