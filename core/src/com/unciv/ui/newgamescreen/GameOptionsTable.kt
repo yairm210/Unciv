@@ -109,6 +109,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.isDisabled = locked
         selectBox.onChange { onChange(selectBox.selected.value) }
+        onChange(selectBox.selected.value)
         add(selectBox).fillX().row()
     }
 
@@ -190,6 +191,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                 if (checkBox.isChecked) gameParameters.mods.add(mod.name)
                 else gameParameters.mods.remove(mod.name)
                 reloadRuleset()
+                update()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {
                     val modNations = RulesetCache[mod.name]?.nations
