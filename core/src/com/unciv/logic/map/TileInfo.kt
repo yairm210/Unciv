@@ -177,6 +177,7 @@ open class TileInfo {
                 stats.add(terrainFeatureBase)
         }
 
+        // This is to be deprecated and converted to [] from every [] - keeping it here to that mods with this can still work for now
         if(city!=null) for(unique in city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles")) {
             val tileType = unique.params[1]
             if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType
@@ -186,7 +187,8 @@ open class TileInfo {
 
         if(city!=null) for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
             val tileType = unique.params[1]
-            if (baseTerrain == tileType || terrainFeature == tileType)
+            if (baseTerrain == tileType || terrainFeature == tileType || resource == tileType || improvement == tileType
+                    || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic))
                 stats.add(Stats.parse(unique.params[0]))
         }
 
