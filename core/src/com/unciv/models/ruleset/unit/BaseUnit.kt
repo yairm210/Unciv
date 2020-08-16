@@ -149,17 +149,18 @@ class BaseUnit : INamed, IConstruction {
     }
 
     override fun postBuildEvent(construction: CityConstructions, wasBought: Boolean): Boolean {
-        val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        val civInfo = construction.cityInfo.civInfo
+        val unit = civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (wasBought && !unit.hasUnique("Can move directly once bought"))
+        if (wasBought && !unit.hasUnique("Can move directly once bought") && !civInfo.gameInfo.gameParameters.godMode)
             unit.currentMovement = 0f
 
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
 
         var XP = construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
-        for (unique in construction.cityInfo.civInfo.getMatchingUniques("New military units start with [] Experience"))
+        for (unique in civInfo.getMatchingUniques("New military units start with [] Experience"))
             XP += unique.params[0].toInt()
         unit.promotions.XP = XP
 

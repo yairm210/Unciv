@@ -45,7 +45,8 @@ class CityExpansionManager {
         val goldCost = getGoldCostOfTile(tileInfo)
 
         class NotEnoughGoldToBuyTileException : Exception()
-        if (cityInfo.civInfo.gold < goldCost) throw NotEnoughGoldToBuyTileException()
+        if (cityInfo.civInfo.gold < goldCost && !cityInfo.civInfo.gameInfo.gameParameters.godMode)
+            throw NotEnoughGoldToBuyTileException()
         cityInfo.civInfo.gold -= goldCost
         takeOwnership(tileInfo)
     }

@@ -43,7 +43,7 @@ class CityScreenTileTable(val cityScreen: CityScreen): Table(){
                 city.expansion.buyTile(selectedTile)
                 UncivGame.Current.setScreen(CityScreen(city))
             }
-            if(goldCostOfTile>city.civInfo.gold
+            if((goldCostOfTile>city.civInfo.gold && !city.civInfo.gameInfo.gameParameters.godMode)
                     || city.isPuppet
                     || !cityScreen.canChangeState)
                 buyTileButton.disable()

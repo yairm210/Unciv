@@ -19,6 +19,7 @@ class GameParameters { // Default values are the default new game
 
     var noBarbarians = false
     var oneCityChallenge = false
+    var godMode = false
     var nuclearWeaponsEnabled = true
 
     var victoryTypes: ArrayList<VictoryType> = arrayListOf(VictoryType.Cultural, VictoryType.Domination, VictoryType.Scientific) // By default, all victory types

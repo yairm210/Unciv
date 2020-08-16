@@ -94,7 +94,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo) {
             civInfo.addNotification("We have discovered [" + tile.naturalWonder + "]!", tile.position, Color.GOLD)
 
             var goldGained = 0
-            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo }
+            val discoveredNaturalWonders = civInfo.gameInfo.civilizations.filter { it != civInfo && it.isMajorCiv() }
                     .flatMap { it.naturalWonders }
             if (tile.containsUnique("Grants 500 Gold to the first civilization to discover it")
                     && !discoveredNaturalWonders.contains(tile.naturalWonder!!)) {

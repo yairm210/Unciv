@@ -29,8 +29,6 @@ import kotlin.math.roundToInt
 
 class CivilizationInfo {
 
-    @Transient private val jsonParser = JsonParser()
-
     @Transient lateinit var gameInfo: GameInfo
     @Transient lateinit var nation:Nation
     /**
@@ -123,7 +121,7 @@ class CivilizationInfo {
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
     fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
-    fun getCapital()=cities.first { it.isCapital() }
+    fun getCapital()= cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isOneCityChallenger() = (
             playerType==PlayerType.Human &&
@@ -283,6 +281,8 @@ class CivilizationInfo {
     }
 
     fun getEra(): String {
+        // For scenarios with no techs
+        if (gameInfo.ruleSet.technologies.isEmpty()) return "None"
         if(tech.researchedTechnologies.isEmpty())
             return gameInfo.ruleSet.getEras().first()
         val maxEraOfTech =  tech.researchedTechnologies
@@ -408,7 +408,7 @@ class CivilizationInfo {
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
             val greatPerson = greatPeople.getNewGreatPerson()
-            if (greatPerson != null) addUnit(greatPerson)
+            if (greatPerson != null && gameInfo.ruleSet.units.containsKey(greatPerson)) addUnit(greatPerson)
         }
 
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better

@@ -50,6 +50,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())
                     .generateMap(MapParameters().apply { size = MapSize.Small; type = MapType.default })
             Gdx.app.postRunnable { // for GL context
+                ImageGetter.setNewRuleset(RulesetCache.getBaseRuleset())
                 val mapHolder = EditorMapHolder(MapEditorScreen(), newMap)
                 backgroundTable.addAction(Actions.sequence(
                         Actions.fadeOut(0f),
@@ -144,22 +145,6 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
             loadMapButton.background = tableBackground
             add(loadMapButton).row()
-
-            if (UncivGame.Current.settings.extendedMapEditor) {
-                val loadScenarioButton = screen.getTableBlock("Load scenario", "OtherIcons/Scenario") {
-                    val loadScenarioScreen = LoadScenarioScreen(null)
-                    loadScenarioScreen.closeButton.isVisible = true
-                    loadScenarioScreen.closeButton.onClick {
-                        screen.game.setScreen(MainMenuScreen())
-                        loadScenarioScreen.dispose()
-                    }
-                    screen.game.setScreen(loadScenarioScreen)
-                    screen.dispose()
-                }
-
-                loadScenarioButton.background = tableBackground
-                add(loadScenarioButton).row()
-            }
 
             add(screen.getTableBlock("Close", "OtherIcons/Close") { close() }
                     .apply { background=tableBackground })

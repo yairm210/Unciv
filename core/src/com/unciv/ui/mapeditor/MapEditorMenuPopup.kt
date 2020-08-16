@@ -1,7 +1,6 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
@@ -13,8 +12,6 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileMap
 import com.unciv.models.metadata.Player
-import com.unciv.ui.newgamescreen.GameOptionsTable
-import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.mainmenu.DropBox
@@ -38,8 +35,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         addUploadMapButton()
         if (UncivGame.Current.settings.extendedMapEditor) {
             addScenarioButton()
-            addSaveScenarioButton()
-            addLoadScenarioButton()
         }
         addExitMapEditorButton()
         addCloseOptionsButton()
@@ -82,9 +77,18 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         saveMapButton.onClick {
             mapEditorScreen.tileMap.mapParameters.name = mapEditorScreen.mapName
             mapEditorScreen.tileMap.mapParameters.type = MapType.custom
-            thread(name = "SaveMap") {
+            thread(name = "SaveMap") { // this works for both scenarios and non-scenarios
                 try {
-                    MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
+                    if(mapEditorScreen.hasScenario()) {
+                        mapEditorScreen.tileMap.mapParameters.type = MapType.scenarioMap
+                        mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
+                        mapEditorScreen.scenario!!.gameParameters.godMode = true // so we can edit this scenario when loading from the map
+                        mapEditorScreen.scenarioName = mapNameEditor.text
+                        MapSaver.saveScenario(mapNameEditor.text, mapEditorScreen.scenario!!)
+                    }
+                    else {
+                        MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)
+                    }
                     close()
                     Gdx.app.postRunnable {
                         ResponsePopup("Map saved", mapEditorScreen) // todo - add this text to translations
@@ -159,9 +163,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
     private fun Popup.addScenarioButton() {
         var scenarioButton = "".toTextButton()
         if (mapEditorScreen.hasScenario()) {
-            scenarioButton.setText("Edit scenario")
+            scenarioButton.setText("Edit scenario parameters")
         } else {
-            scenarioButton.setText("Create scenario")
+            scenarioButton.setText("Create scenario map")
             // for newly created scenarios read players from tileMap
             val players = getPlayersFromMap(mapEditorScreen.tileMap)
             mapEditorScreen.gameSetupInfo.gameParameters.players = players
@@ -175,48 +179,6 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
         }
     }
 
-    private fun Popup.addSaveScenarioButton() {
-        val saveScenarioButton = "Save scenario".toTextButton()
-        add(saveScenarioButton).row()
-        saveScenarioButton.onClick {
-            thread(name = "SaveScenario") {
-                try {
-                    mapEditorScreen.tileMap.mapParameters.type = MapType.scenario
-                    mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
-                    mapEditorScreen.scenarioName = mapNameEditor.text
-                    MapSaver.saveScenario(mapNameEditor.text, mapEditorScreen.scenario!!)
-
-                    close()
-                    Gdx.app.postRunnable {
-                        ResponsePopup("Scenario saved", mapEditorScreen) // todo - add this text to translations
-                    }
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
-                    Gdx.app.postRunnable {
-                        val cantLoadGamePopup = Popup(mapEditorScreen)
-                        cantLoadGamePopup.addGoodSizedLabel("It looks like your scenario can't be saved!").row()
-                        cantLoadGamePopup.addCloseButton()
-                        cantLoadGamePopup.open(force = true)
-                    }
-                }
-            }
-        }
-        saveScenarioButton.isEnabled = mapNameEditor.text.isNotEmpty() && mapEditorScreen.hasScenario()
-        mapNameEditor.addListener {
-            mapEditorScreen.scenarioName = mapNameEditor.text
-            saveScenarioButton.isEnabled = mapNameEditor.text.isNotEmpty() && mapEditorScreen.hasScenario()
-            true
-        }
-    }
-
-    private fun Popup.addLoadScenarioButton() {
-        val loadScenarioButton = "Load scenario".toTextButton()
-        loadScenarioButton.onClick {
-            UncivGame.Current.setScreen(LoadScenarioScreen(mapEditorScreen.tileMap))
-        }
-        add(loadScenarioButton).row()
-
-    }
 
     private fun Popup.addExitMapEditorButton() {
         val exitMapEditorButton = "Exit map editor".toTextButton()

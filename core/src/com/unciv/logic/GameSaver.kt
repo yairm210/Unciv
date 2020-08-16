@@ -31,18 +31,21 @@ object GameSaver {
         return externalFile
     }
 
-    fun getSaves(multiplayer: Boolean = false): Sequence<String> {
-        val localSaves = Gdx.files.local(getSubfolder(multiplayer)).list().asSequence().map { it.name() }
+    fun getSaves(multiplayer: Boolean = false): Sequence<FileHandle> {
+        val localSaves = Gdx.files.local(getSubfolder(multiplayer)).list().asSequence()
         if (externalFilesDirForAndroid == "" || !Gdx.files.isExternalStorageAvailable) return localSaves
-        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence().map { it.name() }
+        return localSaves + Gdx.files.absolute(externalFilesDirForAndroid + "/${getSubfolder(multiplayer)}").list().asSequence()
     }
 
     fun saveGame(game: GameInfo, GameName: String, multiplayer: Boolean = false) {
         json().toJson(game,getSave(GameName, multiplayer))
     }
 
-    fun loadGameByName(GameName: String, multiplayer: Boolean = false) : GameInfo {
-        val game = json().fromJson(GameInfo::class.java, getSave(GameName, multiplayer))
+    fun loadGameByName(GameName: String, multiplayer: Boolean = false) =
+            loadGameFromFile(getSave(GameName, multiplayer))
+
+    fun loadGameFromFile(gameFile: FileHandle): GameInfo {
+        val game = json().fromJson(GameInfo::class.java, gameFile)
         game.setTransients()
         return game
     }
@@ -110,10 +113,10 @@ object GameSaver {
         val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfo.turns}"
         getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
 
-        fun getAutosaves(): Sequence<String> { return getSaves().filter { it.startsWith("Autosave") } }
+        fun getAutosaves(): Sequence<FileHandle> { return getSaves().filter { it.name().startsWith("Autosave") } }
         while(getAutosaves().count()>10){
-            val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
-            deleteSave(saveToDelete)
+            val saveToDelete = getAutosaves().minBy { it.lastModified() }!!
+            deleteSave(saveToDelete.name())
         }
     }
 

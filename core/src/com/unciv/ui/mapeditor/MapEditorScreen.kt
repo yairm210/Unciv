@@ -12,6 +12,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameSetupInfo
@@ -23,7 +24,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
     var tileMap = TileMap()
     var scenarioName = ""   // when loading map: mapName is taken as default for scenarioName
     var scenario: Scenario? = null // main indicator whether scenario information is present
-    var ruleset = RulesetCache.getBaseRuleset()
+    var ruleset = Ruleset().apply { add(RulesetCache.getBaseRuleset()) } // Since we change this in scenarios, we can't take the base ruleset directly
 
     var gameSetupInfo = GameSetupInfo()
     lateinit var mapHolder: EditorMapHolder
@@ -63,13 +64,14 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
         gameSetupInfo.gameParameters = scenario.gameParameters
 
-        ruleset = RulesetCache.getComplexRuleset(scenario.gameParameters)
-        ImageGetter.ruleset = ruleset
-        ImageGetter.setTextureRegionDrawables()
+        // Since the ruleset is referenced directly from other places, we can't just replace it directly
+        ruleset.clear()
+        ruleset.add(RulesetCache.getComplexRuleset(scenario.gameParameters))
         initialize()
     }
 
     fun initialize() {
+        ImageGetter.setNewRuleset(ruleset)
         tileMap.setTransients(ruleset,false)
 
         mapHolder = EditorMapHolder(this, tileMap)

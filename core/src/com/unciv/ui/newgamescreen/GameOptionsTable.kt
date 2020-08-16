@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
+import com.unciv.UncivGame
 import com.unciv.models.metadata.BaseRuleset
 import com.unciv.models.metadata.GameSpeed
 import com.unciv.models.ruleset.RulesetCache
@@ -46,6 +47,8 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         checkboxTable.addBarbariansCheckbox()
         checkboxTable.addOneCityChallengeCheckbox()
         checkboxTable.addNuclearWeaponsCheckbox()
+        if(UncivGame.Current.settings.extendedMapEditor)
+            checkboxTable.addGodmodeCheckbox()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
         checkboxTable.addModCheckboxes()
         add(checkboxTable).colspan(2).row()
@@ -72,6 +75,10 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     private fun Table.addNuclearWeaponsCheckbox() =
             addCheckbox("Enable nuclear weapons", gameParameters.nuclearWeaponsEnabled)
             { gameParameters.nuclearWeaponsEnabled = it }
+
+    private fun Table.addGodmodeCheckbox() =
+            addCheckbox("Scenario Editor", gameParameters.godMode)
+            { gameParameters.godMode = it }
 
 
     private fun Table.addIsOnlineMultiplayerCheckbox()  =
@@ -102,6 +109,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         val selectBox = TranslatedSelectBox(values, initialState, CameraStageBaseScreen.skin)
         selectBox.isDisabled = locked
         selectBox.onChange { onChange(selectBox.selected.value) }
+        onChange(selectBox.selected.value)
         add(selectBox).fillX().row()
     }
 
@@ -124,6 +132,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     private fun Table.addEraSelectBox() {
+        if (ruleset.technologies.isEmpty()) return // scenario with no techs
         val eras = ruleset.technologies.values.map { it.era() }.distinct()
         addSelectBox("{Starting Era}:", eras, gameParameters.startingEra)
         { gameParameters.startingEra = it }
@@ -182,6 +191,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                 if (checkBox.isChecked) gameParameters.mods.add(mod.name)
                 else gameParameters.mods.remove(mod.name)
                 reloadRuleset()
+                update()
                 var desiredCiv = ""
                 if (checkBox.isChecked) {
                     val modNations = RulesetCache[mod.name]?.nations

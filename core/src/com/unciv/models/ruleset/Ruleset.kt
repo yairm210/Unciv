@@ -71,6 +71,7 @@ class Ruleset {
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         for(unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
+        mods += ruleset.mods
     }
 
     fun clear() {
