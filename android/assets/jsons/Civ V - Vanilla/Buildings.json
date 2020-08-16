@@ -167,7 +167,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"uniques": ["Provides a sum of gold each time you spend a Great Person",
-			"[+2 Gold] from [Marble] tiles", "[+2 Gold] from [Stone] tiles"]
+			"[+2 Gold] from [Marble] tiles in this city", "[+2 Gold] from [Stone] tiles in this city"]
 		"requiredTech": "Masonry"
 		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
 	},
@@ -179,7 +179,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"resourceBonusStats": {"food": 1},
-		"uniques": ["Can only be built in coastal cities", "[+1 Food] from [Ocean] tiles", "[+1 Food] from [Coast] tiles"]
+		"uniques": ["Can only be built in coastal cities", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"]
 		"requiredTech": "Optics"
 	},
 	{
@@ -298,7 +298,7 @@
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"gold": 25},
 		"uniques": ["Provides 1 extra copy of each improved luxury resource near this City",
-			"[+2 Gold] from [Oil] tiles", "[+2 Gold] from [Oasis] tiles"],
+			"[+2 Gold] from [Oil] tiles in this city", "[+2 Gold] from [Oasis] tiles in this city"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -411,7 +411,7 @@
 		"production": 2,
 		"specialistSlots": {"production": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["[+1 Production] from [Forest] tiles"],
+		"uniques": ["[+1 Production] from [Forest] tiles in this city"],
 		"requiredTech": "Metal Casting"
 	},
 	{
@@ -438,7 +438,7 @@
 		"percentStatBonus": {"science": 33},
 		"specialistSlots": {"science": 2},
 		"requiredBuilding": "Library",
-		"uniques": ["[+2 Science] from [Jungle] tiles"],
+		"uniques": ["[+2 Science] from [Jungle] tiles in this city"],
 		"requiredTech": "Education"
 	},
 	{
@@ -451,7 +451,7 @@
 		"specialistSlots": {"science": 2},
 		"culture": 3,
 		"requiredBuilding": "Library",
-		"uniques": ["[+2 Science] from [Jungle] tiles"],
+		"uniques": ["[+2 Science] from [Jungle] tiles in this city"],
 		"requiredTech": "Education"
 	},
 	{
