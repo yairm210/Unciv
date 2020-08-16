@@ -76,14 +76,14 @@ class TranslationTests {
         val languages = translations.getLanguages()
         for (key in translations.keys) {
             val translationEntry = translations[key]!!.entry
-            val placeholders = squareBraceRegex.findAll(translationEntry).map { it.value }.toList()
+            val placeholders = squareBraceRegex.findAll(translationEntry)
+                    .map { it.value }.toList()
             for (language in languages) {
                 val output = translations.getText(key, language)
                 if (output == key) continue // the language doesn't have the required translation, so we got back the key
                 for (placeholder in placeholders) {
                     if (!output.contains(placeholder)) {
-                        // TODO temporarily disabled
-                        // allTranslationsHaveCorrectPlaceholders = false
+                        allTranslationsHaveCorrectPlaceholders = false
                         println("Placeholder `$placeholder` not found in `$language` for entry `$translationEntry`")
                     }
                 }
