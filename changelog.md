@@ -1,3 +1,21 @@
+## 3.10.0
+
+Can now create Scenarios and release them with mods!
+
+Comes with Scenario Editor mode in the main game screen
+
+AI chooses to fortify in non-bombardable tiles if possible
+
+Resolved #2985 - fixed Embark/Disembark costs
+
+Resolved #2986 - Knight now obsoletes properly
+
+Map editor UI improvements
+
+Spectator and City-State civs are no logner considered as having 'discovered' a natural wonder
+
+Translation updates
+
 ## 3.9.20
 
 Scenario changes:

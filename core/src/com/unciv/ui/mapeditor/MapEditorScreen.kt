@@ -64,7 +64,9 @@ class MapEditorScreen(): CameraStageBaseScreen() {
 
         gameSetupInfo.gameParameters = scenario.gameParameters
 
-        ruleset = RulesetCache.getComplexRuleset(scenario.gameParameters)
+        // Since the ruleset is referenced directly from other places, we can't just replace it directly
+        ruleset.clear()
+        ruleset.add(RulesetCache.getComplexRuleset(scenario.gameParameters))
         initialize()
     }
 
