@@ -288,6 +288,7 @@ class CityStats {
         val stats               = cityInfo.cityConstructions.getStatPercentBonuses()
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
 
+        // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
         if (currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")) {
             if (cityInfo.containsBuildingUnique("Increases production of spaceship parts by 15%"))
                 stats.production += 15
@@ -297,6 +298,7 @@ class CityStats {
                 stats.production += 50
         }
 
+        // This is to be deprecated and converted to "+[]% production when building [] in this city" - keeping it here to that mods with this can still work for now
         if (currentConstruction is BaseUnit) {
             if (currentConstruction.unitType == UnitType.Mounted
                     && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
@@ -307,6 +309,23 @@ class CityStats {
             if (currentConstruction.unitType.isWaterUnit()
                     && cityInfo.containsBuildingUnique("+15% production of naval units"))
                 stats.production += 15
+        }
+
+        for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
+            for (filter in unique.params[1].split(", ")) {
+                if (currentConstruction.name == filter
+                        || (filter == "land units" && currentConstruction is BaseUnit && currentConstruction.unitType.isLandUnit())
+                        || (filter == "naval units" && currentConstruction is BaseUnit && currentConstruction.unitType.isWaterUnit())
+                        || (filter == "mounted units" && currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted)
+                        || (filter == "military units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMilitary())
+                        || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
+                        || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
+                        || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder)
+                        || (currentConstruction is Building && currentConstruction.uniques.contains(filter))){
+                    stats.production += unique.params[0].toInt()
+                    break
+                }
+            }
         }
 
         return stats

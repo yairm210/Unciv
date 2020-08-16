@@ -158,7 +158,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"uniques": ["+15% Combat Strength for all units when attacking Cities"],
-		"requiredTech": "Bronze Working"
+		"requiredTech": "Bronze Working",
 		"quote": "'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
 	},
 	{
@@ -167,8 +167,8 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"uniques": ["Provides a sum of gold each time you spend a Great Person",
-			"[+2 Gold] from [Marble] tiles in this city", "[+2 Gold] from [Stone] tiles in this city"]
-		"requiredTech": "Masonry"
+			"[+2 Gold] from [Marble, Stone] tiles in this city"],
+		"requiredTech": "Masonry",
 		"quote": "'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
 	},
 	
@@ -179,7 +179,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"resourceBonusStats": {"food": 1},
-		"uniques": ["Can only be built in coastal cities", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"]
+		"uniques": ["Can only be built in coastal cities", "[+1 Food] from [Ocean, Coast] tiles in this city"],
 		"requiredTech": "Optics"
 	},
 	{
@@ -198,7 +198,7 @@
 		"requiredNearbyImprovedResources": ["Horses","Sheep","Cattle"],
 		"resourceBonusStats": {"production": 1},
 		"hurryCostModifier": 25,
-		"uniques": ["+15% Production when building Mounted Units in this city"],
+		"uniques": ["+[15]% production when building [mounted units] in this city"],
 		"requiredTech": "Horseback Riding"
 	},
 	{
@@ -298,7 +298,7 @@
 		"hurryCostModifier": 25,
 		"percentStatBonus": {"gold": 25},
 		"uniques": ["Provides 1 extra copy of each improved luxury resource near this City",
-			"[+2 Gold] from [Oil] tiles in this city", "[+2 Gold] from [Oasis] tiles in this city"],
+			"[+2 Gold] from [Oil, Oasis] tiles in this city"],
 		"requiredTech": "Currency"
 	},
 	{
@@ -421,7 +421,7 @@
 		"requiredNearbyImprovedResources": ["Iron"],
 		"resourceBonusStats": {"production": 1},
 		"requiredTech": "Metal Casting",
-		"uniques": ["+15% production of land units", "Increases production of spaceship parts by 15%"]
+		"uniques": ["+[15]% production when building [land units, Spaceship part] in this city"]
 	},
 	{
 		"name": "Harbor",
@@ -499,7 +499,7 @@
 		"isWonder": true,
 		"providesFreeBuilding": "Castle",
 		"percentStatBonus": {"culture": 20},
-		"uniques": ["All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"],
+		"uniques": ["All newly-trained [Melee, Mounted, Armor] units in this city receive the [Drill I] promotion"],
 		"requiredTech": "Chivalry",
 		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
 	},
@@ -659,7 +659,7 @@
 		"maintenance": 2,
 		"requiredBuilding": "Harbor",
 		"uniques": ["+1 production and gold from all sea resources worked by the city",
-			"Can only be built in coastal cities", "+15% production of naval units"],
+			"Can only be built in coastal cities", "+[15]% production when building [naval units] in this city"],
 		"requiredTech": "Navigation"
 	},
 	{
@@ -900,7 +900,7 @@
 		"production": 3,
 		"requiredResource": "Aluminum",
 		"cost": 360,
-		"uniques": ["Increases production of spaceship parts by 50%"],
+		"uniques": ["+[50]% production when building [Spaceship part] in this city"],
 		"requiredBuilding": "Factory",
 		"requiredTech": "Robotics"
 	},
@@ -927,7 +927,7 @@
 		"greatPersonPoints": {"science": 1},		
 		"providesFreeBuilding":  "Spaceship Factory",
 		"uniques": ["2 free great scientists appear",
-			"Increases production of spaceship parts by 25%"],
+			"+[25]% production when building [Spaceship part] in this city"],
 		"requiredTech": "Satellites",
 		"quote": "'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 	},

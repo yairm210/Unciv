@@ -179,18 +179,20 @@ open class TileInfo {
 
         // City-specific bonuses
         if(city!=null) for(unique in city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")) {
-            val tileType = unique.params[1]
-            if (baseTerrain == tileType || terrainFeature == tileType
-                    || resource == tileType || improvement == tileType)
-                stats.add(Stats.parse(unique.params[0]))
+            for (tileType in unique.params[1].split(", ")) {
+                if (baseTerrain == tileType || terrainFeature == tileType
+                        || resource == tileType || improvement == tileType)
+                    stats.add(Stats.parse(unique.params[0]))
+            }
         }
 
         // Civ-wide bonuses
         if(city!=null) for(unique in city.civInfo.getMatchingUniques("[] from every []")) {
-            val tileType = unique.params[1]
-            if (baseTerrain == tileType || terrainFeature == tileType
-                    || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic))
-                stats.add(Stats.parse(unique.params[0]))
+            for (tileType in unique.params[1].split(", ")) {
+                if (baseTerrain == tileType || terrainFeature == tileType
+                        || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic))
+                    stats.add(Stats.parse(unique.params[0]))
+            }
         }
 
         if (naturalWonder != null) {
