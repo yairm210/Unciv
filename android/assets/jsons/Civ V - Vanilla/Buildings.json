@@ -499,7 +499,7 @@
 		"isWonder": true,
 		"providesFreeBuilding": "Castle",
 		"percentStatBonus": {"culture": 20},
-		"uniques": ["All newly-trained [Melee] units in this city receive the [Drill I] promotion", "All newly-trained [Mounted] units in this city receive the [Drill I] promotion", "All newly-trained [Armor] units in this city receive the [Drill I] promotion"],
+		"uniques": ["All newly-trained [relevant] units in this city receive the [Drill I] promotion"]
 		"requiredTech": "Chivalry",
 		"quote": "'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
 	},

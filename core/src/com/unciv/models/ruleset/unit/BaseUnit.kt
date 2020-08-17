@@ -166,10 +166,12 @@ class BaseUnit : INamed, IConstruction {
 
         for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("All newly-trained [] units in this city receive the [] promotion")) {
             val filter = unique.params[0]
+            val promotion = unique.params[1]
             if (unit.name == filter
+                    || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion })
                     || (unit.type.toString() == filter)
                     || (uniques.contains(filter)))
-                unit.promotions.addPromotion(unique.params[1], isFree = true)
+                unit.promotions.addPromotion(promotion, isFree = true)
         }
 
         // This is to be deprecated and converted to "All newly-trained [] in this city receive the [] promotion" - keeping it here to that mods with this can still work for now
