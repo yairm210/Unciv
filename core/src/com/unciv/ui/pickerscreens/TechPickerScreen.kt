@@ -26,7 +26,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = civInfo.gameInfo.ruleSet.technologies.keys
-            .filter { civTech.canBeResearched(it) && !civTech.isResearched(it) }.toHashSet()
+            .filter { civTech.canBeResearched(it) }.toHashSet()
 
     private val currentTechColor = colorFromRGB(7,46,43)
     private val researchedTechColor = colorFromRGB(133,112,39)
@@ -170,7 +170,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                         prerequisiteCoords.x, prerequisiteCoords.y, 2f)
 
                 val lineColor = when {
-                    civTech.isResearched(tech.name) && tech.name != Constants.futureTech -> researchedTechColor
+                    civTech.isResearched(tech.name) && !tech.isContinuallyResearchable() -> researchedTechColor
                     civTech.isResearched(prerequisite) -> researchableTechColor
                     else -> Color.GRAY
                 }
@@ -210,7 +210,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             civInfo.tech.addTechnology(tech.name)
         }
 
-        if (civTech.isResearched(tech.name) && tech.name != Constants.futureTech) {
+        if (civTech.isResearched(tech.name) && !tech.isContinuallyResearchable()) {
             rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
@@ -242,8 +242,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
-        if (researchableTechs.contains(tech.name) ||
-                (tech.name==Constants.futureTech && civTech.canBeResearched(tech.name))) {
+        if (researchableTechs.contains(tech.name)) {
             pick("Pick [${selectedTech!!.name}] as free tech".tr())
         } else {
             rightSideButton.setText("Pick a free tech".tr())

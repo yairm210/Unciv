@@ -18,7 +18,7 @@ class Technology {
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0
-    var quote=""
+    var quote = ""
 
     fun getDescription(ruleset: Ruleset): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
@@ -81,12 +81,12 @@ class Technology {
         return enabledBuildings
     }
 
-    fun getEnabledUnits(civInfo:CivilizationInfo): List<BaseUnit> {
+    fun getEnabledUnits(civInfo: CivilizationInfo): List<BaseUnit> {
         var enabledUnits = civInfo.gameInfo.ruleSet.units.values.filter {
             it.requiredTech == name &&
                     (it.uniqueTo == null || it.uniqueTo == civInfo.civName)
         }
-        val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo==civInfo.civName }
+        val replacedUnits = civInfo.gameInfo.ruleSet.units.values.filter { it.uniqueTo == civInfo.civName }
                 .mapNotNull { it.replaces }
         enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
 
@@ -96,9 +96,9 @@ class Technology {
         return enabledUnits
     }
 
-    override fun toString(): String {
-        return name
-    }
+    override fun toString() = name
 
     fun era(): String = column!!.era
+
+    fun isContinuallyResearchable() = uniques.contains("Can be continually researched")
 }

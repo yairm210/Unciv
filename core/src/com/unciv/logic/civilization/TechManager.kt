@@ -60,8 +60,10 @@ class TechManager {
         if (civInfo.isPlayerCivilization())
             techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.modifier
-        val techsResearchedKnownCivs = civInfo.getKnownCivs().count { it.isMajorCiv() && it.tech.isResearched(techName) }
-        val undefeatedCivs = civInfo.gameInfo.civilizations.count { it.isMajorCiv() && !it.isDefeated() }
+        val techsResearchedKnownCivs = civInfo.getKnownCivs()
+                .count { it.isMajorCiv() && it.tech.isResearched(techName) }
+        val undefeatedCivs = civInfo.gameInfo.civilizations
+                .count { it.isMajorCiv() && !it.isDefeated() }
         // https://forums.civfanatics.com/threads/the-mechanics-of-overflow-inflation.517970/
         techCost /= 1 + techsResearchedKnownCivs / undefeatedCivs.toFloat() * 0.3f
         // http://www.civclub.net/bbs/forum.php?mod=viewthread&tid=123976
@@ -96,10 +98,13 @@ class TechManager {
         return max(1, ceil(remainingScienceToTech(techName).toDouble() / civInfo.statsForNextTurn.science).toInt())
     }
 
-    fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
+    fun isResearched(techName: String): Boolean = techsResearched.contains(techName)
 
-    fun canBeResearched(TechName: String): Boolean {
-        return getRuleset().technologies[TechName]!!.prerequisites.all { isResearched(it) }
+    fun canBeResearched(techName: String): Boolean {
+        val tech = getRuleset().technologies[techName]!!
+        if (isResearched(tech.name) && !tech.isContinuallyResearchable())
+            return false
+        return tech.prerequisites.all { isResearched(it) }
     }
 
     fun getTechUniques() = researchedTechUniques
@@ -116,7 +121,7 @@ class TechManager {
             val techToCheck = checkPrerequisites.pop()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have anything to research. Yeah.
-            if (techToCheck.name != Constants.futureTech &&
+            if (!techToCheck.isContinuallyResearchable() &&
                     (isResearched(techToCheck.name) || prerequisites.contains(techToCheck)))
                 continue //no need to add or check prerequisites
             for (prerequisite in techToCheck.prerequisites)
@@ -204,8 +209,6 @@ class TechManager {
     }
 
     fun addTechnology(techName: String) {
-        if (techName != Constants.futureTech)
-            techsToResearch.remove(techName)
         techsInProgress.remove(techName)
 
         val previousEra = civInfo.getEra()
@@ -213,6 +216,8 @@ class TechManager {
 
         // this is to avoid concurrent modification problems
         val newTech = getRuleset().technologies[techName]!!
+        if (!newTech.isContinuallyResearchable())
+            techsToResearch.remove(techName)
         researchedTechnologies = researchedTechnologies.withItem(newTech)
         for (unique in newTech.uniques)
             researchedTechUniques = researchedTechUniques.withItem(unique)
@@ -324,5 +329,9 @@ class TechManager {
         val canBuildRailroad = isResearched(techEnablingRailroad)
 
         return if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
+    }
+
+    fun canResearchTech(): Boolean {
+        return getRuleset().technologies.values.any { canBeResearched(it.name) }
     }
 }

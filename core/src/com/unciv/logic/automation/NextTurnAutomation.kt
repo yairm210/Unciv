@@ -14,7 +14,6 @@ import com.unciv.logic.trade.*
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
-import java.lang.reflect.Modifier
 import kotlin.math.min
 
 object NextTurnAutomation{
@@ -153,27 +152,24 @@ object NextTurnAutomation{
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
             val researchableTechs = civInfo.gameInfo.ruleSet.technologies.values
-                    .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+                    .filter { civInfo.tech.canBeResearched(it.name) }
             val techsGroups = researchableTechs.groupBy { it.cost }
             val costs = techsGroups.keys.sorted()
 
-            val tech: Technology
-            if (researchableTechs.isEmpty()) { // no non-researched techs available, go for future tech
-                civInfo.tech.techsToResearch.add(Constants.futureTech)
-                return
-            }
+            if (researchableTechs.isEmpty()) return
 
-            val techsCheapest = techsGroups[costs[0]]!!
+            val cheapestTechs = techsGroups[costs[0]]!!
             //Do not consider advanced techs if only one tech left in cheapest groupe
-            if (techsCheapest.size == 1 || costs.size == 1) {
-                tech = techsCheapest.random()
+            val techToResearch: Technology
+            if (cheapestTechs.size == 1 || costs.size == 1) {
+                techToResearch = cheapestTechs.random()
             } else {
                 //Choose randomly between cheapest and second cheapest groupe
                 val techsAdvanced = techsGroups[costs[1]]!!
-                tech = (techsCheapest + techsAdvanced).random()
+                techToResearch = (cheapestTechs + techsAdvanced).random()
             }
 
-            civInfo.tech.techsToResearch.add(tech.name)
+            civInfo.tech.techsToResearch.add(techToResearch.name)
         }
     }
 
