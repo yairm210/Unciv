@@ -435,27 +435,25 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateTechButton() {
-        if(gameInfo.ruleSet.technologies.isEmpty()) return
+        if (gameInfo.ruleSet.technologies.isEmpty()) return
         techButtonHolder.isVisible = viewingCiv.cities.isNotEmpty()
         techButtonHolder.clearChildren()
 
-        if (viewingCiv.tech.currentTechnology() == null && viewingCiv.tech.canResearchTech()) {
-            val buttonPic = Table()
-            buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
-            buttonPic.defaults().pad(20f)
-            buttonPic.add("{Pick a tech}!".toLabel(Color.WHITE,30))
-            techButtonHolder.add(buttonPic)
-        }
-        else {
+        if (viewingCiv.tech.currentTechnology() != null) {
             val currentTech = viewingCiv.tech.currentTechnologyName()!!
-            val innerButton = TechButton(currentTech,viewingCiv.tech)
+            val innerButton = TechButton(currentTech, viewingCiv.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
             techButtonHolder.add(innerButton)
             val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
             innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
-                    + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()))
+                    + (if (turnsToTech > 1) " {turns}".tr() else " {turn}".tr()))
+        } else if (viewingCiv.tech.canResearchTech()) {
+            val buttonPic = Table()
+            buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
+            buttonPic.defaults().pad(20f)
+            buttonPic.add("{Pick a tech}!".toLabel(Color.WHITE, 30))
+            techButtonHolder.add(buttonPic)
         }
-
         techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
     }
 

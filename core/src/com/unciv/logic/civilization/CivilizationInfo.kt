@@ -225,7 +225,7 @@ class CivilizationInfo {
     //endregion
 
     fun shouldOpenTechPicker(): Boolean {
-        if (gameInfo.ruleSet.technologies.isEmpty()) return false
+        if (!tech.canResearchTech()) return false
         if (tech.freeTechs != 0) return true
         return tech.currentTechnology() == null && cities.isNotEmpty()
     }
