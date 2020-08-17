@@ -336,7 +336,7 @@ object Battle {
             val city = tile.getCity()
             if (city != null && city.location == tile.position) {
                 city.health = 1
-                if (city.population.population <= 5 && city.isOriginalCapital) {
+                if (city.population.population <= 5 && !city.isOriginalCapital) {
                     city.destroyCity()
                 } else {
                     city.population.population = max(city.population.population-5, 1)
