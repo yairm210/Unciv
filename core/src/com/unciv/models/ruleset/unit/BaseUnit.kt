@@ -165,14 +165,11 @@ class BaseUnit : INamed, IConstruction {
         unit.promotions.XP = XP
 
         for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("All newly-trained [] units in this city receive the [] promotion")) {
-            for (filter in unique.params[0].split(", ")) {
-                if (unit.name == filter
-                        || (unit.type.toString() == filter)
-                        || (uniques.contains(filter))){
-                    unit.promotions.addPromotion(unique.params[1], isFree = true)
-                    break
-                }
-            }
+            val filter = unique.params[0]
+            if (unit.name == filter
+                    || (unit.type.toString() == filter)
+                    || (uniques.contains(filter)))
+                unit.promotions.addPromotion(unique.params[1], isFree = true)
         }
 
         // This is to be deprecated and converted to "All newly-trained [] in this city receive the [] promotion" - keeping it here to that mods with this can still work for now

@@ -312,20 +312,17 @@ class CityStats {
         }
 
         for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
-            for (filter in unique.params[1].split(", ")) {
-                if (currentConstruction.name == filter
-                        || (filter == "land units" && currentConstruction is BaseUnit && currentConstruction.unitType.isLandUnit())
-                        || (filter == "naval units" && currentConstruction is BaseUnit && currentConstruction.unitType.isWaterUnit())
-                        || (filter == "mounted units" && currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted)
-                        || (filter == "military units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMilitary())
-                        || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
-                        || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
-                        || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder)
-                        || (currentConstruction is Building && currentConstruction.uniques.contains(filter))){
-                    stats.production += unique.params[0].toInt()
-                    break
-                }
-            }
+            val filter = unique.params[1]
+            if (currentConstruction.name == filter
+                    || (filter == "land units" && currentConstruction is BaseUnit && currentConstruction.unitType.isLandUnit())
+                    || (filter == "naval units" && currentConstruction is BaseUnit && currentConstruction.unitType.isWaterUnit())
+                    || (filter == "mounted units" && currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted)
+                    || (filter == "military units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMilitary())
+                    || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
+                    || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
+                    || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder)
+                    || (currentConstruction is Building && currentConstruction.uniques.contains(filter)))
+                stats.production += unique.params[0].toInt()
         }
 
         return stats
