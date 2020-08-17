@@ -327,7 +327,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         val button = "".toTextButton()
 
-        if (construction == null || (!construction.canBePurchased() && !city.civInfo.gameInfo.gameParameters.godMode)
+        if (construction == null || construction is PerpetualConstruction || (!construction.canBePurchased() && !city.civInfo.gameInfo.gameParameters.godMode)
         ) {
             // fully disable a "buy" button only for "priceless" buildings such as wonders
             // for all other cases, the price should be displayed
