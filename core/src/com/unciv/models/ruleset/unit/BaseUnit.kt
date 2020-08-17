@@ -170,7 +170,7 @@ class BaseUnit : INamed, IConstruction {
             if (unit.name == filter
                     || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion })
                     || unit.type.name == filter
-                    || (uniques.contains(filter)))
+                    || uniques.contains(filter))
                 unit.promotions.addPromotion(promotion, isFree = true)
         }
 
