@@ -154,7 +154,7 @@ class BaseUnit : INamed, IConstruction {
         if (unit == null) return false // couldn't place the unit, so there's actually no unit =(
 
         //movement penalty
-        if (wasBought && !unit.hasUnique("Can move directly once bought") && !civInfo.gameInfo.gameParameters.godMode)
+        if (wasBought && !unit.hasUnique("Can move immediately once bought") && !civInfo.gameInfo.gameParameters.godMode)
             unit.currentMovement = 0f
 
         if (this.unitType.isCivilian()) return true // tiny optimization makes save files a few bytes smaller
