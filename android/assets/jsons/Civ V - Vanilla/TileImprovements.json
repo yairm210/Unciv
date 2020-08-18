@@ -174,7 +174,6 @@
 	{
 		"name": "Citadel",
 		"uniques": ["Gives a defensive bonus of [100]%", "Deal 30 damage to adjacent enemy units", "Great Improvement"]
-		// TODO (G&K): adds every tile around it to your territory
 	},
 
 	//Civilization unique improvements

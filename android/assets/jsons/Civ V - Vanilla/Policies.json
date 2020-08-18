@@ -22,7 +22,7 @@
 			{
 				"name": "Oligarchy",
 				"effect": "Units in cities cost no Maintenance, garrisoned city +50% attacking strength",
-				"uniques": ["Units in cities cost no Maintenance", "+50% attacking strength for cities with garrisoned units"]
+				"uniques": ["Units in cities cost no Maintenance", "+50% attacking strength for cities with garrisoned units"],
 				"row": 1,
 				"column": 5
 			},
@@ -58,7 +58,7 @@
 			{
 				"name": "Collective Rule",
 				"effect": "Training of settlers increased +50% in capital, receive a new settler near the capital",
-				"uniques": ["Training of settlers increased +50% in capital", "Free [Settler] appears"]
+				"uniques": ["Training of settlers increased +50% in capital", "Free [Settler] appears"],
 				"row": 1,
 				"column": 1
 			},
@@ -104,7 +104,7 @@
 		"name": "Honor",
 		"era": "Ancient era",
 		"effect": "+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
-		"uniques": ["+25% bonus vs Barbarians", "Gain Culture when you kill a barbarian unit", "Notified of new Barbarian encampments"]
+		"uniques": ["+25% bonus vs Barbarians", "Gain Culture when you kill a barbarian unit", "Notified of new Barbarian encampments"],
 		"policies": [
 			{
 				"name": "Warrior Code",
@@ -131,7 +131,7 @@
 			{
 				"name": "Military Caste",
 				"effect": "Each city with a garrison increases happiness by 1 and culture by 2",
-				"uniques": ["[+1 Happiness, +2 Culture] in all cities with a garrison"]
+				"uniques": ["[+1 Happiness, +2 Culture] in all cities with a garrison"],
 				"requires": ["Discipline"],
 				"row": 2,
 				"column": 4
@@ -160,7 +160,7 @@
 				"name": "Organized Religion",
 				"effect": "+1 happiness for each monument, temple and monastery",
 				"uniques": ["[+1 Happiness] from every [Monument]","[+1 Happiness] from every [Temple]",
-					"[+1 Happiness] from every [Monastery]"]
+					"[+1 Happiness] from every [Monastery]"],
 				"row": 1,
 				"column": 2
 			},
@@ -182,7 +182,7 @@
 			{
 				"name": "Reformation",
 				"effect": "+33% culture in all cities with a world wonder, immediately enter a golden age",
-				"uniques": ["+33% culture in all cities with a world wonder", "Empire enters golden age"]
+				"uniques": ["+33% culture in all cities with a world wonder", "Empire enters golden age"],
 				"requires": ["Organized Religion"],
 				"row": 2,
 				"column": 3
@@ -191,7 +191,7 @@
 				"name": "Free Religion",
 				"effect": "+1 culture for each monument, temple and monastery. Gain a free policy.",
 				"uniques": ["[+1 Culture] from every [Monument]", "[+1 Culture] from every [Temple]", "[+1 Culture] from every [Monastery]",
-					"Free Social Policy"]
+					"Free Social Policy"],
 				"requires": ["Mandate Of Heaven","Reformation"],
 				"row": 3,
 				"column": 4
@@ -255,14 +255,14 @@
 			{
 				"name": "Trade Unions",
 				"effect": "Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes",
-				"uniques": ["Maintenance on roads & railroads reduced by 33%", "[+2 Gold] from each Trade Route"]
+				"uniques": ["Maintenance on roads & railroads reduced by 33%", "[+2 Gold] from each Trade Route"],
 				"row": 1,
 				"column": 2
 			},
 			{
 				"name": "Mercantilism",
 				"effect": "-25% to purchasing items in cities",
-				"uniques": ["Cost of purchasing items in cities reduced by [25]%"]
+				"uniques": ["Cost of purchasing items in cities reduced by [25]%"],
 				"row": 1,
 				"column": 5
 			},
@@ -278,7 +278,7 @@
 			{
 				"name": "Patronage",
 				"effect": "Cost of purchasing culture buildings reduced by 50%",
-				"uniques": ["Cost of purchasing [Culture] buildings reduced by [50]%"]
+				"uniques": ["Cost of purchasing [Culture] buildings reduced by [50]%"],
 				"requires": ["Mercantilism"],
 				"row": 2,
 				"column": 5
@@ -302,7 +302,7 @@
 		"name": "Rationalism",
 		"era": "Renaissance era",
 		"effect": "Production to science conversion in cities increased by 33%",
-		"uniques": ["Production to science conversion in cities increased by 33%"]
+		"uniques": ["Production to science conversion in cities increased by 33%"],
 		"policies": [
 			{
 				"name": "Secularism",
@@ -315,14 +315,14 @@
 				"name": "Humanism",
 				"effect": "+1 happiness from every university, observatory and public school",
 				"uniques": ["[+1 Happiness] from every [University]","[+1 Happiness] from every [Observatory]",
-					"[+1 Happiness] from every [Public School]"]
+					"[+1 Happiness] from every [Public School]"],
 				"row": 1,
 				"column": 5
 			},
 			{
 				"name": "Free Thought",
 				"effect": "+1 science from every trading post, +17% science from universities",
-				"uniques": ["[+1 Gold] from every [Trading post]", "+[17]% [Science] from every [University]"]
+				"uniques": ["[+1 Gold] from every [Trading post]", "+[17]% [Science] from every [University]"],
 				"requires": ["Secularism"],
 				"row": 2,
 				"column": 1
@@ -402,14 +402,14 @@
 			{
 				"name": "Constitution",
 				"effect": "+2 culture from each wonder",
-				"uniques": ["[+2 Culture] from every Wonder"]
+				"uniques": ["[+2 Culture] from every Wonder"],
 				"row": 1,
 				"column": 1
 			},
 			{
 				"name": "Universal Suffrage",
 				"effect": "+1 production per 5 population",
-				"uniques": ["[+1 Production] per [5] population in all cities"]
+				"uniques": ["[+1 Production] per [5] population in all cities"],
 				"row": 1,
 				"column": 3
 			},
@@ -423,7 +423,7 @@
 			{
 				"name": "Free Speech",
 				"effect": "+1 culture for every 2 citizens",
-				"uniques": ["[+1 Culture] per [2] population in all cities"]
+				"uniques": ["[+1 Culture] per [2] population in all cities"],
 				"requires": ["Constitution"],
 				"row": 2,
 				"column": 1
@@ -489,7 +489,7 @@
 			},
 			{
 				"name": "Autocracy Complete",
-				"effect": "+20% attack bonus to all Military Units for 30 turns"
+				"effect": "+20% attack bonus to all Military Units for 30 turns",
 				"uniques": ["+20% attack bonus to all Military Units for 30 turns"]
 			}
 		]

@@ -496,8 +496,8 @@
 		"upgradesTo": "Musketman",
 		"obsoleteTech": "Metallurgy",
 		"requiredResource": "Iron",
-		"uniques": ["Amphibious"]
-		"promotions": ["Shock I"]
+		"uniques": ["Amphibious"],
+		"promotions": ["Shock I"],
 		"hurryCostModifier": 20,
 		"attackSound": "metalhit"
 		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
