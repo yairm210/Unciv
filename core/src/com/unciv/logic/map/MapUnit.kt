@@ -367,7 +367,7 @@ class MapUnit {
     private fun workOnImprovement() {
         val tile = getTile()
         tile.turnsToImprovement -= 1
-        if (tile.turnsToImprovement != 0) return
+        if (tile.turnsToImprovement != 0 && !civInfo.gameInfo.gameParameters.godMode) return
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")

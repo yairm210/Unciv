@@ -307,7 +307,7 @@ class Building : NamedStats(), IConstruction {
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 
-        if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
+        if (requiredResource != null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode)
             return "Consumes 1 [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
