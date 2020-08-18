@@ -1,3 +1,15 @@
+## 3.10.1
+
+Scenarios can handle tech trees that aren't continually researchable - this allows for very small modded tech trees
+
+Can mod continually researchable techs
+
+Nuke can now no longer destroy Capitals, instead of destroying only capitals - By HadeanLake
+
+Finnish translations added!
+
+Translation updates
+
 ## 3.10.0
 
 Can now create Scenarios and release them with mods!
