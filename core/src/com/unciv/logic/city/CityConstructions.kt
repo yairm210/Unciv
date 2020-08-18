@@ -376,7 +376,7 @@ class CityConstructions {
         validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
             currentConstructionIsUserSet = true
-            if (currentConstructionFromQueue != "") return
+            if (currentConstructionFromQueue != "" && getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) return
         }
 
         ConstructionAutomation(this).chooseNextConstruction()
