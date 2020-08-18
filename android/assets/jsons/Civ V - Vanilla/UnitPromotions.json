@@ -325,7 +325,7 @@
 	
 	{
 		"name": "Sortie",
-		"prerequisites": ["Interception II", "Dogfighting II"]
+		"prerequisites": ["Interception II", "Dogfighting II"],
 		"effect": "1 extra Interception may be made per turn",
 		"unitTypes": ["Fighter"]
 	},

@@ -31,7 +31,7 @@
 		"innerColor": [213,249,255],
 		"unique": "INGENUITY",
 		"uniqueName": "Ingenuity",
-		"uniques": ["Receive free [Great Scientist] when you discover [Writing]", "[Great Scientist] is earned [50]% faster"]
+		"uniques": ["Receive free [Great Scientist] when you discover [Writing]", "[Great Scientist] is earned [50]% faster"],
 		"cities": ["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
 			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab",
@@ -61,7 +61,7 @@
 		"innerColor": [68,142,249],
 		"unique": "HELLENIC_LEAGUE",
 		"uniqueName": "Hellenic League",
-		"uniques": ["City-State Influence degrades at half rate", "City-State Influence recovers at twice the normal rate"]
+		"uniques": ["City-State Influence degrades at half rate", "City-State Influence recovers at twice the normal rate"],
 		"cities": ["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Elis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos","Sicyon",
@@ -87,7 +87,7 @@
 		"innerColor": [255,255,255],
 		"unique": "ART_OF_WAR",
 		"uniqueName": "Art of War",
-		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"]
+		"uniques": ["Great General provides double combat bonus", "[Great General] is earned [50]% faster"],
 		"cities": ["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan","Huangshi",
@@ -117,7 +117,7 @@
 		"innerColor": [98,10,210],
 		"unique": "MONUMENT_BUILDERS",
 		"uniqueName": "Monument Builders",
-		"uniques": ["+[20]% Production when constructing [Wonders]"]
+		"uniques": ["+[20]% Production when constructing [Wonders]"],
 		"cities": ["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten",
 			   "Hieraconpolis","Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			   "Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab","Armant",
@@ -144,7 +144,7 @@
 		"innerColor": [255,255,255],
 		"unique": "SUN_NEVER_SETS",
 		"uniqueName": "Sun Never Sets",
-		"uniques": ["+2 movement for all naval units"]
+		"uniques": ["+2 movement for all naval units"],
 		"cities": ["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton",
@@ -169,7 +169,7 @@
 		"innerColor": [239,236,148],
 		"unique": "ANCIEN_REGIME",
 		"uniqueName": "Ancien Régime",
-		"uniques": ["+2 Culture per turn from cities before discovering Steam Power"]
+		"uniques": ["+2 Culture per turn from cities before discovering Steam Power"],
 		"cities": ["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen","Toulon",
@@ -196,7 +196,7 @@
 		"unique": "SIBERIAN_RICHES",
 		"uniqueName": "Siberian Riches",
 		"uniques": ["[+1 Production] from every [Strategic resource]","Double quantity of [Horses] produced",
-			"Double quantity of [Iron] produced","Double quantity of [Uranium] produced"]
+			"Double quantity of [Iron] produced","Double quantity of [Uranium] produced"],
 		"cities": ["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
 			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir","Perm",
@@ -206,7 +206,7 @@
 		"name": "Rome",
 		"leaderName": "Augustus Caesar",
 		"adjective": ["Roman"],
-		"startBias":["Avoid [Tundra]","Avoid [Desert]"]
+		"startBias":["Avoid [Tundra]","Avoid [Desert]"],
 		"preferredVictoryType": "Scientific",
 		
 		"startIntroPart1": "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed.",
@@ -222,7 +222,7 @@
 		"innerColor": [238,201,9],
 		"unique": "GLORY_OF_ROME",
 		"uniqueName": "The Glory of Rome",
-		"uniques": ["+25% Production towards any buildings that already exist in the Capital"]
+		"uniques": ["+25% Production towards any buildings that already exist in the Capital"],
 		"cities": ["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis",
@@ -272,7 +272,7 @@
 		"innerColor": [255,255,255],
 		"unique": "MANIFEST_DESTINY",
 		"uniqueName": "Manifest Destiny",
-		"uniques": ["+1 Sight for all land military units", "-50% cost when purchasing tiles"]
+		"uniques": ["+1 Sight for all land military units", "-50% cost when purchasing tiles"],
 		"cities": ["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
 			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh",
@@ -300,7 +300,7 @@
 		"innerColor": [185,0,0],
 		"unique": "BUSHIDO",
 		"uniqueName": "Bushido",
-		"uniques": ["Units fight as though they were at full strength even when damaged"]
+		"uniques": ["Units fight as though they were at full strength even when damaged"],
 		"cities": ["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
 			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
 			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
@@ -326,7 +326,7 @@
 		"innerColor": [255,153,51],
 		"unique": "POPULATION_GROWTH",
 		"uniqueName": "Population Growth",
-		"uniques": ["Unhappiness from number of Cities doubled", "Unhappiness from population decreased by [50]%"]
+		"uniques": ["Unhappiness from number of Cities doubled", "Unhappiness from population decreased by [50]%"],
 		"cities": ["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
@@ -433,7 +433,7 @@
 		"innerColor": [246,205,137],
 		"unique": "GREAT_WARPATH",
 		"uniqueName": "The Great Warpath",
-		"uniques": ["All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."]
+		"uniques": ["All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel."],
 		"cities": ["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
@@ -513,7 +513,7 @@
 		"innerColor": [193,21,17],
 		"unique": "FATHER_GOVERNS_CHILDREN",
 		"uniqueName": "Father Governs Children",
-		"uniques": ["Food and Culture from Friendly City-States are increased by 50%"]
+		"uniques": ["Food and Culture from Friendly City-States are increased by 50%"],
 		"cities": ["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
@@ -540,7 +540,7 @@
 		"unique": "SEVEN_CITIES_OF_GOLD",
 		"uniqueName": "Seven Cities of Gold",
 		"uniques": ["100 Gold for discovering a Natural Wonder (bonus enhanced to 500 Gold if first to discover it)",
-			"Double Happiness from Natural Wonders", "Tile yields from Natural Wonders doubled"]
+			"Double Happiness from Natural Wonders", "Tile yields from Natural Wonders doubled"],
 		"cities": ["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
 			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
 			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
@@ -566,7 +566,7 @@
 		"innerColor": [90,0,10],
 		"unique": "RIVER_WARLORD",
 		"uniqueName": "River Warlord",
-		"uniques": ["Receive triple Gold from Barbarian encampments and pillaging Cities", "Embarked units can defend themselves"]
+		"uniques": ["Receive triple Gold from Barbarian encampments and pillaging Cities", "Embarked units can defend themselves"],
 		"cities": ["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
 			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
 			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
@@ -591,7 +591,7 @@
 		"innerColor": [255,120,0],
 		"unique": "MONGOL_TERROR",
 		"uniqueName": "Mongol Terror",
-		"uniques": ["+30% Strength when fighting City-State units and cities", "+[1] Movement for all [Mounted] units"]
+		"uniques": ["+30% Strength when fighting City-State units and cities", "+[1] Movement for all [Mounted] units"],
 		"cities": ["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
 			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Altay","Uliastay","Bayanhongor",
