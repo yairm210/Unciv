@@ -136,7 +136,7 @@ class BaseUnit : INamed, IConstruction {
                 && uniques.contains("Requires Manhattan Project")) return "Disabled by setting"
         if (uniques.contains("Requires Manhattan Project") && !civInfo.hasUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Consumes 1 [$requiredResource]"
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
         if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
@@ -164,6 +164,17 @@ class BaseUnit : INamed, IConstruction {
             XP += unique.params[0].toInt()
         unit.promotions.XP = XP
 
+        for (unique in construction.cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("All newly-trained [] units in this city receive the [] promotion")) {
+            val filter = unique.params[0]
+            val promotion = unique.params[1]
+            if (unit.name == filter
+                    || (filter == "relevant" && civInfo.gameInfo.ruleSet.unitPromotions.values.any { unit.type.toString() in it.unitTypes && it.name == promotion })
+                    || unit.type.name == filter
+                    || uniques.contains(filter))
+                unit.promotions.addPromotion(promotion, isFree = true)
+        }
+
+        // This is to be deprecated and converted to "All newly-trained [] in this city receive the [] promotion" - keeping it here to that mods with this can still work for now
         if (unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
