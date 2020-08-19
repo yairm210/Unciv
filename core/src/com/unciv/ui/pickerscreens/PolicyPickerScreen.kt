@@ -28,7 +28,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         setDefaultCloseAction()
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy".tr())
-            if (viewingCiv.policies.canAdoptPolicy()) closeButton.disable()
+            if (policies.canAdoptPolicy()) closeButton.disable()
         }
         else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
