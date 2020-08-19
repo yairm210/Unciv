@@ -109,9 +109,9 @@ class PolicyManager {
 
     fun adopt(policy: Policy, branchCompletion: Boolean = false) {
 
-        if (!branchCompletion && !civInfo.gameInfo.gameParameters.godMode) {
+        if (!branchCompletion) {
             if (freePolicies > 0) freePolicies--
-            else {
+            else if (!civInfo.gameInfo.gameParameters.godMode) {
                 val cultureNeededForNextPolicy = getCultureNeededForNextPolicy()
                 if (cultureNeededForNextPolicy > storedCulture)
                     throw Exception("How is this possible??????")
