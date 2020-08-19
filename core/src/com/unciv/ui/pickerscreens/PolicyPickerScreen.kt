@@ -28,7 +28,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
         setDefaultCloseAction()
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy".tr())
-            closeButton.disable()
+            if (policies.canAdoptPolicy()) closeButton.disable()
         }
         else onBackButtonClicked { UncivGame.Current.setWorldScreen() }
 
@@ -82,6 +82,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen, civInfo: CivilizationInfo
 
     private fun pickPolicy(policy: Policy) {
         if (!worldScreen.isPlayersTurn
+                || worldScreen.viewingCiv.isSpectator() // viewingCiv var points to selectedCiv in case of spectator
                 || viewingCiv.isDefeated()
                 || viewingCiv.policies.isAdopted(policy.name)
                 || policy.name.endsWith("Complete")
