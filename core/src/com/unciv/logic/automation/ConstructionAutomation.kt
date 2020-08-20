@@ -27,8 +27,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     val militaryUnits = civUnits.filter { !it.type.isCivilian()}.count()
     val workers = civUnits.filter { it.hasUnique(Constants.workerUnique) }.count().toFloat()
     val cities = civInfo.cities.size
-    val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
-            && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
+    val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits()
+            .any { it.uniques.contains("May create improvements on water resources") }
+            && !cityInfo.getTiles().any { it.civilianUnit?.hasUnique("May create improvements on water resources")==true }
     val needWorkboat = canBuildWorkboat
             && cityInfo.getTiles().any { it.isWater && it.hasViewableResource(civInfo) && it.improvement == null }
 

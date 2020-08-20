@@ -211,7 +211,7 @@ class WorkerAutomation(val unit: MapUnit) {
             else -> null
         }
         if (improvementString == null) return null
-        return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString]!!
+        return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
     }
     private fun isImprovementOnFeatureAllowed(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
         // Old hardcoded logic amounts to:

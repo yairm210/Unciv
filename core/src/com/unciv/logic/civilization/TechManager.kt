@@ -323,10 +323,11 @@ class TechManager {
     }
 
     fun getBestRoadAvailable(): RoadStatus {
-        if (!isResearched(RoadStatus.Road.improvement(getRuleset())!!.techRequired!!)) return RoadStatus.None
+        val roadImprovement = RoadStatus.Road.improvement(getRuleset()) // May not exist in mods
+        if (roadImprovement == null || !isResearched(roadImprovement.techRequired!!)) return RoadStatus.None
 
-        val techEnablingRailroad = RoadStatus.Railroad.improvement(getRuleset())!!.techRequired!!
-        val canBuildRailroad = isResearched(techEnablingRailroad)
+        val railroadImprovement = RoadStatus.Railroad.improvement(getRuleset())
+        val canBuildRailroad = railroadImprovement!=null && isResearched(railroadImprovement.techRequired!!)
 
         return if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
     }
