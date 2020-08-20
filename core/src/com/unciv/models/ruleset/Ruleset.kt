@@ -19,11 +19,16 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
+object ModOptionsConstants {
+    const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
+}
+
 class ModOptions {
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
+    var uniques = HashSet<String>()
 }
 
 class Ruleset {

@@ -11,6 +11,8 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
+import com.unciv.models.ruleset.ModOptions
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
@@ -26,9 +28,11 @@ object NextTurnAutomation{
         respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
-            declareWar(civInfo)
+            if(!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+                declareWar(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
-            offerPeaceTreaty(civInfo)
+                offerPeaceTreaty(civInfo)
+            }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
