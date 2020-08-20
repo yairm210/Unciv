@@ -447,13 +447,15 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
             innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
                     + (if (turnsToTech > 1) " {turns}".tr() else " {turn}".tr()))
-        } else if (viewingCiv.tech.canResearchTech()) {
+        } else if (viewingCiv.tech.canResearchTech() || viewingCiv.tech.researchedTechnologies.any()) {
             val buttonPic = Table()
             buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
             buttonPic.defaults().pad(20f)
-            buttonPic.add("{Pick a tech}!".toLabel(Color.WHITE, 30))
+            val text = if(viewingCiv.tech.canResearchTech()) "{Pick a tech}!" else "Technologies"
+            buttonPic.add(text.toLabel(Color.WHITE, 30))
             techButtonHolder.add(buttonPic)
         }
+
         techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
     }
 

@@ -192,7 +192,7 @@ object RulesetCache :HashMap<String,Ruleset>() {
             this[ruleset.fullName] = Ruleset().apply { load(fileHandle) }
         }
 
-        var modsHandles = if(consoleMode) FileHandle("mods").list()
+        val modsHandles = if(consoleMode) FileHandle("mods").list()
                                 else Gdx.files.local("mods").list()
 
         for (modFolder in modsHandles) {
@@ -203,12 +203,50 @@ object RulesetCache :HashMap<String,Ruleset>() {
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
                 println("Mod loaded successfully: " + modRuleset.name)
+                checkModLinks(modRuleset)
             } catch (ex: Exception) {
                 println("Exception loading mod '${modFolder.name()}':")
                 println("  ${ex.localizedMessage}")
                 println("  (Source file ${ex.stackTrace[0].fileName} line ${ex.stackTrace[0].lineNumber})")
             }
         }
+    }
+
+    fun checkModLinks(modRuleset: Ruleset) {
+        for (unit in modRuleset.units.values) {
+            if (unit.requiredTech != null && !modRuleset.technologies.containsKey(unit.requiredTech!!))
+                println("${unit.name} requires tech ${unit.requiredTech} which does not exist!")
+            if (unit.obsoleteTech != null && !modRuleset.technologies.containsKey(unit.obsoleteTech!!))
+                println("${unit.name} obsoletes at tech ${unit.obsoleteTech} which does not exist!")
+            if (unit.requiredResource != null && !modRuleset.tileResources.containsKey(unit.requiredResource!!))
+                println("${unit.name} requires resource ${unit.requiredResource} which does not exist!")
+            if (unit.upgradesTo != null && !modRuleset.units.containsKey(unit.upgradesTo!!))
+                println("${unit.name} upgrades to unit ${unit.upgradesTo} which does not exist!")
+            if (unit.replaces != null && !modRuleset.units.containsKey(unit.replaces!!))
+                println("${unit.replaces} replaces ${unit.replaces} which does not exist!")
+        }
+
+        for (building in modRuleset.buildings.values) {
+            if (building.requiredTech != null && !modRuleset.technologies.containsKey(building.requiredTech!!))
+                println("${building.name} requires tech ${building.requiredTech} which does not exist!")
+            if (building.requiredResource != null && !modRuleset.tileResources.containsKey(building.requiredResource!!))
+                println("${building.name} requires resource ${building.requiredResource} which does not exist!")
+            if (building.replaces != null && !modRuleset.buildings.containsKey(building.replaces!!))
+                println("${building.name} replaces ${building.replaces} which does not exist!")
+        }
+
+        for (resource in modRuleset.tileResources.values) {
+            if (resource.revealedBy != null && !modRuleset.technologies.containsKey(resource.revealedBy!!))
+                println("${resource.name} revealed by tech ${resource.revealedBy} which does not exist!")
+            if (resource.improvement != null && !modRuleset.tileImprovements.containsKey(resource.improvement!!))
+                println("${resource.name} improved by improvement ${resource.improvement} which does not exist!")
+        }
+
+        for (improvement in modRuleset.tileImprovements.values) {
+            if (improvement.techRequired != null && !modRuleset.technologies.containsKey(improvement.techRequired!!))
+                println("${improvement.name} requires tech ${improvement.techRequired} which does not exist!")
+        }
+
     }
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!
