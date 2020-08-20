@@ -325,7 +325,7 @@
 		"name": "Aqueduct",
 		"maintenance": 1,
 		"hurryCostModifier": 25,
-		"uniques": ["40% of food is carried over after a new citizen is born"],
+		"uniques": ["[40]% of food is carried over after population increases"],
 		"requiredTech": "Engineering"
 	},
 	{
@@ -845,7 +845,7 @@
 		"requiredBuilding": "Hospital",
 		"maintenance": 3,
 		"requiredTech": "Pharmaceuticals",
-		"uniques": ["25% of food is carried over after a new citizen is born"]
+		"uniques": ["[25]% of food is carried over after population increases"]
 	},
 	{
 		"name": "Nuclear Plant",
