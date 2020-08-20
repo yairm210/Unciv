@@ -1,3 +1,17 @@
+## 3.10.2
+
+Added link checks when loading mods, so you'll know if you messed something up when making them
+
+Dealt with some game assumptions about what exists, which may not be true in mods
+
+TechPickerScreen centers small tech trees nicely
+
+By HadeanLake:
+- Bugfixes
+- Fixed AI being stuck doing science or gold per turn
+
+Translation updates
+
 ## 3.10.1
 
 Scenarios can handle tech trees that aren't continually researchable - this allows for very small modded tech trees

@@ -456,7 +456,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             techButtonHolder.add(buttonPic)
         }
 
-        techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
+        techButtonHolder.pack()
     }
 
     private fun updateSelectedCiv() {
