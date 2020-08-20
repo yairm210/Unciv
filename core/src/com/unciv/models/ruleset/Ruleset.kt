@@ -247,6 +247,17 @@ object RulesetCache :HashMap<String,Ruleset>() {
                 println("${improvement.name} requires tech ${improvement.techRequired} which does not exist!")
         }
 
+        for (tech in modRuleset.technologies.values) {
+            for (prereq in tech.prerequisites) {
+                if (!modRuleset.technologies.containsKey(prereq))
+                    println("${tech.name} requires tech $prereq which does not exist!")
+            }
+            for (otherTech in tech.column!!.techs) {
+                if (tech != otherTech && otherTech.row == tech.row)
+                    println("${tech.name} is in the same row as ${otherTech.name}!")
+            }
+        }
+
     }
 
     fun getBaseRuleset() = this[BaseRuleset.Civ_V_Vanilla.fullName]!!

@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.models.ruleset.Policy
 import com.unciv.models.ruleset.UniqueMap
+import com.unciv.models.ruleset.UniqueTriggerActivation
 import com.unciv.models.ruleset.VictoryType
 import kotlin.math.min
 import kotlin.math.pow
@@ -133,31 +134,8 @@ class PolicyManager {
         val hasCapital = civInfo.cities.any { it.isCapital() }
 
         for (unique in policy.uniqueObjects)
-            when (unique.placeholderText) {
-                "Free [] appears" -> {
-                    val unitName = unique.params[0]
-                    if (hasCapital && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
-                        civInfo.addUnit(unitName, civInfo.getCapital())
-                }
-                "Free Social Policy" -> freePolicies++
-                "Empire enters golden age" ->
-                    civInfo.goldenAges.enterGoldenAge()
-                "Free Great Person" -> {
-                    if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                    else {
-                        val preferredVictoryType = civInfo.victoryType()
-                        val greatPerson = when (preferredVictoryType) {
-                            VictoryType.Cultural -> "Great Artist"
-                            VictoryType.Scientific -> "Great Scientist"
-                            else ->
-                                civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
-                        }
-                        civInfo.addUnit(greatPerson)
-                    }
-                }
-                "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
-                "+20% attack bonus to all Military Units for 30 turns" -> autocracyCompletedTurns = 30
-            }
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
         tryAddLegalismBuildings()
 
         // This ALSO has the side-effect of updating the CivInfo statForNextTurn so we don't need to call it explicitly
