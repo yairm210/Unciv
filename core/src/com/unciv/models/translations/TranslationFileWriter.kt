@@ -230,7 +230,9 @@ object TranslationFileWriter {
             }
 
             fun serializeElement(element: Any) {
-                val allFields = (element.javaClass.declaredFields + element.javaClass.fields).filter {
+                val allFields = (element.javaClass.declaredFields + element.javaClass.fields
+                        + element.javaClass.superclass.declaredFields) // This is so the main PolicyBranch, which inherits from Policy, will recognize its Uniques and have them translated
+                        .filter {
                     it.type == String::class.java ||
                             it.type == java.util.ArrayList::class.java ||
                             it.type == java.util.HashSet::class.java

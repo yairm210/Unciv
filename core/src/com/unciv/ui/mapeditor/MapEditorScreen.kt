@@ -147,7 +147,7 @@ class MapEditorScreen(): CameraStageBaseScreen() {
                         for (tileInfo in tileMap.getTilesInDistance(centerTileInfo.position, distance)) {
                             tileEditorOptions.updateTileWhenClicked(tileInfo)
 
-                            tileInfo.setTransients()
+                            tileInfo.setTerrainTransients()
                             mapHolder.tileGroups[tileInfo]!!.update()
                             mapHolder.tileGroups[tileInfo]!!.showCircle(Color.WHITE)
 
