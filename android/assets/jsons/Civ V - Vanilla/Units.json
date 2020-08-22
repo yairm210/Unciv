@@ -133,7 +133,7 @@
 		"movement": 4,
 		"cost": 30,
 		"requiredTech": "Sailing",
-		"uniques": ["Cannot enter ocean tiles until Astronomy","May create improvements on water resources"],
+		"uniques": ["Cannot enter ocean tiles until Astronomy", "May create improvements on water resources"],
 		"hurryCostModifier": 20
 	},
 	{
@@ -175,7 +175,7 @@
 		"requiredResource": "Horses",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus","Rough terrain penalty"],
+		"uniques": ["No defensive terrain bonus", "Rough terrain penalty"],
 		"hurryCostModifier": 20,
 		"attackSound": "arrow"
 	},
@@ -191,7 +191,7 @@
 		"requiredTech": "The Wheel",
 		"upgradesTo": "Knight",
 		"obsoleteTech": "Chivalry",
-		"uniques": ["No defensive terrain bonus","Rough terrain penalty"],
+		"uniques": ["No defensive terrain bonus", "Rough terrain penalty"],
 		"hurryCostModifier": 20,
 		"attackSound": "arrow"
 	},

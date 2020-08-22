@@ -209,6 +209,7 @@ object TranslationFileWriter {
                             RulesetCache.getBaseRuleset().tileImprovements.containsKey(parameter) -> "tileImprovement"
                             RulesetCache.getBaseRuleset().tileResources.containsKey(parameter) -> "resource"
                             RulesetCache.getBaseRuleset().technologies.containsKey(parameter) -> "tech"
+                            RulesetCache.getBaseRuleset().unitPromotions.containsKey(parameter) -> "promotion"
                             RulesetCache.getBaseRuleset().buildings.containsKey(parameter)
                                     || parameter == "Wonders" -> "building"
 
