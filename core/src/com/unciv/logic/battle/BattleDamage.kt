@@ -25,7 +25,7 @@ object BattleDamage {
         val modifiers = mutableListOf<BattleDamageModifier>()
         for (ability in unit.getUniques()) {
             // This beut allows us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
-            val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability)
+            val regexResult = Regex(BONUS_VS_UNIT_TYPE).matchEntire(ability.text)
             if (regexResult == null) continue
             val vs = regexResult.groups[2]!!.value
             val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
@@ -114,8 +114,8 @@ object BattleDamage {
             modifiers.putAll(getTileSpecificModifiers(attacker, defender.getTile()))
 
             for (ability in attacker.unit.getUniques()) {
-                if(ability.equalsPlaceholderText("Bonus as Attacker []%")) {
-                    val bonus = ability.getPlaceholderParameters()[0].toFloat() / 100
+                if(ability.placeholderText == "Bonus as Attacker []%") {
+                    val bonus = ability.params[0].toFloat() / 100
                     if (modifiers.containsKey("Attacker Bonus"))
                         modifiers["Attacker Bonus"] = modifiers["Attacker Bonus"]!! + bonus
                     else modifiers["Attacker Bonus"] = bonus
@@ -182,11 +182,11 @@ object BattleDamage {
         }
 
         if(attacker.isRanged()) {
-            val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it == "+25% Defence against ranged attacks" }
+            val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
-        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it == "+25% Combat Bonus when defending" }
+        val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
         if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
 
 

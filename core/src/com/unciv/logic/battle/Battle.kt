@@ -12,8 +12,6 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.math.max
 
@@ -51,8 +49,8 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant ) {
-            val withdraw = defender.unit.getUniques().firstOrNull { it.startsWith("May withdraw before melee")}
-            if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
+            val withdraw = defender.unit.getUniques().firstOrNull { it.text.startsWith("May withdraw before melee")}
+            if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw.text)) return
         }
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
@@ -149,8 +147,8 @@ object Battle {
                 && defender is MapUnitCombatant
                 && attacker is MapUnitCombatant) {
             for (unique in attacker.unit.getUniques()) {
-                if(unique.equalsPlaceholderText("Heals [] damage if it kills a unit")){
-                    val amountToHeal = unique.getPlaceholderParameters()[0].toInt()
+                if(unique.placeholderText == "Heals [] damage if it kills a unit"){
+                    val amountToHeal = unique.params[0].toInt()
                     attacker.unit.healBy(amountToHeal)
                 }
             }

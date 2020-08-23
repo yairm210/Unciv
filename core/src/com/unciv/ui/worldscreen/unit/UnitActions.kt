@@ -351,8 +351,8 @@ object UnitActions {
                         if (unit.civInfo.hasUnique("Double gold from Great Merchant trade missions"))
                             goldEarned *= 2
                         unit.civInfo.gold += goldEarned.toInt()
-                        val relevantUnique = unit.getUniques().first { it.startsWith(CAN_UNDERTAKE) }
-                        val influenceEarned = Regex("\\d+").find(relevantUnique)!!.value.toInt()
+                        val relevantUnique = unit.getUniques().first { it.text.startsWith(CAN_UNDERTAKE) }
+                        val influenceEarned = Regex("\\d+").find(relevantUnique.text)!!.value.toInt()
                         tile.owningCity!!.civInfo.getDiplomacyManager(unit.civInfo).influence += influenceEarned
                         unit.civInfo.addNotification("Your trade mission to [${tile.owningCity!!.civInfo}] has earned you [${goldEarned.toInt()}] gold and [$influenceEarned] influence!", null, Color.GOLD)
                         addGoldPerGreatPersonUsage(unit.civInfo)
@@ -364,8 +364,8 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        for (unique in unit.getUniques().filter { it.equalsPlaceholderText("Can construct []") }) {
-            val improvementName = unique.getPlaceholderParameters()[0]
+        for (unique in unit.getUniques().filter { it.placeholderText == "Can construct []" }) {
+            val improvementName = unique.params[0]
             finalActions +=  UnitAction(
                     type = UnitActionType.Create,
                     title = "Create [$improvementName]",

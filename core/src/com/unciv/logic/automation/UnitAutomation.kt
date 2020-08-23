@@ -103,7 +103,7 @@ object UnitAutomation {
             if (unit.name == Constants.greatGeneral || unit.baseUnit.replaces == Constants.greatGeneral)
                 return SpecificUnitAutomation.automateGreatGeneral(unit)
 
-            if (unit.getUniques().any { it.equalsPlaceholderText("Can construct []") })
+            if (unit.getUniques().any { it.placeholderText == "Can construct []" })
                 return SpecificUnitAutomation.automateImprovementPlacer(unit) // includes great people plus moddable units
 
             return // The AI doesn't know how to handle unknown civilian units

@@ -195,8 +195,8 @@ object SpecificUnitAutomation {
     fun automateImprovementPlacer(unit: MapUnit) {
         if (unit.getTile().militaryUnit == null) return // Don't move until you're accompanied by a military unit
 
-        val improvementName = unit.getUniques().first { it.equalsPlaceholderText("Can construct []") }
-                .getPlaceholderParameters()[0]
+        val improvementName = unit.getUniques().first { it.placeholderText ==  "Can construct []" }
+                .params[0]
         val improvement = unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementName]!!
         val relatedStat = improvement.toHashMap().maxBy { it.value }!!.key
 

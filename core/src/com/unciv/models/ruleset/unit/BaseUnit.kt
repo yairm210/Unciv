@@ -6,6 +6,7 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
@@ -29,6 +30,7 @@ class BaseUnit : INamed, IConstruction {
     var requiredTech:String? = null
     var requiredResource:String? = null
     var uniques =HashSet<String>()
+    val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
     var promotions =HashSet<String>()
     var obsoleteTech:String?=null
     var upgradesTo:String? = null

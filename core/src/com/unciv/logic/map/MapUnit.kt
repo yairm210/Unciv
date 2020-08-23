@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.logic.map.action.StringAction
 import com.unciv.models.ruleset.Ruleset
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import java.text.DecimalFormat
@@ -99,7 +100,7 @@ class MapUnit {
         if (isEmbarked()) return getEmbarkedMovement()
 
         var movement = baseUnit.movement
-        movement += getUniques().count { it == "+1 Movement" }
+        movement += getUniques().count { it.text == "+1 Movement" }
 
         if (type.isWaterUnit() && !type.isCivilian()
                 && civInfo.hasUnique("All military naval units receive +1 movement and +1 sight"))
@@ -121,31 +122,31 @@ class MapUnit {
 
     // This SHOULD NOT be a hashset, because if it is, then promotions with the same text (e.g. barrage I, barrage II)
     //  will not get counted twice!
-    @Transient var tempUniques= ArrayList<String>()
+    @Transient var tempUniques= ArrayList<Unique>()
 
-    fun getUniques(): ArrayList<String> {
+    fun getUniques(): ArrayList<Unique> {
         return tempUniques
     }
 
     fun updateUniques(){
-        val uniques = ArrayList<String>()
+        val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
-        uniques.addAll(baseUnit.uniques)
-        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.unitPromotions[it]!!.effect })
+        uniques.addAll(baseUnit.uniqueObjects)
+        uniques.addAll(promotions.promotions.map { currentTile.tileMap.gameInfo.ruleSet.unitPromotions[it]!!.unique })
         tempUniques = uniques
 
-        ignoresTerrainCost = ("Ignores terrain cost" in uniques)
-        roughTerrainPenalty = ("Rough terrain penalty" in uniques)
-        doubleMovementInCoast = ("Double movement in coast" in uniques)
-        doubleMovementInForestAndJungle = ("Double movement rate through Forest and Jungle" in uniques)
-        doubleMovementInSnowTundraAndHills = ("Double movement in Snow, Tundra and Hills" in uniques)
-        canEnterIceTiles = ("Can enter ice tiles" in uniques)
-        cannotEnterOceanTiles = ("Cannot enter ocean tiles" in uniques)
-        cannotEnterOceanTilesUntilAstronomy = ("Cannot enter ocean tiles until Astronomy" in uniques)
+        ignoresTerrainCost = hasUnique("Ignores terrain cost")
+        roughTerrainPenalty = hasUnique("Rough terrain penalty")
+        doubleMovementInCoast = hasUnique("Double movement in coast")
+        doubleMovementInForestAndJungle = hasUnique("Double movement rate through Forest and Jungle")
+        doubleMovementInSnowTundraAndHills = hasUnique("Double movement in Snow, Tundra and Hills")
+        canEnterIceTiles = hasUnique("Can enter ice tiles")
+        cannotEnterOceanTiles = hasUnique("Cannot enter ocean tiles")
+        cannotEnterOceanTilesUntilAstronomy = hasUnique("Cannot enter ocean tiles until Astronomy")
     }
 
     fun hasUnique(unique:String): Boolean {
-        return getUniques().contains(unique)
+        return getUniques().any { it.text == unique }
     }
 
     fun updateVisibleTiles() {
@@ -156,7 +157,7 @@ class MapUnit {
         }
         else {
             var visibilityRange = 2
-            visibilityRange += getUniques().count { it == "+1 Visibility Range" }
+            visibilityRange += getUniques().count { it.text == "+1 Visibility Range" }
             if (hasUnique("+2 Visibility Range")) visibilityRange += 2 // This shouldn't be stackable
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
             if (civInfo.hasUnique("+1 Sight for all land military units"))
@@ -439,7 +440,7 @@ class MapUnit {
     fun endTurn() {
         doPostTurnAction()
         if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
-                || getUniques().contains("Unit will heal every turn, even if it performs an action")){
+                || hasUnique("Unit will heal every turn, even if it performs an action")){
             heal()
         }
         if(action != null && health > 99)
@@ -631,15 +632,15 @@ class MapUnit {
 
     fun interceptChance():Int{
         val interceptUnique = getUniques()
-                .firstOrNull { it.endsWith(CHANCE_TO_INTERCEPT_AIR_ATTACKS) }
+                .firstOrNull { it.text.endsWith(CHANCE_TO_INTERCEPT_AIR_ATTACKS) }
         if(interceptUnique==null) return 0
-        val percent = Regex("\\d+").find(interceptUnique)!!.value.toInt()
+        val percent = Regex("\\d+").find(interceptUnique.text)!!.value.toInt()
         return percent
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
-        val isAircraftCarrier = getUniques().contains("Can carry 2 aircraft")
-        val isMissileCarrier = getUniques().contains("Can carry 2 missiles")
+        val isAircraftCarrier = hasUnique("Can carry 2 aircraft")
+        val isMissileCarrier = hasUnique("Can carry 2 missiles")
         if(!isMissileCarrier && !isAircraftCarrier)
             return false
         if(!mapUnit.type.isAirUnit()) return false
@@ -655,7 +656,7 @@ class MapUnit {
         if (owner != mapUnit.owner) return false
 
         var unitCapacity = 2
-        unitCapacity += getUniques().count { it == "Can carry 1 extra air unit" }
+        unitCapacity += getUniques().count { it.text == "Can carry 1 extra air unit" }
 
         if (currentTile.airUnits.filter { it.isTransported }.size >= unitCapacity) return false
 
@@ -664,8 +665,8 @@ class MapUnit {
 
     fun interceptDamagePercentBonus():Int{
         var sum=0
-        for(unique in getUniques().filter { it.startsWith(BONUS_WHEN_INTERCEPTING) }){
-            val percent = Regex("\\d+").find(unique)!!.value.toInt()
+        for(unique in getUniques().filter { it.text.startsWith(BONUS_WHEN_INTERCEPTING) }){
+            val percent = Regex("\\d+").find(unique.text)!!.value.toInt()
             sum += percent
         }
         return sum
