@@ -70,7 +70,6 @@ class TranslationTests {
 
     /** For every translatable string find its placeholders and check if all translations have them */
     @Test
-    // TODO - This was broken and was then fixed, but it requires manual work
     fun allTranslationsHaveCorrectPlaceholders() {
         var allTranslationsHaveCorrectPlaceholders = true
         val languages = translations.getLanguages()
@@ -97,7 +96,6 @@ class TranslationTests {
 
     @Test
     fun allPlaceholderKeysMatchEntry() {
-        val squareBraceRegex = Regex("""\[([^]]*)]""")
         var allPlaceholderKeysMatchEntry = true
         for (key in translations.keys) {
             if ( !key.contains('[') ) continue
@@ -112,6 +110,26 @@ class TranslationTests {
         Assert.assertTrue(
                 "This test will only pass when all placeholder translations'keys match their entry with shortened placeholders",
                 allPlaceholderKeysMatchEntry
+        )
+    }
+
+    @Test
+    fun noTwoPlaceholdersAreTheSame() {
+        var noTwoPlaceholdersAreTheSame = true
+        for (translationEntry in translations.values) {
+            val placeholders = squareBraceRegex.findAll(translationEntry.entry)
+                    .map { it.value }.toList()
+
+            for (placeholder in placeholders)
+                if (placeholders.count { it == placeholder } > 1) {
+                    noTwoPlaceholdersAreTheSame = false
+                    println("Entry $translationEntry has the parameter $placeholder more than once")
+                    break
+                }
+        }
+        Assert.assertTrue(
+                "This test will only pass when no translation keys have the same parameter twice",
+                noTwoPlaceholdersAreTheSame
         )
     }
 

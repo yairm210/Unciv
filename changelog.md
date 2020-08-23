@@ -1,3 +1,23 @@
+## 3.10.3
+
+Settler 'by name' recognition changed to 'by unique' recognition, allowing for modded settler-like units
+
+Can now disable diplomatic relationship changes in a mod
+
+MapGen doesn't place ancient ruins if they're not defined in the current ruleset
+
+Resolved #3016 - Policy branch uniques are translated properly
+
+Borders consist of both civ colors, making some borders (esp. Germany) much clearer
+
+Roads and railoads can be removed outside your borders
+
+More generifications!
+
+Merged Building and Policy unique activations
+
+Translation updates
+
 ## 3.10.2
 
 Added link checks when loading mods, so you'll know if you messed something up when making them
