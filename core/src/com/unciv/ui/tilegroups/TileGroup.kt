@@ -435,7 +435,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         previousTileOwner = tileOwner
         if (tileOwner == null) return
 
-        val civColor = tileInfo.getOwner()!!.nation.getOuterColor()
+        val civOuterColor = tileInfo.getOwner()!!.nation.getOuterColor()
+        val civInnerColor = tileInfo.getOwner()!!.nation.getInnerColor()
         for (neighbor in tileInfo.neighbors) {
             val neighborOwner = neighbor.getOwner()
             if (neighborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
@@ -452,14 +453,25 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                 // This is some crazy voodoo magic so I'll explain.
                 val images = mutableListOf<Image>()
                 borderImages[neighbor] = images
+                val sign = if (relativeWorldPosition.x < 0) -1 else 1
+                val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0).toFloat()
+
+                val borderImage = ImageGetter.getWhiteDot()
+
+                borderImage.setSize(27f,2f) // The order is important. First we set the size,
+                borderImage.setOrigin(Align.center) // THEN the origin is correct,
+                borderImage.rotateBy(angle) // and the rotation works.
+                borderImage.center(this) // move to center of tile
+                borderImage.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
+                borderImage.color = civInnerColor
+                miscLayerGroup.addActor(borderImage)
+                images.add(borderImage)
+
                 for (i in -2..2) {
                     val image = ImageGetter.getTriangle()
-                    val sign = if (relativeWorldPosition.x < 0) -1 else 1
-                    val angle = sign * (atan(sign * relativeWorldPosition.y / relativeWorldPosition.x) * 180 / PI - 90.0)
-
                     image.setSize(5f, 5f)
-                    image.setOrigin(image.width/2,image.height/2)
-                    image.rotateBy(angle.toFloat())
+                    image.setOrigin(Align.center)
+                    image.rotateBy(angle)
                     image.center(this)
                     // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
                     // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
@@ -468,12 +480,12 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
                     image.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
 
                     // And now, move it within the tileBaseImage side according to i.
-                    // Remember, if from the center of the heagon to the middle of the side is an (a,b) vecctor,
+                    // Remember, if from the center of the hexagon to the middle of the side is an (a,b) vecctor,
                     // Then within the side, which is of course perpendicular to the (a,b) vector,
                     // we can move with multiples of (b,-a) which is perpendicular to (a,b)
                     image.moveBy(relativeWorldPosition.y * i * 4, -relativeWorldPosition.x * i * 4)
 
-                    image.color = civColor
+                    image.color = civOuterColor
                     miscLayerGroup.addActor(image)
                     images.add(image)
                 }

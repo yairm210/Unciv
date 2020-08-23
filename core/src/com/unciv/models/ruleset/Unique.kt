@@ -17,7 +17,7 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
     }
 
     fun getUniques(placeholderText: String): List<Unique> {
-        val result = this.get(placeholderText)
+        val result = this[placeholderText]
         if (result == null) return listOf()
         else return result
     }
