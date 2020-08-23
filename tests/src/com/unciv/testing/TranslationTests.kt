@@ -50,7 +50,7 @@ class TranslationTests {
     private fun allStringAreTranslated(strings: Set<String>): Boolean {
         var allStringsHaveTranslation = true
         for (entry in strings) {
-            val key = if(entry.contains('[')) entry.replace(squareBraceRegex,"[]") else entry
+            val key = if (entry.contains('[')) entry.replace(squareBraceRegex, "[]") else entry
             if (!translations.containsKey(key)) {
                 allStringsHaveTranslation = false
                 println(entry)
@@ -98,9 +98,9 @@ class TranslationTests {
     fun allPlaceholderKeysMatchEntry() {
         var allPlaceholderKeysMatchEntry = true
         for (key in translations.keys) {
-            if ( !key.contains('[') ) continue
+            if (!key.contains('[')) continue
             val translationEntry = translations[key]!!.entry
-            val keyFromEntry = translationEntry.replace(squareBraceRegex,"[]")
+            val keyFromEntry = translationEntry.replace(squareBraceRegex, "[]")
             if (key != keyFromEntry) {
                 allPlaceholderKeysMatchEntry = false
                 println("Entry $translationEntry found under bad key $key")
@@ -140,7 +140,7 @@ class TranslationTests {
         for (line in templateLines) {
             if (line.endsWith(" =")) {
                 println("$line ends without a space at the end")
-                failed=true
+                failed = true
             }
         }
         Assert.assertFalse(failed)
