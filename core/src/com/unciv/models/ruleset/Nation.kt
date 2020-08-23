@@ -2,7 +2,6 @@ package com.unciv.models.ruleset
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.UniqueAbility
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.Translations
@@ -36,7 +35,6 @@ class Nation : INamed {
     var hateHello = ""
 
     lateinit var outerColor: List<Int>
-    var unique: UniqueAbility? = null
     var uniqueName = ""
     var uniques = HashSet<String>()
     val uniqueObjects: List<Unique> by lazy { uniques.map { Unique(it) } }
@@ -91,17 +89,11 @@ class Nation : INamed {
             textList += getLeaderDisplayName().tr()
             textList += ""
         }
-        if (unique != null) {
-            textList += unique!!.displayName.tr() + ":"
-            textList += "  " + unique!!.description.tr()
 
-            textList += ""
-        }
-        else {
-            if (uniqueName != "") textList += uniqueName.tr() + ":"
-            textList += "  " + uniques.joinToString(", ").tr()
-            textList += ""
-        }
+        if (uniqueName != "") textList += uniqueName.tr() + ":"
+        textList += "  " + uniques.joinToString(", ").tr()
+        textList += ""
+
         if (startBias.isNotEmpty()) {
             textList += "Start bias:".tr() + startBias.joinToString(", ", " ") { it.tr() }
             textList += ""
