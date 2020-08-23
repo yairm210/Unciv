@@ -134,11 +134,13 @@
 	// These are unique and have unique in-game checks related to them
 	{
 		"name": "Remove Road",
-		"turnsToBuild": 2
+		"turnsToBuild": 2,
+		"uniques": ["Can be built outside your borders"]
 	},
 	{
 		"name": "Remove Railroad",
-		"turnsToBuild": 2
+		"turnsToBuild": 2,
+		"uniques": ["Can be built outside your borders"]
 	},
 	{
 		"name": "Cancel improvement order",

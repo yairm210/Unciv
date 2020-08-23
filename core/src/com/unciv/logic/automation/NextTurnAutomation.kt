@@ -11,8 +11,11 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
+import com.unciv.models.ruleset.ModOptions
+import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
+import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import kotlin.math.min
 
@@ -26,9 +29,11 @@ object NextTurnAutomation{
         respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
-            declareWar(civInfo)
+            if(!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
+                declareWar(civInfo)
 //            offerDeclarationOfFriendship(civInfo)
-            offerPeaceTreaty(civInfo)
+                offerPeaceTreaty(civInfo)
+            }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
@@ -476,14 +481,20 @@ object NextTurnAutomation{
         if (civInfo.isCityState()) return
         if (civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.victoryType() == VictoryType.Cultural && civInfo.cities.size > 3) return
-        if (civInfo.cities.any()
-                && civInfo.getHappiness() > civInfo.cities.size + 5
-                && civInfo.getCivUnits().none { it.name == Constants.settler }
-                && civInfo.cities.none { it.cityConstructions.currentConstructionFromQueue == Constants.settler }) {
+        if (civInfo.cities.none() || civInfo.getHappiness() <= civInfo.cities.size + 5) return
+
+        val settlerUnits = civInfo.gameInfo.ruleSet.units.values
+                .filter { it.uniques.contains(Constants.settlerUnique) && it.isBuildable(civInfo) }
+        if (settlerUnits.isEmpty()) return
+        if (civInfo.getCivUnits().none { it.hasUnique(Constants.settlerUnique) }
+                && civInfo.cities.none {
+                    val currentConstruction = it.cityConstructions.getCurrentConstruction()
+                    currentConstruction is BaseUnit && currentConstruction.uniques.contains(Constants.settlerUnique)
+                }) {
 
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstructionFromQueue = Constants.settler
+                bestCity.cityConstructions.currentConstructionFromQueue = settlerUnits.minBy { it.cost }!!.name
         }
     }
 

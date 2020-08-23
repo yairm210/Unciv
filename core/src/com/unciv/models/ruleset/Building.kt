@@ -345,18 +345,16 @@ class Building : NamedStats(), IConstruction {
         if (providesFreeBuilding != null && !cityConstructions.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
             var buildingToAdd = providesFreeBuilding!!
 
-            for(building in civInfo.gameInfo.ruleSet.buildings.values)
-                if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
+            for (building in civInfo.gameInfo.ruleSet.buildings.values)
+                if (building.replaces == buildingToAdd && building.uniqueTo == civInfo.civName)
                     buildingToAdd = building.name
 
             cityConstructions.addBuilding(buildingToAdd)
         }
 
-        if ("Empire enters golden age" in uniques) civInfo.goldenAges.enterGoldenAge()
-        for(unique in uniqueObjects.filter { it.placeholderText == "Free [] appears" }) {
-            val unitName = unique.params[0]
-            civInfo.addUnit(unitName, cityConstructions.cityInfo)
-        }
+        for (unique in uniqueObjects)
+            UniqueTriggerActivation.triggerCivwideUnique(unique, civInfo)
+
         if ("2 free Great Artists appear" in uniques) {
             civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
             civInfo.addUnit("Great Artist", cityConstructions.cityInfo)
@@ -369,22 +367,8 @@ class Building : NamedStats(), IConstruction {
             civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
             civInfo.addUnit(Constants.worker, cityConstructions.cityInfo)
         }
-        if ("Free Social Policy" in uniques) civInfo.policies.freePolicies++
-        if ("Free Great Person" in uniques) {
-            if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-            else civInfo.addUnit(civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random())
-        }
-        if ("+1 population in each city" in uniques) {
-            for(city in civInfo.cities){
-                city.population.population += 1
-                city.population.autoAssignPopulation()
-            }
-        }
         if ("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques)
             civInfo.updateHasActiveGreatWall()
-
-        if("Free Technology" in uniques) civInfo.tech.freeTechs += 1
-
 
         cityConstructions.cityInfo.cityStats.update() // new building, new stats
         civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one

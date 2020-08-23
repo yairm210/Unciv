@@ -277,7 +277,7 @@ class CivilizationInfo {
         if (gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scenario))
             return cities.isEmpty() && getCivUnits().none()
         else return cities.isEmpty() // No cities
-                && (citiesCreated > 0 || !getCivUnits().any { it.name == Constants.settler })
+                && (citiesCreated > 0 || !getCivUnits().any { it.hasUnique(Constants.settlerUnique) })
     }
 
     fun getEra(): String {

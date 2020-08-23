@@ -219,34 +219,26 @@ class CityInfo {
         return 0
     }
 
-    fun isGrowing(): Boolean {
-        return foodForNextTurn() > 0 && cityConstructions.currentConstructionFromQueue != Constants.settler
-    }
+    fun isGrowing() = foodForNextTurn() > 0
 
-    fun isStarving(): Boolean = foodForNextTurn() < 0
+    fun isStarving() = foodForNextTurn() < 0
 
     private fun foodForNextTurn() = cityStats.currentCityStats.food.roundToInt()
 
     /** Take null to mean infinity. */
     fun getNumTurnsToNewPopulation(): Int? {
-        if (isGrowing()) {
-            val roundedFoodPerTurn = foodForNextTurn().toFloat()
-            val remainingFood = population.getFoodToNextPopulation() - population.foodStored
-            var turnsToGrowth = ceil( remainingFood / roundedFoodPerTurn).toInt()
-            if (turnsToGrowth < 1) turnsToGrowth = 1
-            return turnsToGrowth
-        }
-
-        return null
+        if (!isGrowing()) return null
+        val roundedFoodPerTurn = foodForNextTurn().toFloat()
+        val remainingFood = population.getFoodToNextPopulation() - population.foodStored
+        var turnsToGrowth = ceil( remainingFood / roundedFoodPerTurn).toInt()
+        if (turnsToGrowth < 1) turnsToGrowth = 1
+        return turnsToGrowth
     }
 
     /** Take null to mean infinity. */
     fun getNumTurnsToStarvation(): Int? {
-        if (isStarving()) {
-            return population.foodStored / -foodForNextTurn() + 1
-        }
-
-        return null
+        if (!isStarving()) return null
+        return population.foodStored / -foodForNextTurn() + 1
     }
 
     fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
