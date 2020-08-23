@@ -91,7 +91,7 @@ object UnitAutomation {
             throw IllegalStateException("Barbarians is not allowed here.")
 
         if(unit.type.isCivilian()) {
-            if (unit.name == Constants.settler)
+            if (unit.hasUnique(Constants.settlerUnique))
                 return SpecificUnitAutomation.automateSettlerActions(unit)
 
             if (unit.hasUnique(Constants.workerUnique))
@@ -261,7 +261,8 @@ object UnitAutomation {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull {
                     val tile = it.currentTile
-                    (it.name == Constants.settler || it.name in GreatPersonManager().statToGreatPersonMapping.values)
+                    it.type==UnitType.Civilian &&
+                    (it.hasUnique(Constants.settlerUnique) || unit.name in GreatPersonManager().statToGreatPersonMapping.values)
                             && tile.militaryUnit == null && unit.movement.canMoveTo(tile) && unit.movement.canReach(tile)
                 }
         if (settlerOrGreatPersonToAccompany == null) return false

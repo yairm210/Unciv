@@ -137,8 +137,8 @@ class BaseUnit : INamed, IConstruction {
         if (uniques.contains("Requires Manhattan Project") && !civInfo.hasUnique("Enables nuclear weapon"))
             return "Requires Manhattan Project"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!) && !civInfo.gameInfo.gameParameters.godMode) return "Consumes 1 [$requiredResource]"
-        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city-states"
-        if (name == Constants.settler && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isCityState()) return "No settler for city-states"
+        if (uniques.contains(Constants.settlerUnique) && civInfo.isOneCityChallenger()) return "No settler for players in One City Challenge"
         return ""
     }
 

@@ -15,6 +15,7 @@ import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.ceil
 import kotlin.math.roundToInt
 
 /**
@@ -194,7 +195,7 @@ class CityConstructions {
             // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
             //   and recalculating the entire city stats
             // We don't want to change our current construction queue - what if we have an empty queue, too many changes to check for -
-            //  So we ust clone it and see what would happen f that was our construction
+            //  So we must clone it and see what would happen if that was our construction
             val cityConstructionsClone = clone()
             cityConstructionsClone.currentConstructionFromQueue = constructionName
             cityConstructionsClone.cityInfo = cityInfo
@@ -210,7 +211,7 @@ class CityConstructions {
         var production = cityStatsForConstruction.production.roundToInt()
         if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
 
-        return Math.ceil((workLeft / production.toDouble())).toInt()
+        return ceil(workLeft / production.toDouble()).toInt()
     }
     //endregion
 

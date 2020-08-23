@@ -47,12 +47,12 @@ class PopulationManager {
 
     fun nextTurn(food: Int) {
         foodStored += food
-        if(food < 0)
-            cityInfo.civInfo.addNotification("["+cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
+        if (food < 0)
+            cityInfo.civInfo.addNotification("[" + cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
         {
-            if(population>1){
+            if (population > 1) {
                 population--
             }
             foodStored = 0
@@ -61,11 +61,13 @@ class PopulationManager {
         // growth!
         {
             foodStored -= getFoodToNextPopulation()
-            if (cityInfo.containsBuildingUnique("40% of food is carried over after a new citizen is born")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
-            if (cityInfo.containsBuildingUnique("25% of food is carried over after a new citizen is born")) foodStored += (0.25f * getFoodToNextPopulation()).toInt() // Medical Lab special
+            val percentOfFoodCarriedOver = cityInfo.cityConstructions.builtBuildingUniqueMap
+                    .getUniques("[]% of food is carried over after population increases")
+                    .sumBy { it.params[0].toInt() }
+            foodStored += (getFoodToNextPopulation() * percentOfFoodCarriedOver / 100f).toInt()
             population++
             autoAssignPopulation()
-            cityInfo.civInfo.addNotification("["+cityInfo.name + "] has grown!", cityInfo.location, Color.GREEN)
+            cityInfo.civInfo.addNotification("[" + cityInfo.name + "] has grown!", cityInfo.location, Color.GREEN)
         }
     }
 

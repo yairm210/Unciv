@@ -19,11 +19,16 @@ import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
+object ModOptionsConstants {
+    const val diplomaticRelationshipsCannotChange = "Diplomatic relationships cannot change"
+}
+
 class ModOptions {
     var isBaseRuleset = false
     var techsToRemove = HashSet<String>()
     var buildingsToRemove = HashSet<String>()
     var unitsToRemove = HashSet<String>()
+    var uniques = HashSet<String>()
 }
 
 class Ruleset {
@@ -245,6 +250,17 @@ object RulesetCache :HashMap<String,Ruleset>() {
         for (improvement in modRuleset.tileImprovements.values) {
             if (improvement.techRequired != null && !modRuleset.technologies.containsKey(improvement.techRequired!!))
                 println("${improvement.name} requires tech ${improvement.techRequired} which does not exist!")
+        }
+
+        for (tech in modRuleset.technologies.values) {
+            for (prereq in tech.prerequisites) {
+                if (!modRuleset.technologies.containsKey(prereq))
+                    println("${tech.name} requires tech $prereq which does not exist!")
+            }
+            for (otherTech in tech.column!!.techs) {
+                if (tech != otherTech && otherTech.row == tech.row)
+                    println("${tech.name} is in the same row as ${otherTech.name}!")
+            }
         }
 
     }

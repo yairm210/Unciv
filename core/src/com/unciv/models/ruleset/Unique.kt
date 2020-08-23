@@ -1,5 +1,7 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.getPlaceholderText
 
@@ -15,10 +17,49 @@ class UniqueMap:HashMap<String, ArrayList<Unique>>() {
     }
 
     fun getUniques(placeholderText: String): List<Unique> {
-        val result = this.get(placeholderText)
+        val result = this[placeholderText]
         if (result == null) return listOf()
         else return result
     }
 
     fun getAllUniques() = this.asSequence().flatMap { it.value.asSequence() }
+}
+
+// Buildings and policies both have 'triggered' effects, and so may Techs in the future.
+object UniqueTriggerActivation {
+    fun triggerCivwideUnique(unique: Unique, civInfo: CivilizationInfo) {
+        when (unique.placeholderText) {
+            "Free [] appears" -> {
+                val unitName = unique.params[0]
+                if (civInfo.cities.any { it.isCapital() } && (unitName != Constants.settler || !civInfo.isOneCityChallenger()))
+                    civInfo.addUnit(unitName, civInfo.getCapital())
+            }
+            "Free Social Policy" -> civInfo.policies.freePolicies++
+            "Empire enters golden age" ->
+                civInfo.goldenAges.enterGoldenAge()
+            "Free Great Person" -> {
+                if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
+                else {
+                    val preferredVictoryType = civInfo.victoryType()
+                    val greatPerson = when (preferredVictoryType) {
+                        VictoryType.Cultural -> "Great Artist"
+                        VictoryType.Scientific -> "Great Scientist"
+                        else ->
+                            civInfo.gameInfo.ruleSet.units.keys.filter { it.startsWith("Great") }.random()
+                    }
+                    civInfo.addUnit(greatPerson)
+                }
+            }
+            "+1 population in each city" ->
+                for (city in civInfo.cities) {
+                    city.population.population += 1
+                    city.population.autoAssignPopulation()
+                }
+            "Free Technology" -> civInfo.tech.freeTechs += 1
+
+            "Quantity of strategic resources produced by the empire increased by 100%" -> civInfo.updateDetailedCivResources()
+            "+20% attack bonus to all Military Units for 30 turns" -> civInfo.policies.autocracyCompletedTurns = 30
+        }
+    }
+
 }
