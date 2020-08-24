@@ -373,7 +373,7 @@ open class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)
-            lineList += "{$improvementInProgress}\r\n  $turnsToImprovement ${Fonts.turn}".tr() // todo change to [] translation notation
+            lineList += "{$improvementInProgress}  $turnsToImprovement ${Fonts.turn}".tr()
         if (civilianUnit != null && isViewableToPlayer)
             lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
         if (militaryUnit != null && isViewableToPlayer) {

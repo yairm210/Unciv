@@ -55,7 +55,7 @@ class ImprovementPickerScreen(val tileInfo: TileInfo, val onAccept: ()->Unit) : 
 
             var labelText = improvement.name.tr()
             val turnsToBuild = improvement.getTurnsToBuild(currentPlayerCiv)
-            if (turnsToBuild > 0) labelText += " - $turnsToBuild {turns}"
+            if (turnsToBuild > 0) labelText += " - $turnsToBuild ${Fonts.turn}"
             val provideResource = tileInfo.hasViewableResource(currentPlayerCiv) && tileInfo.getTileResource().improvement == improvement.name
             if (provideResource) labelText += "\n" + "Provides [${tileInfo.resource}]".tr()
             val removeImprovement = (improvement.name != RoadStatus.Road.name
