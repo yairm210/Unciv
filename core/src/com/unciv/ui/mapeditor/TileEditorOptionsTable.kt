@@ -184,7 +184,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     }
 
                     val nationIcon = getHex(Color.WHITE, ImageGetter.getNationIndicator(nation, 40f))
-                    setCurrentHex(nationIcon,"Player $playerIndex starting location")
+                    setCurrentHex(nationIcon,"Player [$playerIndex] starting location")
                 }
                 nationTable.add(nationImage).row()
             }
@@ -315,7 +315,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
     private fun getPlayerIndexString(player: Player): String {
         val index = gameParameters.players.indexOf(player) + 1
-        return "Player $index"
+        return "Player [$index]".tr()
     }
 
     private fun getCrossedIcon(): Actor {

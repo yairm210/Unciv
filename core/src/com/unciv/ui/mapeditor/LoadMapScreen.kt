@@ -91,8 +91,8 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
         deleteButton.color = Color.RED
 
         if (scenarioMap) {
-            deleteButton.setText("Delete Scenario Map")
-            rightSideButton.setText("Load Scenario Map")
+            deleteButton.setText("Delete Scenario Map".tr())
+            rightSideButton.setText("Load Scenario Map".tr())
 
             mapsTable.clear()
             for (scenario in MapSaver.getScenarios()) {
@@ -106,8 +106,8 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
                 mapsTable.add(loadScenarioButton).row()
             }
         } else {
-            deleteButton.setText("Delete map")
-            rightSideButton.setText("Load map")
+            deleteButton.setText("Delete map".tr())
+            rightSideButton.setText("Load map".tr())
 
             mapsTable.clear()
             for (map in MapSaver.getMaps()) {

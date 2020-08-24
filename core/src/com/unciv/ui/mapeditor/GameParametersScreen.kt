@@ -4,6 +4,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.map.Scenario
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
+import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameOptionsTable
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.PlayerPickerTable
@@ -32,7 +33,7 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
                 .maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
         topTable.addSeparatorVertical()
         topTable.add(playerPickerTable).maxHeight(topTable.parent.height).width(stage.width / 2).padTop(20f).top()
-        rightSideButton.setText("OK")
+        rightSideButton.setText("OK".tr())
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
             mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
