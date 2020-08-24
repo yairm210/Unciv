@@ -57,15 +57,7 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
         var glyph: Glyph? = super.getGlyph(ch)
         if (glyph == null) {
             if(ch == '\uD83D' || ch == '\uD83C' ) return Glyph() // This is the 'first character' of an emoji - empty space
-            val charPixmap =
-                    when (ch) {
-                        Fonts.strength[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Strength").region)
-                        Fonts.rangedStrength[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/RangedStrength").region)
-                        Fonts.range[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Range").region)
-                        Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
-                        Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
-                        else -> fontImplementation.getCharPixmap(ch)
-                    }
+            val charPixmap = getPixmapFromChar(ch)
 
             glyph = Glyph()
             glyph.id = ch.toInt()
@@ -88,6 +80,17 @@ class NativeBitmapFontData(val fontImplementation: NativeFontImplementation) : B
             dirty = true
         }
         return glyph
+    }
+
+    private fun getPixmapFromChar(ch: Char): Pixmap {
+        return when (ch) {
+            Fonts.strength[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Strength").region)
+            Fonts.rangedStrength[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/RangedStrength").region)
+            Fonts.range[1] -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Range").region)
+            Fonts.movement -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("StatIcons/Movement").region)
+            Fonts.turn -> Fonts.extractPixmapFromTextureRegion(ImageGetter.getDrawable("EmojiIcons/Turn").region)
+            else -> fontImplementation.getCharPixmap(ch)
+        }
     }
 
     override fun getGlyphs(run: GlyphLayout.GlyphRun, str: CharSequence, start: Int, end: Int, lastGlyph: Glyph?) {
@@ -142,4 +145,6 @@ object Fonts {
     const val rangedStrength = "\uD83C\uDFF9"
     const val movement = '➡'
     const val range = "\uD83D\uDCCF"
+
+//    const val production = '⚙'
 }

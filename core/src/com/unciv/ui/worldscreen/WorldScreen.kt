@@ -618,7 +618,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
             else ->
-                NextTurnAction("Next turn", Color.WHITE) {
+                NextTurnAction("${Fonts.turn} {Next turn}", Color.WHITE) {
                     game.settings.addCompletedTutorialTask("Pass a turn")
                     nextTurn()
                 }

@@ -41,14 +41,14 @@ class BaseUnit : INamed, IConstruction {
 
 
     fun getShortDescription(): String {
-        val infoList= mutableListOf<String>()
-        for(unique in uniques)
-            infoList+= Translations.translateBonusOrPenalty(unique)
-        for(promotion in promotions)
+        val infoList = mutableListOf<String>()
+        if (strength != 0) infoList += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) infoList += "$rangedStrength${Fonts.rangedStrength}"
+        if (movement != 2) infoList += "$movement${Fonts.movement}"
+        for (promotion in promotions)
             infoList += promotion.tr()
-        if(strength!=0) infoList += "$strength${Fonts.strength}"
-        if(rangedStrength!=0) infoList += "$rangedStrength${Fonts.rangedStrength}"
-        if(movement!=2) infoList+="$movement${Fonts.movement}"
+        for (unique in uniques)
+            infoList += Translations.translateBonusOrPenalty(unique)
         return infoList.joinToString()
     }
 
