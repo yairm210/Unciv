@@ -308,16 +308,7 @@ class CityStats {
         }
 
         for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
-            val filter = unique.params[1]
-            if (currentConstruction.name == filter
-                    || (filter == "land units" && currentConstruction is BaseUnit && currentConstruction.unitType.isLandUnit())
-                    || (filter == "naval units" && currentConstruction is BaseUnit && currentConstruction.unitType.isWaterUnit())
-                    || (filter == "mounted units" && currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted)
-                    || (filter == "military units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMilitary())
-                    || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
-                    || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
-                    || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder)
-                    || (currentConstruction is Building && currentConstruction.uniques.contains(filter)))
+            if (constructionFitsFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
 
@@ -332,22 +323,19 @@ class CityStats {
                 && uniques.any { it.text == "Training of settlers increased +50% in capital" })
             stats.production += 50f
 
-        if (currentConstruction is Building && !currentConstruction.isWonder)
+        if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
                 val stat = Stat.valueOf(unique.params[1])
                 if (currentConstruction.isStatRelated(stat))
                     stats.production += unique.params[0].toInt()
             }
 
+
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
-            val filter = unique.params[1]
-            if (currentConstruction.name == filter
-                    || (filter == "military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
-                    || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
-                    || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
-                    || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder))
+            if (constructionFitsFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
+
 
         if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
                 && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
@@ -361,6 +349,18 @@ class CityStats {
             stats.culture += 25f
 
         return stats
+    }
+
+    fun constructionFitsFilter(construction:IConstruction, filter:String): Boolean {
+        return construction.name == filter
+                || (filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit())
+                || (filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit())
+                || (filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted)
+                || (filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian())
+                || (filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee())
+                || (filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder))
+                || (filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder))
+                || (construction is Building && construction.uniques.contains(filter))
     }
 
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {

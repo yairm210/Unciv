@@ -4,8 +4,6 @@ import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.unit.UnitType
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -40,11 +38,12 @@ object BattleDamage {
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
-        fun addToModifiers(BDM:BattleDamageModifier){
-            val text = BDM.getText()
-            if(!modifiers.containsKey(text)) modifiers[text]=0f
-            modifiers[text]=modifiers[text]!!+BDM.modificationAmount
+        fun addToModifiers(text:String, amount:Float) {
+            if (!modifiers.containsKey(text)) modifiers[text] = 0f
+            modifiers[text] = modifiers[text]!! + amount
         }
+        fun addToModifiers(BDM:BattleDamageModifier) =
+                addToModifiers(BDM.getText(), BDM.modificationAmount)
 
         val civInfo = combatant.getCivInfo()
         if (combatant is MapUnitCombatant) {
@@ -59,6 +58,11 @@ object BattleDamage {
                     addToModifiers(BDM)
                 if (BDM.vs == "air units" && enemy.getUnitType().isAirUnit())
                     addToModifiers(BDM)
+            }
+
+            for (unique in combatant.unit.getMatchingUniques("+[]% Strength vs []")) {
+                if (unique.params[1] == enemy.getName())
+                    addToModifiers("vs [${unique.params[1]}]", unique.params[0].toFloat() / 100)
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
