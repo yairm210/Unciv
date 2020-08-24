@@ -81,7 +81,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     fun setTrade(civ: CivilizationInfo): TradeTable {
         rightSideTable.clear()
-        val tradeTable =TradeTable(civ, stage)
+        val tradeTable =TradeTable(civ, this)
         rightSideTable.add(tradeTable)
         return tradeTable
     }
