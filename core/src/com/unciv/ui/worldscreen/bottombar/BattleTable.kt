@@ -117,8 +117,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         addSeparator().pad(0f)
 
-        add("{Strength}: ".tr()+attacker.getAttackingStrength())
-        add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
+        add(attacker.getAttackingStrength().toString()+Fonts.strength)
+        add(defender.getDefendingStrength().toString()+Fonts.strength).row()
 
         val attackerModifiers =
                 BattleDamage.getAttackModifiers(attacker,null,defender).map {

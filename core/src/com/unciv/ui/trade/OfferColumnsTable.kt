@@ -12,24 +12,28 @@ import com.unciv.ui.utils.*
 /** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
 class OfferColumnsTable(val tradeLogic: TradeLogic, val screen: DiplomacyScreen, val onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
 
-    fun addOffer(offer:TradeOffer, offerList:TradeOffersList, correspondingOfferList:TradeOffersList){
+    fun addOffer(offer: TradeOffer, offerList: TradeOffersList, correspondingOfferList: TradeOffersList) {
         offerList.add(offer.copy())
-        if(offer.type==TradeType.Treaty) correspondingOfferList.add(offer.copy())
+        if (offer.type == TradeType.Treaty) correspondingOfferList.add(offer.copy())
         onChange()
     }
 
     val ourAvailableOffersTable = OffersListScroll {
-        if(it.type==TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization)
-        else addOffer(it,tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers) }
+        if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization)
+        else addOffer(it, tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
+    }
     val ourOffersTable = OffersListScroll {
-        if (it.type==TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization)
-        else addOffer(it.copy(amount=-it.amount),tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers) }
+        if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.ourOffers, tradeLogic.ourCivilization)
+        else addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers)
+    }
     val theirOffersTable = OffersListScroll {
-        if (it.type==TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization)
-        else addOffer(it.copy(amount=-it.amount),tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers) }
+        if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization)
+        else addOffer(it.copy(amount = -it.amount), tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
+    }
     val theirAvailableOffersTable = OffersListScroll {
-        if (it.type==TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization)
-        else addOffer(it,tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers) }
+        if (it.type == TradeType.Gold) openGoldSelectionPopup(it, tradeLogic.currentTrade.theirOffers, tradeLogic.otherCivilization)
+        else addOffer(it, tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers)
+    }
 
     init {
         defaults().pad(5f)
@@ -38,15 +42,15 @@ class OfferColumnsTable(val tradeLogic: TradeLogic, val screen: DiplomacyScreen,
         add("Our items".tr())
         add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
 
-        add(ourAvailableOffersTable).size(columnWidth,screen.stage.height/2)
-        add(theirAvailableOffersTable).size(columnWidth,screen.stage.height/2).row()
+        add(ourAvailableOffersTable).size(columnWidth, screen.stage.height / 2)
+        add(theirAvailableOffersTable).size(columnWidth, screen.stage.height / 2).row()
 
         addSeparator().height(2f)
 
         add("Our trade offer".tr())
         add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr()).row()
-        add(ourOffersTable).size(columnWidth,screen.stage.height/5)
-        add(theirOffersTable).size(columnWidth,screen.stage.height/5)
+        add(ourOffersTable).size(columnWidth, screen.stage.height / 5)
+        add(theirOffersTable).size(columnWidth, screen.stage.height / 5)
         pack()
         update()
     }
@@ -61,7 +65,7 @@ class OfferColumnsTable(val tradeLogic: TradeLogic, val screen: DiplomacyScreen,
     }
 
 
-    fun openGoldSelectionPopup(offer: TradeOffer, ourOffers: TradeOffersList, offeringCiv:CivilizationInfo) {
+    fun openGoldSelectionPopup(offer: TradeOffer, ourOffers: TradeOffersList, offeringCiv: CivilizationInfo) {
         val selectionPopup = Popup(screen)
         val existingGoldOffer = ourOffers.firstOrNull { it.type == TradeType.Gold }
         if (existingGoldOffer != null)
