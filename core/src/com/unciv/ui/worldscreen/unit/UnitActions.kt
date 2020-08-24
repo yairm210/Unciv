@@ -364,7 +364,7 @@ object UnitActions {
 
     fun getImprovementConstructionActions(unit: MapUnit, tile: TileInfo): ArrayList<UnitAction> {
         val finalActions = ArrayList<UnitAction>()
-        for (unique in unit.getUniques().filter { it.placeholderText == "Can construct []" }) {
+        for (unique in unit.getMatchingUniques("Can construct []")) {
             val improvementName = unique.params[0]
             finalActions +=  UnitAction(
                     type = UnitActionType.Create,

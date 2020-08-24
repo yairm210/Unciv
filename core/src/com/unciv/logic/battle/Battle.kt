@@ -146,11 +146,9 @@ object Battle {
         if (defender.isDefeated()
                 && defender is MapUnitCombatant
                 && attacker is MapUnitCombatant) {
-            for (unique in attacker.unit.getUniques()) {
-                if(unique.placeholderText == "Heals [] damage if it kills a unit"){
-                    val amountToHeal = unique.params[0].toInt()
-                    attacker.unit.healBy(amountToHeal)
-                }
+            for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
+                val amountToHeal = unique.params[0].toInt()
+                attacker.unit.healBy(amountToHeal)
             }
         }
     }
@@ -424,10 +422,6 @@ object Battle {
         // the diverging base chance is coded into the effect string as (133%) for now, with 50% as default
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
         if (defender !is MapUnitCombatant) return false
-        // if (!attacker.isMelee()) return false                // checked in attack()
-
-        // Embarked units should never use the ability
-        // I see this as a rule detail, therefore I did not move the check outside this function
         if (defender.unit.isEmbarked()) return false
         // Calculate success chance: Base chance from json, then ratios of *base* strength and mobility
         // Promotions have no effect as per what I could find in available documentation

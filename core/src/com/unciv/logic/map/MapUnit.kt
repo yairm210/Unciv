@@ -128,6 +128,9 @@ class MapUnit {
         return tempUniques
     }
 
+    fun getMatchingUniques(placeholderText:String): Sequence<Unique>
+            = tempUniques.asSequence().filter { it.placeholderText == placeholderText }
+
     fun updateUniques(){
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
@@ -146,7 +149,7 @@ class MapUnit {
     }
 
     fun hasUnique(unique:String): Boolean {
-        return getUniques().any { it.text == unique }
+        return getUniques().any { it.placeholderText == unique }
     }
 
     fun updateVisibleTiles() {
