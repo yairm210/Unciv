@@ -216,6 +216,8 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList["Buildings"] = happinessFromBuildings
 
+        newHappinessList["National ability"] = getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
+
         newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getBuildingUniques()).happiness
 
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
