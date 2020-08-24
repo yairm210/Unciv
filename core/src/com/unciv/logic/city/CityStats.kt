@@ -200,14 +200,10 @@ class CityStats {
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
-        if (civInfo.hasUnique("+1 happiness for every 10 citizens in a city"))
-            happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
-        if (civInfo.hasUnique("+1 gold and -1 unhappiness for every 2 citizens in capital")
-                && cityInfo.isCapital())
-            happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
         if (civInfo.hasUnique("+1 happiness for every city connected to capital")
                 && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
+        happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
         if (cityInfo.getCenterTile().militaryUnit != null)
             for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
@@ -220,8 +216,7 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList["Buildings"] = happinessFromBuildings
 
-        if (civInfo.hasUnique("+1 happiness in each city"))
-            newHappinessList["Wonders"] = 1f
+        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getBuildingUniques()).happiness
 
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
 
@@ -243,8 +238,7 @@ class CityStats {
 
         for(unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
             stats.add(Stats.parse(unique.params[0]))
-        if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
-            stats.production += 1
+
         return stats
     }
 
@@ -267,8 +261,10 @@ class CityStats {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(Stats.parse(unique.params[0]).times(amountOfEffects))
             }
-            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital())
+            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
                 stats.gold += (cityInfo.population.population / 2).toFloat()
+                stats.happiness += (cityInfo.population.population / 2).toFloat()
+            }
         }
 
         return stats

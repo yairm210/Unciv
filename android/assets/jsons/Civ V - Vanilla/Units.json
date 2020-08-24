@@ -656,7 +656,7 @@
 		"requiredTech": "Astronomy",
 		"upgradesTo": "Ironclad",
 		"obsoleteTech": "Combustion",
-		"uniques": ["+1 Visibility Range","May withdraw before melee"],
+		"uniques": ["+1 Visibility Range","May withdraw before melee ([50]%)"],
 		"hurryCostModifier": 20
 	},
 	{
@@ -1071,7 +1071,7 @@
 		"interceptRange": 2,
 		"cost": 375,
 		"requiredTech": "Combustion",
-		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee"], // todo: add bonus vs submarines
+		"uniques": ["Can attack submarines", "[40]% chance to intercept air attacks", "May withdraw before melee ([50]%)"], // todo: add bonus vs submarines
 		"hurryCostModifier": 20
 	},
 	{

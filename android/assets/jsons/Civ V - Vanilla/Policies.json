@@ -8,7 +8,7 @@
 			{
 				"name": "Aristocracy",
 				"effect": "+15% production when constructing wonders, +1 happiness for every 10 citizens in a city",
-				"uniques": ["+[15]% Production when constructing [Wonders]", "+1 happiness for every 10 citizens in a city"],
+				"uniques": ["+[15]% Production when constructing [Wonders]", "[+1 Happiness] per [10] population in all cities"],
 				"row": 1,
 				"column": 1
 			},

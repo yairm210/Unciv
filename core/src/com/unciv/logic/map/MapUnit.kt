@@ -214,10 +214,10 @@ class MapUnit {
     }
 
     fun getRange(): Int {
-        if(type.isMelee()) return 1
+        if (type.isMelee()) return 1
         var range = baseUnit().range
-        if(hasUnique("+1 Range")) range++
-        if(hasUnique("+2 Range")) range+=2
+        if (hasUnique("+1 Range")) range++
+        if (hasUnique("+2 Range")) range += 2
         return range
     }
 
@@ -634,11 +634,7 @@ class MapUnit {
     }
 
     fun interceptChance():Int{
-        val interceptUnique = getUniques()
-                .firstOrNull { it.text.endsWith(CHANCE_TO_INTERCEPT_AIR_ATTACKS) }
-        if(interceptUnique==null) return 0
-        val percent = Regex("\\d+").find(interceptUnique.text)!!.value.toInt()
-        return percent
+        return getMatchingUniques("[100]% chance to intercept air attacks").sumBy { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {

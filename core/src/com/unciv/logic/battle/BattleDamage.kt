@@ -181,13 +181,18 @@ object BattleDamage {
                 modifiers["Tile"] = tileDefenceBonus
         }
 
-        if(attacker.isRanged()) {
+        if (attacker.isRanged()) {
             val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
             if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
         val carrierDefenceBonus = 0.25f * defender.unit.getUniques().count { it.text == "+25% Combat Bonus when defending" }
         if (carrierDefenceBonus > 0) modifiers["Armor Plating"] = carrierDefenceBonus
+
+        for(unique in defender.unit.getMatchingUniques("+[]% defence in [] tiles")) {
+            if (tile.baseTerrain == unique.params[1] || tile.terrainFeature == unique.params[1])
+                modifiers["[${unique.params[1]}] defence"] = unique.params[0].toFloat() / 100
+        }
 
 
         if (defender.unit.isFortified())

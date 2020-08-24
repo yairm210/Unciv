@@ -786,7 +786,7 @@
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"production": 2},
-		"uniques": ["+1 Production from specialists"],
+		"uniques": ["[+1 Production] from every specialist"],
 		"requiredTech": "Replaceable Parts",
 		"quote": "'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
 	},
