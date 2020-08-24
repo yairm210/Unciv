@@ -518,6 +518,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
 * [City](https://thenounproject.com/search/?q=city&i=1765370) By Muhajir ila Robbi in the Icon center
 * [Lock](https://thenounproject.com/search/?q=lock&i=3217613) by Vadim Solomakhin for locked tiles
+* [Turn](https://thenounproject.com/search/?q=turn&i=2829863) by Adrien Coquet for the 'Turn' icon
 
 ## Main menu
 

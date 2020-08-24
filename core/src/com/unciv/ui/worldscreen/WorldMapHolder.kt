@@ -1,12 +1,14 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
@@ -47,6 +49,23 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 onTileClicked(tileGroup.tileInfo)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tileInfo) }
+
+            // Right mouse click listener
+            tileGroup.addListener(object : ClickListener() {
+                init {
+                    button = Input.Buttons.RIGHT
+                }
+                override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                    val unit = worldScreen.bottomUnitTable.selectedUnit
+                    if (unit == null) return
+                    thread {
+                        val canUnitReachTile = unit.movement.canReach(tileGroup.tileInfo)
+                        if (canUnitReachTile) {
+                            UnitContextMenu(this@WorldMapHolder, unit, tileGroup.tileInfo).onMoveButtonClick()
+                        }
+                    }
+                }
+            })
         }
 
         actor = allTiles
