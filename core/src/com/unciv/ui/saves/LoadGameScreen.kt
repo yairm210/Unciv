@@ -130,7 +130,7 @@ class LoadGameScreen(previousScreen:CameraStageBaseScreen) : PickerScreen() {
                         val game = GameSaver.loadGameFromFile(save)
                         val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                         textToSet += "\n" + playerCivNames +
-                                ", " + game.difficulty.tr() + ", {Turn} ".tr() + game.turns
+                                ", " + game.difficulty.tr() + ", ${Fonts.turn} ".tr() + game.turns
                     } catch (ex: Exception) {
                         textToSet += "\n{Could not load game}!".tr()
                     }

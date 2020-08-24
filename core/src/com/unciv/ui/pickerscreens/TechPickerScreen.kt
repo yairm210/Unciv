@@ -157,7 +157,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             }
 
             if (!civTech.isResearched(techName) || techName == Constants.futureTech)
-                text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+                text += "\r\n" + turnsToTech[techName] + " ${Fonts.turn}".tr()
 
             techButton.text.setText(text)
         }

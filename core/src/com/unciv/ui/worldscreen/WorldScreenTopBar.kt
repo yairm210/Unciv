@@ -182,7 +182,7 @@ class WorldScreenTopBar(val worldScreen: WorldScreen) : Table() {
         val year = getYear(civInfo.gameInfo.gameParameters.gameSpeed, civInfo.gameInfo.turns).toInt()
 
         val yearText = "[" + abs(year) + "] " + if (year < 0) "BC" else "AD"
-        turnsLabel.setText("Turn".tr() + " " + civInfo.gameInfo.turns + " | " + yearText.tr())
+        turnsLabel.setText(Fonts.turn + " " + civInfo.gameInfo.turns + " | " + yearText.tr())
         turnsLabel.onClick { worldScreen.game.setScreen(VictoryScreen(worldScreen)) }
 
         val nextTurnStats = civInfo.statsForNextTurn

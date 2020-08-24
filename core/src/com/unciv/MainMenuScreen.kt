@@ -73,7 +73,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val table = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume", "OtherIcons/Resume") { autoLoadGame() }
+            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
             table.add(resumeTable).row()
         }
 

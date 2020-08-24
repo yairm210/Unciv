@@ -8,6 +8,7 @@ import com.unciv.logic.city.PerpetualConstruction
 import com.unciv.models.ruleset.Building
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 import com.unciv.ui.utils.toLabel
@@ -80,6 +81,6 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
     }
 
     companion object {
-        internal fun turnOrTurns(turns: Int): String = "\r\n$turns ${(if (turns > 1) " {turns}" else " {turn}").tr()}"
+        internal fun turnOrTurns(turns: Int): String = "\r\n$turns ${Fonts.turn}"
     }
 }

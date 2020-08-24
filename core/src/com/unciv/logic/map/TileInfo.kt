@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.tile.*
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.Fonts
 import kotlin.math.abs
 
 open class TileInfo {
@@ -372,7 +373,7 @@ open class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)
-            lineList += "{$improvementInProgress}\r\n  $turnsToImprovement {turns}".tr() // todo change to [] translation notation
+            lineList += "{$improvementInProgress}\r\n  $turnsToImprovement ${Fonts.turn}".tr() // todo change to [] translation notation
         if (civilianUnit != null && isViewableToPlayer)
             lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
         if (militaryUnit != null && isViewableToPlayer) {
