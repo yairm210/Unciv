@@ -1,3 +1,5 @@
+## What's this about?
+
 Everyone has that thing they wish could be in the game.
 Unfortunately, the game only understands code, so mods are our way to give a degree of freedom to those of us who don't code.
 
@@ -5,6 +7,8 @@ Mods can *add, replace and remove* basic game definitions, such as units, nation
 Games loaded with these mods will function according to the mod definition.
 
 The game only knows how to recognize existing definitions, so you can't add *new* unique abilities to nations/units/buildings/etc, only to play around with existing ones
+
+## Mod location
 
 Mods are located in a `/mods` directory, on Desktop that should be next to your .jar file.
 
@@ -17,6 +21,8 @@ If the option "Show all Play folders" does not have a check next to it click it.
 
 When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod
 
+## Mod 
+
 Mods have 2 subfolders:
 - jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons)
 - Images - here you should put game images, as in [the base image files](https://github.com/yairm210/Unciv/tree/master/android/Images)
@@ -27,5 +33,21 @@ In order to remove objects from the game, you'll need to create a ModOptions fil
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
 If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Aliens mod =)
+
+## Getting your mod out there
+
+There are 2 main venues for disseminating mods.
+
+One is our Discord server, which has a dedicated channel.
+
+The Brand New way of doing it is by putting your mod in a Github repository, and then users can download your mod directly to their phone!
+
+The Images and jsons folders need to be in the root directory of the repo - see [here](https://github.com/yairm210/Unciv-IV-mod) for example.
+
+In the game itself, you'll need to enable "Experimental mod manager" in the options.
+
+In the min menu, a "Mods" category will appear, and by clicking "Download mod" and entering your github page, the game will automatically download and extract your mod!
+
+## Other
 
 There is now a [list of mods](https://docs.google.com/spreadsheets/d/1043Ng9ukrL3y8MUXBVl7-C9JsQGnBi5R5mkmS2l7FFg/edit#gid=0)!
