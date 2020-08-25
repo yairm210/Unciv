@@ -528,6 +528,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Go back](https://thenounproject.com/search/?q=go%20back&i=1901947) by Salvia Santos for Resume
 * [Multiplayer](https://thenounproject.com/search/?q=multiplayer&i=1215652) by Roy Charles
 * [Options](https://thenounproject.com/search/?q=options&i=866090) By Thengakola
+* [Package](https://thenounproject.com/search/?q=package&i=1886048) by shashank singh 
 
 # Sound credits
 
