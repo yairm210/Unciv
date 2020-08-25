@@ -450,10 +450,21 @@ class CityStats {
         val isUnhappy = cityInfo.civInfo.getHappiness() < 0
         for (entry in newFinalStatList.values) {
             entry.gold *= 1 + statPercentBonusesSum.gold / 100
-            entry.science *= 1 + statPercentBonusesSum.science / 100
             entry.culture *= 1 + statPercentBonusesSum.culture / 100
             if (!isUnhappy) entry.food *= 1 + statPercentBonusesSum.food / 100 // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
         }
+
+        // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
+        if (cityInfo.getRuleset().modOptions.uniques.contains("Can convert gold to science with sliders")) {
+            val amountConverted = (newFinalStatList.values.sumByDouble { it.gold.toDouble() }
+                    * cityInfo.civInfo.tech.goldPercentConvertedToScience).toInt().toFloat()
+            if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow
+                newFinalStatList["Gold -> Science"] = Stats().apply { science = amountConverted; gold = -amountConverted }
+        }
+        for (entry in newFinalStatList.values) {
+            entry.science *= 1 + statPercentBonusesSum.science / 100
+        }
+
 
         //
         /* Okay, food calculation is complicated.

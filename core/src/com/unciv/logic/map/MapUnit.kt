@@ -46,6 +46,7 @@ class MapUnit {
     var currentMovement: Float = 0f
     var health:Int = 100
 
+    // todo: I see this is being serialized, should it be Transient?
     var mapUnitAction : MapUnitAction? = null
 
     var action: String? // work, automation, fortifying, I dunno what.
