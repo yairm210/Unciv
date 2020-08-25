@@ -209,8 +209,13 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
                 tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
                 tradeTable.offerColumnsTable.update()
             }
-            if (isNotPlayersTurn() || otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar))
+            if (isNotPlayersTurn() || otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
                 negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
+                if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar)) {
+                    val turnsLeft = otherCivDiplomacyManager.getFlag(DiplomacyFlags.DeclaredWar)
+                    negotiatePeaceButton.setText(negotiatePeaceButton.text.toString() + "\n$turnsLeft" + Fonts.turn)
+                }
+            }
 
             diplomacyTable.add(negotiatePeaceButton).row()
         }
@@ -365,7 +370,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
         if (turnsToPeaceTreaty > 0) {
             declareWarButton.disable()
-            declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
+            declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty${Fonts.turn})")
         }
         declareWarButton.onClick {
             YesNoPopup("Declare war on [${otherCiv.civName}]?".tr(), {
