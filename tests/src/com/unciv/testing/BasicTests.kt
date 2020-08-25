@@ -83,9 +83,10 @@ class BasicTests {
         print(x)
     }
 
-//    @Test // This should NOT run as part of the test suite!
+    @Test // This should NOT run as part of the test suite!
 //    fun tryUnzip(){
 //        Zip.extractFolder("""C:\Users\LENOVO\Downloads\Rebuild.rar""")
 //        Zip.downloadAndExtract("/Mods/Reasoures.zip", FileHandle("""C:\Users\LENOVO\Downloads"""))
+//        Zip.downloadAndExtract("https://github.com/yairm210/Unciv-IV-mod/archive/master.zip", FileHandle("""C:\Users\LENOVO\Downloads"""))
 //    }
 }

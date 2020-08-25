@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen.mainmenu
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -135,11 +134,36 @@ class OnlineMultiplayer {
 
 
 object Zip {
-    fun downloadAndExtract(dropboxFileLocation:String, folderFileHandle:FileHandle){
-        val fileFromDropbox = DropBox.downloadFile(dropboxFileLocation)
+    fun downloadUrl(url:String): InputStream? {
+        with(URL(url).openConnection() as HttpURLConnection) {
+//            requestMethod = "POST"  // default is GET
+
+            doOutput = true
+
+            try {
+                return inputStream
+            } catch (ex: Exception) {
+                println(ex.message)
+                val reader = BufferedReader(InputStreamReader(errorStream))
+                println(reader.readText())
+                return null
+            }
+        }
+    }
+
+    fun downloadAndExtract(url:String, folderFileHandle:FileHandle) {
+        val inputStream = downloadUrl(url)
+        if (inputStream == null) return
+        //DropBox.downloadFile(dropboxFileLocation)
+
         val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
-        tempZipFileHandle.write(fileFromDropbox, false)
+        tempZipFileHandle.write(inputStream, false)
         extractFolder(tempZipFileHandle.path())
+        tempZipFileHandle.delete()
+        val extractedFolder = FileHandle(tempZipFileHandle.pathWithoutExtension())
+        val innerFolder = extractedFolder.list().first()
+        innerFolder.moveTo(folderFileHandle.child(innerFolder.name().replace("-master","")))
+        extractedFolder.deleteDirectory()
     }
 
     // I went through a lot of similar answers that didn't work until I got to this gem by NeilMonday
