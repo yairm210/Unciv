@@ -136,13 +136,13 @@ object GameStarter {
                 gameInfo.tileMap)
 
         // For later starting eras, or for civs like Polynesia with a different Warrior, we need different starting units
-        fun getWarriorEquivalent(civ: CivilizationInfo): String {
+        fun getWarriorEquivalent(civ: CivilizationInfo): String? {
             val availableMilitaryUnits = gameInfo.ruleSet.units.values.filter {
                 it.isBuildable(civ)
                         && it.unitType.isLandUnit()
                         && !it.unitType.isCivilian()
             }
-            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }!!.name
+            return availableMilitaryUnits.maxBy { max(it.strength, it.rangedStrength) }?.name
         }
         // no starting units for Barbarians and Spectators
         for (civ in gameInfo.civilizations.filter { !it.isBarbarian() && !it.isSpectator() }) {
@@ -155,12 +155,13 @@ object GameStarter {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
             placeNearStartingPosition(Constants.settler)
-            placeNearStartingPosition(getWarriorEquivalent(civ))
+            val warriorEquivalent = getWarriorEquivalent(civ)
+            if(warriorEquivalent!=null) placeNearStartingPosition(warriorEquivalent)
 
             if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
                 for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    val unitToAdd = if (unit == "Warrior") getWarriorEquivalent(civ) else unit
-                    placeNearStartingPosition(unitToAdd)
+                    val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
+                    if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
                 }
             }
         }
