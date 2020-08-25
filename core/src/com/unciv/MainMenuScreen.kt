@@ -18,6 +18,7 @@ import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
@@ -95,15 +96,17 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
             { game.setScreen(MultiplayerScreen(this)) }
-        column1.add(multiplayerTable).row()
+        column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
-        { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
-        column1.add(mapEditorScreenTable).row()
+            { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
+        column2.add(mapEditorScreenTable).row()
 
-//        val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
-//            { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
-//        column2.add(modEditorTable).row()
+        if(game.settings.showModManager) {
+            val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
+            { game.setScreen(ModManagementScreen()) }
+            column2.add(modsTable).row()
+        }
 
 
         val table=Table().apply { defaults().pad(10f) }
