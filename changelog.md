@@ -1,3 +1,24 @@
+## 3.10.4
+
+Resolved #2979 - Display countdown to negotiate peace in diplomacy screen
+
+Resolved #2844 - Can now immediately move units in Desktop with right-click
+
+Added unit symbols for Turn, Strength, Ranged Strength, Range and Movement as 'emojis'
+
+Resolved #2937 - can add large increments of gold in trades
+
+Keep the perpetual construciton going, if the user set it manually.
+
+Tech picker screen auto-handles eras of different lengths
+
+Can remove tile features outside your borders
+
+A mishmash of different fixes: Unit uniques and promotions, happiness calculation, etc.
+
+Added a new test that ensures no two placeholders are the same
+
+
 ## 3.10.3
 
 Settler 'by name' recognition changed to 'by unique' recognition, allowing for modded settler-like units

@@ -83,9 +83,9 @@ class BasicTests {
         print(x)
     }
 
-    @Test
-    fun tryUnzip(){
+//    @Test // This should NOT run as part of the test suite!
+//    fun tryUnzip(){
 //        Zip.extractFolder("""C:\Users\LENOVO\Downloads\Rebuild.rar""")
-        Zip.downloadAndExtract("/Mods/Reasoures.zip", FileHandle("""C:\Users\LENOVO\Downloads"""))
-    }
+//        Zip.downloadAndExtract("/Mods/Reasoures.zip", FileHandle("""C:\Users\LENOVO\Downloads"""))
+//    }
 }

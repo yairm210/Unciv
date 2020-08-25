@@ -75,7 +75,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
             val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
-            column1.add(resumeTable).row()
+            column1.add(resumeTable).padTop(0f).row()
         }
 
         val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
@@ -95,11 +95,11 @@ class MainMenuScreen: CameraStageBaseScreen() {
 
         val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
             { game.setScreen(MultiplayerScreen(this)) }
-        column2.add(multiplayerTable).row()
+        column1.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
         { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
-        column2.add(mapEditorScreenTable).row()
+        column1.add(mapEditorScreenTable).row()
 
 //        val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
 //            { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
