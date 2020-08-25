@@ -1,5 +1,6 @@
 package com.unciv.models.ruleset
 
+import com.unciv.Constants
 import com.unciv.models.stats.INamed
 import com.unciv.models.translations.tr
 import java.util.*
@@ -15,6 +16,7 @@ class Difficulty: INamed {
     var policyCostModifier:Float = 1f
     var unhappinessModifier:Float = 1f
     var barbarianBonus:Float = 0f
+    var startingUnits = ArrayList<String>()
 
     var aiCityGrowthModifier:Float = 1f
     var aiUnitCostModifier:Float = 1f
@@ -23,11 +25,23 @@ class Difficulty: INamed {
     var aiBuildingMaintenanceModifier:Float = 1f
     var aiUnitMaintenanceModifier = 1f
     var aiFreeTechs = ArrayList<String>()
+    @Deprecated("Use aiMajorCivStartingUnits instead")
     var aiFreeUnits = ArrayList<String>()
+    var aiMajorCivStartingUnits = ArrayList<String>()
+    var aiCityStateStartingUnits = ArrayList<String>()
     var aiUnhappinessModifier = 1f
     var turnBarbariansCanEnterPlayerTiles = 0
     var clearBarbarianCampReward = 25
 
+    init {
+        // For compatibility with old mods
+        if (startingUnits.isEmpty()) {
+            startingUnits.add(Constants.settler)
+            startingUnits.add("Warrior")
+            aiCityStateStartingUnits.addAll(startingUnits)
+            aiMajorCivStartingUnits.addAll(startingUnits + aiFreeUnits)
+        }
+    }
 
     fun getDescription(): String {
         val lines = ArrayList<String>()
@@ -40,6 +54,7 @@ class Difficulty: INamed {
         lines += " - {Policy cost modifier}: $policyCostModifier"
         lines += " - {Unhappiness modifier}: $unhappinessModifier"
         lines += " - {Bonus vs. Barbarians}: $barbarianBonus"
+//        lines += " - {Starting units}: $startingUnits"
         lines += ""
         lines += "AI settings"
         lines += " - {AI city growth modifier}: $aiCityGrowthModifier"
@@ -49,7 +64,8 @@ class Difficulty: INamed {
         lines += " - {AI building maintenance modifier}: $aiBuildingMaintenanceModifier"
         lines += " - {AI unit maintenance modifier}: $aiUnitMaintenanceModifier"
 //        lines += " - {AI free techs}: $aiFreeTechs"
-//        lines += " - {AI free units}: $aiFreeUnits"
+//        lines += " - {AI major civilizations starting units}: $aiMajorCivStartingUnits"
+//        lines += " - {AI city-state starting units}: $aiCityStateStartingUnits"
         lines += " - {AI unhappiness modifier}: $aiUnhappinessModifier"
         lines += ""
         lines += "{Turns until barbarians enter player tiles}: $turnBarbariansCanEnterPlayerTiles"

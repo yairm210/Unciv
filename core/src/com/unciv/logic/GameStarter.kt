@@ -156,15 +156,16 @@ object GameStarter {
             fun placeNearStartingPosition(unitName: String) {
                 civ.placeUnitNearTile(startingLocation.position, unitName)
             }
-            placeNearStartingPosition(Constants.settler)
             val warriorEquivalent = getWarriorEquivalent(civ)
-            if(warriorEquivalent!=null) placeNearStartingPosition(warriorEquivalent)
-
-            if (!civ.isPlayerCivilization() && civ.isMajorCiv()) {
-                for (unit in gameInfo.getDifficulty().aiFreeUnits) {
-                    val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
-                    if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
-                }
+            val startingUnits = when {
+                civ.isPlayerCivilization() -> gameInfo.getDifficulty().startingUnits
+                civ.isMajorCiv() -> gameInfo.getDifficulty().aiMajorCivStartingUnits
+                else -> gameInfo.getDifficulty().aiCityStateStartingUnits
+            }
+            
+            for (unit in startingUnits) {
+                val unitToAdd = if (unit == "Warrior") warriorEquivalent else unit
+                if (unitToAdd != null) placeNearStartingPosition(unitToAdd)
             }
         }
     }
