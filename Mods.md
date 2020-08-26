@@ -44,9 +44,13 @@ The Brand New way of doing it is by putting your mod in a Github repository, and
 
 The Images and jsons folders need to be in the root directory of the repo - see [here](https://github.com/yairm210/Unciv-IV-mod) for example.
 
-In the game itself, you'll need to enable "Experimental mod manager" in the options.
+## Downloading mods from within the game
 
-In the min menu, a "Mods" category will appear, and by clicking "Download mod" and entering your github page, the game will automatically download and extract your mod!
+- From within an existing game, open Menu - Options and enable "Experimental mod manager".
+- Return to the main menu, click "Mods"
+- You should now see a list of your mods and a "Download mod" button.
+- Click "Download mod", enter the location of your Github page
+- The game will automatically download and extract your mod, and it'll be ready to use!
 
 ## Other
 
