@@ -219,5 +219,6 @@ object Zip {
                 extractFolder(destFile, unzipDestination)
             }
         }
+        zip.close() // Needed so we can delete the zip file later
     }
 }
