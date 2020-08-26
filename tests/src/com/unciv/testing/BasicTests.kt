@@ -12,6 +12,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
+import com.unciv.ui.worldscreen.mainmenu.Http
 import com.unciv.ui.worldscreen.mainmenu.Zip
 import org.junit.Assert
 import org.junit.Before
@@ -89,4 +90,9 @@ class BasicTests {
 //        Zip.downloadAndExtract("/Mods/Reasoures.zip", FileHandle("""C:\Users\LENOVO\Downloads"""))
 //        Zip.downloadAndExtract("https://github.com/yairm210/Unciv-IV-mod/archive/master.zip", FileHandle("""C:\Users\LENOVO\Downloads"""))
 //    }
+
+    @Test // This should NOT run as part of the test suite!
+    fun tryGetGithubTopicInfo(){
+        println(Http.tryGetGithubTopic())
+    }
 }

@@ -4,19 +4,18 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.MainMenuScreen
 import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.mainmenu.Zip
+import com.unciv.ui.worldscreen.mainmenu.Github
 import kotlin.concurrent.thread
 
 class ModManagementScreen: PickerScreen() {
 
     val modTable = Table().apply { defaults().pad(10f) }
-    val downloadTable = Table()
+    val downloadTable = Table().apply { defaults().pad(10f) }
 
     init {
         setDefaultCloseAction(MainMenuScreen())
@@ -24,8 +23,32 @@ class ModManagementScreen: PickerScreen() {
 
         topTable.add(modTable).pad(10f)
 
+        downloadTable.add(getDownloadButton()).row()
 
-        downloadTable.add(getDownloadButton())
+        thread {
+            val repoList: ArrayList<Github.Repo>
+            try {
+                repoList = Github.tryGetGithubReposWithTopic()
+
+            } catch (ex: Exception) {
+                ResponsePopup("Could not download mod list", this)
+                return@thread
+            }
+
+            for (repo in repoList) {
+                repo.name = repo.name.replace('-',' ')
+                val downloadButton = repo.name.toTextButton()
+                downloadButton.onClick {
+                    descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}] Stars".tr())
+                    removeRightSideClickListeners()
+                    rightSideButton.enable()
+                    rightSideButton.setText("Download [${repo.name}]".tr())
+                    rightSideButton.onClick { downloadMod(repo.svn_url) }
+                }
+                downloadTable.add(downloadButton).row()
+            }
+        }
+
         topTable.add(downloadTable)
     }
 
@@ -37,30 +60,36 @@ class ModManagementScreen: PickerScreen() {
             popup.add(textArea).width(stage.width/2).row()
             val downloadButton = "Download".toTextButton()
             downloadButton.onClick {
-                thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
-                    try {
-                        downloadButton.setText("Downloading...")
-                        downloadButton.disable()
-                        Zip.downloadAndExtract(textArea.text+"/archive/master.zip",
-                                Gdx.files.local("mods"))
-                        Gdx.app.postRunnable {
-                            RulesetCache.loadRulesets()
-                            refresh()
-                            popup.close()
-                        }
-                    } catch (ex:Exception){
-                        Gdx.app.postRunnable {
-                            ResponsePopup("Could not download mod", this)
-                            popup.close()
-                        }
-                    }
-                }
+                downloadButton.setText("Downloading...")
+                downloadButton.disable()
+                downloadMod(textArea.text) { popup.close() }
             }
             popup.add(downloadButton).row()
             popup.addCloseButton()
             popup.open()
         }
         return downloadButton
+    }
+
+    fun downloadMod(gitRepoUrl:String, postAction:()->Unit={}){
+        thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
+            try {
+                Github.downloadAndExtract(gitRepoUrl+"/archive/master.zip",
+                        Gdx.files.local("mods"))
+                Gdx.app.postRunnable {
+                    ResponsePopup("Downloaded!", this)
+                    RulesetCache.loadRulesets()
+                    refresh()
+                }
+            } catch (ex:Exception){
+                Gdx.app.postRunnable {
+                    ResponsePopup("Could not download mod", this)
+                }
+            }
+            finally {
+                postAction()
+            }
+        }
     }
 
     fun refresh(){
@@ -71,8 +100,7 @@ class ModManagementScreen: PickerScreen() {
                 rightSideButton.setText("Delete [${mod.name}]".tr())
                 rightSideButton.enable()
                 descriptionLabel.setText(mod.getSummary())
-                rightSideButton.listeners.filter { it != rightSideButton.clickListener }
-                        .forEach { rightSideButton.removeListener(it) }
+                removeRightSideClickListeners()
                 rightSideButton.onClick {
                     YesNoPopup("Are you SURE you want to delete this mod?",
                             { deleteMod(mod) }, this).open()

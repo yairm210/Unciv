@@ -62,4 +62,9 @@ open class PickerScreen : CameraStageBaseScreen() {
         if(UncivGame.Current.worldScreen.isPlayersTurn) rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
+
+    fun removeRightSideClickListeners(){
+        rightSideButton.listeners.filter { it != rightSideButton.clickListener }
+                .forEach { rightSideButton.removeListener(it) }
+    }
 }

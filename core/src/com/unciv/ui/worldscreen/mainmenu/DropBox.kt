@@ -4,6 +4,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.saves.Gzip
 import java.io.*
 import java.net.HttpURLConnection
@@ -132,11 +133,12 @@ class OnlineMultiplayer {
     }
 }
 
-
-object Zip {
-    fun downloadUrl(url:String): InputStream? {
-        with(URL(url).openConnection() as HttpURLConnection) {
-//            requestMethod = "POST"  // default is GET
+object Github {
+    // Consider merging this with the Dropbox function
+    fun download(url: String, action: (HttpURLConnection) -> Unit = {}): InputStream? {
+        with(URL(url).openConnection() as HttpURLConnection)
+        {
+            action(this)
 
             doOutput = true
 
@@ -153,17 +155,17 @@ object Zip {
 
     // This took a long time to get just right, so if you're changing this, TEST IT THOROUGHLY on both Desktop and Phone
     fun downloadAndExtract(url:String, folderFileHandle:FileHandle) {
-        val inputStream = downloadUrl(url)
+        val inputStream = download(url)
         if (inputStream == null) return
-        //DropBox.downloadFile(dropboxFileLocation)
 
         val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
         tempZipFileHandle.write(inputStream, false)
         val unzipDestination = tempZipFileHandle.sibling("tempZip") // folder, not file
-        extractFolder(tempZipFileHandle, unzipDestination)
+        Zip.extractFolder(tempZipFileHandle, unzipDestination)
         val innerFolder = unzipDestination.list().first() // tempZip/<repoName>-master/
 
-        val finalDestination = folderFileHandle.child(innerFolder.name().replace("-master",""))
+        val finalDestinationName = innerFolder.name().replace("-master","").replace('-',' ')
+        val finalDestination = folderFileHandle.child(finalDestinationName)
         finalDestination.mkdirs() // If we don't create this as a directory, it will think this is a file and nothing will work.
         for(innerFileOrFolder in innerFolder.list()){
             innerFileOrFolder.moveTo(finalDestination)
@@ -172,6 +174,27 @@ object Zip {
         tempZipFileHandle.delete()
         unzipDestination.deleteDirectory()
     }
+
+
+    fun tryGetGithubReposWithTopic(): ArrayList<Repo> {
+        val inputStream = download("https://api.github.com/search/repositories?q=topic:unciv-mod")
+        if (inputStream == null) return ArrayList()
+        return GameSaver.json().fromJson(RepoSearch::class.java, inputStream!!.bufferedReader().readText()).items
+    }
+
+    class RepoSearch{
+        var items=ArrayList<Repo>()
+    }
+
+    class Repo {
+        var name = ""
+        var description = ""
+        var svn_url = ""
+        var stargazers_count = 0
+    }
+}
+
+object Zip {
 
     // I went through a lot of similar answers that didn't work until I got to this gem by NeilMonday
     //  (with mild changes to fit the FileHandles)
