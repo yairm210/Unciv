@@ -11,6 +11,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.unciv.UncivGame
 import com.unciv.UncivGameParameters
 import com.unciv.models.translations.tr
+import com.unciv.ui.utils.ORIGINAL_FONT_SIZE
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
@@ -46,7 +47,7 @@ internal object DesktopLauncher {
                 versionFromJar,
                 exitEvent = { exitProcess(0) },
                 cancelDiscordEvent = { discordTimer?.cancel() },
-                fontImplementation = NativeFontDesktop(45)
+                fontImplementation = NativeFontDesktop(ORIGINAL_FONT_SIZE.toInt())
         )
 
         val game = UncivGame ( desktopParameters )

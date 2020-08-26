@@ -11,6 +11,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.stats.Stats
 import com.unciv.models.translations.tr
 import com.unciv.ui.cityscreen.ConstructionInfoTable
+import com.unciv.ui.utils.Fonts
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*
@@ -116,13 +117,13 @@ class CityConstructions {
 
     fun getProductionForTileInfo(): String {
         /* this is because there were rare errors tht I assume were caused because
-           currentContruction changed on another thread */
+           currentConstruction changed on another thread */
         val currentConstructionSnapshot = currentConstructionFromQueue
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
                 && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += ConstructionInfoTable.turnOrTurns(turnsLeft)
+            result += " - $turnsLeft ${Fonts.turn}"
         }
         return result
     }
@@ -376,8 +377,9 @@ class CityConstructions {
     fun chooseNextConstruction() {
         validateConstructionQueue()
         if (constructionQueue.isNotEmpty()) {
-            currentConstructionIsUserSet = true
-            if (currentConstructionFromQueue != "" && getConstruction(currentConstructionFromQueue) !is PerpetualConstruction) return
+            if (currentConstructionFromQueue != ""
+                    // If the USER set a perpetual construction, then keep it!
+                    && (getConstruction(currentConstructionFromQueue) !is PerpetualConstruction || currentConstructionIsUserSet)) return
         }
 
         ConstructionAutomation(this).chooseNextConstruction()

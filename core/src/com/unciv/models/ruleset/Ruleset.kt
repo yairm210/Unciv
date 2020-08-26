@@ -17,6 +17,7 @@ import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.Promotion
 import com.unciv.models.stats.INamed
+import java.lang.StringBuilder
 import kotlin.collections.set
 
 object ModOptionsConstants {
@@ -183,6 +184,17 @@ class Ruleset {
     }
 
     fun getEraNumber(era:String) = getEras().indexOf(era)
+    fun getSummary(): String {
+        val stringList = ArrayList<String>()
+        if (technologies.isNotEmpty()) stringList.add(technologies.size.toString() + " Techs")
+        if (nations.isNotEmpty()) stringList.add(nations.size.toString() + " Nations")
+        if (units.isNotEmpty()) stringList.add(units.size.toString() + " Units")
+        if (buildings.isNotEmpty()) stringList.add(buildings.size.toString() + " Buildings")
+        if (tileResources.isNotEmpty()) stringList.add(tileResources.size.toString() + " Resources")
+        if (tileImprovements.isNotEmpty()) stringList.add(tileResources.size.toString() + " Improvements")
+        stringList += ""
+        return stringList.joinToString()
+    }
 }
 
 /** Loading mods is expensive, so let's only do it once and
@@ -190,6 +202,7 @@ class Ruleset {
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
     fun loadRulesets(consoleMode:Boolean=false) {
+        clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
             val fileHandle = if (consoleMode) FileHandle(fileName)

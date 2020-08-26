@@ -18,6 +18,7 @@ import com.unciv.ui.MultiplayerScreen
 import com.unciv.ui.mapeditor.*
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
@@ -70,46 +71,49 @@ class MainMenuScreen: CameraStageBaseScreen() {
             }
         }
 
-        val table = Table().apply { defaults().pad(10f) }
+        val column1 = Table().apply { defaults().pad(10f) }
+        val column2 = Table().apply { defaults().pad(10f) }
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
-            val resumeTable = getTableBlock("Resume", "OtherIcons/Resume") { autoLoadGame() }
-            table.add(resumeTable).row()
+            val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
+            column1.add(resumeTable).padTop(0f).row()
         }
 
         val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
-        table.add(quickstartTable).row()
+        column1.add(quickstartTable).row()
 
         val newGameButton = getTableBlock("Start new game", "OtherIcons/New") {
             game.setScreen(NewGameScreen(this))
             dispose()
         }
-        table.add(newGameButton).row()
+        column1.add(newGameButton).row()
 
         if (GameSaver.getSaves(false).any()) {
             val loadGameTable = getTableBlock("Load game", "OtherIcons/Load")
                 { game.setScreen(LoadGameScreen(this)) }
-            table.add(loadGameTable).row()
+            column1.add(loadGameTable).row()
         }
 
         val multiplayerTable = getTableBlock("Multiplayer", "OtherIcons/Multiplayer")
             { game.setScreen(MultiplayerScreen(this)) }
-        table.add(multiplayerTable).row()
+        column2.add(multiplayerTable).row()
 
         val mapEditorScreenTable = getTableBlock("Map editor", "OtherIcons/MapEditor")
             { if(stage.actors.none { it is MapEditorMainScreenPopup }) MapEditorMainScreenPopup(this) }
-        table.add(mapEditorScreenTable).padBottom(0f)
+        column2.add(mapEditorScreenTable).row()
 
-        // set the same width for all buttons
-        table.cells.first().padTop(0f)
-        table.pack()
-        table.children.filterIsInstance<Table>().forEach {
-            it.align(Align.left)
-            it.moveBy((it.width - table.width) / 2, 0f)
-            it.width = table.width
+        if(game.settings.showModManager) {
+            val modsTable = getTableBlock("Mods", "OtherIcons/Mods")
+            { game.setScreen(ModManagementScreen()) }
+            column2.add(modsTable).row()
         }
 
+
+        val table=Table().apply { defaults().pad(10f) }
+        table.add(column1)
+        table.add(column2)
         table.pack()
+
         val scroll = ScrollPane(table)
         scroll.setSize(table.width, stage.height * 0.98f)
         scroll.center(stage)

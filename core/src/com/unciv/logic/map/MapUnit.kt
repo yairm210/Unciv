@@ -46,6 +46,7 @@ class MapUnit {
     var currentMovement: Float = 0f
     var health:Int = 100
 
+    // todo: I see this is being serialized, should it be Transient?
     var mapUnitAction : MapUnitAction? = null
 
     var action: String? // work, automation, fortifying, I dunno what.
@@ -128,6 +129,9 @@ class MapUnit {
         return tempUniques
     }
 
+    fun getMatchingUniques(placeholderText:String): Sequence<Unique>
+            = tempUniques.asSequence().filter { it.placeholderText == placeholderText }
+
     fun updateUniques(){
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
@@ -146,7 +150,7 @@ class MapUnit {
     }
 
     fun hasUnique(unique:String): Boolean {
-        return getUniques().any { it.text == unique }
+        return getUniques().any { it.placeholderText == unique }
     }
 
     fun updateVisibleTiles() {
@@ -211,10 +215,10 @@ class MapUnit {
     }
 
     fun getRange(): Int {
-        if(type.isMelee()) return 1
+        if (type.isMelee()) return 1
         var range = baseUnit().range
-        if(hasUnique("+1 Range")) range++
-        if(hasUnique("+2 Range")) range+=2
+        if (hasUnique("+1 Range")) range++
+        if (hasUnique("+2 Range")) range += 2
         return range
     }
 
@@ -631,11 +635,7 @@ class MapUnit {
     }
 
     fun interceptChance():Int{
-        val interceptUnique = getUniques()
-                .firstOrNull { it.text.endsWith(CHANCE_TO_INTERCEPT_AIR_ATTACKS) }
-        if(interceptUnique==null) return 0
-        val percent = Regex("\\d+").find(interceptUnique.text)!!.value.toInt()
-        return percent
+        return getMatchingUniques("[100]% chance to intercept air attacks").sumBy { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {

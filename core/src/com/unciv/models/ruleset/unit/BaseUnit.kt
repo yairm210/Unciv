@@ -10,6 +10,7 @@ import com.unciv.models.ruleset.Unique
 import com.unciv.models.translations.Translations
 import com.unciv.models.translations.tr
 import com.unciv.models.stats.INamed
+import com.unciv.ui.utils.Fonts
 import kotlin.math.pow
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
@@ -40,14 +41,14 @@ class BaseUnit : INamed, IConstruction {
 
 
     fun getShortDescription(): String {
-        val infoList= mutableListOf<String>()
-        for(unique in uniques)
-            infoList+= Translations.translateBonusOrPenalty(unique)
-        for(promotion in promotions)
+        val infoList = mutableListOf<String>()
+        if (strength != 0) infoList += "$strength${Fonts.strength}"
+        if (rangedStrength != 0) infoList += "$rangedStrength${Fonts.rangedStrength}"
+        if (movement != 2) infoList += "$movement${Fonts.movement}"
+        for (promotion in promotions)
             infoList += promotion.tr()
-        if(strength!=0) infoList += "{Strength}: $strength".tr()
-        if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
-        if(movement!=2) infoList+="{Movement}: $movement".tr()
+        for (unique in uniques)
+            infoList += Translations.translateBonusOrPenalty(unique)
         return infoList.joinToString()
     }
 
@@ -61,12 +62,12 @@ class BaseUnit : INamed, IConstruction {
             if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
             if(obsoleteTech!=null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
         }
-        if(strength!=0){
-            sb.append("{Strength}: $strength".tr())
-            if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
-            if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
-            sb.appendln()
+        if(strength!=0) {
+            sb.append("$strength${Fonts.strength}, ")
+            if (rangedStrength != 0) sb.append("$rangedStrength${Fonts.rangedStrength}, ")
+            if (rangedStrength != 0) sb.append("$range${Fonts.range}, ")
         }
+        sb.appendln("$movement${Fonts.movement}")
 
         for(unique in uniques)
             sb.appendln(Translations.translateBonusOrPenalty(unique))
@@ -76,7 +77,6 @@ class BaseUnit : INamed, IConstruction {
             sb.appendln(promotions.joinToString(", ", " ") { it.tr() })
         }
 
-        sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
     }
 

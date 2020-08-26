@@ -445,8 +445,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             innerButton.color = colorFromRGB(7, 46, 43)
             techButtonHolder.add(innerButton)
             val turnsToTech = viewingCiv.tech.turnsToTech(currentTech)
-            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
-                    + (if (turnsToTech > 1) " {turns}".tr() else " {turn}".tr()))
+            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech + " "+ Fonts.turn)
         } else if (viewingCiv.tech.canResearchTech() || viewingCiv.tech.researchedTechnologies.any()) {
             val buttonPic = Table()
             buttonPic.background = ImageGetter.getRoundedEdgeTableBackground(colorFromRGB(7, 46, 43))
@@ -619,7 +618,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
             else ->
-                NextTurnAction("Next turn", Color.WHITE) {
+                NextTurnAction("${Fonts.turn} {Next turn}", Color.WHITE) {
                     game.settings.addCompletedTutorialTask("Pass a turn")
                     nextTurn()
                 }

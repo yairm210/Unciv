@@ -119,7 +119,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addHeader("Other options")
 
         addYesNoRow("Extended map editor", settings.extendedMapEditor) { settings.extendedMapEditor = it }
-        addYesNoRow("Experimental spectator mode", settings.spectatorMode) { settings.spectatorMode = it }
+        addYesNoRow("Experimental mod manager", settings.showModManager) { settings.showModManager = it }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()

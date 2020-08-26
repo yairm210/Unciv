@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.AttackableTile
+import com.unciv.models.ruleset.Unique
 import com.unciv.models.ruleset.unit.UnitType
 import java.util.*
 import kotlin.math.max
@@ -49,8 +50,8 @@ object Battle {
 
         // Withdraw from melee ability
         if (attacker is MapUnitCombatant && attacker.isMelee() && defender is MapUnitCombatant ) {
-            val withdraw = defender.unit.getUniques().firstOrNull { it.text.startsWith("May withdraw before melee")}
-            if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw.text)) return
+            val withdraw = defender.unit.getMatchingUniques("May withdraw before melee ([]%)").firstOrNull()
+            if (withdraw != null && doWithdrawFromMeleeAbility(attacker, defender, withdraw)) return
         }
 
         val isAlreadyDefeatedCity = defender is CityCombatant && defender.isDefeated()
@@ -146,11 +147,9 @@ object Battle {
         if (defender.isDefeated()
                 && defender is MapUnitCombatant
                 && attacker is MapUnitCombatant) {
-            for (unique in attacker.unit.getUniques()) {
-                if(unique.placeholderText == "Heals [] damage if it kills a unit"){
-                    val amountToHeal = unique.params[0].toInt()
-                    attacker.unit.healBy(amountToHeal)
-                }
+            for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
+                val amountToHeal = unique.params[0].toInt()
+                attacker.unit.healBy(amountToHeal)
             }
         }
     }
@@ -413,7 +412,7 @@ object Battle {
         }
     }
 
-    private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, withdraw: String): Boolean {
+    private fun doWithdrawFromMeleeAbility(attacker: ICombatant, defender: ICombatant, withdrawUnique: Unique): Boolean {
         // Some notes...
         // unit.getUniques() is a union of baseunit uniques and promotion effects.
         // according to some strategy guide the slinger's withdraw ability is inherited on upgrade,
@@ -424,18 +423,13 @@ object Battle {
         // the diverging base chance is coded into the effect string as (133%) for now, with 50% as default
         if (attacker !is MapUnitCombatant) return false         // allow simple access to unit property
         if (defender !is MapUnitCombatant) return false
-        // if (!attacker.isMelee()) return false                // checked in attack()
-
-        // Embarked units should never use the ability
-        // I see this as a rule detail, therefore I did not move the check outside this function
         if (defender.unit.isEmbarked()) return false
         // Calculate success chance: Base chance from json, then ratios of *base* strength and mobility
         // Promotions have no effect as per what I could find in available documentation
         val attackBaseUnit = attacker.unit.baseUnit
         val defendBaseUnit = defender.unit.baseUnit
-        val withdrawMatch = Regex("""\((\d+)%\)""").find(withdraw)
-        val percentChance = (
-                (if(withdrawMatch!=null) withdrawMatch.groups[1]!!.value.toFloat() else 50f)
+        val baseChance = withdrawUnique.params[0].toFloat()
+        val percentChance = (baseChance
                         * defendBaseUnit.strength / attackBaseUnit.strength
                         * defendBaseUnit.movement / attackBaseUnit.movement).toInt()
         // Roll the dice - note the effect of the surroundings, namely how much room there is to evade to,

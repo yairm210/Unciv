@@ -111,24 +111,28 @@
 		"turnsToBuild": 4,
 		"terrainsCanBeBuiltOn": ["Forest"],
 		"techRequired": "Mining"
+		"uniques": ["Can be built outside your borders"]
 	},
 	{
 		"name": "Remove Jungle",
 		"turnsToBuild": 7,
 		"terrainsCanBeBuiltOn": ["Jungle"],
 		"techRequired": "Bronze Working"
+		"uniques": ["Can be built outside your borders"]
 	},
 	{
 		"name": "Remove Fallout",
 		"turnsToBuild": 8,
 		"terrainsCanBeBuiltOn": ["Fallout"],
 		"techRequired": "Atomic Theory"
+		"uniques": ["Can be built outside your borders"]
 	},
 	{
 		"name": "Remove Marsh",
 		"turnsToBuild": 6,
 		"terrainsCanBeBuiltOn": ["Marsh"],
 		"techRequired": "Bronze Working"
+		"uniques": ["Can be built outside your borders"]
 	},
 
 	// These are unique and have unique in-game checks related to them

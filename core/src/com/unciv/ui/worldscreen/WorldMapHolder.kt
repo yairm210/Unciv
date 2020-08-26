@@ -1,12 +1,14 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
@@ -21,7 +23,6 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.unit.UnitContextMenu
 import kotlin.concurrent.thread
 
 
@@ -42,11 +43,27 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
-        for(tileGroup in tileGroups.values){
+        for(tileGroup in tileGroups.values) {
             tileGroup.cityButtonLayerGroup.onClick(UncivSound.Silent) {
                 onTileClicked(tileGroup.tileInfo)
             }
             tileGroup.onClick { onTileClicked(tileGroup.tileInfo) }
+
+            // Right mouse click listener
+            tileGroup.addListener(object : ClickListener() {
+                init {
+                    button = Input.Buttons.RIGHT
+                }
+
+                override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                    val unit = worldScreen.bottomUnitTable.selectedUnit
+                    if (unit == null) return
+                    thread {
+                        val canUnitReachTile = unit.movement.canReach(tileGroup.tileInfo)
+                        if (canUnitReachTile) moveUnitToTargetTile(unit, tileGroup.tileInfo)
+                    }
+                }
+            })
         }
 
         actor = allTiles
@@ -91,6 +108,42 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         worldScreen.shouldUpdate = true
     }
+
+
+    fun moveUnitToTargetTile(selectedUnit: MapUnit, targetTile:TileInfo) {
+        // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+        thread(name = "TileToMoveTo") {
+            // these are the heavy parts, finding where we want to go
+            // Since this runs in a different thread, even if we check movement.canReach()
+            // then it might change until we get to the getTileToMoveTo, so we just try/catch it
+            val tileToMoveTo: TileInfo
+            try {
+                tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+            } catch (ex: Exception) {
+                return@thread
+            } // can't move here
+
+            Gdx.app.postRunnable {
+                try {
+                    // Because this is darned concurrent (as it MUST be to avoid ANRs),
+                    // there are edge cases where the canReach is true,
+                    // but until it reaches the headTowards the board has changed and so the headTowards fails.
+                    // I can't think of any way to avoid this,
+                    // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
+                    selectedUnit.movement.moveToTile(tileToMoveTo)
+                    if (selectedUnit.action == Constants.unitActionExplore) selectedUnit.action = null // remove explore on manual move
+                    Sounds.play(UncivSound.Whoosh)
+                    if (selectedUnit.currentTile != targetTile)
+                        selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
+                    if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectedUnit = selectedUnit
+
+                    worldScreen.shouldUpdate = true
+                    unitActionOverlay?.remove()
+                } catch (e: Exception) {}
+            }
+        }
+    }
+
 
     private fun addTileOverlaysWithUnitMovement(selectedUnit: MapUnit, tileInfo: TileInfo) {
         // some code is copied from canReach not to call getShortestPath on the main thread before calling it on this thread
@@ -176,7 +229,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
                 if(dto.unit.type.isAirUnit())
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
-                UnitContextMenu(this, dto.unit, dto.tileInfo).onMoveButtonClick()
+                moveUnitToTargetTile(dto.unit, dto.tileInfo)
             }
 
         else moveHereButton.color.a = 0.5f

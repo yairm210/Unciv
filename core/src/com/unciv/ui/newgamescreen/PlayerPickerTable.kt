@@ -276,8 +276,6 @@ class PlayerPickerTable(val previousScreen: IPreviousScreen, var gameParameters:
                 .filter { it.isMajorCiv() || it.isSpectator() }) {
             if (gameParameters.players.any { it.chosenCiv == nation.name })
                 continue
-            if (!UncivGame.Current.settings.spectatorMode && nation.isSpectator())
-                continue
             nations.add(nation)
         }
         return nations

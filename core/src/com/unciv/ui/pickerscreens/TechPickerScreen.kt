@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.tech.Technology
 import com.unciv.models.translations.tr
 import com.unciv.ui.utils.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
@@ -99,11 +100,19 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
-        val erasName = allTechs.map { it.era() }.distinct()
-        for ((i, eraName) in erasName.withIndex()) {
-            val columnSpan = if (eraName != Constants.ancientEra && eraName != Constants.futureEra) 2 else 3
+        val erasNamesToColumns = LinkedHashMap<String, ArrayList<Int>>()
+        for(tech in allTechs) {
+            val era = tech.era()
+            if (!erasNamesToColumns.containsKey(era)) erasNamesToColumns[era] = ArrayList()
+            val columnNumber = tech.column!!.columnNumber
+            if (!erasNamesToColumns[era]!!.contains(columnNumber)) erasNamesToColumns[era]!!.add(columnNumber)
+        }
+        var i=0
+        for ((era, columns) in erasNamesToColumns) {
+            val columnSpan = columns.size
             val color = if (i % 2 == 0) Color.BLUE else Color.FIREBRICK
-            techTable.add(eraName.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
+            i++
+            techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
         for (i in 0..9) {
@@ -148,7 +157,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             }
 
             if (!civTech.isResearched(techName) || techName == Constants.futureTech)
-                text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+                text += "\r\n" + turnsToTech[techName] + " ${Fonts.turn}".tr()
 
             techButton.text.setText(text)
         }

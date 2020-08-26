@@ -11,6 +11,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.Scenario
 import com.unciv.logic.map.TileMap
+import com.unciv.models.translations.tr
 import com.unciv.models.metadata.Player
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.*
@@ -163,9 +164,9 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
     private fun Popup.addScenarioButton() {
         var scenarioButton = "".toTextButton()
         if (mapEditorScreen.hasScenario()) {
-            scenarioButton.setText("Edit scenario parameters")
+            scenarioButton.setText("Edit scenario parameters".tr())
         } else {
-            scenarioButton.setText("Create scenario map")
+            scenarioButton.setText("Create scenario map".tr())
             // for newly created scenarios read players from tileMap
             val players = getPlayersFromMap(mapEditorScreen.tileMap)
             mapEditorScreen.gameSetupInfo.gameParameters.players = players

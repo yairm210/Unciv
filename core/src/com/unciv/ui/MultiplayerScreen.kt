@@ -210,7 +210,7 @@ class MultiplayerScreen(previousScreen: CameraStageBaseScreen) : PickerScreen() 
                     multiplayerGameList[game.gameId] = gameSaveFile
 
                 if (isUsersTurn(game)) {
-                    gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 45f))
+                    gameTable.add(ImageGetter.getNationIndicator(game.currentPlayerCiv.nation, 50f))
                 } else {
                     gameTable.add()
                 }

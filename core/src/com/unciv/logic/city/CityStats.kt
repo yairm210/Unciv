@@ -200,14 +200,10 @@ class CityStats {
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
-        if (civInfo.hasUnique("+1 happiness for every 10 citizens in a city"))
-            happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
-        if (civInfo.hasUnique("+1 gold and -1 unhappiness for every 2 citizens in capital")
-                && cityInfo.isCapital())
-            happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
         if (civInfo.hasUnique("+1 happiness for every city connected to capital")
                 && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
+        happinessFromPolicies += getStatsFromUniques(civInfo.policies.policyUniques.getAllUniques()).happiness
 
         if (cityInfo.getCenterTile().militaryUnit != null)
             for (unique in civInfo.getMatchingUniques("[] in all cities with a garrison"))
@@ -220,8 +216,9 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList["Buildings"] = happinessFromBuildings
 
-        if (civInfo.hasUnique("+1 happiness in each city"))
-            newHappinessList["Wonders"] = 1f
+        newHappinessList["National ability"] = getStatsFromUniques(cityInfo.civInfo.nation.uniqueObjects.asSequence()).happiness
+
+        newHappinessList["Wonders"] = getStatsFromUniques(civInfo.getBuildingUniques()).happiness
 
         newHappinessList["Tile yields"] = getStatsFromTiles().happiness
 
@@ -243,8 +240,7 @@ class CityStats {
 
         for(unique in cityInfo.civInfo.getMatchingUniques("[] from every specialist"))
             stats.add(Stats.parse(unique.params[0]))
-        if (cityInfo.civInfo.hasUnique("+1 Production from specialists"))
-            stats.production += 1
+
         return stats
     }
 
@@ -267,8 +263,10 @@ class CityStats {
                 val amountOfEffects = (cityInfo.population.population / unique.params[1].toInt()).toFloat()
                 stats.add(Stats.parse(unique.params[0]).times(amountOfEffects))
             }
-            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital())
+            if (unique.text == "+1 gold and -1 unhappiness for every 2 citizens in capital" && cityInfo.isCapital()) {
                 stats.gold += (cityInfo.population.population / 2).toFloat()
+                stats.happiness += (cityInfo.population.population / 2).toFloat()
+            }
         }
 
         return stats
@@ -312,16 +310,7 @@ class CityStats {
         }
 
         for (unique in cityInfo.cityConstructions.builtBuildingUniqueMap.getUniques("+[]% production when building [] in this city")) {
-            val filter = unique.params[1]
-            if (currentConstruction.name == filter
-                    || (filter == "land units" && currentConstruction is BaseUnit && currentConstruction.unitType.isLandUnit())
-                    || (filter == "naval units" && currentConstruction is BaseUnit && currentConstruction.unitType.isWaterUnit())
-                    || (filter == "mounted units" && currentConstruction is BaseUnit && currentConstruction.unitType == UnitType.Mounted)
-                    || (filter == "military units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMilitary())
-                    || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
-                    || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
-                    || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder)
-                    || (currentConstruction is Building && currentConstruction.uniques.contains(filter)))
+            if (constructionFitsFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
 
@@ -336,22 +325,19 @@ class CityStats {
                 && uniques.any { it.text == "Training of settlers increased +50% in capital" })
             stats.production += 50f
 
-        if (currentConstruction is Building && !currentConstruction.isWonder)
+        if (currentConstruction is Building && !currentConstruction.isWonder && !currentConstruction.isNationalWonder)
             for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing [] buildings" }) {
                 val stat = Stat.valueOf(unique.params[1])
                 if (currentConstruction.isStatRelated(stat))
                     stats.production += unique.params[0].toInt()
             }
 
+
         for (unique in uniques.filter { it.placeholderText == "+[]% Production when constructing []" }) {
-            val filter = unique.params[1]
-            if (currentConstruction.name == filter
-                    || (filter == "military units" && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian())
-                    || (filter == "melee units" && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
-                    || (filter == "Buildings" && currentConstruction is Building && !currentConstruction.isWonder)
-                    || (filter == "Wonders" && currentConstruction is Building && currentConstruction.isWonder))
+            if (constructionFitsFilter(currentConstruction, unique.params[1]))
                 stats.production += unique.params[0].toInt()
         }
+
 
         if (cityInfo.cityConstructions.getBuiltBuildings().any { it.isWonder }
                 && uniques.any { it.text == "+33% culture in all cities with a world wonder" })
@@ -365,6 +351,18 @@ class CityStats {
             stats.culture += 25f
 
         return stats
+    }
+
+    fun constructionFitsFilter(construction:IConstruction, filter:String): Boolean {
+        return construction.name == filter
+                || (filter == "land units" && construction is BaseUnit && construction.unitType.isLandUnit())
+                || (filter == "naval units" && construction is BaseUnit && construction.unitType.isWaterUnit())
+                || (filter == "mounted units" && construction is BaseUnit && construction.unitType == UnitType.Mounted)
+                || (filter == "military units" && construction is BaseUnit && !construction.unitType.isCivilian())
+                || (filter == "melee units" && construction is BaseUnit && construction.unitType.isMelee())
+                || (filter == "Buildings" && construction is Building && !(construction.isWonder || construction.isNationalWonder))
+                || (filter == "Wonders" && construction is Building && (construction.isWonder || construction.isNationalWonder))
+                || (construction is Building && construction.uniques.contains(filter))
     }
 
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
@@ -452,10 +450,21 @@ class CityStats {
         val isUnhappy = cityInfo.civInfo.getHappiness() < 0
         for (entry in newFinalStatList.values) {
             entry.gold *= 1 + statPercentBonusesSum.gold / 100
-            entry.science *= 1 + statPercentBonusesSum.science / 100
             entry.culture *= 1 + statPercentBonusesSum.culture / 100
             if (!isUnhappy) entry.food *= 1 + statPercentBonusesSum.food / 100 // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
         }
+
+        // AFTER we've gotten all the gold stats figured out, only THEN do we plonk that gold into Science
+        if (cityInfo.getRuleset().modOptions.uniques.contains("Can convert gold to science with sliders")) {
+            val amountConverted = (newFinalStatList.values.sumByDouble { it.gold.toDouble() }
+                    * cityInfo.civInfo.tech.goldPercentConvertedToScience).toInt().toFloat()
+            if (amountConverted > 0) // Don't want you converting negative gold to negative science yaknow
+                newFinalStatList["Gold -> Science"] = Stats().apply { science = amountConverted; gold = -amountConverted }
+        }
+        for (entry in newFinalStatList.values) {
+            entry.science *= 1 + statPercentBonusesSum.science / 100
+        }
+
 
         //
         /* Okay, food calculation is complicated.

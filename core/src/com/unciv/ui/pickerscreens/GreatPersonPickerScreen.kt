@@ -46,3 +46,4 @@ class GreatPersonPickerScreen(val civInfo:CivilizationInfo) : PickerScreen() {
 
     }
 }
+
