@@ -44,6 +44,16 @@ The Brand New way of doing it is by putting your mod in a Github repository, and
 
 The Images and jsons folders need to be in the root directory of the repo - see [here](https://github.com/yairm210/Unciv-IV-mod) for example.
 
+Once you've tested that your mod CAN be downloaded, and that it works well once downloaded, you're ready for the final stage - GETTING IT TO THE USERS AUTOMATICALLY.
+
+In order to do this, all you need to do is:
+
+- Go to your Github page
+- Click the gear icon next to the About (top-right part of the page)
+- In 'Topics', add "unciv-mod"
+
+When you open your app, it will query Github's list of repos with that topic, and now YOUR repo will appear there!
+
 ## Downloading mods from within the game
 
 - From within an existing game, open Menu - Options and enable "Experimental mod manager".
