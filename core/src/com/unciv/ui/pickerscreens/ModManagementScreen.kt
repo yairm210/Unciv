@@ -33,7 +33,7 @@ class ModManagementScreen: PickerScreen() {
         val downloadButton = "Download mod".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            val textArea = TextArea("https://github.com/...",skin)
+            val textArea = TextArea("https://github.com/yairm210/Unciv-IV-mod",skin)
             popup.add(textArea).width(stage.width/2).row()
             val downloadButton = "Download".toTextButton()
             downloadButton.onClick {

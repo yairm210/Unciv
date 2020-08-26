@@ -151,6 +151,7 @@ object Zip {
         }
     }
 
+    // This took a long time to get just right, so if you're changing this, TEST IT THOROUGHLY on both Desktop and Phone
     fun downloadAndExtract(url:String, folderFileHandle:FileHandle) {
         val inputStream = downloadUrl(url)
         if (inputStream == null) return
@@ -158,23 +159,29 @@ object Zip {
 
         val tempZipFileHandle = folderFileHandle.child("tempZip.zip")
         tempZipFileHandle.write(inputStream, false)
-        extractFolder(tempZipFileHandle.path())
+        val unzipDestination = tempZipFileHandle.sibling("tempZip") // folder, not file
+        extractFolder(tempZipFileHandle, unzipDestination)
+        val innerFolder = unzipDestination.list().first() // tempZip/<repoName>-master/
+
+        val finalDestination = folderFileHandle.child(innerFolder.name().replace("-master",""))
+        finalDestination.mkdirs() // If we don't create this as a directory, it will think this is a file and nothing will work.
+        for(innerFileOrFolder in innerFolder.list()){
+            innerFileOrFolder.moveTo(finalDestination)
+        }
+
         tempZipFileHandle.delete()
-        val extractedFolder = FileHandle(tempZipFileHandle.pathWithoutExtension())
-        val innerFolder = extractedFolder.list().first()
-        innerFolder.moveTo(folderFileHandle.child(innerFolder.name().replace("-master","")))
-        extractedFolder.deleteDirectory()
+        unzipDestination.deleteDirectory()
     }
 
     // I went through a lot of similar answers that didn't work until I got to this gem by NeilMonday
+    //  (with mild changes to fit the FileHandles)
     // https://stackoverflow.com/questions/981578/how-to-unzip-files-recursively-in-java
-    fun extractFolder(zipFile: String) {
+    fun extractFolder(zipFile: FileHandle, unzipDestination: FileHandle) {
         println(zipFile)
         val BUFFER = 2048
-        val file = File(zipFile)
+        val file = zipFile.file()
         val zip = ZipFile(file)
-        val newPath = zipFile.substring(0, zipFile.length - 4)
-        File(newPath).mkdir()
+        unzipDestination.mkdirs()
         val zipFileEntries = zip.entries()
 
         // Process each entry
@@ -182,9 +189,8 @@ object Zip {
             // grab a zip file entry
             val entry = zipFileEntries.nextElement() as ZipEntry
             val currentEntry = entry.name
-            val destFile = File(newPath, currentEntry)
-            //destFile = new File(newPath, destFile.getName());
-            val destinationParent = destFile.parentFile
+            val destFile = unzipDestination.child(currentEntry)
+            val destinationParent = destFile.parent()
 
             // create the parent directory structure if needed
             destinationParent.mkdirs()
@@ -196,7 +202,7 @@ object Zip {
                 val data = ByteArray(BUFFER)
 
                 // write the current file to disk
-                val fos = FileOutputStream(destFile)
+                val fos = FileOutputStream(destFile.file())
                 val dest = BufferedOutputStream(fos,
                         BUFFER)
 
@@ -210,7 +216,7 @@ object Zip {
             }
             if (currentEntry.endsWith(".zip")) {
                 // found a zip file, try to open
-                extractFolder(destFile.absolutePath)
+                extractFolder(destFile, unzipDestination)
             }
         }
     }
