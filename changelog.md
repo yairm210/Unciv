@@ -1,3 +1,15 @@
+## 3.10.5
+
+Added Mod Management screen!
+
+Can now download Mods directly from Github, with mod discoverability!
+
+Can now add Maps to mods, to dissimenate them through Github as well!
+
+Resolved #3035 - added nationsToRemove in modOptions
+
+Translation options
+
 ## 3.10.4
 
 Resolved #2979 - Display countdown to negotiate peace in diplomacy screen
