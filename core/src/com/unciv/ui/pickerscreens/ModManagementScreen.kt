@@ -43,7 +43,13 @@ class ModManagementScreen: PickerScreen() {
                     removeRightSideClickListeners()
                     rightSideButton.enable()
                     rightSideButton.setText("Download [${repo.name}]".tr())
-                    rightSideButton.onClick { downloadMod(repo.svn_url) }
+                    rightSideButton.onClick {
+                        rightSideButton.setText("Downloading...")
+                        rightSideButton.disable()
+                        downloadMod(repo.svn_url){
+                            rightSideButton.setText("Done!".tr())
+                        }
+                    }
                 }
                 downloadTable.add(downloadButton).row()
             }
