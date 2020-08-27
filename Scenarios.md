@@ -59,6 +59,8 @@ This has the added bonus of not saving your scenario as a regular save file, so 
 
 # Other Notes
 
+If you're using a custom ruleset that should only be used for this scenario and NOT for starting a regular New Game, you can add the "Scenario only" unique to your modOptions file - example [here](https://github.com/yairm210/The-King-under-the-Hill/blob/master/jsons/ModOptions.json)
+
 Scenario Map games start ONLY with the unit that are already on the map, so 'starting positions' and 'starting units' are irrelevant.
 
 Scenarios have a new victory type - called, creatively, 'Scenario' - which changes the defeat condition to 'no units are left', and turns the game into 'fight to the last man'.
