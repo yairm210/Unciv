@@ -21,7 +21,7 @@ If the option "Show all Play folders" does not have a check next to it click it.
 
 When loading a mod, it needs to be in its own folder in `/mods` - this is how you will work when you're editing your mod
 
-## Mod 
+## Mod components
 
 Mods have 2 subfolders:
 - jsons - here you should put files that alter the data of game objects, the order of the files is as in [the base json files](https://github.com/yairm210/Unciv/tree/master/android/assets/jsons)
@@ -33,6 +33,16 @@ In order to remove objects from the game, you'll need to create a ModOptions fil
 For an example, you can refer to [the example mod](https://github.com/yairm210/Unciv-mod-example) - just download the Example-Aliens-Mod and put it in a `/mods` folder next to the jar, run Unciv, start a new game, and you'll be able to enable the mod, which will allow to you pick Aliens as a playable civilization!
 
 If you want to add a new civilization as a mod, you should check out [the Civ making instructions](https://github.com/yairm210/Unciv/wiki/Making-a-new-Civilization) to see what's required, or see the example Aliens mod =)
+
+### Adding maps to mods
+
+You can also add maps to mods, so they'll be available to players who download your mod.
+
+A mod can also be maps-only, if all you want to do is share your maps.
+
+When you've finished making your map in the Map Editor, save it, and it will be in the `/maps` folder of your game.
+
+Copy it to a `/maps` folder in your *mod*, and you're done!
 
 ## Getting your mod out there
 
