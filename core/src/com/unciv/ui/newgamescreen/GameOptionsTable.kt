@@ -178,7 +178,8 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.values.filter { it.name != "" }
+        val modRulesets = RulesetCache.values.filter { it.name != ""
+                && (it.name in gameParameters.mods || !it.modOptions.uniques.contains("Scenario only")) } // Don't allow scenario mods for a regular 'new game'
         if (modRulesets.isEmpty()) return
 
         add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()

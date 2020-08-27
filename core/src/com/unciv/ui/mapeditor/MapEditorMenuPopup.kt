@@ -9,7 +9,7 @@ import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.map.Scenario
+import com.unciv.logic.map.ScenarioMap
 import com.unciv.logic.map.TileMap
 import com.unciv.models.translations.tr
 import com.unciv.models.metadata.Player
@@ -82,10 +82,10 @@ class MapEditorMenuPopup(var mapEditorScreen: MapEditorScreen): Popup(mapEditorS
                 try {
                     if(mapEditorScreen.hasScenario()) {
                         mapEditorScreen.tileMap.mapParameters.type = MapType.scenarioMap
-                        mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
-                        mapEditorScreen.scenario!!.gameParameters.godMode = true // so we can edit this scenario when loading from the map
+                        mapEditorScreen.scenarioMap = ScenarioMap(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
+                        mapEditorScreen.scenarioMap!!.gameParameters.godMode = true // so we can edit this scenario when loading from the map
                         mapEditorScreen.scenarioName = mapNameEditor.text
-                        MapSaver.saveScenario(mapNameEditor.text, mapEditorScreen.scenario!!)
+                        MapSaver.saveScenario(mapNameEditor.text, mapEditorScreen.scenarioMap!!)
                     }
                     else {
                         MapSaver.saveMap(mapEditorScreen.mapName, mapEditorScreen.tileMap)

@@ -1,6 +1,7 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -15,7 +16,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.utils.AutoScrollPane as ScrollPane
 
 class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
-    var chosenMap = ""
+    var chosenMap:FileHandle? = null
     val deleteButton = "Delete map".toTextButton()
     var scenarioMap = false
     val mapsTable = Table().apply { defaults().pad(10f) }
@@ -34,8 +35,8 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         rightSideButton.setText("Load map".tr())
         rightSideButton.onClick {
-            val mapEditorScreen = if (scenarioMap) MapEditorScreen(MapSaver.loadScenario(chosenMap), chosenMap)
-            else MapEditorScreen(chosenMap)
+            val mapEditorScreen = if (scenarioMap) MapEditorScreen(MapSaver.loadScenario(chosenMap!!), chosenMap!!.name())
+            else MapEditorScreen(chosenMap!!)
             UncivGame.Current.setScreen(mapEditorScreen)
             dispose()
         }
@@ -71,8 +72,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
         deleteButton.onClick {
             YesNoPopup("Are you sure you want to delete this map?", {
-                if (scenarioMap) MapSaver.deleteScenario(chosenMap)
-                else MapSaver.deleteMap(chosenMap)
+                chosenMap!!.delete()
                 UncivGame.Current.setScreen(LoadMapScreen(previousMap))
             }, this).open()
         }
@@ -86,7 +86,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
     }
 
     fun update() {
-        chosenMap = ""
+        chosenMap = null
         deleteButton.disable()
         deleteButton.color = Color.RED
 
@@ -96,7 +96,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
             mapsTable.clear()
             for (scenario in MapSaver.getScenarios()) {
-                val loadScenarioButton = TextButton(scenario, skin)
+                val loadScenarioButton = TextButton(scenario.name(), skin)
                 loadScenarioButton.onClick {
                     rightSideButton.enable()
                     chosenMap = scenario
@@ -111,7 +111,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
 
             mapsTable.clear()
             for (map in MapSaver.getMaps()) {
-                val loadMapButton = TextButton(map, skin)
+                val loadMapButton = TextButton(map.name(), skin)
                 loadMapButton.onClick {
                     rightSideButton.enable()
                     chosenMap = map

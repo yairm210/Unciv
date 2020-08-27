@@ -1,12 +1,10 @@
 package com.unciv.ui.mapeditor
 
 import com.unciv.UncivGame
-import com.unciv.logic.map.Scenario
-import com.unciv.models.ruleset.Ruleset
+import com.unciv.logic.map.ScenarioMap
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.tr
 import com.unciv.ui.newgamescreen.GameOptionsTable
-import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.PlayerPickerTable
 import com.unciv.ui.newgamescreen.IPreviousScreen
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -36,7 +34,7 @@ class GameParametersScreen(var mapEditorScreen: MapEditorScreen): IPreviousScree
         rightSideButton.setText("OK".tr())
         rightSideButton.onClick {
             mapEditorScreen.gameSetupInfo = gameSetupInfo
-            mapEditorScreen.scenario = Scenario(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
+            mapEditorScreen.scenarioMap = ScenarioMap(mapEditorScreen.tileMap, mapEditorScreen.gameSetupInfo.gameParameters)
             mapEditorScreen.ruleset.clear()
             mapEditorScreen.ruleset.add(ruleset)
             mapEditorScreen.tileEditorOptions.update()

@@ -31,27 +31,31 @@ class ModManagementScreen: PickerScreen() {
                 repoList = Github.tryGetGithubReposWithTopic()
 
             } catch (ex: Exception) {
-                ResponsePopup("Could not download mod list", this)
+                Gdx.app.postRunnable {
+                    ResponsePopup("Could not download mod list", this)
+                }
                 return@thread
             }
 
-            for (repo in repoList) {
-                repo.name = repo.name.replace('-',' ')
-                val downloadButton = repo.name.toTextButton()
-                downloadButton.onClick {
-                    descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}] Stars".tr())
-                    removeRightSideClickListeners()
-                    rightSideButton.enable()
-                    rightSideButton.setText("Download [${repo.name}]".tr())
-                    rightSideButton.onClick {
-                        rightSideButton.setText("Downloading...")
-                        rightSideButton.disable()
-                        downloadMod(repo.svn_url){
-                            rightSideButton.setText("Done!".tr())
+            Gdx.app.postRunnable {
+                for (repo in repoList) {
+                    repo.name = repo.name.replace('-', ' ')
+                    val downloadButton = repo.name.toTextButton()
+                    downloadButton.onClick {
+                        descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}] Stars".tr())
+                        removeRightSideClickListeners()
+                        rightSideButton.enable()
+                        rightSideButton.setText("Download [${repo.name}]".tr())
+                        rightSideButton.onClick {
+                            rightSideButton.setText("Downloading...")
+                            rightSideButton.disable()
+                            downloadMod(repo.svn_url) {
+                                rightSideButton.setText("Done!".tr())
+                            }
                         }
                     }
+                    downloadTable.add(downloadButton).row()
                 }
-                downloadTable.add(downloadButton).row()
             }
         }
 

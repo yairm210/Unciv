@@ -23,8 +23,10 @@ object GameStarter {
 
         if (gameSetupInfo.mapParameters.type == MapType.scenarioMap)
             gameInfo.tileMap = MapSaver.loadScenario(gameSetupInfo.mapParameters.name).tileMap
-        else if (gameSetupInfo.mapParameters.name != "")
-            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapParameters.name)
+        else if (gameSetupInfo.mapParameters.name != "") {
+            gameInfo.tileMap = MapSaver.loadMap(gameSetupInfo.mapFile!!)
+        }
+
         else gameInfo.tileMap = MapGenerator(ruleset).generateMap(gameSetupInfo.mapParameters)
         gameInfo.tileMap.mapParameters = gameSetupInfo.mapParameters
 
