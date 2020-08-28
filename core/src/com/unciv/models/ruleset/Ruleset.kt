@@ -78,7 +78,7 @@ class Ruleset {
         unitPromotions.putAll(ruleset.unitPromotions)
         units.putAll(ruleset.units)
         for (unitToRemove in ruleset.modOptions.unitsToRemove) units.remove(unitToRemove)
-        for (nationToRemove in ruleset.modOptions.unitsToRemove) nations.remove(nationToRemove)
+        for (nationToRemove in ruleset.modOptions.nationsToRemove) nations.remove(nationToRemove)
         mods += ruleset.mods
     }
 
