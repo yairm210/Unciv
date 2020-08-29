@@ -81,6 +81,6 @@ class ConstructionInfoTable(val city: CityInfo): Table() {
     }
 
     companion object {
-        internal fun turnOrTurns(turns: Int): String = "\r\n$turns ${Fonts.turn}"
+        internal fun turnOrTurns(turns: Int): String = "\r\n$turns${Fonts.turn}"
     }
 }
