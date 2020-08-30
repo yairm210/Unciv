@@ -184,7 +184,7 @@ open class TileInfo {
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
                 if (baseTerrain == tileType || terrainFeature == tileType
-                        || resource == tileType
+                        || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Water" && isWater)
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
