@@ -29,7 +29,7 @@
 			{
 				"name": "Landed Elite",
 				"effect": "+10% food growth and +2 food in capital",
-				"uniques": ["+10% food growth in capital", "[+2 Food] in capital"],
+				"uniques": ["+[10]% growth in capital", "[+2 Food] in capital"],
 				"requires": ["Legalism"],
 				"row": 2,
 				"column": 2
@@ -45,7 +45,7 @@
 			{
 				"name": "Tradition Complete",
 				"effect": "+15% growth and +2 food in all cities",
-				"uniques": ["+15% growth in all cities","[+2 Food] in all cities"]
+				"uniques": ["+[15]% growth in all cities","[+2 Food] in all cities"]
 			}
 		]
 	},

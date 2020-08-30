@@ -50,7 +50,8 @@
 		"type": "Water",
 		"food": 2,
 		"gold": 1,
-		"RGB": [ 200, 200, 255]
+		"RGB": [ 200, 200, 255],
+		"uniques": ["Fresh water"]
 	},
 	{
 		"name": "Hill",
@@ -126,7 +127,8 @@
 		"movementCost": 1,
 		"unbuildable": true,
 		"defenceBonus": -0.1,
-		"occursOn": ["Desert"]
+		"occursOn": ["Desert"],
+		"uniques": ["Fresh water"]
 	},
 	{
 		"name": "Flood plains",
@@ -188,7 +190,7 @@
 		"uniques": ["Grants 500 Gold to the first civilization to discover it"],
 		"weight": 2
 	},
-	{
+	{ // This will count as "Fresh water" in civ 6
 		"name": "Fountain of Youth",
 		"type": "NaturalWonder",
 		"happiness": 10,
@@ -263,4 +265,17 @@
 		"unbuildable": true,
 		"weight": 10
 	}
+	/*
+	{// Will be introduced in Brave New World. Despite being a lake, it cannot be sailed on and it blocks line of sight like a mountain. 
+		"name": "Lake Victoria",
+		"type": "NaturalWonder",
+		"food": 6,
+		"occursOn": [Plains"],
+		"turnsInto": "Mountain",
+		"impassable": true,
+		"unbuildable": true,
+		"uniques": ["Fresh water"],
+		"weight": 5
+	}
+	*/
 ]	
