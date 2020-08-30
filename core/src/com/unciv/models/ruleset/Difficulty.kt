@@ -25,7 +25,7 @@ class Difficulty: INamed {
     var aiBuildingMaintenanceModifier:Float = 1f
     var aiUnitMaintenanceModifier = 1f
     var aiFreeTechs = ArrayList<String>()
-    @Deprecated("Use aiMajorCivStartingUnits instead")
+    @Deprecated("Deprecated as of 3.10.4. Use aiMajorCivStartingUnits instead")
     var aiFreeUnits = ArrayList<String>()
     var aiMajorCivStartingUnits = ArrayList<String>()
     var aiCityStateStartingUnits = ArrayList<String>()
@@ -34,7 +34,7 @@ class Difficulty: INamed {
     var clearBarbarianCampReward = 25
 
     init {
-        // For compatibility with old mods
+        // For compatibility with old mods that use deprecated var aiFreeUnits and do not have startingUnits, aiCityStateStartingUnits, aiMajorCivStartingUnits
         if (startingUnits.isEmpty()) {
             startingUnits.add(Constants.settler)
             startingUnits.add("Warrior")
