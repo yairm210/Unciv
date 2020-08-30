@@ -908,7 +908,7 @@
 		"name": "SS Booster",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Robotics",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	},
 	{
 		"name": "Apollo Program",
@@ -935,18 +935,18 @@
 		"name": "SS Cockpit",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Satellites",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Engine",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Particle Physics",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	},
 	{
 		"name": "SS Stasis Chamber",
 		"requiredResource": "Aluminum",
 		"requiredTech": "Nanotechnology",
-		"uniques": ["Spaceship part"]
+		"uniques": ["Spaceship part", "Cannot be purchased"]
 	}
 ]

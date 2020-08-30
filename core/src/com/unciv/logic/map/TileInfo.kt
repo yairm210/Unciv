@@ -184,7 +184,7 @@ open class TileInfo {
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
                 if (baseTerrain == tileType || terrainFeature == tileType
-                        || resource == tileType
+                        || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Water" && isWater)
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
@@ -258,7 +258,8 @@ open class TileInfo {
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count { it.improvement == adjacent
-                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent }
+                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent
+                        || it.roadStatus.name==adjacent}
                 stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
             }
 
