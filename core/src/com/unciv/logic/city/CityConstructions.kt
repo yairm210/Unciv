@@ -71,6 +71,13 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo.civInfo))
+
+        for (unique in builtBuildingUniqueMap.getAllUniques()) when (unique.placeholderText) {
+            "[] Per [] Population in this city" -> stats.add(Stats.parse(unique.params[0]).times(cityInfo.population.population / unique.params[1].toFloat()))
+            "[] once [] is discovered" -> if (cityInfo.civInfo.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
+        }
+
+        // This is to be deprecated and converted to "[stats] Per [N] Population in this city" - keeping it here to that mods with this can still work for now
         stats.science += (builtBuildingUniqueMap.getAllUniques().count { it.text == "+1 Science Per 2 Population" } * cityInfo.population.population / 2).toFloat()
         return stats
     }

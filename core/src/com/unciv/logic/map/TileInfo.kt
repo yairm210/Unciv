@@ -24,6 +24,12 @@ open class TileInfo {
     @Transient var isWater = false
     @Transient var isOcean = false
 
+    // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
+    // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
+    @delegate:Transient
+    val isAdjacentToFreshwater: Boolean by lazy { isAdjacentToRiver() || neighbors.any { it.getBaseTerrain().uniques.contains("Fresh water")
+            || it.terrainFeature != null && it.getTerrainFeature()!!.uniques.contains("Fresh water") }}
+
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>()
@@ -188,6 +194,7 @@ open class TileInfo {
                         || (tileType == "Water" && isWater)
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
+                        || (tileType == "River" && isAdjacentToRiver())
                 )
                     stats.add(Stats.parse(unique.params[0]))
             }

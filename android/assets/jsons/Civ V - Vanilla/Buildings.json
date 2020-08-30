@@ -48,7 +48,7 @@
 		"name": "Library",
 		"hurryCostModifier": 25,
 		"maintenance": 1,
-		"uniques": ["+1 Science Per 2 Population"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -68,7 +68,7 @@
 		"uniqueTo": "China",
 		"hurryCostModifier": 25,
 		"gold": 2,
-		"uniques": ["+1 Science Per 2 Population"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Writing"
 	},
 	{
@@ -87,19 +87,29 @@
 		"uniques": ["Must be next to river"],
 		"requiredTech": "The Wheel"
 	},
-	
-	/*
+	{
+		"name": "Floating Gardens",
+		"replaces": "Water Mill",
+		"uniqueTo": "Aztecs",
+		"cost": 75,
+		"food": 2,
+		"production": 1,
+		"uniques": ["[+2 Food] from [Lakes] tiles in this city", "Must border a source of fresh water"],
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"percentStatBonus": {"food": 15},
+		"requiredTech": "The Wheel"     
+	},
 	{
 		"name": "Temple of Artemis",
 		"culture": 1,
 		"isWonder": true,
+		"cost": 185,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["+10% Growth in all Cities.","+15% Production towards Ranged Units."],
-		"requiredTech": "Archery"
-		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
+		"uniques": ["+[10]% growth in all cities", "+[15]% Production when constructing [ranged units]"],
+		"requiredTech": "Archery",
+		"quote": "'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.'  - Robert Louis Stevenson"
 	},
-	*/
-	
 	{
 		"name": "Walls",
 		"cityStrength": 5,
@@ -309,16 +319,15 @@
 		"hurryCostModifier": 25,
 		"requiredTech": "Currency"
 	},
-	
 	/*
-	{ //Must be built in or near Desert
+	{ // Will be Introduced in Gods & Kings. Flood plains are not supposed to be affected by this wonder. Add stats to all desert tiles and then add negative stats to flood plains to undo the effect on them for now
 		"name": "Petra",
 		"culture": 1,
 		"isWonder": true,
 		"greatPersonPoints": {"production": 1},
-		"uniques": ["+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains).","+6 Culture when discovering Archeology."],
-		"requiredTech": "Currency"
-		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
+		"uniques": ["Must be next to [Desert]", "[+1 Food, +1 Production] from [Desert] tiles in this city", "[-1 Food, -1 Production] from [Flood plains] tiles in this city", "[+6 Culture] once [Archaeology] is discovered"],
+		"requiredTech": "Currency",
+		"quote": "'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...'  - Indiana Jones"
 	},
 	*/
 	{
@@ -341,6 +350,14 @@
 	
 	// Medieval Era
 	
+	{
+		"name": "Garden",
+		"cost": 120,
+		"uniques": ["+[25]% great person generation in this city", "Must border a source of fresh water"],
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"requiredTech": "Theology"
+	},
 	{
 		"name": "Monastery",
 		"maintenance": 0,
@@ -481,6 +498,7 @@
 		"culture": 2,
 		"hurryCostModifier": 25,
 		"requiredBuilding": "Walls",
+		"uniques": ["[+1 Gold] once [Flight] is discovered"],
 		"requiredTech": "Chivalry"
 	},
 	{
@@ -701,7 +719,7 @@
 		"requiredBuilding": "University",
 		"maintenance": 3,
 		"hurryCostModifier": 0,
-		"uniques": ["+1 Science Per 2 Population"],
+		"uniques": ["[+1 Science] Per [2] Population in this city"],
 		"requiredTech": "Scientific Theory"
 	},
 	{
@@ -760,6 +778,17 @@
 		"requiredTech": "Industrialization",
 		"quote": "'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},
+	/* This works and even has icon but AI cannot manage its Aluminum at this moment
+	{
+		"name": "Hydro Plant",
+		"cost": 360,
+		"requiredResource": "Aluminum",
+		"hurryCostModifier": 25,
+		"maintenance": 3,
+		"uniques": ["Must be next to river","[+1 Production] from [River] tiles in this city"],
+		"requiredTech": "Electricity"
+	},
+	*/
 	
 	// Modern Era
 	
