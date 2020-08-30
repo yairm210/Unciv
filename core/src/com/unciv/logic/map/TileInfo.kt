@@ -26,6 +26,7 @@ open class TileInfo {
 
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
+    @delegate:Transient
     val isAdjacentToFreshwater: Boolean by lazy { isAdjacentToRiver() || neighbors.any { it.getBaseTerrain().uniques.contains("Fresh water")
             || it.terrainFeature != null && it.getTerrainFeature()!!.uniques.contains("Fresh water") }}
 
