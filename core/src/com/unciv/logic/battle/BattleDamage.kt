@@ -179,11 +179,9 @@ object BattleDamage {
 
         modifiers.putAll(getTileSpecificModifiers(defender, tile))
 
-        if (!defender.unit.hasUnique("No defensive terrain bonus")) {
-            val tileDefenceBonus = tile.getDefensiveBonus()
-            if (tileDefenceBonus > 0)
-                modifiers["Tile"] = tileDefenceBonus
-        }
+        val tileDefenceBonus = tile.getDefensiveBonus()
+        if (!defender.unit.hasUnique("No defensive terrain bonus") || tileDefenceBonus < 0)
+            modifiers["Tile"] = tileDefenceBonus
 
         if (attacker.isRanged()) {
             val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it.text == "+25% Defence against ranged attacks" }
@@ -212,6 +210,7 @@ object BattleDamage {
         if(!tile.isFriendlyTerritory(unit.getCivInfo()) && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
 
+        // This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if (unit.unit.hasUnique("+25% bonus in Snow, Tundra and Hills") &&
                 (tile.baseTerrain == Constants.snow
                         || tile.baseTerrain == Constants.tundra
@@ -230,10 +229,17 @@ object BattleDamage {
                         .any { it.hasUnique("-10% combat strength for adjacent enemy units") && it.civInfo.isAtWarWith(unit.getCivInfo()) })
             modifiers["Haka War Dance"] = -0.1f
 
-
+        // This is to be deprecated and converted to "+[]% combat bonus in []" - keeping it here to that mods with this can still work for now
         if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
                 && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
             modifiers[tile.terrainFeature!!]=0.33f
+
+        for (unique in unit.unit.getUniques().filter { it.placeholderText == "+[]% combat bonus in []" })
+            if (tile.terrainFeature == unique.params[1])
+                modifiers[tile.terrainFeature!!] = unique.params[0].toFloat() / 100
+            else if (tile.baseTerrain == unique.params[1]
+                    && tile.terrainFeature == null)
+                modifiers[tile.baseTerrain] = unique.params[0].toFloat() / 100
 
         val isRoughTerrain = tile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {
