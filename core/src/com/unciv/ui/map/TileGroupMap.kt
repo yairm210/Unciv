@@ -27,7 +27,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
         }
 
         for (group in tileGroups) {
-            group.moveBy(-bottomX + padding, -bottomY + padding)
+            group.moveBy(-bottomX + padding, -bottomY + padding * 0.5f)
         }
 
         val baseLayers = ArrayList<Group>()
@@ -58,7 +58,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        setSize(topX - bottomX + padding*2, topY - bottomY + padding*2)
+        setSize(topX - bottomX + padding * 2, topY - bottomY + padding * 2 * 0.5f)
     }
 
     /**
@@ -66,7 +66,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups: Collection<T>, val padding: Flo
      */
     fun getPositionalVector(stageCoords: Vector2): Vector2 {
         val trueGroupSize = 0.8f * groupSize.toFloat()
-        return Vector2(bottomX - padding, bottomY - padding)
+        return Vector2(bottomX - padding, bottomY - padding * 0.5f)
                 .add(stageCoords)
                 .sub(groupSize.toFloat() / 2f, groupSize.toFloat() / 2f)
                 .scl(1f / trueGroupSize)

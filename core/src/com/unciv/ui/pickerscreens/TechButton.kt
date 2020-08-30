@@ -23,12 +23,12 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
         val rightSide = Table()
         val techCost = techManager.costOfTech(techName)
         val remainingTech = techManager.remainingScienceToTech(techName)
-        if (techCost != remainingTech) {
+
+        if (isWorldScreen) {
             val percentComplete = (techCost - remainingTech) / techCost.toFloat()
             add(ImageGetter.getProgressBarVertical(2f, 50f, percentComplete, Color.BLUE, Color.WHITE))
-        } else add().width(2f)
-
-        if (isWorldScreen) rightSide.add(text).padBottom(5f).row()
+            rightSide.add(text).padBottom(5f).row()
+        }
         else rightSide.add(text).height(25f).padBottom(5f).row()
 
         addTechEnabledIcons(techName, isWorldScreen, rightSide)
