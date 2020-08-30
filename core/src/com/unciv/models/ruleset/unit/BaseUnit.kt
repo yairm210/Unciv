@@ -89,7 +89,7 @@ class BaseUnit : INamed, IConstruction {
         return unit
     }
 
-    override fun canBePurchased() = true
+    override fun canBePurchased() = "Cannot be purchased" !in uniques
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
