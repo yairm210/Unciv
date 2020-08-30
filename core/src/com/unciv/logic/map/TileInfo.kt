@@ -258,7 +258,8 @@ open class TileInfo {
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count { it.improvement == adjacent
-                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent }
+                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent
+                        || it.roadStatus.name==adjacent}
                 stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
             }
 
