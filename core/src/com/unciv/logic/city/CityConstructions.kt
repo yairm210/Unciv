@@ -123,7 +123,7 @@ class CityConstructions {
         if (currentConstructionSnapshot!=""
                 && !PerpetualConstruction.perpetualConstructionsMap.containsKey(currentConstructionSnapshot)) {
             val turnsLeft = turnsToConstruction(currentConstructionSnapshot)
-            result += " - $turnsLeft ${Fonts.turn}"
+            result += " - $turnsLeft${Fonts.turn}"
         }
         return result
     }
