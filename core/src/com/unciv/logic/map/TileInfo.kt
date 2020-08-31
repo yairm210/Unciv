@@ -283,8 +283,8 @@ open class TileInfo {
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
-            !improvement.hasUnique("Can be built outside your borders")
-                    && getOwner() != civInfo -> false
+            getOwner() != null && getOwner() != civInfo &&
+                    !improvement.hasUnique("Can be built outside your borders") -> false
 
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
