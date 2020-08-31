@@ -144,16 +144,17 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun tileCanBeImproved(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
         if (!tile.isLand || tile.isImpassible() || tile.isCityCenter())
             return false
-        val city=tile.getCity()
+        val city = tile.getCity()
         if (city == null || city.civInfo != civInfo)
             return false
+        if (tile.improvement != null && !UncivGame.Current.settings.automatedWorkersReplaceImprovements)
+            return false
 
-        if(tile.improvement==null){
-            if(tile.improvementInProgress!=null) return true
+        if (tile.improvement == null) {
+            if (tile.improvementInProgress != null) return true
             val chosenImprovement = chooseImprovement(tile, civInfo)
-            if(chosenImprovement!=null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
-        }
-        else if(!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
+            if (chosenImprovement != null && tile.canBuildImprovement(chosenImprovement, civInfo)) return true
+        } else if (!tile.containsGreatImprovement() && tile.hasViewableResource(civInfo)
                 && tile.getTileResource().improvement != tile.improvement
                 && tile.canBuildImprovement(chooseImprovement(tile, civInfo)!!, civInfo))
             return true
@@ -178,10 +179,10 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
-            tile.terrainFeature == Constants.marsh && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Marsh"
-            tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Fallout"    // for really mad modders
-            tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Jungle"
-            tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile,civInfo) -> "Remove Forest"
+            tile.terrainFeature == Constants.marsh && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Marsh"
+            tile.terrainFeature == "Fallout" && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Fallout"    // for really mad modders
+            tile.terrainFeature == Constants.jungle && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Jungle"
+            tile.terrainFeature == Constants.forest && !isImprovementOnFeatureAllowed(tile, civInfo) -> "Remove Forest"
             else -> tile.getTileResource().improvement
         }
 
@@ -214,9 +215,6 @@ class WorkerAutomation(val unit: MapUnit) {
         return unit.civInfo.gameInfo.ruleSet.tileImprovements[improvementString] // For mods, the tile improvement may not exist, so don't assume.
     }
     private fun isImprovementOnFeatureAllowed(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        // Old hardcoded logic amounts to:
-        //return tile.terrainFeature == Constants.forest && tile.getTileResource().improvement == "Camp"
-
         // routine assumes the caller ensured that terrainFeature and resource are both present
         val resourceImprovementName = tile.getTileResource().improvement
                 ?: return false
