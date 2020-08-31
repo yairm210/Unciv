@@ -178,12 +178,14 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
     }
 
     fun Table.addModCheckboxes() {
-        val modRulesets = RulesetCache.values.filter { it.name != ""
-                && (it.name in gameParameters.mods || !it.modOptions.uniques.contains("Scenario only")) } // Don't allow scenario mods for a regular 'new game'
-        if (modRulesets.isEmpty()) return
+        val modRulesets = RulesetCache.values.filter {
+            it.name != ""
+                    && (it.name in gameParameters.mods || !it.modOptions.uniques.contains("Scenario only"))
+        } // Don't allow scenario mods for a regular 'new game'
 
-        add("Mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
-        val modCheckboxTable = Table().apply { defaults().pad(5f) }
+        val baseRulesetCheckboxes = ArrayList<CheckBox>()
+        val extentionRulesetModButtons = ArrayList<CheckBox>()
+
         for (mod in modRulesets) {
             val checkBox = CheckBox(mod.name.tr(), CameraStageBaseScreen.skin)
             checkBox.isDisabled = locked
@@ -199,13 +201,32 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                     if (modNations != null && modNations.size > 0) {
                         desiredCiv = modNations.keys.first()
                     }
+                    if (mod.modOptions.isBaseRuleset)
+                        for (oldBaseRuleset in gameParameters.mods)
+                            if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
+                                gameParameters.mods.remove(oldBaseRuleset)
                 }
                 updatePlayerPickerTable(desiredCiv)
             }
-            modCheckboxTable.add(checkBox).row()
+            if (mod.modOptions.isBaseRuleset) baseRulesetCheckboxes.add(checkBox)
+            else extentionRulesetModButtons.add(checkBox)
         }
 
-        add(modCheckboxTable).colspan(2).row()
+        if (baseRulesetCheckboxes.any()) {
+            add("Base ruleset mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
+            val modCheckboxTable = Table().apply { defaults().pad(5f) }
+            for (checkbox in baseRulesetCheckboxes) modCheckboxTable.add(checkbox).row()
+            add(modCheckboxTable).colspan(2).row()
+        }
+
+
+        if (extentionRulesetModButtons.any()) {
+            add("Extension mods:".toLabel(fontSize = 24)).padTop(16f).colspan(2).row()
+            val modCheckboxTable = Table().apply { defaults().pad(5f) }
+            for (checkbox in extentionRulesetModButtons) modCheckboxTable.add(checkbox).row()
+            add(modCheckboxTable).colspan(2).row()
+        }
+
     }
 
 }
