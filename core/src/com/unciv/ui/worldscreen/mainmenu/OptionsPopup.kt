@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array
+import com.unciv.MainMenuScreen
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.UncivSound
 import com.unciv.models.translations.TranslationFileWriter
@@ -23,9 +24,9 @@ class Language(val language:String, val percentComplete:Int){
     }
 }
 
-class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) {
+class OptionsPopup(val previousScreen:CameraStageBaseScreen) : Popup(previousScreen) {
     var selectedLanguage: String = "English"
-    private val settings = worldScreen.game.settings
+    private val settings = previousScreen.game.settings
     private val innerTable = Table(CameraStageBaseScreen.skin)
 
     init {
@@ -39,10 +40,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         scrollPane.setScrollingDisabled(true, false)
         add(scrollPane).maxHeight(screen.stage.height * 0.6f).row()
 
-        addCloseButton() { worldScreen.enableNextTurnButtonAfterOptions() }
+        addCloseButton() {
+            if(previousScreen is WorldScreen)
+                previousScreen.enableNextTurnButtonAfterOptions()
+        }
 
         pack() // Needed to show the background.
-        center(worldScreen.game.worldScreen.stage)
+        center(previousScreen.stage)
     }
 
     private fun addHeader (text: String) {
@@ -54,17 +58,21 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         val button = YesNoButton(initialValue, skin) {
             action(it)
             settings.save()
-            if (updateWorld)
-                worldScreen.game.worldScreen.shouldUpdate = true
+            if (updateWorld && previousScreen is WorldScreen)
+                previousScreen.shouldUpdate = true
         }
         innerTable.add(button).row()
     }
 
     private fun reloadWorldAndOptions() {
         settings.save()
-        worldScreen.game.worldScreen = WorldScreen(worldScreen.viewingCiv)
-        worldScreen.game.setWorldScreen()
-        WorldScreenOptionsPopup(worldScreen.game.worldScreen).open()
+        if (previousScreen is WorldScreen) {
+            previousScreen.game.worldScreen = WorldScreen(previousScreen.viewingCiv)
+            previousScreen.game.setWorldScreen()
+        } else if (previousScreen is MainMenuScreen) {
+            previousScreen.game.setScreen(MainMenuScreen())
+        }
+        OptionsPopup(previousScreen.game.screen as CameraStageBaseScreen).open()
     }
 
     private fun rebuildInnerTable() {
@@ -102,9 +110,10 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addYesNoRow ("Move units with a single tap", settings.singleTapMove) { settings.singleTapMove = it }
         addYesNoRow ("Auto-assign city production", settings.autoAssignCityProduction, true) {
             settings.autoAssignCityProduction = it
-            if (it && worldScreen.viewingCiv.isCurrentPlayer() && worldScreen.viewingCiv.playerType == PlayerType.Human) {
-                worldScreen.game.gameInfo.currentPlayerCiv.cities.forEach {
-                    city -> city.cityConstructions.chooseNextConstruction()
+            if (it && previousScreen is WorldScreen &&
+                previousScreen.viewingCiv.isCurrentPlayer() && previousScreen.viewingCiv.playerType == PlayerType.Human) {
+                previousScreen.gameInfo.currentPlayerCiv.cities.forEach { city ->
+                    city.cityConstructions.chooseNextConstruction()
                 }
             }
         }
@@ -114,13 +123,13 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
         addAutosaveTurnsSelectBox()
 
-        // at the moment the notification service only exists on Android
+        // at the moment tmainmhe notification service only exists on Android
         addNotificationOptions()
 
         addHeader("Other options")
 
         addYesNoRow("Extended map editor", settings.extendedMapEditor) { settings.extendedMapEditor = it }
-        addYesNoRow("Experimental mod manager", settings.showModManager) { settings.showModManager = it }
+        addYesNoRow("Experimental mod manager", settings.showModManager) { settings.showModManager = it; reloadWorldAndOptions() }
 
         addSoundEffectsVolumeSlider()
         addMusicVolumeSlider()
@@ -128,7 +137,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
         addSetUserId()
 
         innerTable.add("Version".toLabel()).pad(10f)
-        innerTable.add(worldScreen.game.version.toLabel()).pad(10f).row()
+        innerTable.add(previousScreen.game.version.toLabel()).pad(10f).row()
     }
 
     private fun addSetUserId() {
@@ -199,7 +208,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     }
 
     private fun addMusicVolumeSlider() {
-        val musicLocation = Gdx.files.local(worldScreen.game.musicLocation)
+        val musicLocation = Gdx.files.local(previousScreen.game.musicLocation)
         if (musicLocation.exists()) {
             innerTable.add("Music volume".tr())
 
@@ -209,9 +218,9 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                 settings.musicVolume = musicVolumeSlider.value
                 settings.save()
 
-                val music = worldScreen.game.music
+                val music = previousScreen.game.music
                 if (music == null) // restart music, if it was off at the app start
-                    thread(name = "Music") { worldScreen.game.startMusic() }
+                    thread(name = "Music") { previousScreen.game.startMusic() }
 
                 music?.volume = 0.4f * musicVolumeSlider.value
             }
@@ -234,7 +243,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
                         musicLocation.write(file, false)
                         Gdx.app.postRunnable {
                             rebuildInnerTable()
-                            worldScreen.game.startMusic()
+                            previousScreen.game.startMusic()
                         }
                     } catch (ex: Exception) {
                         Gdx.app.postRunnable {
@@ -318,7 +327,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
     private fun addLanguageSelectBox() {
         val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
-        worldScreen.game.translations.percentCompleteOfLanguages
+        previousScreen.game.translations.percentCompleteOfLanguages
                 .map { Language(it.key, if (it.key == "English") 100 else it.value) }
                 .sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
@@ -341,7 +350,7 @@ class WorldScreenOptionsPopup(val worldScreen:WorldScreen) : Popup(worldScreen) 
 
     private fun selectLanguage() {
         settings.language = selectedLanguage
-        worldScreen.game.translations.tryReadTranslationForCurrentLanguage()
+        previousScreen.game.translations.tryReadTranslationForCurrentLanguage()
         reloadWorldAndOptions()
     }
 

@@ -50,7 +50,7 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         addSeparator()
 
         addSquareButton("Options".tr()){
-            WorldScreenOptionsPopup(worldScreen).open(force = true)
+            OptionsPopup(worldScreen).open(force = true)
             close()
         }.size(width,height)
         addSeparator()
