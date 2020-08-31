@@ -539,6 +539,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 -> if (topTerrain.unbuildable && improvement.isGreatImprovement())
                     tileInfo.terrainFeature = null
             topTerrain.unbuildable -> tileInfo.improvement = null      // forbid on unbuildable feature
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
+                    && tileInfo.isAdjacentToFreshwater -> Unit // allow farms on tiles adjacent to fresh water
             "Can only be built on Coastal tiles" in improvement.uniques && tileInfo.isCoastalTile()
                 -> Unit                             // allow Moai where appropriate
             else -> tileInfo.improvement = null
