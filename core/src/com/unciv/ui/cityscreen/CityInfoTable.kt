@@ -54,7 +54,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun Table.addCategory(str: String, showHideTable: Table) {
-        val width = cityScreen.stage.width / 4 - 2 * pad
+        val width = cityScreen.stage.width / 4
         val showHideTableWrapper = Table()
                 .add(showHideTable)
                 .minWidth(width)
