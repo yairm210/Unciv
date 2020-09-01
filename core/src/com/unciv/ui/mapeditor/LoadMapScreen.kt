@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.MainMenuScreen
 import com.unciv.UncivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
@@ -79,8 +80,7 @@ class LoadMapScreen(previousMap: TileMap?) : PickerScreen(){
         rightSideTable.add(deleteButton).row()
 
         topTable.add(rightSideTable)
-        if (previousMap != null)
-            closeButton.onClick { UncivGame.Current.setScreen(MapEditorScreen(previousMap)) }
+        setDefaultCloseAction(MainMenuScreen())
 
         update()
     }

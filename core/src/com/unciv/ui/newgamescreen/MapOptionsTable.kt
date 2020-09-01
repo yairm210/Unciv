@@ -145,7 +145,9 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         }
         mapFileSelectBox.items = mapFiles
         val selectedItem = mapFiles.firstOrNull { it.fileHandle.name()==mapParameters.name }
-        if(selectedItem!=null) mapFileSelectBox.selected = selectedItem
+        if (selectedItem != null) mapFileSelectBox.selected = selectedItem
+        else mapFileSelectBox.selected = mapFiles.first()
+        newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
 
         mapFileSelectBox.onChange {
             val mapFile =  mapFileSelectBox.selected.fileHandle
