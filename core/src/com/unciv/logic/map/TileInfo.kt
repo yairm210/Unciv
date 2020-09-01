@@ -441,7 +441,7 @@ open class TileInfo {
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
         improvementInProgress = improvement.name
-        turnsToImprovement = improvement.getTurnsToBuild(civInfo)
+        turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1 else improvement.getTurnsToBuild(civInfo)
     }
 
     fun stopWorkingOnImprovement() {

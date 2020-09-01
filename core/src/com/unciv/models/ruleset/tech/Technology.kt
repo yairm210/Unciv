@@ -33,8 +33,7 @@ class Technology {
             mapOfImprovedImprovements[key]!!.add(improvement.name)
         }
         for ( improvements in mapOfImprovedImprovements) {
-            val impimpString = improvements.value.joinToString(", ") { it.tr() } +
-                    " {provide" + (if (improvements.value.size == 1) "s" else "") + "} " + improvements.key.tr()
+            val impimpString = improvements.key.tr() + " from improvements: ".tr() + improvements.value.joinToString(", ") { it.tr() }
             lineList += impimpString
         }
 
