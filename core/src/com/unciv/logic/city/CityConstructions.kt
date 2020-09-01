@@ -396,9 +396,15 @@ class CityConstructions {
         if (isQueueFull()) return
         if (currentConstructionFromQueue == "" || currentConstructionFromQueue == "Nothing") {
             currentConstructionFromQueue = constructionName
-            currentConstructionIsUserSet = true
+        } else if (getConstruction(constructionQueue.last()) is PerpetualConstruction) {
+            if (getConstruction(constructionName) is PerpetualConstruction) {  // perpetual constructions will replace each other
+                constructionQueue.removeAt(constructionQueue.size - 1)
+                constructionQueue.add(constructionName)
+            } else
+                constructionQueue.add(constructionQueue.size - 1, constructionName) // insert new construction before perpetual one
         } else
             constructionQueue.add(constructionName)
+        currentConstructionIsUserSet = true
     }
 
     /** If this was done automatically, we should automatically try to choose a new construction and treat it as such */
