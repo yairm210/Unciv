@@ -47,7 +47,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         }
 
         val currentCityLabel = city.name.toLabel(fontSize = 30, fontColor = civInfo.nation.getInnerColor())
-        currentCityLabel.onClick {
+        if (cityScreen.canChangeState) currentCityLabel.onClick {
             val editCityNamePopup = Popup(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
             textArea.alignment = Align.center
