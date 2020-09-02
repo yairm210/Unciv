@@ -27,7 +27,7 @@ class WorkerAutomation(val unit: MapUnit) {
 
         if (tileToWork != currentTile) {
             val reachedTile = unit.movement.headTowards(tileToWork)
-            if (reachedTile != currentTile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
+            if (reachedTile != currentTile) unit.doAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
 
@@ -52,7 +52,7 @@ class WorkerAutomation(val unit: MapUnit) {
 
         if (mostUndevelopedCity != null && mostUndevelopedCity != unit.currentTile.owningCity) {
             val reachedTile = unit.movement.headTowards(mostUndevelopedCity.getCenterTile())
-            if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
+            if (reachedTile != currentTile) unit.doAction() // since we've moved, maybe we can do something here - automate
             return
         }
 

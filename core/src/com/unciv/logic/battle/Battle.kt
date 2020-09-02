@@ -86,12 +86,10 @@ object Battle {
         }
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.getUnitType()==UnitType.Missile) {
+            if (attacker.getUnitType() == UnitType.Missile)
                 attacker.unit.destroy()
-            } else if (attacker.unit.action != null
-                    && attacker.unit.action!!.startsWith("moveTo")) {
+            else if (attacker.unit.isMoving())
                 attacker.unit.action = null
-            }
         }
     }
 

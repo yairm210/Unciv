@@ -32,7 +32,7 @@ object UnitActions {
         val unitTable = worldScreen.bottomUnitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unit.action != null && unit.action!!.startsWith("moveTo")) {
+        if (unit.isMoving()) {
             actionList += UnitAction(
                     type = UnitActionType.StopMovement,
                     action = { unit.action = null }
