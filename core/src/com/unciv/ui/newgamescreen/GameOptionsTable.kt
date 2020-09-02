@@ -191,7 +191,13 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             checkBox.isDisabled = locked
             if (mod.name in gameParameters.mods) checkBox.isChecked = true
             checkBox.onChange {
-                if (checkBox.isChecked) gameParameters.mods.add(mod.name)
+                if (checkBox.isChecked) {
+                    if (mod.modOptions.isBaseRuleset)
+                        for (oldBaseRuleset in gameParameters.mods)
+                            if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
+                                gameParameters.mods.remove(oldBaseRuleset)
+                    gameParameters.mods.add(mod.name)
+                }
                 else gameParameters.mods.remove(mod.name)
                 reloadRuleset()
                 update()
@@ -201,10 +207,6 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
                     if (modNations != null && modNations.size > 0) {
                         desiredCiv = modNations.keys.first()
                     }
-                    if (mod.modOptions.isBaseRuleset)
-                        for (oldBaseRuleset in gameParameters.mods)
-                            if (modRulesets.firstOrNull { it.name == oldBaseRuleset }?.modOptions?.isBaseRuleset == true)
-                                gameParameters.mods.remove(oldBaseRuleset)
                 }
                 updatePlayerPickerTable(desiredCiv)
             }
