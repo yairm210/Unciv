@@ -243,16 +243,24 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
+        // As of 3.10.5 This is to be deprecated and converted to "[stats] once [tech] is discovered" - keeping it here to that mods with this can still work for now
         if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!))
             stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
 
+        for (unique in improvement.uniqueObjects) if (unique.placeholderText == "[] once [] is discovered"
+                && observingCiv.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
 
         if(city!=null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
-            for (unique in cityWideUniques + civWideUniques) {
+            val improvementUniques = improvement.uniqueObjects.filter { it.placeholderText == "[] on [] tiles once [] is discovered"
+                    && observingCiv.tech.isResearched(it.params[2]) }
+            for (unique in cityWideUniques + civWideUniques + improvementUniques) {
                 if (improvement.name == unique.params[1]
-                        || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement()))
+                        || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement())
+                        || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
+                        || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
+                )
                     stats.add(Stats.parse(unique.params[0]))
             }
         }
@@ -293,6 +301,8 @@ open class TileInfo {
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
+                    && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
         }
@@ -431,7 +441,7 @@ open class TileInfo {
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
         improvementInProgress = improvement.name
-        turnsToImprovement = improvement.getTurnsToBuild(civInfo)
+        turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1 else improvement.getTurnsToBuild(civInfo)
     }
 
     fun stopWorkingOnImprovement() {

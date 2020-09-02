@@ -54,7 +54,8 @@ class TechButton(techName:String, private val techManager: TechManager, isWorldS
             techEnabledIcons.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(techIconSize))
 
         for (improvement in gameBasics.tileImprovements.values
-                .filter { it.techRequired == techName || it.improvingTech == techName }
+                .filter { it.techRequired == techName || it.uniqueObjects.any { u -> u.params.contains(techName) }
+                        || it.improvingTech == techName }
                 .filter { it.uniqueTo==null || it.uniqueTo==civName }) {
             if (improvement.name.startsWith("Remove"))
                 techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(techIconSize)

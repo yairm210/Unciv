@@ -372,7 +372,7 @@ class MapUnit {
     private fun workOnImprovement() {
         val tile = getTile()
         tile.turnsToImprovement -= 1
-        if (tile.turnsToImprovement != 0 && !civInfo.gameInfo.gameParameters.godMode) return
+        if (tile.turnsToImprovement != 0) return
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
@@ -387,7 +387,12 @@ class MapUnit {
                 }
                 if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
-                else tile.terrainFeature = null
+                else {
+                    if (tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature]!!.uniques
+                                    .contains("Provides a one-time Production bonus to the closest city when cut down"))
+                        tryProvideProductionToClosestCity()
+                    tile.terrainFeature = null
+                }
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
@@ -397,6 +402,21 @@ class MapUnit {
             }
         }
         tile.improvementInProgress = null
+    }
+
+    private fun tryProvideProductionToClosestCity()
+    {
+        val tile = getTile()
+        val closestCity = civInfo.cities.minBy { it.getCenterTile().aerialDistanceTo(tile) }
+        if (closestCity == null) return
+        val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
+        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
+        if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo ) productionPointsToAdd = productionPointsToAdd * 2 / 3
+        if (productionPointsToAdd > 0) {
+            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+            civInfo.addNotification("Clearing a [${tile.terrainFeature}] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
+        }
+
     }
 
     private fun heal() {
