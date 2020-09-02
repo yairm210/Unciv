@@ -128,7 +128,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech, false) }
-                    techTable.add(techButton)
+                    techTable.add(techButton).fillX()
                 }
             }
         }

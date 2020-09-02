@@ -34,9 +34,9 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             val listItem = Table()
 
             listItem.add(ImageGetter.getCircle()
-                    .apply { color=notification.color }).size(10f).pad(5f)
-            listItem.background = ImageGetter.getRoundedEdgeTableBackground()
-            listItem.add(label).pad(5f).padRight(10f)
+                    .apply { color=notification.color }).size(10f).padRight(5f)
+            listItem.background = ImageGetter.getRoundedEdgeTableBackground(null, false)
+            listItem.add(label)
 
             // using a large click area with no gap in between each message item.
             // this avoids accidentally clicking in between the messages, resulting in a map click
