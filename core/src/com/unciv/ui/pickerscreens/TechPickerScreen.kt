@@ -115,11 +115,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             techTable.add(era.toLabel().addBorder(2f, color)).fill().colspan(columnSpan)
         }
 
-        for (i in 0..9) {
+        for (rowIndex in 0..9) {
             techTable.row().pad(5f).padRight(40f)
 
-            for (j in techMatrix.indices) {
-                val tech = techMatrix[j][i]
+            for (columnIndex in techMatrix.indices) {
+                val tech = techMatrix[columnIndex][rowIndex]
                 if (tech == null)
                     techTable.add() // empty cell
 
