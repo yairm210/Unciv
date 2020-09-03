@@ -98,7 +98,7 @@ class Ruleset {
     }
 
 
-    fun load(folderHandle: FileHandle) {
+    fun load(folderHandle: FileHandle, printOutput:Boolean) {
         val gameBasicsStartTime = System.currentTimeMillis()
 
         val modOptionsFile = folderHandle.child("ModOptions.json")
@@ -163,7 +163,7 @@ class Ruleset {
         if (difficultiesFile.exists()) difficulties += createHashmap(jsonParser.getFromJson(Array<Difficulty>::class.java, difficultiesFile))
 
         val gameBasicsLoadTime = System.currentTimeMillis() - gameBasicsStartTime
-        println("Loading game basics - " + gameBasicsLoadTime + "ms")
+        if(printOutput) println("Loading ruleset - " + gameBasicsLoadTime + "ms")
     }
 
     /** Building costs are unique in that they are dependant on info in the technology part.
@@ -204,13 +204,13 @@ class Ruleset {
  * save all of the loaded rulesets somewhere for later use
  *  */
 object RulesetCache :HashMap<String,Ruleset>() {
-    fun loadRulesets(consoleMode:Boolean=false) {
+    fun loadRulesets(consoleMode:Boolean=false, printOutput: Boolean=false) {
         clear()
         for (ruleset in BaseRuleset.values()) {
             val fileName = "jsons/${ruleset.fullName}"
             val fileHandle = if (consoleMode) FileHandle(fileName)
             else Gdx.files.internal(fileName)
-            this[ruleset.fullName] = Ruleset().apply { load(fileHandle) }
+            this[ruleset.fullName] = Ruleset().apply { load(fileHandle, printOutput) }
         }
 
         val modsHandles = if(consoleMode) FileHandle("mods").list()
@@ -220,11 +220,11 @@ object RulesetCache :HashMap<String,Ruleset>() {
             if (modFolder.name().startsWith('.')) continue
             try {
                 val modRuleset = Ruleset()
-                modRuleset.load(modFolder.child("jsons"))
+                modRuleset.load(modFolder.child("jsons"), printOutput)
                 modRuleset.name = modFolder.name()
                 this[modRuleset.name] = modRuleset
-                println("Mod loaded successfully: " + modRuleset.name)
-                checkModLinks(modRuleset)
+                if(printOutput) println("Mod loaded successfully: " + modRuleset.name)
+                if(printOutput) checkModLinks(modRuleset)
             } catch (ex: Exception) {
                 println("Exception loading mod '${modFolder.name()}':")
                 println("  ${ex.localizedMessage}")

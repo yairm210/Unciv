@@ -7,12 +7,13 @@ import com.unciv.models.ruleset.Ruleset
 import com.unciv.models.ruleset.RulesetCache
 import com.unciv.models.translations.TranslationFileWriter
 import com.unciv.models.translations.Translations
-import com.unciv.models.translations.eitherSquareBraceRegex
 import com.unciv.models.translations.squareBraceRegex
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.OutputStream
+import java.io.PrintStream
 import java.util.*
 
 @RunWith(GdxTestRunner::class)
@@ -22,9 +23,19 @@ class TranslationTests {
 
     @Before
     fun loadTranslations() {
+        // Since the ruleset and translation loader have their own output,
+        // We 'disable' the output stream for their outputs, and only enable it for the twst itself.
+        val outputChannel = System.out
+        System.setOut(PrintStream(object : OutputStream() {
+            override fun write(b: Int) {}
+        }))
+//        System.setOut(TextWriter.Null)
+//        Console(). //(TextWriter.Null);
         translations.readAllLanguagesTranslation()
         RulesetCache.loadRulesets()
         ruleset = RulesetCache.getBaseRuleset()
+        System.setOut(outputChannel)
+//        Console.SetOut()
     }
 
     @Test
