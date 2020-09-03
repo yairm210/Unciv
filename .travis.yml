@@ -34,10 +34,13 @@ script:
     chmod +x butler;
     ./butler -V;
     ./gradlew desktop:packrWindows32;
+    ./butler push deploy/Unciv-Windows32.zip yairm210/unciv:Windows32 --userversion $TRAVIS_TAG;
     ./gradlew desktop:packrWindows64;
-    ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64;
+    ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64 --userversion $TRAVIS_TAG;
     ./gradlew desktop:packrLinux32;
+    ./butler push deploy/Unciv-Linux32.zip yairm210/unciv:Linux32     --userversion $TRAVIS_TAG;
     ./gradlew desktop:packrLinux64;
+    ./butler push deploy/Unciv-Linux64.zip yairm210/unciv:Linux64     --userversion $TRAVIS_TAG;
     ./gradlew desktop:zipLinuxFilesForJar;
   fi
     
