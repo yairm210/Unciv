@@ -29,13 +29,13 @@ script:
 - if [ -n "$TRAVIS_TAG" ]; then
     wget  -O jdk-windows-64.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.232-1.b09/java-1.8.0-openjdk-1.8.0.232-1.b09.ojdkbuild.windows.x86_64.zip;
     wget  -O jdk-windows-32.zip https://github.com/ojdkbuild/ojdkbuild/releases/download/java-1.8.0-openjdk-1.8.0.252-2.b09-x86/java-1.8.0-openjdk-1.8.0.252-2.b09.ojdkbuild.windows.x86.zip;
-    wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default;
+    wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default > /dev/null;
     unzip butler.zip;
     chmod +x butler;
-    ./butler -V # just a sanity check run (and also helpful in case you're sharing CI logs);
+    ./butler -V;
     ./gradlew desktop:packrWindows32;
     ./gradlew desktop:packrWindows64;
-    ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64
+    ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64;
     ./gradlew desktop:packrLinux32;
     ./gradlew desktop:packrLinux64;
     ./gradlew desktop:zipLinuxFilesForJar;
