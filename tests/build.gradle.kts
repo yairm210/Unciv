@@ -12,12 +12,9 @@ java {
 tasks {
     test {
         workingDir = file("../android/assets")
-        testLogging.debug {
+        testLogging.lifecycle {
             events(
-                    TestLogEvent.STARTED,
                     TestLogEvent.FAILED,
-                    TestLogEvent.PASSED,
-                    TestLogEvent.SKIPPED,
                     TestLogEvent.STANDARD_ERROR,
                     TestLogEvent.STANDARD_OUT
             )

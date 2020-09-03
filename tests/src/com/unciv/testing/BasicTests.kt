@@ -76,8 +76,6 @@ class BasicTests {
 
         UncivGame.Current = UncivGame("")
         UncivGame.Current.settings = GameSettings().apply { language = "Italian" }
-        val x = "+1 Gold, +2 Production".tr()
-        print(x)
     }
 
 //    @Test // This should NOT run as part of the test suite!
