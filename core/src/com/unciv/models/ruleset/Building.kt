@@ -177,7 +177,7 @@ class Building : NamedStats(), IConstruction {
     }
 
     override fun canBePurchased(): Boolean {
-        return !isWonder && !isNationalWonder && ("Spaceship part" !in uniques)
+        return !isWonder && !isNationalWonder && ("Cannot be purchased" !in uniques)
     }
 
 
@@ -256,6 +256,10 @@ class Building : NamedStats(), IConstruction {
         if ("Can only be built in coastal cities" in uniques
                 && !cityCenter.isCoastalTile())
             return "Can only be built in coastal cities"
+
+        if ("Must border a source of fresh water" in uniques
+                && !cityCenter.isAdjacentToFreshwater)
+            return "Must border a source of fresh water"
 
         if ("Can only be built in annexed cities" in uniques
                 && (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""

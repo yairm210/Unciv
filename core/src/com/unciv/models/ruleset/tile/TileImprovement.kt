@@ -19,7 +19,9 @@ class TileImprovement : NamedStats() {
 
     var techRequired: String? = null
 
+    @Deprecated("Deprecated as of 3.10.5. Use [stats] once [tech] is discovered unique instead")
     var improvingTech: String? = null
+    @Deprecated("Deprecated as of 3.10.5. Use [stats] once [tech] is discovered unique instead")
     var improvingTechStats: Stats? = null
     var uniqueTo:String? = null
     var uniques = ArrayList<String>()

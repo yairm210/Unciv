@@ -189,10 +189,10 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
         dominationVictoryColumn.addSeparator()
 
         for (civ in majorCivs.filter { !it.isDefeated() })
-            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).row()
+            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).fillX().row()
 
         for (civ in majorCivs.filter { it.isDefeated() })
-            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).row()
+            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).fillX().row()
 
         return dominationVictoryColumn
     }
@@ -210,7 +210,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (entry in civsToBranchesCompleted) {
             val civToBranchesHaveCompleted= EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
-            policyVictoryColumn.add(civToBranchesHaveCompleted).row()
+            policyVictoryColumn.add(civToBranchesHaveCompleted).fillX().row()
         }
         return policyVictoryColumn
     }
@@ -229,7 +229,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
         for (entry in civsToPartsRemaining) {
             val civToPartsBeRemaining=(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo))
-            scientificVictoryColumn.add(civToPartsBeRemaining).row()
+            scientificVictoryColumn.add(civToPartsBeRemaining).fillX().row()
         }
         return scientificVictoryColumn
     }
@@ -244,7 +244,7 @@ class VictoryScreen(val worldScreen: WorldScreen) : PickerScreen() {
             column.addSeparator()
 
             for (civ in majorCivs.sortedByDescending { it.getStatForRanking(category) }) {
-                column.add(EmpireOverviewScreen.getCivGroup(civ, " : " + civ.getStatForRanking(category).toString(), playerCivInfo)).row()
+                column.add(EmpireOverviewScreen.getCivGroup(civ, " : " + civ.getStatForRanking(category).toString(), playerCivInfo)).fillX().row()
             }
 
             civRankingsTable.add(column)

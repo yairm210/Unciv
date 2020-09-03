@@ -24,6 +24,12 @@ open class TileInfo {
     @Transient var isWater = false
     @Transient var isOcean = false
 
+    // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
+    // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
+    @delegate:Transient
+    val isAdjacentToFreshwater: Boolean by lazy { isAdjacentToRiver() || neighbors.any { it.getBaseTerrain().uniques.contains("Fresh water")
+            || it.terrainFeature != null && it.getTerrainFeature()!!.uniques.contains("Fresh water") }}
+
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
     var airUnits = ArrayList<MapUnit>()
@@ -184,10 +190,11 @@ open class TileInfo {
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
                 if (baseTerrain == tileType || terrainFeature == tileType
-                        || resource == tileType
+                        || (resource == tileType && hasViewableResource(observingCiv))
                         || (tileType == "Water" && isWater)
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
+                        || (tileType == "River" && isAdjacentToRiver())
                 )
                     stats.add(Stats.parse(unique.params[0]))
             }
@@ -236,16 +243,24 @@ open class TileInfo {
         if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
             stats.add(getTileResource().improvementStats!!.clone()) // resource-specific improvement
 
+        // As of 3.10.5 This is to be deprecated and converted to "[stats] once [tech] is discovered" - keeping it here to that mods with this can still work for now
         if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!))
             stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
 
+        for (unique in improvement.uniqueObjects) if (unique.placeholderText == "[] once [] is discovered"
+                && observingCiv.tech.isResearched(unique.params[1])) stats.add(Stats.parse(unique.params[0]))
 
         if(city!=null) {
             val cityWideUniques = city.cityConstructions.builtBuildingUniqueMap.getUniques("[] from [] tiles in this city")
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
-            for (unique in cityWideUniques + civWideUniques) {
+            val improvementUniques = improvement.uniqueObjects.filter { it.placeholderText == "[] on [] tiles once [] is discovered"
+                    && observingCiv.tech.isResearched(it.params[2]) }
+            for (unique in cityWideUniques + civWideUniques + improvementUniques) {
                 if (improvement.name == unique.params[1]
-                        || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement()))
+                        || (unique.params[1] == "Great Improvement" && improvement.isGreatImprovement())
+                        || (unique.params[1] == "fresh water" && isAdjacentToFreshwater)
+                        || (unique.params[1] == "non-fresh water" && !isAdjacentToFreshwater)
+                )
                     stats.add(Stats.parse(unique.params[0]))
             }
         }
@@ -258,7 +273,8 @@ open class TileInfo {
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count { it.improvement == adjacent
-                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent }
+                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent
+                        || it.roadStatus.name==adjacent}
                 stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
             }
 
@@ -275,8 +291,8 @@ open class TileInfo {
             improvement.techRequired?.let { civInfo.tech.isResearched(it) } == false -> false
             "Cannot be built on bonus resource" in improvement.uniques && resource != null
                     && getTileResource().resourceType == ResourceType.Bonus -> false
-            !improvement.hasUnique("Can be built outside your borders")
-                    && getOwner() != civInfo -> false
+            getOwner() != null && getOwner() != civInfo &&
+                    !improvement.hasUnique("Can be built outside your borders") -> false
 
             improvement.terrainsCanBeBuiltOn.contains(topTerrain.name) -> true
             improvement.name == "Road" && roadStatus == RoadStatus.None -> true
@@ -285,6 +301,8 @@ open class TileInfo {
             improvement.name == "Remove Railroad" && this.roadStatus == RoadStatus.Railroad -> true
             improvement.name == Constants.cancelImprovementOrder && this.improvementInProgress != null -> true
             topTerrain.unbuildable && (topTerrain.name !in improvement.resourceTerrainAllow) -> false
+            improvement.hasUnique("Can also be built on tiles adjacent to fresh water")
+                    && isAdjacentToFreshwater -> true
             "Can only be built on Coastal tiles" in improvement.uniques && isCoastalTile() -> true
             else -> hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
         }
@@ -373,7 +391,7 @@ open class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)
-            lineList += "{$improvementInProgress}  $turnsToImprovement ${Fonts.turn}".tr()
+            lineList += "{$improvementInProgress} - $turnsToImprovement${Fonts.turn}".tr()
         if (civilianUnit != null && isViewableToPlayer)
             lineList += civilianUnit!!.name.tr() + " - " + civilianUnit!!.civInfo.civName.tr()
         if (militaryUnit != null && isViewableToPlayer) {
@@ -423,7 +441,7 @@ open class TileInfo {
 
     fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
         improvementInProgress = improvement.name
-        turnsToImprovement = improvement.getTurnsToBuild(civInfo)
+        turnsToImprovement = if (civInfo.gameInfo.gameParameters.godMode) 1 else improvement.getTurnsToBuild(civInfo)
     }
 
     fun stopWorkingOnImprovement() {

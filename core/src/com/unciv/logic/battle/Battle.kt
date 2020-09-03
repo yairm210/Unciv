@@ -60,8 +60,6 @@ object Battle {
 
         postBattleNotifications(attacker, defender, attackedTile)
 
-        tryHealAfterAttacking(attacker, defender)
-
         postBattleNationUniques(defender, attackedTile, attacker)
 
         // This needs to come BEFORE the move-to-tile, because if we haven't conquered it we can't move there =)
@@ -75,21 +73,23 @@ object Battle {
 
         if(!isAlreadyDefeatedCity) postBattleAddXp(attacker, defender)
 
-        // Add culture when defeating a barbarian when Honor policy is adopted (can be either attacker or defender!)
-        tryGetCultureFromHonor(attacker, defender)
-        tryGetCultureFromHonor(defender, attacker)
-
-        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
-                && attacker.getCivInfo().hasUnique("Gain gold for each unit killed"))
-            attacker.getCivInfo().gold += defender.unit.baseUnit.getProductionCost(attacker.getCivInfo()) / 10
+        // Add culture when defeating a barbarian when Honor policy is adopted, gold from enemy killed when honor is complete
+        // or any enemy military unit with Sacrificial captives unique (can be either attacker or defender!)
+        if (defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()) {
+            tryGetCultureFromKilling(attacker, defender)
+            tryGetGoldFromKilling(attacker, defender)
+            tryHealAfterKilling(attacker, defender)
+        } else if (attacker.isDefeated() && attacker is MapUnitCombatant && !attacker.getUnitType().isCivilian()) {
+            tryGetCultureFromKilling(defender, attacker)
+            tryGetGoldFromKilling(defender, attacker)
+            tryHealAfterKilling(defender, attacker)
+        }
 
         if (attacker is MapUnitCombatant) {
-            if (attacker.getUnitType()==UnitType.Missile) {
+            if (attacker.getUnitType() == UnitType.Missile)
                 attacker.unit.destroy()
-            } else if (attacker.unit.action != null
-                    && attacker.unit.action!!.startsWith("moveTo")) {
+            else if (attacker.unit.isMoving())
                 attacker.unit.action = null
-            }
         }
     }
 
@@ -143,15 +143,12 @@ object Battle {
         }
     }
 
-    private fun tryHealAfterAttacking(attacker: ICombatant, defender: ICombatant) {
-        if (defender.isDefeated()
-                && defender is MapUnitCombatant
-                && attacker is MapUnitCombatant) {
+    private fun tryHealAfterKilling(attacker: ICombatant, defender: ICombatant) {
+        if (attacker is MapUnitCombatant)
             for (unique in attacker.unit.getMatchingUniques("Heals [] damage if it kills a unit")) {
                 val amountToHeal = unique.params[0].toInt()
                 attacker.unit.healBy(amountToHeal)
             }
-        }
     }
 
     private fun postBattleNationUniques(defender: ICombatant, attackedTile: TileInfo, attacker: ICombatant) {
@@ -166,10 +163,12 @@ object Battle {
         }
 
         // Similarly, Ottoman unique
-        if (defender.isDefeated() && defender.getUnitType().isWaterUnit() && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                && attacker.getCivInfo().hasUnique("Melee naval units have a 1/3 chance to capture defeated naval units")
-                && Random().nextDouble() > 0.33) {
+        if (defender.isDefeated() && defender.getUnitType().isWaterUnit() && defender.getCivInfo().isBarbarian()
+                && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
+                && attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
+                && Random().nextDouble() > 0.5) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
+            attacker.getCivInfo().gold += 25
         }
     }
 
@@ -217,12 +216,19 @@ object Battle {
         }
     }
 
-    private fun tryGetCultureFromHonor(civUnit:ICombatant, barbarianUnit:ICombatant){
-        if(barbarianUnit.isDefeated() && barbarianUnit is MapUnitCombatant
-                && barbarianUnit.getCivInfo().isBarbarian()
-                && civUnit.getCivInfo().hasUnique("Gain Culture when you kill a barbarian unit"))
-            civUnit.getCivInfo().policies.addCulture(
-                    max(barbarianUnit.unit.baseUnit.strength, barbarianUnit.unit.baseUnit.rangedStrength))
+    private fun tryGetCultureFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant){
+        //Aztecs get half the strength of the unit killed in culture and honor opener does the same thing.
+        //They stack. So you get culture equal to 100% of the dead unit's strength.
+        val civInfo = civUnit.getCivInfo()
+        if (defeatedUnit.getCivInfo().isBarbarian() && civInfo.hasUnique("Gain Culture when you kill a barbarian unit"))
+            civInfo.policies.addCulture(max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength) / 2)
+        if (civInfo.hasUnique("Gains culture from each enemy unit killed"))
+            civInfo.policies.addCulture(max(defeatedUnit.unit.baseUnit.strength, defeatedUnit.unit.baseUnit.rangedStrength) / 2)
+    }
+
+    private fun tryGetGoldFromKilling(civUnit:ICombatant, defeatedUnit:MapUnitCombatant) {
+        if (civUnit.getCivInfo().hasUnique("Gain gold for each unit killed"))
+            civUnit.getCivInfo().gold += defeatedUnit.unit.baseUnit.getProductionCost(defeatedUnit.getCivInfo()) / 10
     }
 
     // XP!

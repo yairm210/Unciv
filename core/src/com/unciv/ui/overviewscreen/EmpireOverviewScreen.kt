@@ -545,6 +545,12 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
                 backgroundColor = civ.nation.getOuterColor()
                 labelColor = civ.nation.getInnerColor()
             } else {
+                civGroup.add(
+                        "?".toLabel(Color.WHITE)
+                        .apply { this.setAlignment(Align.center) }
+                        .surroundWithCircle(27f).apply { circle.color = Color.BLACK }
+                        .surroundWithCircle(30f, false).apply { circle.color = Color.WHITE }
+                )
                 backgroundColor = Color.DARK_GRAY
                 labelText = "???"
             }
@@ -553,7 +559,7 @@ class EmpireOverviewScreen(private var viewingPlayer:CivilizationInfo, defaultPa
             val label = labelText.toLabel(labelColor)
             label.setAlignment(Align.center)
 
-            civGroup.add(label).pad(10f)
+            civGroup.add(label).padLeft(10f)
             civGroup.pack()
             return civGroup
         }

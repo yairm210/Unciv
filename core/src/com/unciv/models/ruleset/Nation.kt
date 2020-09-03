@@ -92,7 +92,7 @@ class Nation : INamed {
         }
 
         if (uniqueName != "") textList += uniqueName.tr() + ":"
-        textList += "  " + uniques.joinToString(", ").tr()
+        textList += "  " + uniques.joinToString(", ") { it.tr() }
         textList += ""
 
         if (startBias.isNotEmpty()) {
@@ -103,7 +103,7 @@ class Nation : INamed {
         addUniqueUnitsText(textList, ruleset)
         addUniqueImprovementsText(textList, ruleset)
 
-        return textList.joinToString("\n").tr().trim()
+        return textList.joinToString("\n")
     }
 
     private fun addUniqueBuildingsText(textList: ArrayList<String>, ruleset: Ruleset) {

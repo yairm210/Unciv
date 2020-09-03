@@ -1,16 +1,16 @@
 # Unciv - Civ V for Android (+Desktop)
 
-![](/extraImages/Feature%20graphic.png)
+![](/extraImages/GithubPreviewImage.png)
 
-
-[![Google Play](https://img.shields.io/badge/Google-Play-black.svg)](https://play.google.com/store/apps/details?id=com.unciv.app)
+[![Google Play](https://img.shields.io/static/v1?label=Google&message=Play&color=607D8B&logo=google-play)](https://play.google.com/store/apps/details?id=com.unciv.app)
 [![F-Droid](https://img.shields.io/f-droid/v/com.unciv.app)](https://f-droid.org/en/packages/com.unciv.app/)
+[![itch.io](https://img.shields.io/static/v1?label=itch.io&message=Unciv&color=607D8B&logo=itch.io)](https://yairm210.itch.io/unciv)
 
 [![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)
 
 [![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.710-orange.svg)](http://kotlinlang.org/)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.3.710-0095D5.svg?logo=kotlin)](http://kotlinlang.org/)
 
 
 # What is this?
@@ -25,11 +25,7 @@ Is this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
-* Development and distribution cycle
-   * Automated tests - done!
-   * Automated F-droid and Google Play version deployment - done!
-   * Standalone Desktop executables - done!
-   * Maybe Itch.io?
+* Development and distribution cycle - Done! (tests, f-droid/Google Play/itch.io deployment)
 * Missing features from Vanilla - Natural wonders (done!), city-state quests, missing civs etc.
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
@@ -71,9 +67,9 @@ Considering how long it took to get this far, no.
 
 ## Is there a desktop version?
 
-There are standalone zip files for each operating system in [Releases](https://github.com/yairm210/UnCiv/releases) which contain everything needed for Unciv to run
+Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
 
-If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
+If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`. This is also (currently) the only way to run the game on MacOS.
 
 Be aware that the game will generate files inside the folder where the Jar is located!
 

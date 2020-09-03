@@ -21,6 +21,7 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.ModManagementScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.mainmenu.OptionsPopup
 import kotlin.concurrent.thread
 
 class MainMenuScreen: CameraStageBaseScreen() {
@@ -76,7 +77,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         val autosaveGame = GameSaver.getSave(autosave, false)
         if (autosaveGame.exists()) {
             val resumeTable = getTableBlock("Resume","OtherIcons/Resume") { autoLoadGame() }
-            column1.add(resumeTable).padTop(0f).row()
+            column1.add(resumeTable).row()
         }
 
         val quickstartTable = getTableBlock("Quickstart", "OtherIcons/Quickstart") { quickstartNewGame() }
@@ -107,6 +108,11 @@ class MainMenuScreen: CameraStageBaseScreen() {
             { game.setScreen(ModManagementScreen()) }
             column2.add(modsTable).row()
         }
+
+
+        val optionsTable = getTableBlock("Options", "OtherIcons/Options")
+            { OptionsPopup(this).open() }
+        column2.add(optionsTable).row()
 
 
         val table=Table().apply { defaults().pad(10f) }

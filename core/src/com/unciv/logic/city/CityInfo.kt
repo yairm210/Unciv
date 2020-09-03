@@ -267,7 +267,8 @@ class CityInfo {
                 if (stat != null) entry.value.add(stat, entry.value.get(stat) * unique.params[1].toFloat()/100)
             }
 
-            for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities"))
+            for (unique in civInfo.getMatchingUniques("+[]% great person generation in all cities")
+                    + cityConstructions.builtBuildingUniqueMap.getUniques("+[]% great person generation in this city"))
                 stats[entry.key] = stats[entry.key]!!.times(1 + (unique.params[0].toFloat() / 100))
         }
 

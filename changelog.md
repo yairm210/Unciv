@@ -1,3 +1,25 @@
+## 3.10.6
+
+Options button now appears in main menu
+
+Added "automated workers don't replace improvements" setting (#3050)
+
+Separated base ruleset mods in new game screen - cannot activate multiple base ruleset mods
+
+Resolved #2886 - new Plains+Forest tiles by The Bucketeer that don't hide the rivers behind them :)
+
+Resolved #3053 - improvements can be built on neutral tiles
+
+Resolved #3065 - Ottomans' unique is now according to Vanilla
+
+By HadeanLake:
+
+- Added Aztecs nation
+- A Few UI fixes 
+- New uniques and stuff for mods 
+
+UI fixes - By lishaoxia1985
+
 ## 3.10.5
 
 Added Mod Management screen!

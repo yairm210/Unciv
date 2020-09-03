@@ -24,6 +24,19 @@ class Technology {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         for (unique in uniques) lineList += unique.tr()
 
+        val mapOfImprovedImprovements = HashMap<String, ArrayList<String>>()
+        for (improvement in ruleset.tileImprovements.values) for ( unique in improvement.uniqueObjects
+                .filter { it.placeholderText in setOf("[] once [] is discovered", "[] on [] tiles once [] is discovered")
+                        && it.params.last() == name }) {
+            val key = if (unique.params.size == 2 ) unique.params[0] else "[${unique.params[0]}] on [${unique.params[1]}] tiles"
+            if (!mapOfImprovedImprovements.containsKey(key)) mapOfImprovedImprovements[key] = ArrayList()
+            mapOfImprovedImprovements[key]!!.add(improvement.name)
+        }
+        for ( improvements in mapOfImprovedImprovements) {
+            val impimpString = improvements.key.tr() + " from improvements: ".tr() + improvements.value.joinToString(", ") { it.tr() }
+            lineList += impimpString
+        }
+
         val improvedImprovements = ruleset.tileImprovements.values
                 .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
         for (improvement in improvedImprovements) {

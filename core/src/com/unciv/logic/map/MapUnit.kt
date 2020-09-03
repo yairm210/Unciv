@@ -179,16 +179,14 @@ class MapUnit {
         civInfo.updateViewableTiles() // for the civ
     }
 
-    fun isFortified(): Boolean {
-        return action?.startsWith("Fortify") == true
-    }
+    fun isFortified() = action?.startsWith("Fortify") == true
 
-    fun isSleeping(): Boolean {
-        return action?.startsWith("Sleep") == true
-    }
+    fun isSleeping() = action?.startsWith("Sleep") == true
+
+    fun isMoving() = action?.startsWith("moveTo") == true
 
     fun getFortificationTurns(): Int {
-        if(!isFortified()) return 0
+        if (!isFortified()) return 0
         return action!!.split(" ")[1].toInt()
     }
 
@@ -200,17 +198,17 @@ class MapUnit {
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
         if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) return false
-        if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
+        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") return false
         if (isFortified()) return false
-        if (action==Constants.unitActionExplore || isSleeping()
-                || action == Constants.unitActionAutomation) return false
+        if (action == Constants.unitActionExplore || isSleeping()
+                || action == Constants.unitActionAutomation || isMoving()) return false
         return true
     }
 
     fun canAttack(): Boolean {
-        if(currentMovement==0f) return false
-        if(attacksThisTurn>0 && !hasUnique("1 additional attack per turn")) return false
-        if(attacksThisTurn>1) return false
+        if (currentMovement == 0f) return false
+        if (attacksThisTurn > 0 && !hasUnique("1 additional attack per turn")) return false
+        if (attacksThisTurn > 1) return false
         return true
     }
 
@@ -235,9 +233,9 @@ class MapUnit {
     }
 
     fun getEmbarkedMovement(): Int {
-        var movement=2
+        var movement = 2
         movement += civInfo.tech.getTechUniques().count { it == "Increases embarked movement +1" }
-        if (civInfo.hasUnique("+1 Movement for all embarked units")) movement +=1
+        if (civInfo.hasUnique("+1 Movement for all embarked units")) movement += 1
         return movement
     }
 
@@ -267,30 +265,26 @@ class MapUnit {
     fun getCostOfUpgrade(): Int {
         val unitToUpgradeTo = getUnitToUpgradeTo()
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
-        for(unique in civInfo.getMatchingUniques("Gold cost of upgrading military units reduced by 33%"))
+        for (unique in civInfo.getMatchingUniques("Gold cost of upgrading military units reduced by 33%"))
             goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
-        if(goldCostOfUpgrade<0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
+        if (goldCostOfUpgrade < 0) return 0 // For instance, Landsknecht costs less than Spearman, so upgrading would cost negative gold
         return goldCostOfUpgrade
     }
 
 
     fun canFortify(): Boolean {
-        if(type.isWaterUnit()) return false
-        if(type.isCivilian()) return false
-        if(type.isAirUnit()) return false
-        if(isEmbarked()) return false
-        if(hasUnique("No defensive terrain bonus")) return false
-        if(isFortified()) return false
+        if (type.isWaterUnit()) return false
+        if (type.isCivilian()) return false
+        if (type.isAirUnit()) return false
+        if (isEmbarked()) return false
+        if (hasUnique("No defensive terrain bonus")) return false
+        if (isFortified()) return false
         return true
     }
 
-    fun fortify() {
-        action = "Fortify 0"
-    }
+    fun fortify() { action = "Fortify 0" }
 
-    fun fortifyUntilHealed() {
-        action = "Fortify 0 until healed"
-    }
+    fun fortifyUntilHealed() { action = "Fortify 0 until healed" }
 
     fun fortifyIfCan() {
         if (canFortify()) {
@@ -323,9 +317,8 @@ class MapUnit {
         if(currentMovement<0) currentMovement = 0f
     }
 
-    fun doPreTurnAction() {
+    fun doAction() {
         if (action == null) return
-        val currentTile = getTile()
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
         val enemyUnitsInWalkingDistance = movement.getDistanceToTiles().keys
@@ -338,16 +331,17 @@ class MapUnit {
 
         mapUnitAction?.doPreTurnAction()
 
-        if (action != null && action!!.startsWith("moveTo")) {
+        val currentTile = getTile()
+        if (isMoving()) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
-            val destinationVector = Vector2(Integer.parseInt(destination[0]).toFloat(), Integer.parseInt(destination[1]).toFloat())
+            val destinationVector = Vector2(destination[0].toFloat(), destination[1].toFloat())
             val destinationTile = currentTile.tileMap[destinationVector]
             if (!movement.canReach(destinationTile)) return // That tile that we were moving towards is now unreachable
             val gotTo = movement.headTowards(destinationTile)
             if (gotTo == currentTile) // We didn't move at all
                 return
             if (gotTo.position == destinationVector) action = null
-            if (currentMovement > 0) doPreTurnAction()
+            if (currentMovement > 0) doAction()
             return
         }
 
@@ -356,23 +350,11 @@ class MapUnit {
         if (action == Constants.unitActionExplore) UnitAutomation.automatedExplore(this)
     }
 
-    private fun doPostTurnAction() {
-        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
-        if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
-        if(currentMovement == getMaxMovement().toFloat()
-                && isFortified()){
-            val currentTurnsFortified = getFortificationTurns()
-            if(currentTurnsFortified<2)
-                action = action!!.replace(currentTurnsFortified.toString(),(currentTurnsFortified+1).toString(), true)
-        }
-        if (hasUnique("Heal adjacent units for an additional 15 HP per turn"))
-            currentTile.neighbors.flatMap{ it.getUnits() }.forEach{ it.healBy(15) }
-    }
 
     private fun workOnImprovement() {
         val tile = getTile()
         tile.turnsToImprovement -= 1
-        if (tile.turnsToImprovement != 0 && !civInfo.gameInfo.gameParameters.godMode) return
+        if (tile.turnsToImprovement != 0) return
 
         if (civInfo.isCurrentPlayer())
             UncivGame.Current.settings.addCompletedTutorialTask("Construct an improvement")
@@ -387,7 +369,12 @@ class MapUnit {
                 }
                 if (tile.improvementInProgress == "Remove Road" || tile.improvementInProgress == "Remove Railroad")
                     tile.roadStatus = RoadStatus.None
-                else tile.terrainFeature = null
+                else {
+                    if (tile.tileMap.gameInfo.ruleSet.terrains[tile.terrainFeature]!!.uniques
+                                    .contains("Provides a one-time Production bonus to the closest city when cut down"))
+                        tryProvideProductionToClosestCity()
+                    tile.terrainFeature = null
+                }
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
@@ -397,6 +384,21 @@ class MapUnit {
             }
         }
         tile.improvementInProgress = null
+    }
+
+    private fun tryProvideProductionToClosestCity()
+    {
+        val tile = getTile()
+        val closestCity = civInfo.cities.minBy { it.getCenterTile().aerialDistanceTo(tile) }
+        if (closestCity == null) return
+        val distance = closestCity.getCenterTile().aerialDistanceTo(tile)
+        var productionPointsToAdd = if (distance == 1) 20 else 20 - (distance - 2) * 5
+        if (tile.owningCity == null || tile.owningCity!!.civInfo != civInfo ) productionPointsToAdd = productionPointsToAdd * 2 / 3
+        if (productionPointsToAdd > 0) {
+            closestCity.cityConstructions.addProductionPoints(productionPointsToAdd)
+            civInfo.addNotification("Clearing a [${tile.terrainFeature}] has created [$productionPointsToAdd] Production for [${closestCity.name}]", closestCity.location, Color.BROWN)
+        }
+
     }
 
     private fun heal() {
@@ -442,12 +444,22 @@ class MapUnit {
     }
 
     fun endTurn() {
-        doPostTurnAction()
-        if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
-                || hasUnique("Unit will heal every turn, even if it performs an action")){
-            heal()
+        doAction()
+
+        if (hasUnique(Constants.workerUnique) && getTile().improvementInProgress != null) workOnImprovement()
+        if (hasUnique("Can construct roads") && currentTile.improvementInProgress == "Road") workOnImprovement()
+        if (currentMovement == getMaxMovement().toFloat() && isFortified()) {
+            val currentTurnsFortified = getFortificationTurns()
+            if (currentTurnsFortified < 2)
+                action = action!!.replace(currentTurnsFortified.toString(), (currentTurnsFortified + 1).toString(), true)
         }
-        if(action != null && health > 99)
+        if (hasUnique("Heal adjacent units for an additional 15 HP per turn"))
+            currentTile.neighbors.flatMap { it.getUnits() }.forEach { it.healBy(15) }
+
+        if (currentMovement == getMaxMovement().toFloat() // didn't move this turn
+                || hasUnique("Unit will heal every turn, even if it performs an action")) heal()
+
+        if (action != null && health > 99)
             if (action!!.endsWith(" until healed")) {
                 action = null // wake up when healed
             }
@@ -470,7 +482,6 @@ class MapUnit {
         val tileOwner = getTile().getOwner()
         if (tileOwner != null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movement.teleportToClosestMoveableTile()
-        doPreTurnAction()
     }
 
     fun destroy(){
