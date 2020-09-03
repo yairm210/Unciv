@@ -25,11 +25,7 @@ Is this order:
 * Polish! As you may have noticed, Unciv is fully functional but rough around the edges. This means:
     * UI+UX improvements (suggestions welcome!)
     * Better automation, AI etc. in-game
-* Development and distribution cycle
-   * Automated tests - done!
-   * Automated F-droid and Google Play version deployment - done!
-   * Standalone Desktop executables - done!
-   * Maybe Itch.io?
+* Development and distribution cycle - Done! (tests, f-droid/Google Play/itch.io deployment)
 * Missing features from Vanilla - Natural wonders (done!), city-state quests, missing civs etc.
 * G&K mechanics - religion, faith etc.
 * BNW mechanics - trade routes etc.
@@ -71,9 +67,9 @@ Considering how long it took to get this far, no.
 
 ## Is there a desktop version?
 
-There are standalone zip files for each operating system in [Releases](https://github.com/yairm210/UnCiv/releases) which contain everything needed for Unciv to run
+Yes! Windows and Linux versions are available at [itch.io](https://yairm210.itch.io/unciv), and if you're using the Itch app, your game will stay up-to-date - and we release pretty frequently so that's an issue ;)
 
-If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`
+If you have Java 8, and are familiar with the command line, there are (considerably smaller) JARs in [Releases](https://github.com/yairm210/UnCiv/releases) which you can run with `java -jar Unciv.jar`. This is also (currently) the only way to run the game on MacOS.
 
 Be aware that the game will generate files inside the folder where the Jar is located!
 
