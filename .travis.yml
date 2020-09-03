@@ -32,7 +32,7 @@ script:
     wget -O butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default;
     unzip butler.zip;
     chmod +x butler;
-    ./butler -V; # just a sanity check run (and also helpful in case you're sharing CI logs)
+    ./butler -V # just a sanity check run (and also helpful in case you're sharing CI logs);
     ./gradlew desktop:packrWindows32;
     ./gradlew desktop:packrWindows64;
     ./butler push deploy/Unciv-Windows64.zip yairm210/unciv:Windows64
