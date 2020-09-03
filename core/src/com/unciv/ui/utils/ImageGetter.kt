@@ -93,6 +93,7 @@ object ImageGetter {
         val drawable =if(isButton) NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region,20,20,20,20)).apply {
             setPadding(0f,10f,0f,10f)
         } else NinePatchDrawable(NinePatch(getDrawable("OtherIcons/civTableBackground").region,12,12,12,12))
+                .apply { setPadding(5f,5f,5f,5f) }
         if(tintColor==null) return drawable
         return drawable.tint(tintColor)
     }
