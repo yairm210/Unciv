@@ -10,9 +10,9 @@ The process has two major parts, one is "Getting your code in the main repositor
 
 * First off, push your changes with Git to your own branch at https://github.com/YourUsername/Unciv.git. I hope you've been doing this during development too, but that's none of my business \*sips tea\*
 * Issue a pull request from https://github.com/YourUsername/Unciv - from the Pull Requests is the simplest
-* The Travis build will check that your proposed change builds properly and doesn't crash the game in an obvious way
-* I'll go over your pull request and will ask questions and request changes - this is not just for the code to be good, it's mostly so you can learn how the repo works for the next change you make =)
-* When everything looks good, I'll merge your code in!
+* The Travis build will check that your proposed change builds properly and passes all tests
+* I'll go over your pull request and will ask questions and request changes - this is not only for code quality and standard, it's mostly so you can learn how the repo works for the next change you make =)
+* When everything looks good, I'll merge your code in and it'll enter the next release!
 
 ## Deploying versions
 
@@ -24,6 +24,7 @@ When I'm ready to release a new version I:
    * Compile an unsigned APK for Android
    * Pack a .jar file for every operating system with Java
    * Use Linux and Windows JDKs to create standalone zips for 32 and 64 bit systems
+   * Download [Butler](https://itch.io/docs/butler/installing.html) and use it to [push](https://itch.io/docs/butler/pushing.html) the new versions to the [itch.io page](https://yairm210.itch.io/unciv)
    * Upload all of these files to a new release on Github, which will get added to the [Releases](https://github.com/yairm210/Unciv/releases) page
 * The F-Droid bot checks periodically if we added a new tag. When it recognizes that we did, it will update the [yaml file here](https://gitlab.com/fdroid/fdroiddata/blob/master/metadata/com.unciv.app.yml) (requires human acceptance)
    * When the bot next runs and sees that there's a version it doesn't have a release for, it will attempt to build the new release. The log of the build will be added [here](https://f-droid.org/wiki/page/com.unciv.app/lastbuild) (redirects to the latest build), and the new release will eventually be available [here](https://f-droid.org/en/packages/com.unciv.app/)
