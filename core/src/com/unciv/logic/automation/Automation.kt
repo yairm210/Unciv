@@ -20,29 +20,25 @@ object Automation {
 
     private fun rankStatsForCityWork(stats: Stats, city: CityInfo, foodWeight: Float = 1f): Float {
         var rank = 0f
-        if(city.population.population < 5){
+        if (city.population.population < 5) {
             // "small city" - we care more about food and less about global problems like gold science and culture
             rank += stats.food * 1.2f * foodWeight
             rank += stats.production
-            rank += stats.science/2
-            rank += stats.culture/2
+            rank += stats.science / 2
+            rank += stats.culture / 2
             rank += stats.gold / 5 // it's barely worth anything at this points
-        }
-        else{
-            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += (stats.food * 1.2f * foodWeight) //food get more value to keep city growing
-            else rank += ((2.4f + (stats.food - 2) / 2) * foodWeight) // 1.2 point for each food up to 2, from there on half a point
+        } else {
+            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += stats.food * 1.2f * foodWeight //food get more value to keep city growing
+            else rank += (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
 
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
             else rank += stats.gold / 3 // 3 gold is worse than 2 production
 
             rank += stats.production
             rank += stats.science
-            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural){
+            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural) {
                 rank += stats.culture
-            }
-            else{
-                rank += stats.culture / 2
-            }
+            } else rank += stats.culture / 2
         }
         return rank
     }
@@ -53,19 +49,20 @@ object Automation {
         return rank
     }
 
-    fun trainMilitaryUnit(city: CityInfo) {
-        val name = chooseMilitaryUnit(city)
-        city.cityConstructions.currentConstructionFromQueue = name
+    fun tryTrainMilitaryUnit(city: CityInfo) {
+        val chosenUnitName = chooseMilitaryUnit(city)
+        if (chosenUnitName != null)
+            city.cityConstructions.currentConstructionFromQueue = chosenUnitName
     }
 
-    fun chooseMilitaryUnit(city: CityInfo) : String {
+    fun chooseMilitaryUnit(city: CityInfo) : String? {
         var militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
         if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstructionFromQueue))
             return city.cityConstructions.currentConstructionFromQueue
 
         // This is so that the AI doesn't use all its aluminum on units and have none left for spaceship parts
         val aluminum = city.civInfo.getCivResourcesByName()["Aluminum"]
-        if (aluminum!=null && aluminum < 2) // mods may have no aluminum
+        if (aluminum != null && aluminum < 2) // mods may have no aluminum
             militaryUnits.filter { it.requiredResource != "Aluminum" }
 
         val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()) { it.isWater || it.isCityCenter() }
@@ -81,8 +78,9 @@ object Automation {
                 && militaryUnits.any { it.unitType == UnitType.Ranged }) // this is for city defence so get an archery unit if we can
             chosenUnit = militaryUnits.filter { it.unitType == UnitType.Ranged }.maxBy { it.cost }!!
         else { // randomize type of unit and take the most expensive of its kind
-            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }.toList().random()
-            chosenUnit = militaryUnits.filter { it.unitType == chosenUnitType }.maxBy { it.cost }!!
+            val availableTypes = militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }.toList()
+            if (availableTypes.isEmpty()) return null
+            chosenUnit = militaryUnits.filter { it.unitType == availableTypes.random() }.maxBy { it.cost }!!
         }
         return chosenUnit.name
     }

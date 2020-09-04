@@ -11,7 +11,6 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.models.ruleset.ModOptions
 import com.unciv.models.ruleset.ModOptionsConstants
 import com.unciv.models.ruleset.VictoryType
 import com.unciv.models.ruleset.tech.Technology
@@ -473,7 +472,7 @@ object NextTurnAutomation{
 
             city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())
-                Automation.trainMilitaryUnit(city) // override previous decision if city is under attack
+                Automation.tryTrainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
 
