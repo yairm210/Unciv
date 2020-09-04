@@ -1,3 +1,17 @@
+## 3.10.7
+
+Mods can handle situations where there is no military unit that is available for construction
+
+Getting the mod list for download now works from Android as well
+
+Resolved #3076 - automation now happens at the end of turn rather than the beginning
+
+UI fixes for rounded edge boxes - By lishaoxia1985
+
+Can construct Farms near freshwater in all terrains - By HadeanLake
+
+Translation updates
+
 ## 3.10.6
 
 Options button now appears in main menu
