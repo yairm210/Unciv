@@ -140,8 +140,6 @@ object Github {
         {
             action(this)
 
-            doOutput = true
-
             try {
                 return inputStream
             } catch (ex: Exception) {
