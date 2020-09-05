@@ -76,7 +76,7 @@
 	// Military improvement
 	{
 		"name": "Fort",
-		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow"],
+		"terrainsCanBeBuiltOn": ["Plains","Grassland","Desert","Hill","Tundra","Snow","Forest","Jungle"],
 		"turnsToBuild": 6,
 		"techRequired": "Engineering",
 		"uniques": ["Gives a defensive bonus of [50]%", "Can be built outside your borders"]

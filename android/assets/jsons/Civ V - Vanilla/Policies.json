@@ -439,7 +439,7 @@
 			{
 				"name": "Freedom Complete",
 				"effect": "Tile yield from great improvement +100%, golden ages increase by 50%",
-				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increases +50%"]
+				"uniques": ["Tile yield from Great Improvements +100%", "Golden Age length increased by [50]%"]
 			}
 		]
 	},

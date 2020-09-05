@@ -95,9 +95,7 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 mapParameters.type = MapType.custom
                 mapParameters.name = mapFileSelectBox.selected.toString()
                 mapTypeSpecificTable.add(savedMapOptionsTable)
-                newGameScreen.gameSetupInfo.gameParameters.godMode = false
                 newGameScreen.unlockTables()
-                newGameScreen.updateTables()
             } else if (mapTypeSelectBox.selected.value == MapType.scenarioMap) {
                 mapParameters.type = MapType.scenarioMap
                 mapParameters.name = scenarioMapSelectBox.selected.toString()
@@ -108,7 +106,6 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
                 newGameScreen.updateRuleset()
                 // update PlayerTable and GameOptionsTable
                 newGameScreen.lockTables()
-                newGameScreen.updateTables()
             } else if(mapTypeSelectBox.selected.value == MapType.scenario){
                 selectSavedGameAsScenario(scenarioSelectBox.selected.fileHandle)
                 mapTypeSpecificTable.add(scenarioOptionsTable)
@@ -116,11 +113,11 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
             } else { // generated map
                 mapParameters.name = ""
                 mapParameters.type = generatedMapOptionsTable.mapTypeSelectBox.selected.value
-                newGameScreen.gameSetupInfo.gameParameters.godMode = false
                 mapTypeSpecificTable.add(generatedMapOptionsTable)
                 newGameScreen.unlockTables()
-                newGameScreen.updateTables()
             }
+            newGameScreen.gameSetupInfo.gameParameters.godMode = false
+            newGameScreen.updateTables()
         }
 
         // activate once, so when we had a file map before we'll have the right things set for another one
@@ -145,7 +142,10 @@ class MapOptionsTable(val newGameScreen: NewGameScreen): Table() {
         }
         mapFileSelectBox.items = mapFiles
         val selectedItem = mapFiles.firstOrNull { it.fileHandle.name()==mapParameters.name }
-        if (selectedItem != null) mapFileSelectBox.selected = selectedItem
+        if (selectedItem != null) {
+            mapFileSelectBox.selected = selectedItem
+            newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
+        }
         else if (!mapFiles.isEmpty) {
             mapFileSelectBox.selected = mapFiles.first()
             newGameScreen.gameSetupInfo.mapFile = mapFileSelectBox.selected.fileHandle
