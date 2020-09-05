@@ -56,10 +56,10 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
         pack()
     }
 
-    private fun Table.addCheckbox(text: String, initialState: Boolean, onChange: (newValue: Boolean) -> Unit) {
+    private fun Table.addCheckbox(text: String, initialState: Boolean, lockable: Boolean = true, onChange: (newValue: Boolean) -> Unit) {
         val checkbox = CheckBox(text.tr(), CameraStageBaseScreen.skin)
         checkbox.isChecked = initialState
-        checkbox.isDisabled = locked
+        checkbox.isDisabled = lockable && locked
         checkbox.onChange { onChange(checkbox.isChecked) }
         add(checkbox).colspan(2).left().row()
     }
@@ -77,7 +77,7 @@ class GameOptionsTable(val previousScreen: IPreviousScreen, val updatePlayerPick
             { gameParameters.nuclearWeaponsEnabled = it }
 
     private fun Table.addGodmodeCheckbox() =
-            addCheckbox("Scenario Editor", gameParameters.godMode)
+            addCheckbox("Scenario Editor", gameParameters.godMode, lockable = false)
             { gameParameters.godMode = it }
 
 

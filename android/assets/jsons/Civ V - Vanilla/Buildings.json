@@ -396,7 +396,7 @@
 		"happiness": 4,
 		"greatPersonPoints": {"production": 1},
 		"isWonder": true,
-		"uniques": ["Golden Age length increases +50%"],
+		"uniques": ["Golden Age length increased by [50]%"],
 		"requiredTech": "Civil Service",
 		"quote": "'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam"
 	},

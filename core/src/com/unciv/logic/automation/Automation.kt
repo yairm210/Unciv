@@ -80,7 +80,8 @@ object Automation {
         else { // randomize type of unit and take the most expensive of its kind
             val availableTypes = militaryUnits.map { it.unitType }.distinct().filterNot { it == UnitType.Scout }.toList()
             if (availableTypes.isEmpty()) return null
-            chosenUnit = militaryUnits.filter { it.unitType == availableTypes.random() }.maxBy { it.cost }!!
+            val randomType = availableTypes.random()
+            chosenUnit = militaryUnits.filter { it.unitType == randomType }.maxBy { it.cost }!!
         }
         return chosenUnit.name
     }
