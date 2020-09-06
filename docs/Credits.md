@@ -104,6 +104,10 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Nuclear Missile](https://thenounproject.com/marialuisa.iborra/collection/missiles-bombs/?i=1022574) By Lluisa Iborra, ES
 * Icon for Carrier made by [JackRainy](https://github.com/JackRainy), based on [Aircraft Carrier](https://thenounproject.com/icolabs/collection/flat-icons-transport/?i=2332914) By IcoLabs, BR
 
+### Information Era
+
+* [Air Defense Missile Launcher](https://thenounproject.com/term/air-defense-missile-launcher/1189656/) by Salaidinovich for Mobile SAM
+
 ### Great People
 
 * [Pallet](https://thenounproject.com/search/?q=Pallet&i=6862) By James Keuning for Great Artist

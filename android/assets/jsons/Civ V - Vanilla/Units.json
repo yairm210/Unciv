@@ -1197,7 +1197,7 @@
 		"strength": 50,
 		"cost": 375,
 		"requiredTech": "Ballistics",
-		//"upgradesTo": "Mobile SAM",
+		"upgradesTo": "Mobile SAM",
 		"uniques": ["[100]% chance to intercept air attacks","Bonus vs air units 150%"],
 		"attackSound": "machinegun"
 	},
@@ -1267,8 +1267,7 @@
 		//"upgradesTo": "Giant Death Robot",
 		"uniques": ["Can move after attacking","No defensive terrain bonus"]
 	},
-	
-	/*
+
 	// Information Era
 	{
 		"name": "Mobile SAM",
@@ -1282,6 +1281,8 @@
 		"attackSound": "shot"
 		// 65 strength, 3 movement, requiredTech "Rocketry" in expansions
 	},
+
+	/*
 	{
 		"name": "Jet Fighter",
 		"unitType": "Fighter",
