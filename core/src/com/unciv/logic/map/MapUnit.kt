@@ -646,7 +646,7 @@ class MapUnit {
     }
 
     fun interceptChance():Int{
-        return getMatchingUniques("[100]% chance to intercept air attacks").sumBy { it.params[0].toInt() }
+        return getMatchingUniques("[]% chance to intercept air attacks").sumBy { it.params[0].toInt() }
     }
 
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
