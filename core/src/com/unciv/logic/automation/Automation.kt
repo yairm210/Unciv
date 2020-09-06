@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.ruleset.VictoryType
+import com.unciv.models.ruleset.tile.ResourceType
 import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.ruleset.unit.UnitType
 import com.unciv.models.stats.Stats
@@ -111,11 +112,14 @@ object Automation {
         val stats = tile.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.hasViewableResource(civInfo)) rank += 1.0f
+        if (tile.hasViewableResource(civInfo)) {
+            val resource = tile.getTileResource()
+            if (resource.resourceType != ResourceType.Bonus) rank += 1f // for usage
+            if (tile.improvement == null) rank += 1f // improvement potential - resources give lots when improved!
+        }
         return rank
     }
 
-    @JvmStatic
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
         if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
