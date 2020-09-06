@@ -50,15 +50,15 @@ com.badlogic.gdx.graphics.Color: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	button-c: {
-		name: button
+		name: "Button"
 		color: color
 	}
 	button-pressed-c: {
-		name: button-pressed
+		name: "Button"
 		color: color
 	}
 	button-h: {
-		name: button
+		name: "Button"
 		color: highlight
 	}
 	checkbox-c: {
@@ -106,7 +106,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		color: color
 	}
 	textfield-c: {
-		name: textfield
+		name: "Button"
 		color: color
 	}
 	color: {
@@ -150,7 +150,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 		color: black
 	}
 	button-p: {
-		name: button
+		name: "Button"
 		color: pressed
 	}
 	slider-fancy-p: {
