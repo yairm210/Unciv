@@ -73,8 +73,6 @@ class MapUnit {
         private const val ANCIENT_RUIN_MAP_REVEAL_OFFSET = 4
         private const val ANCIENT_RUIN_MAP_REVEAL_RANGE = 4
         private const val ANCIENT_RUIN_MAP_REVEAL_CHANCE = 0.8f
-        const val BONUS_WHEN_INTERCEPTING = "Bonus when intercepting"
-        const val CHANCE_TO_INTERCEPT_AIR_ATTACKS = " chance to intercept air attacks"
     }
 
     //region pure functions
@@ -125,14 +123,12 @@ class MapUnit {
     //  will not get counted twice!
     @Transient var tempUniques= ArrayList<Unique>()
 
-    fun getUniques(): ArrayList<Unique> {
-        return tempUniques
-    }
+    fun getUniques(): ArrayList<Unique> = tempUniques
 
     fun getMatchingUniques(placeholderText:String): Sequence<Unique>
             = tempUniques.asSequence().filter { it.placeholderText == placeholderText }
 
-    fun updateUniques(){
+    fun updateUniques() {
         val uniques = ArrayList<Unique>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniqueObjects)
@@ -190,9 +186,7 @@ class MapUnit {
         return action!!.split(" ")[1].toInt()
     }
 
-    override fun toString(): String {
-        return "$name - $owner"
-    }
+    override fun toString() = "$name - $owner"
 
 
     fun isIdle(): Boolean {
@@ -222,7 +216,7 @@ class MapUnit {
 
 
     fun isEmbarked(): Boolean {
-        if(!type.isLandUnit()) return false
+        if (!type.isLandUnit()) return false
         return currentTile.isWater
     }
 
@@ -287,9 +281,7 @@ class MapUnit {
     fun fortifyUntilHealed() { action = "Fortify 0 until healed" }
 
     fun fortifyIfCan() {
-        if (canFortify()) {
-            fortify()
-        }
+        if (canFortify()) fortify()
     }
 
     private fun adjacentHealingBonus():Int{
@@ -305,9 +297,9 @@ class MapUnit {
 
     //region state-changing functions
     fun setTransients(ruleset: Ruleset) {
-        promotions.unit=this
+        promotions.unit = this
         mapUnitAction?.unit = this
-        baseUnit=ruleset.units[name]
+        baseUnit = ruleset.units[name]
                 ?: throw java.lang.Exception("Unit $name is not found!")
         updateUniques()
     }
@@ -425,7 +417,7 @@ class MapUnit {
     fun rankTileForHealing(tileInfo: TileInfo): Int {
         val isFriendlyTerritory = tileInfo.isFriendlyTerritory(civInfo)
 
-        var healing =  when {
+        var healing = when {
             tileInfo.isCityCenter() -> 20
             tileInfo.isWater && isFriendlyTerritory && type.isWaterUnit() -> 15 // Water unit on friendly water
             tileInfo.isWater -> 0 // All other water cases
@@ -435,9 +427,8 @@ class MapUnit {
         }
 
         if (hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")
-            && !isFriendlyTerritory
-            // Additional healing from medic is only applied when the unit is able to heal
-            && healing > 0)
+                && !isFriendlyTerritory
+                && healing > 0)// Additional healing from medic is only applied when the unit is able to heal
             healing += 5
 
         return healing
@@ -568,14 +559,14 @@ class MapUnit {
     }
 
     private fun getAncientRuinBonus(tile: TileInfo) {
-        tile.improvement=null
+        tile.improvement = null
         val tileBasedRandom = Random(tile.position.toString().hashCode())
         val actions: ArrayList<() -> Unit> = ArrayList()
-        if(civInfo.cities.isNotEmpty()) actions.add {
+        if (civInfo.cities.isNotEmpty()) actions.add {
             val city = civInfo.cities.random(tileBasedRandom)
             city.population.population++
             city.population.autoAssignPopulation()
-            civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",tile.position, Color.GREEN)
+            civInfo.addNotification("We have found survivors in the ruins - population added to [" + city.name + "]", tile.position, Color.GREEN)
         }
         val researchableAncientEraTechs = tile.tileMap.gameInfo.ruleSet.technologies.values
                 .filter {
@@ -583,11 +574,11 @@ class MapUnit {
                             && civInfo.tech.canBeResearched(it.name)
                             && it.era() == Constants.ancientEra
                 }
-        if(researchableAncientEraTechs.isNotEmpty())
+        if (researchableAncientEraTechs.isNotEmpty())
             actions.add {
                 val tech = researchableAncientEraTechs.random(tileBasedRandom).name
                 civInfo.tech.addTechnology(tech)
-                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",tile.position, Color.BLUE)
+                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!", tile.position, Color.BLUE)
             }
 
         actions.add {
@@ -599,30 +590,30 @@ class MapUnit {
             }
         }
 
-        if(!type.isCivilian())
+        if (!type.isCivilian())
             actions.add {
-                promotions.XP+=10
-                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",tile.position, Color.RED)
+                promotions.XP += 10
+                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!", tile.position, Color.RED)
             }
 
         actions.add {
-            val amount = listOf(25,60,100).random(tileBasedRandom)
-            civInfo.gold+=amount
-            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
+            val amount = listOf(25, 60, 100).random(tileBasedRandom)
+            civInfo.gold += amount
+            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!", tile.position, Color.GOLD)
         }
 
         actions.add {
             civInfo.policies.addCulture(20)
-            civInfo.addNotification("We have discovered cultural artifacts in the ruins! (+20 Culture)",tile.position, Color.GOLD)
+            civInfo.addNotification("We have discovered cultural artifacts in the ruins! (+20 Culture)", tile.position, Color.GOLD)
         }
 
         // Map of the surrounding area
         actions.add {
             val revealCenter = tile.getTilesAtDistance(ANCIENT_RUIN_MAP_REVEAL_OFFSET).toList().random(tileBasedRandom)
             val tilesToReveal = revealCenter
-                .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
-                .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
-                .map { it.position }
+                    .getTilesInDistance(ANCIENT_RUIN_MAP_REVEAL_RANGE)
+                    .filter { Random.nextFloat() < ANCIENT_RUIN_MAP_REVEAL_CHANCE }
+                    .map { it.position }
             civInfo.exploredTiles.addAll(tilesToReveal)
             civInfo.updateViewableTiles()
             civInfo.addNotification("We have found a crudely-drawn map in the ruins!", tile.position, Color.RED)
@@ -652,12 +643,12 @@ class MapUnit {
     fun isTransportTypeOf(mapUnit: MapUnit): Boolean {
         val isAircraftCarrier = hasUnique("Can carry 2 aircraft")
         val isMissileCarrier = hasUnique("Can carry 2 missiles")
-        if(!isMissileCarrier && !isAircraftCarrier)
+        if (!isMissileCarrier && !isAircraftCarrier)
             return false
-        if(!mapUnit.type.isAirUnit()) return false
-        if(isMissileCarrier && mapUnit.type!=UnitType.Missile)
+        if (!mapUnit.type.isAirUnit()) return false
+        if (isMissileCarrier && mapUnit.type != UnitType.Missile)
             return false
-        if(isAircraftCarrier && mapUnit.type==UnitType.Missile)
+        if (isAircraftCarrier && mapUnit.type == UnitType.Missile)
             return false
         return true
     }
@@ -669,26 +660,22 @@ class MapUnit {
         var unitCapacity = 2
         unitCapacity += getUniques().count { it.text == "Can carry 1 extra air unit" }
 
-        if (currentTile.airUnits.filter { it.isTransported }.size >= unitCapacity) return false
+        if (currentTile.airUnits.count { it.isTransported } >= unitCapacity) return false
 
         return true
     }
 
-    fun interceptDamagePercentBonus():Int{
-        var sum=0
-        for(unique in getUniques().filter { it.text.startsWith(BONUS_WHEN_INTERCEPTING) }){
-            val percent = Regex("\\d+").find(unique.text)!!.value.toInt()
-            sum += percent
-        }
-        return sum
+    fun interceptDamagePercentBonus():Int {
+        return getUniques().filter { it.placeholderText == "Bonus when intercepting []%" }
+                .sumBy { it.params[0].toInt() }
     }
 
     private fun getCitadelDamage() {
         // Check for Citadel damage
         val applyCitadelDamage = currentTile.neighbors
-                .filter{ it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) }
-                .map{ it.getTileImprovement() }
-                .filter{ it != null && it.hasUnique("Deal 30 damage to adjacent enemy units") }
+                .filter { it.getOwner() != null && civInfo.isAtWarWith(it.getOwner()!!) }
+                .map { it.getTileImprovement() }
+                .filter { it != null && it.hasUnique("Deal 30 damage to adjacent enemy units") }
                 .any()
 
         if (applyCitadelDamage) {
