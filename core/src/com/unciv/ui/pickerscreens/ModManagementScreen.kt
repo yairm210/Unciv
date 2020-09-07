@@ -48,10 +48,10 @@ class ModManagementScreen: PickerScreen() {
                         rightSideButton.enable()
                         rightSideButton.setText("Download [${repo.name}]".tr())
                         rightSideButton.onClick {
-                            rightSideButton.setText("Downloading...")
+                            rightSideButton.setText("Downloading...".tr())
                             rightSideButton.disable()
                             downloadMod(repo.svn_url) {
-                                rightSideButton.setText("Done!".tr())
+                                rightSideButton.setText("Downloaded!".tr())
                             }
                         }
                     }
@@ -64,14 +64,14 @@ class ModManagementScreen: PickerScreen() {
     }
 
     fun getDownloadButton(): TextButton {
-        val downloadButton = "Download mod".toTextButton()
+        val downloadButton = "Download mod from URL".toTextButton()
         downloadButton.onClick {
             val popup = Popup(this)
-            val textArea = TextArea("https://github.com/yairm210/Unciv-IV-mod",skin)
+            val textArea = TextArea("https://github.com/...",skin)
             popup.add(textArea).width(stage.width/2).row()
             val downloadButton = "Download".toTextButton()
             downloadButton.onClick {
-                downloadButton.setText("Downloading...")
+                downloadButton.setText("Downloading...".tr())
                 downloadButton.disable()
                 downloadMod(textArea.text) { popup.close() }
             }
