@@ -1,6 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -21,7 +22,7 @@ class ModManagementScreen: PickerScreen() {
         setDefaultCloseAction(MainMenuScreen())
         refresh()
 
-        topTable.add(modTable).pad(10f)
+        topTable.add(ScrollPane(modTable)).height(topTable.height).pad(10f)
 
         downloadTable.add(getDownloadButton()).row()
 
@@ -59,7 +60,7 @@ class ModManagementScreen: PickerScreen() {
             }
         }
 
-        topTable.add(downloadTable)
+        topTable.add(ScrollPane(downloadTable)).height(topTable.height)
     }
 
     fun getDownloadButton(): TextButton {

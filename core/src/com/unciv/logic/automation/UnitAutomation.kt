@@ -37,7 +37,7 @@ object UnitAutomation {
             return true
         }
 
-        // Nothing immediate, let's look further. Number increases exponentially with distance - at 10 this took a looong time
+        // Nothing immediate, lets look further. Number increases exponentially with distance - at 10 this took a looong time
         for (tile in unit.currentTile.getTilesInDistance(5))
             if (isGoodTileToExplore(unit, tile)) {
                 unit.movement.headTowards(tile)
