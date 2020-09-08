@@ -1,3 +1,19 @@
+## 3.10.8
+
+Resolved #3048 - Fixed ANRs on 'Resume' on huge save files
+
+Mod management screen improvements
+
+Resolved #3059 - better city expansion rules
+
+Resolved #3081 - fixed bug in air interception
+
+Show that air units can move to tiles within attack range - By bringert
+
+Fixed #3066, crash in chooseMilitaryUnit and some great people actions - By HadeanLake
+
+Translation updates
+
 ## 3.10.7
 
 Mods can handle situations where there is no military unit that is available for construction
