@@ -366,7 +366,7 @@
 		"outerColor": [245,248,185],
 		"innerColor": [18,84,30],
 		"uniqueName": "Barbary Corsairs",
-		"uniques": ["Pay only one third the usual cost for naval unit maintenance", "50% chance of capturing defeated Barbarian naval units and earning 25 Gold"],
+		"uniques": ["Pay only one third the usual cost for naval unit maintenance", "Melee naval units can capture defeated naval units and earn 25 Gold"],
 		"cities": ["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
 			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",

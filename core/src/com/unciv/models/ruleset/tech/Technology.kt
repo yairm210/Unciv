@@ -28,12 +28,12 @@ class Technology {
         for (improvement in ruleset.tileImprovements.values) for ( unique in improvement.uniqueObjects
                 .filter { it.placeholderText in setOf("[] once [] is discovered", "[] on [] tiles once [] is discovered")
                         && it.params.last() == name }) {
-            val key = if (unique.params.size == 2 ) unique.params[0] else "[${unique.params[0]}] on [${unique.params[1]}] tiles"
+            val key = if (unique.params.size == 2 ) "The following improvements [${unique.params[0]}]:" else "The following improvements on [${unique.params[1]}] tiles [${unique.params[0]}]:"
             if (!mapOfImprovedImprovements.containsKey(key)) mapOfImprovedImprovements[key] = ArrayList()
             mapOfImprovedImprovements[key]!!.add(improvement.name)
         }
         for ( improvements in mapOfImprovedImprovements) {
-            val impimpString = improvements.key.tr() + " from improvements: ".tr() + improvements.value.joinToString(", ") { it.tr() }
+            val impimpString = improvements.key.tr() + improvements.value.joinToString(", "," ") { it.tr() }
             lineList += impimpString
         }
 
