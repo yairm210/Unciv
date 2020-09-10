@@ -47,7 +47,7 @@ class MainMenuScreen: CameraStageBaseScreen() {
         // If we were in a mod, some of the resource images for the background map we're creating
         // will not exist unless we reset the ruleset and images
         ImageGetter.ruleset = RulesetCache.getBaseRuleset()
-        ImageGetter.refreshAtlas()
+        //ImageGetter.refreshAtlas()
 
         thread(name = "ShowMapBackground") {
             val newMap = MapGenerator(RulesetCache.getBaseRuleset())

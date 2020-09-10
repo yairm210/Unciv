@@ -43,7 +43,7 @@ class ModManagementScreen: PickerScreen() {
                     repo.name = repo.name.replace('-', ' ')
                     val downloadButton = repo.name.toTextButton()
                     downloadButton.onClick {
-                        descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}] Stars".tr())
+                        descriptionLabel.setText(repo.description + "\n" + "[${repo.stargazers_count}]✯".tr())
                         removeRightSideClickListeners()
                         rightSideButton.enable()
                         rightSideButton.setText("Download [${repo.name}]".tr())
