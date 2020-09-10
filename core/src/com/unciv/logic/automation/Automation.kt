@@ -27,12 +27,13 @@ object Automation {
             rank += stats.production
             rank += stats.science / 2
             rank += stats.culture / 2
-            rank += stats.gold / 5 // it's barely worth anything at this points
+            rank += stats.gold / 5 // it's barely worth anything at this point
         } else {
             if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += stats.food * 1.2f * foodWeight //food get more value to keep city growing
             else rank += (2.4f + (stats.food - 2) / 2) * foodWeight // 1.2 point for each food up to 2, from there on half a point
 
-            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
+            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0)
+                rank += stats.gold // we have a global problem
             else rank += stats.gold / 3 // 3 gold is worse than 2 production
 
             rank += stats.production
@@ -91,7 +92,7 @@ object Automation {
         // Since units become exponentially stronger per combat strength increase, we square em all
         fun square(x:Int) = x*x
         val unitStrength =  civInfo.getCivUnits().map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
-        return (sqrt(unitStrength.toDouble())).toInt() + 1 //avoid 0, becaus we divide by the result
+        return sqrt(unitStrength.toDouble()).toInt() + 1 //avoid 0, because we divide by the result
     }
 
     fun threatAssessment(assessor:CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
