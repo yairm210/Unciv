@@ -118,7 +118,7 @@ class CityButton(val city: CityInfo, private val tileGroup: WorldTileGroup): Tab
         if (!showAdditionalInfoTags || tileGroup.tileInfo.airUnits.isEmpty()) return
         val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table()
-        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor(),false)
+        airUnitTable.background = ImageGetter.getRoundedEdgeTableBackground(city.civInfo.nation.getOuterColor()).apply { setMinSize(0f,0f) }
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
