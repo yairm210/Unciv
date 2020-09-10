@@ -50,6 +50,7 @@ object ImageGetter {
         textureRegionDrawables.clear()
         // These are the drawables from the base game
         for(region in atlas.regions){
+            region.texture.setFilter(Texture.TextureFilter.Linear,Texture.TextureFilter.Linear)
             val drawable =TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
@@ -67,11 +68,11 @@ object ImageGetter {
         }
     }
 
-    fun refreshAtlas() {
+    /*fun refreshAtlas() {
         atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
         setTextureRegionDrawables()
-    }
+    }*/
 
     fun getWhiteDot() =  getImage(whiteDotLocation)
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
@@ -89,11 +90,10 @@ object ImageGetter {
         else return textureRegionDrawables[whiteDotLocation]!!
     }
 
-    fun getRoundedEdgeTableBackground(tintColor: Color?=null, isButton: Boolean =true): NinePatchDrawable {
-        val drawable =if(isButton) NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region,20,20,20,20)).apply {
-            setPadding(0f,10f,0f,10f)
-        } else NinePatchDrawable(NinePatch(getDrawable("OtherIcons/civTableBackground").region,12,12,12,12))
-                .apply { setPadding(5f,5f,5f,5f) }
+    fun getRoundedEdgeTableBackground(tintColor: Color?=null): NinePatchDrawable {
+        val drawable = NinePatchDrawable(NinePatch(getDrawable("OtherIcons/buttonBackground").region,25,25,0,0)).apply {
+            setPadding(5f,15f,5f,15f)
+        }
         if(tintColor==null) return drawable
         return drawable.tint(tintColor)
     }
