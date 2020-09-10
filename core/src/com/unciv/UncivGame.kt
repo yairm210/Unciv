@@ -115,7 +115,7 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         ImageGetter.ruleset = gameInfo.ruleSet
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
                                         // This is to avoid ANRs when loading.
-        ImageGetter.refreshAtlas()
+        //ImageGetter.refreshAtlas()
         worldScreen = WorldScreen(gameInfo.getPlayerToViewAs())
         setWorldScreen()
     }

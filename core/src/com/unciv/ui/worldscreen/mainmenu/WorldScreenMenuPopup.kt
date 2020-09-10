@@ -7,6 +7,7 @@ import com.unciv.models.translations.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.newgamescreen.GameSetupInfo
 import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.utils.Popup
 import com.unciv.ui.utils.addSeparator
@@ -36,6 +37,11 @@ class WorldScreenMenuPopup(val worldScreen: WorldScreen) : Popup(worldScreen) {
         }.size(width,height)
         addSeparator()
 
+        addSquareButton("Load game".tr()){
+            worldScreen.game.setScreen(LoadGameScreen(worldScreen))
+            close()
+        }.size(width,height)
+        addSeparator()
 
         addSquareButton("Start new game".tr()){
             worldScreen.game.setScreen(NewGameScreen(worldScreen, GameSetupInfo(worldScreen.gameInfo)))
