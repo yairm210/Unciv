@@ -174,14 +174,17 @@ class MainMenuScreen: CameraStageBaseScreen() {
             } catch (outOfMemory: OutOfMemoryError) {
                 ResponsePopup("Not enough memory on phone to load game!", this)
                 return@thread
+            } catch (ex: Exception) { // silent fail if we can't read the autosave for any reason
+                ResponsePopup("Cannot resume game!", this)
+                return@thread
             }
 
             Gdx.app.postRunnable { /// ... and load it into the screen on main thread for GL context
                 try {
                     game.loadGame(savedGame)
                     dispose()
-                } catch (ex: Exception) { // silent fail if we can't read the autosave
-                    ResponsePopup("Cannot resume game!", this)
+                } catch (outOfMemory: OutOfMemoryError) {
+                    ResponsePopup("Not enough memory on phone to load game!", this)
                 }
 
             }
