@@ -232,39 +232,31 @@ class Building : NamedStats(), IConstruction {
 
         val cityCenter = construction.cityInfo.getCenterTile()
 
-        for(unique in uniqueObjects)
-            if(unique.placeholderText == "Must be next to []"
-                    && !cityCenter.getTilesInDistance(1).any { it.baseTerrain == unique.params[0] })
-                return unique.text
+        for(unique in uniqueObjects) when (unique.placeholderText) {
+            "Must be on []" -> if (!cityCenter.fitsUniqueFilter(unique.params[0])) return unique.text
+            "Must not be on []" -> if (cityCenter.fitsUniqueFilter(unique.params[0])) return unique.text
+            "Must be next to []" -> if (cityCenter.getTilesInDistance(1).none { it.fitsUniqueFilter(unique.params[0]) }) return unique.text
+            "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.fitsUniqueFilter(unique.params[0]) }) return unique.text
+            "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(distance = unique.params[1].toInt()).none {
+                        it.fitsUniqueFilter(unique.params[0]) && it.getOwner() == construction.cityInfo.civInfo }) return unique.text
+            "Can only be built in annexed cities" -> if (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
+                    || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv) return unique.text
 
-        if ("Must be next to river" in uniques && !cityCenter.isAdjacentToRiver())
-            return "Must be next to river"
-
-        if ("Must have an owned mountain within 2 tiles" in uniques
-                && !cityCenter.getTilesInDistance(2)
-                        .any { it.baseTerrain == Constants.mountain && it.getOwner() == construction.cityInfo.civInfo })
-            return "Must be within 2 tiles of an owned mountain"
-
-        if ("Must not be on plains" in uniques
-                && cityCenter.baseTerrain == Constants.plains)
-            return "Must not be on plains"
-
-        if ("Must not be on hill" in uniques
-                && cityCenter.baseTerrain == Constants.hill)
-            return "Must not be on hill"
-
-        if ("Can only be built in coastal cities" in uniques
-                && !cityCenter.isCoastalTile())
-            return "Can only be built in coastal cities"
-
-        if ("Must border a source of fresh water" in uniques
-                && !cityCenter.isAdjacentToFreshwater)
-            return "Must border a source of fresh water"
-
-        if ("Can only be built in annexed cities" in uniques
-                && (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
-                        || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv))
-            return "Can only be built in annexed cities"
+            "Must have an owned mountain within 2 tiles" ->  // Deprecated as of 3.10.8 . Use "Must have an owned [Mountain] within [2] tiles" instead
+                if (cityCenter.getTilesInDistance(2)
+                                .none { it.baseTerrain == Constants.mountain && it.getOwner() == construction.cityInfo.civInfo })
+                    return unique.text
+            "Must be next to river" -> // Deprecated as of 3.10.8 . Use "Must be on [River]" instead
+                if (!cityCenter.isAdjacentToRiver()) return unique.text
+            "Must not be on plains" ->  // Deprecated as of 3.10.8 . Use "Must not be on [Plains]" instead
+                if (cityCenter.baseTerrain == Constants.plains) return unique.text
+            "Must not be on hill" ->  // Deprecated as of 3.10.8 . Use "Must not be on [Hill]" instead
+                if (cityCenter.baseTerrain == Constants.hill) return unique.text
+            "Can only be built in coastal cities" ->  // Deprecated as of 3.10.8 . Use "Must be on [seacoast]" instead
+                if (!cityCenter.isCoastalTile()) return unique.text
+            "Must border a source of fresh water" ->  // Deprecated as of 3.10.8 . Use "Must be on [tile adjacent to source of fresh water]" instead
+                if (!cityCenter.isAdjacentToFreshwater) return  unique.text
+        }
 
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo != null && uniqueTo != civInfo.civName) return "Unique to $uniqueTo"

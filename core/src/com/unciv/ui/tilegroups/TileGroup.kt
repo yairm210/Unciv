@@ -398,6 +398,11 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             if (!ImageGetter.imageExists(naturalWonderOverlay)) // Assume no natural wonder overlay = dedicated tile image
                 return
 
+            if (baseTerrainOverlayImage != null) {
+                baseTerrainOverlayImage!!.remove()
+                baseTerrainOverlayImage = null
+            }
+
             naturalWonderImage = ImageGetter.getImage(naturalWonderOverlay)
             terrainFeatureLayerGroup.addActor(naturalWonderImage)
             naturalWonderImage!!.run {
