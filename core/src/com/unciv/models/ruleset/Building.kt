@@ -235,7 +235,8 @@ class Building : NamedStats(), IConstruction {
         for(unique in uniqueObjects) when (unique.placeholderText) {
             "Must be on []" -> if (!cityCenter.fitsUniqueFilter(unique.params[0])) return unique.text
             "Must not be on []" -> if (cityCenter.fitsUniqueFilter(unique.params[0])) return unique.text
-            "Must be next to []" -> if (cityCenter.getTilesInDistance(1).none { it.fitsUniqueFilter(unique.params[0]) }) return unique.text
+            "Must be next to []" -> if (!(unique.params[0] == "Fresh water" && cityCenter.isAdjacentToRiver()) // Fresh water is special, in that rivers are not tiles themselves but also fit the filter..
+                    && cityCenter.getTilesInDistance(1).none { it.fitsUniqueFilter(unique.params[0])}) return unique.text
             "Must not be next to []" -> if (cityCenter.getTilesInDistance(1).any { it.fitsUniqueFilter(unique.params[0]) }) return unique.text
             "Must have an owned [] within [] tiles" -> if (cityCenter.getTilesInDistance(distance = unique.params[1].toInt()).none {
                         it.fitsUniqueFilter(unique.params[0]) && it.getOwner() == construction.cityInfo.civInfo }) return unique.text

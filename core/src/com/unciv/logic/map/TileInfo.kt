@@ -309,7 +309,7 @@ open class TileInfo {
 
     fun fitsUniqueFilter(filter:String): Boolean {
         return filter == baseTerrain
-                || (filter == "River" || filter == "Fresh water") && isAdjacentToRiver()
+                || filter == "River" && isAdjacentToRiver()
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)
                 || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
