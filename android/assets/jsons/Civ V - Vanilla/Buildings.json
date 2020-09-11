@@ -94,7 +94,7 @@
 		"cost": 75,
 		"food": 2,
 		"production": 1,
-		"uniques": ["[+2 Food] from [Lakes] tiles in this city", "Must be on [tile adjacent to source of fresh water]"],
+		"uniques": ["[+2 Food] from [Lakes] tiles in this city", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"percentStatBonus": {"food": 15},
@@ -149,7 +149,7 @@
 		"gold": 5,
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
-		"uniques": ["Must be on [seacoast]", "[+1 Gold] from [Water] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Gold] from [Water] tiles in this city"],
 		"requiredTech": "Iron Working",
 		"quote": "'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
@@ -189,7 +189,7 @@
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"resourceBonusStats": {"food": 1},
-		"uniques": ["Must be on [seacoast]", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"],
+		"uniques": ["Must be next to [Coast]", "[+1 Food] from [Ocean] tiles in this city", "[+1 Food] from [Coast] tiles in this city"],
 		"requiredTech": "Optics"
 	},
 	{
@@ -198,7 +198,7 @@
 		"greatPersonPoints": {"gold": 1},
 		"isWonder": true,
 		"providesFreeBuilding":  "Lighthouse",
-		"uniques": ["Must be on [seacoast]", "All military naval units receive +1 movement and +1 sight"],
+		"uniques": ["Must be next to [Coast]", "All military naval units receive +1 movement and +1 sight"],
 		"requiredTech": "Optics",
 		"quote": "'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
@@ -353,7 +353,7 @@
 	{
 		"name": "Garden",
 		"cost": 120,
-		"uniques": ["+[25]% great person generation in this city", "Must be on [tile adjacent to source of fresh water]"],
+		"uniques": ["+[25]% great person generation in this city", "Must be next to [Fresh water]"],
 		"hurryCostModifier": 25,
 		"maintenance": 1,
 		"requiredTech": "Theology"
@@ -445,7 +445,7 @@
 		"maintenance": 2,
 		"hurryCostModifier": 25,
 		"uniques": ["[+1 Production] from [Water resource] tiles in this city",
-			"Connects trade routes over water","Must be on [seacoast]"],
+			"Connects trade routes over water","Must be next to [Coast]"],
 		"requiredTech": "Compass"
 	},
 	{
@@ -677,7 +677,7 @@
 		"maintenance": 2,
 		"requiredBuilding": "Harbor",
 		"uniques": ["[+1 Production, +1 Gold] from [Water resource] tiles in this city",
-			"Must be on [seacoast]", "+[15]% production when building [naval units] in this city"],
+			"Must be next to [Coast]", "+[15]% production when building [naval units] in this city"],
 		"requiredTech": "Navigation"
 	},
 	{
@@ -901,7 +901,7 @@
 		"isWonder": true,
 		"greatPersonPoints": {"culture": 2},
 		"percentStatBonus": {"culture": 50},
-		"uniques": ["Free Social Policy","Must be on [seacoast]"],
+		"uniques": ["Free Social Policy","Must be next to [Coast]"],
 		"requiredTech": "Ecology",
 		"quote": "'Those who lose dreaming are lost.'  - Australian Aboriginal saying"
 	},

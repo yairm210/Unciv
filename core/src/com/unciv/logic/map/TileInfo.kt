@@ -27,8 +27,7 @@ open class TileInfo {
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy { isAdjacentToRiver() || neighbors.any { it.getBaseTerrain().uniques.contains("Fresh water")
-            || it.terrainFeature != null && it.getTerrainFeature()!!.uniques.contains("Fresh water") }}
+    val isAdjacentToFreshwater: Boolean by lazy { fitsUniqueFilter("Fresh water") || neighbors.any { it.fitsUniqueFilter("Fresh water") } }
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -310,9 +309,7 @@ open class TileInfo {
 
     fun fitsUniqueFilter(filter:String): Boolean {
         return filter == baseTerrain
-                || filter == "River" && isAdjacentToRiver()
-                || filter == "seacoast" && isCoastalTile()
-                || filter == "tile adjacent to source of fresh water" && isAdjacentToFreshwater
+                || (filter == "River" || filter == "Fresh water") && isAdjacentToRiver()
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)
                 || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)

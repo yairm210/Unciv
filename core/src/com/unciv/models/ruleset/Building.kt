@@ -252,9 +252,9 @@ class Building : NamedStats(), IConstruction {
                 if (cityCenter.baseTerrain == Constants.plains) return unique.text
             "Must not be on hill" ->  // Deprecated as of 3.10.8 . Use "Must not be on [Hill]" instead
                 if (cityCenter.baseTerrain == Constants.hill) return unique.text
-            "Can only be built in coastal cities" ->  // Deprecated as of 3.10.8 . Use "Must be on [seacoast]" instead
+            "Can only be built in coastal cities" ->  // Deprecated as of 3.10.8 . Use "Must be next to [Coast]" instead
                 if (!cityCenter.isCoastalTile()) return unique.text
-            "Must border a source of fresh water" ->  // Deprecated as of 3.10.8 . Use "Must be on [tile adjacent to source of fresh water]" instead
+            "Must border a source of fresh water" ->  // Deprecated as of 3.10.8 . Use "Must be next to [Fresh water]" instead
                 if (!cityCenter.isAdjacentToFreshwater) return  unique.text
         }
 
