@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UncivGame
 import com.unciv.models.Tutorial
@@ -75,6 +76,7 @@ open class CameraStageBaseScreen : Screen {
         val skin by lazy {
             val skin = Skin().apply {
                 add("Nativefont", Fonts.font, BitmapFont::class.java)
+                add("Button", ImageGetter.getRoundedEdgeTableBackground(), Drawable::class.java)
                 addRegions(TextureAtlas("skin/flat-earth-ui.atlas"))
                 load(Gdx.files.internal("skin/flat-earth-ui.json"))
             }

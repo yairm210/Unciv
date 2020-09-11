@@ -18,7 +18,7 @@ import com.unciv.models.ruleset.unit.BaseUnit
 import com.unciv.models.translations.tr
 import kotlin.math.min
 
-object NextTurnAutomation{
+object NextTurnAutomation {
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
@@ -30,8 +30,8 @@ object NextTurnAutomation{
         if(civInfo.isMajorCiv()) {
             if(!civInfo.gameInfo.ruleSet.modOptions.uniques.contains(ModOptionsConstants.diplomaticRelationshipsCannotChange)) {
                 declareWar(civInfo)
-//            offerDeclarationOfFriendship(civInfo)
                 offerPeaceTreaty(civInfo)
+//            offerDeclarationOfFriendship(civInfo)
             }
             offerResearchAgreement(civInfo)
             exchangeLuxuries(civInfo)
