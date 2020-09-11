@@ -109,9 +109,20 @@ class UncivGame(parameters: UncivGameParameters) : Game() {
         }
     }
 
+    private fun fixOldSave() {
+        // As of 3.10.8 hills are no longer base terrain. Hills in old saves need to be converted to Grassland+Hill
+        for (tile in gameInfo.tileMap.values) {
+            if (tile.baseTerrain == Constants.hill) {
+                tile.baseTerrain = Constants.grassland
+                tile.elevationLevel = Constants.hillElevationLevel
+            } else if (tile.baseTerrain == Constants.mountain)
+                tile.elevationLevel = Constants.mountainElevationLevel
+        }
+    }
 
     fun loadGame(gameInfo: GameInfo) {
         this.gameInfo = gameInfo
+        fixOldSave()
         ImageGetter.ruleset = gameInfo.ruleSet
         Gdx.input.inputProcessor = null // Since we will set the world screen when we're ready,
                                         // This is to avoid ANRs when loading.

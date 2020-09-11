@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
+import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
@@ -42,6 +43,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     // This is for OLD tiles - the "mountain" symbol on mountains for instance
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain: String = ""
+    protected var elevationLevel = 0
 
 
     val terrainFeatureLayerGroup = Group().apply { isTransform = false; setSize(groupSize, groupSize) }
@@ -49,6 +51,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
     // These are for OLD tiles - for instance the "forest" symbol on the forest
     protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature: String? = null
+    protected var hillOverlayImage: Image? = null
     protected var cityImage: Image? = null
     protected var naturalWonderImage: Image? = null
 
@@ -170,7 +173,8 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         val shouldShowResource = UncivGame.Current.settings.showPixelImprovements
                 && tileInfo.resource!=null &&
                 (showEntireMap || viewingCiv==null || tileInfo.hasViewableResource(viewingCiv))
-        val baseTerrainTileLocation = tileSetStrings.getTile(tileInfo.baseTerrain) // e.g. Grassland
+        val baseTerrainTileLocation = if (tileInfo.isHill()) "${tileSetStrings.getTile(tileInfo.baseTerrain)}+${Constants.hill}" // e.g. Grassland+Hill
+                                            else tileSetStrings.getTile(tileInfo.baseTerrain) // e.g. Grassland
 
         if (tileInfo.terrainFeature != null) {
             // e.g. Grassland+Forest
@@ -323,6 +327,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         updateTileImage(viewingCiv)
         updateRivers(tileInfo.hasBottomRightRiver, tileInfo.hasBottomRiver, tileInfo.hasBottomLeftRiver)
         updateTerrainBaseImage()
+        updateHillOverlayImage()
         updateTerrainFeatureImage()
 
         updatePixelMilitaryUnit(tileIsViewable && showMilitaryUnit)
@@ -371,6 +376,27 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             center(this@TileGroup)
         }
         baseLayerGroup.addActor(baseTerrainOverlayImage)
+    }
+
+    private fun updateHillOverlayImage() {
+        if (tileInfo.elevationLevel == elevationLevel) return
+        elevationLevel = tileInfo.elevationLevel
+
+        if (hillOverlayImage != null) {
+            hillOverlayImage!!.remove()
+            hillOverlayImage = null
+        }
+        if (!tileInfo.isHill()) return
+
+        val imagePath = tileSetStrings.hillOverlay
+        if (!ImageGetter.imageExists(imagePath)) return
+        hillOverlayImage = ImageGetter.getImage(imagePath)
+        hillOverlayImage!!.run {
+            color.a = 0.25f
+            setSize(40f, 40f)
+            center(this@TileGroup)
+        }
+        terrainFeatureLayerGroup.addActor(hillOverlayImage)
     }
 
     private fun updateCityImage() {

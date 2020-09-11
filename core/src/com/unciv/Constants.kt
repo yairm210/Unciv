@@ -41,6 +41,9 @@ object Constants {
     const val elDorado = "El Dorado"
     const val fountainOfYouth = "Fountain of Youth"
 
+    const val hillElevationLevel = 1
+    const val mountainElevationLevel = 2
+
     const val barbarianEncampment = "Barbarian encampment"
     const val ancientRuins = "Ancient ruins"
 

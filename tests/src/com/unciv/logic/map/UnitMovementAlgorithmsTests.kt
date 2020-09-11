@@ -55,7 +55,8 @@ class UnitMovementAlgorithmsTests {
     @Test
     fun unitCanEnterTheCity() {
         val map = TileMap()
-        tile.baseTerrain = Constants.hill
+        tile.baseTerrain = Constants.grassland
+        tile.elevationLevel = Constants.hillElevationLevel
         tile.tileMap = map
         tile.setTransients()
 

@@ -215,8 +215,7 @@ object GameStarter {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid [").removeSuffix("]")
                             preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
-                        } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.isCoastalTile() }
-                        else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
+                        } else preferredTiles = preferredTiles.filter { it.fitsUniqueFilter(startBias) }
                     }
 
                     startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()

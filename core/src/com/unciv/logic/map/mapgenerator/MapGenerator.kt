@@ -131,6 +131,7 @@ class MapGenerator(val ruleset: Ruleset) {
         for (resource in strategicResources) {
             // remove the tiles where previous resources have been placed
             val suitableTiles = candidateTiles
+                    .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
                     .filter { it.resource == null
                             && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
 
@@ -148,6 +149,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val resourcesOfType = ruleset.tileResources.values.filter { it.resourceType == resourceType }
 
         val suitableTiles = tileMap.values
+                .filterNot { it.baseTerrain == Constants.snow && it.isHill() }
                 .filter { it.resource == null && resourcesOfType.any { r -> r.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) } }
         val numberOfResources = tileMap.values.count { it.isLand && !it.isImpassible() } *
                 tileMap.mapParameters.resourceRichness
@@ -178,8 +180,11 @@ class MapGenerator(val ruleset: Ruleset) {
                     elevation = abs(elevation).pow(1.0 - tileMap.mapParameters.elevationExponent.toDouble()) * elevation.sign
 
             if (elevation <= 0.5) tile.baseTerrain = Constants.plains
-            else if (elevation <= 0.7) tile.baseTerrain = Constants.hill
-            else if (elevation <= 1.0) tile.baseTerrain = Constants.mountain
+            else if (elevation <= 0.7) tile.elevationLevel = Constants.hillElevationLevel
+            else if (elevation <= 1.0) {
+                tile.baseTerrain = Constants.mountain
+                tile.elevationLevel = Constants.mountainElevationLevel
+            }
         }
     }
 
@@ -196,7 +201,7 @@ class MapGenerator(val ruleset: Ruleset) {
         val scale = tileMap.mapParameters.tilesPerBiomeArea.toDouble()
 
         for (tile in tileMap.values) {
-            if (tile.isWater || tile.baseTerrain in arrayOf(Constants.mountain, Constants.hill))
+            if (tile.isWater || tile.baseTerrain == Constants.mountain)
                 continue
 
             val humidity = (randomness.getPerlinNoise(tile, humiditySeed, scale = scale, nOctaves = 1) + 1.0) / 2.0
@@ -234,7 +239,8 @@ class MapGenerator(val ruleset: Ruleset) {
     private fun spawnVegetation(tileMap: TileMap) {
         val vegetationSeed = randomness.RNG.nextInt().toDouble()
         val candidateTerrains = Constants.vegetation.flatMap{ ruleset.terrains[it]!!.occursOn!! }
-        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeature == null}) {
+        for (tile in tileMap.values.asSequence().filter { it.baseTerrain in candidateTerrains && it.terrainFeature == null
+                && (!it.isHill() || Constants.hill in candidateTerrains) }) {
             val vegetation = (randomness.getPerlinNoise(tile, vegetationSeed, scale = 3.0, nOctaves = 1) + 1.0) / 2.0
 
             if (vegetation <= tileMap.mapParameters.vegetationRichness)
@@ -250,7 +256,8 @@ class MapGenerator(val ruleset: Ruleset) {
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
-                val possibleFeatures = rareFeatures.filter { it.occursOn != null && it.occursOn.contains(tile.baseTerrain) }
+                val possibleFeatures = rareFeatures.filter { it.occursOn != null && it.occursOn.contains(tile.baseTerrain)
+                        && (!tile.isHill() || it.occursOn.contains(Constants.hill) )}
                 if (possibleFeatures.any())
                     tile.terrainFeature = possibleFeatures.random(randomness.RNG).name
             }

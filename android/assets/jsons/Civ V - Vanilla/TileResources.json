@@ -12,7 +12,7 @@
 	{
 		"name": "Sheep",
 		"resourceType": "Bonus",
-		"terrainsCanBeFoundOn": ["Plains","Hill"],
+		"terrainsCanBeFoundOn": ["Hill"],
 		"food": 1,
 		"improvement": "Pasture",
 		"improvementStats": {"food": 1},
@@ -80,7 +80,7 @@
 		"name": "Horses",
 		"resourceType": "Strategic",
 		"revealedBy": "Animal Husbandry",
-		"terrainsCanBeFoundOn": ["Plains","Grassland","Hill","Desert"],
+		"terrainsCanBeFoundOn": ["Plains","Grassland","Desert"],
 		"production": 1,
 		"improvement": "Pasture",
 		"improvementStats": {"production": 1},
@@ -127,7 +127,7 @@
 		"name": "Uranium",
 		"resourceType": "Strategic",
 		"revealedBy": "Atomic Theory",
-		"terrainsCanBeFoundOn": ["Plains","Desert","Tundra","Hill","Snow","Forest","Desert","Marsh","Grassland"],
+		"terrainsCanBeFoundOn": ["Plains","Desert","Tundra","Snow","Forest","Desert","Marsh","Grassland"],
 		"production": 1,
 		"improvement": "Mine",
 		"improvementStats": {"production": 2}

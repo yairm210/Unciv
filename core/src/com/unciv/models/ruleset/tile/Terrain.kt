@@ -25,7 +25,7 @@ class Terrain : NamedStats() {
     /** Used by Natural Wonders: it is the baseTerrain on top of which the Natural Wonder is placed */
     val turnsInto: String? = null
 
-    /** Uniques (currently used only for Natural Wonders) */
+    /** Uniques */
     val uniques = ArrayList<String>()
 
     /** Natural Wonder weight: probability to be picked */

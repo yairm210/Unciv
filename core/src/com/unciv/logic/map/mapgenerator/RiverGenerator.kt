@@ -12,7 +12,7 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
         var optionalTiles = map.values
                 .filter { it.baseTerrain== Constants.mountain && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
         if(optionalTiles.size < numberOfRivers)
-            optionalTiles.addAll(map.values.filter { it.baseTerrain== Constants.hill && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 })
+            optionalTiles.addAll(map.values.filter { it.isHill() && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 })
         if(optionalTiles.size < numberOfRivers)
             optionalTiles = map.values.filter { it.isLand && it.aerialDistanceTo(getClosestWaterTile(it)) > 4 }.toMutableList()
 
@@ -22,7 +22,7 @@ class RiverGenerator(val randomness: MapGenerationRandomness){
 
         for(tile in map.values){
             if(tile.isAdjacentToRiver()){
-                if(tile.baseTerrain== Constants.desert) tile.terrainFeature= Constants.floodPlains
+                if(tile.baseTerrain== Constants.desert && !tile.isHill()) tile.terrainFeature= Constants.floodPlains
                 else if(tile.baseTerrain== Constants.snow) tile.baseTerrain = Constants.tundra
                 else if(tile.baseTerrain== Constants.tundra) tile.baseTerrain = Constants.plains
                 tile.setTerrainTransients()

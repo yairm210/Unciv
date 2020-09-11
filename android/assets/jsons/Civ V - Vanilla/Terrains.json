@@ -100,7 +100,7 @@
 		"overrideStats": true,
 		"unbuildable": true,
 		"defenceBonus": 0.25,
-		"occursOn": ["Plains","Grassland"],
+		"occursOn": ["Plains","Grassland","Hill"],
 		"rough": true
 	},
 	{

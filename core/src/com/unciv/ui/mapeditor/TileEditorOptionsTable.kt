@@ -97,6 +97,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     it.hasBottomRiver=false
                     it.hasBottomLeftRiver=false
                     it.hasBottomRightRiver=false
+                    it.elevationLevel = 0
                 }
                 setCurrentHex(getHex(Color.WHITE, getRedCross(40f, 0.6f)), "Clear terrain features")
             }
@@ -391,7 +392,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                     when (terrain.type) {
                         TerrainType.TerrainFeature -> it.terrainFeature = terrain.name
                         TerrainType.NaturalWonder -> it.naturalWonder = terrain.name
-                        else -> it.baseTerrain = terrain.name
+                        else -> {
+                            if (terrain.name == Constants.hill) it.elevationLevel = Constants.hillElevationLevel
+                            else it.baseTerrain = terrain.name
+                        }
                     }
                 }
                 setCurrentHex(tileInfo, terrain.name.tr() + "\n" + terrain.clone().toString())
@@ -491,15 +495,24 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             tileInfo.improvement = null
         }
 
+        if (tileInfo.baseTerrain == Constants.mountain)
+            tileInfo.elevationLevel = Constants.mountainElevationLevel
+        else if (ruleset.terrains[tileInfo.baseTerrain]!!.type != TerrainType.Land)
+            tileInfo.elevationLevel = 0
+
         if (tileInfo.terrainFeature != null) {
             val terrainFeature = tileInfo.getTerrainFeature()!!
-            if(terrainFeature.occursOn!=null && !terrainFeature.occursOn.contains(tileInfo.baseTerrain))
-                tileInfo.terrainFeature=null
+            if (terrainFeature.occursOn != null && (tileInfo.baseTerrain !in terrainFeature.occursOn
+                            || tileInfo.isHill() && Constants.hill !in terrainFeature.occursOn) )
+                tileInfo.terrainFeature = null
         }
         if (tileInfo.resource != null) {
             val resource = tileInfo.getTileResource()
-            if(resource.terrainsCanBeFoundOn.none { it==tileInfo.baseTerrain || it==tileInfo.terrainFeature })
-                tileInfo.resource=null
+            when {
+                tileInfo.terrainFeature != null -> if (tileInfo.terrainFeature!! !in resource.terrainsCanBeFoundOn) tileInfo.resource = null
+                tileInfo.isHill() -> if (Constants.hill !in resource.terrainsCanBeFoundOn) tileInfo.resource = null
+                else -> if(tileInfo.baseTerrain !in resource.terrainsCanBeFoundOn) tileInfo.resource = null
+            }
         }
         if (tileInfo.improvement!=null) {
             normalizeTileImprovement(tileInfo)

@@ -49,7 +49,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         for (city  in civInfo.cities) {
             for (tile in city.getTiles()) {
                 if (tile.isCityCenter()) continue
-                if(ignoreHillTiles && tile.baseTerrain==Constants.hill) continue
+                if (ignoreHillTiles && tile.isHill()) continue
                 val tileUpkeep =
                     when (tile.roadStatus) {
                         RoadStatus.Road -> 1

@@ -27,7 +27,7 @@ open class TileInfo {
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy { fitsUniqueFilter("Fresh water") || neighbors.any { it.fitsUniqueFilter("Fresh water") } }
+    val isAdjacentToFreshwater: Boolean by lazy { fitsUniqueFilter("River") || neighbors.any { it.fitsUniqueFilter("Fresh water") } }
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -43,6 +43,9 @@ open class TileInfo {
 
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
+
+    var elevationLevel = 0
+    fun isHill() = elevationLevel == Constants.hillElevationLevel
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -60,6 +63,7 @@ open class TileInfo {
         for (airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position = position.cpy()
         toReturn.baseTerrain = baseTerrain
+        toReturn.elevationLevel = elevationLevel
         toReturn.terrainFeature = terrainFeature
         toReturn.naturalWonder = naturalWonder
         toReturn.resource = resource
@@ -103,7 +107,7 @@ open class TileInfo {
 
     fun getCity(): CityInfo? = owningCity
 
-    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if (naturalWonder != null) getNaturalWonder() else getBaseTerrain()
+    fun getLastTerrain(): Terrain = if (terrainFeature != null) getTerrainFeature()!! else if (naturalWonder != null) getNaturalWonder() else if (isHill()) ruleset.terrains[Constants.hill]!! else getBaseTerrain()
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
@@ -175,6 +179,8 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
+        if (isHill() && baseTerrain != Constants.snow) stats = ruleset.terrains[Constants.hill]!!.clone()
+        
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()
             if (terrainFeatureBase!!.overrideStats)
@@ -309,6 +315,7 @@ open class TileInfo {
 
     fun fitsUniqueFilter(filter:String): Boolean {
         return filter == baseTerrain
+                || filter == "Hill" && isHill()
                 || filter == "River" && isAdjacentToRiver()
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)
@@ -392,6 +399,7 @@ open class TileInfo {
                 lineList += city.cityConstructions.getProductionForTileInfo()
         }
         lineList += baseTerrain.tr()
+        if (isHill()) lineList += Constants.hill.tr()
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
         if (resource != null && (viewingCiv == null || hasViewableResource(viewingCiv))) lineList += resource!!.tr()
         if (naturalWonder != null) lineList += naturalWonder!!.tr()
