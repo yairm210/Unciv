@@ -50,7 +50,6 @@ object ImageGetter {
         textureRegionDrawables.clear()
         // These are the drawables from the base game
         for(region in atlas.regions){
-            region.texture.setFilter(Texture.TextureFilter.Linear,Texture.TextureFilter.Linear)
             val drawable =TextureRegionDrawable(region)
             textureRegionDrawables[region.name] = drawable
         }
