@@ -308,6 +308,17 @@ open class TileInfo {
         }
     }
 
+    fun fitsUniqueFilter(filter:String): Boolean {
+        return filter == baseTerrain
+                || filter == "River" && isAdjacentToRiver()
+                || filter == "seacoast" && isCoastalTile()
+                || filter == "tile adjacent to source of fresh water" && isAdjacentToFreshwater
+                || filter == terrainFeature
+                || baseTerrainObject.uniques.contains(filter)
+                || terrainFeature != null && getTerrainFeature()!!.uniques.contains(filter)
+                || filter == "Water" && isWater
+    }
+
     fun hasImprovementInProgress() = improvementInProgress != null
 
     @delegate:Transient

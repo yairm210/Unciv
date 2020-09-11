@@ -110,7 +110,8 @@
 		"movementCost": 3,
 		"unbuildable": true,
 		"defenceBonus": -0.15,
-		"occursOn": ["Grassland"]
+		"occursOn": ["Grassland"],
+		"uniques": ["Rare feature"]
 	},
 	{
 		"name": "Fallout",
@@ -131,7 +132,7 @@
 		"unbuildable": true,
 		"defenceBonus": -0.1,
 		"occursOn": ["Desert"],
-		"uniques": ["Fresh water"]
+		"uniques": ["Fresh water", "Rare feature"]
 	},
 	{
 		"name": "Flood plains",
@@ -154,7 +155,8 @@
 		"movementCost": 1,
 		"food": 1,
 		"production": 1,
-		"occursOn": ["Coast"]
+		"occursOn": ["Coast"],
+		"uniques": ["Rare feature"]
 	},
  
 	// Natural Wonders

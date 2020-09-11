@@ -246,10 +246,7 @@ class MapGenerator(val ruleset: Ruleset) {
      */
     private fun spawnRareFeatures(tileMap: TileMap) {
         val rareFeatures = ruleset.terrains.values.filter {
-            it.type == TerrainType.TerrainFeature &&
-            it.name !in Constants.vegetation &&
-            it.name != Constants.floodPlains &&
-            it.name != Constants.ice
+            it.type == TerrainType.TerrainFeature && it.uniques.contains("Rare feature")
         }
         for (tile in tileMap.values.asSequence().filter { it.terrainFeature == null }) {
             if (randomness.RNG.nextDouble() <= tileMap.mapParameters.rareFeaturesRichness) {
