@@ -23,6 +23,7 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 
@@ -82,16 +83,16 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         selectedTile = tileInfo
 
         val unitTable = worldScreen.bottomUnitTable
-        val previousSelectedUnit = unitTable.selectedUnit
+        val previousSelectedUnits = unitTable.selectedUnits.toList() // create copy
         val previousSelectedCity = unitTable.selectedCity
         unitTable.tileSelected(tileInfo)
         val newSelectedUnit = unitTable.selectedUnit
 
-        if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
+        if (previousSelectedUnits.isNotEmpty() && previousSelectedUnits.any { it.getTile() != tileInfo }
                 && worldScreen.isPlayersTurn
-                && previousSelectedUnit.movement.canMoveTo(tileInfo)) {
+                && previousSelectedUnits.any { it.movement.canMoveTo(tileInfo) }) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-            addTileOverlaysWithUnitMovement(previousSelectedUnit, tileInfo)
+            addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
         }
         else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
@@ -146,28 +147,42 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
 
-    private fun addTileOverlaysWithUnitMovement(selectedUnit: MapUnit, tileInfo: TileInfo) {
-        thread(name="TurnsToGetThere") {
+    private fun addTileOverlaysWithUnitMovement(selectedUnits: List<MapUnit>, tileInfo: TileInfo) {
+        thread(name = "TurnsToGetThere") {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
              * so that and that alone will be relegated to the concurrent thread.
              */
-            val turnsToGetThere = if(selectedUnit.type.isAirUnit()){
-                if (selectedUnit.movement.canReach(tileInfo)) 1
-                else 0
+
+            val unitToTurnsToTile = HashMap<MapUnit,Int>()
+            for(unit in selectedUnits) {
+                val turnsToGetThere = if (unit.type.isAirUnit()) {
+                    if (unit.movement.canReach(tileInfo)) 1
+                    else 0
+                } else unit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
+                unitToTurnsToTile[unit] = turnsToGetThere
             }
-                else selectedUnit.movement.getShortestPath(tileInfo).size // this is what takes the most time, tbh
 
             Gdx.app.postRunnable {
-                if(UncivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
+                val unitsWhoCanMoveThere = unitToTurnsToTile.filter { it.value!=0 }
+                if (unitsWhoCanMoveThere.isEmpty()){ // give the regular tile overlays with no unit movement
+                    addTileOverlays(tileInfo)
+                    worldScreen.shouldUpdate = true
+                    return@postRunnable
+                }
+                
+                val turnsToGetThere = unitsWhoCanMoveThere.values.first()
+                val selectedUnit = unitsWhoCanMoveThere.keys.first()
+
+                if (UncivGame.Current.settings.singleTapMove && turnsToGetThere == 1) {
                     // single turn instant move
                     selectedUnit.movement.headTowards(tileInfo)
                     worldScreen.bottomUnitTable.selectUnits(selectedUnit) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
                     val moveHereButtonDto = if (turnsToGetThere != 0) MoveHereButtonDto(hashMapOf(selectedUnit to turnsToGetThere), tileInfo)
-                        else null
+                    else null
                     addTileOverlays(tileInfo, moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
