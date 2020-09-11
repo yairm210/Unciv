@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.Constants
 import com.unciv.UncivGame
 import com.unciv.logic.automation.BattleHelper
@@ -23,7 +24,6 @@ import com.unciv.ui.map.TileGroupMap
 import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.thread
 
 
@@ -93,11 +93,10 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 && previousSelectedUnits.any { it.movement.canMoveTo(tileInfo) }) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnits, tileInfo)
-        }
-        else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
+        } else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
-        if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian) {
+        if (newSelectedUnit == null || newSelectedUnit.type == UnitType.Civilian) {
             val unitsInTile = selectedTile!!.getUnits()
             if (previousSelectedCity != null && !previousSelectedCity.attackedThisTurn
                     && selectedTile!!.getTilesInDistance(2).contains(previousSelectedCity.getCenterTile())
@@ -137,7 +136,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
-                    if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnits(selectedUnit)
+                    if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
                     unitActionOverlay?.remove()
@@ -165,24 +164,25 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             }
 
             Gdx.app.postRunnable {
-                val unitsWhoCanMoveThere = unitToTurnsToTile.filter { it.value!=0 }
+                val unitsWhoCanMoveThere = HashMap(unitToTurnsToTile.filter { it.value!=0 })
                 if (unitsWhoCanMoveThere.isEmpty()){ // give the regular tile overlays with no unit movement
                     addTileOverlays(tileInfo)
                     worldScreen.shouldUpdate = true
                     return@postRunnable
                 }
-                
-                val turnsToGetThere = unitsWhoCanMoveThere.values.first()
-                val selectedUnit = unitsWhoCanMoveThere.keys.first()
+
+                val turnsToGetThere = unitsWhoCanMoveThere.values.max()!!
+//                val selectedUnit = unitsWhoCanMoveThere.keys.first()
 
                 if (UncivGame.Current.settings.singleTapMove && turnsToGetThere == 1) {
                     // single turn instant move
-                    selectedUnit.movement.headTowards(tileInfo)
-                    worldScreen.bottomUnitTable.selectUnits(selectedUnit) // keep moved unit selected
+                    for(unit in unitsWhoCanMoveThere.keys) {
+                        unit.movement.headTowards(tileInfo)
+                    }
+//                    worldScreen.bottomUnitTable.selectUnit(selectedUnit) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
-                    val moveHereButtonDto = if (turnsToGetThere != 0) MoveHereButtonDto(hashMapOf(selectedUnit to turnsToGetThere), tileInfo)
-                    else null
+                    val moveHereButtonDto = MoveHereButtonDto(unitsWhoCanMoveThere, tileInfo)
                     addTileOverlays(tileInfo, moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
@@ -211,7 +211,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
             unitGroup.touchable = Touchable.enabled
             unitGroup.onClick {
-                worldScreen.bottomUnitTable.selectUnits(unit)
+                worldScreen.bottomUnitTable.selectUnit(unit)
                 worldScreen.shouldUpdate = true
                 unitActionOverlay?.remove()
             }
@@ -227,27 +227,30 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         val moveHereButton = Group().apply { width = size;height = size; }
         moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
         moveHereButton.addActor(ImageGetter.getStatIcon("Movement")
-                .apply { color= Color.BLACK; width = size / 2; height = size / 2; center(moveHereButton) })
+                .apply { color = Color.BLACK; width = size / 2; height = size / 2; center(moveHereButton) })
 
         val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
 
 
-        moveHereButton.addActor(dto.unitToTurnsToDestination.values.first().toString().toLabel().apply { center(numberCircle) })
-        val unit = dto.unitToTurnsToDestination.keys.first()
-        val unitIcon = UnitGroup(unit, size / 2)
+        moveHereButton.addActor(dto.unitToTurnsToDestination.values.max()!!.toLabel().apply { center(numberCircle) })
+        val firstUnit = dto.unitToTurnsToDestination.keys.first()
+        val unitIcon = if (dto.unitToTurnsToDestination.size == 1) UnitGroup(firstUnit, size / 2)
+        else dto.unitToTurnsToDestination.size.toString().toLabel(fontColor = firstUnit.civInfo.nation.getInnerColor()).apply { setAlignment(Align.center) }
+                .surroundWithCircle(size / 2).apply { circle.color = firstUnit.civInfo.nation.getOuterColor() }
         unitIcon.y = size - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
-        if (unit.currentMovement > 0)
-            moveHereButton.onClick(UncivSound.Silent) {
-                UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if(unit.type.isAirUnit())
-                    UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
-                moveUnitToTargetTile(unit, dto.tileInfo)
-            }
-
-        else moveHereButton.color.a = 0.5f
+        for (unit in dto.unitToTurnsToDestination.keys) {
+            if (unit.currentMovement > 0)
+                moveHereButton.onClick(UncivSound.Silent) {
+                    UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
+                    if (unit.type.isAirUnit())
+                        UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
+                    moveUnitToTargetTile(unit, dto.tileInfo)
+                }
+            else moveHereButton.color.a = 0.5f
+        }
         return moveHereButton
     }
 

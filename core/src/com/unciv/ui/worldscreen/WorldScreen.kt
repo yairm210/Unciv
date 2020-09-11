@@ -593,7 +593,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     val nextDueUnit = viewingCiv.getNextDueUnit()
                     if (nextDueUnit != null) {
                         mapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
-                        bottomUnitTable.selectUnits(nextDueUnit)
+                        bottomUnitTable.selectUnit(nextDueUnit)
                         shouldUpdate = true
                     }
                 }
@@ -686,7 +686,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         // Deselect Unit
         if (bottomUnitTable.selectedUnit != null) {
-            bottomUnitTable.selectUnits()
+            bottomUnitTable.selectUnit()
             bottomUnitTable.isVisible = false
             shouldUpdate = true
             return

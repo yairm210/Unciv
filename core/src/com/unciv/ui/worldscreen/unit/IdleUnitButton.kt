@@ -46,7 +46,7 @@ class IdleUnitButton (
 
             unitToSelect.due = false
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
-            unitTable.selectUnits(unitToSelect)
+            unitTable.selectUnit(unitToSelect)
             unitTable.worldScreen.shouldUpdate = true
         }
     }

@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -28,11 +30,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     /** This is in preparation for multi-select and multi-move  */
     val selectedUnits = ArrayList<MapUnit>()
 
-    /** Sending no units clears the selected units entirely */
-    fun selectUnits(vararg units:MapUnit) {
-        selectedUnits.clear()
+
+    /** Sending no unit clears the selected units entirely */
+    fun selectUnit(unit:MapUnit?=null, append:Boolean=false) {
+        if (!append) selectedUnits.clear()
         selectedCity = null
-        for (unit in units) selectedUnits.add(unit)
+        if (unit != null) selectedUnits.add(unit)
     }
 
     var selectedCity : CityInfo? = null
@@ -56,7 +59,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
             deselectUnitButton.pack()
             deselectUnitButton.touchable = Touchable.enabled
-            deselectUnitButton.onClick { selectUnits(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
+            deselectUnitButton.onClick { selectUnit(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
             addActor(deselectUnitButton)
         }).left()
 
@@ -86,10 +89,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(selectedUnit!=null) {
             isVisible=true
             if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
-                selectUnits()
+                selectUnit()
                 selectedUnitHasChanged = true
             } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists}
-                selectUnits()
+                selectUnit()
                 selectedUnitHasChanged = true
             }
         }
@@ -192,7 +195,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     }
 
     fun citySelected(cityInfo: CityInfo) : Boolean {
-        selectUnits()
+        selectUnit()
         if (cityInfo == selectedCity) return false
         selectedCity = cityInfo
         selectedUnitHasChanged = true
@@ -204,28 +207,28 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         val previouslySelectedUnit = selectedUnit
 
-        if(selectedTile.isCityCenter()
-                && (selectedTile.getOwner()==worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())){
+
+        if (selectedTile.isCityCenter()
+                && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
             citySelected(selectedTile.getCity()!!)
-        }
-        else if(selectedTile.militaryUnit!=null
+        } else if (selectedTile.militaryUnit != null
                 && (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-                && selectedUnit!=selectedTile.militaryUnit
-                && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)) {
-            selectUnits(selectedTile.militaryUnit!!)
-        }
-        else if (selectedTile.civilianUnit!=null
+                && selectedTile.militaryUnit!! !in selectedUnits
+                && (selectedTile.civilianUnit == null || selectedUnit != selectedTile.civilianUnit)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) selectUnit(selectedTile.militaryUnit!!, true)
+            else selectUnit(selectedTile.militaryUnit!!)
+        } else if (selectedTile.civilianUnit != null
                 && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-                && selectedUnit!=selectedTile.civilianUnit) {
-            selectUnits(selectedTile.civilianUnit!!)
-        } else if(selectedTile == previouslySelectedUnit?.currentTile) {
+                && selectedUnit != selectedTile.civilianUnit) {
+            selectUnit(selectedTile.civilianUnit!!)
+        } else if (selectedTile == previouslySelectedUnit?.currentTile) {
             // tapping the same tile again will deselect a unit.
             // important for single-tap-move to abort moving easily
-            selectUnits()
+            selectUnit()
             isVisible = false
         }
 
-        if(selectedUnit != previouslySelectedUnit)
+        if (selectedUnit != previouslySelectedUnit)
             selectedUnitHasChanged = true
     }
 

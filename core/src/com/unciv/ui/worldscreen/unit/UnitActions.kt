@@ -285,7 +285,7 @@ object UnitActions {
                 type = UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                 action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnits() })
+                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnit() })
                 }.takeIf { canConstruct })
     }
 
@@ -443,7 +443,7 @@ object UnitActions {
                 uncivSound = UncivSound.Fortify,
                 action = {
                     unit.fortify()
-                    unitTable.selectUnits()
+                    unitTable.selectUnit()
                 }.takeIf { unit.currentMovement > 0 })
 
         if (unit.health < 100) {
@@ -452,7 +452,7 @@ object UnitActions {
                     title = UnitActionType.FortifyUntilHealed.value,
                     action = {
                         unit.fortifyUntilHealed()
-                        unitTable.selectUnits()
+                        unitTable.selectUnit()
                     }.takeIf { unit.currentMovement > 0 })
             actionList += actionForWounded
         }
@@ -469,7 +469,7 @@ object UnitActions {
                 isCurrentAction = isSleeping,
                 action = {
                     unit.action = Constants.unitActionSleep
-                    unitTable.selectUnits()
+                    unitTable.selectUnit()
                 }.takeIf { !isSleeping })
 
         if (unit.health < 100 && !isSleeping) {
@@ -478,7 +478,7 @@ object UnitActions {
                     title = UnitActionType.SleepUntilHealed.value,
                     action = {
                         unit.action = Constants.unitActionSleepUntilHealed
-                        unitTable.selectUnits()
+                        unitTable.selectUnit()
                     })
             actionList += actionForWounded
         }
