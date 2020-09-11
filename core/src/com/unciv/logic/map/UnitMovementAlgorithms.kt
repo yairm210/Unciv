@@ -35,7 +35,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (unit.doubleMovementInForestAndJungle && (to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
             return 1f + extraCost // usually forest and jungle take 2 movements, so here it is 1
-        if (civInfo.nation.ignoreHillMovementCost && to.baseTerrain == Constants.hill)
+        if (civInfo.nation.ignoreHillMovementCost && to.isHill())
             return 1f + extraCost // usually hills take 2 movements, so here it is 1
 
         if (unit.roughTerrainPenalty && to.isRoughTerrain())
@@ -44,7 +44,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
             return 1 / 2f + extraCost
 
-        if (unit.doubleMovementInSnowTundraAndHills && to.baseTerrain == Constants.hill)
+        if (unit.doubleMovementInSnowTundraAndHills && to.isHill())
             return 1f + extraCost // usually hills take 2
         if (unit.doubleMovementInSnowTundraAndHills && (to.baseTerrain == Constants.snow || to.baseTerrain == Constants.tundra))
             return 1 / 2f + extraCost
