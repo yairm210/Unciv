@@ -33,7 +33,8 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     var unitActionOverlay :Actor?=null
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
-    class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
+    // This is a hashmap in preparation for moving multiple units at once
+    class MoveHereButtonDto(val unitToTurnsToDestination: HashMap<MapUnit,Int>, val tileInfo: TileInfo)
 
     internal fun addTiles() {
         val tileSetStrings = TileSetStrings()
@@ -167,7 +168,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     worldScreen.bottomUnitTable.selectUnits(selectedUnit) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
-                    val moveHereButtonDto = if (turnsToGetThere != 0) MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
+                    val moveHereButtonDto = if (turnsToGetThere != 0) MoveHereButtonDto(hashMapOf(selectedUnit to turnsToGetThere), tileInfo)
                         else null
                     addTileOverlays(tileInfo, moveHereButtonDto)
                 }
@@ -217,18 +218,20 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
-        moveHereButton.addActor(dto.turnsToGetThere.toString().toLabel().apply { center(numberCircle) })
 
-        val unitIcon = UnitGroup(dto.unit, size / 2)
+
+        moveHereButton.addActor(dto.unitToTurnsToDestination.values.first().toString().toLabel().apply { center(numberCircle) })
+        val unit = dto.unitToTurnsToDestination.keys.first()
+        val unitIcon = UnitGroup(unit, size / 2)
         unitIcon.y = size - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
-        if (dto.unit.currentMovement > 0)
+        if (unit.currentMovement > 0)
             moveHereButton.onClick(UncivSound.Silent) {
                 UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                if(dto.unit.type.isAirUnit())
+                if(unit.type.isAirUnit())
                     UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
-                moveUnitToTargetTile(dto.unit, dto.tileInfo)
+                moveUnitToTargetTile(unit, dto.tileInfo)
             }
 
         else moveHereButton.color.a = 0.5f

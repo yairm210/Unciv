@@ -85,7 +85,7 @@ class ModManagementScreen: PickerScreen() {
     fun downloadMod(gitRepoUrl:String, postAction:()->Unit={}){
         thread { // to avoid ANRs - we've learnt our lesson from previous download-related actions
             try {
-                Github.downloadAndExtract(gitRepoUrl+"/archive/master.zip",
+                Github.downloadAndExtract("$gitRepoUrl/archive/master.zip",
                         Gdx.files.local("mods"))
                 Gdx.app.postRunnable {
                     ResponsePopup("Downloaded!", this)

@@ -544,7 +544,8 @@ class MapUnit {
             if (unit.currentMovement < 0.1)
                 unit.disband()
             // let's find closest city or another carrier where it can be evacuated
-            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange() * 2).filterNot { it == currentTile }.firstOrNull { unit.movement.canMoveTo(it) }
+            val tileCanMoveTo = unit.currentTile.getTilesInDistance(unit.getRange() * 2)
+                    .filterNot { it == currentTile }.firstOrNull { unit.movement.canMoveTo(it) }
 
             if (tileCanMoveTo != null)
                 unit.movement.moveToTile(tileCanMoveTo)
