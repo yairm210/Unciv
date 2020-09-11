@@ -213,7 +213,7 @@ class CityScreen(internal val city: CityInfo): CameraStageBaseScreen() {
         stage.removeListener(keyListener)
         game.setWorldScreen()
         game.worldScreen.mapHolder.setCenterPosition(city.location)
-        game.worldScreen.bottomUnitTable.selectedUnit=null
+        game.worldScreen.bottomUnitTable.selectUnits()
     }
     fun page(delta: Int) {
         val civInfo = city.civInfo

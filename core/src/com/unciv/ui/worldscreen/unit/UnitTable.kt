@@ -22,10 +22,21 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitNameLabel = "".toLabel()
     private val promotionsTable = Table()
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
-    var selectedUnit : MapUnit? = null
+
+    val selectedUnit : MapUnit?
+        get() = selectedUnits.firstOrNull()
+    /** This is in preparation for multi-select and multi-move  */
+    val selectedUnits = ArrayList<MapUnit>()
+
+    /** Sending no units clears the selected units entirely */
+    fun selectUnits(vararg units:MapUnit) {
+        selectedUnits.clear()
+        selectedCity = null
+        for (unit in units) selectedUnits.add(unit)
+    }
+
     var selectedCity : CityInfo? = null
     val deselectUnitButton = Table()
-    val helpUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -45,7 +56,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             deselectUnitButton.add(ImageGetter.getImage("OtherIcons/Close")).size(20f).pad(10f)
             deselectUnitButton.pack()
             deselectUnitButton.touchable = Touchable.enabled
-            deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true;this@UnitTable.isVisible=false }
+            deselectUnitButton.onClick { selectUnits(); worldScreen.shouldUpdate=true; this@UnitTable.isVisible=false }
             addActor(deselectUnitButton)
         }).left()
 
@@ -75,12 +86,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(selectedUnit!=null) {
             isVisible=true
             if (selectedUnit!!.civInfo != worldScreen.viewingCiv && !worldScreen.viewingCiv.isSpectator()) { // The unit that was selected, was captured. It exists but is no longer ours.
-                selectedUnit = null
-                selectedCity = null
+                selectUnits()
                 selectedUnitHasChanged = true
             } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists}
-                selectedUnit = null
-                selectedCity = null
+                selectUnits()
                 selectedUnitHasChanged = true
             }
         }
@@ -183,9 +192,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     }
 
     fun citySelected(cityInfo: CityInfo) : Boolean {
+        selectUnits()
         if (cityInfo == selectedCity) return false
         selectedCity = cityInfo
-        selectedUnit = null
         selectedUnitHasChanged = true
         worldScreen.shouldUpdate = true
         return true
@@ -202,20 +211,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         else if(selectedTile.militaryUnit!=null
                 && (selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
                 && selectedUnit!=selectedTile.militaryUnit
-                && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
-            selectedUnit = selectedTile.militaryUnit
-            selectedCity = null
+                && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)) {
+            selectUnits(selectedTile.militaryUnit!!)
         }
         else if (selectedTile.civilianUnit!=null
                 && (selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())
-                && selectedUnit!=selectedTile.civilianUnit){
-            selectedUnit = selectedTile.civilianUnit
-            selectedCity = null
+                && selectedUnit!=selectedTile.civilianUnit) {
+            selectUnits(selectedTile.civilianUnit!!)
         } else if(selectedTile == previouslySelectedUnit?.currentTile) {
             // tapping the same tile again will deselect a unit.
             // important for single-tap-move to abort moving easily
-            selectedUnit = null
-            isVisible=false
+            selectUnits()
+            isVisible = false
         }
 
         if(selectedUnit != previouslySelectedUnit)

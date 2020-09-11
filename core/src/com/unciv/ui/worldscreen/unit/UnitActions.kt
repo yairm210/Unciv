@@ -14,8 +14,6 @@ import com.unciv.models.UncivSound
 import com.unciv.models.UnitAction
 import com.unciv.models.UnitActionType
 import com.unciv.models.ruleset.Building
-import com.unciv.models.translations.equalsPlaceholderText
-import com.unciv.models.translations.getPlaceholderParameters
 import com.unciv.models.translations.tr
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -287,7 +285,7 @@ object UnitActions {
                 type = UnitActionType.ConstructImprovement,
                 isCurrentAction = unit.currentTile.hasImprovementInProgress(),
                 action = {
-                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectedUnit = null })
+                    worldScreen.game.setScreen(ImprovementPickerScreen(tile) { unitTable.selectUnits() })
                 }.takeIf { canConstruct })
     }
 
@@ -445,7 +443,7 @@ object UnitActions {
                 uncivSound = UncivSound.Fortify,
                 action = {
                     unit.fortify()
-                    unitTable.selectedUnit = null
+                    unitTable.selectUnits()
                 }.takeIf { unit.currentMovement > 0 })
 
         if (unit.health < 100) {
@@ -454,7 +452,7 @@ object UnitActions {
                     title = UnitActionType.FortifyUntilHealed.value,
                     action = {
                         unit.fortifyUntilHealed()
-                        unitTable.selectedUnit = null
+                        unitTable.selectUnits()
                     }.takeIf { unit.currentMovement > 0 })
             actionList += actionForWounded
         }
@@ -471,7 +469,7 @@ object UnitActions {
                 isCurrentAction = isSleeping,
                 action = {
                     unit.action = Constants.unitActionSleep
-                    unitTable.selectedUnit = null
+                    unitTable.selectUnits()
                 }.takeIf { !isSleeping })
 
         if (unit.health < 100 && !isSleeping) {
@@ -480,7 +478,7 @@ object UnitActions {
                     title = UnitActionType.SleepUntilHealed.value,
                     action = {
                         unit.action = Constants.unitActionSleepUntilHealed
-                        unitTable.selectedUnit = null
+                        unitTable.selectUnits()
                     })
             actionList += actionForWounded
         }

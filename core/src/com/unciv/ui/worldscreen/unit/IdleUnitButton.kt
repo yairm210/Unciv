@@ -31,14 +31,14 @@ class IdleUnitButton (
         onClick {
 
             val idleUnits = unitTable.worldScreen.viewingCiv.getIdleUnits()
-            if(idleUnits.none()) return@onClick
+            if (idleUnits.none()) return@onClick
 
             val unitToSelect: MapUnit
-            if (unitTable.selectedUnit==null || !idleUnits.contains(unitTable.selectedUnit!!))
+            if (unitTable.selectedUnit == null || !idleUnits.contains(unitTable.selectedUnit!!))
                 unitToSelect = idleUnits.first()
             else {
                 var index = idleUnits.indexOf(unitTable.selectedUnit!!)
-                if(previous) index-- else index++
+                if (previous) index-- else index++
                 index += idleUnits.count()
                 index %= idleUnits.count() // for looping
                 unitToSelect = idleUnits.elementAt(index)
@@ -46,10 +46,8 @@ class IdleUnitButton (
 
             unitToSelect.due = false
             tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
-            unitTable.selectedCity = null // need to deselect city, so that units on cities show their tiles
-            unitTable.selectedUnit = unitToSelect
-            unitTable.worldScreen.shouldUpdate=true
-
+            unitTable.selectUnits(unitToSelect)
+            unitTable.worldScreen.shouldUpdate = true
         }
     }
 

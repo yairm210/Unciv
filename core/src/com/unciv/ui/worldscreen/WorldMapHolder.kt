@@ -135,7 +135,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     Sounds.play(UncivSound.Whoosh)
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
-                    if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectedUnit = selectedUnit
+                    if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnits(selectedUnit)
 
                     worldScreen.shouldUpdate = true
                     unitActionOverlay?.remove()
@@ -164,7 +164,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                 if(UncivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
                     // single turn instant move
                     selectedUnit.movement.headTowards(tileInfo)
-                    worldScreen.bottomUnitTable.selectedUnit = selectedUnit // keep moved unit selected
+                    worldScreen.bottomUnitTable.selectUnits(selectedUnit) // keep moved unit selected
                 } else {
                     // add "move to" button if there is a path to tileInfo
                     val moveHereButtonDto = if (turnsToGetThere != 0) MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
@@ -197,8 +197,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
             if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
             unitGroup.touchable = Touchable.enabled
             unitGroup.onClick {
-                worldScreen.bottomUnitTable.selectedUnit = unit
-                worldScreen.bottomUnitTable.selectedCity = null
+                worldScreen.bottomUnitTable.selectUnits(unit)
                 worldScreen.shouldUpdate = true
                 unitActionOverlay?.remove()
             }
