@@ -165,8 +165,8 @@ object Battle {
         // Similarly, Ottoman unique
         if (defender.isDefeated() && defender.getUnitType().isWaterUnit() && defender.getCivInfo().isBarbarian()
                 && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
-                && attacker.getCivInfo().hasUnique("Melee naval units can capture defeated naval units and earn 25 Gold")
-                && Random().nextDouble() > 0.4 * attacker.getAttackingStrength() / defender.getDefendingStrength() + 0.1f) {
+                && attacker.getCivInfo().hasUnique("50% chance of capturing defeated Barbarian naval units and earning 25 Gold")
+                && Random().nextDouble() > 0.5) {
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
             attacker.getCivInfo().gold += 25
         }
