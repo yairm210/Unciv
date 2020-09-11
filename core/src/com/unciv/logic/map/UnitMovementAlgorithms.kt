@@ -99,6 +99,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return distanceToTiles
     }
 
+    /** Returns an empty list if there's no way to get there */
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
         val currentTile = unit.getTile()
         if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
