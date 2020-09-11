@@ -62,7 +62,7 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     if (unit == null) return
                     thread {
                         val canUnitReachTile = unit.movement.canReach(tileGroup.tileInfo)
-                        if (canUnitReachTile) moveUnitToTargetTile(unit, tileGroup.tileInfo)
+                        if (canUnitReachTile) moveUnitToTargetTile(listOf(unit), tileGroup.tileInfo)
                     }
                 }
             })
@@ -111,8 +111,17 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
     }
 
 
-    fun moveUnitToTargetTile(selectedUnit: MapUnit, targetTile:TileInfo) {
+    fun moveUnitToTargetTile(selectedUnits: List<MapUnit>, targetTile:TileInfo) {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+        // THIS PART IS REALLY ANNOYING
+        // So lets say you have 2 units you want to move in the same direction, right
+        // But if the first one gets there, and the second one was PLANNING on going there, then now it can't and has to rethink
+        // So basically, THE UNIT MOVES HAVE TO BE SEQUENTIAL and not concurrent which is a BITCH
+        // So we do this one at a time by getting the list of units to move, MOVING ONE OF THEM with all the yukky threading,
+        // and then calling the function again but without the unit that moved.
+
+        val selectedUnit = selectedUnits.first()
+
         thread(name = "TileToMoveTo") {
             // these are the heavy parts, finding where we want to go
             // Since this runs in a different thread, even if we check movement.canReach()
@@ -139,8 +148,11 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
                     if (selectedUnit.currentMovement > 0) worldScreen.bottomUnitTable.selectUnit(selectedUnit)
 
                     worldScreen.shouldUpdate = true
-                    unitActionOverlay?.remove()
-                } catch (e: Exception) {}
+                    if (selectedUnits.size > 1) { // We have more tiles to move
+                        moveUnitToTargetTile(selectedUnits.subList(1, selectedUnits.size), targetTile)
+                    } else unitActionOverlay?.remove() //we're done here
+                } catch (e: Exception) {
+                }
             }
         }
     }
@@ -241,15 +253,15 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
         unitIcon.y = size - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
-        for (unit in dto.unitToTurnsToDestination.keys) {
-            if (unit.currentMovement > 0)
-                moveHereButton.onClick(UncivSound.Silent) {
-                    UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
-                    if (unit.type.isAirUnit())
-                        UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
-                    moveUnitToTargetTile(unit, dto.tileInfo)
-                }
-            else moveHereButton.color.a = 0.5f
+        val unitsThatCanMove = dto.unitToTurnsToDestination.keys.filter { it.currentMovement > 0 }
+        if(unitsThatCanMove.isEmpty()) moveHereButton.color.a = 0.5f
+        else {
+            moveHereButton.onClick(UncivSound.Silent) {
+                UncivGame.Current.settings.addCompletedTutorialTask("Move unit")
+                if (unitsThatCanMove.any { it.type.isAirUnit() })
+                    UncivGame.Current.settings.addCompletedTutorialTask("Move an air unit")
+                moveUnitToTargetTile(unitsThatCanMove, dto.tileInfo)
+            }
         }
         return moveHereButton
     }
