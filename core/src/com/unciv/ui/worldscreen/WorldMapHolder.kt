@@ -286,33 +286,34 @@ class WorldMapHolder(internal val worldScreen: WorldScreen, internal val tileMap
 
         val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
 
-        for (tileGroup in tileGroups.values){
+        for (tileGroup in tileGroups.values) {
             tileGroup.update(viewingCiv)
 
-            if(tileGroup.tileInfo.improvement==Constants.barbarianEncampment
+            if (tileGroup.tileInfo.improvement == Constants.barbarianEncampment
                     && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
                 tileGroup.showCircle(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
             val canSeeEnemy = unitsInTile.any() && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
                     && tileGroup.showMilitaryUnit(viewingCiv)
-            if(tileGroup.isViewable(viewingCiv) && canSeeEnemy)
+            if (tileGroup.isViewable(viewingCiv) && canSeeEnemy)
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
         val unitTable = worldScreen.bottomUnitTable
         when {
-            unitTable.selectedCity!=null -> {
+            unitTable.selectedCity != null -> {
                 val city = unitTable.selectedCity!!
                 updateTilegroupsForSelectedCity(city, playerViewableTilePositions)
             }
-            unitTable.selectedUnit!=null -> {
-                val unit = unitTable.selectedUnit!!
-                updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
+            unitTable.selectedUnit != null -> {
+                for (unit in unitTable.selectedUnits) {
+                    updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
+                }
             }
-            unitActionOverlay!=null      -> {
+            unitActionOverlay != null -> {
                 unitActionOverlay!!.remove()
-                unitActionOverlay=null
+                unitActionOverlay = null
             }
         }
 

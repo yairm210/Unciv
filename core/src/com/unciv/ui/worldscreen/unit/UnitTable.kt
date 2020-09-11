@@ -107,50 +107,56 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
-            separator.isVisible=true
-            val unit = selectedUnit!!
-            var nameLabelText = unit.name.tr()
-            if(unit.health<100) nameLabelText+=" ("+unit.health+")"
-            if(nameLabelText!=unitNameLabel.text.toString()){
-                unitNameLabel.setText(nameLabelText)
-                selectedUnitHasChanged=true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
+            if(selectedUnits.size==1) { //single selected unit
+                separator.isVisible = true
+                val unit = selectedUnit!!
+                var nameLabelText = unit.name.tr()
+                if (unit.health < 100) nameLabelText += " (" + unit.health + ")"
+                if (nameLabelText != unitNameLabel.text.toString()) {
+                    unitNameLabel.setText(nameLabelText)
+                    selectedUnitHasChanged = true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
+                }
+
+                unitDescriptionTable.clear()
+                unitDescriptionTable.defaults().pad(2f)
+                unitDescriptionTable.add(ImageGetter.getStatIcon("Movement")).size(20f)
+                unitDescriptionTable.add(unit.getMovementString()).padRight(10f)
+
+                if (!unit.type.isCivilian()) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
+                    unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
+                }
+
+                if (unit.baseUnit().rangedStrength != 0) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
+                    unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
+                }
+
+                if (unit.type.isRanged()) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
+                    unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
+                }
+
+                if (unit.baseUnit.interceptRange > 0) {
+                    unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
+                    val range = if (unit.type.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
+                    unitDescriptionTable.add(range.toString()).padRight(10f)
+                }
+
+                if (!unit.type.isCivilian()) {
+                    unitDescriptionTable.add("XP")
+                    unitDescriptionTable.add(unit.promotions.XP.toString() + "/" + unit.promotions.xpForNextPromotion())
+                }
+
+                if (unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
+                    selectedUnitHasChanged = true
             }
-
-
-            unitDescriptionTable.clear()
-            unitDescriptionTable.defaults().pad(2f)
-            unitDescriptionTable.add(ImageGetter.getStatIcon("Movement")).size(20f)
-            unitDescriptionTable.add(unit.getMovementString()).padRight(10f)
-
-            if (!unit.type.isCivilian()) {
-                unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
-                unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
+            else { // multiple selected units
+                unitNameLabel.setText("")
+                unitDescriptionTable.clear()
             }
-
-            if (unit.baseUnit().rangedStrength!=0) {
-                unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
-                unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
-            }
-
-            if(unit.type.isRanged()){
-                unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
-                unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
-            }
-
-            if(unit.baseUnit.interceptRange > 0){
-                unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
-                val range = if(unit.type.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
-                unitDescriptionTable.add(range.toString()).padRight(10f)
-            }
-
-            if (!unit.type.isCivilian()) {
-                unitDescriptionTable.add("XP")
-                unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())
-            }
-
-            if(unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
-                selectedUnitHasChanged = true
         }
+
         else if (selectedCity != null) {
             separator.isVisible=true
             val city = selectedCity!!
@@ -178,16 +184,21 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         unitDescriptionTable.clearListeners()
 
         if(selectedUnit!=null) {
-            unitIconHolder.add(UnitGroup(selectedUnit!!,30f)).pad(5f)
-            for(promotion in selectedUnit!!.promotions.promotions.sorted())
-                promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
+            if(selectedUnits.size==1) { // single selected unit
+                unitIconHolder.add(UnitGroup(selectedUnit!!, 30f)).pad(5f)
+                for (promotion in selectedUnit!!.promotions.promotions.sorted())
+                    promotionsTable.add(ImageGetter.getPromotionIcon(promotion))
 
-            // Since Clear also clears the listeners, we need to re-add it every time
-            promotionsTable.onClick {
-                if(selectedUnit==null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
-                UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
+                // Since Clear also clears the listeners, we need to re-add it every time
+                promotionsTable.onClick {
+                    if (selectedUnit == null || selectedUnit!!.promotions.promotions.isEmpty()) return@onClick
+                    UncivGame.Current.setScreen(PromotionPickerScreen(selectedUnit!!))
+                }
             }
-
+            else { // multiple selected units
+                for (unit in selectedUnits)
+                    unitIconHolder.add(UnitGroup(unit, 30f)).pad(5f)
+            }
         }
 
         pack()
@@ -206,7 +217,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun tileSelected(selectedTile: TileInfo) {
 
         val previouslySelectedUnit = selectedUnit
-
+        val previousNumberOfSelectedUnits = selectedUnits.size
 
         if (selectedTile.isCityCenter()
                 && (selectedTile.getOwner() == worldScreen.viewingCiv || worldScreen.viewingCiv.isSpectator())) {
@@ -228,7 +239,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             isVisible = false
         }
 
-        if (selectedUnit != previouslySelectedUnit)
+        if (selectedUnit != previouslySelectedUnit || selectedUnits.size != previousNumberOfSelectedUnits)
             selectedUnitHasChanged = true
     }
 
