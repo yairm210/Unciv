@@ -1,3 +1,17 @@
+## 3.10.9
+
+Resolved #3115 - AI no longer congregates great people in cities where it can't improve tiles
+
+Fixed AI unit upgrading - can now 'skip' over intermediate units, the way the "promote unit" action works. #3115
+
+Parameterized some uniques, fixes some minor bugs - By HadeanLake
+
+UI update - By lishaoxia1985
+
+Experimental - Can now move multiple military units to nearby tiles at the same turn in Desktop, via shift-click
+
+Translation updates
+
 ## 3.10.8
 
 Resolved #3048 - Fixed ANRs on 'Resume' on huge save files
