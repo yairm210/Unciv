@@ -27,7 +27,7 @@ open class TileInfo {
     // This will be called often - farm can be built on Hill and tundra if adjacent to fresh water
     // and farms on adjacent to fresh water tiles will have +1 additional Food after researching Civil Service
     @delegate:Transient
-    val isAdjacentToFreshwater: Boolean by lazy { fitsUniqueFilter("Fresh water") || neighbors.any { it.fitsUniqueFilter("Fresh water") } }
+    val isAdjacentToFreshwater: Boolean by lazy { fitsUniqueFilter("River") || fitsUniqueFilter("Fresh water") || neighbors.any { it.fitsUniqueFilter("Fresh water") } }
 
     var militaryUnit: MapUnit? = null
     var civilianUnit: MapUnit? = null
@@ -43,6 +43,8 @@ open class TileInfo {
 
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
+
+    fun isHill() = baseTerrain == Constants.hill
 
     var hasBottomRightRiver = false
     var hasBottomRiver = false
@@ -129,7 +131,7 @@ open class TileInfo {
 
     fun getHeight(): Int {
         if (baseTerrain == Constants.mountain) return 4
-        if (baseTerrain == Constants.hill) return 2
+        if (isHill()) return 2
         if (terrainFeature == Constants.forest || terrainFeature == Constants.jungle) return 1
         return 0
     }
@@ -188,14 +190,11 @@ open class TileInfo {
             val civWideUniques = city.civInfo.getMatchingUniques("[] from every []")
             for (unique in cityWideUniques + civWideUniques) {
                 val tileType = unique.params[1]
-                if (baseTerrain == tileType || terrainFeature == tileType
+                if (fitsUniqueFilter(tileType)
                         || (resource == tileType && hasViewableResource(observingCiv))
-                        || (tileType == "Water" && isWater)
                         || (tileType == "Strategic resource" && hasViewableResource(observingCiv) && getTileResource().resourceType == ResourceType.Strategic)
                         || (tileType == "Water resource" && isWater && hasViewableResource(observingCiv))
-                        || (tileType == "River" && isAdjacentToRiver())
-                )
-                    stats.add(Stats.parse(unique.params[0]))
+                ) stats.add(Stats.parse(unique.params[0]))
             }
         }
 
@@ -272,8 +271,8 @@ open class TileInfo {
             if (unique.placeholderText == "[] for each adjacent []") {
                 val adjacent = unique.params[1]
                 val numberOfBonuses = neighbors.count { it.improvement == adjacent
-                        || it.baseTerrain==adjacent || it.terrainFeature==adjacent
-                        || it.roadStatus.name==adjacent}
+                        || it.fitsUniqueFilter(adjacent)
+                        || it.roadStatus.name == adjacent}
                 stats.add(Stats.parse(unique.params[0]).times(numberOfBonuses.toFloat()))
             }
 
@@ -309,6 +308,7 @@ open class TileInfo {
 
     fun fitsUniqueFilter(filter:String): Boolean {
         return filter == baseTerrain
+                || filter == Constants.hill && isHill()
                 || filter == "River" && isAdjacentToRiver()
                 || filter == terrainFeature
                 || baseTerrainObject.uniques.contains(filter)

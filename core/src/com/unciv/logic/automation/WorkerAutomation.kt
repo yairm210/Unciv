@@ -206,10 +206,9 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.terrainFeature == Constants.jungle -> Constants.tradingPost
             tile.terrainFeature == "Oasis" -> null
             tile.terrainFeature == Constants.forest -> "Lumber mill"
-            tile.baseTerrain == Constants.hill -> "Mine"
+            tile.isHill() -> "Mine"
             tile.baseTerrain in listOf(Constants.grassland,Constants.desert,Constants.plains) -> "Farm"
-            tile.baseTerrain in listOf(Constants.tundra, Constants.snow)
-                    && tile.isAdjacentToFreshwater -> "Farm"
+            tile.isAdjacentToFreshwater -> "Farm"
             tile.baseTerrain in listOf(Constants.tundra, Constants.snow) -> Constants.tradingPost
             else -> null
         }
@@ -244,7 +243,6 @@ class WorkerAutomation(val unit: MapUnit) {
                         (!isCitadel || tile.neighbors.all { it.getOwner() != civInfo })) ||
                 !isAcceptableTileForFort(tile, civInfo)) return false
 
-        val isHills = tile.getBaseTerrain().name == Constants.hill
         // if this place is not perfect, let's see if there is a better one
         val nearestTiles = tile.getTilesInDistance(2).filter{it.owningCity?.civInfo == civInfo}.toList()
         for (closeTile in nearestTiles) {
@@ -254,7 +252,7 @@ class WorkerAutomation(val unit: MapUnit) {
             if (closeTile.improvement == Constants.fort || closeTile.improvement == Constants.citadel
                     || closeTile.improvementInProgress == Constants.fort) return false
             // there is another better tile for the fort
-            if (!isHills && tile.getBaseTerrain().name == Constants.hill &&
+            if (!tile.isHill() && closeTile.isHill() &&
                     isAcceptableTileForFort(closeTile, civInfo)) return false
         }
 
